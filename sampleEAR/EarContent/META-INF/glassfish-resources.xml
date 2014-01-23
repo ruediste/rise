@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE resources PUBLIC "-//GlassFish.org//DTD GlassFish Application Server 3.1 Resource Definitions//EN" "http://glassfish.org/dtds/glassfish-resources_1_5.dtd">
+<resources>
+<jdbc-connection-pool 
+ 	name="jdbc/laf-pool" 
+	datasource-classname="com.mysql.jdbc.jdbc2.optional.MysqlXADataSource" 
+	res-type="javax.sql.XADataSource"
+ 	transaction-isolation-level="repeatable-read" 
+ 	ping="true">
+
+   <property name="User" value="laf"></property>
+   <property name="serverName" value="localhost" />
+   <property name="portNumber" value="3306" />
+   <property name="dataBaseName" value="laf" />
+   <property name="User" value="laf" />
+   <property name="Password" value="password" />
+   <property name="connectionAttributes" value=";create=true" />
+ </jdbc-connection-pool>
+ 
+ <jdbc-resource jndi-name="jdbc/laf2" pool-name="jdbc/laf-pool" />
+</resources>

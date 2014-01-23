@@ -3,6 +3,7 @@
 	<name>sampleEAR</name>
 	<comment></comment>
 	<projects>
+		<project>sampleApp</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
