@@ -1,5 +1,7 @@
 package sampleApp;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.ejb.LocalBean;
@@ -22,6 +24,13 @@ public class TestBean {
 	EntityManager em;
 	
 	public void test(){
+		try {
+			em.unwrap(java.sql.Connection.class).setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		Issue issue=new Issue();
 		issue.setTitle("Hello "+System.currentTimeMillis());
 		em.persist(issue);
