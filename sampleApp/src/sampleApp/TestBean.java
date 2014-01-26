@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -19,18 +20,14 @@ import javax.persistence.criteria.Root;
 @LocalBean
 public class TestBean {
 
+	@Inject
+	DemoBean demo;
   
 	@PersistenceContext
 	EntityManager em;
 	
 	public void test(){
-		try {
-			em.unwrap(java.sql.Connection.class).setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		demo.writeRenderCommit();
 		Issue issue=new Issue();
 		issue.setTitle("Hello "+System.currentTimeMillis());
 		em.persist(issue);
@@ -44,7 +41,7 @@ public class TestBean {
 		query.select(from);
 		StringBuilder sb=new StringBuilder();
 		for (Issue issue: em.createQuery(query).getResultList()){
-			sb.append(issue.getTitle()+"<br/>");
+			sb.append(issue.getTitle()+"br<br/>");
 		}
 		return sb.toString();
 	}
