@@ -16,8 +16,8 @@ import javax.persistence.criteria.Root;
 /**
  * Session Bean implementation class TestBean
  */
-@Stateless
-@LocalBean
+//@Stateless
+//@LocalBean
 public class TestBean {
 
 	@Inject

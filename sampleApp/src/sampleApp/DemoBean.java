@@ -20,8 +20,8 @@ import javax.transaction.Transactional;
 import javax.transaction.UserTransaction;
 import javax.transaction.Transactional.TxType;
 
-@LocalBean
-@Stateful
+//@LocalBean
+//@Stateful
 @TransactionManagement(TransactionManagementType.BEAN)
 public class DemoBean {
 
