@@ -73,9 +73,11 @@ public class TestServlet extends HttpServlet {
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-			
-			em.close(); em=emf.createEntityManager();
 
+			em.close();
+
+			em = emf.createEntityManager();
+			
 			//CustomDataSource
 			//		.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
 			try {
@@ -86,21 +88,16 @@ public class TestServlet extends HttpServlet {
 				Issue issue2 = em2.find(Issue.class, issue.getId());
 				issue2.setDescription("b");
 				em2.flush();
-				em2.close();
-				
+
 				em.joinTransaction();
 
-				//System.out
-					//	.println("Isolation: "
-						//		+ em.unwrap(Connection.class)
-							//			.getTransactionIsolation());
-				
-				issue=em.find(Issue.class, issue.getId());
-				System.out.println("Description: "+issue.getDescription()); 
+				issue = em.find(Issue.class, issue.getId());
+				System.out.println("Description: " + issue.getDescription());
 				// the description has to be b
 				readWrite();
 				render();
 				ut.commit();
+				em2.close();
 			} catch (NotSupportedException | SystemException
 					| SecurityException | IllegalStateException
 					| RollbackException | HeuristicMixedException
