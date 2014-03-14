@@ -16,9 +16,7 @@ import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
-import javax.transaction.Transactional;
 import javax.transaction.UserTransaction;
-import javax.transaction.Transactional.TxType;
 
 //@LocalBean
 //@Stateful

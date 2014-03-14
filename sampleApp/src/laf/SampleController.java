@@ -2,15 +2,13 @@ package laf;
 
 import javax.inject.Inject;
 
+@Controller
 public class SampleController {
 
-	@Inject
-	ActionContext actionContext;
 
-	public String index() {
-		actionContext.setRenderResult(new NormalRenderResult(
-				"<html><head></head><body>Hello World</body></html>"));
-		return null;
+	public ActionResult index() {
+		return new NormalRenderResult(
+				"<html><head></head><body>Hello World</body></html>");
 	}
 
 }

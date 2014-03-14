@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<system-libraries>
-    <library path="/home/ruedi/glassfish4/glassfish/modules/org.eclipse.persistence.core.jar" source="/lafLib/eclipselink-src-2.5.1.v20130918-f2b9fc5.zip"/>
-</system-libraries>
