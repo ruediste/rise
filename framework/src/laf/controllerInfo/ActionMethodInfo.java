@@ -1,0 +1,29 @@
+package laf.controllerInfo;
+
+import java.lang.reflect.Method;
+
+import laf.attachedProperties.AttachedPropertyBearer;
+
+/**
+ * Contains information about an action method. An action method is a method of
+ * a controller, which can be invoked via HTTP to generate a response.
+ * 
+ * Implementations of this interface may not be modified after initialization.
+ */
+public interface ActionMethodInfo extends AttachedPropertyBearer {
+
+	/**
+	 * Get the info of the controller defining this method
+	 */
+	ControllerInfo getControllerInfo();
+
+	/**
+	 * Get the parameters of this method
+	 */
+	Iterable<ParameterInfo> getParameters();
+
+	/**
+	 * Return the underlying method.
+	 */
+	Method getMethod();
+}

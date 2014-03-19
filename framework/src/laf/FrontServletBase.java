@@ -4,16 +4,14 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.Singleton;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
+
+import laf.urlMapping.UrlMapping;
 
 /**
  * Framework entry point
@@ -28,6 +26,9 @@ public class FrontServletBase extends HttpServlet {
 
 	@Inject
 	ActionContext actionContext;
+
+	@Inject
+	UrlMapping urlMapping;
 
 	private static final long serialVersionUID = 1L;
 
