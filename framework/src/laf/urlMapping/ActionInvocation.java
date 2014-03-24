@@ -1,14 +1,48 @@
 package laf.urlMapping;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
+import laf.controllerInfo.ActionMethodInfo;
+import laf.urlMapping.ActionPath.ParameterValueComparator;
 
 /**
- * An invocation of an action method in the serialized form. All arguments are
- * represented by strings.
+ * An invocation of an action method.
  */
-public class ActionInvocation {
-	public final List<String> arguments = new ArrayList<String>();
+public class ActionInvocation<T> {
+	private final List<T> arguments = new ArrayList<>();
+	private ActionMethodInfo methodInfo;
+
+	public List<T> getArguments() {
+		return arguments;
+	}
+
+	public ActionMethodInfo getMethodInfo() {
+		return methodInfo;
+	}
+
+	public void setMethodInfo(ActionMethodInfo methodInfo) {
+		this.methodInfo = methodInfo;
+	}
+
+	public <O> boolean isCallToSameActionMethod(ActionInvocation<O> other,
+			ParameterValueComparator<? super T, ? super O> comparator) {
+		if (methodInfo != other.getMethodInfo()) {
+			return false;
+		}
+		if (arguments.size() != other.getArguments().size()) {
+			return false;
+		}
+
+		Iterator<T> it = arguments.iterator();
+		Iterator<O> oit = other.getArguments().iterator();
+		while (it.hasNext() && oit.hasNext()) {
+			if (!comparator.equals(it.next(), oit.next())) {
+				return false;
+			}
+		}
+
+		return true;
+	}
 
 	/*private ActionMethodMappingEntry method;
 

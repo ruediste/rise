@@ -1,18 +1,13 @@
 package laf.urlMapping;
 
-import laf.controllerInfo.ActionMethodInfo;
-import laf.controllerInfo.ControllerInfo;
 
 /**
  * {@link UrlMappingRule}s map URLs to {@link ActionPath}s. There is a system
  * wide list of rules which is tried one after the other, until one of them
- * returns a non-null value. In addition, each controller and each action method
- * can specify additional rules, which are tried before the system wide rules.
- * (Rules specified by action methods are tried before the rules defined by the
- * controller). The mechanism to add rules to controllers and action methods is
- * not defined, but they can be added to the {@link ControllerInfo} and
- * {@link ActionMethodInfo} instances.
- * 
+ * returns a non-null value. It is not possible to specify per controller or per
+ * action method rules. However, an extension could add a rule which processes
+ * some controller and action method meta data, and performs a mapping based on
+ * it.
  */
 public interface UrlMappingRule {
 	/**

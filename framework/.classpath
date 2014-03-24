@@ -8,7 +8,7 @@
 			<attribute name="owner.project.facets" value="jst.utility"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/java-7-openjdk-amd64">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
@@ -20,5 +20,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="/lib/guava-14.0.1.jar" sourcepath="/lib/guava-14.0.1-sources.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="/lib/mockito-all-1.9.5.jar" sourcepath="/lib/mockito-all-1.9.5-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

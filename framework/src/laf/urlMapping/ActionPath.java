@@ -1,68 +1,26 @@
 package laf.urlMapping;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import com.google.common.base.Objects;
 
 /**
- * An action path represents an invocation of an action. It is composed of
- * {@link ActionInvocation} elements, which describe the path over possibly
+ * An action path represents an invocation of an action method. It is composed
+ * of {@link ActionInvocation} elements, which describe the path over possibly
  * multiple embedded controllers to the final action.
  */
 
-public class ActionPath<T> implements Iterable<ActionInvocation> {
+public class ActionPath<T> {
 	// public FlashMessage flashMessage;
 	// public HttpMethod forcedHttpMethod;
 
-	private ArrayList<ActionInvocation> elements = new ArrayList<>();
+	private final LinkedList<ActionInvocation<T>> elements = new LinkedList<>();
 	public Integer statefulControllerId;
 
 	@Override
-	public Iterator<ActionInvocation> iterator() {
-		return elements.iterator();
-	}
-
-	public void add(ActionInvocation element) {
-		elements.add(element);
-	}
-
-	public int size() {
-		return elements.size();
-	}
-
-	public void addAll(Collection<? extends ActionInvocation> newElements) {
-		elements.addAll(newElements);
-	}
-
-	public void prepend(Collection<? extends ActionInvocation> elements) {
-		this.elements.addAll(0, elements);
-	}
-
-	public ActionInvocation statefulControllerInvocation() {
-		for (ActionInvocation element : elements) {
-			// if (element.getMethod().controllerEntry.isStatefulController) {
-			// return element;
-			// }
-		}
-		return null;
-	}
-
-	public ActionInvocation first() {
-		return elements.get(0);
-	}
-
-	public ActionInvocation last() {
-		return elements.get(elements.size() - 1);
-	}
-
-	public boolean isSerializable() {
-		// return first().getMethod().isSerializable;
-		return false;
-	}
-
-	@Override
 	public String toString() {
-		return Objects.toStringHelper(this).addValue(elements).toString();
+		return Objects.toStringHelper(this).addValue(getElements()).toString();
 	}
 
 	/*public Set<Right> getRequiredRights() {
@@ -80,7 +38,7 @@ public class ActionPath<T> implements Iterable<ActionInvocation> {
 			Iterable<ActionInvocation> invocationsOfInstatiation,
 			Class<?> controllerClass) {
 		Iterator<ActionInvocation> it = invocationsOfInstatiation.iterator();
-		Iterator<ActionInvocation> eit = elements.iterator();
+		Iterator<ActionInvocation<T>> eit = getElements().iterator();
 
 		// iterate an check if the elements are equal
 		while (it.hasNext() && eit.hasNext()) {
@@ -105,5 +63,49 @@ public class ActionPath<T> implements Iterable<ActionInvocation> {
 		// return eit.next().getMethod().controllerEntry.clazz ==
 		// controllerClass;
 		return false;
+	}
+
+	public LinkedList<ActionInvocation<T>> getElements() {
+		return elements;
+	}
+
+	/**
+	 * Determine if this and the other path represent calls to the same action
+	 * method. The Parameters are not compared.
+	 */
+	public boolean isCallToSameActionMethod(ActionPath<?> other) {
+		return isCallToSameActionMethod(other,
+				new ParameterValueComparator<Object, Object>() {
+
+					@Override
+					public boolean equals(Object a, Object b) {
+						return true;
+					}
+				});
+	}
+
+	public interface ParameterValueComparator<A, B> {
+		public boolean equals(A a, B b);
+	}
+
+	/**
+	 * Determine if this and the other path represent calls to the same action
+	 * method. The Parameters are compared by the provided
+	 */
+	public <O> boolean isCallToSameActionMethod(ActionPath<O> other,
+			ParameterValueComparator<? super T, ? super O> comparator) {
+		if (elements.size() != other.getElements().size()) {
+			return false;
+		}
+
+		Iterator<ActionInvocation<T>> it = elements.iterator();
+		Iterator<ActionInvocation<O>> oit = other.getElements().iterator();
+
+		while (it.hasNext() && oit.hasNext()) {
+			if (!it.next().isCallToSameActionMethod(oit.next(), comparator)) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
