@@ -26,4 +26,12 @@ public interface ActionMethodInfo extends AttachedPropertyBearer {
 	 * Return the underlying method.
 	 */
 	Method getMethod();
+
+	/**
+	 * Return the name of this action method. Must be unique within the
+	 * Controller.
+	 * 
+	 * @return
+	 */
+	String getName();
 }

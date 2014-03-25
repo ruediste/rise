@@ -1,7 +1,5 @@
 package laf.controllerInfo;
 
-import java.lang.reflect.Type;
-
 import laf.attachedProperties.AttachedPropertyBearer;
 
 /**
@@ -29,7 +27,18 @@ public interface ControllerInfo extends AttachedPropertyBearer {
 	String getQualifiedName();
 
 	/**
-	 * Return the {@link Type} of the underlying controller class.
+	 * Return the underlying controller class.
 	 */
-	Type getType();
+	Class<?> getControllerClass();
+
+	/**
+	 * Return the action method info of the given name, or null if none is
+	 * found.
+	 */
+	ActionMethodInfo getActionMethodInfo(String name);
+
+	/**
+	 * Return all action methods for this controller
+	 */
+	Iterable<ActionMethodInfo> getActionMethodInfos();
 }

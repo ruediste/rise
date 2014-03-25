@@ -1,14 +1,16 @@
 package laf;
 
 import javax.enterprise.inject.Produces;
+import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Singleton;
 
-import laf.urlMapping.UrlMapping;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 @Singleton
 public class FrameworkFactory {
-	@Produces UrlMapping produceUrlMapping(){
-		UrlMapping result=new UrlMapping();
-		return result;
+	@Produces Logger produceUrlMapping(InjectionPoint point){
+		return LoggerFactory.getLogger(point.getMember().getDeclaringClass());
 	}
 }

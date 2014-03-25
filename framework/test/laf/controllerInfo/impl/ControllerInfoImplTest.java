@@ -13,4 +13,12 @@ public class ControllerInfoImplTest {
 		assertEquals("laf.controllerInfo.impl", info.getPackage());
 		assertEquals("laf.controllerInfo.impl.Test", info.getQualifiedName());
 	}
+
+	@Test
+	public void calculateUnusedMethodName() {
+		ControllerInfoImpl info = new ControllerInfoImpl(TestController.class);
+		assertEquals("foo", info.calculateUnusedMethodName("foo"));
+		info.getActionMethods().put("foo", null);
+		assertNotEquals("foo", info.calculateUnusedMethodName("foo"));
+	}
 }

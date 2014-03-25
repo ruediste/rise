@@ -5,6 +5,9 @@
         <dependent-module archiveName="framework.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/framework/framework">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="guava-14.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/lib/guava-14.0.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="context-root" value="sampleApp"/>
         <property name="java-output-path" value="/sampleApp/build/classes"/>
     </wb-module>

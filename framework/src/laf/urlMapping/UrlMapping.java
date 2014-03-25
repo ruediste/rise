@@ -16,7 +16,12 @@ public class UrlMapping {
 	/**
 	 * Parse a servlet path. If no matching rule is found, null is returned.
 	 */
-	ActionPath<ParameterValueProvider> parse(String servletPath) {
+	public ActionPath<ParameterValueProvider> parse(String servletPath) {
+		if (coreConfig.getUrlMappingRules().isEmpty()) {
+			throw new RuntimeException(
+					"No UrlMappingRules are defined in CoreConfig");
+		}
+
 		for (UrlMappingRule rule : coreConfig.getUrlMappingRules()) {
 			ActionPath<ParameterValueProvider> result = rule.parse(servletPath);
 			if (result != null) {
@@ -29,7 +34,7 @@ public class UrlMapping {
 	/**
 	 * Generate a servlet path from an {@link ActionPath}.
 	 */
-	String generate(ActionPath<Object> path) {
+	public String generate(ActionPath<Object> path) {
 		String result = null;
 		for (UrlMappingRule rule : coreConfig.getUrlMappingRules()) {
 			result = rule.generate(path);
