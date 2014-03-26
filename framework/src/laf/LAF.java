@@ -6,8 +6,7 @@ import java.util.Deque;
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 
-import laf.urlMapping.ParameterHandler;
-import laf.urlMapping.UrlMappingRule;
+import laf.urlMapping.*;
 
 /**
  * This class contains all the knots and switches to configure the framework.
@@ -60,7 +59,7 @@ public class LAF {
 	 */
 	@PostConstruct
 	void configureDefaults() {
-
+		urlMappingRules.add(new DefaultUrlMappingRule());
 	}
 
 }
