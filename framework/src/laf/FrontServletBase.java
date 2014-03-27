@@ -1,13 +1,11 @@
 package laf;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -37,17 +35,7 @@ public class FrontServletBase extends HttpServlet {
 
 	@PostConstruct
 	public void initialize() {
-		Controller controllerAnnotation = new Controller() {
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return Controller.class;
-			}
-		};
 
-		for (Bean<?> bean : beanManager.getBeans(Object.class,
-				controllerAnnotation)) {
-			System.out.println(bean.getBeanClass());
-		}
 	}
 
 	@Override
@@ -56,6 +44,11 @@ public class FrontServletBase extends HttpServlet {
 		// parse request
 		ActionPath<ParameterValueProvider> actionPath = urlMapping.parse(req
 				.getServletPath());
+
+		if (actionPath == null) {
+			throw new RuntimeException("No Controller found for "
+					+ req.getServletPath());
+		}
 
 		// call controller
 		ActionResult result = null;
