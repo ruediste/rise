@@ -11,6 +11,8 @@ import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.google.common.collect.Iterables;
+
 public class InitializationEngineTest {
 
 	private final class Fail implements Answer<Object> {
@@ -62,8 +64,34 @@ public class InitializationEngineTest {
 	}
 
 	@Test
-	public void testCreateInitializersFromComponent() throws Exception {
-		throw new RuntimeException("not yet implemented");
+	public void testCreateInitializersFromComponentProvider() throws Exception {
+		Initializer init1 = mock(Initializer.class);
+		InitializerProvider provider = mock(InitializerProvider.class);
+		when(provider.getInitializers()).thenReturn(Arrays.asList(init1));
+		Iterable<Initializer> initializers = engine
+				.createInitializersFromComponent(provider);
+		assertEquals(1, Iterables.size(initializers));
+	}
+
+	private static class TestProvider {
+		public boolean initialized;
+
+		@LafInitializer
+		public void init() {
+			initialized = true;
+		}
+	}
+
+	@Test
+	public void testCreateInitializersFromComponentMethod() throws Exception {
+		TestProvider provider = new TestProvider();
+		Iterable<Initializer> initializers = engine
+				.createInitializersFromComponent(provider);
+		assertEquals(1, Iterables.size(initializers));
+
+		assertFalse(provider.initialized);
+		initializers.iterator().next().run();
+		assertTrue(provider.initialized);
 	}
 
 	@Test

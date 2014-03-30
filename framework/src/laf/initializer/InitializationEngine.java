@@ -1,11 +1,96 @@
 package laf.initializer;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class InitializationEngine {
 
-	Iterable<Initializer> createInitializersFromComponent(Object component) {
-		return null;
+	private static class MethodInitializer extends InitializerImpl {
+
+		ArrayList<InitializerMatcher> beforeMatchers = new ArrayList<>();
+		ArrayList<InitializerMatcher> afterMatchers = new ArrayList<>();
+		private Object component;
+		private Method method;
+
+		public MethodInitializer(Method method, Object component,
+				LafInitializer lafInitializer) {
+			super(component.getClass(), method.getName());
+			this.method = method;
+			this.component = component;
+
+			for (Class<?> cls : lafInitializer.before()) {
+				beforeMatchers.add(new InitializerMatcher(cls));
+			}
+			for (Class<?> cls : lafInitializer.after()) {
+				afterMatchers.add(new InitializerMatcher(cls));
+			}
+
+			for (InitializerRef ref : lafInitializer.beforeRef()) {
+				beforeMatchers.add(new InitializerMatcher(ref));
+			}
+			for (InitializerRef ref : lafInitializer.afterRef()) {
+				afterMatchers.add(new InitializerMatcher(ref));
+			}
+		}
+
+		@Override
+		public boolean isBefore(Initializer other) {
+			for (InitializerMatcher m : beforeMatchers) {
+				if (m.matches(other)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		@Override
+		public boolean isAfter(Initializer other) {
+			for (InitializerMatcher m : afterMatchers) {
+				if (m.matches(other)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		@Override
+		public void run() {
+			try {
+				method.invoke(component);
+			} catch (IllegalAccessException | IllegalArgumentException e) {
+				throw new RuntimeException(
+						"Unable to invoke initializer method " + method);
+			} catch (InvocationTargetException e) {
+				throw new RuntimeException("Error in initializer method "
+						+ method, e.getCause());
+			}
+		}
+
+	}
+
+	public Iterable<Initializer> createInitializersFromComponent(
+			Object component) {
+		ArrayList<Initializer> result = new ArrayList<>();
+
+		// handle InitializerProvider
+		if (component instanceof InitializerProvider) {
+			for (Initializer i : ((InitializerProvider) component)
+					.getInitializers()) {
+				result.add(i);
+			}
+		}
+
+		Class<? extends Object> componentClass = component.getClass();
+		for (Method method : componentClass.getMethods()) {
+			LafInitializer lafInitializer = method
+					.getAnnotation(LafInitializer.class);
+			if (lafInitializer == null) {
+				continue;
+			}
+			result.add(new MethodInitializer(method, component, lafInitializer));
+		}
+		return result;
 	}
 
 	public void runInitializers(Iterable<Initializer> initializers) {
