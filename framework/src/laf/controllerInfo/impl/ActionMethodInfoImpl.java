@@ -4,13 +4,14 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import laf.ActionResult;
 import laf.attachedProperties.AttachedPropertyBearerBase;
 import laf.controllerInfo.*;
 
 import com.google.common.base.Joiner;
 
 public class ActionMethodInfoImpl extends AttachedPropertyBearerBase implements
-ActionMethodInfo {
+		ActionMethodInfo {
 
 	private String name;
 	private final Method method;
@@ -57,6 +58,11 @@ ActionMethodInfo {
 		}
 		String parameterString = Joiner.on(", ").join(parameterTypes);
 		return getControllerInfo().getQualifiedName() + "." + getName() + "("
-				+ parameterString + ")";
+		+ parameterString + ")";
+	}
+
+	@Override
+	public boolean returnsEmbeddedController() {
+		return method.getReturnType() != ActionResult.class;
 	}
 }

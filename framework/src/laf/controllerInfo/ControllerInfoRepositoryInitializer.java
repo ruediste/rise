@@ -56,7 +56,7 @@ public class ControllerInfoRepositoryInitializer implements Runnable {
 		}
 	}
 
-	ControllerInfoImpl createControllerInfo(Class<?> controllerClass) {
+	public ControllerInfoImpl createControllerInfo(Class<?> controllerClass) {
 		ControllerInfoImpl info = new ControllerInfoImpl(controllerClass);
 		for (Method method : info.getControllerClass().getMethods()) {
 			if (method.getReturnType() == null) {
@@ -79,7 +79,7 @@ public class ControllerInfoRepositoryInitializer implements Runnable {
 
 			// calculate name
 			methodInfo
-					.setName(info.calculateUnusedMethodName(method.getName()));
+			.setName(info.calculateUnusedMethodName(method.getName()));
 
 			// add to repository
 			info.getActionMethods().put(methodInfo.getName(), methodInfo);

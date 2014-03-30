@@ -1,19 +1,27 @@
 package laf.urlMapping;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.inject.Inject;
 
+import laf.attachedProperties.AttachedProperty;
 import laf.controllerInfo.*;
+import laf.initializer.LafInitializer;
 
 import org.slf4j.Logger;
 
-import com.google.common.base.*;
-import com.google.common.collect.Lists;
-
 /**
- * Map URLs in the form <qualifiedControllerName
+ * <p>
+ * Map URLs in the form
+ * &lt;controllerIdentifier>.&lt;method>.&lt;method>/&lt;arg1>/&lt;arg2>
+ * </p>
  *
+ * <p>
+ * For each controller class, a controller identifier is determined, using a
+ * {@link ControllerIdentifierStrategy}. The controller identifiers have to be
+ * unique and may not contain a dot (.)
+ * </p>
  */
 public class DefaultUrlMappingRule implements UrlMappingRule {
 
@@ -23,56 +31,37 @@ public class DefaultUrlMappingRule implements UrlMappingRule {
 	@Inject
 	ControllerInfoRepository controllerInfoRepository;
 
-	private final HashMap<String, ControllerInfo> controllersByPrefix = new HashMap<>();
+	private ControllerIdentifierStrategy controllerIdentifierStrategy = new DefaultControllerIdentifierStrategy();
 
-	public String getControllerPrefix(String controllerClassName) {
-		List<String> parts = getControllerPrefixParts(controllerClassName);
+	private final HashMap<String, ControllerInfo> controllersByIdentifier = new HashMap<>();
 
-		// lowercamelize the controller name, which is last in the parts
-		parts.set(
-				parts.size() - 1,
-				CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL,
-						parts.get(parts.size() - 1)));
+	private static final AttachedProperty<String> controllerIdentifier = new AttachedProperty<>();
 
-		// join the parts
-		return "/" + Joiner.on("/").join(parts);
-
-	}
-
-	public List<String> getControllerPrefixParts(String controllerClassName) {
-		// remove package
-		String prefix = controllerClassName
-				.substring((Constants.basePackage + ".").length());
-
-		// remove Controller suffix
-		if (prefix.endsWith("Controller")) {
-			prefix = prefix.substring(0,
-					prefix.length() - "Controller".length());
+	@LafInitializer
+	public void initialize() {
+		// fill the identifiers map
+		for (ControllerInfo info : controllerInfoRepository
+				.getControllerInfos()) {
+			String identifier = controllerIdentifierStrategy
+					.generateIdentifier(info);
+			controllerIdentifier.set(info, identifier);
+			controllersByIdentifier.put(identifier, info);
 		}
-
-		List<String> parts = Lists.newArrayList(Splitter.on(".").split(prefix));
-
-		// remove a controller subpackage
-		if (parts.size() >= 2) {
-			if (parts.get(parts.size() - 2).equals("controller")) {
-				parts.remove(parts.size() - 2);
-			}
-		}
-		return parts;
 	}
 
 	@Override
 	public ActionPath<ParameterValueProvider> parse(String servletPath) {
-		ActionPath call = new ActionPath();
-		ControllerInfo controllerEntry = findControllerEntry(servletPath);
+		ActionPath<ParameterValueProvider> call = new ActionPath<>();
+		ControllerInfo controllerInfo = findControllerEntry(servletPath);
 
-		if (controllerEntry == null) {
+		if (controllerInfo == null) {
 			return null;
 		}
 
-		// remove the prefix and split the suffix into parts at the / characters
+		// remove the identifier and split the suffix into parts at the /
+		// characters
 		String[] parts = servletPath.substring(
-				controllerEntry.getQualifiedName().length()).split("/");
+				controllerIdentifier.get(controllerInfo).length()).split("/");
 
 		if (!parts[0].startsWith(".")) {
 			log.debug("unable to parse servlet path " + servletPath);
@@ -84,8 +73,8 @@ public class DefaultUrlMappingRule implements UrlMappingRule {
 
 		int i = 1;
 		for (String actionName : actionNames) {
-			ActionInvocation invocation = new ActionInvocation();
-			ActionMethodInfo actionMethodInfo = controllerEntry
+			ActionInvocation<ParameterValueProvider> invocation = new ActionInvocation<ParameterValueProvider>();
+			ActionMethodInfo actionMethodInfo = controllerInfo
 					.getActionMethodInfo(actionName);
 			if (actionMethodInfo == null) {
 				log.debug("no ActionMethod named " + actionName + " found");
@@ -96,17 +85,19 @@ public class DefaultUrlMappingRule implements UrlMappingRule {
 
 			Iterator<ParameterInfo> it = actionMethodInfo.getParameters()
 					.iterator();
-			for (int p = 0; it.hasNext() && i < parts.length; i++, p++) {
+			for (; it.hasNext() && i < parts.length; i++) {
 				ParameterInfo parameter = it.next();
-
-				invocation.arguments.add(parts[i]);
+				invocation.getArguments().add(
+						parameter.getParameterHandler().parse(parameter,
+								parts[i]));
 			}
-			call.add(invocation);
+			call.getElements().add(invocation);
 
-			if (invocation.getMethod().method.getReturnType() != String.class) {
+			if (invocation.getMethodInfo().returnsEmbeddedController()) {
 				// update the controller entry to the embedded controller
-				controllerEntry = findControllerEntry(invocation.getMethod().method
-						.getReturnType());
+				controllerInfo = controllerInfoRepository
+						.getControllerInfo(invocation.getMethodInfo()
+								.getMethod().getReturnType());
 			}
 		}
 
@@ -115,7 +106,44 @@ public class DefaultUrlMappingRule implements UrlMappingRule {
 
 	@Override
 	public String generate(ActionPath<Object> path) {
-		return null;
+		StringBuilder sb = new StringBuilder();
+
+		// add indentifier
+		{
+			Iterator<ActionInvocation<Object>> it = path.getElements()
+					.iterator();
+			if (!it.hasNext()) {
+				throw new RuntimeException(
+						"Tried to generate URL of empty ActionPath");
+			}
+
+			ActionInvocation<Object> element = it.next();
+			ControllerInfo controllerInfo = element.getMethodInfo()
+					.getControllerInfo();
+			String identifier = controllerIdentifier.get(controllerInfo);
+			sb.append(identifier);
+		}
+
+		// add methods
+		for (ActionInvocation<Object> element : path.getElements()) {
+			sb.append(".");
+			sb.append(element.getMethodInfo().getName());
+		}
+
+		// add arguments
+		for (ActionInvocation<Object> element : path.getElements()) {
+
+			Iterator<ParameterInfo> infoIt = element.getMethodInfo()
+					.getParameters().iterator();
+			Iterator<Object> argIt = element.getArguments().iterator();
+			while (infoIt.hasNext() && argIt.hasNext()) {
+				ParameterInfo info = infoIt.next();
+				sb.append("/");
+				sb.append(info.getParameterHandler().generate(info,
+						argIt.next()));
+			}
+		}
+		return sb.toString();
 	}
 
 	private ControllerInfo findControllerEntry(String servletPath) {
@@ -128,10 +156,18 @@ public class DefaultUrlMappingRule implements UrlMappingRule {
 		}
 
 		// get the prefix
-		String qualifiedControllerName = servletPath.substring(0, idx + 1);
+		String identifier = servletPath.substring(0, idx + 1);
 
-		return controllerInfoRepository
-				.getControllerInfo(qualifiedControllerName);
+		return controllersByIdentifier.get(identifier);
+	}
+
+	public ControllerIdentifierStrategy getControllerIdentifierStrategy() {
+		return controllerIdentifierStrategy;
+	}
+
+	public void setControllerIdentifierStrategy(
+			ControllerIdentifierStrategy controllerIdentifierStrategy) {
+		this.controllerIdentifierStrategy = controllerIdentifierStrategy;
 	}
 
 }
