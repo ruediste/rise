@@ -4,12 +4,12 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class AttachedPropertyKeyTest {
+public class AttachedPropertyTest {
 
 	@Test
 	public void testCrud() {
 		AttachedPropertyBearerBase bearer = new AttachedPropertyBearerBase();
-		AttachedPropertyKey<Integer> key = new AttachedPropertyKey<>();
+		AttachedProperty<Integer> key = new AttachedProperty<>();
 		assertFalse(key.isSet(bearer));
 		key.set(bearer, 10);
 		assertTrue(key.isSet(bearer));

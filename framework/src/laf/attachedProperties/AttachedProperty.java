@@ -4,7 +4,7 @@ package laf.attachedProperties;
  * Identifies a property which can be attached to any
  * {@link AttachedPropertyBearer}
  */
-public class AttachedPropertyKey<T> {
+public class AttachedProperty<T> {
 	/**
 	 * Return the value associated with the bearer. If the property is not set,
 	 * null is returned. To determine if a property is set, use
