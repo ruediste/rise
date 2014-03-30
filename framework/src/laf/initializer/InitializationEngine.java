@@ -69,7 +69,16 @@ public class InitializationEngine {
 
 	}
 
-	public Iterable<Initializer> createInitializersFromComponent(
+	public Collection<Initializer> createInitializersFromComponents(
+			Iterable<?> components) {
+		ArrayList<Initializer> result = new ArrayList<>();
+		for (Object component : components) {
+			result.addAll(createInitializersFromComponent(component));
+		}
+		return result;
+	}
+
+	public Collection<Initializer> createInitializersFromComponent(
 			Object component) {
 		ArrayList<Initializer> result = new ArrayList<>();
 

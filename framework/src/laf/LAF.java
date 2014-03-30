@@ -1,11 +1,13 @@
 package laf;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.*;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import laf.initializer.InitializationEngine;
+import laf.initializer.Initializer;
 import laf.urlMapping.*;
 
 /**
@@ -14,6 +16,9 @@ import laf.urlMapping.*;
  */
 @Singleton
 public class LAF {
+
+	@Inject
+	InitializationEngine initializationEngine;
 
 	final private ArrayDeque<UrlMappingRule> urlMappingRules = new ArrayDeque<>();
 
@@ -36,22 +41,22 @@ public class LAF {
 	private ProjectStage projectStage;
 
 	private final Deque<ParameterHandler> parameterHandlers = new ArrayDeque<>();
-	private final Deque<Runnable> initializers = new ArrayDeque<>();
 
 	/**
 	 * Initialize the Framework. This method has to be called after any
 	 * configuration changes.
 	 */
 	public void initialize() {
-
+		ArrayList<Initializer> list = new ArrayList<>();
+		list.addAll(initializationEngine
+				.createInitializersFromComponents(urlMappingRules));
+		list.addAll(initializationEngine
+				.createInitializersFromComponents(parameterHandlers));
+		initializationEngine.runInitializers(list);
 	}
 
 	public Deque<ParameterHandler> getParameterHandlers() {
 		return parameterHandlers;
-	}
-
-	public Deque<Runnable> getInitializers() {
-		return initializers;
 	}
 
 	/**
