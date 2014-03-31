@@ -10,7 +10,8 @@ public class ControllerInfoImplTest {
 
 	@Test
 	public void checkNames() {
-		ControllerInfoImpl info = new ControllerInfoImpl(TestController.class);
+		ControllerInfoImpl info = new ControllerInfoImpl(TestController.class,
+				false);
 		assertEquals("Test", info.getName());
 		assertEquals("laf.controllerInfo.impl", info.getPackage());
 		assertEquals("laf.controllerInfo.impl.Test", info.getQualifiedName());
@@ -18,7 +19,8 @@ public class ControllerInfoImplTest {
 
 	@Test
 	public void calculateUnusedMethodName() {
-		ControllerInfoImpl info = new ControllerInfoImpl(TestController.class);
+		ControllerInfoImpl info = new ControllerInfoImpl(TestController.class,
+				true);
 		assertEquals("foo", info.calculateUnusedMethodName("foo"));
 		ActionMethodInfo methodInfo = mock(ActionMethodInfo.class);
 		when(methodInfo.getName()).thenReturn("foo");

@@ -2,7 +2,11 @@ package laf.urlMapping;
 
 import java.util.*;
 
+import com.google.common.base.Objects;
+import com.google.common.base.Objects.ToStringHelper;
+
 import laf.controllerInfo.ActionMethodInfo;
+import laf.controllerInfo.ControllerInfo;
 import laf.urlMapping.ActionPath.ParameterValueComparator;
 
 /**
@@ -53,6 +57,16 @@ public class ActionInvocation<T> {
 		}
 
 		return true;
+	}
+
+	public ControllerInfo getControllerInfo() {
+		return getMethodInfo().getControllerInfo();
+	}
+
+	@Override
+	public String toString() {
+		return Objects.toStringHelper(this).add("methodInfo", methodInfo)
+				.toString();
 	}
 
 	/*private ActionMethodMappingEntry method;

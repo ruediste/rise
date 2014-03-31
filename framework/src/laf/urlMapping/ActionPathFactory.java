@@ -1,6 +1,7 @@
 package laf.urlMapping;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -31,13 +32,35 @@ public class ActionPathFactory {
 	public <T> T createActionPath(final Class<T> controllerClass) {
 		ControllerInfo controllerInfo = controllerInfoRepository
 				.getControllerInfo(controllerClass);
+		PathActionResult path = new PathActionResult();
 		if (controllerInfo.isEmbeddedController()) {
 			// look for the latest occurrence of the controller class
 			// in the invoked path, and use the prefix for the to be generated
 			// path
-			actionContext.getInvokedPath().getElements();
+
+			ArrayList<ActionInvocation<Object>> elements = actionContext
+					.getInvokedPath().getElements();
+			boolean found = false;
+			for (int i = elements.size() - 1; i >= 0; i--) {
+				if (controllerClass.isAssignableFrom(elements.get(i)
+						.getControllerInfo().getControllerClass())) {
+					for (int p = 0; p < i; p++) {
+						path.getElements().add(elements.get(p));
+					}
+					found = true;
+					break;
+				}
+			}
+
+			if (!found) {
+				throw new RuntimeException(
+						"Attempted to generate an ActionPath starting with controller "
+								+ controllerClass.getName()
+								+ ", but did not find a suiting stating point within invoked ActionPath "
+								+ actionContext.getInvokedPath());
+			}
 		}
-		return createActionPath(controllerClass, new PathActionResult());
+		return createActionPath(controllerClass, path);
 	}
 
 	/**
@@ -72,12 +95,12 @@ public class ActionPathFactory {
 									+ controllerClass.getName()
 									+ " while generating an ActionPath. Available Methods:\n"
 									+ Joiner.on("\n")
-									.join(controllerInfo
-											.getActionMethodInfos()
-											.stream()
-											.map(i -> i.getSignature())
-											.collect(
-													Collectors.toList())));
+											.join(controllerInfo
+													.getActionMethodInfos()
+													.stream()
+													.map(i -> i.getSignature())
+													.collect(
+															Collectors.toList())));
 				}
 				invocation.setMethodInfo(methodInfo);
 				invocation.getArguments().addAll(Arrays.asList(args));

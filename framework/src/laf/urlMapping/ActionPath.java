@@ -1,7 +1,7 @@
 package laf.urlMapping;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 
 import com.google.common.base.Objects;
 
@@ -15,7 +15,7 @@ public class ActionPath<T> {
 	// public FlashMessage flashMessage;
 	// public HttpMethod forcedHttpMethod;
 
-	private final LinkedList<ActionInvocation<T>> elements = new LinkedList<>();
+	private final ArrayList<ActionInvocation<T>> elements = new ArrayList<>();
 	public Integer statefulControllerId;
 
 	@Override
@@ -65,7 +65,7 @@ public class ActionPath<T> {
 		return false;
 	}
 
-	public LinkedList<ActionInvocation<T>> getElements() {
+	public ArrayList<ActionInvocation<T>> getElements() {
 		return elements;
 	}
 
@@ -77,11 +77,11 @@ public class ActionPath<T> {
 		return isCallToSameActionMethod(other,
 				new ParameterValueComparator<Object, Object>() {
 
-			@Override
-			public boolean equals(Object a, Object b) {
-				return true;
-			}
-		});
+					@Override
+					public boolean equals(Object a, Object b) {
+						return true;
+					}
+				});
 	}
 
 	public interface ParameterValueComparator<A, B> {
@@ -108,4 +108,5 @@ public class ActionPath<T> {
 		}
 		return true;
 	}
+
 }

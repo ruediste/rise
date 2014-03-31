@@ -1,38 +1,45 @@
 package laf.urlMapping;
 
-import static org.mockito.Mockito.*;
-
-import java.util.Arrays;
-
 import laf.controllerInfo.ControllerInfoRepository;
 import laf.controllerInfo.ControllerInfoRepositoryInitializer;
-import laf.controllerInfo.impl.ControllerInfoImpl;
 import laf.controllerInfo.impl.TestController;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
+
+import de.akquinet.jbosscc.needle.annotation.InjectIntoMany;
+import de.akquinet.jbosscc.needle.annotation.ObjectUnderTest;
+import de.akquinet.jbosscc.needle.junit.NeedleRule;
 
 public class DefaultUrlMappingRuleTest {
 
+	@Rule
+	public NeedleRule needleRule = new NeedleRule();
+
+	@ObjectUnderTest
 	DefaultUrlMappingRule rule;
+
+	@ObjectUnderTest
+	ActionPathFactory factory;
+
+	@InjectIntoMany
+	@ObjectUnderTest
+	ControllerInfoRepository repo = new ControllerInfoRepository();
+
+	@InjectIntoMany
+	@ObjectUnderTest
+	ControllerInfoRepositoryInitializer initializer = new ControllerInfoRepositoryInitializer();
 
 	@Before
 	public void init() {
-		rule = new DefaultUrlMappingRule();
-		rule.controllerInfoRepository = mock(ControllerInfoRepository.class);
-		ControllerInfoRepositoryInitializer initializer = new ControllerInfoRepositoryInitializer();
-		ControllerInfoImpl info = initializer
-				.createControllerInfo(TestController.class);
-		when(rule.controllerInfoRepository.getControllerInfos()).thenReturn(
-				Arrays.asList(info));
+		initializer.putControllerInfo(TestController.class, false);
 		rule.initialize();
 	}
 
 	@Test
 	public void generate() {
-		ActionPath<Object> path = new ActionPath<>();
-		ActionInvocation<Object> invocation = new ActionInvocation<>();
+		PathActionResult path = (PathActionResult) factory.createActionPath(
+				TestController.class).actionMethod(1);
 
 		rule.generate(path);
 

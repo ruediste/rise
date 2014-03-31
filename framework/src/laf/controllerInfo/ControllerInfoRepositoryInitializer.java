@@ -19,7 +19,7 @@ public class ControllerInfoRepositoryInitializer implements Runnable {
 	Logger log;
 
 	@Inject
-	ControllerInfoRepository repository;
+	public ControllerInfoRepository repository;
 
 	@Inject
 	BeanManager beanManager;
@@ -44,16 +44,19 @@ public class ControllerInfoRepositoryInitializer implements Runnable {
 		for (Bean<?> bean : beanManager.getBeans(Object.class,
 				controllerAnnotation)) {
 			log.debug("Found controller " + bean.getBeanClass());
-			repository.putControllerInfo(createControllerInfo(
-					bean.getBeanClass(), false));
+			putControllerInfo(bean.getBeanClass(), false);
 		}
 
 		for (Bean<?> bean : beanManager.getBeans(Object.class,
 				embeddedControllerAnnotation)) {
 			log.debug("Found embedded controller " + bean.getBeanClass());
-			repository.putControllerInfo(createControllerInfo(
-					bean.getBeanClass(), true));
+			putControllerInfo(bean.getBeanClass(), true);
 		}
+	}
+
+	public void putControllerInfo(Class<?> controllerClass, boolean isEmbedded) {
+		repository.putControllerInfo(createControllerInfo(controllerClass,
+				isEmbedded));
 	}
 
 	public ControllerInfoImpl createControllerInfo(Class<?> controllerClass,

@@ -12,7 +12,7 @@ import laf.controllerInfo.*;
 import com.google.common.base.Joiner;
 
 public class ActionMethodInfoImpl extends AttachedPropertyBearerBase implements
-ActionMethodInfo {
+		ActionMethodInfo {
 
 	private String name;
 	private final Method method;
@@ -58,8 +58,9 @@ ActionMethodInfo {
 			parameterTypes.add(p.getType().toString());
 		}
 		String parameterString = Joiner.on(", ").join(parameterTypes);
-		return getControllerInfo().getQualifiedName() + "." + getName() + "("
-				+ parameterString + ")";
+		return method.getReturnType() + " "
+				+ getControllerInfo().getQualifiedName() + "." + getName()
+				+ "(" + parameterString + ")";
 	}
 
 	@Override
@@ -75,6 +76,6 @@ ActionMethodInfo {
 				+ "("
 				+ Joiner.on(",").join(
 						parameters.stream().map(p -> p.getType())
-						.collect(Collectors.toList())) + ")";
+								.collect(Collectors.toList())) + ")";
 	}
 }
