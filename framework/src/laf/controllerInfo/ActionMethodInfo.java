@@ -42,4 +42,11 @@ public interface ActionMethodInfo extends AttachedPropertyBearer {
 	 * @return
 	 */
 	boolean returnsEmbeddedController();
+
+	/**
+	 * Return a signature including method name, argument types and return type
+	 * 
+	 * @return
+	 */
+	String getSignature();
 }

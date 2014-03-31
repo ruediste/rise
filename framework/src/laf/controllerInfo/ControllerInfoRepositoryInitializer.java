@@ -44,20 +44,22 @@ public class ControllerInfoRepositoryInitializer implements Runnable {
 		for (Bean<?> bean : beanManager.getBeans(Object.class,
 				controllerAnnotation)) {
 			log.debug("Found controller " + bean.getBeanClass());
-			repository.putControllerInfo(createControllerInfo(bean
-					.getBeanClass()));
+			repository.putControllerInfo(createControllerInfo(
+					bean.getBeanClass(), false));
 		}
 
 		for (Bean<?> bean : beanManager.getBeans(Object.class,
 				embeddedControllerAnnotation)) {
 			log.debug("Found embedded controller " + bean.getBeanClass());
-			repository.putControllerInfo(createControllerInfo(bean
-					.getBeanClass()));
+			repository.putControllerInfo(createControllerInfo(
+					bean.getBeanClass(), true));
 		}
 	}
 
-	public ControllerInfoImpl createControllerInfo(Class<?> controllerClass) {
-		ControllerInfoImpl info = new ControllerInfoImpl(controllerClass);
+	public ControllerInfoImpl createControllerInfo(Class<?> controllerClass,
+			boolean isEmbedded) {
+		ControllerInfoImpl info = new ControllerInfoImpl(controllerClass,
+				isEmbedded);
 		for (Method method : info.getControllerClass().getMethods()) {
 			if (method.getReturnType() == null) {
 				continue;
@@ -68,10 +70,10 @@ public class ControllerInfoRepositoryInitializer implements Runnable {
 				continue;
 			}
 
-			{
-				if (method.getDeclaringClass().getAnnotation(Controller.class) == null) {
-					continue;
-				}
+			if (method.getDeclaringClass().getAnnotation(Controller.class) == null
+					&& method.getDeclaringClass().getAnnotation(
+							EmbeddedController.class) == null) {
+				continue;
 			}
 			// create method info
 			ActionMethodInfoImpl methodInfo = new ActionMethodInfoImpl(method);
@@ -79,10 +81,10 @@ public class ControllerInfoRepositoryInitializer implements Runnable {
 
 			// calculate name
 			methodInfo
-			.setName(info.calculateUnusedMethodName(method.getName()));
+					.setName(info.calculateUnusedMethodName(method.getName()));
 
 			// add to repository
-			info.getActionMethods().put(methodInfo.getName(), methodInfo);
+			info.putActionMethodInfo(methodInfo);
 
 			// create parameter infos
 			createParameterInfos(methodInfo);

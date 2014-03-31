@@ -77,11 +77,11 @@ public class ActionPath<T> {
 		return isCallToSameActionMethod(other,
 				new ParameterValueComparator<Object, Object>() {
 
-					@Override
-					public boolean equals(Object a, Object b) {
-						return true;
-					}
-				});
+			@Override
+			public boolean equals(Object a, Object b) {
+				return true;
+			}
+		});
 	}
 
 	public interface ParameterValueComparator<A, B> {

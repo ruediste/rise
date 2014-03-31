@@ -1,7 +1,7 @@
 package laf.controllerInfo.impl;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.lang.reflect.Method;
+import java.util.*;
 
 import laf.attachedProperties.AttachedPropertyBearerBase;
 import laf.controllerInfo.ActionMethodInfo;
@@ -13,10 +13,15 @@ public class ControllerInfoImpl extends AttachedPropertyBearerBase implements
 		ControllerInfo {
 	final private Class<?> controllerClass;
 
-	private final HashMap<String, ActionMethodInfo> actionMethods = new LinkedHashMap<>();
+	private final HashMap<String, ActionMethodInfo> actionMethodsByName = new LinkedHashMap<>();
+	private final HashMap<Method, ActionMethodInfo> actionMethodsByMethod = new LinkedHashMap<>();
 
-	public ControllerInfoImpl(Class<?> controllerClass) {
+	private boolean isEmbeddedController;
+
+	public ControllerInfoImpl(Class<?> controllerClass,
+			boolean isEmbeddedController) {
 		this.controllerClass = controllerClass;
+		this.isEmbeddedController = isEmbeddedController;
 	}
 
 	@Override
@@ -48,7 +53,7 @@ public class ControllerInfoImpl extends AttachedPropertyBearerBase implements
 
 	public String calculateUnusedMethodName(String name) {
 		// return the plain name if it is not taken already
-		if (!actionMethods.containsKey(name)) {
+		if (!actionMethodsByName.containsKey(name)) {
 			return name;
 		}
 
@@ -57,23 +62,35 @@ public class ControllerInfoImpl extends AttachedPropertyBearerBase implements
 		String result;
 		do {
 			result = name + "$" + i++;
-		} while (actionMethods.containsKey(result));
+		} while (actionMethodsByName.containsKey(result));
 
 		return result;
 	}
 
 	@Override
 	public ActionMethodInfo getActionMethodInfo(String name) {
-		return getActionMethods().get(name);
+		return actionMethodsByName.get(name);
 	}
 
 	@Override
-	public Iterable<ActionMethodInfo> getActionMethodInfos() {
-		return getActionMethods().values();
+	public Collection<ActionMethodInfo> getActionMethodInfos() {
+		return actionMethodsByName.values();
 	}
 
-	public HashMap<String, ActionMethodInfo> getActionMethods() {
-		return actionMethods;
+	public void putActionMethodInfo(ActionMethodInfo actionMethodInfo) {
+		actionMethodsByName.put(actionMethodInfo.getName(), actionMethodInfo);
+		actionMethodsByMethod.put(actionMethodInfo.getMethod(),
+				actionMethodInfo);
+	}
+
+	@Override
+	public ActionMethodInfo getActionMethodInfo(Method method) {
+		return actionMethodsByMethod.get(method);
+	}
+
+	@Override
+	public boolean isEmbeddedController() {
+		return isEmbeddedController;
 	}
 
 }

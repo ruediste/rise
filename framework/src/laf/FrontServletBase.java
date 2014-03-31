@@ -2,7 +2,6 @@ package laf;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Instance;
@@ -41,6 +40,9 @@ public class FrontServletBase extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+		actionContext.setRequest(req);
+		actionContext.setResponse(resp);
+
 		// parse request
 		ActionPath<ParameterValueProvider> actionPath = urlMapping.parse(req
 				.getServletPath());
@@ -50,11 +52,15 @@ public class FrontServletBase extends HttpServlet {
 					+ req.getServletPath());
 		}
 
+		// create arguments
+		ActionPath<Object> objectActionPath = createObjectActionPath(actionPath);
+		actionContext.setInvokedPath(objectActionPath);
+
 		// call controller
 		ActionResult result = null;
 		{
 			Object lastActionMethodResult = null;
-			for (ActionInvocation<ParameterValueProvider> invocation : actionPath
+			for (ActionInvocation<Object> invocation : objectActionPath
 					.getElements()) {
 				// determine controller
 				Object controller;
@@ -67,17 +73,10 @@ public class FrontServletBase extends HttpServlet {
 					controller = lastActionMethodResult;
 				}
 
-				// load arguments
-				ArrayList<Object> arguments = new ArrayList<>();
-				for (ParameterValueProvider provider : invocation
-						.getArguments()) {
-					arguments.add(provider.provideValue());
-				}
-
 				// invoke controller
 				try {
 					lastActionMethodResult = methodInfo.getMethod().invoke(
-							controller, arguments.toArray());
+							controller, invocation.getArguments().toArray());
 				} catch (IllegalAccessException | IllegalArgumentException e) {
 					throw new RuntimeException("Error calling action method "
 							+ methodInfo, e);
@@ -99,5 +98,23 @@ public class FrontServletBase extends HttpServlet {
 		// render result
 		RenderResult renderResult = (RenderResult) result;
 		renderResult.sendTo(resp);
+	}
+
+	/**
+	 * Create a copy of the provided action path, retrieving the arguments form
+	 * the {@link ParameterValueProvider}s.
+	 */
+	private ActionPath<Object> createObjectActionPath(
+			ActionPath<ParameterValueProvider> actionPath) {
+		ActionPath<Object> result = new ActionPath<Object>();
+		for (ActionInvocation<ParameterValueProvider> invocation : actionPath
+				.getElements()) {
+			ActionInvocation<Object> i = new ActionInvocation<Object>(
+					invocation);
+			for (ParameterValueProvider provider : invocation.getArguments()) {
+				i.getArguments().add(provider.provideValue());
+			}
+		}
+		return result;
 	}
 }

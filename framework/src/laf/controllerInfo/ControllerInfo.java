@@ -1,11 +1,14 @@
 package laf.controllerInfo;
 
+import java.lang.reflect.Method;
+import java.util.Collection;
+
 import laf.attachedProperties.AttachedPropertyBearer;
 
 /**
  * Provides information about a controller. A controller contains action
  * methods, which can be called via requests.
- * 
+ *
  * Implementations of this interface may not be modified after initialization.
  */
 public interface ControllerInfo extends AttachedPropertyBearer {
@@ -40,5 +43,16 @@ public interface ControllerInfo extends AttachedPropertyBearer {
 	/**
 	 * Return all action methods for this controller
 	 */
-	Iterable<ActionMethodInfo> getActionMethodInfos();
+	Collection<ActionMethodInfo> getActionMethodInfos();
+
+	/**
+	 * Return the action method info of the given method, or null if none is
+	 * found.
+	 */
+	ActionMethodInfo getActionMethodInfo(Method method);
+
+	/**
+	 * Return true if this is an embedded controller.
+	 */
+	boolean isEmbeddedController();
 }

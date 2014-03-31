@@ -1,6 +1,8 @@
 package laf.controllerInfo.impl;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import laf.controllerInfo.ActionMethodInfo;
 
 import org.junit.Test;
 
@@ -18,7 +20,9 @@ public class ControllerInfoImplTest {
 	public void calculateUnusedMethodName() {
 		ControllerInfoImpl info = new ControllerInfoImpl(TestController.class);
 		assertEquals("foo", info.calculateUnusedMethodName("foo"));
-		info.getActionMethods().put("foo", null);
+		ActionMethodInfo methodInfo = mock(ActionMethodInfo.class);
+		when(methodInfo.getName()).thenReturn("foo");
+		info.putActionMethodInfo(methodInfo);
 		assertNotEquals("foo", info.calculateUnusedMethodName("foo"));
 	}
 }

@@ -9,6 +9,7 @@ import laf.controllerInfo.ControllerInfoRepositoryInitializer;
 import laf.controllerInfo.impl.ControllerInfoImpl;
 import laf.controllerInfo.impl.TestController;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -34,5 +35,7 @@ public class DefaultUrlMappingRuleTest {
 		ActionInvocation<Object> invocation = new ActionInvocation<>();
 
 		rule.generate(path);
+
+		throw new NotImplementedException();
 	}
 }

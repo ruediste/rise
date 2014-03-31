@@ -12,6 +12,17 @@ public class ActionInvocation<T> {
 	private final List<T> arguments = new ArrayList<>();
 	private ActionMethodInfo methodInfo;
 
+	public ActionInvocation() {
+
+	}
+
+	/**
+	 * Create a copy of this invocation, not including the argument list
+	 */
+	public ActionInvocation(ActionInvocation<?> invocation) {
+		this.methodInfo = invocation.methodInfo;
+	}
+
 	public List<T> getArguments() {
 		return arguments;
 	}

@@ -3,6 +3,7 @@ package laf.controllerInfo.impl;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import laf.ActionResult;
 import laf.attachedProperties.AttachedPropertyBearerBase;
@@ -11,7 +12,7 @@ import laf.controllerInfo.*;
 import com.google.common.base.Joiner;
 
 public class ActionMethodInfoImpl extends AttachedPropertyBearerBase implements
-		ActionMethodInfo {
+ActionMethodInfo {
 
 	private String name;
 	private final Method method;
@@ -58,11 +59,22 @@ public class ActionMethodInfoImpl extends AttachedPropertyBearerBase implements
 		}
 		String parameterString = Joiner.on(", ").join(parameterTypes);
 		return getControllerInfo().getQualifiedName() + "." + getName() + "("
-		+ parameterString + ")";
+				+ parameterString + ")";
 	}
 
 	@Override
 	public boolean returnsEmbeddedController() {
 		return method.getReturnType() != ActionResult.class;
+	}
+
+	@Override
+	public String getSignature() {
+		return method.getReturnType().getSimpleName()
+				+ " "
+				+ getName()
+				+ "("
+				+ Joiner.on(",").join(
+						parameters.stream().map(p -> p.getType())
+						.collect(Collectors.toList())) + ")";
 	}
 }
