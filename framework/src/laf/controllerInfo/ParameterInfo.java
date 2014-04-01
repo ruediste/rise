@@ -3,12 +3,11 @@ package laf.controllerInfo;
 import java.lang.reflect.Type;
 
 import laf.attachedProperties.AttachedPropertyBearer;
-import laf.urlMapping.ParameterHandler;
 
 /**
  * Information of a parameter to an action method. Implementations of this
  * interface may not be modified after initialization.
- * 
+ *
  * @see ActionMethodInfo
  */
 public interface ParameterInfo extends AttachedPropertyBearer {
@@ -23,7 +22,4 @@ public interface ParameterInfo extends AttachedPropertyBearer {
 	 */
 	ActionMethodInfo getMethod();
 
-	void setParameterHandler(ParameterHandler parameterHandler);
-
-	ParameterHandler getParameterHandler();
 }

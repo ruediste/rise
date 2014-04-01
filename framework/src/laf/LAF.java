@@ -9,6 +9,7 @@ import javax.inject.Singleton;
 import laf.initializer.InitializationEngine;
 import laf.initializer.Initializer;
 import laf.urlMapping.*;
+import laf.urlMapping.parameterHandler.IntegerParameterHandler;
 
 /**
  * This class contains all the knots and switches to configure the framework.
@@ -65,6 +66,7 @@ public class LAF {
 	@PostConstruct
 	void configureDefaults() {
 		urlMappingRules.add(new DefaultUrlMappingRule());
+		parameterHandlers.add(new IntegerParameterHandler());
 	}
 
 }

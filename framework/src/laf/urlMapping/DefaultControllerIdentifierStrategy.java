@@ -28,7 +28,7 @@ public class DefaultControllerIdentifierStrategy implements
 						parts.get(parts.size() - 1)));
 
 		// join the parts
-		return "/" + Joiner.on("/").join(parts);
+		return Joiner.on("/").join(parts);
 
 	}
 
@@ -61,7 +61,7 @@ public class DefaultControllerIdentifierStrategy implements
 
 	@Override
 	public String generateIdentifier(ControllerInfo info) {
-		return null;
+		return getControllerIdentifier(info.getQualifiedName());
 	}
 
 	public String getBasePackage() {

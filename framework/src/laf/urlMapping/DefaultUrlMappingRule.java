@@ -1,15 +1,18 @@
 package laf.urlMapping;
 
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.inject.Inject;
 
+import laf.LAF;
 import laf.attachedProperties.AttachedProperty;
 import laf.controllerInfo.*;
 import laf.initializer.LafInitializer;
 
 import org.slf4j.Logger;
+
+import com.google.common.collect.MapMaker;
 
 /**
  * <p>
@@ -31,21 +34,38 @@ public class DefaultUrlMappingRule implements UrlMappingRule {
 	@Inject
 	ControllerInfoRepository controllerInfoRepository;
 
+	@Inject
+	LAF laf;
+
 	private ControllerIdentifierStrategy controllerIdentifierStrategy = new DefaultControllerIdentifierStrategy();
 
-	private final HashMap<String, ControllerInfo> controllersByIdentifier = new HashMap<>();
+	private final Map<String, ControllerInfo> controllersByIdentifier = new MapMaker()
+	.weakValues().makeMap();
 
 	private static final AttachedProperty<String> controllerIdentifier = new AttachedProperty<>();
+	private static final AttachedProperty<ParameterHandler> parameterHandler = new AttachedProperty<>();
 
 	@LafInitializer
 	public void initialize() {
-		// fill the identifiers map
 		for (ControllerInfo info : controllerInfoRepository
 				.getControllerInfos()) {
+			// fill the identifiers map
 			String identifier = controllerIdentifierStrategy
 					.generateIdentifier(info);
 			controllerIdentifier.set(info, identifier);
 			controllersByIdentifier.put(identifier, info);
+
+			// initialize parameter handlers
+			for (ActionMethodInfo method : info.getActionMethodInfos()) {
+				for (ParameterInfo parameter : method.getParameters()) {
+					for (ParameterHandler h : laf.getParameterHandlers()) {
+						if (h.handles(parameter)) {
+							parameterHandler.set(parameter, h);
+							break;
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -88,7 +108,7 @@ public class DefaultUrlMappingRule implements UrlMappingRule {
 			for (; it.hasNext() && i < parts.length; i++) {
 				ParameterInfo parameter = it.next();
 				invocation.getArguments().add(
-						parameter.getParameterHandler().parse(parameter,
+						parameterHandler.get(parameter).parse(parameter,
 								parts[i]));
 			}
 			call.getElements().add(invocation);
@@ -139,7 +159,7 @@ public class DefaultUrlMappingRule implements UrlMappingRule {
 			while (infoIt.hasNext() && argIt.hasNext()) {
 				ParameterInfo info = infoIt.next();
 				sb.append("/");
-				sb.append(info.getParameterHandler().generate(info,
+				sb.append(parameterHandler.get(info).generate(info,
 						argIt.next()));
 			}
 		}
