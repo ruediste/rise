@@ -3,7 +3,6 @@ package laf.urlMapping;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import javax.ejb.Singleton;
 import javax.inject.Inject;
@@ -88,19 +87,18 @@ public class ActionPathFactory {
 				ActionMethodInfo methodInfo = controllerInfo
 						.getActionMethodInfo(thisMethod);
 				if (methodInfo == null) {
+					ArrayList<String> methods = new ArrayList<>();
+					for (ActionMethodInfo method : controllerInfo
+							.getActionMethodInfos()) {
+						methods.add(method.getSignature());
+					}
 					throw new RuntimeException(
 							"The method "
 									+ thisMethod.getName()
 									+ " wich is not action method has been called on a controller of type "
 									+ controllerClass.getName()
 									+ " while generating an ActionPath. Available Methods:\n"
-									+ Joiner.on("\n")
-											.join(controllerInfo
-													.getActionMethodInfos()
-													.stream()
-													.map(i -> i.getSignature())
-													.collect(
-															Collectors.toList())));
+									+ Joiner.on("\n").join(methods));
 				}
 				invocation.setMethodInfo(methodInfo);
 				invocation.getArguments().addAll(Arrays.asList(args));

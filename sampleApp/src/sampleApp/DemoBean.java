@@ -3,9 +3,6 @@ package sampleApp;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import javax.annotation.ManagedBean;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateful;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;

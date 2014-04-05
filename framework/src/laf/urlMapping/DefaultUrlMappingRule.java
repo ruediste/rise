@@ -45,13 +45,14 @@ public class DefaultUrlMappingRule implements UrlMappingRule {
 	private static final AttachedProperty<String> controllerIdentifier = new AttachedProperty<>();
 	private static final AttachedProperty<ParameterHandler> parameterHandler = new AttachedProperty<>();
 
-	@LafInitializer
+	@LafInitializer(after = ControllerInfoRepositoryInitializer.class)
 	public void initialize() {
 		for (ControllerInfo info : controllerInfoRepository
 				.getControllerInfos()) {
 			// fill the identifiers map
 			String identifier = controllerIdentifierStrategy
 					.generateIdentifier(info);
+			log.debug("found controller " + identifier);
 			controllerIdentifier.set(info, identifier);
 			controllersByIdentifier.put(identifier, info);
 

@@ -67,6 +67,11 @@ public class InitializationEngine {
 			}
 		}
 
+		@Override
+		public String toString() {
+			return method.toString();
+		}
+
 	}
 
 	public Collection<Initializer> createInitializersFromComponents(

@@ -1,8 +1,5 @@
 package sampleApp.test;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
 
 import javax.ejb.LocalBean;
 import javax.inject.Inject;

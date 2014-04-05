@@ -1,9 +1,7 @@
 package laf.controllerInfo.impl;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 import laf.ActionResult;
 import laf.attachedProperties.AttachedPropertyBearerBase;
@@ -12,7 +10,7 @@ import laf.controllerInfo.*;
 import com.google.common.base.Joiner;
 
 public class ActionMethodInfoImpl extends AttachedPropertyBearerBase implements
-		ActionMethodInfo {
+ActionMethodInfo {
 
 	private String name;
 	private final Method method;
@@ -59,8 +57,8 @@ public class ActionMethodInfoImpl extends AttachedPropertyBearerBase implements
 		}
 		String parameterString = Joiner.on(", ").join(parameterTypes);
 		return method.getReturnType() + " "
-				+ getControllerInfo().getQualifiedName() + "." + getName()
-				+ "(" + parameterString + ")";
+		+ getControllerInfo().getQualifiedName() + "." + getName()
+		+ "(" + parameterString + ")";
 	}
 
 	@Override
@@ -70,12 +68,11 @@ public class ActionMethodInfoImpl extends AttachedPropertyBearerBase implements
 
 	@Override
 	public String getSignature() {
-		return method.getReturnType().getSimpleName()
-				+ " "
-				+ getName()
-				+ "("
-				+ Joiner.on(",").join(
-						parameters.stream().map(p -> p.getType())
-								.collect(Collectors.toList())) + ")";
+		ArrayList<String> types = new ArrayList<>();
+		for (ParameterInfo p : parameters) {
+			types.add(Objects.toString(p.getType().toString()));
+		}
+		return method.getReturnType().getSimpleName() + " " + getName() + "("
+				+ Joiner.on(",").join(types) + ")";
 	}
 }

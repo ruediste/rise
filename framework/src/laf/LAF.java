@@ -2,14 +2,13 @@ package laf;
 
 import java.util.*;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import laf.initializer.InitializationEngine;
 import laf.initializer.Initializer;
-import laf.urlMapping.*;
-import laf.urlMapping.parameterHandler.IntegerParameterHandler;
+import laf.urlMapping.ParameterHandler;
+import laf.urlMapping.UrlMappingRule;
 
 /**
  * This class contains all the knots and switches to configure the framework.
@@ -53,6 +52,8 @@ public class LAF {
 				.createInitializersFromComponents(urlMappingRules));
 		list.addAll(initializationEngine
 				.createInitializersFromComponents(parameterHandlers));
+		list.addAll(initializationEngine
+				.createInitializersFromComponents(additionalComponents));
 		initializationEngine.runInitializers(list);
 	}
 
@@ -60,13 +61,13 @@ public class LAF {
 		return parameterHandlers;
 	}
 
-	/**
-	 * Configures the framework to default settings
-	 */
-	@PostConstruct
-	void configureDefaults() {
-		urlMappingRules.add(new DefaultUrlMappingRule());
-		parameterHandlers.add(new IntegerParameterHandler());
+	public ArrayList<Object> getAdditionalComponents() {
+		return additionalComponents;
 	}
 
+	public void setAdditionalComponents(ArrayList<Object> additionalComponents) {
+		this.additionalComponents = additionalComponents;
+	}
+
+	private ArrayList<Object> additionalComponents = new ArrayList<>();
 }

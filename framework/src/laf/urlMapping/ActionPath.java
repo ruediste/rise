@@ -31,40 +31,6 @@ public class ActionPath<T> {
 		return result;
 	}*/
 
-	/**
-	 * test if this path starts with the given {@link ActionInvocation}s
-	 */
-	public boolean isCallToStatefulController(
-			Iterable<ActionInvocation> invocationsOfInstatiation,
-			Class<?> controllerClass) {
-		Iterator<ActionInvocation> it = invocationsOfInstatiation.iterator();
-		Iterator<ActionInvocation<T>> eit = getElements().iterator();
-
-		// iterate an check if the elements are equal
-		while (it.hasNext() && eit.hasNext()) {
-			// if (!it.next().isEqual(eit.next())) {
-			// return false;
-			// }
-		}
-
-		if (it.hasNext()) {
-			// there were unconsumed entries in the invocations, thus
-			// this path was shorter than invocations
-			return false;
-		}
-
-		if (!eit.hasNext()) {
-			// there are no more elements, thus the call to a method in the
-			// stateful controller is missing
-			return false;
-		}
-
-		// check the controller class
-		// return eit.next().getMethod().controllerEntry.clazz ==
-		// controllerClass;
-		return false;
-	}
-
 	public ArrayList<ActionInvocation<T>> getElements() {
 		return elements;
 	}
@@ -77,11 +43,11 @@ public class ActionPath<T> {
 		return isCallToSameActionMethod(other,
 				new ParameterValueComparator<Object, Object>() {
 
-					@Override
-					public boolean equals(Object a, Object b) {
-						return true;
-					}
-				});
+			@Override
+			public boolean equals(Object a, Object b) {
+				return true;
+			}
+		});
 	}
 
 	public interface ParameterValueComparator<A, B> {

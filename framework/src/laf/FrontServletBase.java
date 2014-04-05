@@ -3,7 +3,6 @@ package laf;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
@@ -32,11 +31,6 @@ public class FrontServletBase extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
-	@PostConstruct
-	public void initialize() {
-
-	}
-
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
@@ -45,11 +39,11 @@ public class FrontServletBase extends HttpServlet {
 
 		// parse request
 		ActionPath<ParameterValueProvider> actionPath = urlMapping.parse(req
-				.getServletPath());
+				.getPathInfo());
 
 		if (actionPath == null) {
 			throw new RuntimeException("No Controller found for "
-					+ req.getServletPath());
+					+ req.getPathInfo());
 		}
 
 		// create arguments

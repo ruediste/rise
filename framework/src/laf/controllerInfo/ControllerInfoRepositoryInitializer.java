@@ -10,10 +10,11 @@ import javax.inject.Inject;
 
 import laf.*;
 import laf.controllerInfo.impl.*;
+import laf.initializer.LafInitializer;
 
 import org.slf4j.Logger;
 
-public class ControllerInfoRepositoryInitializer implements Runnable {
+public class ControllerInfoRepositoryInitializer {
 
 	@Inject
 	Logger log;
@@ -24,8 +25,8 @@ public class ControllerInfoRepositoryInitializer implements Runnable {
 	@Inject
 	BeanManager beanManager;
 
-	@Override
-	public void run() {
+	@LafInitializer
+	public void initialize() {
 		Controller controllerAnnotation = new Controller() {
 			@Override
 			public Class<? extends Annotation> annotationType() {
@@ -84,7 +85,7 @@ public class ControllerInfoRepositoryInitializer implements Runnable {
 
 			// calculate name
 			methodInfo
-					.setName(info.calculateUnusedMethodName(method.getName()));
+			.setName(info.calculateUnusedMethodName(method.getName()));
 
 			// add to repository
 			info.putActionMethodInfo(methodInfo);
