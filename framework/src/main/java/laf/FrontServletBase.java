@@ -7,10 +7,15 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import laf.controllerInfo.ActionMethodInfo;
-import laf.urlMapping.*;
+import laf.urlMapping.ActionInvocation;
+import laf.urlMapping.ActionPath;
+import laf.urlMapping.ParameterValueProvider;
+import laf.urlMapping.UrlMapping;
 
 /**
  * Framework entry point
@@ -47,7 +52,8 @@ public class FrontServletBase extends HttpServlet {
 		}
 
 		// create arguments
-		ActionPath<Object> objectActionPath = createObjectActionPath(actionPath);
+		ActionPath<Object> objectActionPath = ActionPath
+				.createObjectActionPath(actionPath);
 		actionContext.setInvokedPath(objectActionPath);
 
 		// call controller
@@ -94,21 +100,4 @@ public class FrontServletBase extends HttpServlet {
 		renderResult.sendTo(resp);
 	}
 
-	/**
-	 * Create a copy of the provided action path, retrieving the arguments form
-	 * the {@link ParameterValueProvider}s.
-	 */
-	private ActionPath<Object> createObjectActionPath(
-			ActionPath<ParameterValueProvider> actionPath) {
-		ActionPath<Object> result = new ActionPath<Object>();
-		for (ActionInvocation<ParameterValueProvider> invocation : actionPath
-				.getElements()) {
-			ActionInvocation<Object> i = new ActionInvocation<Object>(
-					invocation);
-			for (ParameterValueProvider provider : invocation.getArguments()) {
-				i.getArguments().add(provider.provideValue());
-			}
-		}
-		return result;
-	}
 }

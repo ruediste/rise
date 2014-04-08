@@ -5,6 +5,7 @@ import javax.inject.Inject;
 
 import laf.controllerInfo.ControllerInfoRepositoryInitializer;
 import laf.urlMapping.DefaultUrlMappingRule;
+import laf.urlMapping.ParameterHandlerInitializer;
 import laf.urlMapping.parameterHandler.IntegerParameterHandler;
 
 public class DefaultLafConfigurator {
@@ -24,7 +25,9 @@ public class DefaultLafConfigurator {
 		laf.getParameterHandlers().add(new IntegerParameterHandler());
 		laf.getAdditionalComponents().add(
 				instance.select(ControllerInfoRepositoryInitializer.class)
-						.get());
+				.get());
+		laf.getAdditionalComponents().add(
+				instance.select(ParameterHandlerInitializer.class).get());
 	}
 
 }

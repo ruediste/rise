@@ -23,13 +23,11 @@ public class ActionPath<T> {
 		return Objects.toStringHelper(this).addValue(getElements()).toString();
 	}
 
-	/*public Set<Right> getRequiredRights() {
-		Set<Right> result = new HashSet<>();
-		for (ActionInvocation element : elements) {
-			result.addAll(element.getRequiredRights());
-		}
-		return result;
-	}*/
+	/*
+	 * public Set<Right> getRequiredRights() { Set<Right> result = new
+	 * HashSet<>(); for (ActionInvocation element : elements) {
+	 * result.addAll(element.getRequiredRights()); } return result; }
+	 */
 
 	public ArrayList<ActionInvocation<T>> getElements() {
 		return elements;
@@ -37,7 +35,7 @@ public class ActionPath<T> {
 
 	/**
 	 * Determine if this and the other path represent calls to the same action
-	 * method. The Parameters are not compared.
+	 * method. The parameters values are ignored.
 	 */
 	public boolean isCallToSameActionMethod(ActionPath<?> other) {
 		return isCallToSameActionMethod(other,
@@ -50,6 +48,13 @@ public class ActionPath<T> {
 		});
 	}
 
+	/**
+	 * When comparing two {@link ActionPath}s with different argument
+	 * representations using
+	 * {@link ActionPath#isCallToSameActionMethod(ActionPath, ParameterValueComparator)}
+	 * , providing an implementation of this interface allows to specify a
+	 * strategy to compare the arguments.
+	 */
 	public interface ParameterValueComparator<A, B> {
 		public boolean equals(A a, B b);
 	}
@@ -75,4 +80,23 @@ public class ActionPath<T> {
 		return true;
 	}
 
+	/**
+	 * Convert an {@link ActionPath} with {@link ParameterValueProvider}s to an
+	 * ActionPath with {@link Object}s, using the
+	 * {@link ParameterValueProvider#provideValue()}
+	 */
+	public static ActionPath<Object> createObjectActionPath(
+			ActionPath<ParameterValueProvider> actionPath) {
+		ActionPath<Object> result = new ActionPath<Object>();
+		for (ActionInvocation<ParameterValueProvider> invocation : actionPath
+				.getElements()) {
+			ActionInvocation<Object> i = new ActionInvocation<Object>(
+					invocation);
+			for (ParameterValueProvider provider : invocation.getArguments()) {
+				i.getArguments().add(provider.provideValue());
+			}
+			result.getElements().add(i);
+		}
+		return result;
+	}
 }

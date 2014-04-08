@@ -2,7 +2,14 @@ package laf.initializer;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class InitializationEngine {
 
@@ -35,7 +42,7 @@ public class InitializationEngine {
 		}
 
 		@Override
-		public boolean isBefore(Initializer other) {
+		public boolean declaresIsBefore(Initializer other) {
 			for (InitializerMatcher m : beforeMatchers) {
 				if (m.matches(other)) {
 					return true;
@@ -45,7 +52,7 @@ public class InitializationEngine {
 		}
 
 		@Override
-		public boolean isAfter(Initializer other) {
+		public boolean declaresIsAfter(Initializer other) {
 			for (InitializerMatcher m : afterMatchers) {
 				if (m.matches(other)) {
 					return true;

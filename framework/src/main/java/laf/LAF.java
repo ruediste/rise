@@ -1,6 +1,8 @@
 package laf;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -42,6 +44,12 @@ public class LAF {
 
 	private final Deque<ParameterHandler> parameterHandlers = new ArrayDeque<>();
 
+	private boolean initialized;
+
+	public boolean isInitialized() {
+		return initialized;
+	}
+
 	/**
 	 * Initialize the Framework. This method has to be called after any
 	 * configuration changes.
@@ -55,6 +63,7 @@ public class LAF {
 		list.addAll(initializationEngine
 				.createInitializersFromComponents(additionalComponents));
 		initializationEngine.runInitializers(list);
+		initialized = true;
 	}
 
 	public Deque<ParameterHandler> getParameterHandlers() {

@@ -12,13 +12,17 @@ class InitializerMatcher {
 	private Class<?> componentClass;
 	private String id;
 
-	public InitializerMatcher(Class<?> componentClass) {
+	public InitializerMatcher(Class<?> componentClass, String id) {
 		this.componentClass = componentClass;
+		this.id = id;
+	}
+
+	public InitializerMatcher(Class<?> componentClass) {
+		this(componentClass, null);
 	}
 
 	public InitializerMatcher(InitializerRef ref) {
-		componentClass = ref.componentClass();
-		id = ref.id();
+		this(ref.componentClass(), ref.id());
 	}
 
 	public Class<?> getComponentClass() {
@@ -38,7 +42,7 @@ class InitializerMatcher {
 	}
 
 	public boolean matches(Initializer initializer) {
-		if (componentClass.equals(initializer.getComponentClass())) {
+		if (!componentClass.equals(initializer.getComponentClass())) {
 			return false;
 		}
 		// if the id is left empty, all initializers of the right

@@ -1,9 +1,18 @@
 package laf.initializer;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -74,11 +83,17 @@ public class InitializationEngineTest {
 	}
 
 	private static class TestProvider {
-		public boolean initialized;
+		public boolean initialized1;
+		public boolean initialized2;
 
 		@LafInitializer
-		public void init() {
-			initialized = true;
+		public void init1() {
+			initialized1 = true;
+		}
+
+		@LafInitializer(afterRef = @InitializerRef(componentClass = TestProvider.class, id = "init1"))
+		public void init2() {
+			initialized2 = true;
 		}
 	}
 
@@ -87,11 +102,34 @@ public class InitializationEngineTest {
 		TestProvider provider = new TestProvider();
 		Iterable<Initializer> initializers = engine
 				.createInitializersFromComponent(provider);
-		assertEquals(1, Iterables.size(initializers));
 
-		assertFalse(provider.initialized);
-		initializers.iterator().next().run();
-		assertTrue(provider.initialized);
+		assertEquals(2, Iterables.size(initializers));
+		Initializer init1 = null;
+		Initializer init2 = null;
+
+		for (Initializer initializer : initializers) {
+			if (initializer.getId().equals("init1")) {
+				assertNull(init1);
+				init1 = initializer;
+			} else if (initializer.getId().equals("init2")) {
+				assertNull(init2);
+				init2 = initializer;
+			} else {
+				fail("unexpected initializer");
+			}
+		}
+
+		assertFalse(init2.isBefore(init1));
+		assertFalse(init1.isAfter(init2));
+		assertTrue(init1.isBefore(init2));
+		assertTrue(init2.isAfter(init1));
+
+		init1.run();
+		init2.run();
+
+		assertTrue(provider.initialized1);
+		assertTrue(provider.initialized2);
+
 	}
 
 	@Test
