@@ -52,22 +52,22 @@ import java.lang.annotation.*;
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
-public @interface Module {
+public @interface LafModule {
 
 	/**
-	 * List of modules this module depends on. These modules are not exported.
+	 * List of modules this module imports. These modules are not exported.
 	 * Classes of this module may only use classes from modules this module
-	 * depends on.
+	 * imports on.
 	 */
-	Class<?>[] depends() default {};
+	Class<?>[] imported() default {};
 
 	/**
 	 * List of modules which are exported to clients of this module. All listed
-	 * modules are as well regarded as dependencies of this module. Exports are
+	 * modules are as well regarded as imported by this module. Exports are
 	 * transitive. If module A exports module B and module B exports module C,
-	 * clients of A also have a dependency on C.
+	 * clients of A also import C.
 	 */
-	Class<?>[] exports() default {};
+	Class<?>[] exported() default {};
 
 	/**
 	 * Additional classes to include

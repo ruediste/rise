@@ -1,5 +1,6 @@
 package laf.module.pattern;
 
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class ClassPattern {
@@ -8,17 +9,61 @@ public class ClassPattern {
 	private final long score;
 	private final Pattern pattern;
 
-	public ClassPattern(String pattern) {
+	public ClassPattern(String pkg, String pattern) {
 		originalPattern = pattern;
+		if (pattern.startsWith(".")) {
+			if (pkg.length() == 0) {
+				pattern = pattern.substring(1);
+			} else {
+				pattern = pkg + pattern;
+			}
+		}
 		score = calculateScore(pattern);
 		this.pattern = createRegexpPattern(pattern);
 	}
 
-	private Pattern createRegexpPattern(String pattern2) {
-		return Pattern.compile("foo");
+	private Pattern createRegexpPattern(String pattern) {
+		// remove trailing exclamation mark
+		if (pattern.endsWith("!")) {
+			pattern = pattern.substring(0, pattern.length() - 1);
+		}
+
+		StringBuilder full = new StringBuilder(pattern.length());
+		StringBuilder part = new StringBuilder(10);
+		for (int i = 0; i < pattern.length(); i++) {
+			char ch = pattern.charAt(i);
+			if (ch == '*') {
+				// append part
+				full.append(Pattern.quote(part.toString()));
+				part = new StringBuilder(10);
+
+				// add regex expression for * or **
+				if (i + 1 < pattern.length() && pattern.charAt(i + 1) == '*') {
+					full.append(".*");
+				} else {
+					full.append("[^\\.]*");
+				}
+			} else {
+				// no *, just append the char
+				part.append(ch);
+			}
+		}
+
+		// append the last part
+		full.append(Pattern.quote(part.toString()));
+
+		// create the pattern
+		return Pattern.compile(full.toString());
 	}
 
 	private long calculateScore(String pattern) {
+		// remove trailing exclamation mark
+		boolean isImportant = false;
+		if (pattern.endsWith("!")) {
+			pattern = pattern.substring(0, pattern.length() - 1);
+			isImportant = true;
+		}
+
 		String[] parts = pattern.split("\\.");
 		long result = 0;
 		long factor = 2;
@@ -42,8 +87,8 @@ public class ClassPattern {
 
 			result += baseScore * factor;
 		}
-		if (pattern.endsWith("!")) {
-			result += 1000;
+		if (isImportant) {
+			result *= 1000;
 		}
 		return result;
 	}
@@ -57,6 +102,19 @@ public class ClassPattern {
 	}
 
 	public boolean matches(String qualifiedClassName) {
-		return false;
+		return pattern.matcher(qualifiedClassName).matches();
+	}
+
+	public static ClassPattern getBestMatch(Set<ClassPattern> patterns,
+			String qualifiedName) {
+		ClassPattern result = null;
+		for (ClassPattern p : patterns) {
+			if (p.matches(qualifiedName)) {
+				if (result == null || result.score < p.score) {
+					result = p;
+				}
+			}
+		}
+		return result;
 	}
 }

@@ -16,8 +16,6 @@ public class ClassModel {
 	ModuleModel module;
 
 	final Set<ClassModel> usesClasses = new HashSet<>();
-	final Set<ClassModel> usedByClasses = new HashSet<>();
-
 	final Set<String> usesClassNames = new HashSet<>();
 
 	public String getQualifiedName() {
@@ -34,11 +32,6 @@ public class ClassModel {
 
 	public void addUsesClass(ClassModel clazz) {
 		usesClasses.add(clazz);
-		clazz.usedByClasses.add(this);
-	}
-
-	public Set<ClassModel> getUsedByClasses() {
-		return Collections.unmodifiableSet(usedByClasses);
 	}
 
 	public Set<String> getUsesClassNames() {
@@ -64,12 +57,51 @@ public class ClassModel {
 	}
 
 	public void resolveDependencies() {
+		// resolve usage dependencies
 		for (String usesClassName : usesClassNames) {
 			ClassModel classModel = projectModel.getClassModel(usesClassName);
 			if (classModel != null) {
 				addUsesClass(classModel);
 			}
 		}
+
+		// resolve module
+		Set<ModuleModel> matchingModules = projectModel
+				.getMatchingModules(this);
+		if (matchingModules.size() > 1) {
+			throw new RuntimeException("Multiple Modules found for class "
+					+ qualifiedName + ": " + matchingModules);
+		}
+
+		if (matchingModules.size() == 1) {
+			setModule(matchingModules.iterator().next());
+		}
 	}
 
+	public void checkDependencies(ArrayList<String> errors) {
+		if (module == null) {
+			return;
+		}
+
+		for (ClassModel clazz : usesClasses) {
+			if (!module.isAccessible(clazz)) {
+				errors.add("Class " + this + " references class " + clazz
+						+ ", which is not accessible for classes in module "
+						+ module);
+			}
+		}
+	}
+
+	@Override
+	public String toString() {
+		return qualifiedName;
+	}
+
+	public String details() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Class " + qualifiedName + "\n");
+		sb.append("module: " + module + "\n");
+		sb.append("usesClasses: " + usesClasses + "\n");
+		return sb.toString();
+	}
 }
