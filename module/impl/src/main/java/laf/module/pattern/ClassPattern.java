@@ -34,7 +34,9 @@ public class ClassPattern {
 			char ch = pattern.charAt(i);
 			if (ch == '*') {
 				// append part
-				full.append(Pattern.quote(part.toString()));
+				if (part.length() > 0) {
+					full.append(Pattern.quote(part.toString()));
+				}
 				part = new StringBuilder(10);
 
 				// add regex expression for * or **
@@ -50,7 +52,9 @@ public class ClassPattern {
 		}
 
 		// append the last part
-		full.append(Pattern.quote(part.toString()));
+		if (part.length() > 0) {
+			full.append(Pattern.quote(part.toString()));
+		}
 
 		// create the pattern
 		return Pattern.compile(full.toString());
@@ -116,5 +120,10 @@ public class ClassPattern {
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public String toString() {
+		return originalPattern;
 	}
 }

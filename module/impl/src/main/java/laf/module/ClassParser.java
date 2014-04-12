@@ -20,11 +20,15 @@ public class ClassParser {
 	public void parse(File file) throws FileNotFoundException, IOException {
 		try (FileInputStream fis = new FileInputStream(file)) {
 			ClassReader reader = new ClassReader(fis);
-			reader.accept(new ParsingClassVisitor(), ClassReader.SKIP_FRAMES);
+			parse(reader);
 		}
 	}
 
-	private class ParsingClassVisitor extends ClassVisitor {
+	void parse(ClassReader reader) {
+		reader.accept(new ParsingClassVisitor(), ClassReader.SKIP_FRAMES);
+	}
+
+	class ParsingClassVisitor extends ClassVisitor {
 
 		ClassModel classModel;
 
@@ -38,6 +42,10 @@ public class ClassParser {
 			classModel = new ClassModel(project, Type.getObjectType(name)
 					.getClassName());
 			handleClassOrMethodSignature(classModel, signature);
+			handleType(classModel, superName);
+			for (String s : interfaces) {
+				handleType(classModel, s);
+			}
 		}
 
 		@Override
@@ -47,6 +55,7 @@ public class ClassParser {
 				return new ModuleAnnotationVisitor(
 						classModel.getQualifiedName());
 			} else {
+				handleTypeDescriptor(classModel, desc);
 				return new ParsingAnnotationVisitor(classModel);
 			}
 		}
@@ -56,6 +65,11 @@ public class ClassParser {
 				String signature, String[] exceptions) {
 			handleClassOrMethodSignature(classModel, signature);
 			handleMethodDescriptor(classModel, desc);
+			if (exceptions != null) {
+				for (String s : exceptions) {
+					handleType(classModel, s);
+				}
+			}
 			return new ParsingMethodVisitor(classModel);
 		}
 
@@ -131,6 +145,7 @@ public class ClassParser {
 							.getPackage(), s));
 				}
 			}
+
 			if ("exclude".equals(name)) {
 				for (Type t : (Type[]) value) {
 					module.addExclusionPattern(new ClassPattern(module
@@ -146,9 +161,59 @@ public class ClassParser {
 				}
 			}
 		}
+
+		@Override
+		public AnnotationVisitor visitArray(String name) {
+			return new ModuleAnnotationArrayVisitor(module, name);
+		}
+
 	}
 
-	public static class ParsingAnnotationVisitor extends AnnotationVisitor {
+	public class ModuleAnnotationArrayVisitor extends AnnotationVisitor {
+
+		ModuleModel module;
+		private String arrayName;
+
+		public ModuleAnnotationArrayVisitor(ModuleModel module, String arrayName) {
+			super(Opcodes.ASM5);
+			this.module = module;
+			this.arrayName = arrayName;
+		}
+
+		@Override
+		public void visit(String name, Object value) {
+			if ("imported".equals(arrayName)) {
+				module.addImportedModuleName(((Type) value).getClassName());
+			}
+
+			if ("exported".equals(arrayName)) {
+				module.addExportedModuleName(((Type) value).getClassName());
+			}
+
+			if ("include".equals(arrayName)) {
+				module.addInclusionPattern(new ClassPattern(
+						module.getPackage(), ((Type) value).getClassName()));
+			}
+
+			if ("includePattern".equals(arrayName)) {
+
+				module.addInclusionPattern(new ClassPattern(
+						module.getPackage(), (String) value));
+			}
+
+			if ("exclude".equals(arrayName)) {
+				module.addExclusionPattern(new ClassPattern(
+						module.getPackage(), ((Type) value).getClassName()));
+			}
+
+			if ("excludePattern".equals(arrayName)) {
+				module.addExclusionPattern(new ClassPattern(
+						module.getPackage(), (String) value));
+			}
+		}
+	}
+
+	public class ParsingAnnotationVisitor extends AnnotationVisitor {
 
 		private ClassModel classModel;
 
@@ -159,6 +224,7 @@ public class ClassParser {
 
 		@Override
 		public AnnotationVisitor visitAnnotation(String name, String desc) {
+			handleTypeDescriptor(classModel, desc);
 			return this;
 		}
 
@@ -197,6 +263,7 @@ public class ClassParser {
 
 		@Override
 		public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+			handleTypeDescriptor(classModel, desc);
 			return new ParsingAnnotationVisitor(classModel);
 		}
 
@@ -369,15 +436,15 @@ public class ClassParser {
 		}
 	}
 
-	public void handleTypeDescriptor(ClassModel classModel, String desc) {
+	void handleTypeDescriptor(ClassModel classModel, String desc) {
 		handleType(classModel, Type.getType(desc));
 	}
 
-	public void handleType(ClassModel classModel, String internalName) {
+	void handleType(ClassModel classModel, String internalName) {
 		handleType(classModel, Type.getObjectType(internalName));
 	}
 
-	public void handleType(ClassModel classModel, Type type) {
+	void handleType(ClassModel classModel, Type type) {
 		classModel.addUsesClassName(type.getClassName());
 	}
 

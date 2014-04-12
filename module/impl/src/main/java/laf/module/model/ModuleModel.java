@@ -191,4 +191,20 @@ public class ModuleModel {
 		}
 		return sb.toString();
 	}
+
+	public Set<ClassPattern> getInclusionPatterns() {
+		return Collections.unmodifiableSet(inclusionPatterns);
+	}
+
+	public Set<ClassPattern> getExclusionPatterns() {
+		return Collections.unmodifiableSet(exclusionPatterns);
+	}
+
+	public Set<String> getExportedModuleNames() {
+		return Collections.unmodifiableSet(exportedModuleNames);
+	}
+
+	public Set<String> getImportedModuleNames() {
+		return Collections.unmodifiableSet(importedModuleNames);
+	}
 }
