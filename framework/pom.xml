@@ -38,8 +38,8 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>laf</groupId>
-				<artifactId>module-maven-plugin</artifactId>
+				<groupId>org.jabsaw</groupId>
+				<artifactId>jabsaw-maven-plugin</artifactId>
 				<version>1.0-SNAPSHOT</version>
 				<executions>
 					<execution>
@@ -63,9 +63,9 @@
 							<pluginExecutions>
 								<pluginExecution>
 									<pluginExecutionFilter>
-										<groupId>laf</groupId>
+										<groupId>org.jabsaw</groupId>
 										<artifactId>
-											module-maven-plugin
+											jabsaw-maven-plugin
 										</artifactId>
 										<versionRange>
 											[0.1,)
