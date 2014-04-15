@@ -19,9 +19,23 @@ public @interface LafInitializer {
 	Class<?>[] before() default {};
 
 	/**
+	 * A list of representing classes whose initializers should always be
+	 * executed after this initializer. But the execution of the other
+	 * initializers is optional.
+	 */
+	Class<?>[] beforeOptional() default {};
+
+	/**
 	 * A list of representing classes whose initializers should be run before
 	 * this initializer.
 	 */
 	Class<?>[] after() default {};
+
+	/**
+	 * A list of representing classes whose initializers should always be
+	 * executed before this initializer. But the execution of the other
+	 * initializers is optional.
+	 */
+	Class<?>[] afterOptional() default {};
 
 }

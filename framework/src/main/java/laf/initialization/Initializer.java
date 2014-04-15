@@ -1,42 +1,31 @@
 package laf.initialization;
 
+import java.util.Set;
+
 /**
+ * Represents an initializer which is {@link #run()} during initialization
  *
- *
+ * @see InitializationModule
  */
 public interface Initializer {
-	/**
-	 * Returns true if this initializer is to be run before the other
-	 * initializer. Also takes into account if the other initializer declares to
-	 * be after this.
-	 */
-	boolean isBefore(Initializer other);
 
 	/**
-	 * Return true if this initializer declares to be before the other
-	 * initializer. Use {@link #isBefore(Initializer)} to determine if this
-	 * initializer is to be run before the other initializer.
+	 * Return all dependency relation this initializer declares between this and
+	 * the other initializer. There might be additional relations declared by
+	 * the other initializer.
 	 */
-	boolean declaresIsBefore(Initializer other);
+	Iterable<InitializerDependsRelation> getDeclaredRelations(Initializer other);
 
 	/**
-	 * Returns true if this initializer is to be run after the other
-	 * initializer. Also takes into account if the other initializer declares to
-	 * be before this.
+	 * Return all the representing classes of initializers this initializer
+	 * declares a depends relation to. This information is used to reduce the
+	 * time complexity of determining the depends relation. Return null if the
+	 * set of classes can not be determined.
 	 */
-	boolean isAfter(Initializer other);
-
-	/**
-	 * Return true if this initializer declares to be after the other
-	 * initializer. Use {@link #isAfter(Initializer)} to determine if this
-	 * initializer is to be run before the other initializer.
-	 */
-	boolean declaresIsAfter(Initializer other);
+	Set<Class<?>> getRelatedRepresentingClasses();
 
 	/**
 	 * Return the class of the component which defined this initializer.
-	 *
-	 * @return
 	 */
 	Class<?> getRepresentingClass();
 

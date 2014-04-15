@@ -6,13 +6,18 @@ import java.util.*;
 
 import javax.inject.Singleton;
 
+import org.jgrapht.EdgeFactory;
+import org.jgrapht.graph.SimpleDirectedGraph;
+
 @Singleton
 public class InitializationService {
 
 	private static class MethodInitializer extends InitializerImpl {
 
 		ArrayList<InitializerMatcher> beforeMatchers = new ArrayList<>();
+		ArrayList<InitializerMatcher> beforeMatchersOptional = new ArrayList<>();
 		ArrayList<InitializerMatcher> afterMatchers = new ArrayList<>();
+		ArrayList<InitializerMatcher> afterMatchersOptional = new ArrayList<>();
 		private Object component;
 		private Method method;
 
@@ -25,29 +30,46 @@ public class InitializationService {
 			for (Class<?> cls : lafInitializer.before()) {
 				beforeMatchers.add(new InitializerMatcher(cls));
 			}
+
+			for (Class<?> cls : lafInitializer.beforeOptional()) {
+				beforeMatchersOptional.add(new InitializerMatcher(cls));
+			}
 			for (Class<?> cls : lafInitializer.after()) {
 				afterMatchers.add(new InitializerMatcher(cls));
 			}
+			for (Class<?> cls : lafInitializer.afterOptional()) {
+				afterMatchersOptional.add(new InitializerMatcher(cls));
+			}
 		}
 
 		@Override
-		public boolean declaresIsBefore(Initializer other) {
+		public Iterable<InitializerDependsRelation> getDeclaredRelations(
+				Initializer other) {
+			ArrayList<InitializerDependsRelation> result = new ArrayList<>();
+
 			for (InitializerMatcher m : beforeMatchers) {
 				if (m.matches(other)) {
-					return true;
+					result.add(new InitializerDependsRelation(other, this,
+							false));
 				}
 			}
-			return false;
-		}
-
-		@Override
-		public boolean declaresIsAfter(Initializer other) {
+			for (InitializerMatcher m : beforeMatchersOptional) {
+				if (m.matches(other)) {
+					result.add(new InitializerDependsRelation(other, this, true));
+				}
+			}
 			for (InitializerMatcher m : afterMatchers) {
 				if (m.matches(other)) {
-					return true;
+					result.add(new InitializerDependsRelation(this, other,
+							false));
 				}
 			}
-			return false;
+			for (InitializerMatcher m : afterMatchersOptional) {
+				if (m.matches(other)) {
+					result.add(new InitializerDependsRelation(this, other, true));
+				}
+			}
+			return result;
 		}
 
 		@Override
@@ -70,8 +92,7 @@ public class InitializationService {
 
 	}
 
-	public Collection<Initializer> createInitializers(
-			Iterable<?> objects) {
+	public Collection<Initializer> createInitializers(Iterable<?> objects) {
 		ArrayList<Initializer> result = new ArrayList<>();
 		for (Object object : objects) {
 			result.addAll(createInitializers(object));
@@ -125,12 +146,16 @@ public class InitializationService {
 	public void runInitializers(Initializer rootInitializer,
 			Iterable<Initializer> initializers) {
 		// check for duplicates and the uniqueness of ids
-		if (!checkUnique(initializers)) {
-			throw new RuntimeException("duplication initializer detected");
+		HashSet<Initializer> initializerSet = new HashSet<>();
+		for (Initializer init : initializers) {
+			if (!initializerSet.add(init)) {
+				throw new RuntimeException("duplication initializer detected");
+			}
 		}
 
-		// determine before relation
-		Map<Initializer, Set<Initializer>> before = calculateBeforeRelation(initializers);
+		// determine depends relation
+		DependsRelation dependsRelation =calculateDependsRelation(initializerSet);
+		dependsRelation.mandatory.
 
 		// initialize map containing after how many initializers a given
 		// initializer can be run, as well as remaining
@@ -141,7 +166,7 @@ public class InitializationService {
 			remaining.add(i);
 		}
 
-		for (Set<Initializer> set : before.values()) {
+		for (Set<Initializer> set : dedependsRelation.values()) {
 			for (Initializer i : set) {
 				afterCount.put(i, afterCount.get(i) + 1);
 			}
@@ -160,7 +185,7 @@ public class InitializationService {
 		while (!runnable.isEmpty()) {
 			Initializer i = runnable.iterator().next();
 			runnable.remove(i);
-			for (Initializer p : before.get(i)) {
+			for (Initializer p : depedependsRelation)) {
 				int newCount = afterCount.get(p) - 1;
 				afterCount.put(p, newCount);
 				if (newCount == 0) {
@@ -176,30 +201,61 @@ public class InitializationService {
 		if (!remaining.isEmpty()) {
 			throw new RuntimeException(
 					"There was a loop in the initializer dependencies. Remaining Initializers: "
-							+ initializers + " Dependencies:" + before);
+							+ initializers + " Dependencies:" + dependdependsRelation);
 		}
 	}
 
-	Map<Initializer, Set<Initializer>> calculateBeforeRelation(
-			Iterable<Initializer> initializers) {
-		HashMap<Initializer, Set<Initializer>> result = new LinkedHashMap<>();
+	private class Edge {
+
+	}
+
+	private class DependsRelation {
+		SimpleDirectedGraph<Initializer, Edge> mandatory;
+		SimpleDirectedGraph<Initializer, Edge> optional;
+
+		public DependsRelation() {
+			EdgeFactory<Initializer, Edge> edgeFactory = new EdgeFactory<Initializer, Edge>() {
+
+				@Override
+				public Edge createEdge(Initializer sourceVertex,
+						Initializer targetVertex) {
+					return new Edge();
+				}
+			};
+			mandatory = new SimpleDirectedGraph<>(edgeFactory);
+			optional = new SimpleDirectedGraph<>(edgeFactory);
+		}
+	}
+
+	DependsRelation calculateDependsRelation(Iterable<Initializer> initializers) {
+		DependsRelation result = new DependsRelation();
+
+		ClassMap<Object, Initializer> initializersByRepresentingClass = new ClassMap<>();
 
 		for (Initializer i : initializers) {
-			result.put(i, new LinkedHashSet<Initializer>());
+			initializersByRepresentingClass.put(i.getRepresentingClass(), i);
 		}
 
 		for (Initializer i : initializers) {
-			for (Initializer p : initializers) {
-				if (i == p) {
-					continue;
-				}
+			Set<Class<?>> relatedRepresentingClasses = i
+					.getRelatedRepresentingClasses();
+			if (relatedRepresentingClasses == null) {
+				relatedRepresentingClasses = Collections
+						.<Class<?>> singleton(Object.class);
+			}
+			for (Class<?> cls : relatedRepresentingClasses) {
+				for (Initializer p : initializersByRepresentingClass.get(cls)) {
+					for (InitializerDependsRelation r : i
+							.getDeclaredRelations(p)) {
+						if (r.isOptional()) {
+							result.optional.addEdge(r.getSource(),
+									r.getTarget());
+						} else {
+							result.mandatory.addEdge(r.getSource(),
+									r.getTarget());
+						}
+					}
 
-				if (i.isAfter(p)) {
-					result.get(p).add(i);
-				}
-
-				if (i.isBefore(p)) {
-					result.get(i).add(p);
 				}
 			}
 		}
@@ -208,16 +264,6 @@ public class InitializationService {
 
 	void initialize(Class<?> rootInitializerRepresentingClass) {
 
-	}
-
-	boolean checkUnique(Iterable<Initializer> initializers) {
-		HashSet<Initializer> initializerSet = new HashSet<>();
-		for (Initializer init : initializers) {
-			if (!initializerSet.add(init)) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 }
