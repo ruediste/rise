@@ -1,18 +1,11 @@
-package laf.initializer;
+package laf.initialization;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
+import laf.initialization.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +15,7 @@ import org.mockito.stubbing.Answer;
 
 import com.google.common.collect.Iterables;
 
-public class InitializationEngineTest {
+public class InitializationServiceTest {
 
 	private final class Fail implements Answer<Object> {
 		@Override
@@ -32,11 +25,11 @@ public class InitializationEngineTest {
 		}
 	}
 
-	InitializationEngine engine;
+	InitializationService engine;
 
 	@Before
 	public void setup() {
-		engine = new InitializationEngine();
+		engine = new InitializationService();
 
 	}
 
@@ -46,10 +39,10 @@ public class InitializationEngineTest {
 		Initializer init1 = mock(Initializer.class, "init1");
 		Initializer init2 = mock(Initializer.class, "init2");
 
-		when(init1.getComponentClass()).thenReturn((Class) Integer.class);
-		when(init1.getComponentClass()).thenReturn((Class) Float.class);
+		when(init1.getRepresentingClass()).thenReturn((Class) Integer.class);
+		when(init1.getRepresentingClass()).thenReturn((Class) Float.class);
 		when(init1.isBefore(init2)).thenReturn(true);
-		engine.runInitializers(Arrays.asList(init1, init2));
+		engine.runInitializers(Arrays.asList(init1, init2), init1);
 
 		InOrder order = inOrder(init1, init2);
 		order.verify(init1).run();
@@ -62,8 +55,8 @@ public class InitializationEngineTest {
 		Initializer init1 = mock(Initializer.class, "init1");
 		Initializer init2 = mock(Initializer.class, "init2");
 
-		when(init1.getComponentClass()).thenReturn((Class) Integer.class);
-		when(init1.getComponentClass()).thenReturn((Class) Float.class);
+		when(init1.getRepresentingClass()).thenReturn((Class) Integer.class);
+		when(init1.getRepresentingClass()).thenReturn((Class) Float.class);
 		when(init1.isBefore(init2)).thenReturn(true);
 		when(init2.isBefore(init1)).thenReturn(true);
 		doAnswer(new Fail()).when(init1).run();
@@ -73,12 +66,12 @@ public class InitializationEngineTest {
 	}
 
 	@Test
-	public void testCreateInitializersFromComponentProvider() throws Exception {
+	public void testCreateInitializersProvider() throws Exception {
 		Initializer init1 = mock(Initializer.class);
 		InitializerProvider provider = mock(InitializerProvider.class);
 		when(provider.getInitializers()).thenReturn(Arrays.asList(init1));
 		Iterable<Initializer> initializers = engine
-				.createInitializersFromComponent(provider);
+				.createInitializers(provider);
 		assertEquals(1, Iterables.size(initializers));
 	}
 
@@ -98,10 +91,10 @@ public class InitializationEngineTest {
 	}
 
 	@Test
-	public void testCreateInitializersFromComponentMethod() throws Exception {
+	public void testCreateInitializersMethod() throws Exception {
 		TestProvider provider = new TestProvider();
 		Iterable<Initializer> initializers = engine
-				.createInitializersFromComponent(provider);
+				.createInitializers(provider);
 
 		assertEquals(2, Iterables.size(initializers));
 		Initializer init1 = null;
@@ -146,8 +139,8 @@ public class InitializationEngineTest {
 	public void testCheckUniqueIds() throws Exception {
 		Initializer init1 = mock(Initializer.class);
 		Initializer init2 = mock(Initializer.class);
-		when(init1.getComponentClass()).thenReturn((Class) Integer.class);
-		when(init2.getComponentClass()).thenReturn((Class) Float.class);
+		when(init1.getRepresentingClass()).thenReturn((Class) Integer.class);
+		when(init2.getRepresentingClass()).thenReturn((Class) Float.class);
 
 		// same id, different classes
 		when(init1.getId()).thenReturn("a");
@@ -155,7 +148,7 @@ public class InitializationEngineTest {
 		assertTrue(engine.checkUniqueIds(Arrays.asList(init1, init2)));
 
 		// same id, same classes
-		when(init2.getComponentClass()).thenReturn((Class) Integer.class);
+		when(init2.getRepresentingClass()).thenReturn((Class) Integer.class);
 		assertFalse(engine.checkUniqueIds(Arrays.asList(init1, init2)));
 
 		// different id, same classes

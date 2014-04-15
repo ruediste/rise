@@ -1,4 +1,4 @@
-package laf.controllerInfo;
+package laf.controllerInfo.impl;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -9,8 +9,8 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
 import laf.*;
-import laf.controllerInfo.impl.*;
-import laf.initializer.LafInitializer;
+import laf.controllerInfo.ControllerInfoRepository;
+import laf.initialization.LafInitializer;
 
 import org.slf4j.Logger;
 
@@ -85,7 +85,7 @@ public class ControllerInfoRepositoryInitializer {
 
 			// calculate name
 			methodInfo
-			.setName(info.calculateUnusedMethodName(method.getName()));
+					.setName(info.calculateUnusedMethodName(method.getName()));
 
 			// add to repository
 			info.putActionMethodInfo(methodInfo);

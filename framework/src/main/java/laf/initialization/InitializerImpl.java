@@ -1,23 +1,16 @@
-package laf.initializer;
+package laf.initialization;
 
 public abstract class InitializerImpl implements Initializer {
 
-	final private String id;
 	final private Class<?> componentClass;
 
-	public InitializerImpl(Class<?> componentClass, String id) {
+	public InitializerImpl(Class<?> componentClass) {
 		super();
 		this.componentClass = componentClass;
-		this.id = id;
 	}
 
 	@Override
-	public String getId() {
-		return id;
-	}
-
-	@Override
-	public Class<?> getComponentClass() {
+	public Class<?> getRepresentingClass() {
 		return componentClass;
 	}
 

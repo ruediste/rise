@@ -10,9 +10,9 @@ import laf.attachedProperties.AttachedProperty;
 import laf.controllerInfo.ActionMethodInfo;
 import laf.controllerInfo.ControllerInfo;
 import laf.controllerInfo.ControllerInfoRepository;
-import laf.controllerInfo.ControllerInfoRepositoryInitializer;
 import laf.controllerInfo.ParameterInfo;
-import laf.initializer.LafInitializer;
+import laf.controllerInfo.impl.ControllerInfoRepositoryInitializer;
+import laf.initialization.LafInitializer;
 
 import org.slf4j.Logger;
 

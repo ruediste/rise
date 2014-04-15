@@ -1,4 +1,4 @@
-package laf.initializer;
+package laf.initialization;
 
 public interface InitializerProvider {
 

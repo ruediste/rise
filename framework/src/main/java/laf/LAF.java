@@ -1,14 +1,12 @@
 package laf;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
+import java.util.*;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import laf.initializer.InitializationEngine;
-import laf.initializer.Initializer;
+import laf.initialization.InitializationService;
+import laf.initialization.Initializer;
 import laf.urlMapping.ParameterHandler;
 import laf.urlMapping.UrlMappingRule;
 
@@ -20,7 +18,7 @@ import laf.urlMapping.UrlMappingRule;
 public class LAF {
 
 	@Inject
-	InitializationEngine initializationEngine;
+	InitializationService initializationEngine;
 
 	final private ArrayDeque<UrlMappingRule> urlMappingRules = new ArrayDeque<>();
 
@@ -62,7 +60,7 @@ public class LAF {
 				.createInitializersFromComponents(parameterHandlers));
 		list.addAll(initializationEngine
 				.createInitializersFromComponents(additionalComponents));
-		initializationEngine.runInitializers(list);
+		// initializationEngine.runInitializers(list);
 		initialized = true;
 	}
 

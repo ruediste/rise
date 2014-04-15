@@ -1,12 +1,12 @@
-package laf.controllerInfo;
+package laf.controllerInfo.impl;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import javax.enterprise.inject.spi.BeanManager;
 
-import laf.controllerInfo.impl.EmbeddedTestController;
-import laf.controllerInfo.impl.TestController;
+import laf.controllerInfo.*;
+import laf.controllerInfo.impl.*;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -3,7 +3,7 @@ package laf;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import laf.controllerInfo.ControllerInfoRepositoryInitializer;
+import laf.controllerInfo.impl.ControllerInfoRepositoryInitializer;
 import laf.urlMapping.DefaultUrlMappingRule;
 import laf.urlMapping.ParameterHandlerInitializer;
 import laf.urlMapping.parameterHandler.IntegerParameterHandler;

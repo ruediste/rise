@@ -1,17 +1,13 @@
-package laf.initializer;
+package laf.initialization;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-public class InitializationEngine {
+import javax.inject.Singleton;
+
+@Singleton
+public class InitializationService {
 
 	private static class MethodInitializer extends InitializerImpl {
 
@@ -22,7 +18,7 @@ public class InitializationEngine {
 
 		public MethodInitializer(Method method, Object component,
 				LafInitializer lafInitializer) {
-			super(component.getClass(), method.getName());
+			super(component.getClass());
 			this.method = method;
 			this.component = component;
 
@@ -31,13 +27,6 @@ public class InitializationEngine {
 			}
 			for (Class<?> cls : lafInitializer.after()) {
 				afterMatchers.add(new InitializerMatcher(cls));
-			}
-
-			for (InitializerRef ref : lafInitializer.beforeRef()) {
-				beforeMatchers.add(new InitializerMatcher(ref));
-			}
-			for (InitializerRef ref : lafInitializer.afterRef()) {
-				afterMatchers.add(new InitializerMatcher(ref));
 			}
 		}
 
@@ -85,42 +74,58 @@ public class InitializationEngine {
 			Iterable<?> components) {
 		ArrayList<Initializer> result = new ArrayList<>();
 		for (Object component : components) {
-			result.addAll(createInitializersFromComponent(component));
+			result.addAll(createInitializers(component));
 		}
 		return result;
 	}
 
-	public Collection<Initializer> createInitializersFromComponent(
-			Object component) {
+	public boolean mightCreateInitializers(Class<?> clazz) {
+		if (InitializerProvider.class.isAssignableFrom(clazz)) {
+			return true;
+		}
+		for (Method method : clazz.getMethods()) {
+			LafInitializer lafInitializer = method
+					.getAnnotation(LafInitializer.class);
+			if (lafInitializer != null) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Scan the provided object for a single method annotated with
+	 * {@link LafInitializer} and create an {@link Initializer}, which will call
+	 * this method. The dependencies are declared with the annotation. If no
+	 * initializer method is found, null is returned.
+	 */
+	public Collection<Initializer> createInitializers(Object object) {
 		ArrayList<Initializer> result = new ArrayList<>();
 
 		// handle InitializerProvider
-		if (component instanceof InitializerProvider) {
-			for (Initializer i : ((InitializerProvider) component)
+		if (object instanceof InitializerProvider) {
+			for (Initializer i : ((InitializerProvider) object)
 					.getInitializers()) {
 				result.add(i);
 			}
 		}
 
-		Class<? extends Object> componentClass = component.getClass();
-		for (Method method : componentClass.getMethods()) {
+		Class<? extends Object> representingClass = object.getClass();
+		for (Method method : representingClass.getMethods()) {
 			LafInitializer lafInitializer = method
 					.getAnnotation(LafInitializer.class);
 			if (lafInitializer == null) {
 				continue;
 			}
-			result.add(new MethodInitializer(method, component, lafInitializer));
+			result.add(new MethodInitializer(method, object, lafInitializer));
 		}
 		return result;
 	}
 
-	public void runInitializers(Iterable<Initializer> initializers) {
+	public void runInitializers(Iterable<Initializer> initializers,
+			Initializer rootInitializer) {
 		// check for duplicates and the uniqueness of ids
 		if (!checkUnique(initializers)) {
-			throw new RuntimeException("duplication initializer detected");
-		}
-
-		if (!checkUniqueIds(initializers)) {
 			throw new RuntimeException("duplication initializer detected");
 		}
 
@@ -201,20 +206,8 @@ public class InitializationEngine {
 		return result;
 	}
 
-	boolean checkUniqueIds(Iterable<Initializer> initializers) {
-		HashMap<Class<?>, HashSet<String>> map = new HashMap<>();
-		for (Initializer i : initializers) {
-			HashSet<String> set = map.get(i.getComponentClass());
-			if (set == null) {
-				set = new HashSet<>();
-				map.put(i.getComponentClass(), set);
-			}
+	void initialize(Class<?> rootInitializerRepresentingClass) {
 
-			if (!set.add(i.getId())) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 	boolean checkUnique(Iterable<Initializer> initializers) {

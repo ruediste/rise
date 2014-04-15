@@ -1,4 +1,4 @@
-package laf.initializer;
+package laf.initialization;
 
 /**
  *
@@ -38,12 +38,7 @@ public interface Initializer {
 	 *
 	 * @return
 	 */
-	Class<?> getComponentClass();
-
-	/**
-	 * Returns the unique ID within the component class of this initializer.
-	 */
-	String getId();
+	Class<?> getRepresentingClass();
 
 	/**
 	 * Runs this initializer

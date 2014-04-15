@@ -4,13 +4,11 @@ import java.util.LinkedHashMap;
 
 import javax.inject.Singleton;
 
-import laf.controllerInfo.impl.ControllerInfoImpl;
-
 @Singleton
 public class ControllerInfoRepository {
 	private final LinkedHashMap<Class<?>, ControllerInfo> controllerInfos = new LinkedHashMap<>();
 
-	public void putControllerInfo(ControllerInfoImpl info) {
+	public void putControllerInfo(ControllerInfo info) {
 		controllerInfos.put(info.getControllerClass(), info);
 	}
 

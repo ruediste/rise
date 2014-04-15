@@ -7,7 +7,7 @@ import laf.controllerInfo.ActionMethodInfo;
 import laf.controllerInfo.ControllerInfo;
 import laf.controllerInfo.ControllerInfoRepository;
 import laf.controllerInfo.ParameterInfo;
-import laf.initializer.LafInitializer;
+import laf.initialization.LafInitializer;
 
 /**
  * Initializer to initialize the {@link ParameterHandler#parameterHandler}
