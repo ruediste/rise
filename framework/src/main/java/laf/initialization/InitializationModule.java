@@ -44,7 +44,7 @@ import org.jabsaw.Module;
  * <p>
  * The core of the initialization system is based on {@link Initializer}
  * instances. The method
- * {@link InitializationService#runInitializers(Iterable, Initializer)} accepts
+ * {@link InitializationService#runInitializers(Initializer, Iterable)} accepts
  * a set of {@link Initializer}s and a root initializer and executes all
  * initializers the root initializer depends on in the order imposed by the
  * depends relation.
@@ -73,6 +73,4 @@ import org.jabsaw.Module;
 @Module
 public class InitializationModule {
 
-	public void initializersDefinedByMethods() {
-	}
 }

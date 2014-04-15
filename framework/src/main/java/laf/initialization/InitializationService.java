@@ -70,11 +70,11 @@ public class InitializationService {
 
 	}
 
-	public Collection<Initializer> createInitializersFromComponents(
-			Iterable<?> components) {
+	public Collection<Initializer> createInitializers(
+			Iterable<?> objects) {
 		ArrayList<Initializer> result = new ArrayList<>();
-		for (Object component : components) {
-			result.addAll(createInitializers(component));
+		for (Object object : objects) {
+			result.addAll(createInitializers(object));
 		}
 		return result;
 	}
@@ -122,8 +122,8 @@ public class InitializationService {
 		return result;
 	}
 
-	public void runInitializers(Iterable<Initializer> initializers,
-			Initializer rootInitializer) {
+	public void runInitializers(Initializer rootInitializer,
+			Iterable<Initializer> initializers) {
 		// check for duplicates and the uniqueness of ids
 		if (!checkUnique(initializers)) {
 			throw new RuntimeException("duplication initializer detected");

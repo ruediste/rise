@@ -55,11 +55,11 @@ public class LAF {
 	public void initialize() {
 		ArrayList<Initializer> list = new ArrayList<>();
 		list.addAll(initializationEngine
-				.createInitializersFromComponents(urlMappingRules));
+				.createInitializers(urlMappingRules));
 		list.addAll(initializationEngine
-				.createInitializersFromComponents(parameterHandlers));
+				.createInitializers(parameterHandlers));
 		list.addAll(initializationEngine
-				.createInitializersFromComponents(additionalComponents));
+				.createInitializers(additionalComponents));
 		// initializationEngine.runInitializers(list);
 		initialized = true;
 	}

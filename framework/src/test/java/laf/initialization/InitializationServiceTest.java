@@ -5,8 +5,6 @@ import static org.mockito.Mockito.*;
 
 import java.util.*;
 
-import laf.initialization.*;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -25,11 +23,11 @@ public class InitializationServiceTest {
 		}
 	}
 
-	InitializationService engine;
+	InitializationService service;
 
 	@Before
 	public void setup() {
-		engine = new InitializationService();
+		service = new InitializationService();
 
 	}
 
@@ -42,7 +40,7 @@ public class InitializationServiceTest {
 		when(init1.getRepresentingClass()).thenReturn((Class) Integer.class);
 		when(init1.getRepresentingClass()).thenReturn((Class) Float.class);
 		when(init1.isBefore(init2)).thenReturn(true);
-		engine.runInitializers(Arrays.asList(init1, init2), init1);
+		service.runInitializers(init1, Arrays.asList(init1, init2));
 
 		InOrder order = inOrder(init1, init2);
 		order.verify(init1).run();
@@ -62,7 +60,7 @@ public class InitializationServiceTest {
 		doAnswer(new Fail()).when(init1).run();
 		doAnswer(new Fail()).when(init2).run();
 
-		engine.runInitializers(Arrays.asList(init1, init2));
+		service.runInitializers(init1, Arrays.asList(init1, init2));
 	}
 
 	@Test
@@ -70,41 +68,48 @@ public class InitializationServiceTest {
 		Initializer init1 = mock(Initializer.class);
 		InitializerProvider provider = mock(InitializerProvider.class);
 		when(provider.getInitializers()).thenReturn(Arrays.asList(init1));
-		Iterable<Initializer> initializers = engine
+		Iterable<Initializer> initializers = service
 				.createInitializers(provider);
 		assertEquals(1, Iterables.size(initializers));
 	}
 
-	private static class TestProvider {
-		public boolean initialized1;
-		public boolean initialized2;
+	private static class TestInitializer1 {
+		public boolean initialized;
 
 		@LafInitializer
 		public void init1() {
-			initialized1 = true;
+			initialized = true;
 		}
 
-		@LafInitializer(afterRef = @InitializerRef(componentClass = TestProvider.class, id = "init1"))
+	}
+
+	private static class TestInitializer2 {
+		public boolean initialized;
+
+		@LafInitializer(after = TestInitializer1.class)
 		public void init2() {
-			initialized2 = true;
+			initialized = true;
 		}
 	}
 
 	@Test
 	public void testCreateInitializersMethod() throws Exception {
-		TestProvider provider = new TestProvider();
-		Iterable<Initializer> initializers = engine
-				.createInitializers(provider);
+		TestInitializer1 provider1 = new TestInitializer1();
+		TestInitializer2 provider2 = new TestInitializer2();
+		Iterable<Initializer> initializers = service.createInitializers(Arrays
+				.asList(provider1, provider2));
 
 		assertEquals(2, Iterables.size(initializers));
 		Initializer init1 = null;
 		Initializer init2 = null;
 
 		for (Initializer initializer : initializers) {
-			if (initializer.getId().equals("init1")) {
+			if (initializer.getRepresentingClass().equals(
+					TestInitializer1.class)) {
 				assertNull(init1);
 				init1 = initializer;
-			} else if (initializer.getId().equals("init2")) {
+			} else if (initializer.getRepresentingClass().equals(
+					TestInitializer2.class)) {
 				assertNull(init2);
 				init2 = initializer;
 			} else {
@@ -120,8 +125,8 @@ public class InitializationServiceTest {
 		init1.run();
 		init2.run();
 
-		assertTrue(provider.initialized1);
-		assertTrue(provider.initialized2);
+		assertTrue(provider1.initialized);
+		assertTrue(provider2.initialized);
 
 	}
 
@@ -129,31 +134,9 @@ public class InitializationServiceTest {
 	public void testCheckUnique() throws Exception {
 		Initializer init1 = mock(Initializer.class);
 		Initializer init2 = mock(Initializer.class);
-		assertTrue(engine.checkUnique(Arrays.asList(init1)));
-		assertTrue(engine.checkUnique(Arrays.asList(init1, init2)));
-		assertFalse(engine.checkUnique(Arrays.asList(init1, init1)));
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Test
-	public void testCheckUniqueIds() throws Exception {
-		Initializer init1 = mock(Initializer.class);
-		Initializer init2 = mock(Initializer.class);
-		when(init1.getRepresentingClass()).thenReturn((Class) Integer.class);
-		when(init2.getRepresentingClass()).thenReturn((Class) Float.class);
-
-		// same id, different classes
-		when(init1.getId()).thenReturn("a");
-		when(init2.getId()).thenReturn("a");
-		assertTrue(engine.checkUniqueIds(Arrays.asList(init1, init2)));
-
-		// same id, same classes
-		when(init2.getRepresentingClass()).thenReturn((Class) Integer.class);
-		assertFalse(engine.checkUniqueIds(Arrays.asList(init1, init2)));
-
-		// different id, same classes
-		when(init2.getId()).thenReturn("b");
-		assertTrue(engine.checkUniqueIds(Arrays.asList(init1, init2)));
+		assertTrue(service.checkUnique(Arrays.asList(init1)));
+		assertTrue(service.checkUnique(Arrays.asList(init1, init2)));
+		assertFalse(service.checkUnique(Arrays.asList(init1, init1)));
 	}
 
 	@Test
@@ -162,7 +145,7 @@ public class InitializationServiceTest {
 		Initializer init2 = mock(Initializer.class);
 		when(init1.isBefore(init2)).thenReturn(true);
 
-		Map<Initializer, Set<Initializer>> map = engine
+		Map<Initializer, Set<Initializer>> map = service
 				.calculateBeforeRelation(Arrays.asList(init1, init2));
 		assertEquals(2, map.size());
 		assertTrue(map.get(init2).isEmpty());
