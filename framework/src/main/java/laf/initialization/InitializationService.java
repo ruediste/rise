@@ -2,15 +2,30 @@ package laf.initialization;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Set;
 
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.jgrapht.EdgeFactory;
+import org.jgrapht.graph.DirectedSubgraph;
 import org.jgrapht.graph.SimpleDirectedGraph;
+import org.jgrapht.traverse.DepthFirstIterator;
+import org.jgrapht.traverse.TopologicalOrderIterator;
 
 @Singleton
 public class InitializationService {
+
+	@Inject
+	Event<CreateInitializersEvent> createInitializersEvent;
 
 	private static class MethodInitializer extends InitializerImpl {
 
@@ -20,6 +35,7 @@ public class InitializationService {
 		ArrayList<InitializerMatcher> afterMatchersOptional = new ArrayList<>();
 		private Object component;
 		private Method method;
+		private final HashSet<Class<?>> relatedRepresentingClasses = new HashSet<>();
 
 		public MethodInitializer(Method method, Object component,
 				LafInitializer lafInitializer) {
@@ -29,16 +45,20 @@ public class InitializationService {
 
 			for (Class<?> cls : lafInitializer.before()) {
 				beforeMatchers.add(new InitializerMatcher(cls));
+				relatedRepresentingClasses.add(cls);
 			}
 
 			for (Class<?> cls : lafInitializer.beforeOptional()) {
 				beforeMatchersOptional.add(new InitializerMatcher(cls));
+				relatedRepresentingClasses.add(cls);
 			}
 			for (Class<?> cls : lafInitializer.after()) {
 				afterMatchers.add(new InitializerMatcher(cls));
+				relatedRepresentingClasses.add(cls);
 			}
 			for (Class<?> cls : lafInitializer.afterOptional()) {
 				afterMatchersOptional.add(new InitializerMatcher(cls));
+				relatedRepresentingClasses.add(cls);
 			}
 		}
 
@@ -88,6 +108,11 @@ public class InitializationService {
 		@Override
 		public String toString() {
 			return method.toString();
+		}
+
+		@Override
+		public Set<Class<?>> getRelatedRepresentingClasses() {
+			return relatedRepresentingClasses;
 		}
 
 	}
@@ -144,64 +169,67 @@ public class InitializationService {
 	}
 
 	public void runInitializers(Initializer rootInitializer,
-			Iterable<Initializer> initializers) {
-		// check for duplicates and the uniqueness of ids
-		HashSet<Initializer> initializerSet = new HashSet<>();
-		for (Initializer init : initializers) {
-			if (!initializerSet.add(init)) {
-				throw new RuntimeException("duplication initializer detected");
-			}
-		}
-
+			Set<Initializer> initializers) {
 		// determine depends relation
-		DependsRelation dependsRelation =calculateDependsRelation(initializerSet);
-		dependsRelation.mandatory.
+		DependsRelation dependsRelation = calculateDependsRelation(initializers);
 
-		// initialize map containing after how many initializers a given
-		// initializer can be run, as well as remaining
-		Map<Initializer, Integer> afterCount = new LinkedHashMap<>();
-		HashSet<Initializer> remaining = new LinkedHashSet<>();
-		for (Initializer i : initializers) {
-			afterCount.put(i, 0);
-			remaining.add(i);
-		}
-
-		for (Set<Initializer> set : dedependsRelation.values()) {
-			for (Initializer i : set) {
-				afterCount.put(i, afterCount.get(i) + 1);
+		// determine required initializers
+		Set<Initializer> requiredInitializers = new HashSet<>();
+		{
+			DepthFirstIterator<Initializer, Edge> it = new DepthFirstIterator<>(
+					dependsRelation.mandatory, rootInitializer);
+			while (it.hasNext()) {
+				requiredInitializers.add(it.next());
 			}
 		}
 
-		// move initializers with afterCount = 0 from remaining to runnable
-		LinkedHashSet<Initializer> runnable = new LinkedHashSet<>();
-		for (Initializer i : initializers) {
-			if (afterCount.get(i).equals(0)) {
-				remaining.remove(i);
-				runnable.add(i);
+		// iterate over the initializers using the combined map (all
+		// dependencies) and
+		// filter out the required initializers
+		ArrayList<Initializer> orderedInitializers = new ArrayList<>();
+		{
+			// create subgraph
+			DirectedSubgraph<Initializer, Edge> subgraph;
+			{
+				HashSet<Initializer> set = new HashSet<>();
+				DepthFirstIterator<Initializer, Edge> it = new DepthFirstIterator<>(
+						dependsRelation.combined, rootInitializer);
+				while (it.hasNext()) {
+					set.add(it.next());
+				}
+				subgraph = new DirectedSubgraph<>(dependsRelation.combined,
+						set, null);
+			}
+
+			// traverse graph
+			{
+				Queue<Initializer> queue = new PriorityQueue<>(10,
+						new Comparator<Initializer>() {
+
+							@Override
+							public int compare(Initializer o1, Initializer o2) {
+								return o1
+										.getRepresentingClass()
+										.getName()
+										.compareTo(
+												o2.getRepresentingClass()
+														.getName());
+							}
+						});
+				TopologicalOrderIterator<Initializer, Edge> it = new TopologicalOrderIterator<Initializer, Edge>(
+						subgraph, queue);
+				while (it.hasNext()) {
+					Initializer next = it.next();
+					if (requiredInitializers.contains(next)) {
+						orderedInitializers.add(next);
+					}
+				}
 			}
 		}
 
 		// run initializers
-		while (!runnable.isEmpty()) {
-			Initializer i = runnable.iterator().next();
-			runnable.remove(i);
-			for (Initializer p : depedependsRelation)) {
-				int newCount = afterCount.get(p) - 1;
-				afterCount.put(p, newCount);
-				if (newCount == 0) {
-					remaining.remove(p);
-					runnable.add(p);
-				}
-			}
-
-			// run initializer
-			i.run();
-		}
-
-		if (!remaining.isEmpty()) {
-			throw new RuntimeException(
-					"There was a loop in the initializer dependencies. Remaining Initializers: "
-							+ initializers + " Dependencies:" + dependdependsRelation);
+		for (int i = orderedInitializers.size() - 1; i >= 0; i--) {
+			orderedInitializers.get(i).run();
 		}
 	}
 
@@ -211,7 +239,7 @@ public class InitializationService {
 
 	private class DependsRelation {
 		SimpleDirectedGraph<Initializer, Edge> mandatory;
-		SimpleDirectedGraph<Initializer, Edge> optional;
+		SimpleDirectedGraph<Initializer, Edge> combined;
 
 		public DependsRelation() {
 			EdgeFactory<Initializer, Edge> edgeFactory = new EdgeFactory<Initializer, Edge>() {
@@ -223,7 +251,7 @@ public class InitializationService {
 				}
 			};
 			mandatory = new SimpleDirectedGraph<>(edgeFactory);
-			optional = new SimpleDirectedGraph<>(edgeFactory);
+			combined = new SimpleDirectedGraph<>(edgeFactory);
 		}
 	}
 
@@ -234,6 +262,8 @@ public class InitializationService {
 
 		for (Initializer i : initializers) {
 			initializersByRepresentingClass.put(i.getRepresentingClass(), i);
+			result.mandatory.addVertex(i);
+			result.combined.addVertex(i);
 		}
 
 		for (Initializer i : initializers) {
@@ -247,10 +277,8 @@ public class InitializationService {
 				for (Initializer p : initializersByRepresentingClass.get(cls)) {
 					for (InitializerDependsRelation r : i
 							.getDeclaredRelations(p)) {
-						if (r.isOptional()) {
-							result.optional.addEdge(r.getSource(),
-									r.getTarget());
-						} else {
+						result.combined.addEdge(r.getSource(), r.getTarget());
+						if (!r.isOptional()) {
 							result.mandatory.addEdge(r.getSource(),
 									r.getTarget());
 						}
@@ -262,8 +290,68 @@ public class InitializationService {
 		return result;
 	}
 
-	void initialize(Class<?> rootInitializerRepresentingClass) {
+	public class CreateInitializersEventImpl implements CreateInitializersEvent {
+		final Set<Initializer> initializers = new HashSet<>();
+		final Set<Object> checkedObjects = new HashSet<>();
 
+		@Override
+		public void addInitializer(Initializer initializer) {
+			initializers.add(initializer);
+		}
+
+		@Override
+		public void createInitializersFrom(Object object) {
+			if (object instanceof Iterable<?>) {
+				for (Object o : (Iterable<?>) object) {
+					if (!checkedObjects.contains(object)) {
+						initializers.addAll(createInitializers(o));
+						addCheckedObject(o);
+					}
+				}
+			} else {
+				if (!checkedObjects.contains(object)) {
+					initializers.addAll(createInitializers(object));
+					addCheckedObject(object);
+				}
+			}
+		}
+
+		@Override
+		public void addCheckedObject(Object o) {
+			checkedObjects.add(o);
+		}
+
+		@Override
+		public boolean isChecked(Object o) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+	}
+
+	public void initialize(Class<?> rootInitializerRepresentingClass) {
+		// create initializers
+		CreateInitializersEventImpl e = new CreateInitializersEventImpl();
+		createInitializersEvent.fire(e);
+
+		// find root initializer
+		Initializer root = null;
+		for (Initializer i : e.initializers) {
+			if (rootInitializerRepresentingClass.isAssignableFrom(i
+					.getRepresentingClass())) {
+				if (root == null) {
+					root = i;
+				} else {
+					throw new Error(
+							"Multiple Initializers with representing class "
+									+ rootInitializerRepresentingClass
+											.getName()
+									+ " found. Only one expected as root initializer.");
+				}
+			}
+		}
+
+		// run initializers
+		runInitializers(root, e.initializers);
 	}
 
 }

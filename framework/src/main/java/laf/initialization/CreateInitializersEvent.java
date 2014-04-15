@@ -1,15 +1,30 @@
 package laf.initialization;
 
-import java.util.*;
 
-public class CreateInitializersEvent {
-	final Set<Initializer> initializers = new HashSet<>();
+public interface CreateInitializersEvent {
 
-	public void addInitializer(Initializer initializer) {
-		initializers.add(initializer);
-	}
+	/**
+	 * Add an initializer. If the initializer is created from an object, do not
+	 * forget to use {@link #isChecked(Object)} and
+	 * {@link #addCheckedObject(Object)} to avoid creating initializers multiple
+	 * times.
+	 */
+	public void addInitializer(Initializer initializer);
 
-	public void addInitializers(Collection<Initializer> initializers) {
-		this.initializers.addAll(initializers);
-	}
+	/**
+	 * Search and create initializers from the provided object using
+	 * {@link InitializationService#createInitializers(Object)}. Skip objects
+	 * which are already marked as checked
+	 */
+	public void createInitializersFrom(Object object);
+
+	/**
+	 * Report that an object is already checked for initializers.
+	 */
+	public void addCheckedObject(Object o);
+
+	/**
+	 * Check if an object has already been checked for initializers
+	 */
+	public boolean isChecked(Object o);
 }
