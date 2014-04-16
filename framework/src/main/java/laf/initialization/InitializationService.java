@@ -2,20 +2,14 @@ package laf.initialization;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.jgrapht.EdgeFactory;
+import org.jgrapht.alg.CycleDetector;
 import org.jgrapht.graph.DirectedSubgraph;
 import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.traverse.DepthFirstIterator;
@@ -63,7 +57,7 @@ public class InitializationService {
 		}
 
 		@Override
-		public Iterable<InitializerDependsRelation> getDeclaredRelations(
+		public Collection<InitializerDependsRelation> getDeclaredRelations(
 				Initializer other) {
 			ArrayList<InitializerDependsRelation> result = new ArrayList<>();
 
@@ -173,6 +167,18 @@ public class InitializationService {
 		// determine depends relation
 		DependsRelation dependsRelation = calculateDependsRelation(initializers);
 
+		// check for loops
+		{
+			CycleDetector<Initializer, Edge> detector = new CycleDetector<>(
+					dependsRelation.combined);
+			Set<Initializer> findCycles = detector.findCycles();
+			if (!findCycles.isEmpty()) {
+				throw new Error(
+						"Found cycle in initializer dependency graph. Participating initializers: "
+								+ findCycles);
+			}
+		}
+
 		// determine required initializers
 		Set<Initializer> requiredInitializers = new HashSet<>();
 		{
@@ -191,14 +197,14 @@ public class InitializationService {
 			// create subgraph
 			DirectedSubgraph<Initializer, Edge> subgraph;
 			{
-				HashSet<Initializer> set = new HashSet<>();
+				HashSet<Initializer> reachableInitializers = new HashSet<>();
 				DepthFirstIterator<Initializer, Edge> it = new DepthFirstIterator<>(
 						dependsRelation.combined, rootInitializer);
 				while (it.hasNext()) {
-					set.add(it.next());
+					reachableInitializers.add(it.next());
 				}
 				subgraph = new DirectedSubgraph<>(dependsRelation.combined,
-						set, null);
+						reachableInitializers, null);
 			}
 
 			// traverse graph
@@ -233,12 +239,19 @@ public class InitializationService {
 		}
 	}
 
-	private class Edge {
+	private static class Edge {
 
 	}
 
-	private class DependsRelation {
+	private static class DependsRelation {
+		/**
+		 * Contains mandatory depends relations only
+		 */
 		SimpleDirectedGraph<Initializer, Edge> mandatory;
+
+		/**
+		 * Contains all depends relations, mandatory and optional
+		 */
 		SimpleDirectedGraph<Initializer, Edge> combined;
 
 		public DependsRelation() {
@@ -291,40 +304,46 @@ public class InitializationService {
 	}
 
 	public class CreateInitializersEventImpl implements CreateInitializersEvent {
+		/**
+		 * Contains the initializers created via
+		 * {@link #createInitializersFrom(Object)}
+		 */
+		HashMap<Object, Collection<Initializer>> objectBasedInitializers = new HashMap<>();
+
+		/**
+		 * Contains all initializers
+		 */
 		final Set<Initializer> initializers = new HashSet<>();
-		final Set<Object> checkedObjects = new HashSet<>();
 
 		@Override
 		public void addInitializer(Initializer initializer) {
 			initializers.add(initializer);
 		}
 
-		@Override
-		public void createInitializersFrom(Object object) {
-			if (object instanceof Iterable<?>) {
-				for (Object o : (Iterable<?>) object) {
-					if (!checkedObjects.contains(object)) {
-						initializers.addAll(createInitializers(o));
-						addCheckedObject(o);
-					}
-				}
-			} else {
-				if (!checkedObjects.contains(object)) {
-					initializers.addAll(createInitializers(object));
-					addCheckedObject(object);
-				}
+		private Collection<Initializer> createInitializersFromInner(
+				Object object) {
+			Collection<Initializer> result = objectBasedInitializers
+					.get(object);
+			if (result == null) {
+				result = createInitializers(object);
+				objectBasedInitializers.put(object, result);
+				initializers.addAll(result);
 			}
+			return result;
 		}
 
 		@Override
-		public void addCheckedObject(Object o) {
-			checkedObjects.add(o);
-		}
-
-		@Override
-		public boolean isChecked(Object o) {
-			// TODO Auto-generated method stub
-			return false;
+		public Collection<Initializer> createInitializersFrom(Object object) {
+			if (object instanceof Iterable<?>) {
+				ArrayList<Initializer> initializers = new ArrayList<>();
+				for (Object o : (Iterable<?>) object) {
+					initializers.addAll(createInitializersFromInner(o));
+				}
+				objectBasedInitializers.put(object, initializers);
+				return initializers;
+			} else {
+				return createInitializersFromInner(object);
+			}
 		}
 	}
 

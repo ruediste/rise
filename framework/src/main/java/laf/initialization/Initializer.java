@@ -1,5 +1,6 @@
 package laf.initialization;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -14,7 +15,8 @@ public interface Initializer {
 	 * the other initializer. There might be additional relations declared by
 	 * the other initializer.
 	 */
-	Iterable<InitializerDependsRelation> getDeclaredRelations(Initializer other);
+	Collection<InitializerDependsRelation> getDeclaredRelations(
+			Initializer other);
 
 	/**
 	 * Return all the representing classes of initializers this initializer

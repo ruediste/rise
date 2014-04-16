@@ -1,13 +1,12 @@
 package laf.initialization;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -52,24 +51,27 @@ public class InitializationServiceTest {
 				new HashSet<>(Arrays.asList(init1, init2)));
 
 		InOrder order = Mockito.inOrder(init1, init2);
-		order.verify(init1).run();
 		order.verify(init2).run();
+		order.verify(init1).run();
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	@Test(expected = RuntimeException.class)
+	@Test(expected = Error.class)
 	public void testRunInitializersLoop() throws Exception {
 		Initializer init1 = Mockito.mock(Initializer.class, "init1");
 		Initializer init2 = Mockito.mock(Initializer.class, "init2");
 
 		Mockito.when(init1.getRepresentingClass()).thenReturn(
 				(Class) Integer.class);
-		Mockito.when(init1.getRepresentingClass()).thenReturn(
+		Mockito.when(init2.getRepresentingClass()).thenReturn(
 				(Class) Float.class);
 		Mockito.when(init1.getDeclaredRelations(init2)).thenReturn(
 				Arrays.asList(new InitializerDependsRelation(init1, init2,
 						false), new InitializerDependsRelation(init2, init1,
 						false)));
+		Mockito.when(init1.getRelatedRepresentingClasses()).thenReturn(
+				new HashSet<>(Arrays.<Class<?>> asList(Float.class)));
+
 		Mockito.doAnswer(new Fail()).when(init1).run();
 		Mockito.doAnswer(new Fail()).when(init2).run();
 
@@ -132,10 +134,15 @@ public class InitializationServiceTest {
 			}
 		}
 
-		Assert.assertFalse(init2.isBefore(init1));
-		Assert.assertFalse(init1.isAfter(init2));
-		Assert.assertTrue(init1.isBefore(init2));
-		Assert.assertTrue(init2.isAfter(init1));
+		assertTrue(init1.getRelatedRepresentingClasses().isEmpty());
+		assertEquals(1, init2.getRelatedRepresentingClasses().size());
+		assertEquals(TestInitializer1.class,
+				Iterables.getOnlyElement(init2.getRelatedRepresentingClasses()));
+
+		assertEquals(0, init1.getDeclaredRelations(init1).size());
+		assertEquals(1, init2.getDeclaredRelations(init1).size());
+		assertEquals(new InitializerDependsRelation(init2, init1, false),
+				Iterables.getOnlyElement(init2.getDeclaredRelations(init1)));
 
 		init1.run();
 		init2.run();
@@ -145,26 +152,4 @@ public class InitializationServiceTest {
 
 	}
 
-	@Test
-	public void testCheckUnique() throws Exception {
-		Initializer init1 = Mockito.mock(Initializer.class);
-		Initializer init2 = Mockito.mock(Initializer.class);
-		Assert.assertTrue(service.checkUnique(Arrays.asList(init1)));
-		Assert.assertTrue(service.checkUnique(Arrays.asList(init1, init2)));
-		Assert.assertFalse(service.checkUnique(Arrays.asList(init1, init1)));
-	}
-
-	@Test
-	public void testCalculateBeforeRelation() throws Exception {
-		Initializer init1 = Mockito.mock(Initializer.class);
-		Initializer init2 = Mockito.mock(Initializer.class);
-		Mockito.when(init1.isBefore(init2)).thenReturn(true);
-
-		Map<Initializer, Set<Initializer>> map = service
-				.calculateBeforeRelation(Arrays.asList(init1, init2));
-		Assert.assertEquals(2, map.size());
-		Assert.assertTrue(map.get(init2).isEmpty());
-		Assert.assertEquals(1, map.get(init1).size());
-		Assert.assertTrue(map.get(init1).contains(init2));
-	}
 }

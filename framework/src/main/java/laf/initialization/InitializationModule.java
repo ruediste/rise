@@ -66,8 +66,9 @@ import org.jabsaw.Module;
  * {@link LafInitializer} and creates initializer instances, which will invoke
  * the initializer methods. In addition, if the object implements
  * {@link InitializerProvider} the provided initializers are returned as well.
- * Using this mechanism, when the {@link CreateInitializersEvent} is raised, all
- * singletons are scanned and initializers are created.
+ * Using this mechanism, when the {@link CreateInitializersEvent} is raised,
+ * {@link SingletonInitializerCreator} scans all singletons and creates the
+ * initializers defined in them.
  * </p>
  */
 @Module
