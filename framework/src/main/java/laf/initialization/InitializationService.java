@@ -212,16 +212,16 @@ public class InitializationService {
 				Queue<Initializer> queue = new PriorityQueue<>(10,
 						new Comparator<Initializer>() {
 
-							@Override
-							public int compare(Initializer o1, Initializer o2) {
-								return o1
-										.getRepresentingClass()
-										.getName()
-										.compareTo(
-												o2.getRepresentingClass()
-														.getName());
-							}
-						});
+					@Override
+					public int compare(Initializer o1, Initializer o2) {
+						return o1
+								.getRepresentingClass()
+								.getName()
+								.compareTo(
+										o2.getRepresentingClass()
+										.getName());
+					}
+				});
 				TopologicalOrderIterator<Initializer, Edge> it = new TopologicalOrderIterator<Initializer, Edge>(
 						subgraph, queue);
 				while (it.hasNext()) {
@@ -363,10 +363,14 @@ public class InitializationService {
 					throw new Error(
 							"Multiple Initializers with representing class "
 									+ rootInitializerRepresentingClass
-											.getName()
+									.getName()
 									+ " found. Only one expected as root initializer.");
 				}
 			}
+		}
+
+		if (root == null) {
+			throw new Error("No Root initializer instance found");
 		}
 
 		// run initializers
