@@ -1,9 +1,9 @@
 package laf.urlMapping;
 
-import static laf.MockitoExt.*;
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static laf.MockitoExt.mock;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.when;
 import laf.LAF;
 import laf.LAF.ProjectStage;
 import laf.urlMapping.ActionPath.ParameterValueComparator;
@@ -11,6 +11,7 @@ import laf.urlMapping.ActionPath.ParameterValueComparator;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
+import org.mockito.Mockito;
 
 import com.google.common.reflect.TypeToken;
 
@@ -26,7 +27,7 @@ public class UrlMappingTest {
 	public void setup() {
 		mapping = new UrlMapping();
 		config = new LAF();
-		rule = mock(UrlMappingRule.class);
+		rule = Mockito.mock(UrlMappingRule.class);
 		providerPath = mock(new TypeToken<ActionPath<ParameterValueProvider>>() {
 		});
 

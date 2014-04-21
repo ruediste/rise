@@ -1,12 +1,16 @@
 package laf.controllerInfo.impl;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.mock;
 
 import javax.enterprise.inject.spi.BeanManager;
 
-import laf.controllerInfo.*;
-import laf.controllerInfo.impl.*;
+import laf.controllerInfo.ActionMethodInfo;
+import laf.controllerInfo.ControllerInfo;
+import laf.controllerInfo.ControllerInfoRepository;
+import laf.controllerInfo.ParameterInfo;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -1,5 +1,8 @@
 package laf.initialization;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import javax.inject.Inject;
 
 import org.jabsaw.util.Modules;
@@ -20,12 +23,14 @@ public class SingletonInitializersTest {
 				.create(WebArchive.class)
 				.addAsLibraries(
 						Maven.resolver()
-						.loadPomFromFile("pom.xml")
-						.resolve("org.slf4j:slf4j-api",
-								"com.google.guava:guava")
+								.loadPomFromFile("pom.xml")
+								.resolve("org.slf4j:slf4j-api",
+										"com.google.guava:guava")
 								.withTransitivity().asFile())
-				.addClasses(Modules.getClasses(InitializationModule.class))
-				.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+								.addClasses(Modules.getClasses(InitializationModule.class))
+								.addClass(TestInitializer.class)
+								.addClass(TestRootInitializer.class)
+								.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
 		System.out.println(archive.toString(true));
 		return archive;
 	}
@@ -33,8 +38,13 @@ public class SingletonInitializersTest {
 	@Inject
 	InitializationService initializationService;
 
+	@Inject
+	TestInitializer testInitializer;
+
 	@Test
 	public void test() {
+		assertFalse(testInitializer.initialized);
 		initializationService.initialize(TestRootInitializer.class);
+		assertTrue(testInitializer.initialized);
 	}
 }

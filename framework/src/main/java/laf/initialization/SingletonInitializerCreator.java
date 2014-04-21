@@ -19,7 +19,7 @@ public class SingletonInitializerCreator {
 	@Singleton
 	Instance<Object> instance;
 
-	@Singleton
+	@Inject
 	InitializationService initializationService;
 
 	public void initialize(@Observes CreateInitializersEvent e) {
@@ -31,7 +31,11 @@ public class SingletonInitializerCreator {
 			}
 		};
 
-		for (Bean<?> bean : beanManager.getBeans(Object.class, singleton)) {
+		for (Bean<?> bean : beanManager.getBeans(Object.class)) {
+			if (!bean.getBeanClass().isAnnotationPresent(Singleton.class)) {
+				continue;
+			}
+
 			if (initializationService.mightCreateInitializers(bean
 					.getBeanClass())) {
 				e.createInitializersFrom(instance.select(bean.getBeanClass())
