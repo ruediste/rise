@@ -1,15 +1,19 @@
-package laf.urlMapping;
+package laf.actionPath;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import javax.ejb.Singleton;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import laf.ActionContext;
-import laf.controllerInfo.*;
-import net.sf.cglib.proxy.*;
+import laf.controllerInfo.ActionMethodInfo;
+import laf.controllerInfo.ControllerInfo;
+import laf.controllerInfo.ControllerInfoRepository;
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
 
 import com.google.common.base.Joiner;
 
@@ -31,6 +35,12 @@ public class ActionPathFactory {
 	public <T> T createActionPath(final Class<T> controllerClass) {
 		ControllerInfo controllerInfo = controllerInfoRepository
 				.getControllerInfo(controllerClass);
+		if (controllerInfo == null) {
+			throw new RuntimeException(
+					"Could not find controllerInfo for the provided controller class "
+							+ controllerClass.getName());
+		}
+
 		PathActionResult path = new PathActionResult();
 		if (controllerInfo.isEmbeddedController()) {
 			// look for the latest occurrence of the controller class

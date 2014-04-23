@@ -1,4 +1,4 @@
-package laf.controllerInfo.impl;
+package laf.controllerInfo;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -7,13 +7,16 @@ import java.lang.reflect.Type;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
-import laf.*;
-import laf.controllerInfo.ControllerInfoRepository;
+import laf.ActionResult;
+import laf.Controller;
+import laf.EmbeddedController;
 import laf.initialization.LafInitializer;
 
 import org.slf4j.Logger;
 
+@Singleton
 public class ControllerInfoRepositoryInitializer {
 
 	@Inject

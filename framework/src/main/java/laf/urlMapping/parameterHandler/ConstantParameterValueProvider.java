@@ -1,4 +1,4 @@
-package laf.urlMapping;
+package laf.urlMapping.parameterHandler;
 
 import java.util.Objects;
 

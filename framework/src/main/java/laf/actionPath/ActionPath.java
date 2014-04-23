@@ -1,4 +1,4 @@
-package laf.urlMapping;
+package laf.actionPath;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -41,11 +41,11 @@ public class ActionPath<T> {
 		return isCallToSameActionMethod(other,
 				new ParameterValueComparator<Object, Object>() {
 
-			@Override
-			public boolean equals(Object a, Object b) {
-				return true;
-			}
-		});
+					@Override
+					public boolean equals(Object a, Object b) {
+						return true;
+					}
+				});
 	}
 
 	/**
@@ -80,23 +80,4 @@ public class ActionPath<T> {
 		return true;
 	}
 
-	/**
-	 * Convert an {@link ActionPath} with {@link ParameterValueProvider}s to an
-	 * ActionPath with {@link Object}s, using the
-	 * {@link ParameterValueProvider#provideValue()}
-	 */
-	public static ActionPath<Object> createObjectActionPath(
-			ActionPath<ParameterValueProvider> actionPath) {
-		ActionPath<Object> result = new ActionPath<Object>();
-		for (ActionInvocation<ParameterValueProvider> invocation : actionPath
-				.getElements()) {
-			ActionInvocation<Object> i = new ActionInvocation<Object>(
-					invocation);
-			for (ParameterValueProvider provider : invocation.getArguments()) {
-				i.getArguments().add(provider.provideValue());
-			}
-			result.getElements().add(i);
-		}
-		return result;
-	}
 }

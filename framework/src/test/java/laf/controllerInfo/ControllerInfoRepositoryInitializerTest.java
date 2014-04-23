@@ -1,4 +1,4 @@
-package laf.controllerInfo.impl;
+package laf.controllerInfo;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -7,10 +7,8 @@ import static org.mockito.Mockito.mock;
 
 import javax.enterprise.inject.spi.BeanManager;
 
-import laf.controllerInfo.ActionMethodInfo;
-import laf.controllerInfo.ControllerInfo;
-import laf.controllerInfo.ControllerInfoRepository;
-import laf.controllerInfo.ParameterInfo;
+import laf.controllerInfo.impl.EmbeddedTestController;
+import laf.controllerInfo.impl.TestController;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -6,7 +6,9 @@ import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.when;
 import laf.LAF;
 import laf.LAF.ProjectStage;
-import laf.urlMapping.ActionPath.ParameterValueComparator;
+import laf.actionPath.ActionPath;
+import laf.actionPath.ActionPath.ParameterValueComparator;
+import laf.urlMapping.parameterHandler.ParameterValueProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -34,8 +36,9 @@ public class UrlMappingTest {
 		objectPath = mock(new TypeToken<ActionPath<Object>>() {
 		});
 
-		mapping.coreConfig = config;
-		config.getUrlMappingRules().add(rule);
+		mapping.laf = config;
+		mapping.urlMappingRules.getValue().clear();
+		mapping.urlMappingRules.getValue().add(rule);
 
 		when(rule.parse("foo")).thenReturn(providerPath);
 		when(rule.generate(objectPath)).thenReturn("foo");
@@ -43,7 +46,7 @@ public class UrlMappingTest {
 				objectPath.isCallToSameActionMethod(
 						same(providerPath),
 						Matchers.<ParameterValueComparator<Object, ParameterValueProvider>> any()))
-				.thenReturn(true);
+						.thenReturn(true);
 	}
 
 	@Test

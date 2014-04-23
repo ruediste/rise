@@ -1,28 +1,47 @@
 package laf.urlMapping;
 
+import java.util.ArrayDeque;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import laf.LAF;
 import laf.LAF.ProjectStage;
-import laf.urlMapping.ActionPath.ParameterValueComparator;
+import laf.actionPath.ActionInvocation;
+import laf.actionPath.ActionPath;
+import laf.actionPath.ActionPath.ParameterValueComparator;
+import laf.configuration.ConfigurationParameter;
+import laf.urlMapping.parameterHandler.ParameterValueProvider;
 
 @Singleton
 public class UrlMapping {
 
+	LAF laf;
+
+	public ConfigurationParameter<ArrayDeque<UrlMappingRule>> urlMappingRules = new ConfigurationParameter<ArrayDeque<UrlMappingRule>>(
+			new ArrayDeque<UrlMappingRule>());
+
 	@Inject
-	LAF coreConfig;
+	Instance<UrlMappingRule> ruleInstance;
+
+	@PostConstruct
+	public void initialize() {
+		urlMappingRules.getValue().add(
+				ruleInstance.select(DefaultUrlMappingRule.class).get());
+	}
 
 	/**
 	 * Parse a servlet path. If no matching rule is found, null is returned.
 	 */
 	public ActionPath<ParameterValueProvider> parse(String servletPath) {
-		if (coreConfig.getUrlMappingRules().isEmpty()) {
+		if (urlMappingRules.getValue().isEmpty()) {
 			throw new RuntimeException(
 					"No UrlMappingRules are defined in CoreConfig");
 		}
 
-		for (UrlMappingRule rule : coreConfig.getUrlMappingRules()) {
+		for (UrlMappingRule rule : urlMappingRules.getValue()) {
 			ActionPath<ParameterValueProvider> result = rule.parse(servletPath);
 			if (result != null) {
 				return result;
@@ -36,7 +55,7 @@ public class UrlMapping {
 	 */
 	public String generate(ActionPath<Object> path) {
 		String result = null;
-		for (UrlMappingRule rule : coreConfig.getUrlMappingRules()) {
+		for (UrlMappingRule rule : urlMappingRules.getValue()) {
 			result = rule.generate(path);
 			if (result != null) {
 				break;
@@ -50,7 +69,7 @@ public class UrlMapping {
 		}
 
 		// check if the generated URL can be parsed
-		if (coreConfig.getProjectStage() != ProjectStage.PRODUCTION) {
+		if (laf.getProjectStage() != ProjectStage.PRODUCTION) {
 			ActionPath<ParameterValueProvider> parsed = parse(result);
 			if (parsed == null) {
 				throw new RuntimeException(
@@ -76,6 +95,26 @@ public class UrlMapping {
 								+ " did not match the original ActionPath. This is caused by an inconsistency between the URL generation and the URL parsing"
 								+ " of the configured rules. Each rule has to parse exactly those URLs it generates.");
 			}
+		}
+		return result;
+	}
+
+	/**
+	 * Convert an {@link ActionPath} with {@link ParameterValueProvider}s to an
+	 * ActionPath with {@link Object}s, using the
+	 * {@link ParameterValueProvider#provideValue()}
+	 */
+	public static ActionPath<Object> createObjectActionPath(
+			ActionPath<ParameterValueProvider> actionPath) {
+		ActionPath<Object> result = new ActionPath<Object>();
+		for (ActionInvocation<ParameterValueProvider> invocation : actionPath
+				.getElements()) {
+			ActionInvocation<Object> i = new ActionInvocation<Object>(
+					invocation);
+			for (ParameterValueProvider provider : invocation.getArguments()) {
+				i.getArguments().add(provider.provideValue());
+			}
+			result.getElements().add(i);
 		}
 		return result;
 	}

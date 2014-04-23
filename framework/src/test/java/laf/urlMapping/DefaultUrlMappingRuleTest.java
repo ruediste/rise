@@ -1,19 +1,26 @@
 package laf.urlMapping;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.ArrayDeque;
 
 import javax.inject.Inject;
 
-import laf.DefaultLafConfigurator;
 import laf.LAF;
+import laf.actionPath.ActionInvocation;
+import laf.actionPath.ActionPath;
+import laf.actionPath.ActionPathFactory;
+import laf.actionPath.PathActionResult;
+import laf.controllerInfo.ControllerInfoRepository;
 import laf.controllerInfo.impl.TestController;
+import laf.test.DeploymentProvider;
+import laf.urlMapping.parameterHandler.ParameterValueProvider;
 
+import org.jabsaw.util.Modules;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,16 +30,11 @@ public class DefaultUrlMappingRuleTest {
 
 	@Deployment
 	public static WebArchive createDeployment() {
-		WebArchive archive = ShrinkWrap
-				.create(WebArchive.class)
-				.addAsLibraries(
-						Maven.resolver()
-						.loadPomFromFile("pom.xml")
-						.resolve("org.slf4j:slf4j-api",
-								"com.google.guava:guava")
-								.withTransitivity().asFile())
-				.addPackages(true, "laf").addClass(TestController.class)
-				.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+		WebArchive archive = DeploymentProvider
+				.getDefault()
+				.addClasses(
+						Modules.getAllRequiredClasses(UrlMappingModule.class))
+						.addClass(TestController.class);
 		System.out.println(archive.toString(true));
 		return archive;
 	}
@@ -41,22 +43,32 @@ public class DefaultUrlMappingRuleTest {
 	ActionPathFactory factory;
 
 	@Inject
-	DefaultUrlMappingRule rule;
-
-	@Inject
 	LAF laf;
 
 	@Inject
-	DefaultLafConfigurator defaultLafConfigurator;
+	UrlMapping urlMapping;
+
+	@Inject
+	DefaultUrlMappingRule rule;
+
+	@Inject
+	ControllerInfoRepository controllerInfoRepository;
 
 	@Before
 	public void init() {
 		if (!laf.isInitialized()) {
-			defaultLafConfigurator.configure();
-			laf.getUrlMappingRules().clear();
-			laf.getUrlMappingRules().add(rule);
+			ArrayDeque<UrlMappingRule> rules = urlMapping.urlMappingRules
+					.getValue();
+			rules.clear();
+			rules.add(rule);
 			laf.initialize();
 		}
+	}
+
+	@Test
+	public void controllerInfoPresent() {
+		assertNotNull(controllerInfoRepository
+				.getControllerInfo(TestController.class));
 	}
 
 	@Test
@@ -72,7 +84,7 @@ public class DefaultUrlMappingRuleTest {
 	public void parse() {
 		ActionPath<ParameterValueProvider> path = rule
 				.parse("laf/controllerInfo/impl/test.actionMethod/2");
-		ActionPath<Object> objectPath = ActionPath.createObjectActionPath(path);
+		ActionPath<Object> objectPath = UrlMapping.createObjectActionPath(path);
 		assertEquals(1, objectPath.getElements().size());
 		ActionInvocation<Object> invocation = objectPath.getElements().get(0);
 		assertEquals(TestController.class, invocation.getControllerInfo()

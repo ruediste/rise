@@ -1,4 +1,4 @@
-package laf.urlMapping;
+package laf.actionPath;
 
 import laf.ActionResult;
 

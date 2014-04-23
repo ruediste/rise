@@ -1,10 +1,10 @@
-package laf.urlMapping;
+package laf.actionPath;
 
 import java.util.*;
 
+import laf.actionPath.ActionPath.ParameterValueComparator;
 import laf.controllerInfo.ActionMethodInfo;
 import laf.controllerInfo.ControllerInfo;
-import laf.urlMapping.ActionPath.ParameterValueComparator;
 
 import com.google.common.base.Objects;
 

@@ -1,14 +1,9 @@
 package laf;
 
-import java.util.*;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import laf.initialization.InitializationService;
-import laf.initialization.Initializer;
-import laf.urlMapping.ParameterHandler;
-import laf.urlMapping.UrlMappingRule;
 
 /**
  * This class contains all the knots and switches to configure the framework.
@@ -18,13 +13,12 @@ import laf.urlMapping.UrlMappingRule;
 public class LAF {
 
 	@Inject
-	InitializationService initializationEngine;
+	InitializationService initializationService;
 
-	final private ArrayDeque<UrlMappingRule> urlMappingRules = new ArrayDeque<>();
+	@Inject
+	FrameworkRootInitializer frameworkRootInitializer;
 
-	public ArrayDeque<UrlMappingRule> getUrlMappingRules() {
-		return urlMappingRules;
-	}
+	private ProjectStage projectStage;
 
 	public ProjectStage getProjectStage() {
 		return projectStage;
@@ -34,47 +28,20 @@ public class LAF {
 		this.projectStage = projectStage;
 	}
 
-	public enum ProjectStage {
-		DEVELOPMENT, PRODUCTION,
-	}
-
-	private ProjectStage projectStage;
-
-	private final Deque<ParameterHandler> parameterHandlers = new ArrayDeque<>();
-
-	private boolean initialized;
-
-	public boolean isInitialized() {
-		return initialized;
-	}
-
 	/**
 	 * Initialize the Framework. This method has to be called after any
 	 * configuration changes.
 	 */
 	public void initialize() {
-		ArrayList<Initializer> list = new ArrayList<>();
-		list.addAll(initializationEngine
-				.createInitializers(urlMappingRules));
-		list.addAll(initializationEngine
-				.createInitializers(parameterHandlers));
-		list.addAll(initializationEngine
-				.createInitializers(additionalComponents));
-		// initializationEngine.runInitializers(list);
-		initialized = true;
+		initializationService.initialize(FrameworkRootInitializer.class);
 	}
 
-	public Deque<ParameterHandler> getParameterHandlers() {
-		return parameterHandlers;
+	public boolean isInitialized() {
+		return frameworkRootInitializer.isInitialized();
 	}
 
-	public ArrayList<Object> getAdditionalComponents() {
-		return additionalComponents;
+	public enum ProjectStage {
+		DEVELOPMENT, PRODUCTION,
 	}
 
-	public void setAdditionalComponents(ArrayList<Object> additionalComponents) {
-		this.additionalComponents = additionalComponents;
-	}
-
-	private ArrayList<Object> additionalComponents = new ArrayList<>();
 }

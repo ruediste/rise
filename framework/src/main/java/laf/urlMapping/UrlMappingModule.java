@@ -3,7 +3,16 @@ package laf.urlMapping;
 import javax.persistence.EntityManager;
 
 import laf.LAF;
+import laf.actionPath.ActionPathModule;
+import laf.configuration.ConfigurationModule;
+import laf.controllerInfo.ControllerInfoModule;
 import laf.controllerInfo.ParameterInfo;
+import laf.initialization.InitializationModule;
+import laf.urlMapping.parameterHandler.ParameterHandler;
+import laf.urlMapping.parameterHandler.ParameterHandlerModule;
+import laf.urlMapping.parameterHandler.ParameterValueProvider;
+
+import org.jabsaw.Module;
 
 /**
  * URLs have to be mapped to action method invocations for request handling, and
@@ -29,7 +38,10 @@ import laf.controllerInfo.ParameterInfo;
  * {@link LAF#getUrlMappingRules()}
  * </p>
  */
-public class UrlMappingConcepts {
+@Module(exported = { ActionPathModule.class, ControllerInfoModule.class,
+		ConfigurationModule.class }, imported = { ParameterHandlerModule.class,
+		InitializationModule.class })
+public class UrlMappingModule {
 
 	/**
 	 * <p>

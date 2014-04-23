@@ -11,11 +11,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import laf.actionPath.ActionInvocation;
+import laf.actionPath.ActionPath;
 import laf.controllerInfo.ActionMethodInfo;
-import laf.urlMapping.ActionInvocation;
-import laf.urlMapping.ActionPath;
-import laf.urlMapping.ParameterValueProvider;
 import laf.urlMapping.UrlMapping;
+import laf.urlMapping.parameterHandler.ParameterValueProvider;
 
 /**
  * Framework entry point
@@ -52,7 +52,7 @@ public class FrontServletBase extends HttpServlet {
 		}
 
 		// create arguments
-		ActionPath<Object> objectActionPath = ActionPath
+		ActionPath<Object> objectActionPath = UrlMapping
 				.createObjectActionPath(actionPath);
 		actionContext.setInvokedPath(objectActionPath);
 

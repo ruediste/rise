@@ -1,10 +1,14 @@
-package laf.urlMapping;
+package laf.actionPath;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import laf.ActionContext;
-import laf.controllerInfo.*;
-import laf.controllerInfo.impl.*;
+import laf.controllerInfo.ControllerInfo;
+import laf.controllerInfo.ControllerInfoRepository;
+import laf.controllerInfo.ControllerInfoRepositoryInitializer;
+import laf.controllerInfo.impl.EmbeddedTestController;
+import laf.controllerInfo.impl.TestController;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +34,7 @@ public class ActionPathFactoryTest {
 				testControllerInfo);
 		when(
 				factory.controllerInfoRepository
-				.getControllerInfo(EmbeddedTestController.class))
+						.getControllerInfo(EmbeddedTestController.class))
 				.thenReturn(embeddedControllerInfo);
 
 	}

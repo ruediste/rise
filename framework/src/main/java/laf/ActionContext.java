@@ -4,7 +4,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import laf.urlMapping.ActionPath;
+import laf.actionPath.ActionPath;
 
 @RequestScoped
 public interface ActionContext {

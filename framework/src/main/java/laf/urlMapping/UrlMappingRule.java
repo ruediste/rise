@@ -1,5 +1,8 @@
 package laf.urlMapping;
 
+import laf.actionPath.ActionPath;
+import laf.urlMapping.parameterHandler.ParameterValueProvider;
+
 
 /**
  * {@link UrlMappingRule}s map URLs to {@link ActionPath}s. There is a system

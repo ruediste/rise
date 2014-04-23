@@ -1,11 +1,9 @@
-package laf.controllerInfo.impl;
+package laf.controllerInfo;
 
 import java.lang.reflect.Method;
 import java.util.*;
 
 import laf.attachedProperties.AttachedPropertyBearerBase;
-import laf.controllerInfo.ActionMethodInfo;
-import laf.controllerInfo.ControllerInfo;
 
 import com.google.common.base.Strings;
 

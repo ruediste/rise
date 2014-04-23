@@ -1,4 +1,4 @@
-package laf.controllerInfo.impl;
+package laf.controllerInfo;
 
 import java.lang.reflect.Method;
 import java.util.*;

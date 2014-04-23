@@ -1,10 +1,8 @@
-package laf.controllerInfo.impl;
+package laf.controllerInfo;
 
 import java.lang.reflect.Type;
 
 import laf.attachedProperties.AttachedPropertyBearerBase;
-import laf.controllerInfo.ActionMethodInfo;
-import laf.controllerInfo.ParameterInfo;
 
 public class ParameterInfoImpl extends AttachedPropertyBearerBase implements
 		ParameterInfo {

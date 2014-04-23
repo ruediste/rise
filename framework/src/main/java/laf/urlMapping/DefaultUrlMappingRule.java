@@ -5,14 +5,18 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import laf.LAF;
+import laf.actionPath.ActionInvocation;
+import laf.actionPath.ActionPath;
 import laf.attachedProperties.AttachedProperty;
 import laf.controllerInfo.ActionMethodInfo;
 import laf.controllerInfo.ControllerInfo;
 import laf.controllerInfo.ControllerInfoRepository;
+import laf.controllerInfo.ControllerInfoRepositoryInitializer;
 import laf.controllerInfo.ParameterInfo;
-import laf.controllerInfo.impl.ControllerInfoRepositoryInitializer;
 import laf.initialization.LafInitializer;
+import laf.urlMapping.parameterHandler.ParameterHandler;
+import laf.urlMapping.parameterHandler.ParameterHandlerInitializer;
+import laf.urlMapping.parameterHandler.ParameterValueProvider;
 
 import org.slf4j.Logger;
 
@@ -38,9 +42,6 @@ public class DefaultUrlMappingRule implements UrlMappingRule {
 	@Inject
 	ControllerInfoRepository controllerInfoRepository;
 
-	@Inject
-	LAF laf;
-
 	private ControllerIdentifierStrategy controllerIdentifierStrategy = new DefaultControllerIdentifierStrategy();
 
 	private final Map<String, ControllerInfo> controllersByIdentifier = new MapMaker()
@@ -48,7 +49,8 @@ public class DefaultUrlMappingRule implements UrlMappingRule {
 
 	private static final AttachedProperty<String> controllerIdentifier = new AttachedProperty<>();
 
-	@LafInitializer(after = ControllerInfoRepositoryInitializer.class)
+	@LafInitializer(after = { ControllerInfoRepositoryInitializer.class,
+			ParameterHandlerInitializer.class })
 	public void initialize() {
 		for (ControllerInfo info : controllerInfoRepository
 				.getControllerInfos()) {

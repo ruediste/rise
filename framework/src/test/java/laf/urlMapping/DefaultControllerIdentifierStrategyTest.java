@@ -2,7 +2,7 @@ package laf.urlMapping;
 
 import static org.junit.Assert.*;
 import laf.controllerInfo.ControllerInfo;
-import laf.controllerInfo.impl.ControllerInfoImpl;
+import laf.controllerInfo.ControllerInfoImpl;
 import laf.controllerInfo.impl.TestController;
 
 import org.junit.Test;

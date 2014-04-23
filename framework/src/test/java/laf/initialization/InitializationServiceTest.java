@@ -2,15 +2,19 @@ package laf.initialization;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
 import java.util.HashSet;
 
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.slf4j.Logger;
 
 import com.google.common.collect.Iterables;
 
@@ -29,7 +33,7 @@ public class InitializationServiceTest {
 	@Before
 	public void setup() {
 		service = new InitializationService();
-
+		service.log = mock(Logger.class);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -68,7 +72,7 @@ public class InitializationServiceTest {
 		Mockito.when(init1.getDeclaredRelations(init2)).thenReturn(
 				Arrays.asList(new InitializerDependsRelation(init1, init2,
 						false), new InitializerDependsRelation(init2, init1,
-						false)));
+								false)));
 		Mockito.when(init1.getRelatedRepresentingClasses()).thenReturn(
 				new HashSet<>(Arrays.<Class<?>> asList(Float.class)));
 

@@ -1,8 +1,10 @@
-package laf.controllerInfo.impl;
+package laf.controllerInfo;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import laf.controllerInfo.ActionMethodInfo;
+import laf.controllerInfo.impl.TestController;
+import laf.controllerInfo.ControllerInfoImpl;
 
 import org.junit.Test;
 

@@ -3,7 +3,7 @@ package laf;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import laf.urlMapping.ActionPath;
+import laf.actionPath.ActionPath;
 
 public class ActionContextImpl implements ActionContext {
 
