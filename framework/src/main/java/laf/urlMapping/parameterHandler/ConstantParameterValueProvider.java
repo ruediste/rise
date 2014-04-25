@@ -2,6 +2,8 @@ package laf.urlMapping.parameterHandler;
 
 import java.util.Objects;
 
+import laf.urlMapping.parameterValueProvider.ParameterValueProvider;
+
 public class ConstantParameterValueProvider implements ParameterValueProvider {
 
 	private Object value;

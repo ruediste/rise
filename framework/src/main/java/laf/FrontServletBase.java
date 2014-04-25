@@ -15,7 +15,7 @@ import laf.actionPath.ActionInvocation;
 import laf.actionPath.ActionPath;
 import laf.controllerInfo.ActionMethodInfo;
 import laf.urlMapping.UrlMapping;
-import laf.urlMapping.parameterHandler.ParameterValueProvider;
+import laf.urlMapping.parameterValueProvider.ParameterValueProvider;
 
 /**
  * Framework entry point

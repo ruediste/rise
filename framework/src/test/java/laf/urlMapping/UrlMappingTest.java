@@ -8,7 +8,7 @@ import laf.LAF;
 import laf.LAF.ProjectStage;
 import laf.actionPath.ActionPath;
 import laf.actionPath.ActionPath.ParameterValueComparator;
-import laf.urlMapping.parameterHandler.ParameterValueProvider;
+import laf.urlMapping.parameterValueProvider.ParameterValueProvider;
 
 import org.junit.Before;
 import org.junit.Test;

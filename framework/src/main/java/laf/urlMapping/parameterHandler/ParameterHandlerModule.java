@@ -11,10 +11,13 @@ import laf.configuration.ConfigurationModule;
 import laf.configuration.ConfigurationParameter;
 import laf.controllerInfo.ControllerInfoModule;
 import laf.initialization.InitializationModule;
+import laf.urlMapping.parameterValueProvider.ParameterValueProviderModule;
 
 import org.jabsaw.Module;
 
-@Module(exported = { ConfigurationModule.class, ControllerInfoModule.class, }, imported = { InitializationModule.class })
+@Module(exported = { ControllerInfoModule.class,
+		ParameterValueProviderModule.class }, imported = {
+		InitializationModule.class, ConfigurationModule.class })
 @Singleton
 public class ParameterHandlerModule {
 

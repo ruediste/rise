@@ -6,7 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import laf.controllerInfo.ActionMethodInfo;
 import laf.urlMapping.UrlMapping;
-import laf.urlMapping.parameterHandler.ParameterValueProvider;
+import laf.urlMapping.parameterValueProvider.ParameterValueProvider;
 
 import org.junit.Test;
 

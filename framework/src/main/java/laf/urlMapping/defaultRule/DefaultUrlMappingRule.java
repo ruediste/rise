@@ -1,4 +1,4 @@
-package laf.urlMapping;
+package laf.urlMapping.defaultRule;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -14,9 +14,12 @@ import laf.controllerInfo.ControllerInfoRepository;
 import laf.controllerInfo.ControllerInfoRepositoryInitializer;
 import laf.controllerInfo.ParameterInfo;
 import laf.initialization.LafInitializer;
+import laf.urlMapping.ControllerIdentifierStrategy;
+import laf.urlMapping.DefaultControllerIdentifierStrategy;
+import laf.urlMapping.UrlMappingRule;
 import laf.urlMapping.parameterHandler.ParameterHandler;
 import laf.urlMapping.parameterHandler.ParameterHandlerInitializer;
-import laf.urlMapping.parameterHandler.ParameterValueProvider;
+import laf.urlMapping.parameterValueProvider.ParameterValueProvider;
 
 import org.slf4j.Logger;
 

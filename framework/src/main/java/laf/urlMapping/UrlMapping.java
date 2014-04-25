@@ -13,7 +13,8 @@ import laf.actionPath.ActionInvocation;
 import laf.actionPath.ActionPath;
 import laf.actionPath.ActionPath.ParameterValueComparator;
 import laf.configuration.ConfigurationParameter;
-import laf.urlMapping.parameterHandler.ParameterValueProvider;
+import laf.urlMapping.defaultRule.DefaultUrlMappingRule;
+import laf.urlMapping.parameterValueProvider.ParameterValueProvider;
 
 @Singleton
 public class UrlMapping {

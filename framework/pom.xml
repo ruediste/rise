@@ -41,6 +41,9 @@
 				<groupId>org.jabsaw</groupId>
 				<artifactId>jabsaw-maven-plugin</artifactId>
 				<version>1.0-SNAPSHOT</version>
+				<configuration>
+					<moduleGraphFormat>svg</moduleGraphFormat>
+				</configuration>
 				<executions>
 					<execution>
 						<phase>process-classes</phase>

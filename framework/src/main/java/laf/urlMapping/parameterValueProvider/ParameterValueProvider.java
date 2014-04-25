@@ -1,4 +1,4 @@
-package laf.urlMapping.parameterHandler;
+package laf.urlMapping.parameterValueProvider;
 
 import javax.persistence.EntityManager;
 

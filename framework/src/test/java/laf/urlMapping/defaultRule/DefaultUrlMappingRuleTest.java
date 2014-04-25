@@ -1,4 +1,4 @@
-package laf.urlMapping;
+package laf.urlMapping.defaultRule;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -15,7 +15,9 @@ import laf.actionPath.PathActionResult;
 import laf.controllerInfo.ControllerInfoRepository;
 import laf.controllerInfo.impl.TestController;
 import laf.test.DeploymentProvider;
-import laf.urlMapping.parameterHandler.ParameterValueProvider;
+import laf.urlMapping.UrlMapping;
+import laf.urlMapping.UrlMappingRule;
+import laf.urlMapping.parameterValueProvider.ParameterValueProvider;
 
 import org.jabsaw.util.Modules;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -33,8 +35,8 @@ public class DefaultUrlMappingRuleTest {
 		WebArchive archive = DeploymentProvider
 				.getDefault()
 				.addClasses(
-						Modules.getAllRequiredClasses(UrlMappingModule.class))
-						.addClass(TestController.class);
+						Modules.getAllRequiredClasses(DefaultUrlMappingRuleModule.class))
+				.addClass(TestController.class);
 		System.out.println(archive.toString(true));
 		return archive;
 	}

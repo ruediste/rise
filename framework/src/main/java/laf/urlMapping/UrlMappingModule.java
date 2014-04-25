@@ -9,8 +9,8 @@ import laf.controllerInfo.ControllerInfoModule;
 import laf.controllerInfo.ParameterInfo;
 import laf.initialization.InitializationModule;
 import laf.urlMapping.parameterHandler.ParameterHandler;
-import laf.urlMapping.parameterHandler.ParameterHandlerModule;
-import laf.urlMapping.parameterHandler.ParameterValueProvider;
+import laf.urlMapping.parameterValueProvider.ParameterValueProvider;
+import laf.urlMapping.parameterValueProvider.ParameterValueProviderModule;
 
 import org.jabsaw.Module;
 
@@ -39,8 +39,8 @@ import org.jabsaw.Module;
  * </p>
  */
 @Module(exported = { ActionPathModule.class, ControllerInfoModule.class,
-		ConfigurationModule.class }, imported = { ParameterHandlerModule.class,
-		InitializationModule.class })
+		ParameterValueProviderModule.class }, imported = {
+		InitializationModule.class, ConfigurationModule.class })
 public class UrlMappingModule {
 
 	/**
