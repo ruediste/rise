@@ -17,9 +17,9 @@ import org.mockito.Mockito;
 
 import com.google.common.reflect.TypeToken;
 
-public class UrlMappingTest {
+public class UrlMappingModuleTest {
 
-	UrlMapping mapping;
+	UrlMappingModule mapping;
 	LAF config;
 	UrlMappingRule rule;
 	ActionPath<ParameterValueProvider> providerPath;
@@ -27,7 +27,7 @@ public class UrlMappingTest {
 
 	@Before
 	public void setup() {
-		mapping = new UrlMapping();
+		mapping = new UrlMappingModule();
 		config = new LAF();
 		rule = Mockito.mock(UrlMappingRule.class);
 		providerPath = mock(new TypeToken<ActionPath<ParameterValueProvider>>() {
@@ -46,7 +46,7 @@ public class UrlMappingTest {
 				objectPath.isCallToSameActionMethod(
 						same(providerPath),
 						Matchers.<ParameterValueComparator<Object, ParameterValueProvider>> any()))
-						.thenReturn(true);
+				.thenReturn(true);
 	}
 
 	@Test

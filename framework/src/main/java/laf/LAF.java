@@ -1,8 +1,10 @@
 package laf;
 
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import laf.configuration.ConfigurationModule;
 import laf.initialization.InitializationService;
 
 /**
@@ -16,7 +18,13 @@ public class LAF {
 	InitializationService initializationService;
 
 	@Inject
+	ConfigurationModule configurationModule;
+
+	@Inject
 	FrameworkRootInitializer frameworkRootInitializer;
+
+	@Inject
+	Event<ConfigureEvent> configureEvent;
 
 	private ProjectStage projectStage;
 
@@ -29,10 +37,14 @@ public class LAF {
 	}
 
 	/**
-	 * Initialize the Framework. This method has to be called after any
-	 * configuration changes.
+	 * Initialize the Framework. This will first initialize the configuration
+	 * module, load the default configuration, fire the {@link ConfigureEvent}
+	 * and finally run the initializers.
 	 */
 	public void initialize() {
+		configurationModule.initialize();
+		configurationModule.loadDefaultConfiguration();
+		configureEvent.fire(new ConfigureEvent());
 		initializationService.initialize(FrameworkRootInitializer.class);
 	}
 

@@ -40,9 +40,10 @@
 			<plugin>
 				<groupId>org.jabsaw</groupId>
 				<artifactId>jabsaw-maven-plugin</artifactId>
-				<version>1.0-SNAPSHOT</version>
+				<version>1.0</version>
 				<configuration>
 					<moduleGraphFormat>svg</moduleGraphFormat>
+					<useModuleNames>true</useModuleNames>
 				</configuration>
 				<executions>
 					<execution>
@@ -177,11 +178,7 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>1.7.5</version>
 		</dependency>
-		<dependency>
-			<groupId>org.jabsaw</groupId>
-			<artifactId>jabsaw-api</artifactId>
-			<version>1.0-SNAPSHOT</version>
-		</dependency>
+		
 		<dependency>
 			<groupId>org.jgrapht</groupId>
 			<artifactId>jgrapht-core</artifactId>
@@ -189,8 +186,12 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jabsaw</groupId>
+			<artifactId>jabsaw-api</artifactId>
+			<version>1.0</version>
+		</dependency><dependency>
+			<groupId>org.jabsaw</groupId>
 			<artifactId>jabsaw-util</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>1.0</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

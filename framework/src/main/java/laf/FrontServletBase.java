@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import laf.actionPath.ActionInvocation;
 import laf.actionPath.ActionPath;
 import laf.controllerInfo.ActionMethodInfo;
-import laf.urlMapping.UrlMapping;
+import laf.urlMapping.UrlMappingModule;
 import laf.urlMapping.parameterValueProvider.ParameterValueProvider;
 
 /**
@@ -32,7 +32,7 @@ public class FrontServletBase extends HttpServlet {
 	ActionContext actionContext;
 
 	@Inject
-	UrlMapping urlMapping;
+	UrlMappingModule urlMapping;
 
 	private static final long serialVersionUID = 1L;
 
@@ -52,7 +52,7 @@ public class FrontServletBase extends HttpServlet {
 		}
 
 		// create arguments
-		ActionPath<Object> objectActionPath = UrlMapping
+		ActionPath<Object> objectActionPath = UrlMappingModule
 				.createObjectActionPath(actionPath);
 		actionContext.setInvokedPath(objectActionPath);
 

@@ -1,19 +1,16 @@
 package laf.configuration;
 
-import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import laf.FrameworkRootInitializer;
+import laf.configuration.ConfigurationParameterRepository.ParameterEntry;
 import laf.initialization.CreateInitializersEvent;
 import laf.initialization.Initializer;
 import laf.initialization.InitializerDependsRelation;
@@ -24,10 +21,10 @@ import org.slf4j.Logger;
 public class ConfigurationInitializerCreator {
 
 	@Inject
-	BeanManager beanManager;
+	ConfigurationModule configurationModule;
 
 	@Inject
-	Instance<Object> instance;
+	ConfigurationParameterRepository configurationParameterRepository;
 
 	@Inject
 	Logger log;
@@ -92,49 +89,20 @@ public class ConfigurationInitializerCreator {
 	}
 
 	public void initialize(@Observes CreateInitializersEvent e) {
+		configurationModule.checkInitialized();
+
 		log.debug("Scanning configuration parameters in singletons for initializers");
 		ConfigurationInitializer configurationInitializer = new ConfigurationInitializer();
 		e.addInitializer(configurationInitializer);
 
-		for (Bean<?> bean : beanManager.getBeans(Object.class)) {
-			if (!bean.getBeanClass().isAnnotationPresent(Singleton.class)) {
-				continue;
-			}
-
-			Object beanInstance = null;
-			for (Field f : bean.getBeanClass().getFields()) {
-				if (ConfigurationParameter.class.isAssignableFrom(f.getType())) {
-					log.trace("Handling parameter "
-							+ bean.getBeanClass().getName() + "." + f.getName()
-							+ ": " + f.getGenericType());
-
-					// obtain bean instance if necessary
-					if (beanInstance == null) {
-						beanInstance = instance.select(bean.getBeanClass())
-								.get();
-					}
-
-					try {
-						ConfigurationParameter<?> p = (ConfigurationParameter<?>) f
-								.get(beanInstance);
-						// set the identifier
-						p.identifier = f.getDeclaringClass().getName() + "."
-								+ f.getName();
-
-						// add eventual initializers
-						{
-							for (Initializer i : e.createInitializersFrom(p
-									.getValue())) {
-								log.debug("Found initializer " + i);
-								configurationInitializer.addInitializer(i);
-							}
-						}
-					} catch (IllegalArgumentException | IllegalAccessException e1) {
-						throw new Error(
-								"error while accessing configuration parameter "
-										+ f.getName() + " in singleton "
-										+ bean.getBeanClass().getName());
-					}
+		for (ParameterEntry entry : configurationParameterRepository
+				.getEntries()) {
+			// add eventual initializers
+			{
+				for (Initializer i : e.createInitializersFrom(entry.parameter
+						.getValue())) {
+					log.debug("Found initializer " + i);
+					configurationInitializer.addInitializer(i);
 				}
 			}
 		}

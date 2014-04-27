@@ -3,8 +3,6 @@ package laf.urlMapping.defaultRule;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.ArrayDeque;
-
 import javax.inject.Inject;
 
 import laf.LAF;
@@ -15,8 +13,7 @@ import laf.actionPath.PathActionResult;
 import laf.controllerInfo.ControllerInfoRepository;
 import laf.controllerInfo.impl.TestController;
 import laf.test.DeploymentProvider;
-import laf.urlMapping.UrlMapping;
-import laf.urlMapping.UrlMappingRule;
+import laf.urlMapping.UrlMappingModule;
 import laf.urlMapping.parameterValueProvider.ParameterValueProvider;
 
 import org.jabsaw.util.Modules;
@@ -48,10 +45,7 @@ public class DefaultUrlMappingRuleTest {
 	LAF laf;
 
 	@Inject
-	UrlMapping urlMapping;
-
-	@Inject
-	DefaultUrlMappingRule rule;
+	UrlMappingModule urlMapping;
 
 	@Inject
 	ControllerInfoRepository controllerInfoRepository;
@@ -59,10 +53,6 @@ public class DefaultUrlMappingRuleTest {
 	@Before
 	public void init() {
 		if (!laf.isInitialized()) {
-			ArrayDeque<UrlMappingRule> rules = urlMapping.urlMappingRules
-					.getValue();
-			rules.clear();
-			rules.add(rule);
 			laf.initialize();
 		}
 	}
@@ -79,14 +69,15 @@ public class DefaultUrlMappingRuleTest {
 				TestController.class).actionMethod(2);
 
 		assertEquals("laf/controllerInfo/impl/test.actionMethod/2",
-				rule.generate(path));
+				urlMapping.generate(path));
 	}
 
 	@Test
 	public void parse() {
-		ActionPath<ParameterValueProvider> path = rule
+		ActionPath<ParameterValueProvider> path = urlMapping
 				.parse("laf/controllerInfo/impl/test.actionMethod/2");
-		ActionPath<Object> objectPath = UrlMapping.createObjectActionPath(path);
+		ActionPath<Object> objectPath = UrlMappingModule
+				.createObjectActionPath(path);
 		assertEquals(1, objectPath.getElements().size());
 		ActionInvocation<Object> invocation = objectPath.getElements().get(0);
 		assertEquals(TestController.class, invocation.getControllerInfo()
