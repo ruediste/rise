@@ -1,7 +1,6 @@
 package laf.urlMapping.parameterHandler;
 
 import laf.controllerInfo.ParameterInfo;
-import laf.urlMapping.*;
 import laf.urlMapping.parameterValueProvider.ConstantParameterValueProvider;
 import laf.urlMapping.parameterValueProvider.ParameterValueProvider;
 

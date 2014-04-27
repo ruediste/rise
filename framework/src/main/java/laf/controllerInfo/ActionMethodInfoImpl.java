@@ -1,16 +1,17 @@
 package laf.controllerInfo;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import laf.ActionResult;
 import laf.attachedProperties.AttachedPropertyBearerBase;
-import laf.controllerInfo.*;
 
 import com.google.common.base.Joiner;
 
 public class ActionMethodInfoImpl extends AttachedPropertyBearerBase implements
-ActionMethodInfo {
+		ActionMethodInfo {
 
 	private String name;
 	private final Method method;
@@ -57,8 +58,8 @@ ActionMethodInfo {
 		}
 		String parameterString = Joiner.on(", ").join(parameterTypes);
 		return method.getReturnType() + " "
-		+ getControllerInfo().getQualifiedName() + "." + getName()
-		+ "(" + parameterString + ")";
+				+ getControllerInfo().getQualifiedName() + "." + getName()
+				+ "(" + parameterString + ")";
 	}
 
 	@Override
@@ -73,6 +74,6 @@ ActionMethodInfo {
 			types.add(Objects.toString(p.getType().toString()));
 		}
 		return method.getReturnType().getSimpleName() + " " + getName() + "("
-				+ Joiner.on(",").join(types) + ")";
+		+ Joiner.on(",").join(types) + ")";
 	}
 }

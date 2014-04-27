@@ -5,7 +5,7 @@ import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import laf.controllerInfo.ActionMethodInfo;
-import laf.urlMapping.UrlMappingModule;
+import laf.urlMapping.UrlMappingService;
 import laf.urlMapping.parameterValueProvider.ParameterValueProvider;
 
 import org.junit.Test;
@@ -25,7 +25,7 @@ public class ActionPathTest {
 		invocation.getArguments().add(argument);
 		path.getElements().add(invocation);
 
-		ActionPath<Object> objectPath = UrlMappingModule
+		ActionPath<Object> objectPath = UrlMappingService
 				.createObjectActionPath(path);
 
 		assertEquals(1, objectPath.getElements().size());

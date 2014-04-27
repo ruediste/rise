@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import laf.ActionContext;
+import laf.attachedProperties.AttachedProperty;
 import laf.controllerInfo.ActionMethodInfo;
 import laf.controllerInfo.ControllerInfo;
 import laf.controllerInfo.ControllerInfoRepository;
@@ -17,6 +18,20 @@ import net.sf.cglib.proxy.MethodProxy;
 
 import com.google.common.base.Joiner;
 
+/**
+ * Factory to create {@link ActionPath}s for controller method invocations using
+ * a fluent interface. Example:
+ *
+ * <pre>
+ * <code>
+ * ActionPath path= (ActionPath) factory
+ * 			.buildActionPath()
+ * 			.set(property, 27)
+ * 			.controller(TestController.class).actionMethod(5);
+ * </code>
+ * </pre>
+ *
+ */
 @Singleton
 public class ActionPathFactory {
 
@@ -26,57 +41,78 @@ public class ActionPathFactory {
 	@Inject
 	ActionContext actionContext;
 
-	/**
-	 * Method to create {@link ActionPath}s. An instance of the supplied
-	 * controllerClass is returned. As soon as an action method is called on the
-	 * returned instance, the {@link ActionPathProcessor} is invoked with the
-	 * {@link ActionPath} corresponding to the invoked action method.
-	 */
-	public <T> T createActionPath(final Class<T> controllerClass) {
-		ControllerInfo controllerInfo = controllerInfoRepository
-				.getControllerInfo(controllerClass);
-		if (controllerInfo == null) {
-			throw new RuntimeException(
-					"Could not find controllerInfo for the provided controller class "
-							+ controllerClass.getName());
+	public class ActionPathBuilder {
+		private PathActionResult path = new PathActionResult();
+
+		/**
+		 * Set an {@link AttachedProperty} of the {@link ActionPath} to be
+		 * created.
+		 */
+		public <T> ActionPathBuilder set(AttachedProperty<T> property, T value) {
+			property.set(path, value);
+			return this;
 		}
 
-		PathActionResult path = new PathActionResult();
-		if (controllerInfo.isEmbeddedController()) {
-			// look for the latest occurrence of the controller class
-			// in the invoked path, and use the prefix for the to be generated
-			// path
+		/**
+		 * An instance of the supplied controllerClass is returned. If the call
+		 * is targeted at an embedded controller, the current
+		 * {@link ActionContext#getInvokedPath()} is scanned for the last
+		 * occurence of the supplied controller class, and the elements of the
+		 * invoked path up to this point are prepended to the {@link ActionPath}
+		 * .
+		 */
+		public <T> T controller(Class<T> controllerClass) {
+			ControllerInfo controllerInfo = controllerInfoRepository
+					.getControllerInfo(controllerClass);
+			if (controllerInfo == null) {
+				throw new RuntimeException(
+						"Could not find controllerInfo for the provided controller class "
+								+ controllerClass.getName());
+			}
 
-			ArrayList<ActionInvocation<Object>> elements = actionContext
-					.getInvokedPath().getElements();
-			boolean found = false;
-			for (int i = elements.size() - 1; i >= 0; i--) {
-				if (controllerClass.isAssignableFrom(elements.get(i)
-						.getControllerInfo().getControllerClass())) {
-					for (int p = 0; p < i; p++) {
-						path.getElements().add(elements.get(p));
+			if (controllerInfo.isEmbeddedController()) {
+				// look for the latest occurrence of the controller class
+				// in the invoked path, and use the prefix for the to be
+				// generated
+				// path
+
+				ArrayList<ActionInvocation<Object>> elements = actionContext
+						.getInvokedPath().getElements();
+				boolean found = false;
+				for (int i = elements.size() - 1; i >= 0; i--) {
+					if (controllerClass.isAssignableFrom(elements.get(i)
+							.getControllerInfo().getControllerClass())) {
+						for (int p = 0; p < i; p++) {
+							path.getElements().add(elements.get(p));
+						}
+						found = true;
+						break;
 					}
-					found = true;
-					break;
+				}
+
+				if (!found) {
+					throw new RuntimeException(
+							"Attempted to generate an ActionPath starting with controller "
+									+ controllerClass.getName()
+									+ ", but did not find a suiting stating point within invoked ActionPath "
+									+ actionContext.getInvokedPath());
 				}
 			}
-
-			if (!found) {
-				throw new RuntimeException(
-						"Attempted to generate an ActionPath starting with controller "
-								+ controllerClass.getName()
-								+ ", but did not find a suiting stating point within invoked ActionPath "
-								+ actionContext.getInvokedPath());
-			}
+			return createActionPath(controllerClass, path);
 		}
-		return createActionPath(controllerClass, path);
+	}
+
+	/**
+	 * Create a new {@link ActionPathBuilder} used to create {@link ActionPath}s
+	 */
+	public ActionPathBuilder buildActionPath() {
+		return new ActionPathBuilder();
 	}
 
 	/**
 	 * An instance of the supplied controller class is returned. As soon as an
 	 * action method is called on the returned instance, the invoked invocation
-	 * is appended to the path. When the final action method is called, the
-	 * supplied processor is invoked with the whole action path as argument.
+	 * is appended to the path.
 	 */
 	@SuppressWarnings("unchecked")
 	private <T> T createActionPath(final Class<T> controllerClass,

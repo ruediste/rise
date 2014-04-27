@@ -12,7 +12,9 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jabsaw.version>1.2-SNAPSHOT</jabsaw.version>
 	</properties>
+	
 	<!-- <pluginManagement> <plugins> <plugin> <groupId>org.eclipse.m2e</groupId> 
 		<artifactId>lifecycle-mapping</artifactId> <version>1.0.0</version> <configuration> 
 		<lifecycleMappingMetadata> <pluginExecutions> <pluginExecution> <pluginExecutionFilter> 
@@ -40,7 +42,7 @@
 			<plugin>
 				<groupId>org.jabsaw</groupId>
 				<artifactId>jabsaw-maven-plugin</artifactId>
-				<version>1.0</version>
+				<version>${jabsaw.version}</version>
 				<configuration>
 					<moduleGraphFormat>svg</moduleGraphFormat>
 					<useModuleNames>true</useModuleNames>
@@ -73,7 +75,7 @@
 											jabsaw-maven-plugin
 										</artifactId>
 										<versionRange>
-											[0.1,)
+											${jabsaw.version}
 										</versionRange>
 										<goals>
 											<goal>check</goal>
@@ -187,11 +189,11 @@
 		<dependency>
 			<groupId>org.jabsaw</groupId>
 			<artifactId>jabsaw-api</artifactId>
-			<version>1.0</version>
+			<version>${jabsaw.version}</version>
 		</dependency><dependency>
 			<groupId>org.jabsaw</groupId>
 			<artifactId>jabsaw-util</artifactId>
-			<version>1.0</version>
+			<version>${jabsaw.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

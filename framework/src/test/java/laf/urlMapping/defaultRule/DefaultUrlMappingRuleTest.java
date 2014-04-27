@@ -13,7 +13,7 @@ import laf.actionPath.PathActionResult;
 import laf.controllerInfo.ControllerInfoRepository;
 import laf.controllerInfo.impl.TestController;
 import laf.test.DeploymentProvider;
-import laf.urlMapping.UrlMappingModule;
+import laf.urlMapping.UrlMappingService;
 import laf.urlMapping.parameterValueProvider.ParameterValueProvider;
 
 import org.jabsaw.util.Modules;
@@ -33,7 +33,7 @@ public class DefaultUrlMappingRuleTest {
 				.getDefault()
 				.addClasses(
 						Modules.getAllRequiredClasses(DefaultUrlMappingRuleModule.class))
-				.addClass(TestController.class);
+						.addClass(TestController.class);
 		System.out.println(archive.toString(true));
 		return archive;
 	}
@@ -45,7 +45,7 @@ public class DefaultUrlMappingRuleTest {
 	LAF laf;
 
 	@Inject
-	UrlMappingModule urlMapping;
+	UrlMappingService urlMappingService;
 
 	@Inject
 	ControllerInfoRepository controllerInfoRepository;
@@ -65,18 +65,18 @@ public class DefaultUrlMappingRuleTest {
 
 	@Test
 	public void generate() {
-		PathActionResult path = (PathActionResult) factory.createActionPath(
-				TestController.class).actionMethod(2);
+		PathActionResult path = (PathActionResult) factory.buildActionPath()
+				.controller(TestController.class).actionMethod(2);
 
 		assertEquals("laf/controllerInfo/impl/test.actionMethod/2",
-				urlMapping.generate(path));
+				urlMappingService.generate(path));
 	}
 
 	@Test
 	public void parse() {
-		ActionPath<ParameterValueProvider> path = urlMapping
+		ActionPath<ParameterValueProvider> path = urlMappingService
 				.parse("laf/controllerInfo/impl/test.actionMethod/2");
-		ActionPath<Object> objectPath = UrlMappingModule
+		ActionPath<Object> objectPath = UrlMappingService
 				.createObjectActionPath(path);
 		assertEquals(1, objectPath.getElements().size());
 		ActionInvocation<Object> invocation = objectPath.getElements().get(0);

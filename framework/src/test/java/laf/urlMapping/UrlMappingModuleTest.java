@@ -19,7 +19,8 @@ import com.google.common.reflect.TypeToken;
 
 public class UrlMappingModuleTest {
 
-	UrlMappingModule mapping;
+	UrlMappingModule mappingModule;
+	UrlMappingService mappingService;
 	LAF config;
 	UrlMappingRule rule;
 	ActionPath<ParameterValueProvider> providerPath;
@@ -27,7 +28,9 @@ public class UrlMappingModuleTest {
 
 	@Before
 	public void setup() {
-		mapping = new UrlMappingModule();
+		mappingModule = new UrlMappingModule();
+		mappingService = new UrlMappingService();
+		mappingService.urlMappingModule = mappingModule;
 		config = new LAF();
 		rule = Mockito.mock(UrlMappingRule.class);
 		providerPath = mock(new TypeToken<ActionPath<ParameterValueProvider>>() {
@@ -36,9 +39,9 @@ public class UrlMappingModuleTest {
 		objectPath = mock(new TypeToken<ActionPath<Object>>() {
 		});
 
-		mapping.laf = config;
-		mapping.urlMappingRules.getValue().clear();
-		mapping.urlMappingRules.getValue().add(rule);
+		mappingService.laf = config;
+		mappingModule.urlMappingRules.getValue().clear();
+		mappingModule.urlMappingRules.getValue().add(rule);
 
 		when(rule.parse("foo")).thenReturn(providerPath);
 		when(rule.generate(objectPath)).thenReturn("foo");
@@ -51,17 +54,17 @@ public class UrlMappingModuleTest {
 
 	@Test
 	public void successfulParse() {
-		assertEquals(providerPath, mapping.parse("foo"));
+		assertEquals(providerPath, mappingService.parse("foo"));
 	}
 
 	@Test
 	public void parseNoRuleMatches() {
-		assertEquals(null, mapping.parse("foo1"));
+		assertEquals(null, mappingService.parse("foo1"));
 	}
 
 	@Test
 	public void successfulGenerate() {
-		assertEquals("foo", mapping.generate(objectPath));
+		assertEquals("foo", mappingService.generate(objectPath));
 	}
 
 	@Test(expected = RuntimeException.class)
@@ -69,7 +72,7 @@ public class UrlMappingModuleTest {
 		when(rule.parse("foo")).thenReturn(
 				new ActionPath<ParameterValueProvider>());
 
-		mapping.generate(objectPath);
+		mappingService.generate(objectPath);
 	}
 
 	@Test(expected = RuntimeException.class)
@@ -78,7 +81,7 @@ public class UrlMappingModuleTest {
 				new ActionPath<ParameterValueProvider>());
 		when(config.getProjectStage()).thenReturn(ProjectStage.PRODUCTION);
 
-		assertEquals("foo", mapping.generate(objectPath));
+		assertEquals("foo", mappingService.generate(objectPath));
 	}
 
 }

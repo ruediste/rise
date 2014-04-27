@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import laf.actionPath.ActionInvocation;
 import laf.actionPath.ActionPath;
 import laf.controllerInfo.ActionMethodInfo;
-import laf.urlMapping.UrlMappingModule;
+import laf.urlMapping.UrlMappingService;
 import laf.urlMapping.parameterValueProvider.ParameterValueProvider;
 
 /**
@@ -32,7 +32,7 @@ public class FrontServletBase extends HttpServlet {
 	ActionContext actionContext;
 
 	@Inject
-	UrlMappingModule urlMapping;
+	UrlMappingService urlMappingService;
 
 	private static final long serialVersionUID = 1L;
 
@@ -43,8 +43,8 @@ public class FrontServletBase extends HttpServlet {
 		actionContext.setResponse(resp);
 
 		// parse request
-		ActionPath<ParameterValueProvider> actionPath = urlMapping.parse(req
-				.getPathInfo());
+		ActionPath<ParameterValueProvider> actionPath = urlMappingService
+				.parse(req.getPathInfo());
 
 		if (actionPath == null) {
 			throw new RuntimeException("No Controller found for "
@@ -52,7 +52,7 @@ public class FrontServletBase extends HttpServlet {
 		}
 
 		// create arguments
-		ActionPath<Object> objectActionPath = UrlMappingModule
+		ActionPath<Object> objectActionPath = UrlMappingService
 				.createObjectActionPath(actionPath);
 		actionContext.setInvokedPath(objectActionPath);
 
