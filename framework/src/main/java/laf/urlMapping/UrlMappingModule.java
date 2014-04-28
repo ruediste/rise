@@ -5,7 +5,6 @@ import java.util.ArrayDeque;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
-import laf.LAF;
 import laf.actionPath.ActionPathModule;
 import laf.configuration.ConfigurationModule;
 import laf.configuration.ConfigurationParameter;
@@ -27,6 +26,9 @@ import org.jabsaw.Module;
  * transaction and {@link EntityManager} which is to be used. Thus parameters
  * are represented as {@link ParameterValueProvider}s after parsing.
  * </p>
+ * <p>
+ * <img src="doc-files/UrlRepresentations.png" />
+ * </p>
  *
  * <p>
  * When representing an invocation to an action method, the parameters are at
@@ -37,7 +39,7 @@ import org.jabsaw.Module;
  * <p>
  * A list of {@link UrlMappingRule}s is used to perform the actual mapping,
  * allowing total customization thereof. The list is configured via
- * {@link LAF#getUrlMappingRules()}
+ * {@link #urlMappingRules}
  * </p>
  */
 @Module(description = "Maps URLs to ActionPaths using UrlMappingRules", exported = {
@@ -47,6 +49,6 @@ import org.jabsaw.Module;
 @Singleton
 public class UrlMappingModule {
 
-	public ConfigurationParameter<ArrayDeque<UrlMappingRule>> urlMappingRules = new ConfigurationParameter<ArrayDeque<UrlMappingRule>>(
+	public final ConfigurationParameter<ArrayDeque<UrlMappingRule>> urlMappingRules = new ConfigurationParameter<ArrayDeque<UrlMappingRule>>(
 			new ArrayDeque<UrlMappingRule>());
 }

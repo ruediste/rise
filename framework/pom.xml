@@ -14,7 +14,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jabsaw.version>1.2-SNAPSHOT</jabsaw.version>
 	</properties>
-	
+
 	<!-- <pluginManagement> <plugins> <plugin> <groupId>org.eclipse.m2e</groupId> 
 		<artifactId>lifecycle-mapping</artifactId> <version>1.0.0</version> <configuration> 
 		<lifecycleMappingMetadata> <pluginExecutions> <pluginExecution> <pluginExecutionFilter> 
@@ -56,6 +56,20 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>javadoc</goal>
+						</goals>
+						<phase>compile</phase>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -79,6 +93,25 @@
 										</versionRange>
 										<goals>
 											<goal>check</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-javadoc-plugin
+										</artifactId>
+										<versionRange>
+											[2.9.1,)
+										</versionRange>
+										<goals>
+											<goal>javadoc</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
@@ -180,7 +213,7 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>1.7.5</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.jgrapht</groupId>
 			<artifactId>jgrapht-core</artifactId>
@@ -190,7 +223,8 @@
 			<groupId>org.jabsaw</groupId>
 			<artifactId>jabsaw-api</artifactId>
 			<version>${jabsaw.version}</version>
-		</dependency><dependency>
+		</dependency>
+		<dependency>
 			<groupId>org.jabsaw</groupId>
 			<artifactId>jabsaw-util</artifactId>
 			<version>${jabsaw.version}</version>
