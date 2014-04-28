@@ -1,4 +1,4 @@
-package laf.urlMapping.parameterHandler;
+package laf.httpRequestMapping.parameterHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +13,9 @@ import laf.configuration.ConfigurationParameter;
 import laf.configuration.LoadDefaultConfigurationEvent;
 import laf.controllerInfo.ControllerInfoModule;
 import laf.controllerInfo.ParameterInfo;
+import laf.httpRequestMapping.HttpRequestMappingRule;
+import laf.httpRequestMapping.parameterValueProvider.ParameterValueProviderModule;
 import laf.initialization.InitializationModule;
-import laf.urlMapping.UrlMappingRule;
-import laf.urlMapping.parameterValueProvider.ParameterValueProviderModule;
 
 import org.jabsaw.Module;
 
@@ -25,7 +25,7 @@ import org.jabsaw.Module;
  * overall format of the URL and the way individual parameters are represented.
  * While the configuration of the mapping rules gives you complete freedom of
  * the mapping, we implemented an infrastructure for parameter value handling.
- * This infrastructure is used by the default {@link UrlMappingRule}s, but can
+ * This infrastructure is used by the default {@link HttpRequestMappingRule}s, but can
  * as well be used by your own customizations.
  * </p>
  *

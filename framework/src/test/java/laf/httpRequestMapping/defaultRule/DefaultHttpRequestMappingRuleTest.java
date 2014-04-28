@@ -1,4 +1,4 @@
-package laf.urlMapping.defaultRule;
+package laf.httpRequestMapping.defaultRule;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -6,15 +6,13 @@ import static org.junit.Assert.assertNotNull;
 import javax.inject.Inject;
 
 import laf.LAF;
-import laf.actionPath.ActionInvocation;
-import laf.actionPath.ActionPath;
-import laf.actionPath.ActionPathFactory;
-import laf.actionPath.PathActionResult;
+import laf.actionPath.*;
 import laf.controllerInfo.ControllerInfoRepository;
 import laf.controllerInfo.impl.TestController;
+import laf.httpRequest.HttpRequestImpl;
+import laf.httpRequestMapping.HttpRequestMappingService;
+import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 import laf.test.DeploymentProvider;
-import laf.urlMapping.UrlMappingService;
-import laf.urlMapping.parameterValueProvider.ParameterValueProvider;
 
 import org.jabsaw.util.Modules;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -25,15 +23,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
-public class DefaultUrlMappingRuleTest {
+public class DefaultHttpRequestMappingRuleTest {
 
 	@Deployment
 	public static WebArchive createDeployment() {
 		WebArchive archive = DeploymentProvider
 				.getDefault()
 				.addClasses(
-						Modules.getAllRequiredClasses(DefaultUrlMappingRuleModule.class))
-						.addClass(TestController.class);
+						Modules.getAllRequiredClasses(DefaultHttpRequestMappingModule.class))
+				.addClass(TestController.class);
 		System.out.println(archive.toString(true));
 		return archive;
 	}
@@ -45,7 +43,7 @@ public class DefaultUrlMappingRuleTest {
 	LAF laf;
 
 	@Inject
-	UrlMappingService urlMappingService;
+	HttpRequestMappingService httpRequestMappingService;
 
 	@Inject
 	ControllerInfoRepository controllerInfoRepository;
@@ -69,14 +67,15 @@ public class DefaultUrlMappingRuleTest {
 				.controller(TestController.class).actionMethod(2);
 
 		assertEquals("laf/controllerInfo/impl/test.actionMethod/2",
-				urlMappingService.generate(path));
+				httpRequestMappingService.generate(path));
 	}
 
 	@Test
 	public void parse() {
-		ActionPath<ParameterValueProvider> path = urlMappingService
-				.parse("laf/controllerInfo/impl/test.actionMethod/2");
-		ActionPath<Object> objectPath = UrlMappingService
+		ActionPath<ParameterValueProvider> path = httpRequestMappingService
+				.parse(new HttpRequestImpl(
+						"laf/controllerInfo/impl/test.actionMethod/2"));
+		ActionPath<Object> objectPath = HttpRequestMappingService
 				.createObjectActionPath(path);
 		assertEquals(1, objectPath.getElements().size());
 		ActionInvocation<Object> invocation = objectPath.getElements().get(0);

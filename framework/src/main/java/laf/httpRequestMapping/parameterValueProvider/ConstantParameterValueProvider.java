@@ -1,4 +1,4 @@
-package laf.urlMapping.parameterValueProvider;
+package laf.httpRequestMapping.parameterValueProvider;
 
 import java.util.Objects;
 

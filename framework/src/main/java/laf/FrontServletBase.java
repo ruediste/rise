@@ -7,15 +7,14 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 
 import laf.actionPath.ActionInvocation;
 import laf.actionPath.ActionPath;
 import laf.controllerInfo.ActionMethodInfo;
-import laf.urlMapping.UrlMappingService;
-import laf.urlMapping.parameterValueProvider.ParameterValueProvider;
+import laf.httpRequest.DelegatingHttpRequest;
+import laf.httpRequestMapping.HttpRequestMappingService;
+import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 
 /**
  * Framework entry point
@@ -32,7 +31,7 @@ public class FrontServletBase extends HttpServlet {
 	ActionContext actionContext;
 
 	@Inject
-	UrlMappingService urlMappingService;
+	HttpRequestMappingService httpRequestMappingService;
 
 	private static final long serialVersionUID = 1L;
 
@@ -43,8 +42,8 @@ public class FrontServletBase extends HttpServlet {
 		actionContext.setResponse(resp);
 
 		// parse request
-		ActionPath<ParameterValueProvider> actionPath = urlMappingService
-				.parse(req.getPathInfo());
+		ActionPath<ParameterValueProvider> actionPath = httpRequestMappingService
+				.parse(new DelegatingHttpRequest(req));
 
 		if (actionPath == null) {
 			throw new RuntimeException("No Controller found for "
@@ -52,7 +51,7 @@ public class FrontServletBase extends HttpServlet {
 		}
 
 		// create arguments
-		ActionPath<Object> objectActionPath = UrlMappingService
+		ActionPath<Object> objectActionPath = HttpRequestMappingService
 				.createObjectActionPath(actionPath);
 		actionContext.setInvokedPath(objectActionPath);
 

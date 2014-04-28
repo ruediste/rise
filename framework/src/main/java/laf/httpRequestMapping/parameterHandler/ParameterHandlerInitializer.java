@@ -1,4 +1,4 @@
-package laf.urlMapping.parameterHandler;
+package laf.httpRequestMapping.parameterHandler;
 
 import java.util.List;
 

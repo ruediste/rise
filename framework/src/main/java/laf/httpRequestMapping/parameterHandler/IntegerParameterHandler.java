@@ -1,8 +1,8 @@
-package laf.urlMapping.parameterHandler;
+package laf.httpRequestMapping.parameterHandler;
 
 import laf.controllerInfo.ParameterInfo;
-import laf.urlMapping.parameterValueProvider.ConstantParameterValueProvider;
-import laf.urlMapping.parameterValueProvider.ParameterValueProvider;
+import laf.httpRequestMapping.parameterValueProvider.ConstantParameterValueProvider;
+import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 
 public class IntegerParameterHandler implements ParameterHandler {
 

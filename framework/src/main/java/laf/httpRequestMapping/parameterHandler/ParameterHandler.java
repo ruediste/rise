@@ -1,12 +1,12 @@
-package laf.urlMapping.parameterHandler;
+package laf.httpRequestMapping.parameterHandler;
 
 import laf.attachedProperties.AttachedProperty;
 import laf.controllerInfo.ParameterInfo;
-import laf.urlMapping.UrlMappingRule;
-import laf.urlMapping.parameterValueProvider.ParameterValueProvider;
+import laf.httpRequestMapping.HttpRequestMappingRule;
+import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 
 /**
- * Maps parameters to URL strings. Used by {@link UrlMappingRule}s to handle
+ * Maps parameters to URL strings. Used by {@link HttpRequestMappingRule}s to handle
  * parameters.
  *
  * @see ParameterHandlerModule

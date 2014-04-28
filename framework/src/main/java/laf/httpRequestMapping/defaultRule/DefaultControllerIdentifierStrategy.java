@@ -1,4 +1,4 @@
-package laf.urlMapping;
+package laf.httpRequestMapping.defaultRule;
 
 import java.util.List;
 

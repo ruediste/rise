@@ -1,17 +1,17 @@
-package laf.urlMapping;
+package laf.httpRequestMapping;
 
 import javax.inject.Inject;
 
 import laf.LAF;
 import laf.LAF.ProjectStage;
-import laf.actionPath.ActionInvocation;
-import laf.actionPath.ActionPath;
+import laf.actionPath.*;
 import laf.actionPath.ActionPath.ParameterValueComparator;
-import laf.urlMapping.parameterValueProvider.ParameterValueProvider;
+import laf.httpRequest.HttpRequest;
+import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 
-public class UrlMappingService {
+public class HttpRequestMappingService {
 	@Inject
-	UrlMappingModule urlMappingModule;
+	HttpRequestMappingModule httpRequestMappingModule;
 
 	@Inject
 	LAF laf;
@@ -19,14 +19,16 @@ public class UrlMappingService {
 	/**
 	 * Parse a servlet path. If no matching rule is found, null is returned.
 	 */
-	public ActionPath<ParameterValueProvider> parse(String servletPath) {
-		if (urlMappingModule.urlMappingRules.getValue().isEmpty()) {
+	public ActionPath<ParameterValueProvider> parse(HttpRequest request) {
+		if (httpRequestMappingModule.httpRequestMappingRules.getValue()
+				.isEmpty()) {
 			throw new RuntimeException(
 					"No UrlMappingRules are defined in CoreConfig");
 		}
 
-		for (UrlMappingRule rule : urlMappingModule.urlMappingRules.getValue()) {
-			ActionPath<ParameterValueProvider> result = rule.parse(servletPath);
+		for (HttpRequestMappingRule rule : httpRequestMappingModule.httpRequestMappingRules
+				.getValue()) {
+			ActionPath<ParameterValueProvider> result = rule.parse(request);
 			if (result != null) {
 				return result;
 			}
@@ -37,9 +39,10 @@ public class UrlMappingService {
 	/**
 	 * Generate a servlet path from an {@link ActionPath}.
 	 */
-	public String generate(ActionPath<Object> path) {
-		String result = null;
-		for (UrlMappingRule rule : urlMappingModule.urlMappingRules.getValue()) {
+	public HttpRequest generate(ActionPath<Object> path) {
+		HttpRequest result = null;
+		for (HttpRequestMappingRule rule : httpRequestMappingModule.httpRequestMappingRules
+				.getValue()) {
 			result = rule.generate(path);
 			if (result != null) {
 				break;
@@ -54,6 +57,7 @@ public class UrlMappingService {
 
 		// check if the generated URL can be parsed
 		if (laf.getProjectStage() != ProjectStage.PRODUCTION) {
+
 			ActionPath<ParameterValueProvider> parsed = parse(result);
 			if (parsed == null) {
 				throw new RuntimeException(

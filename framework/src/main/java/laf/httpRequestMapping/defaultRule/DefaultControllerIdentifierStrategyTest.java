@@ -1,9 +1,10 @@
-package laf.urlMapping;
+package laf.httpRequestMapping.defaultRule;
 
 import static org.junit.Assert.*;
 import laf.controllerInfo.ControllerInfo;
 import laf.controllerInfo.ControllerInfoImpl;
 import laf.controllerInfo.impl.TestController;
+import laf.httpRequestMapping.defaultRule.DefaultControllerIdentifierStrategy;
 
 import org.junit.Test;
 

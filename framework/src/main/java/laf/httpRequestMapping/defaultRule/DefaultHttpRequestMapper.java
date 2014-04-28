@@ -1,75 +1,22 @@
-package laf.urlMapping.defaultRule;
+package laf.httpRequestMapping.defaultRule;
 
 import java.util.Iterator;
-import java.util.Map;
-
-import javax.inject.Inject;
 
 import laf.actionPath.ActionInvocation;
 import laf.actionPath.ActionPath;
-import laf.attachedProperties.AttachedProperty;
-import laf.controllerInfo.ActionMethodInfo;
-import laf.controllerInfo.ControllerInfo;
-import laf.controllerInfo.ControllerInfoRepository;
-import laf.controllerInfo.ControllerInfoRepositoryInitializer;
-import laf.controllerInfo.ParameterInfo;
-import laf.initialization.LafInitializer;
-import laf.urlMapping.ControllerIdentifierStrategy;
-import laf.urlMapping.DefaultControllerIdentifierStrategy;
-import laf.urlMapping.UrlMappingRule;
-import laf.urlMapping.parameterHandler.ParameterHandler;
-import laf.urlMapping.parameterHandler.ParameterHandlerInitializer;
-import laf.urlMapping.parameterValueProvider.ParameterValueProvider;
+import laf.controllerInfo.*;
+import laf.httpRequest.HttpRequest;
+import laf.httpRequest.HttpRequestImpl;
+import laf.httpRequestMapping.parameterHandler.ParameterHandler;
+import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
+import laf.httpRequestMapping.twoStageMappingRule.HttpRequestMapper;
 
-import org.slf4j.Logger;
-
-import com.google.common.collect.MapMaker;
-
-/**
- * <p>
- * Map URLs in the form
- * &lt;controllerIdentifier>.&lt;method>.&lt;method>/&lt;arg1>/&lt;arg2>
- * </p>
- *
- * <p>
- * For each controller class, a controller identifier is determined, using a
- * {@link ControllerIdentifierStrategy}. The controller identifiers have to be
- * unique and may not contain a dot (.)
- * </p>
- */
-public class DefaultUrlMappingRule implements UrlMappingRule {
-
-	@Inject
-	Logger log;
-
-	@Inject
-	ControllerInfoRepository controllerInfoRepository;
-
-	private ControllerIdentifierStrategy controllerIdentifierStrategy = new DefaultControllerIdentifierStrategy();
-
-	private final Map<String, ControllerInfo> controllersByIdentifier = new MapMaker()
-			.weakValues().makeMap();
-
-	private static final AttachedProperty<String> controllerIdentifier = new AttachedProperty<>();
-
-	@LafInitializer(after = { ControllerInfoRepositoryInitializer.class,
-			ParameterHandlerInitializer.class })
-	public void initialize() {
-		for (ControllerInfo info : controllerInfoRepository
-				.getControllerInfos()) {
-			// fill the identifiers map
-			String identifier = controllerIdentifierStrategy
-					.generateIdentifier(info);
-			log.debug("found controller " + identifier);
-			controllerIdentifier.set(info, identifier);
-			controllersByIdentifier.put(identifier, info);
-		}
-	}
+public class DefaultHttpRequestMapper implements HttpRequestMapper {
 
 	@Override
-	public ActionPath<ParameterValueProvider> parse(String servletPath) {
-		ActionPath<ParameterValueProvider> call = new ActionPath<>();
-		ControllerInfo controllerInfo = findControllerEntry(servletPath);
+	public ActionPath<String> parse(HttpRequest request) {
+		ActionPath<String> call = new ActionPath<>();
+		ControllerInfo controllerInfo = findControllerEntry(request.getPath());
 
 		if (controllerInfo == null) {
 			return null;
@@ -77,11 +24,12 @@ public class DefaultUrlMappingRule implements UrlMappingRule {
 
 		// remove the identifier and split the suffix into parts at the /
 		// characters
-		String[] parts = servletPath.substring(
-				controllerIdentifier.get(controllerInfo).length()).split("/");
+		String[] parts = request.getPath()
+				.substring(controllerIdentifier.get(controllerInfo).length())
+				.split("/");
 
 		if (!parts[0].startsWith(".")) {
-			log.debug("unable to parse servlet path " + servletPath);
+			log.debug("unable to parse servlet path " + request);
 			return null;
 		}
 
@@ -122,8 +70,7 @@ public class DefaultUrlMappingRule implements UrlMappingRule {
 	}
 
 	@Override
-	public String generate(ActionPath<Object> path) {
-		StringBuilder sb = new StringBuilder();
+	public HttpRequest generate(ActionPath<String> path) {
 
 		// add indentifier
 		{
@@ -160,7 +107,7 @@ public class DefaultUrlMappingRule implements UrlMappingRule {
 						info, argIt.next()));
 			}
 		}
-		return sb.toString();
+		return new HttpRequestImpl(sb.toString());
 	}
 
 	private ControllerInfo findControllerEntry(String servletPath) {
@@ -178,13 +125,9 @@ public class DefaultUrlMappingRule implements UrlMappingRule {
 		return controllersByIdentifier.get(identifier);
 	}
 
-	public ControllerIdentifierStrategy getControllerIdentifierStrategy() {
-		return controllerIdentifierStrategy;
-	}
-
-	public void setControllerIdentifierStrategy(
-			ControllerIdentifierStrategy controllerIdentifierStrategy) {
-		this.controllerIdentifierStrategy = controllerIdentifierStrategy;
+	@Override
+	public boolean handles(ActionPath<Object> path) {
+		return true;
 	}
 
 }

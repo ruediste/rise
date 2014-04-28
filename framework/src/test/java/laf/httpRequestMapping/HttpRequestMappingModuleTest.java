@@ -1,4 +1,4 @@
-package laf.urlMapping;
+package laf.httpRequestMapping;
 
 import static laf.MockitoExt.mock;
 import static org.junit.Assert.assertEquals;
@@ -8,7 +8,8 @@ import laf.LAF;
 import laf.LAF.ProjectStage;
 import laf.actionPath.ActionPath;
 import laf.actionPath.ActionPath.ParameterValueComparator;
-import laf.urlMapping.parameterValueProvider.ParameterValueProvider;
+import laf.httpRequest.HttpRequestImpl;
+import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,22 +18,22 @@ import org.mockito.Mockito;
 
 import com.google.common.reflect.TypeToken;
 
-public class UrlMappingModuleTest {
+public class HttpRequestMappingModuleTest {
 
-	UrlMappingModule mappingModule;
-	UrlMappingService mappingService;
+	HttpRequestMappingModule mappingModule;
+	HttpRequestMappingService mappingService;
 	LAF config;
-	UrlMappingRule rule;
+	HttpRequestMappingRule rule;
 	ActionPath<ParameterValueProvider> providerPath;
 	ActionPath<Object> objectPath;
 
 	@Before
 	public void setup() {
-		mappingModule = new UrlMappingModule();
-		mappingService = new UrlMappingService();
-		mappingService.urlMappingModule = mappingModule;
+		mappingModule = new HttpRequestMappingModule();
+		mappingService = new HttpRequestMappingService();
+		mappingService.httpRequestMappingModule = mappingModule;
 		config = new LAF();
-		rule = Mockito.mock(UrlMappingRule.class);
+		rule = Mockito.mock(HttpRequestMappingRule.class);
 		providerPath = mock(new TypeToken<ActionPath<ParameterValueProvider>>() {
 		});
 
@@ -40,11 +41,11 @@ public class UrlMappingModuleTest {
 		});
 
 		mappingService.laf = config;
-		mappingModule.urlMappingRules.getValue().clear();
-		mappingModule.urlMappingRules.getValue().add(rule);
+		mappingModule.httpRequestMappingRules.getValue().clear();
+		mappingModule.httpRequestMappingRules.getValue().add(rule);
 
-		when(rule.parse("foo")).thenReturn(providerPath);
-		when(rule.generate(objectPath)).thenReturn("foo");
+		when(rule.parse(new HttpRequestImpl("foo"))).thenReturn(providerPath);
+		when(rule.generate(objectPath)).thenReturn(new HttpRequestImpl("foo"));
 		when(
 				objectPath.isCallToSameActionMethod(
 						same(providerPath),
@@ -54,12 +55,13 @@ public class UrlMappingModuleTest {
 
 	@Test
 	public void successfulParse() {
-		assertEquals(providerPath, mappingService.parse("foo"));
+		assertEquals(providerPath,
+				mappingService.parse(new HttpRequestImpl("foo")));
 	}
 
 	@Test
 	public void parseNoRuleMatches() {
-		assertEquals(null, mappingService.parse("foo1"));
+		assertEquals(null, mappingService.parse(new HttpRequestImpl("foo1")));
 	}
 
 	@Test
@@ -69,7 +71,7 @@ public class UrlMappingModuleTest {
 
 	@Test(expected = RuntimeException.class)
 	public void generateWrongParsing() {
-		when(rule.parse("foo")).thenReturn(
+		when(rule.parse(new HttpRequestImpl("foo"))).thenReturn(
 				new ActionPath<ParameterValueProvider>());
 
 		mappingService.generate(objectPath);
@@ -77,7 +79,7 @@ public class UrlMappingModuleTest {
 
 	@Test(expected = RuntimeException.class)
 	public void generateWrongParsingInProduction() {
-		when(rule.parse("foo")).thenReturn(
+		when(rule.parse(new HttpRequestImpl("foo"))).thenReturn(
 				new ActionPath<ParameterValueProvider>());
 		when(config.getProjectStage()).thenReturn(ProjectStage.PRODUCTION);
 
