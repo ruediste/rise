@@ -19,4 +19,5 @@ public class ControllerInfoRepository {
 	public ControllerInfo getControllerInfo(Class<?> controllerClass) {
 		return controllerInfos.get(controllerClass);
 	}
+
 }

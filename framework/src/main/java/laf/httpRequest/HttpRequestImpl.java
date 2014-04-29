@@ -2,6 +2,8 @@ package laf.httpRequest;
 
 import java.util.*;
 
+import com.google.common.base.Objects;
+
 /**
  * Mutable implementation of the {@link HttpRequest} interface
  */
@@ -50,5 +52,11 @@ public class HttpRequestImpl extends HttpRequestBase {
 
 	public Map<String, String[]> getModifiableParameterMap() {
 		return parameterMap;
+	}
+
+	@Override
+	public String toString() {
+		return Objects.toStringHelper(this).add("path", path)
+				.add("parameters", parameterMap).toString();
 	}
 }

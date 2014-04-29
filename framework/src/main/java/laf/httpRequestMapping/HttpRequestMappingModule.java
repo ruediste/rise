@@ -9,9 +9,10 @@ import laf.actionPath.ActionPathModule;
 import laf.configuration.ConfigurationModule;
 import laf.configuration.ConfigurationParameter;
 import laf.controllerInfo.ControllerInfoModule;
+import laf.httpRequest.HttpRequestModule;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProviderModule;
-import laf.httpRequestMapping.twoStageMappingRule.TwoStageMapingRuleModule;
+import laf.httpRequestMapping.twoStageMappingRule.TwoStageMappingRuleModule;
 import laf.initialization.InitializationModule;
 
 import org.jabsaw.Module;
@@ -38,9 +39,9 @@ import org.jabsaw.Module;
  * </p>
  *
  * <p>
- * A list of {@link HttpRequestMappingRule}s is used to perform the
- * actual mapping, allowing total customization thereof. The list is configured
- * via {@link #httpRequestMappingRules}
+ * A list of {@link HttpRequestMappingRule}s is used to perform the actual
+ * mapping, allowing total customization thereof. The list is configured via
+ * {@link #httpRequestMappingRules}
  * </p>
  *
  * <p>
@@ -48,12 +49,12 @@ import org.jabsaw.Module;
  * Care has been taken to make this functionality reusable and to split it into
  * meaningful sub packages. Since most rules will separate the string
  * representation of the parameter values and the combination thereof to the
- * final URL, the {@link TwoStageMapingRuleModule} has been created.
+ * final URL, the {@link TwoStageMappingRuleModule} has been created.
  * </p>
  */
 @Module(description = "Maps URLs to ActionPaths using UrlMappingRules", exported = {
 		ActionPathModule.class, ControllerInfoModule.class,
-		ParameterValueProviderModule.class }, imported = {
+		ParameterValueProviderModule.class, HttpRequestModule.class }, imported = {
 		InitializationModule.class, ConfigurationModule.class })
 @Singleton
 public class HttpRequestMappingModule {

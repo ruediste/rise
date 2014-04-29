@@ -4,10 +4,12 @@ import javax.inject.Inject;
 
 import laf.LAF;
 import laf.LAF.ProjectStage;
-import laf.actionPath.*;
+import laf.actionPath.ActionPath;
 import laf.actionPath.ActionPath.ParameterValueComparator;
 import laf.httpRequest.HttpRequest;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
+
+import com.google.common.base.Function;
 
 public class HttpRequestMappingService {
 	@Inject
@@ -94,17 +96,13 @@ public class HttpRequestMappingService {
 	 */
 	public static ActionPath<Object> createObjectActionPath(
 			ActionPath<ParameterValueProvider> actionPath) {
-		ActionPath<Object> result = new ActionPath<Object>();
-		for (ActionInvocation<ParameterValueProvider> invocation : actionPath
-				.getElements()) {
-			ActionInvocation<Object> i = new ActionInvocation<Object>(
-					invocation);
-			for (ParameterValueProvider provider : invocation.getArguments()) {
-				i.getArguments().add(provider.provideValue());
+		return actionPath.map(new Function<ParameterValueProvider, Object>() {
+
+			@Override
+			public Object apply(ParameterValueProvider input) {
+				return input.provideValue();
 			}
-			result.getElements().add(i);
-		}
-		return result;
+		});
 	}
 
 }

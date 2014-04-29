@@ -2,19 +2,56 @@ package laf.httpRequestMapping.defaultRule;
 
 import java.util.Iterator;
 
+import javax.inject.Inject;
+
 import laf.actionPath.ActionInvocation;
 import laf.actionPath.ActionPath;
 import laf.controllerInfo.*;
 import laf.httpRequest.HttpRequest;
 import laf.httpRequest.HttpRequestImpl;
 import laf.httpRequestMapping.parameterHandler.ParameterHandler;
-import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 import laf.httpRequestMapping.twoStageMappingRule.HttpRequestMapper;
+import laf.initialization.LafInitializer;
+
+import org.slf4j.Logger;
 
 public class DefaultHttpRequestMapper implements HttpRequestMapper {
 
+	public static class Builder {
+		@Inject
+		ControllerInfoMap.Builder mapBuilder;
+
+		@Inject
+		Logger log;
+
+		@Inject
+		ControllerInfoRepository controllerInfoRepository;
+
+		public DefaultHttpRequestMapper create(
+				ControllerIdentifierStrategy controllerIdentifierStrategy) {
+			return new DefaultHttpRequestMapper(controllerInfoRepository,
+					mapBuilder.create(controllerIdentifierStrategy), log);
+		}
+	}
+
+	@LafInitializer(after = ControllerInfoRepositoryInitializer.class)
+	public void initialize() {
+	}
+
+	private final ControllerInfoMap<String> identifiers;
+	private Logger log;
+	private ControllerInfoRepository controllerInfoRepository;
+
+	DefaultHttpRequestMapper(ControllerInfoRepository controllerInfoRepository,
+			ControllerInfoMap<String> identifiers, Logger log) {
+		this.controllerInfoRepository = controllerInfoRepository;
+		this.identifiers = identifiers;
+		this.log = log;
+	}
+
 	@Override
 	public ActionPath<String> parse(HttpRequest request) {
+
 		ActionPath<String> call = new ActionPath<>();
 		ControllerInfo controllerInfo = findControllerEntry(request.getPath());
 
@@ -25,7 +62,7 @@ public class DefaultHttpRequestMapper implements HttpRequestMapper {
 		// remove the identifier and split the suffix into parts at the /
 		// characters
 		String[] parts = request.getPath()
-				.substring(controllerIdentifier.get(controllerInfo).length())
+				.substring(identifiers.getMap().get(controllerInfo).length())
 				.split("/");
 
 		if (!parts[0].startsWith(".")) {
@@ -38,7 +75,7 @@ public class DefaultHttpRequestMapper implements HttpRequestMapper {
 
 		int i = 1;
 		for (String actionName : actionNames) {
-			ActionInvocation<ParameterValueProvider> invocation = new ActionInvocation<ParameterValueProvider>();
+			ActionInvocation<String> invocation = new ActionInvocation<String>();
 			ActionMethodInfo actionMethodInfo = controllerInfo
 					.getActionMethodInfo(actionName);
 			if (actionMethodInfo == null) {
@@ -48,13 +85,8 @@ public class DefaultHttpRequestMapper implements HttpRequestMapper {
 
 			invocation.setMethodInfo(actionMethodInfo);
 
-			Iterator<ParameterInfo> it = actionMethodInfo.getParameters()
-					.iterator();
-			for (; it.hasNext() && i < parts.length; i++) {
-				ParameterInfo parameter = it.next();
-				invocation.getArguments().add(
-						ParameterHandler.parameterHandler.get(parameter).parse(
-								parameter, parts[i]));
+			for (; i < parts.length; i++) {
+				invocation.getArguments().add(parts[i]);
 			}
 			call.getElements().add(invocation);
 
@@ -71,35 +103,35 @@ public class DefaultHttpRequestMapper implements HttpRequestMapper {
 
 	@Override
 	public HttpRequest generate(ActionPath<String> path) {
-
+		StringBuilder sb = new StringBuilder();
 		// add indentifier
 		{
-			Iterator<ActionInvocation<Object>> it = path.getElements()
+			Iterator<ActionInvocation<String>> it = path.getElements()
 					.iterator();
 			if (!it.hasNext()) {
 				throw new RuntimeException(
 						"Tried to generate URL of empty ActionPath");
 			}
 
-			ActionInvocation<Object> element = it.next();
+			ActionInvocation<String> element = it.next();
 			ControllerInfo controllerInfo = element.getMethodInfo()
 					.getControllerInfo();
-			String identifier = controllerIdentifier.get(controllerInfo);
+			String identifier = identifiers.getMap().get(controllerInfo);
 			sb.append(identifier);
 		}
 
 		// add methods
-		for (ActionInvocation<Object> element : path.getElements()) {
+		for (ActionInvocation<String> element : path.getElements()) {
 			sb.append(".");
 			sb.append(element.getMethodInfo().getName());
 		}
 
 		// add arguments
-		for (ActionInvocation<Object> element : path.getElements()) {
+		for (ActionInvocation<String> element : path.getElements()) {
 
 			Iterator<ParameterInfo> infoIt = element.getMethodInfo()
 					.getParameters().iterator();
-			Iterator<Object> argIt = element.getArguments().iterator();
+			Iterator<String> argIt = element.getArguments().iterator();
 			while (infoIt.hasNext() && argIt.hasNext()) {
 				ParameterInfo info = infoIt.next();
 				sb.append("/");
@@ -122,7 +154,7 @@ public class DefaultHttpRequestMapper implements HttpRequestMapper {
 		// get the prefix
 		String identifier = servletPath.substring(0, idx);
 
-		return controllersByIdentifier.get(identifier);
+		return identifiers.getMap().inverse().get(identifier);
 	}
 
 	@Override

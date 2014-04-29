@@ -11,14 +11,14 @@ import org.junit.Test;
 public class DefaultControllerIdentifierStrategyTest {
 
 	@Test
-	public void testGenerateIdentifier() throws Exception {
-		DefaultControllerIdentifierStrategy strategy = new DefaultControllerIdentifierStrategy();
-		ControllerInfo info = new ControllerInfoImpl(TestController.class,
-				false);
-
-		assertEquals("laf/controllerInfo/impl/test",
-				strategy.generateIdentifier(info));
-	}
+		public void testApply() throws Exception {
+			DefaultControllerIdentifierStrategy strategy = new DefaultControllerIdentifierStrategy();
+			ControllerInfo info = new ControllerInfoImpl(TestController.class,
+					false);
+	
+			assertEquals("laf/controllerInfo/impl/test",
+					strategy.apply(info));
+		}
 
 	@Test
 	public void testWithPrefix() throws Exception {

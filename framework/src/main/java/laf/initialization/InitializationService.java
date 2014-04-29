@@ -2,15 +2,7 @@ package laf.initialization;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -152,13 +144,20 @@ public class InitializationService {
 	 * initializer method is found, null is returned.
 	 */
 	public Collection<Initializer> createInitializers(Object object) {
+		if (object == null) {
+			return Collections.emptyList();
+		}
+
 		ArrayList<Initializer> result = new ArrayList<>();
 
 		// handle InitializerProvider
 		if (object instanceof InitializerProvider) {
-			for (Initializer i : ((InitializerProvider) object)
-					.getInitializers()) {
-				result.add(i);
+			for (Object obj : ((InitializerProvider) object).getInitializers()) {
+				if (obj instanceof Initializer) {
+					result.add((Initializer) obj);
+				} else {
+					result.addAll(createInitializers(obj));
+				}
 			}
 		}
 
@@ -224,16 +223,16 @@ public class InitializationService {
 				Queue<Initializer> queue = new PriorityQueue<>(10,
 						new Comparator<Initializer>() {
 
-							@Override
-							public int compare(Initializer o1, Initializer o2) {
-								return o1
-										.getRepresentingClass()
-										.getName()
-										.compareTo(
-												o2.getRepresentingClass()
-														.getName());
-							}
-						});
+					@Override
+					public int compare(Initializer o1, Initializer o2) {
+						return o1
+								.getRepresentingClass()
+								.getName()
+								.compareTo(
+										o2.getRepresentingClass()
+										.getName());
+					}
+				});
 				TopologicalOrderIterator<Initializer, Edge> it = new TopologicalOrderIterator<Initializer, Edge>(
 						subgraph, queue);
 				while (it.hasNext()) {
@@ -381,7 +380,7 @@ public class InitializationService {
 					throw new Error(
 							"Multiple Initializers with representing class "
 									+ rootInitializerRepresentingClass
-											.getName()
+									.getName()
 									+ " found. Only one expected as root initializer.");
 				}
 			}

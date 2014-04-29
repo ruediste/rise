@@ -50,7 +50,7 @@ public class HttpRequestMappingModuleTest {
 				objectPath.isCallToSameActionMethod(
 						same(providerPath),
 						Matchers.<ParameterValueComparator<Object, ParameterValueProvider>> any()))
-				.thenReturn(true);
+						.thenReturn(true);
 	}
 
 	@Test
@@ -66,7 +66,8 @@ public class HttpRequestMappingModuleTest {
 
 	@Test
 	public void successfulGenerate() {
-		assertEquals("foo", mappingService.generate(objectPath));
+		assertEquals(new HttpRequestImpl("foo"),
+				mappingService.generate(objectPath));
 	}
 
 	@Test(expected = RuntimeException.class)

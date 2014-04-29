@@ -31,7 +31,7 @@ public class DefaultHttpRequestMappingRuleTest {
 				.getDefault()
 				.addClasses(
 						Modules.getAllRequiredClasses(DefaultHttpRequestMappingModule.class))
-				.addClass(TestController.class);
+						.addClass(TestController.class);
 		System.out.println(archive.toString(true));
 		return archive;
 	}
@@ -66,7 +66,8 @@ public class DefaultHttpRequestMappingRuleTest {
 		PathActionResult path = (PathActionResult) factory.buildActionPath()
 				.controller(TestController.class).actionMethod(2);
 
-		assertEquals("laf/controllerInfo/impl/test.actionMethod/2",
+		assertEquals(new HttpRequestImpl(
+				"laf/controllerInfo/impl/test.actionMethod/2"),
 				httpRequestMappingService.generate(path));
 	}
 

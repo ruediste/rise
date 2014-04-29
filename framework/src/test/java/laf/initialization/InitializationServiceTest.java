@@ -7,9 +7,7 @@ import static org.mockito.Mockito.mock;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -72,7 +70,7 @@ public class InitializationServiceTest {
 		Mockito.when(init1.getDeclaredRelations(init2)).thenReturn(
 				Arrays.asList(new InitializerDependsRelation(init1, init2,
 						false), new InitializerDependsRelation(init2, init1,
-								false)));
+						false)));
 		Mockito.when(init1.getRelatedRepresentingClasses()).thenReturn(
 				new HashSet<>(Arrays.<Class<?>> asList(Float.class)));
 
@@ -88,7 +86,7 @@ public class InitializationServiceTest {
 		Initializer init1 = Mockito.mock(Initializer.class);
 		InitializerProvider provider = Mockito.mock(InitializerProvider.class);
 		Mockito.when(provider.getInitializers()).thenReturn(
-				Arrays.asList(init1));
+				Arrays.<Object> asList(init1));
 		Iterable<Initializer> initializers = service
 				.createInitializers(provider);
 		Assert.assertEquals(1, Iterables.size(initializers));

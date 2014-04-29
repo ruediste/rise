@@ -1,12 +1,13 @@
 package laf.actionPath;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 
+import laf.Function2;
 import laf.attachedProperties.AttachedProperty;
 import laf.attachedProperties.AttachedPropertyBearerBase;
+import laf.controllerInfo.ParameterInfo;
 
+import com.google.common.base.Function;
 import com.google.common.base.Objects;
 
 /**
@@ -58,11 +59,11 @@ public class ActionPath<T> extends AttachedPropertyBearerBase {
 		return isCallToSameActionMethod(other,
 				new ParameterValueComparator<Object, Object>() {
 
-			@Override
-			public boolean equals(Object a, Object b) {
-				return true;
-			}
-		});
+					@Override
+					public boolean equals(Object a, Object b) {
+						return true;
+					}
+				});
 	}
 
 	/**
@@ -97,4 +98,37 @@ public class ActionPath<T> extends AttachedPropertyBearerBase {
 		return true;
 	}
 
+	/**
+	 * Create a new {@link ActionPath} with the arguments mapped by the given
+	 * function. The associated {@link ActionPathParameter}s are copied
+	 */
+	public <P> ActionPath<P> map(final Function<T, P> func) {
+		return mapWithParameter(new Function2<ParameterInfo, T, P>() {
+
+			@Override
+			public P apply(ParameterInfo a, T b) {
+				return func.apply(b);
+			}
+		});
+	}
+
+	public <P> ActionPath<P> mapWithParameter(
+			Function2<ParameterInfo, T, P> func) {
+		ActionPath<P> result = new ActionPath<>();
+		result.parameters.putAll(parameters);
+
+		for (ActionInvocation<T> element : elements) {
+			ActionInvocation<P> invocation = new ActionInvocation<>(element);
+			result.getElements().add(invocation);
+			Iterator<ParameterInfo> pit = element.getMethodInfo()
+					.getParameters().iterator();
+			Iterator<T> ait = element.getArguments().iterator();
+			while (pit.hasNext() && ait.hasNext()) {
+
+				invocation.getArguments().add(
+						func.apply(pit.next(), ait.next()));
+			}
+		}
+		return result;
+	}
 }

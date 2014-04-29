@@ -8,11 +8,13 @@ import laf.configuration.ConfigurationModule;
 import laf.configuration.LoadDefaultConfigurationEvent;
 import laf.httpRequestMapping.HttpRequestMappingModule;
 import laf.httpRequestMapping.parameterHandler.ParameterHandlerModule;
+import laf.httpRequestMapping.twoStageMappingRule.*;
 import laf.initialization.InitializationModule;
 
 import org.jabsaw.Module;
 
-@Module(imported = { ParameterHandlerModule.class, HttpRequestMappingModule.class,
+@Module(imported = { ParameterHandlerModule.class,
+		HttpRequestMappingModule.class, TwoStageMappingRuleModule.class,
 		InitializationModule.class, ConfigurationModule.class })
 @Singleton
 public class DefaultHttpRequestMappingModule {
@@ -21,10 +23,20 @@ public class DefaultHttpRequestMappingModule {
 	HttpRequestMappingModule httpRequestMappingModule;
 
 	@Inject
-	DefaultHttpRequestMappingRule defaultHttpRequestMappingRule;
+	DefaultHttpRequestMapper.Builder requestMapperBuilder;
+
+	@Inject
+	DefaultActionPathSigner defaultActionPathSigner;
+
+	@Inject
+	DefaultParameterMapper defaultParameterMapper;
 
 	public void loadDefaultConfiguration(
 			@Observes LoadDefaultConfigurationEvent e) {
-		httpRequestMappingModule.httpRequestMappingRules.getValue().add(defaultHttpRequestMappingRule);
+		TwoStageMappingRule rule = new TwoStageMappingRule(
+				requestMapperBuilder
+						.create(new DefaultControllerIdentifierStrategy()),
+				defaultParameterMapper, defaultActionPathSigner);
+		httpRequestMappingModule.httpRequestMappingRules.getValue().add(rule);
 	}
 }

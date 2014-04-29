@@ -60,7 +60,7 @@ public class DefaultControllerIdentifierStrategy implements
 	}
 
 	@Override
-	public String generateIdentifier(ControllerInfo info) {
+	public String apply(ControllerInfo info) {
 		return getControllerIdentifier(info.getQualifiedName());
 	}
 
