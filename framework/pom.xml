@@ -2,9 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>ch.laf</groupId>
-	<artifactId>framework</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<artifactId>laf-framework</artifactId>
 	<packaging>jar</packaging>
 
 	<name>Light Application Framework</name>
@@ -15,14 +13,13 @@
 		<jabsaw.version>1.2-SNAPSHOT</jabsaw.version>
 	</properties>
 
-	<!-- <pluginManagement> <plugins> <plugin> <groupId>org.eclipse.m2e</groupId> 
-		<artifactId>lifecycle-mapping</artifactId> <version>1.0.0</version> <configuration> 
-		<lifecycleMappingMetadata> <pluginExecutions> <pluginExecution> <pluginExecutionFilter> 
-		<groupId>some-group-id</groupId> <artifactId>some-artifact-id</artifactId> 
-		<versionRange>[1.0.0,)</versionRange> <goals> <goal>some-goal</goal> </goals> 
-		</pluginExecutionFilter> <action> <ignore /> </action> </pluginExecution> 
-		</pluginExecutions> </lifecycleMappingMetadata> </configuration> </plugin> 
-		</plugins> </pluginManagement> -->
+	<parent>
+		<groupId>ch.laf</groupId>
+		<artifactId>laf</artifactId>
+		<version>1.0-SNAPSHOT</version>
+		<relativePath>..</relativePath>
+	</parent>
+
 
 	<build>
 		<plugins>

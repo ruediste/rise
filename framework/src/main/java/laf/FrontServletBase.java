@@ -47,7 +47,7 @@ public class FrontServletBase extends HttpServlet {
 
 		if (actionPath == null) {
 			throw new RuntimeException("No Controller found for "
-					+ req.getPathInfo());
+					+ req.getServletPath());
 		}
 
 		// create arguments
