@@ -17,7 +17,7 @@ public class DelegatingHttpRequest extends HttpRequestBase {
 
 	@Override
 	public String getPath() {
-		return delegate.getServletPath();
+		return delegate.getPathInfo().substring(1);
 	}
 
 	@Override

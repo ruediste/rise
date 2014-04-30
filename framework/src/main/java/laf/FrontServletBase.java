@@ -22,6 +22,7 @@ import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 public class FrontServletBase extends HttpServlet {
 
 	@Inject
+	@Controller
 	Instance<Object> controllerInstance;
 
 	@Inject
@@ -47,7 +48,7 @@ public class FrontServletBase extends HttpServlet {
 
 		if (actionPath == null) {
 			throw new RuntimeException("No Controller found for "
-					+ req.getServletPath());
+					+ req.getPathInfo());
 		}
 
 		// create arguments
