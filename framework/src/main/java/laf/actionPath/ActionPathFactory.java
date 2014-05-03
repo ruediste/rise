@@ -8,13 +8,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import laf.attachedProperties.AttachedProperty;
-import laf.controllerInfo.ActionMethodInfo;
-import laf.controllerInfo.ControllerInfo;
-import laf.controllerInfo.ControllerInfoRepository;
+import laf.controllerInfo.*;
 import laf.misc.ActionContext;
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
+import net.sf.cglib.proxy.*;
 
 import com.google.common.base.Joiner;
 
@@ -48,7 +44,8 @@ public class ActionPathFactory {
 		 * Set an {@link AttachedProperty} of the {@link ActionPath} to be
 		 * created.
 		 */
-		public <T> ActionPathBuilder set(AttachedProperty<T> property, T value) {
+		public <T> ActionPathBuilder set(
+				AttachedProperty<ActionPath<?>, T> property, T value) {
 			property.set(path, value);
 			return this;
 		}

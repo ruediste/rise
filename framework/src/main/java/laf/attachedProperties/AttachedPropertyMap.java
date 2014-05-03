@@ -14,22 +14,22 @@ import java.util.HashMap;
  */
 public class AttachedPropertyMap {
 
-	private HashMap<AttachedProperty<?>, Object> map = new HashMap<>();
+	private HashMap<AttachedProperty<?, ?>, Object> map = new HashMap<>();
 
 	@SuppressWarnings("unchecked")
-	synchronized <T> T get(AttachedProperty<T> key) {
+	synchronized <T> T get(AttachedProperty<?, T> key) {
 		return (T) map.get(key);
 	}
 
-	synchronized <T> void set(AttachedProperty<T> key, T value) {
+	synchronized <T> void set(AttachedProperty<?, T> key, T value) {
 		map.put(key, value);
 	}
 
-	synchronized void clear(AttachedProperty<?> key) {
+	synchronized void clear(AttachedProperty<?, ?> key) {
 		map.remove(key);
 	}
 
-	synchronized boolean isSet(AttachedProperty<?> key) {
+	synchronized boolean isSet(AttachedProperty<?, ?> key) {
 		return map.containsKey(key);
 	}
 

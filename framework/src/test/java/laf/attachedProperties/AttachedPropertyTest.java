@@ -9,7 +9,7 @@ public class AttachedPropertyTest {
 	@Test
 	public void testCrud() {
 		AttachedPropertyBearerBase bearer = new AttachedPropertyBearerBase();
-		AttachedProperty<Integer> key = new AttachedProperty<>();
+		AttachedProperty<AttachedPropertyBearer, Integer> key = new AttachedProperty<>();
 		assertFalse(key.isSet(bearer));
 		key.set(bearer, 10);
 		assertTrue(key.isSet(bearer));
