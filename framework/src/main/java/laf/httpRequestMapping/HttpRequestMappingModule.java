@@ -1,11 +1,13 @@
 package laf.httpRequestMapping;
 
-import java.util.ArrayDeque;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
 import laf.actionPath.ActionPathModule;
+import laf.base.BaseModule;
 import laf.configuration.ConfigurationModule;
 import laf.configuration.ConfigurationParameter;
 import laf.controllerInfo.ControllerInfoModule;
@@ -55,10 +57,10 @@ import org.jabsaw.Module;
 @Module(description = "Maps URLs to ActionPaths using UrlMappingRules", exported = {
 		ActionPathModule.class, ControllerInfoModule.class,
 		ParameterValueProviderModule.class, HttpRequestModule.class }, imported = {
-		InitializationModule.class, ConfigurationModule.class })
+		InitializationModule.class, ConfigurationModule.class, BaseModule.class })
 @Singleton
 public class HttpRequestMappingModule {
 
-	public final ConfigurationParameter<ArrayDeque<HttpRequestMappingRule>> httpRequestMappingRules = new ConfigurationParameter<ArrayDeque<HttpRequestMappingRule>>(
-			new ArrayDeque<HttpRequestMappingRule>());
+	public final ConfigurationParameter<List<Object>> mappingRuleInitializers = new ConfigurationParameter<List<Object>>(
+			new LinkedList<>());
 }

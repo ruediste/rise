@@ -3,13 +3,13 @@ package laf.actionPath;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import laf.ActionContext;
 import laf.attachedProperties.AttachedProperty;
 import laf.controllerInfo.ControllerInfo;
 import laf.controllerInfo.ControllerInfoRepository;
 import laf.controllerInfo.ControllerInfoRepositoryInitializer;
 import laf.controllerInfo.impl.EmbeddedTestController;
 import laf.controllerInfo.impl.TestController;
+import laf.misc.ActionContext;
 
 import org.junit.Before;
 import org.junit.Test;

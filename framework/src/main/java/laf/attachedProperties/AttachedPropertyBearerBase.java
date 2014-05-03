@@ -1,5 +1,9 @@
 package laf.attachedProperties;
 
+/**
+ * Implementation of the {@link AttachedPropertyBearer} interface, to be used as
+ * base class.
+ */
 public class AttachedPropertyBearerBase implements AttachedPropertyBearer {
 
 	private final AttachedPropertyMap map = new AttachedPropertyMap();

@@ -35,7 +35,8 @@ public class SingletonInitializersTest {
 	@Test
 	public void test() {
 		assertFalse(testInitializer.initialized);
-		initializationService.initialize(TestRootInitializer.class);
+		initializationService.initialize(DefaultPhase.class,
+				TestRootInitializer.class);
 		assertTrue(testInitializer.initialized);
 	}
 }

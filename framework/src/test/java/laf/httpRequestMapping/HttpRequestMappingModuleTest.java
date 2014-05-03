@@ -3,11 +3,12 @@ package laf.httpRequestMapping;
 import static laf.MockitoExt.mock;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import laf.LAF;
-import laf.LAF.ProjectStage;
+import laf.Laf;
 import laf.actionPath.ActionPath;
 import laf.actionPath.ActionPath.ParameterValueComparator;
+import laf.base.BaseModule;
 import laf.httpRequest.HttpRequestImpl;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 
@@ -22,7 +23,8 @@ public class HttpRequestMappingModuleTest {
 
 	HttpRequestMappingModule mappingModule;
 	HttpRequestMappingService mappingService;
-	LAF config;
+	Laf config;
+	BaseModule baseModule;
 	HttpRequestMappingRule rule;
 	ActionPath<ParameterValueProvider> providerPath;
 	ActionPath<Object> objectPath;
@@ -32,7 +34,8 @@ public class HttpRequestMappingModuleTest {
 		mappingModule = new HttpRequestMappingModule();
 		mappingService = new HttpRequestMappingService();
 		mappingService.httpRequestMappingModule = mappingModule;
-		config = new LAF();
+		config = new Laf();
+		baseModule = mock(BaseModule.class);
 		rule = Mockito.mock(HttpRequestMappingRule.class);
 		providerPath = mock(new TypeToken<ActionPath<ParameterValueProvider>>() {
 		});
@@ -40,9 +43,8 @@ public class HttpRequestMappingModuleTest {
 		objectPath = mock(new TypeToken<ActionPath<Object>>() {
 		});
 
-		mappingService.laf = config;
-		mappingModule.httpRequestMappingRules.getValue().clear();
-		mappingModule.httpRequestMappingRules.getValue().add(rule);
+		mappingService.baseModule = baseModule;
+		mappingService.getMappingRules().add(rule);
 
 		when(rule.parse(new HttpRequestImpl("foo"))).thenReturn(providerPath);
 		when(rule.generate(objectPath)).thenReturn(new HttpRequestImpl("foo"));
@@ -82,7 +84,8 @@ public class HttpRequestMappingModuleTest {
 	public void generateWrongParsingInProduction() {
 		when(rule.parse(new HttpRequestImpl("foo"))).thenReturn(
 				new ActionPath<ParameterValueProvider>());
-		when(config.getProjectStage()).thenReturn(ProjectStage.PRODUCTION);
+		when(baseModule.getProjectStage()).thenReturn(
+				laf.base.BaseModule.ProjectStage.PRODUCTION);
 
 		assertEquals("foo", mappingService.generate(objectPath));
 	}

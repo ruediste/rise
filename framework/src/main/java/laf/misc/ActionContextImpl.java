@@ -1,4 +1,4 @@
-package laf;
+package laf.misc;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

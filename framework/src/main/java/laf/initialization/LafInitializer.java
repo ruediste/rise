@@ -2,15 +2,17 @@ package laf.initialization;
 
 import java.lang.annotation.*;
 
-import laf.LAF;
+import laf.Laf;
 
 /**
- * Mark a method of a component registered in {@link LAF} as defining an
+ * Mark a method of a component registered in {@link Laf} as defining an
  * {@link Initializer}.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface LafInitializer {
+
+	Class<? extends Phase> phase() default DefaultPhase.class;
 
 	/**
 	 * A list of representing classes whose initializers should be run after

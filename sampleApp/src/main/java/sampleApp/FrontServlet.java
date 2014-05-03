@@ -5,7 +5,7 @@ import javax.inject.Inject;
 import javax.servlet.annotation.WebServlet;
 
 import laf.FrontServletBase;
-import laf.LAF;
+import laf.Laf;
 
 @WebServlet("/front/*")
 public class FrontServlet extends FrontServletBase {
@@ -16,7 +16,7 @@ public class FrontServlet extends FrontServletBase {
 	private static final long serialVersionUID = 1L;
 
 	@Inject
-	LAF laf;
+	Laf laf;
 
 	@PostConstruct
 	public void initialize() {

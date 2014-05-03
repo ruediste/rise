@@ -14,11 +14,16 @@ import java.util.Collection;
 public interface CreateInitializersEvent {
 
 	/**
+	 * Get the current initialization phase.
+	 */
+	Class<? extends Phase> getPhase();
+
+	/**
 	 * Add an initializer. The initializer itself is used as underlying object.
 	 * If the initializer has been added before with itself as underlying object
 	 * it will not be added again.
 	 */
-	public void addInitializer(Initializer initializer);
+	void addInitializer(Initializer initializer);
 
 	/**
 	 * Search and create initializers from the provided object using
@@ -30,5 +35,5 @@ public interface CreateInitializersEvent {
 	 *         initializers created from the elements of the provided
 	 *         {@link Iterable}
 	 */
-	public Collection<Initializer> createInitializersFrom(Object object);
+	Collection<Initializer> createInitializersFrom(Object object);
 }

@@ -4,8 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.*;
 
 import org.junit.*;
 import org.mockito.InOrder;
@@ -70,7 +69,7 @@ public class InitializationServiceTest {
 		Mockito.when(init1.getDeclaredRelations(init2)).thenReturn(
 				Arrays.asList(new InitializerDependsRelation(init1, init2,
 						false), new InitializerDependsRelation(init2, init1,
-						false)));
+								false)));
 		Mockito.when(init1.getRelatedRepresentingClasses()).thenReturn(
 				new HashSet<>(Arrays.<Class<?>> asList(Float.class)));
 
@@ -85,11 +84,15 @@ public class InitializationServiceTest {
 	public void testCreateInitializersProvider() throws Exception {
 		Initializer init1 = Mockito.mock(Initializer.class);
 		InitializerProvider provider = Mockito.mock(InitializerProvider.class);
-		Mockito.when(provider.getInitializers()).thenReturn(
+		Mockito.when(provider.getInitializers(DefaultPhase.class)).thenReturn(
 				Arrays.<Object> asList(init1));
-		Iterable<Initializer> initializers = service
-				.createInitializers(provider);
+		Iterable<Initializer> initializers = service.createInitializers(
+				DefaultPhase.class, provider);
 		Assert.assertEquals(1, Iterables.size(initializers));
+	}
+
+	private static interface TestPhase extends Phase {
+
 	}
 
 	private static class TestInitializer1 {
@@ -105,20 +108,43 @@ public class InitializationServiceTest {
 	private static class TestInitializer2 {
 		public boolean initialized;
 
-		@LafInitializer(after = TestInitializer1.class)
+		@LafInitializer(phase = TestPhase.class, after = TestInitializer1.class)
 		public void init2() {
 			initialized = true;
 		}
 	}
 
 	@Test
+	public void testCreateInitializersMethodPhaseSpecific() throws Exception {
+		TestInitializer1 provider1 = new TestInitializer1();
+		TestInitializer2 provider2 = new TestInitializer2();
+
+		Collection<Initializer> initializers = service.createInitializers(
+				DefaultPhase.class, Arrays.asList(provider1, provider2));
+
+		assertEquals(1, initializers.size());
+		assertEquals(TestInitializer1.class,
+				Iterables.getOnlyElement(initializers).getRepresentingClass());
+
+		initializers = service.createInitializers(TestPhase.class,
+				Arrays.asList(provider1, provider2));
+		assertEquals(1, initializers.size());
+		assertEquals(TestInitializer2.class,
+				Iterables.getOnlyElement(initializers).getRepresentingClass());
+
+	}
+
+	@Test
 	public void testCreateInitializersMethod() throws Exception {
 		TestInitializer1 provider1 = new TestInitializer1();
 		TestInitializer2 provider2 = new TestInitializer2();
-		Iterable<Initializer> initializers = service.createInitializers(Arrays
-				.asList(provider1, provider2));
+		ArrayList<Initializer> initializers = new ArrayList<>();
+		initializers.addAll(service.createInitializers(DefaultPhase.class,
+				Arrays.asList(provider1, provider2)));
+		initializers.addAll(service.createInitializers(TestPhase.class,
+				Arrays.asList(provider1, provider2)));
 
-		Assert.assertEquals(2, Iterables.size(initializers));
+		Assert.assertEquals(2, initializers.size());
 		Initializer init1 = null;
 		Initializer init2 = null;
 

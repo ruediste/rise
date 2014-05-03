@@ -9,11 +9,8 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import laf.FrameworkRootInitializer;
 import laf.configuration.ConfigurationParameterRepository.ParameterEntry;
-import laf.initialization.CreateInitializersEvent;
-import laf.initialization.Initializer;
-import laf.initialization.InitializerDependsRelation;
+import laf.initialization.*;
 
 import org.slf4j.Logger;
 

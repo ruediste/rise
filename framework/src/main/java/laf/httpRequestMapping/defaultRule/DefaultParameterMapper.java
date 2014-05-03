@@ -1,7 +1,7 @@
 package laf.httpRequestMapping.defaultRule;
 
-import laf.Function2;
 import laf.actionPath.ActionPath;
+import laf.base.Function2;
 import laf.controllerInfo.ParameterInfo;
 import laf.httpRequestMapping.parameterHandler.*;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;

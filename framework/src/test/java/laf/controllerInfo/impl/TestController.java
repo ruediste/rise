@@ -1,7 +1,7 @@
 package laf.controllerInfo.impl;
 
-import laf.ActionResult;
-import laf.Controller;
+import laf.base.ActionResult;
+import laf.base.Controller;
 
 @Controller
 public class TestController {

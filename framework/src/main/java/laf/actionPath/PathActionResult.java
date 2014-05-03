@@ -1,6 +1,6 @@
 package laf.actionPath;
 
-import laf.ActionResult;
+import laf.base.ActionResult;
 
 /**
  * An action method returns an {@link ActionResult}. When using the

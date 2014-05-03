@@ -1,5 +1,6 @@
 package laf;
 
+import laf.base.*;
 
 @Controller
 public class SampleController {

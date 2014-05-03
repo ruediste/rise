@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import javax.inject.Inject;
 
-import laf.LAF;
+import laf.Laf;
 import laf.actionPath.*;
 import laf.controllerInfo.ControllerInfoRepository;
 import laf.controllerInfo.impl.TestController;
@@ -40,13 +40,16 @@ public class DefaultHttpRequestMappingRuleTest {
 	ActionPathFactory factory;
 
 	@Inject
-	LAF laf;
+	Laf laf;
 
 	@Inject
 	HttpRequestMappingService httpRequestMappingService;
 
 	@Inject
 	ControllerInfoRepository controllerInfoRepository;
+
+	@Inject
+	DefaultHttpRequestMappingModule defaultHttpRequestMappingModule;
 
 	@Before
 	public void init() {

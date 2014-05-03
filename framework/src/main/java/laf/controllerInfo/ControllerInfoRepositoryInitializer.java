@@ -9,9 +9,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import laf.ActionResult;
-import laf.Controller;
-import laf.EmbeddedController;
+import laf.base.*;
 import laf.initialization.LafInitializer;
 
 import org.slf4j.Logger;

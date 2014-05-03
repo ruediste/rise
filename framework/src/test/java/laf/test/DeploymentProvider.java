@@ -1,6 +1,6 @@
 package laf.test;
 
-import laf.ActionContextImpl;
+import laf.misc.ActionContextImpl;
 
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;

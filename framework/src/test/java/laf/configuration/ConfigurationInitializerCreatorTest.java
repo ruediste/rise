@@ -7,10 +7,8 @@ import static org.mockito.Mockito.mock;
 
 import java.util.Collection;
 
-import laf.FrameworkRootInitializer;
 import laf.configuration.ConfigurationInitializerCreator.ConfigurationInitializer;
-import laf.initialization.Initializer;
-import laf.initialization.InitializerDependsRelation;
+import laf.initialization.*;
 
 import org.junit.Test;
 import org.mockito.Mockito;

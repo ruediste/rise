@@ -2,9 +2,9 @@ package laf.actionPath;
 
 import java.util.*;
 
-import laf.Function2;
 import laf.attachedProperties.AttachedProperty;
 import laf.attachedProperties.AttachedPropertyBearerBase;
+import laf.base.Function2;
 import laf.controllerInfo.ParameterInfo;
 
 import com.google.common.base.Function;

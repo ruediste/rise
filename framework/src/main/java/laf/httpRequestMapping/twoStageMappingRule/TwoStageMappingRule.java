@@ -7,6 +7,7 @@ import laf.httpRequest.HttpRequest;
 import laf.httpRequestMapping.HttpRequestMappingRule;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 import laf.initialization.InitializerProvider;
+import laf.initialization.Phase;
 
 /**
  * {@link HttpRequestMappingRule} using a {@link HttpRequestMapper} and a
@@ -17,7 +18,7 @@ import laf.initialization.InitializerProvider;
  * </p>
  */
 public class TwoStageMappingRule implements HttpRequestMappingRule,
-		InitializerProvider {
+InitializerProvider {
 
 	private final HttpRequestMapper httpRequestMapper;
 	private final ParameterMapper parameterMapper;
@@ -59,7 +60,7 @@ public class TwoStageMappingRule implements HttpRequestMappingRule,
 	}
 
 	@Override
-	public Iterable<Object> getInitializers() {
+	public Iterable<Object> getInitializers(Class<? extends Phase> phase) {
 		return Arrays.asList(httpRequestMapper, parameterMapper, signer);
 	}
 

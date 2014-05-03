@@ -1,8 +1,6 @@
-package laf;
+package laf.initialization;
 
 import javax.inject.Singleton;
-
-import laf.initialization.LafInitializer;
 
 @Singleton
 public class FrameworkRootInitializer {

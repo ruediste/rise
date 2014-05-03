@@ -1,4 +1,4 @@
-package laf;
+package laf.base;
 
 import java.io.IOException;
 import java.io.PrintWriter;

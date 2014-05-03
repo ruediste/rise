@@ -1,4 +1,4 @@
-package laf;
+package laf.base;
 
 public interface Function2<A, B, R> {
 

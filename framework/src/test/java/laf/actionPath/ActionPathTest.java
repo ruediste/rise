@@ -7,7 +7,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 
-import laf.Function2;
+import laf.base.Function2;
 import laf.controllerInfo.ActionMethodInfo;
 import laf.controllerInfo.ParameterInfo;
 import laf.httpRequestMapping.HttpRequestMappingService;

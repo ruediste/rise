@@ -1,11 +1,14 @@
 package laf.httpRequestMapping;
 
+import java.util.Deque;
+import java.util.LinkedList;
+
 import javax.inject.Inject;
 
-import laf.LAF;
-import laf.LAF.ProjectStage;
 import laf.actionPath.ActionPath;
 import laf.actionPath.ActionPath.ParameterValueComparator;
+import laf.base.BaseModule;
+import laf.base.BaseModule.ProjectStage;
 import laf.httpRequest.HttpRequest;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 
@@ -16,20 +19,20 @@ public class HttpRequestMappingService {
 	HttpRequestMappingModule httpRequestMappingModule;
 
 	@Inject
-	LAF laf;
+	BaseModule baseModule;
+
+	private final Deque<HttpRequestMappingRule> mappingRules = new LinkedList<>();
 
 	/**
 	 * Parse a servlet path. If no matching rule is found, null is returned.
 	 */
 	public ActionPath<ParameterValueProvider> parse(HttpRequest request) {
-		if (httpRequestMappingModule.httpRequestMappingRules.getValue()
-				.isEmpty()) {
+		if (mappingRules.isEmpty()) {
 			throw new RuntimeException(
 					"No UrlMappingRules are defined in CoreConfig");
 		}
 
-		for (HttpRequestMappingRule rule : httpRequestMappingModule.httpRequestMappingRules
-				.getValue()) {
+		for (HttpRequestMappingRule rule : mappingRules) {
 			ActionPath<ParameterValueProvider> result = rule.parse(request);
 			if (result != null) {
 				return result;
@@ -43,8 +46,7 @@ public class HttpRequestMappingService {
 	 */
 	public HttpRequest generate(ActionPath<Object> path) {
 		HttpRequest result = null;
-		for (HttpRequestMappingRule rule : httpRequestMappingModule.httpRequestMappingRules
-				.getValue()) {
+		for (HttpRequestMappingRule rule : mappingRules) {
 			result = rule.generate(path);
 			if (result != null) {
 				break;
@@ -58,7 +60,7 @@ public class HttpRequestMappingService {
 		}
 
 		// check if the generated URL can be parsed
-		if (laf.getProjectStage() != ProjectStage.PRODUCTION) {
+		if (baseModule.getProjectStage() != ProjectStage.PRODUCTION) {
 
 			ActionPath<ParameterValueProvider> parsed = parse(result);
 			if (parsed == null) {
@@ -103,6 +105,10 @@ public class HttpRequestMappingService {
 				return input.provideValue();
 			}
 		});
+	}
+
+	public Deque<HttpRequestMappingRule> getMappingRules() {
+		return mappingRules;
 	}
 
 }

@@ -1,7 +1,5 @@
 package laf.initialization;
 
-import laf.FrameworkRootInitializer;
-
 import org.jabsaw.Module;
 
 /**
@@ -18,6 +16,13 @@ import org.jabsaw.Module;
  * be defined by both the source or the target initializer. This allows the
  * initializers of a framework extension to define initializers, without the
  * initializers of the framework beeing aware of the extension.
+ * </p>
+ *
+ * <p>
+ * The initialization is organized in phases. Each phase is represented by an
+ * empty type value. At the beginning of each phase, the initialializers for the
+ * phase are discovered and created. The ordering of the phases is defined
+ * externally to the initialization module.
  * </p>
  *
  * <p>

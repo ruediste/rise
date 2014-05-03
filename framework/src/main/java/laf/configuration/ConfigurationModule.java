@@ -7,10 +7,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import laf.configuration.ConfigurationParameterRepository.ParameterEntry;
-import laf.initialization.CreateInitializersEvent;
-import laf.initialization.InitializationModule;
-import laf.initialization.InitializationService;
-import laf.initialization.Initializer;
+import laf.initialization.*;
 
 import org.jabsaw.Module;
 
@@ -20,15 +17,28 @@ import org.jabsaw.Module;
  * variables. A parameter has a default value which can be overwritten during
  * application startup.
  *
+ *
  * <p>
  * The configuration module has to be {@link #initialize()}d. This will set the
- * {@link ConfigurationParameter#identifier}s. Afterwards, the default
- * configuration can be loaded by calling {@link #loadDefaultConfiguration()}.
- * This will raise the {@link LoadDefaultConfigurationEvent} which gives other
- * modules the opportunity to initialize the default configuration. For special
- * circumstances there also exists the {@link LoadDefaultConfigurationPreEvent}
- * and the {@link LoadDefaultConfigurationPostEvent}, which are raised before
- * respectively after the main event.
+ * {@link ConfigurationParameter#identifier}s. The parameters will have their
+ * default values.
+ * </p>
+ *
+ * <p>
+ * Afterwards, the default configuration can be loaded by calling
+ * {@link #loadDefaultConfiguration()}. This will raise the
+ * {@link LoadDefaultConfigurationEvent} which gives other modules the
+ * opportunity to initialize the default configuration. The default
+ * configuration is different from the default values of the parameters. The
+ * default configuration is a configuration which should make the framework
+ * usable and can be used as starting point for further customization.
+ * </p>
+ *
+ * <p>
+ * It is important to realize that the mechanism of the default configuration is
+ * not suitable for the integration of independent modules. Instead, it is
+ * designed to load one fixed configuration. To integrate multiple modules, use
+ * the initializer system instead.
  * </p>
  *
  * <p>
@@ -38,7 +48,7 @@ import org.jabsaw.Module;
  * adaption of the initialization process to the configuration.
  * </p>
  */
-@Module(imported = InitializationModule.class)
+@Module(description = "Configuration module integrated with the Initialization module", imported = InitializationModule.class)
 @Singleton
 public class ConfigurationModule {
 
@@ -49,16 +59,15 @@ public class ConfigurationModule {
 	ConfigurationParameterRepository configurationParameterRepository;
 
 	@Inject
-	Event<LoadDefaultConfigurationPreEvent> loadDefaultConfigurationPreEvent;
-
-	@Inject
 	Event<LoadDefaultConfigurationEvent> loadDefaultConfigurationEvent;
-
-	@Inject
-	Event<LoadDefaultConfigurationPostEvent> loadDefaultConfigurationPostEvent;
 
 	private boolean isInitialized;
 
+	/**
+	 * Initialize the configuration. This will set the identifiers of all
+	 * {@link ConfigurationParameter}s. Note however, that this will not load
+	 * the default configuration (use {@link #loadDefaultConfiguration()}).
+	 */
 	public void initialize() {
 		if (isInitialized) {
 			throw new RuntimeException(
@@ -84,11 +93,7 @@ public class ConfigurationModule {
 	public void loadDefaultConfiguration() {
 		checkInitialized();
 
-		loadDefaultConfigurationPreEvent
-		.fire(new LoadDefaultConfigurationPreEvent());
 		loadDefaultConfigurationEvent.fire(new LoadDefaultConfigurationEvent());
-		loadDefaultConfigurationPostEvent
-		.fire(new LoadDefaultConfigurationPostEvent());
 	}
 
 	public boolean isInitialized() {

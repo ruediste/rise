@@ -1,4 +1,4 @@
-package laf;
+package laf.misc;
 
 import javax.enterprise.context.RequestScoped;
 import javax.servlet.http.HttpServletRequest;

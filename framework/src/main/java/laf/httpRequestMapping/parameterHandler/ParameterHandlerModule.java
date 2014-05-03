@@ -7,7 +7,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import laf.LAF;
+import laf.Laf;
 import laf.configuration.ConfigurationModule;
 import laf.configuration.ConfigurationParameter;
 import laf.configuration.LoadDefaultConfigurationEvent;
@@ -31,7 +31,7 @@ import org.jabsaw.Module;
  *
  * <p>
  * A {@link ParameterHandler} is used to perform the mapping of a parameter. The
- * handlers are configured via {@link LAF#getParameterHandlers()}. During
+ * handlers are configured via {@link Laf#getParameterHandlers()}. During
  * initialization, the first matching handler for each {@link ParameterInfo} is
  * determined and stored in {@link DefaultUrlMappingRule#}
  * {@link ParameterInfo#getParameterHandler()}.

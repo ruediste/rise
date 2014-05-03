@@ -5,7 +5,7 @@
 	<artifactId>laf</artifactId>
 	<packaging>pom</packaging>
 	<version>1.0-SNAPSHOT</version>
-	<name>Light Application Framework</name>
+	<name>Light Application Framework Parent</name>
 	<url>http://maven.apache.org</url>
 	<modules>
 		<module>framework</module>

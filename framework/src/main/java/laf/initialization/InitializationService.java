@@ -115,15 +115,27 @@ public class InitializationService {
 
 	}
 
-	public Collection<Initializer> createInitializers(Iterable<?> objects) {
+	/**
+	 * Iterate over the provided objects and create the initializers for each
+	 * one.
+	 */
+	public Collection<Initializer> createInitializers(
+			Class<? extends Phase> phase, Iterable<?> objects) {
 		ArrayList<Initializer> result = new ArrayList<>();
 		for (Object object : objects) {
-			result.addAll(createInitializers(object));
+			result.addAll(createInitializers(phase, object));
 		}
 		return result;
 	}
 
-	public boolean mightCreateInitializers(Class<?> clazz) {
+	/**
+	 * Determine if instances of the provided class might define initializers.
+	 * If this method returns false, instances of the provided class never
+	 * define initializers. If it returns true, instances can define
+	 * initializers, but it is possible that a concrete instance does not define
+	 * any initializers.
+	 */
+	public boolean mightDefineInitializers(Class<?> clazz) {
 		if (InitializerProvider.class.isAssignableFrom(clazz)) {
 			return true;
 		}
@@ -138,12 +150,17 @@ public class InitializationService {
 	}
 
 	/**
-	 * Scan the provided object for a single method annotated with
-	 * {@link LafInitializer} and create an {@link Initializer}, which will call
-	 * this method. The dependencies are declared with the annotation. If no
-	 * initializer method is found, null is returned.
+	 * Scan the provided object for defined initializers.
+	 *
+	 * <p>
+	 * If the method implements {@link InitializerProvider}, the implementation
+	 * will be invoked to create initializers. In addition the class is scanned
+	 * for methods annotated with {@link LafInitializer}. For each such method
+	 * an {@link Initializer} is created, which will call the method.
+	 * Dependencies are declared with the annotation.
 	 */
-	public Collection<Initializer> createInitializers(Object object) {
+	public Collection<Initializer> createInitializers(
+			Class<? extends Phase> phase, Object object) {
 		if (object == null) {
 			return Collections.emptyList();
 		}
@@ -152,11 +169,12 @@ public class InitializationService {
 
 		// handle InitializerProvider
 		if (object instanceof InitializerProvider) {
-			for (Object obj : ((InitializerProvider) object).getInitializers()) {
+			for (Object obj : ((InitializerProvider) object)
+					.getInitializers(phase)) {
 				if (obj instanceof Initializer) {
 					result.add((Initializer) obj);
 				} else {
-					result.addAll(createInitializers(obj));
+					result.addAll(createInitializers(phase, obj));
 				}
 			}
 		}
@@ -168,11 +186,22 @@ public class InitializationService {
 			if (lafInitializer == null) {
 				continue;
 			}
+			if (!phase.equals(lafInitializer.phase())) {
+				continue;
+			}
 			result.add(new MethodInitializer(method, object, lafInitializer));
 		}
 		return result;
 	}
 
+	/**
+	 * Run some of the provided initializers
+	 *
+	 * @param rootInitializer
+	 *            all initializers this initializer depends on will be executed.
+	 * @param initializers
+	 *            the set of initializers to run
+	 */
 	public void runInitializers(Initializer rootInitializer,
 			Set<Initializer> initializers) {
 		// determine depends relation
@@ -316,7 +345,8 @@ public class InitializationService {
 		return result;
 	}
 
-	public class CreateInitializersEventImpl implements CreateInitializersEvent {
+	private class CreateInitializersEventImpl implements
+			CreateInitializersEvent {
 		/**
 		 * Contains the initializers created via
 		 * {@link #createInitializersFrom(Object)}
@@ -328,17 +358,24 @@ public class InitializationService {
 		 */
 		final Set<Initializer> initializers = new HashSet<>();
 
+		private final Class<? extends Phase> phase;
+
+		public CreateInitializersEventImpl(Class<? extends Phase> phase) {
+			this.phase = phase;
+
+		}
+
 		@Override
 		public void addInitializer(Initializer initializer) {
 			initializers.add(initializer);
 		}
 
 		private Collection<Initializer> createInitializersFromInner(
-				Object object) {
+				Class<? extends Phase> phase, Object object) {
 			Collection<Initializer> result = objectBasedInitializers
 					.get(object);
 			if (result == null) {
-				result = createInitializers(object);
+				result = createInitializers(phase, object);
 				objectBasedInitializers.put(object, result);
 				initializers.addAll(result);
 			}
@@ -353,20 +390,32 @@ public class InitializationService {
 				if (initializers == null) {
 					initializers = new ArrayList<>();
 					for (Object o : (Iterable<?>) object) {
-						initializers.addAll(createInitializersFromInner(o));
+						initializers.addAll(createInitializersFromInner(phase,
+								o));
 					}
 					objectBasedInitializers.put(object, initializers);
 				}
 				return initializers;
 			} else {
-				return createInitializersFromInner(object);
+				return createInitializersFromInner(phase, object);
 			}
+		}
+
+		@Override
+		public Class<? extends Phase> getPhase() {
+			return phase;
 		}
 	}
 
-	public void initialize(Class<?> rootInitializerRepresentingClass) {
+	/**
+	 * Discover initializers using the {@link CreateInitializersEvent}, search
+	 * for the single instance of the rootInitializerRepresentingClass and run
+	 * the initializers.
+	 */
+	public void initialize(Class<? extends Phase> phase,
+			Class<?> rootInitializerRepresentingClass) {
 		// create initializers
-		CreateInitializersEventImpl e = new CreateInitializersEventImpl();
+		CreateInitializersEventImpl e = new CreateInitializersEventImpl(phase);
 		createInitializersEvent.fire(e);
 
 		// find root initializer

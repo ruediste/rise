@@ -4,15 +4,15 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import laf.base.ConfigureEvent;
 import laf.configuration.ConfigurationModule;
-import laf.initialization.InitializationService;
+import laf.initialization.*;
 
 /**
- * This class contains all the knots and switches to configure the framework.
- * For all settings, there are default values which should for most cases.
+ * This class controls the initialization of the framework.
  */
 @Singleton
-public class LAF {
+public class Laf {
 
 	@Inject
 	InitializationService initializationService;
@@ -26,16 +26,6 @@ public class LAF {
 	@Inject
 	Event<ConfigureEvent> configureEvent;
 
-	private ProjectStage projectStage;
-
-	public ProjectStage getProjectStage() {
-		return projectStage;
-	}
-
-	public void setProjectStage(ProjectStage projectStage) {
-		this.projectStage = projectStage;
-	}
-
 	/**
 	 * Initialize the Framework. This will first initialize the configuration
 	 * module, load the default configuration, fire the {@link ConfigureEvent}
@@ -45,15 +35,12 @@ public class LAF {
 		configurationModule.initialize();
 		configurationModule.loadDefaultConfiguration();
 		configureEvent.fire(new ConfigureEvent());
-		initializationService.initialize(FrameworkRootInitializer.class);
+		initializationService.initialize(DefaultPhase.class,
+				FrameworkRootInitializer.class);
 	}
 
 	public boolean isInitialized() {
 		return frameworkRootInitializer.isInitialized();
-	}
-
-	public enum ProjectStage {
-		DEVELOPMENT, PRODUCTION,
 	}
 
 }

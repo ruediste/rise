@@ -33,7 +33,7 @@ public class SingletonInitializerCreator {
 
 			log.trace("Scanning singleton " + bean.getBeanClass());
 
-			if (initializationService.mightCreateInitializers(bean
+			if (initializationService.mightDefineInitializers(bean
 					.getBeanClass())) {
 				for (Initializer i : e.createInitializersFrom(instance.select(
 						bean.getBeanClass()).get())) {

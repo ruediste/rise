@@ -1,3 +1,4 @@
 /docs/
 /html/
 */src/main/java/**/doc-files/*.png
+target/

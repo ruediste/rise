@@ -11,7 +11,7 @@ public class AttachedProperty<T> {
 	 * {@link #isSet(AttachedPropertyBearer)}
 	 */
 	public T get(AttachedPropertyBearer bearer) {
-		return bearer.getAttachedPropertyMap().getAttachedProperty(this);
+		return bearer.getAttachedPropertyMap().get(this);
 	}
 
 	/**
