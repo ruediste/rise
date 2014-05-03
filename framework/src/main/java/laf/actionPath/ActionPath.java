@@ -102,7 +102,7 @@ public class ActionPath<T> extends AttachedPropertyBearerBase {
 	 * Create a new {@link ActionPath} with the arguments mapped by the given
 	 * function. The associated {@link ActionPathParameter}s are copied
 	 */
-	public <P> ActionPath<P> map(final Function<T, P> func) {
+	public <P> ActionPath<P> map(final Function<? super T, P> func) {
 		return mapWithParameter(new Function2<ParameterInfo, T, P>() {
 
 			@Override
@@ -113,7 +113,7 @@ public class ActionPath<T> extends AttachedPropertyBearerBase {
 	}
 
 	public <P> ActionPath<P> mapWithParameter(
-			Function2<ParameterInfo, T, P> func) {
+			Function2<ParameterInfo, ? super T, P> func) {
 		ActionPath<P> result = new ActionPath<>();
 		result.parameters.putAll(parameters);
 

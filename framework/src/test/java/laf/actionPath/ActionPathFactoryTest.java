@@ -7,7 +7,6 @@ import laf.attachedProperties.AttachedProperty;
 import laf.controllerInfo.*;
 import laf.controllerInfo.impl.EmbeddedTestController;
 import laf.controllerInfo.impl.TestController;
-import laf.misc.ActionContext;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,18 +28,19 @@ public class ActionPathFactoryTest {
 				EmbeddedTestController.class, true);
 		when(
 				factory.controllerInfoRepository
-						.getControllerInfo(TestController.class)).thenReturn(
-				testControllerInfo);
+				.getControllerInfo(TestController.class)).thenReturn(
+						testControllerInfo);
 		when(
 				factory.controllerInfoRepository
-						.getControllerInfo(EmbeddedTestController.class))
+				.getControllerInfo(EmbeddedTestController.class))
 				.thenReturn(embeddedControllerInfo);
 
 	}
 
 	@Test
 	public void simple() {
-		PathActionResult path = (PathActionResult) factory.buildActionPath()
+		PathActionResult path = (PathActionResult) factory
+				.buildActionPath(new ActionPath<Object>())
 				.controller(TestController.class).actionMethod(5);
 		assertEquals(1, path.getElements().size());
 		ActionInvocation<Object> invocation = path.getElements().get(0);
@@ -54,16 +54,17 @@ public class ActionPathFactoryTest {
 	public void settingProperties() {
 		AttachedProperty<ActionPath<?>, Integer> property = new AttachedProperty<>();
 
-		PathActionResult path = (PathActionResult) factory.buildActionPath()
-				.set(property, 27).controller(TestController.class)
-				.actionMethod(5);
+		PathActionResult path = (PathActionResult) factory
+				.buildActionPath(new ActionPath<Object>()).set(property, 27)
+				.controller(TestController.class).actionMethod(5);
 
 		assertEquals(Integer.valueOf(27), property.get(path));
 	}
 
 	@Test
 	public void embedded() {
-		PathActionResult path = (PathActionResult) factory.buildActionPath()
+		PathActionResult path = (PathActionResult) factory
+				.buildActionPath(new ActionPath<Object>())
 				.controller(TestController.class).actionMethodEmbedded()
 				.actionMethodEmbedded();
 
@@ -82,13 +83,13 @@ public class ActionPathFactoryTest {
 
 	@Test
 	public void embeddedPartial() {
-		factory.actionContext = mock(ActionContext.class);
-		PathActionResult invokedResult = (PathActionResult) factory
-				.buildActionPath().controller(TestController.class)
-				.actionMethodEmbedded().actionMethodEmbedded();
-		when(factory.actionContext.getInvokedPath()).thenReturn(invokedResult);
+		PathActionResult invokedPath = (PathActionResult) factory
+				.buildActionPath(new ActionPath<Object>())
+				.controller(TestController.class).actionMethodEmbedded()
+				.actionMethodEmbedded();
 
-		PathActionResult path = (PathActionResult) factory.buildActionPath()
+		PathActionResult path = (PathActionResult) factory
+				.buildActionPath(invokedPath)
 				.controller(EmbeddedTestController.class)
 				.actionMethodEmbedded();
 
@@ -107,13 +108,12 @@ public class ActionPathFactoryTest {
 
 	@Test(expected = RuntimeException.class)
 	public void embeddedPartialNotFound() {
-		factory.actionContext = mock(ActionContext.class);
-		PathActionResult invokedResult = (PathActionResult) factory
-				.buildActionPath().controller(TestController.class)
-				.actionMethod(2);
-		when(factory.actionContext.getInvokedPath()).thenReturn(invokedResult);
+		PathActionResult currentPath = (PathActionResult) factory
+				.buildActionPath(new ActionPath<Object>())
+				.controller(TestController.class).actionMethod(2);
 
-		factory.buildActionPath().controller(EmbeddedTestController.class)
-				.actionMethodEmbedded();
+		factory.buildActionPath(currentPath)
+				.controller(EmbeddedTestController.class)
+		.actionMethodEmbedded();
 	}
 }

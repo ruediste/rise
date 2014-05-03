@@ -12,7 +12,7 @@ import laf.base.BaseModule.ProjectStage;
 import laf.httpRequest.HttpRequest;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 
-import com.google.common.base.Function;
+import com.google.common.base.Suppliers;
 
 public class HttpRequestMappingService {
 	@Inject
@@ -89,22 +89,6 @@ public class HttpRequestMappingService {
 			}
 		}
 		return result;
-	}
-
-	/**
-	 * Convert an {@link ActionPath} with {@link ParameterValueProvider}s to an
-	 * ActionPath with {@link Object}s, using the
-	 * {@link ParameterValueProvider#provideValue()}
-	 */
-	public static ActionPath<Object> createObjectActionPath(
-			ActionPath<ParameterValueProvider> actionPath) {
-		return actionPath.map(new Function<ParameterValueProvider, Object>() {
-
-			@Override
-			public Object apply(ParameterValueProvider input) {
-				return input.provideValue();
-			}
-		});
 	}
 
 	public Deque<HttpRequestMappingRule> getMappingRules() {

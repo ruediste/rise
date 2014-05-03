@@ -12,7 +12,7 @@ public class ConstantParameterValueProvider implements ParameterValueProvider {
 	}
 
 	@Override
-	public Object provideValue() {
+	public Object get() {
 		return value;
 	}
 

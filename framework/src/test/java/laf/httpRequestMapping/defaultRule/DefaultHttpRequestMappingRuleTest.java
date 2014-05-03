@@ -22,6 +22,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import com.google.common.base.Suppliers;
+
 @RunWith(Arquillian.class)
 public class DefaultHttpRequestMappingRuleTest {
 
@@ -31,7 +33,7 @@ public class DefaultHttpRequestMappingRuleTest {
 				.getDefault()
 				.addClasses(
 						Modules.getAllRequiredClasses(DefaultHttpRequestMappingModule.class))
-						.addClass(TestController.class);
+				.addClass(TestController.class);
 		System.out.println(archive.toString(true));
 		return archive;
 	}
@@ -66,7 +68,8 @@ public class DefaultHttpRequestMappingRuleTest {
 
 	@Test
 	public void generate() {
-		PathActionResult path = (PathActionResult) factory.buildActionPath()
+		PathActionResult path = (PathActionResult) factory
+				.buildActionPath(new ActionPath<Object>())
 				.controller(TestController.class).actionMethod(2);
 
 		assertEquals(new HttpRequestImpl(
@@ -79,8 +82,7 @@ public class DefaultHttpRequestMappingRuleTest {
 		ActionPath<ParameterValueProvider> path = httpRequestMappingService
 				.parse(new HttpRequestImpl(
 						"laf/controllerInfo/impl/test.actionMethod/2"));
-		ActionPath<Object> objectPath = HttpRequestMappingService
-				.createObjectActionPath(path);
+		ActionPath<Object> objectPath = path.map(Suppliers.supplierFunction());
 		assertEquals(1, objectPath.getElements().size());
 		ActionInvocation<Object> invocation = objectPath.getElements().get(0);
 		assertEquals(TestController.class, invocation.getControllerInfo()

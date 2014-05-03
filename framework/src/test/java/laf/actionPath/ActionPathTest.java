@@ -15,6 +15,8 @@ import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 
 import org.junit.Test;
 
+import com.google.common.base.Suppliers;
+
 public class ActionPathTest {
 
 	@Test
@@ -30,12 +32,11 @@ public class ActionPathTest {
 		invocation.setMethodInfo(methodInfo);
 		ParameterValueProvider argument = mock(ParameterValueProvider.class);
 		Object value = new Object();
-		when(argument.provideValue()).thenReturn(value);
+		when(argument.get()).thenReturn(value);
 		invocation.getArguments().add(argument);
 		path.getElements().add(invocation);
 
-		ActionPath<Object> objectPath = HttpRequestMappingService
-				.createObjectActionPath(path);
+		ActionPath<Object> objectPath = path.map(Suppliers.supplierFunction());
 
 		assertEquals(1, objectPath.getElements().size());
 		assertSame(methodInfo, objectPath.getElements().get(0).getMethodInfo());

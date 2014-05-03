@@ -8,8 +8,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import laf.attachedProperties.AttachedProperty;
+import laf.base.ActionContext;
 import laf.controllerInfo.*;
-import laf.misc.ActionContext;
 import net.sf.cglib.proxy.*;
 
 import com.google.common.base.Joiner;
@@ -34,11 +34,13 @@ public class ActionPathFactory {
 	@Inject
 	ControllerInfoRepository controllerInfoRepository;
 
-	@Inject
-	ActionContext actionContext;
-
 	public class ActionPathBuilder {
 		private PathActionResult path = new PathActionResult();
+		private ActionPath<Object> currentActionPath;
+
+		public ActionPathBuilder(ActionPath<Object> currentActionPath) {
+			this.currentActionPath = currentActionPath;
+		}
 
 		/**
 		 * Set an {@link AttachedProperty} of the {@link ActionPath} to be
@@ -73,8 +75,8 @@ public class ActionPathFactory {
 				// generated
 				// path
 
-				ArrayList<ActionInvocation<Object>> elements = actionContext
-						.getInvokedPath().getElements();
+				ArrayList<ActionInvocation<Object>> elements = currentActionPath
+						.getElements();
 				boolean found = false;
 				for (int i = elements.size() - 1; i >= 0; i--) {
 					if (controllerClass.isAssignableFrom(elements.get(i)
@@ -92,7 +94,7 @@ public class ActionPathFactory {
 							"Attempted to generate an ActionPath starting with controller "
 									+ controllerClass.getName()
 									+ ", but did not find a suiting stating point within invoked ActionPath "
-									+ actionContext.getInvokedPath());
+									+ currentActionPath);
 				}
 			}
 			return createActionPath(controllerClass, path);
@@ -101,9 +103,15 @@ public class ActionPathFactory {
 
 	/**
 	 * Create a new {@link ActionPathBuilder} used to create {@link ActionPath}s
+	 *
+	 * @param currentActionPath
+	 *            the {@link ActionPath} which is currently being processed.
+	 *            Used to determine the full path if a path is started with an
+	 *            embedded controller class.
 	 */
-	public ActionPathBuilder buildActionPath() {
-		return new ActionPathBuilder();
+	public ActionPathBuilder buildActionPath(
+			ActionPath<Object> currentActionPath) {
+		return new ActionPathBuilder(currentActionPath);
 	}
 
 	/**

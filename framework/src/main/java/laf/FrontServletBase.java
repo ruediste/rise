@@ -16,7 +16,8 @@ import laf.controllerInfo.ActionMethodInfo;
 import laf.httpRequest.DelegatingHttpRequest;
 import laf.httpRequestMapping.HttpRequestMappingService;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
-import laf.misc.ActionContext;
+
+import com.google.common.base.Suppliers;
 
 /**
  * Framework entry point
@@ -41,22 +42,19 @@ public class FrontServletBase extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
-		actionContext.setRequest(req);
-		actionContext.setResponse(resp);
 
 		// parse request
 		ActionPath<ParameterValueProvider> actionPath = httpRequestMappingService
 				.parse(new DelegatingHttpRequest(req));
 
 		if (actionPath == null) {
-			throw new RuntimeException("No Controller found for "
+			throw new RuntimeException("URL could not be handled "
 					+ req.getPathInfo());
 		}
 
 		// create arguments
-		ActionPath<Object> objectActionPath = HttpRequestMappingService
-				.createObjectActionPath(actionPath);
-		actionContext.setInvokedPath(objectActionPath);
+		ActionPath<Object> objectActionPath = actionPath.map(Suppliers
+				.supplierFunction());
 
 		// call controller
 		ActionResult result = null;
