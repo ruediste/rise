@@ -7,8 +7,8 @@ public interface InitializerProvider {
 	 * initializers will be used as-is, the bearer will be scanned with
 	 * {@link InitializationService#createInitializers(Object)}.
 	 * 
-	 * @param phase
+	 * @param initializationPhase
 	 *            The initialization phase to get the initializers for
 	 */
-	Iterable<Object> getInitializers(Class<? extends Phase> phase);
+	Iterable<Object> getInitializers(Class<? extends InitializationPhase> initializationPhase);
 }

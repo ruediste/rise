@@ -120,10 +120,10 @@ public class InitializationService {
 	 * one.
 	 */
 	public Collection<Initializer> createInitializers(
-			Class<? extends Phase> phase, Iterable<?> objects) {
+			Class<? extends InitializationPhase> initializationPhase, Iterable<?> objects) {
 		ArrayList<Initializer> result = new ArrayList<>();
 		for (Object object : objects) {
-			result.addAll(createInitializers(phase, object));
+			result.addAll(createInitializers(initializationPhase, object));
 		}
 		return result;
 	}
@@ -160,7 +160,7 @@ public class InitializationService {
 	 * Dependencies are declared with the annotation.
 	 */
 	public Collection<Initializer> createInitializers(
-			Class<? extends Phase> phase, Object object) {
+			Class<? extends InitializationPhase> initializationPhase, Object object) {
 		if (object == null) {
 			return Collections.emptyList();
 		}
@@ -170,11 +170,11 @@ public class InitializationService {
 		// handle InitializerProvider
 		if (object instanceof InitializerProvider) {
 			for (Object obj : ((InitializerProvider) object)
-					.getInitializers(phase)) {
+					.getInitializers(initializationPhase)) {
 				if (obj instanceof Initializer) {
 					result.add((Initializer) obj);
 				} else {
-					result.addAll(createInitializers(phase, obj));
+					result.addAll(createInitializers(initializationPhase, obj));
 				}
 			}
 		}
@@ -186,7 +186,7 @@ public class InitializationService {
 			if (lafInitializer == null) {
 				continue;
 			}
-			if (!phase.equals(lafInitializer.phase())) {
+			if (!initializationPhase.equals(lafInitializer.phase())) {
 				continue;
 			}
 			result.add(new MethodInitializer(method, object, lafInitializer));
@@ -358,10 +358,10 @@ public class InitializationService {
 		 */
 		final Set<Initializer> initializers = new HashSet<>();
 
-		private final Class<? extends Phase> phase;
+		private final Class<? extends InitializationPhase> initializationPhase;
 
-		public CreateInitializersEventImpl(Class<? extends Phase> phase) {
-			this.phase = phase;
+		public CreateInitializersEventImpl(Class<? extends InitializationPhase> initializationPhase) {
+			this.initializationPhase = initializationPhase;
 
 		}
 
@@ -371,11 +371,11 @@ public class InitializationService {
 		}
 
 		private Collection<Initializer> createInitializersFromInner(
-				Class<? extends Phase> phase, Object object) {
+				Class<? extends InitializationPhase> initializationPhase, Object object) {
 			Collection<Initializer> result = objectBasedInitializers
 					.get(object);
 			if (result == null) {
-				result = createInitializers(phase, object);
+				result = createInitializers(initializationPhase, object);
 				objectBasedInitializers.put(object, result);
 				initializers.addAll(result);
 			}
@@ -390,20 +390,20 @@ public class InitializationService {
 				if (initializers == null) {
 					initializers = new ArrayList<>();
 					for (Object o : (Iterable<?>) object) {
-						initializers.addAll(createInitializersFromInner(phase,
+						initializers.addAll(createInitializersFromInner(initializationPhase,
 								o));
 					}
 					objectBasedInitializers.put(object, initializers);
 				}
 				return initializers;
 			} else {
-				return createInitializersFromInner(phase, object);
+				return createInitializersFromInner(initializationPhase, object);
 			}
 		}
 
 		@Override
-		public Class<? extends Phase> getPhase() {
-			return phase;
+		public Class<? extends InitializationPhase> getPhase() {
+			return initializationPhase;
 		}
 	}
 
@@ -412,10 +412,10 @@ public class InitializationService {
 	 * for the single instance of the rootInitializerRepresentingClass and run
 	 * the initializers.
 	 */
-	public void initialize(Class<? extends Phase> phase,
+	public void initialize(Class<? extends InitializationPhase> initializationPhase,
 			Class<?> rootInitializerRepresentingClass) {
 		// create initializers
-		CreateInitializersEventImpl e = new CreateInitializersEventImpl(phase);
+		CreateInitializersEventImpl e = new CreateInitializersEventImpl(initializationPhase);
 		createInitializersEvent.fire(e);
 
 		// find root initializer

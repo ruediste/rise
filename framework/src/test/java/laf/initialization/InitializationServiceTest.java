@@ -91,7 +91,7 @@ public class InitializationServiceTest {
 		Assert.assertEquals(1, Iterables.size(initializers));
 	}
 
-	private static interface TestPhase extends Phase {
+	private static interface TestPhase extends InitializationPhase {
 
 	}
 

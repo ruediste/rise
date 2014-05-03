@@ -12,7 +12,7 @@ import laf.Laf;
 @Target(ElementType.METHOD)
 public @interface LafInitializer {
 
-	Class<? extends Phase> phase() default DefaultPhase.class;
+	Class<? extends InitializationPhase> phase() default DefaultPhase.class;
 
 	/**
 	 * A list of representing classes whose initializers should be run after

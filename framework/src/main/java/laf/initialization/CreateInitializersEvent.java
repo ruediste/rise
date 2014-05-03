@@ -16,7 +16,7 @@ public interface CreateInitializersEvent {
 	/**
 	 * Get the current initialization phase.
 	 */
-	Class<? extends Phase> getPhase();
+	Class<? extends InitializationPhase> getPhase();
 
 	/**
 	 * Add an initializer. The initializer itself is used as underlying object.
