@@ -1,15 +1,11 @@
 package laf.httpRequestMapping;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
 import laf.actionPath.ActionPathModule;
 import laf.base.BaseModule;
 import laf.configuration.ConfigurationModule;
-import laf.configuration.ConfigurationParameter;
 import laf.controllerInfo.ControllerInfoModule;
 import laf.httpRequest.HttpRequestModule;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
@@ -61,6 +57,4 @@ import org.jabsaw.Module;
 @Singleton
 public class HttpRequestMappingModule {
 
-	public final ConfigurationParameter<List<Object>> mappingRuleInitializers = new ConfigurationParameter<List<Object>>(
-			new LinkedList<>());
 }

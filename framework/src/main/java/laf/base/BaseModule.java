@@ -2,9 +2,11 @@ package laf.base;
 
 import javax.inject.Singleton;
 
+import laf.attachedProperties.AttachedPropertiesModule;
+
 import org.jabsaw.Module;
 
-@Module(description = "Base classes of the LAF Framework")
+@Module(description = "Base classes of the LAF Framework", exported = { AttachedPropertiesModule.class })
 @Singleton
 public class BaseModule {
 

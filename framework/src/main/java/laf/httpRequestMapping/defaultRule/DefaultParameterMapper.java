@@ -3,10 +3,13 @@ package laf.httpRequestMapping.defaultRule;
 import laf.actionPath.ActionPath;
 import laf.base.Function2;
 import laf.controllerInfo.ParameterInfo;
-import laf.httpRequestMapping.parameterHandler.*;
+import laf.httpRequestMapping.parameterHandler.ParameterHandler;
+import laf.httpRequestMapping.parameterHandler.ParameterHandlerInitializer;
+import laf.httpRequestMapping.parameterHandler.ParameterHandlerModule;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 import laf.httpRequestMapping.twoStageMappingRule.ParameterMapper;
 import laf.initialization.LafInitializer;
+import laf.initialization.laf.LafInitializationPhase;
 
 /**
  * A {@link ParameterMapper} using the {@link ParameterHandlerModule}
@@ -14,7 +17,7 @@ import laf.initialization.LafInitializer;
  */
 public class DefaultParameterMapper implements ParameterMapper {
 
-	@LafInitializer(after = ParameterHandlerInitializer.class)
+	@LafInitializer(phase = LafInitializationPhase.class, after = ParameterHandlerInitializer.class)
 	public void initialize() {
 
 	}

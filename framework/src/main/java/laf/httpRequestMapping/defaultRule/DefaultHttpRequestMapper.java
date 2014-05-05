@@ -6,12 +6,18 @@ import javax.inject.Inject;
 
 import laf.actionPath.ActionInvocation;
 import laf.actionPath.ActionPath;
-import laf.controllerInfo.*;
+import laf.controllerInfo.ActionMethodInfo;
+import laf.controllerInfo.ControllerInfo;
+import laf.controllerInfo.ControllerInfoMap;
+import laf.controllerInfo.ControllerInfoRepository;
+import laf.controllerInfo.ControllerInfoRepositoryInitializer;
+import laf.controllerInfo.ParameterInfo;
 import laf.httpRequest.HttpRequest;
 import laf.httpRequest.HttpRequestImpl;
 import laf.httpRequestMapping.parameterHandler.ParameterHandler;
 import laf.httpRequestMapping.twoStageMappingRule.HttpRequestMapper;
 import laf.initialization.LafInitializer;
+import laf.initialization.laf.LafInitializationPhase;
 
 import org.slf4j.Logger;
 
@@ -34,7 +40,7 @@ public class DefaultHttpRequestMapper implements HttpRequestMapper {
 		}
 	}
 
-	@LafInitializer(after = ControllerInfoRepositoryInitializer.class)
+	@LafInitializer(phase = LafInitializationPhase.class, after = ControllerInfoRepositoryInitializer.class)
 	public void initialize() {
 	}
 

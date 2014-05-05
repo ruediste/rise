@@ -2,7 +2,15 @@ package laf.initialization;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Set;
 
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -120,7 +128,8 @@ public class InitializationService {
 	 * one.
 	 */
 	public Collection<Initializer> createInitializers(
-			Class<? extends InitializationPhase> initializationPhase, Iterable<?> objects) {
+			Class<? extends InitializationPhase> initializationPhase,
+			Iterable<?> objects) {
 		ArrayList<Initializer> result = new ArrayList<>();
 		for (Object object : objects) {
 			result.addAll(createInitializers(initializationPhase, object));
@@ -160,7 +169,8 @@ public class InitializationService {
 	 * Dependencies are declared with the annotation.
 	 */
 	public Collection<Initializer> createInitializers(
-			Class<? extends InitializationPhase> initializationPhase, Object object) {
+			Class<? extends InitializationPhase> initializationPhase,
+			Object object) {
 		if (object == null) {
 			return Collections.emptyList();
 		}
@@ -252,16 +262,16 @@ public class InitializationService {
 				Queue<Initializer> queue = new PriorityQueue<>(10,
 						new Comparator<Initializer>() {
 
-					@Override
-					public int compare(Initializer o1, Initializer o2) {
-						return o1
-								.getRepresentingClass()
-								.getName()
-								.compareTo(
-										o2.getRepresentingClass()
-										.getName());
-					}
-				});
+							@Override
+							public int compare(Initializer o1, Initializer o2) {
+								return o1
+										.getRepresentingClass()
+										.getName()
+										.compareTo(
+												o2.getRepresentingClass()
+														.getName());
+							}
+						});
 				TopologicalOrderIterator<Initializer, Edge> it = new TopologicalOrderIterator<Initializer, Edge>(
 						subgraph, queue);
 				while (it.hasNext()) {
@@ -346,7 +356,7 @@ public class InitializationService {
 	}
 
 	private class CreateInitializersEventImpl implements
-			CreateInitializersEvent {
+	CreateInitializersEvent {
 		/**
 		 * Contains the initializers created via
 		 * {@link #createInitializersFrom(Object)}
@@ -360,7 +370,8 @@ public class InitializationService {
 
 		private final Class<? extends InitializationPhase> initializationPhase;
 
-		public CreateInitializersEventImpl(Class<? extends InitializationPhase> initializationPhase) {
+		public CreateInitializersEventImpl(
+				Class<? extends InitializationPhase> initializationPhase) {
 			this.initializationPhase = initializationPhase;
 
 		}
@@ -371,12 +382,14 @@ public class InitializationService {
 		}
 
 		private Collection<Initializer> createInitializersFromInner(
-				Class<? extends InitializationPhase> initializationPhase, Object object) {
+				Class<? extends InitializationPhase> initializationPhase,
+				Object object) {
 			Collection<Initializer> result = objectBasedInitializers
 					.get(object);
 			if (result == null) {
 				result = createInitializers(initializationPhase, object);
 				objectBasedInitializers.put(object, result);
+				log.debug("Found initializers " + result);
 				initializers.addAll(result);
 			}
 			return result;
@@ -390,8 +403,8 @@ public class InitializationService {
 				if (initializers == null) {
 					initializers = new ArrayList<>();
 					for (Object o : (Iterable<?>) object) {
-						initializers.addAll(createInitializersFromInner(initializationPhase,
-								o));
+						initializers.addAll(createInitializersFromInner(
+								initializationPhase, o));
 					}
 					objectBasedInitializers.put(object, initializers);
 				}
@@ -412,10 +425,12 @@ public class InitializationService {
 	 * for the single instance of the rootInitializerRepresentingClass and run
 	 * the initializers.
 	 */
-	public void initialize(Class<? extends InitializationPhase> initializationPhase,
+	public void initialize(
+			Class<? extends InitializationPhase> initializationPhase,
 			Class<?> rootInitializerRepresentingClass) {
 		// create initializers
-		CreateInitializersEventImpl e = new CreateInitializersEventImpl(initializationPhase);
+		CreateInitializersEventImpl e = new CreateInitializersEventImpl(
+				initializationPhase);
 		createInitializersEvent.fire(e);
 
 		// find root initializer
@@ -429,7 +444,7 @@ public class InitializationService {
 					throw new Error(
 							"Multiple Initializers with representing class "
 									+ rootInitializerRepresentingClass
-									.getName()
+											.getName()
 									+ " found. Only one expected as root initializer.");
 				}
 			}

@@ -1,5 +1,7 @@
 package laf.initialization;
 
+import laf.initialization.laf.FrameworkRootInitializer;
+
 import org.jabsaw.Module;
 
 /**

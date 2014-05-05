@@ -3,6 +3,7 @@ package laf.httpRequestMapping;
 import java.util.Deque;
 import java.util.LinkedList;
 
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import laf.actionPath.ActionPath;
@@ -11,8 +12,7 @@ import laf.base.BaseModule;
 import laf.base.BaseModule.ProjectStage;
 import laf.httpRequest.HttpRequest;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
-
-import com.google.common.base.Suppliers;
+import laf.initialization.CreateInitializersEvent;
 
 public class HttpRequestMappingService {
 	@Inject
@@ -95,4 +95,7 @@ public class HttpRequestMappingService {
 		return mappingRules;
 	}
 
+	public void createInitializers(@Observes CreateInitializersEvent e) {
+		e.createInitializersFrom(mappingRules);
+	}
 }

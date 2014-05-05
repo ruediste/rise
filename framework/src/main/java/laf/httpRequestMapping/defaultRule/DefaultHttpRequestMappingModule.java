@@ -1,24 +1,27 @@
 package laf.httpRequestMapping.defaultRule;
 
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import laf.base.BaseModule;
 import laf.configuration.ConfigurationModule;
-import laf.configuration.LoadDefaultConfigurationEvent;
 import laf.httpRequestMapping.HttpRequestMappingModule;
 import laf.httpRequestMapping.HttpRequestMappingService;
 import laf.httpRequestMapping.parameterHandler.ParameterHandlerModule;
-import laf.httpRequestMapping.twoStageMappingRule.*;
-import laf.initialization.InitializationModule;
+import laf.httpRequestMapping.twoStageMappingRule.DefaultActionPathSigner;
+import laf.httpRequestMapping.twoStageMappingRule.TwoStageMappingRule;
+import laf.httpRequestMapping.twoStageMappingRule.TwoStageMappingRuleModule;
 import laf.initialization.LafInitializer;
+import laf.initialization.laf.DefaultInitializer;
+import laf.initialization.laf.LafConfigurationPhase;
+import laf.initialization.laf.LafInitializationModule;
 
 import org.jabsaw.Module;
 
 @Module(imported = { ParameterHandlerModule.class,
 		HttpRequestMappingModule.class, TwoStageMappingRuleModule.class,
-		InitializationModule.class, ConfigurationModule.class, BaseModule.class })
+		LafInitializationModule.class, ConfigurationModule.class,
+		BaseModule.class })
 @Singleton
 public class DefaultHttpRequestMappingModule {
 
@@ -37,18 +40,14 @@ public class DefaultHttpRequestMappingModule {
 	@Inject
 	DefaultParameterMapper defaultParameterMapper;
 
-	public void loadDefaultConfiguration(
-			@Observes LoadDefaultConfigurationEvent e) {
-		httpRequestMappingModule.mappingRuleInitializers.getValue().add(this);
-	}
-
-	@LafInitializer
+	@LafInitializer(phase = LafConfigurationPhase.class, before = DefaultInitializer.class)
 	public void setupDefaultMappingRule() {
 		TwoStageMappingRule rule = new TwoStageMappingRule(
 				requestMapperBuilder
-						.create(new DefaultControllerIdentifierStrategy()),
+				.create(new DefaultControllerIdentifierStrategy()),
 				defaultParameterMapper, defaultActionPathSigner);
 		httpRequestMappingService.getMappingRules().add(rule);
 
 	}
+
 }

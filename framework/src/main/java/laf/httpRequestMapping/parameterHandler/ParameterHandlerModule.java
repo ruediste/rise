@@ -1,21 +1,18 @@
 package laf.httpRequestMapping.parameterHandler;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import laf.Laf;
+import laf.configuration.ConfigValue;
 import laf.configuration.ConfigurationModule;
-import laf.configuration.ConfigurationParameter;
-import laf.configuration.LoadDefaultConfigurationEvent;
 import laf.controllerInfo.ControllerInfoModule;
 import laf.controllerInfo.ParameterInfo;
 import laf.httpRequestMapping.HttpRequestMappingRule;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProviderModule;
-import laf.initialization.InitializationModule;
+import laf.initialization.laf.LafInitializationModule;
 
 import org.jabsaw.Module;
 
@@ -25,8 +22,8 @@ import org.jabsaw.Module;
  * overall format of the URL and the way individual parameters are represented.
  * While the configuration of the mapping rules gives you complete freedom of
  * the mapping, we implemented an infrastructure for parameter value handling.
- * This infrastructure is used by the default {@link HttpRequestMappingRule}s, but can
- * as well be used by your own customizations.
+ * This infrastructure is used by the default {@link HttpRequestMappingRule}s,
+ * but can as well be used by your own customizations.
  * </p>
  *
  * <p>
@@ -39,19 +36,12 @@ import org.jabsaw.Module;
  */
 @Module(exported = { ControllerInfoModule.class,
 		ParameterValueProviderModule.class }, imported = {
-		InitializationModule.class, ConfigurationModule.class })
+		LafInitializationModule.class, ConfigurationModule.class })
 @Singleton
 public class ParameterHandlerModule {
 
-	public final ConfigurationParameter<List<ParameterHandler>> parameterHandlers = new ConfigurationParameter<List<ParameterHandler>>(
-			new ArrayList<ParameterHandler>());
-
 	@Inject
-	IntegerParameterHandler integerParameterHandler;
-
-	public void loadDefaultConfiguration(
-			@Observes LoadDefaultConfigurationEvent e) {
-		parameterHandlers.getValue().add(integerParameterHandler);
-	}
+	@ConfigValue("laf.httpRequestMapping.parameterHandler.IntegerParameterHandler")
+	LinkedList<ParameterHandler> parameterHandlers;
 
 }

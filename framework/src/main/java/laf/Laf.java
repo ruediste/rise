@@ -1,12 +1,13 @@
 package laf;
 
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import laf.base.ConfigureEvent;
 import laf.configuration.ConfigurationModule;
-import laf.initialization.*;
+import laf.initialization.InitializationService;
+import laf.initialization.laf.FrameworkRootInitializer;
+import laf.initialization.laf.LafConfigurationPhase;
+import laf.initialization.laf.LafInitializationPhase;
 
 /**
  * This class controls the initialization of the framework.
@@ -23,19 +24,15 @@ public class Laf {
 	@Inject
 	FrameworkRootInitializer frameworkRootInitializer;
 
-	@Inject
-	Event<ConfigureEvent> configureEvent;
-
 	/**
 	 * Initialize the Framework. This will first initialize the configuration
 	 * module, load the default configuration, fire the {@link ConfigureEvent}
 	 * and finally run the initializers.
 	 */
 	public void initialize() {
-		configurationModule.initialize();
-		configurationModule.loadDefaultConfiguration();
-		configureEvent.fire(new ConfigureEvent());
-		initializationService.initialize(DefaultPhase.class,
+		initializationService.initialize(LafConfigurationPhase.class,
+				FrameworkRootInitializer.class);
+		initializationService.initialize(LafInitializationPhase.class,
 				FrameworkRootInitializer.class);
 	}
 

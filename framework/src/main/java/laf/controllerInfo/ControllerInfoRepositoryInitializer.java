@@ -9,8 +9,11 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import laf.base.*;
+import laf.base.ActionResult;
+import laf.base.Controller;
+import laf.base.EmbeddedController;
 import laf.initialization.LafInitializer;
+import laf.initialization.laf.LafInitializationPhase;
 
 import org.slf4j.Logger;
 
@@ -26,7 +29,7 @@ public class ControllerInfoRepositoryInitializer {
 	@Inject
 	BeanManager beanManager;
 
-	@LafInitializer
+	@LafInitializer(phase = LafInitializationPhase.class)
 	public void initialize() {
 		Controller controllerAnnotation = new Controller() {
 			@Override
@@ -86,7 +89,7 @@ public class ControllerInfoRepositoryInitializer {
 
 			// calculate name
 			methodInfo
-					.setName(info.calculateUnusedMethodName(method.getName()));
+			.setName(info.calculateUnusedMethodName(method.getName()));
 
 			// add to repository
 			info.putActionMethodInfo(methodInfo);

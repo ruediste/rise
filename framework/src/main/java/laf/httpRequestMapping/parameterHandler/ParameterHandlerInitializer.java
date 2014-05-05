@@ -11,6 +11,7 @@ import laf.controllerInfo.ControllerInfoRepository;
 import laf.controllerInfo.ControllerInfoRepositoryInitializer;
 import laf.controllerInfo.ParameterInfo;
 import laf.initialization.LafInitializer;
+import laf.initialization.laf.LafInitializationPhase;
 
 /**
  * Initializer to initialize the {@link ParameterHandler#parameterHandler}
@@ -28,10 +29,9 @@ public class ParameterHandlerInitializer {
 	@Inject
 	ParameterHandlerModule parameterHandlerModule;
 
-	@LafInitializer(after = ControllerInfoRepositoryInitializer.class)
+	@LafInitializer(phase = LafInitializationPhase.class, after = ControllerInfoRepositoryInitializer.class)
 	public void initialize() {
-		List<ParameterHandler> handlers = parameterHandlerModule.parameterHandlers
-				.getValue();
+		List<ParameterHandler> handlers = parameterHandlerModule.parameterHandlers;
 		for (ControllerInfo info : controllerInfoRepository
 				.getControllerInfos()) {
 			// initialize parameter handlers
