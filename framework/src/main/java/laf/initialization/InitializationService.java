@@ -2,19 +2,13 @@ package laf.initialization;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import laf.initialization.MatcherBasedInitializer.InitializerMatcherSet;
 
 import org.jgrapht.EdgeFactory;
 import org.jgrapht.alg.CycleDetector;
@@ -23,6 +17,8 @@ import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.traverse.DepthFirstIterator;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.slf4j.Logger;
+
+import com.google.common.base.Joiner;
 
 @Singleton
 public class InitializationService {
@@ -33,15 +29,10 @@ public class InitializationService {
 	@Inject
 	Logger log;
 
-	private static class MethodInitializer extends InitializerImpl {
+	static class MethodInitializer extends MatcherBasedInitializer {
 
-		ArrayList<InitializerMatcher> beforeMatchers = new ArrayList<>();
-		ArrayList<InitializerMatcher> beforeMatchersOptional = new ArrayList<>();
-		ArrayList<InitializerMatcher> afterMatchers = new ArrayList<>();
-		ArrayList<InitializerMatcher> afterMatchersOptional = new ArrayList<>();
 		private Object component;
 		private Method method;
-		private final HashSet<Class<?>> relatedRepresentingClasses = new HashSet<>();
 
 		public MethodInitializer(Method method, Object component,
 				LafInitializer lafInitializer) {
@@ -50,52 +41,22 @@ public class InitializationService {
 			this.component = component;
 
 			for (Class<?> cls : lafInitializer.before()) {
-				beforeMatchers.add(new InitializerMatcher(cls));
+				data.beforeMatchers.add(new InitializerMatcher(cls));
 				relatedRepresentingClasses.add(cls);
 			}
 
 			for (Class<?> cls : lafInitializer.beforeOptional()) {
-				beforeMatchersOptional.add(new InitializerMatcher(cls));
+				data.beforeMatchersOptional.add(new InitializerMatcher(cls));
 				relatedRepresentingClasses.add(cls);
 			}
 			for (Class<?> cls : lafInitializer.after()) {
-				afterMatchers.add(new InitializerMatcher(cls));
+				data.afterMatchers.add(new InitializerMatcher(cls));
 				relatedRepresentingClasses.add(cls);
 			}
 			for (Class<?> cls : lafInitializer.afterOptional()) {
-				afterMatchersOptional.add(new InitializerMatcher(cls));
+				data.afterMatchersOptional.add(new InitializerMatcher(cls));
 				relatedRepresentingClasses.add(cls);
 			}
-		}
-
-		@Override
-		public Collection<InitializerDependsRelation> getDeclaredRelations(
-				Initializer other) {
-			ArrayList<InitializerDependsRelation> result = new ArrayList<>();
-
-			for (InitializerMatcher m : beforeMatchers) {
-				if (m.matches(other)) {
-					result.add(new InitializerDependsRelation(other, this,
-							false));
-				}
-			}
-			for (InitializerMatcher m : beforeMatchersOptional) {
-				if (m.matches(other)) {
-					result.add(new InitializerDependsRelation(other, this, true));
-				}
-			}
-			for (InitializerMatcher m : afterMatchers) {
-				if (m.matches(other)) {
-					result.add(new InitializerDependsRelation(this, other,
-							false));
-				}
-			}
-			for (InitializerMatcher m : afterMatchersOptional) {
-				if (m.matches(other)) {
-					result.add(new InitializerDependsRelation(this, other, true));
-				}
-			}
-			return result;
 		}
 
 		@Override
@@ -117,10 +78,10 @@ public class InitializationService {
 		}
 
 		@Override
-		public Set<Class<?>> getRelatedRepresentingClasses() {
-			return relatedRepresentingClasses;
+		public boolean equals(Object obj) {
+			return super.equals(obj)
+					&& method.equals(((MethodInitializer) obj).method);
 		}
-
 	}
 
 	/**
@@ -355,6 +316,95 @@ public class InitializationService {
 		return result;
 	}
 
+	private static class DependencyEstablishingInitializer extends
+	MatcherBasedInitializer {
+
+		public DependencyEstablishingInitializer(Class<?> componentClass) {
+			super(componentClass);
+		}
+
+		public DependencyEstablishingInitializer(Class<?> componentClass,
+				InitializerMatcherSet data) {
+			super(componentClass, data);
+			// TODO Auto-generated constructor stub
+		}
+
+		@Override
+		public void run() {
+			// nothing to do
+		}
+
+	}
+
+	public class InitializerBuilderImpl implements InitializerBuilder {
+		private InitializerMatcherSet data = new InitializerMatcherSet();
+		private CreateInitializersEventImpl event;
+
+		public InitializerBuilderImpl(CreateInitializersEventImpl event) {
+			this.event = event;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see laf.initialization.InitializerBuilder#after(java.lang.Class)
+		 */
+		@Override
+		public InitializerBuilderImpl after(Class<?> cls) {
+			data.afterMatchers.add(new InitializerMatcher(cls));
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * laf.initialization.InitializerBuilder#afterOptional(java.lang.Class)
+		 */
+		@Override
+		public InitializerBuilderImpl afterOptional(Class<?> cls) {
+			data.afterMatchers.add(new InitializerMatcher(cls));
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see laf.initialization.InitializerBuilder#before(java.lang.Class)
+		 */
+		@Override
+		public InitializerBuilderImpl before(Class<?> cls) {
+			data.afterMatchers.add(new InitializerMatcher(cls));
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see
+		 * laf.initialization.InitializerBuilder#beforeOptional(java.lang.Class)
+		 */
+		@Override
+		public InitializerBuilderImpl beforeOptional(Class<?> cls) {
+			data.afterMatchers.add(new InitializerMatcher(cls));
+			return this;
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see laf.initialization.InitializerBuilder#from(java.lang.Object)
+		 */
+		@Override
+		public void from(Object object) {
+			for (Initializer i : createInitializers(event.getPhase(), object)) {
+				event.addInitializer(new DependencyEstablishingInitializer(i
+						.getRepresentingClass(), data));
+
+			}
+		}
+	}
+
 	private class CreateInitializersEventImpl implements
 	CreateInitializersEvent {
 		/**
@@ -387,9 +437,9 @@ public class InitializationService {
 			Collection<Initializer> result = objectBasedInitializers
 					.get(object);
 			if (result == null) {
-				result = createInitializers(initializationPhase, object);
+				result = InitializationService.this.createInitializers(
+						initializationPhase, object);
 				objectBasedInitializers.put(object, result);
-				log.debug("Found initializers " + result);
 				initializers.addAll(result);
 			}
 			return result;
@@ -415,6 +465,11 @@ public class InitializationService {
 		}
 
 		@Override
+		public InitializerBuilderImpl createInitializers() {
+			return new InitializerBuilderImpl(this);
+		}
+
+		@Override
 		public Class<? extends InitializationPhase> getPhase() {
 			return initializationPhase;
 		}
@@ -428,6 +483,7 @@ public class InitializationService {
 	public void initialize(
 			Class<? extends InitializationPhase> initializationPhase,
 			Class<?> rootInitializerRepresentingClass) {
+
 		// create initializers
 		CreateInitializersEventImpl e = new CreateInitializersEventImpl(
 				initializationPhase);
@@ -454,8 +510,18 @@ public class InitializationService {
 			throw new Error("No Root initializer instance found");
 		}
 
+		if (log.isDebugEnabled()) {
+			ArrayList<String> initializers = new ArrayList<String>();
+			for (Initializer i : e.initializers) {
+				initializers.add(i.toString());
+			}
+			Collections.sort(initializers);
+			log.debug("executing " + initializationPhase.getName()
+					+ " with initializers\n* "
+					+ Joiner.on("\n* ").join(initializers));
+		}
+
 		// run initializers
 		runInitializers(root, e.initializers);
 	}
-
 }

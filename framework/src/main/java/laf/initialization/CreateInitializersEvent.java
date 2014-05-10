@@ -29,11 +29,15 @@ public interface CreateInitializersEvent {
 	 * Search and create initializers from the provided object using
 	 * {@link InitializationService#createInitializers(Object)}. Skip objects
 	 * which were used before. If the object implements {@link Iterable}, the
-	 * objects in the initializer are processed.
+	 * objects in the iterable are processed. (not transistive)
 	 *
 	 * @return the initializers derived from the single object, or all
 	 *         initializers created from the elements of the provided
-	 *         {@link Iterable}
+	 *         {@link Iterable}. If the method is called multiple times with the
+	 *         same object, the initializers are added once but returned on
+	 *         every call.
 	 */
 	Collection<Initializer> createInitializersFrom(Object object);
+
+	InitializerBuilder createInitializers();
 }

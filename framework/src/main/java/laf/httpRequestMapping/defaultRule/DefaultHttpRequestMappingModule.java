@@ -12,7 +12,7 @@ import laf.httpRequestMapping.twoStageMappingRule.DefaultActionPathSigner;
 import laf.httpRequestMapping.twoStageMappingRule.TwoStageMappingRule;
 import laf.httpRequestMapping.twoStageMappingRule.TwoStageMappingRuleModule;
 import laf.initialization.LafInitializer;
-import laf.initialization.laf.DefaultInitializer;
+import laf.initialization.laf.DefaultConfigurationInitializer;
 import laf.initialization.laf.LafConfigurationPhase;
 import laf.initialization.laf.LafInitializationModule;
 
@@ -40,7 +40,7 @@ public class DefaultHttpRequestMappingModule {
 	@Inject
 	DefaultParameterMapper defaultParameterMapper;
 
-	@LafInitializer(phase = LafConfigurationPhase.class, before = DefaultInitializer.class)
+	@LafInitializer(phase = LafConfigurationPhase.class, before = DefaultConfigurationInitializer.class)
 	public void setupDefaultMappingRule() {
 		TwoStageMappingRule rule = new TwoStageMappingRule(
 				requestMapperBuilder

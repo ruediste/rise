@@ -2,6 +2,7 @@ package laf.httpRequestMapping.parameterHandler;
 
 import java.util.LinkedList;
 
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -12,6 +13,8 @@ import laf.controllerInfo.ControllerInfoModule;
 import laf.controllerInfo.ParameterInfo;
 import laf.httpRequestMapping.HttpRequestMappingRule;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProviderModule;
+import laf.initialization.CreateInitializersEvent;
+import laf.initialization.laf.FrameworkRootInitializer;
 import laf.initialization.laf.LafInitializationModule;
 
 import org.jabsaw.Module;
@@ -42,6 +45,17 @@ public class ParameterHandlerModule {
 
 	@Inject
 	@ConfigValue("laf.httpRequestMapping.parameterHandler.IntegerParameterHandler")
-	LinkedList<ParameterHandler> parameterHandlers;
+	public LinkedList<ParameterHandler> parameterHandlers;
 
+	@Inject
+	ParameterHandlerInitializer parameterHandlerInitializer;
+
+	void createInitializers(@Observes CreateInitializersEvent e) {
+		if (!parameterHandlers.isEmpty()) {
+			e.createInitializers().before(FrameworkRootInitializer.class)
+					.from(parameterHandlerInitializer);
+		}
+		e.createInitializers().before(FrameworkRootInitializer.class)
+		.from(parameterHandlers);
+	}
 }

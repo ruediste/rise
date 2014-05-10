@@ -7,7 +7,7 @@ import javax.servlet.annotation.WebServlet;
 import laf.FrontServletBase;
 import laf.Laf;
 
-@WebServlet("/front/*")
+@WebServlet(value = "/front/*", loadOnStartup = 10)
 public class FrontServlet extends FrontServletBase {
 
 	/**
@@ -22,4 +22,5 @@ public class FrontServlet extends FrontServletBase {
 	public void initialize() {
 		laf.initialize();
 	}
+
 }

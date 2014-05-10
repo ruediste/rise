@@ -37,7 +37,7 @@ public class SingletonInitializerCreator {
 					.getBeanClass())) {
 				for (Initializer i : e.createInitializersFrom(instance.select(
 						bean.getBeanClass()).get())) {
-					log.debug("Found initializer " + i);
+					log.trace("Found initializer " + i);
 				}
 			}
 		}

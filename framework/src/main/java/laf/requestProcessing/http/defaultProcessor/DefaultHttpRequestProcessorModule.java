@@ -3,6 +3,7 @@ package laf.requestProcessing.http.defaultProcessor;
 import java.io.IOException;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -10,19 +11,18 @@ import laf.actionPath.ActionPathModule;
 import laf.base.BaseModule;
 import laf.controllerInfo.ControllerInfoModule;
 import laf.initialization.LafInitializer;
-import laf.initialization.laf.DefaultInitializer;
-import laf.initialization.laf.LafInitializationModule;
+import laf.initialization.laf.*;
 import laf.requestProcessing.RequestProcessingModule;
+import laf.requestProcessing.RequestProcessingService.RequestProcessor;
 import laf.requestProcessing.defaultProcessor.DefaultRequestProcessorModule;
-import laf.requestProcessing.defaultProcessor.DefaultRequestProcessorModule.DefaultRequestProcessor;
 import laf.requestProcessing.http.HttpRequestProcessingModule;
-import laf.requestProcessing.http.HttpRequestProcessingService;
 import laf.requestProcessing.http.HttpRequestProcessingService.HttpRequestProcessor;
-import laf.requestProcessing.http.HttpRequestProcessingService.RequestParserImpl;
-import laf.requestProcessing.http.HttpRequestProcessingService.ResultRendererImpl;
+import laf.requestProcessing.http.defaultProcessor.DefaultHttpRequestProcessingService.RequestParserImpl;
+import laf.requestProcessing.http.defaultProcessor.DefaultHttpRequestProcessingService.ResultRendererImpl;
 
 import org.jabsaw.Module;
 
+@Singleton
 @Module(description = "Default implementation of a HttpRequestProcessor", imported = {
 		HttpRequestProcessingModule.class, BaseModule.class,
 		ControllerInfoModule.class, LafInitializationModule.class,
@@ -31,11 +31,10 @@ import org.jabsaw.Module;
 public class DefaultHttpRequestProcessorModule {
 
 	@Inject
-	HttpRequestProcessingService service;
+	DefaultHttpRequestProcessingService service;
 
 	@Inject
-	DefaultRequestProcessorModule defaultRequestProcessorModule;
-
+	RequestProcessingModule requestProcessingModule;
 	@Inject
 	HttpRequestProcessingModule httpRequestProcessingModule;
 
@@ -43,13 +42,12 @@ public class DefaultHttpRequestProcessorModule {
 
 		private RequestParserImpl parser;
 		private ResultRendererImpl renderer;
-		private DefaultRequestProcessor innerProcessor;
+		private RequestProcessor innerProcessor;
 
 		public DefaultHttpRequestProcessor() {
 			parser = service.new RequestParserImpl();
 			renderer = service.new ResultRendererImpl();
-			innerProcessor = defaultRequestProcessorModule
-					.getDefaultProcessor();
+			innerProcessor = requestProcessingModule.getProcessor();
 		}
 
 		@Override
@@ -64,9 +62,9 @@ public class DefaultHttpRequestProcessorModule {
 		}
 	}
 
-	@LafInitializer(after = DefaultRequestProcessorModule.class, before = DefaultInitializer.class)
-	void initialize() {
+	@LafInitializer(phase = LafConfigurationPhase.class, after = DefaultRequestProcessorModule.class, before = DefaultConfigurationInitializer.class)
+	public void initialize() {
 		httpRequestProcessingModule
-				.setHttpProcessor(new DefaultHttpRequestProcessor());
+		.setHttpProcessor(new DefaultHttpRequestProcessor());
 	}
 }

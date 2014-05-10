@@ -5,6 +5,7 @@ import java.util.LinkedList;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import laf.actionPath.ActionPath;
 import laf.actionPath.ActionPath.ParameterValueComparator;
@@ -13,7 +14,9 @@ import laf.base.BaseModule.ProjectStage;
 import laf.httpRequest.HttpRequest;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 import laf.initialization.CreateInitializersEvent;
+import laf.initialization.laf.FrameworkRootInitializer;
 
+@Singleton
 public class HttpRequestMappingService {
 	@Inject
 	HttpRequestMappingModule httpRequestMappingModule;
@@ -96,6 +99,7 @@ public class HttpRequestMappingService {
 	}
 
 	public void createInitializers(@Observes CreateInitializersEvent e) {
-		e.createInitializersFrom(mappingRules);
+		e.createInitializers().before(FrameworkRootInitializer.class)
+				.from(mappingRules);
 	}
 }

@@ -16,15 +16,10 @@ import laf.initialization.LafInitializer;
  * </p>
  */
 @Singleton
-public class DefaultInitializer {
+public class DefaultConfigurationInitializer {
 
 	@LafInitializer(phase = LafConfigurationPhase.class)
 	public void configurationInitializer() {
-
-	}
-
-	@LafInitializer(phase = LafInitializationPhase.class)
-	public void frameworkInitializer() {
 
 	}
 }

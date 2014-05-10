@@ -1,6 +1,7 @@
 package laf.requestProcessing.defaultProcessor;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import laf.actionPath.ActionPath;
 import laf.actionPath.ActionPathModule;
@@ -10,21 +11,26 @@ import laf.controllerInfo.ControllerInfoModule;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProviderModule;
 import laf.initialization.LafInitializer;
-import laf.initialization.laf.LafConfigurationPhase;
-import laf.initialization.laf.LafInitializationModule;
-import laf.requestProcessing.RequestProcessingModule;
-import laf.requestProcessing.RequestProcessingService;
+import laf.initialization.laf.*;
+import laf.requestProcessing.*;
 import laf.requestProcessing.RequestProcessingService.ControllerInvokerImpl;
 import laf.requestProcessing.RequestProcessingService.ParameterLoaderImpl;
 import laf.requestProcessing.RequestProcessingService.RequestProcessor;
 
 import org.jabsaw.Module;
 
+@Singleton
 @Module(description = "Default implementation of a Request Processor", imported = {
 		RequestProcessingModule.class, LafInitializationModule.class,
 		BaseModule.class, ControllerInfoModule.class,
 		ParameterValueProviderModule.class, ActionPathModule.class })
 public class DefaultRequestProcessorModule {
+
+	@Inject
+	RequestProcessingService requestProcessingService;
+
+	@Inject
+	RequestProcessingModule requestProcessingModule;
 
 	public final class DefaultRequestProcessor implements RequestProcessor {
 		private ParameterLoaderImpl loader;
@@ -41,17 +47,8 @@ public class DefaultRequestProcessorModule {
 		}
 	}
 
-	private DefaultRequestProcessor defaultProcessor;
-
-	public DefaultRequestProcessor getDefaultProcessor() {
-		return defaultProcessor;
-	}
-
-	@Inject
-	RequestProcessingService requestProcessingService;
-
-	@LafInitializer(phase = LafConfigurationPhase.class)
-	void initialize() {
-		defaultProcessor = new DefaultRequestProcessor();
+	@LafInitializer(phase = LafConfigurationPhase.class, before = DefaultConfigurationInitializer.class)
+	public void initialize() {
+		requestProcessingModule.setProcessor(new DefaultRequestProcessor());
 	}
 }

@@ -6,15 +6,9 @@ import javax.inject.Inject;
 
 import laf.actionPath.ActionInvocation;
 import laf.actionPath.ActionPath;
-import laf.controllerInfo.ActionMethodInfo;
-import laf.controllerInfo.ControllerInfo;
-import laf.controllerInfo.ControllerInfoMap;
-import laf.controllerInfo.ControllerInfoRepository;
-import laf.controllerInfo.ControllerInfoRepositoryInitializer;
-import laf.controllerInfo.ParameterInfo;
+import laf.controllerInfo.*;
 import laf.httpRequest.HttpRequest;
 import laf.httpRequest.HttpRequestImpl;
-import laf.httpRequestMapping.parameterHandler.ParameterHandler;
 import laf.httpRequestMapping.twoStageMappingRule.HttpRequestMapper;
 import laf.initialization.LafInitializer;
 import laf.initialization.laf.LafInitializationPhase;
@@ -134,15 +128,9 @@ public class DefaultHttpRequestMapper implements HttpRequestMapper {
 
 		// add arguments
 		for (ActionInvocation<String> element : path.getElements()) {
-
-			Iterator<ParameterInfo> infoIt = element.getMethodInfo()
-					.getParameters().iterator();
-			Iterator<String> argIt = element.getArguments().iterator();
-			while (infoIt.hasNext() && argIt.hasNext()) {
-				ParameterInfo info = infoIt.next();
+			for (String argument : element.getArguments()) {
 				sb.append("/");
-				sb.append(ParameterHandler.parameterHandler.get(info).generate(
-						info, argIt.next()));
+				sb.append(argument);
 			}
 		}
 		return new HttpRequestImpl(sb.toString());
