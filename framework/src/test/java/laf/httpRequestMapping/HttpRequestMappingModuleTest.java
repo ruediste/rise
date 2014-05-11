@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import laf.Laf;
 import laf.actionPath.ActionPath;
 import laf.actionPath.ActionPath.ParameterValueComparator;
 import laf.base.BaseModule;
@@ -23,7 +22,6 @@ public class HttpRequestMappingModuleTest {
 
 	HttpRequestMappingModule mappingModule;
 	HttpRequestMappingService mappingService;
-	Laf config;
 	BaseModule baseModule;
 	HttpRequestMappingRule rule;
 	ActionPath<ParameterValueProvider> providerPath;
@@ -33,8 +31,6 @@ public class HttpRequestMappingModuleTest {
 	public void setup() {
 		mappingModule = new HttpRequestMappingModule();
 		mappingService = new HttpRequestMappingService();
-		mappingService.httpRequestMappingModule = mappingModule;
-		config = new Laf();
 		baseModule = mock(BaseModule.class);
 		rule = Mockito.mock(HttpRequestMappingRule.class);
 		providerPath = mock(new TypeToken<ActionPath<ParameterValueProvider>>() {
@@ -52,7 +48,7 @@ public class HttpRequestMappingModuleTest {
 				objectPath.isCallToSameActionMethod(
 						same(providerPath),
 						Matchers.<ParameterValueComparator<Object, ParameterValueProvider>> any()))
-						.thenReturn(true);
+				.thenReturn(true);
 	}
 
 	@Test
@@ -80,14 +76,17 @@ public class HttpRequestMappingModuleTest {
 		mappingService.generate(objectPath);
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test
 	public void generateWrongParsingInProduction() {
 		when(rule.parse(new HttpRequestImpl("foo"))).thenReturn(
 				new ActionPath<ParameterValueProvider>());
 		when(baseModule.getProjectStage()).thenReturn(
 				laf.base.BaseModule.ProjectStage.PRODUCTION);
 
-		assertEquals("foo", mappingService.generate(objectPath));
+		mappingService.generate(objectPath);
+
+		assertEquals(new HttpRequestImpl("foo"),
+				mappingService.generate(objectPath));
 	}
 
 }

@@ -4,6 +4,7 @@ import javax.inject.Singleton;
 
 import laf.actionPath.ActionPathModule;
 import laf.base.BaseModule;
+import laf.configuration.ConfigurationModule;
 import laf.controllerInfo.ControllerInfoModule;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProviderModule;
 
@@ -11,7 +12,8 @@ import org.jabsaw.Module;
 
 @Singleton
 @Module(description = "request processing logic, independant of view technology", imported = {
-		BaseModule.class, ControllerInfoModule.class, ActionPathModule.class }, exported = { ParameterValueProviderModule.class })
+		BaseModule.class, ControllerInfoModule.class, ActionPathModule.class,
+		ConfigurationModule.class }, exported = { ParameterValueProviderModule.class })
 public class RequestProcessingModule {
 
 	private RequestProcessor processor;

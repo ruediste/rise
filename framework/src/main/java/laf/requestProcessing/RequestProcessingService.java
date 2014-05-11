@@ -5,14 +5,15 @@ import javax.inject.Inject;
 
 import laf.actionPath.ActionPath;
 import laf.base.ActionResult;
+import laf.configuration.ConfigInstance;
 import laf.configuration.ConfigValue;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 
 public class RequestProcessingService {
 
-	@ConfigValue
+	@ConfigValue("laf.requestProcessing.DefaultRequestProcessorFactory")
 	@Inject
-	RequestProcessorFactory requestProcessorFactory;
+	ConfigInstance<RequestProcessorFactory> requestProcessorFactory;
 
 	RequestProcessor processor;
 
@@ -22,6 +23,10 @@ public class RequestProcessingService {
 
 	@PostConstruct
 	void initialize() {
-		processor = requestProcessorFactory.createProcessor();
+		processor = requestProcessorFactory.get().createProcessor();
+	}
+
+	public RequestProcessor getProcessor() {
+		return processor;
 	}
 }

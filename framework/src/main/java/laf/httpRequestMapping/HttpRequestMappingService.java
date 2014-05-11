@@ -23,6 +23,7 @@ public class HttpRequestMappingService {
 
 	final ArrayList<HttpRequestMappingRule> mappingRules = new ArrayList<>();
 
+	@Inject
 	@ConfigValue("laf.httpRequestMapping.defaultRule.DefaultHttpMappingRuleFactory")
 	Collection<HttpRequestMappingRuleFactory> mappingRuleFactories;
 

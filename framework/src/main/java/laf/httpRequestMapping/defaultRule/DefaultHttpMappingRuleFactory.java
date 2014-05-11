@@ -12,7 +12,7 @@ import laf.httpRequestMapping.twoStageMappingRule.DefaultActionPathSigner;
 import laf.httpRequestMapping.twoStageMappingRule.TwoStageMappingRule;
 
 public class DefaultHttpMappingRuleFactory implements
-		HttpRequestMappingRuleFactory {
+HttpRequestMappingRuleFactory {
 
 	@Inject
 	DefaultHttpRequestMapper.Builder requestMapperBuilder;
@@ -23,14 +23,16 @@ public class DefaultHttpMappingRuleFactory implements
 	@Inject
 	Instance<DefaultParameterMapper> defaultParameterMapper;
 
+	@Inject
+	Instance<DefaultControllerIdentifierStrategy> strategy;
+
 	@Override
 	public Collection<HttpRequestMappingRule> createRules() {
 		return Collections
 				.<HttpRequestMappingRule> singletonList(new TwoStageMappingRule(
-						requestMapperBuilder
-								.create(new DefaultControllerIdentifierStrategy()),
+						requestMapperBuilder.create(strategy.get()),
 						defaultParameterMapper.get(), defaultActionPathSigner
-								.get()));
+						.get()));
 	}
 
 }

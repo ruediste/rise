@@ -4,9 +4,11 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import laf.requestProcessing.http.HttpRequestProcessingModule;
+import laf.requestProcessing.http.HttpRequestProcessingService;
 
 /**
  * Framework entry point
@@ -14,7 +16,7 @@ import laf.requestProcessing.http.HttpRequestProcessingModule;
 public class FrontServletBase extends HttpServlet {
 
 	@Inject
-	HttpRequestProcessingModule httpRequestProcessingModule;
+	HttpRequestProcessingService service;
 
 	private static final long serialVersionUID = 1L;
 
@@ -22,7 +24,7 @@ public class FrontServletBase extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
-		httpRequestProcessingModule.getHttpProcessor().process(req, resp);
+		service.process(req, resp);
 	}
 
 }

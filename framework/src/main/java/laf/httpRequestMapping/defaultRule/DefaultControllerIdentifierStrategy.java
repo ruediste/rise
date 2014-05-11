@@ -2,9 +2,15 @@ package laf.httpRequestMapping.defaultRule;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import laf.configuration.ConfigValue;
 import laf.controllerInfo.ControllerInfo;
 
-import com.google.common.base.*;
+import com.google.common.base.CaseFormat;
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 /**
@@ -16,7 +22,9 @@ import com.google.common.collect.Lists;
 public class DefaultControllerIdentifierStrategy implements
 		ControllerIdentifierStrategy {
 
-	private String basePackage;
+	@Inject
+	@ConfigValue
+	String basePackage;
 
 	public String getControllerIdentifier(String controllerClassName) {
 		List<String> parts = getControllerIdentifierParts(controllerClassName);
@@ -62,14 +70,6 @@ public class DefaultControllerIdentifierStrategy implements
 	@Override
 	public String apply(ControllerInfo info) {
 		return getControllerIdentifier(info.getQualifiedName());
-	}
-
-	public String getBasePackage() {
-		return basePackage;
-	}
-
-	public void setBasePackage(String basePackage) {
-		this.basePackage = basePackage;
 	}
 
 }

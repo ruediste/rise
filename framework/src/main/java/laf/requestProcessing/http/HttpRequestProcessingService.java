@@ -1,27 +1,29 @@
 package laf.requestProcessing.http;
 
-import java.io.IOException;
-
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import laf.actionPath.ActionPath;
-import laf.base.ActionResult;
-import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
+import laf.configuration.ConfigInstance;
+import laf.configuration.ConfigValue;
 
+@ApplicationScoped
 public class HttpRequestProcessingService {
 
-	public interface RequestParser {
-		ActionPath<ParameterValueProvider> parse(HttpServletRequest request);
+	HttpRequestProcessor processor;
+
+	@Inject
+	@ConfigValue("laf.requestProcessing.http.defaultProcessor.DefaultHttpRequestProcessorFactory")
+	ConfigInstance<HttpRequestProcessorFactory> processorFactory;
+
+	public void process(HttpServletRequest request, HttpServletResponse response) {
+		processor.process(request, response);
 	}
 
-	public interface ResultRenderer {
-		void renderResult(ActionResult result, HttpServletResponse response)
-				throws IOException;
+	@PostConstruct
+	void initialize() {
+		processor = processorFactory.get().createProcessor();
 	}
-
-	public interface HttpRequestProcessor {
-		void process(HttpServletRequest request, HttpServletResponse response);
-	}
-
 }

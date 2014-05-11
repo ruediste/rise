@@ -4,25 +4,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.servlet.ServletContextEvent;
 
 import org.slf4j.Logger;
 
-import com.google.common.base.Strings;
-
-@Singleton
+@ApplicationScoped
 public class ConfigurationFactory {
 
 	@Inject
@@ -60,26 +59,19 @@ public class ConfigurationFactory {
 		// search with the qualified name first
 		String configKey = p.getMember().getDeclaringClass().getName() + "."
 				+ p.getMember().getName();
-		if (!properties.containsValue(configKey)) {
+		if (!properties.containsKey(configKey)) {
 			// try with the unqualified class name
 			configKey = p.getMember().getDeclaringClass().getSimpleName() + "."
 					+ p.getMember().getName();
-			if (!properties.containsValue(configKey)) {
+			if (!properties.containsKey(configKey)) {
 				// try with just the member name
 				configKey = p.getMember().getName();
 
-				if (!properties.containsValue(configKey)) {
+				if (!properties.containsKey(configKey)) {
 					// check if the annotation specifies a default
 					ConfigValue annotation = p.getAnnotated().getAnnotation(
 							ConfigValue.class);
-					if (annotation != null
-							&& !Strings.isNullOrEmpty(annotation.value())) {
-						return annotation.value();
-					} else {
-						throw new RuntimeException(
-								"No value found for configuration parameter "
-										+ p.getMember());
-					}
+					return annotation.value();
 				}
 			}
 		}
@@ -149,6 +141,14 @@ public class ConfigurationFactory {
 
 	@Produces
 	@ConfigValue
+	public <T> Collection<T> produceInstancesCollection(InjectionPoint p)
+			throws InstantiationException, IllegalAccessException,
+			ClassNotFoundException {
+		return produceInstancesArrayList(p);
+	}
+
+	@Produces
+	@ConfigValue
 	public <T> Deque<T> produceInstancesDequeue(InjectionPoint p)
 			throws InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
@@ -187,7 +187,7 @@ public class ConfigurationFactory {
 	}
 
 	private Object createObject(String value) throws ClassNotFoundException,
-			InstantiationException, IllegalAccessException {
+	InstantiationException, IllegalAccessException {
 		String[] parts = value.split(":");
 		final List<Annotation> qualifiers = new ArrayList<>();
 		ClassLoader classLoader = Thread.currentThread()

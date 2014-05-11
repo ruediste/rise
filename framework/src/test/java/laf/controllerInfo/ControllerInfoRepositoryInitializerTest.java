@@ -25,7 +25,6 @@ public class ControllerInfoRepositoryInitializerTest {
 	public void setup() {
 		repo = new ControllerInfoRepository();
 		initializer = new ControllerInfoRepositoryInitializer();
-		initializer.repository = repo;
 		initializer.beanManager = mock(BeanManager.class);
 		initializer.log = mock(Logger.class);
 	}

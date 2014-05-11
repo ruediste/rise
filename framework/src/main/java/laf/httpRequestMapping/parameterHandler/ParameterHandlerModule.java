@@ -2,7 +2,6 @@ package laf.httpRequestMapping.parameterHandler;
 
 import javax.inject.Singleton;
 
-import laf.Laf;
 import laf.configuration.ConfigurationModule;
 import laf.controllerInfo.ControllerInfoModule;
 import laf.controllerInfo.ParameterInfo;

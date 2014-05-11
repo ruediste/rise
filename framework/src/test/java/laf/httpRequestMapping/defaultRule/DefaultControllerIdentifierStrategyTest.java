@@ -23,7 +23,7 @@ public class DefaultControllerIdentifierStrategyTest {
 	@Test
 	public void testWithPrefix() throws Exception {
 		DefaultControllerIdentifierStrategy strategy = new DefaultControllerIdentifierStrategy();
-		strategy.setBasePackage("laf.controllerInfo");
+		strategy.basePackage = "laf.controllerInfo";
 		assertEquals(
 				"impl/test",
 				strategy.getControllerIdentifier("laf.controllerInfo.impl.TestController"));

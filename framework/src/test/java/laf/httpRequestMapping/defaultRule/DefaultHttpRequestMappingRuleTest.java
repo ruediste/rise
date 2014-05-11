@@ -5,8 +5,10 @@ import static org.junit.Assert.assertNotNull;
 
 import javax.inject.Inject;
 
-import laf.Laf;
-import laf.actionPath.*;
+import laf.actionPath.ActionInvocation;
+import laf.actionPath.ActionPath;
+import laf.actionPath.ActionPathFactory;
+import laf.actionPath.PathActionResult;
 import laf.controllerInfo.ControllerInfoRepository;
 import laf.controllerInfo.impl.TestController;
 import laf.httpRequest.HttpRequestImpl;
@@ -18,7 +20,6 @@ import org.jabsaw.util.Modules;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -33,16 +34,13 @@ public class DefaultHttpRequestMappingRuleTest {
 				.getDefault()
 				.addClasses(
 						Modules.getAllRequiredClasses(DefaultHttpRequestMappingModule.class))
-				.addClass(TestController.class);
+						.addClass(TestController.class);
 		System.out.println(archive.toString(true));
 		return archive;
 	}
 
 	@Inject
 	ActionPathFactory factory;
-
-	@Inject
-	Laf laf;
 
 	@Inject
 	HttpRequestMappingService httpRequestMappingService;
@@ -52,13 +50,6 @@ public class DefaultHttpRequestMappingRuleTest {
 
 	@Inject
 	DefaultHttpRequestMappingModule defaultHttpRequestMappingModule;
-
-	@Before
-	public void init() {
-		if (!laf.isInitialized()) {
-			laf.initialize();
-		}
-	}
 
 	@Test
 	public void controllerInfoPresent() {
