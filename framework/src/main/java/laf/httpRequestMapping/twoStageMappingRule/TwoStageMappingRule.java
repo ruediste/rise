@@ -1,13 +1,9 @@
 package laf.httpRequestMapping.twoStageMappingRule;
 
-import java.util.Arrays;
-
 import laf.actionPath.ActionPath;
 import laf.httpRequest.HttpRequest;
 import laf.httpRequestMapping.HttpRequestMappingRule;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
-import laf.initialization.InitializerProvider;
-import laf.initialization.InitializationPhase;
 
 /**
  * {@link HttpRequestMappingRule} using a {@link HttpRequestMapper} and a
@@ -17,8 +13,7 @@ import laf.initialization.InitializationPhase;
  * <img src="doc-files/TwoStageMappingRule.png" />
  * </p>
  */
-public class TwoStageMappingRule implements HttpRequestMappingRule,
-InitializerProvider {
+public class TwoStageMappingRule implements HttpRequestMappingRule {
 
 	private final HttpRequestMapper httpRequestMapper;
 	private final ParameterMapper parameterMapper;
@@ -57,11 +52,6 @@ InitializerProvider {
 		signer.sign(stringPath);
 
 		return httpRequestMapper.generate(stringPath);
-	}
-
-	@Override
-	public Iterable<Object> getInitializers(Class<? extends InitializationPhase> initializationPhase) {
-		return Arrays.asList(httpRequestMapper, parameterMapper, signer);
 	}
 
 }

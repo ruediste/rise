@@ -11,7 +11,6 @@ import laf.httpRequest.HttpRequestModule;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProviderModule;
 import laf.httpRequestMapping.twoStageMappingRule.TwoStageMappingRuleModule;
-import laf.initialization.InitializationModule;
 
 import org.jabsaw.Module;
 
@@ -53,7 +52,7 @@ import org.jabsaw.Module;
 @Module(description = "Maps URLs to ActionPaths using UrlMappingRules", exported = {
 		ActionPathModule.class, ControllerInfoModule.class,
 		ParameterValueProviderModule.class, HttpRequestModule.class }, imported = {
-		InitializationModule.class, ConfigurationModule.class, BaseModule.class })
+		ConfigurationModule.class, BaseModule.class })
 @Singleton
 public class HttpRequestMappingModule {
 

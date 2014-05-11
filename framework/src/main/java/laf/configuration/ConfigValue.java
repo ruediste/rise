@@ -1,13 +1,13 @@
 package laf.configuration;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 import javax.enterprise.util.Nonbinding;
 import javax.inject.Qualifier;
 
+/**
+ * Marks a configuration value. The default value can be specified.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Qualifier

@@ -13,7 +13,7 @@ import laf.controllerInfo.ControllerInfoModule;
 import laf.initialization.LafInitializer;
 import laf.initialization.laf.*;
 import laf.requestProcessing.RequestProcessingModule;
-import laf.requestProcessing.RequestProcessingService.RequestProcessor;
+import laf.requestProcessing.RequestProcessor;
 import laf.requestProcessing.defaultProcessor.DefaultRequestProcessorModule;
 import laf.requestProcessing.http.HttpRequestProcessingModule;
 import laf.requestProcessing.http.HttpRequestProcessingService.HttpRequestProcessor;
@@ -25,7 +25,7 @@ import org.jabsaw.Module;
 @Singleton
 @Module(description = "Default implementation of a HttpRequestProcessor", imported = {
 		HttpRequestProcessingModule.class, BaseModule.class,
-		ControllerInfoModule.class, LafInitializationModule.class,
+		ControllerInfoModule.class, 
 		RequestProcessingModule.class, DefaultRequestProcessorModule.class,
 		ActionPathModule.class })
 public class DefaultHttpRequestProcessorModule {

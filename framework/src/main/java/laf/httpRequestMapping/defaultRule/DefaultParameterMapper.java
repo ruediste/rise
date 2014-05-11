@@ -1,15 +1,14 @@
 package laf.httpRequestMapping.defaultRule;
 
+import javax.inject.Inject;
+
 import laf.actionPath.ActionPath;
 import laf.base.Function2;
 import laf.controllerInfo.ParameterInfo;
-import laf.httpRequestMapping.parameterHandler.ParameterHandler;
-import laf.httpRequestMapping.parameterHandler.ParameterHandlerInitializer;
 import laf.httpRequestMapping.parameterHandler.ParameterHandlerModule;
+import laf.httpRequestMapping.parameterHandler.ParameterHandlerRepository;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 import laf.httpRequestMapping.twoStageMappingRule.ParameterMapper;
-import laf.initialization.LafInitializer;
-import laf.initialization.laf.LafInitializationPhase;
 
 /**
  * A {@link ParameterMapper} using the {@link ParameterHandlerModule}
@@ -17,10 +16,8 @@ import laf.initialization.laf.LafInitializationPhase;
  */
 public class DefaultParameterMapper implements ParameterMapper {
 
-	@LafInitializer(phase = LafInitializationPhase.class, after = ParameterHandlerInitializer.class)
-	public void initialize() {
-
-	}
+	@Inject
+	ParameterHandlerRepository handlerRepository;
 
 	@Override
 	public ActionPath<ParameterValueProvider> parse(
@@ -31,7 +28,7 @@ public class DefaultParameterMapper implements ParameterMapper {
 					@Override
 					public ParameterValueProvider apply(ParameterInfo a,
 							String b) {
-						return ParameterHandler.parameterHandler.get(a).parse(
+						return handlerRepository.getParameterHandler(a).parse(
 								a, b);
 					}
 				});
@@ -44,7 +41,7 @@ public class DefaultParameterMapper implements ParameterMapper {
 
 					@Override
 					public String apply(ParameterInfo a, Object b) {
-						return ParameterHandler.parameterHandler.get(a)
+						return handlerRepository.getParameterHandler(a)
 								.generate(a, b);
 					}
 				});

@@ -1,15 +1,11 @@
 package laf.requestProcessing;
 
-import javax.enterprise.event.Observes;
 import javax.inject.Singleton;
 
 import laf.actionPath.ActionPathModule;
 import laf.base.BaseModule;
 import laf.controllerInfo.ControllerInfoModule;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProviderModule;
-import laf.initialization.CreateInitializersEvent;
-import laf.initialization.laf.FrameworkRootInitializer;
-import laf.requestProcessing.RequestProcessingService.RequestProcessor;
 
 import org.jabsaw.Module;
 
@@ -28,8 +24,4 @@ public class RequestProcessingModule {
 		this.processor = processor;
 	}
 
-	void createInitializers(@Observes CreateInitializersEvent e) {
-		e.createInitializers().before(FrameworkRootInitializer.class)
-		.from(processor);
-	}
 }

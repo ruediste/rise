@@ -44,7 +44,7 @@ public class HttpRequestMappingModuleTest {
 		});
 
 		mappingService.baseModule = baseModule;
-		mappingService.getMappingRules().add(rule);
+		mappingService.mappingRules.add(rule);
 
 		when(rule.parse(new HttpRequestImpl("foo"))).thenReturn(providerPath);
 		when(rule.generate(objectPath)).thenReturn(new HttpRequestImpl("foo"));

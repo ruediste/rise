@@ -1,6 +1,5 @@
 package laf.httpRequestMapping.parameterHandler;
 
-import laf.attachedProperties.AttachedProperty;
 import laf.controllerInfo.ParameterInfo;
 import laf.httpRequestMapping.HttpRequestMappingRule;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
@@ -12,11 +11,6 @@ import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
  * @see ParameterHandlerModule
  */
 public interface ParameterHandler {
-
-	/**
-	 * Attached property for the parameter handler of a {@link ParameterInfo}
-	 */
-	static final AttachedProperty<ParameterInfo, ParameterHandler> parameterHandler = new AttachedProperty<>();
 
 	/**
 	 * Returns true if this handler can handle the specified parameter.

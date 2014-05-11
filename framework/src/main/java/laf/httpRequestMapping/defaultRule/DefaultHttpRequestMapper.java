@@ -10,8 +10,6 @@ import laf.controllerInfo.*;
 import laf.httpRequest.HttpRequest;
 import laf.httpRequest.HttpRequestImpl;
 import laf.httpRequestMapping.twoStageMappingRule.HttpRequestMapper;
-import laf.initialization.LafInitializer;
-import laf.initialization.laf.LafInitializationPhase;
 
 import org.slf4j.Logger;
 
@@ -32,10 +30,6 @@ public class DefaultHttpRequestMapper implements HttpRequestMapper {
 			return new DefaultHttpRequestMapper(controllerInfoRepository,
 					mapBuilder.create(controllerIdentifierStrategy), log);
 		}
-	}
-
-	@LafInitializer(phase = LafInitializationPhase.class, after = ControllerInfoRepositoryInitializer.class)
-	public void initialize() {
 	}
 
 	private final ControllerInfoMap<String> identifiers;

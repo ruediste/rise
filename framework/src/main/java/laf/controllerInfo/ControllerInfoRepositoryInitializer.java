@@ -9,11 +9,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import laf.base.ActionResult;
-import laf.base.Controller;
-import laf.base.EmbeddedController;
-import laf.initialization.LafInitializer;
-import laf.initialization.laf.LafInitializationPhase;
+import laf.base.*;
 
 import org.slf4j.Logger;
 
@@ -24,13 +20,9 @@ public class ControllerInfoRepositoryInitializer {
 	Logger log;
 
 	@Inject
-	public ControllerInfoRepository repository;
-
-	@Inject
 	BeanManager beanManager;
 
-	@LafInitializer(phase = LafInitializationPhase.class)
-	public void initialize() {
+	public void initialize(ControllerInfoRepository repository) {
 		Controller controllerAnnotation = new Controller() {
 			@Override
 			public Class<? extends Annotation> annotationType() {
@@ -49,17 +41,17 @@ public class ControllerInfoRepositoryInitializer {
 		for (Bean<?> bean : beanManager.getBeans(Object.class,
 				controllerAnnotation)) {
 			log.debug("Found controller " + bean.getBeanClass());
-			putControllerInfo(bean.getBeanClass(), false);
+			putControllerInfo(repository, bean.getBeanClass(), false);
 		}
 
 		for (Bean<?> bean : beanManager.getBeans(Object.class,
 				embeddedControllerAnnotation)) {
 			log.debug("Found embedded controller " + bean.getBeanClass());
-			putControllerInfo(bean.getBeanClass(), true);
+			putControllerInfo(repository, bean.getBeanClass(), true);
 		}
 	}
 
-	public void putControllerInfo(Class<?> controllerClass, boolean isEmbedded) {
+	public void putControllerInfo(ControllerInfoRepository repository, Class<?> controllerClass, boolean isEmbedded) {
 		repository.putControllerInfo(createControllerInfo(controllerClass,
 				isEmbedded));
 	}
@@ -89,7 +81,7 @@ public class ControllerInfoRepositoryInitializer {
 
 			// calculate name
 			methodInfo
-			.setName(info.calculateUnusedMethodName(method.getName()));
+					.setName(info.calculateUnusedMethodName(method.getName()));
 
 			// add to repository
 			info.putActionMethodInfo(methodInfo);

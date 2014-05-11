@@ -1,9 +1,9 @@
 package laf.httpRequestMapping;
 
-import java.util.Deque;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Collection;
 
-import javax.enterprise.event.Observes;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -11,20 +11,27 @@ import laf.actionPath.ActionPath;
 import laf.actionPath.ActionPath.ParameterValueComparator;
 import laf.base.BaseModule;
 import laf.base.BaseModule.ProjectStage;
+import laf.configuration.ConfigValue;
 import laf.httpRequest.HttpRequest;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
-import laf.initialization.CreateInitializersEvent;
-import laf.initialization.laf.FrameworkRootInitializer;
 
 @Singleton
 public class HttpRequestMappingService {
-	@Inject
-	HttpRequestMappingModule httpRequestMappingModule;
 
 	@Inject
 	BaseModule baseModule;
 
-	private final Deque<HttpRequestMappingRule> mappingRules = new LinkedList<>();
+	final ArrayList<HttpRequestMappingRule> mappingRules = new ArrayList<>();
+
+	@ConfigValue("laf.httpRequestMapping.defaultRule.DefaultHttpMappingRuleFactory")
+	Collection<HttpRequestMappingRuleFactory> mappingRuleFactories;
+
+	@PostConstruct
+	void initialize() {
+		for (HttpRequestMappingRuleFactory factory : mappingRuleFactories) {
+			mappingRules.addAll(factory.createRules());
+		}
+	}
 
 	/**
 	 * Parse a servlet path. If no matching rule is found, null is returned.
@@ -94,12 +101,4 @@ public class HttpRequestMappingService {
 		return result;
 	}
 
-	public Deque<HttpRequestMappingRule> getMappingRules() {
-		return mappingRules;
-	}
-
-	public void createInitializers(@Observes CreateInitializersEvent e) {
-		e.createInitializers().before(FrameworkRootInitializer.class)
-				.from(mappingRules);
-	}
 }

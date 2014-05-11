@@ -2,10 +2,15 @@ package laf.controllerInfo;
 
 import java.util.LinkedHashMap;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
 public class ControllerInfoRepository {
+	@Inject
+	ControllerInfoRepositoryInitializer initializer;
+
 	private final LinkedHashMap<Class<?>, ControllerInfo> controllerInfos = new LinkedHashMap<>();
 
 	public void putControllerInfo(ControllerInfo info) {
@@ -20,4 +25,8 @@ public class ControllerInfoRepository {
 		return controllerInfos.get(controllerClass);
 	}
 
+	@PostConstruct
+	void initialize() {
+		initializer.initialize(this);
+	}
 }

@@ -10,20 +10,17 @@ import laf.base.BaseModule;
 import laf.controllerInfo.ControllerInfoModule;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProviderModule;
-import laf.initialization.LafInitializer;
-import laf.initialization.laf.*;
 import laf.requestProcessing.*;
 import laf.requestProcessing.RequestProcessingService.ControllerInvokerImpl;
 import laf.requestProcessing.RequestProcessingService.ParameterLoaderImpl;
-import laf.requestProcessing.RequestProcessingService.RequestProcessor;
 
 import org.jabsaw.Module;
 
 @Singleton
 @Module(description = "Default implementation of a Request Processor", imported = {
-		RequestProcessingModule.class, LafInitializationModule.class,
-		BaseModule.class, ControllerInfoModule.class,
-		ParameterValueProviderModule.class, ActionPathModule.class })
+		RequestProcessingModule.class, BaseModule.class,
+		ControllerInfoModule.class, ParameterValueProviderModule.class,
+		ActionPathModule.class })
 public class DefaultRequestProcessorModule {
 
 	@Inject
@@ -47,7 +44,6 @@ public class DefaultRequestProcessorModule {
 		}
 	}
 
-	@LafInitializer(phase = LafConfigurationPhase.class, before = DefaultConfigurationInitializer.class)
 	public void initialize() {
 		requestProcessingModule.setProcessor(new DefaultRequestProcessor());
 	}
