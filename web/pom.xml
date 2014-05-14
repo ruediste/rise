@@ -187,17 +187,6 @@
 			<version>3.1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>1.9.5</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>16.0.1</version>
-		</dependency>
-		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>1.7.5</version>
@@ -223,6 +212,12 @@
 			<groupId>org.rendersnake</groupId>
 			<artifactId>xrendersnake</artifactId>
 			<version>1.8-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.laf</groupId>
+			<artifactId>laf-testUtil</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>
