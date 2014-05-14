@@ -219,5 +219,10 @@
 			<version>${jabsaw.version}</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.rendersnake</groupId>
+			<artifactId>xrendersnake</artifactId>
+			<version>1.8-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>

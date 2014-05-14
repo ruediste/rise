@@ -27,14 +27,14 @@ public class AttachedProperty<Bearer extends AttachedPropertyBearer, T> {
 	 * Clear the property on the bearer. After calling this method,
 	 * {@link #isSet(Bearer)} will return false.
 	 */
-	void clear(Bearer bearer) {
+	public void clear(Bearer bearer) {
 		bearer.getAttachedPropertyMap().clear(this);
 	}
 
 	/**
 	 * Determine if the property is set on the.
 	 */
-	boolean isSet(Bearer bearer) {
+	public boolean isSet(Bearer bearer) {
 		return bearer.getAttachedPropertyMap().isSet(this);
 	}
 
