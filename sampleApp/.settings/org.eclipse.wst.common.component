@@ -4,7 +4,10 @@
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
-        <dependent-module archiveName="laf-framework-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/laf-framework/laf-framework">
+        <dependent-module archiveName="laf-web-component-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/laf-web-component/laf-web-component">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="laf-web-base-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/laf-web-base/laf-web-base">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="jabsaw-api-1.2-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/jabsaw-api/jabsaw-api">

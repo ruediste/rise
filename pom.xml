@@ -8,7 +8,7 @@
 	<name>Light Application Framework Parent</name>
 	<url>http://maven.apache.org</url>
 	<modules>
-		<module>framework</module>
+		<module>web</module>
 		<module>sampleApp</module>
 	</modules>
 </project>
