@@ -2,10 +2,6 @@ package laf.component;
 
 import java.util.Collections;
 
-import org.apache.myfaces.shared.util.ComponentUtils;
-
-import com.google.common.collect.Iterables;
-
 public enum EventRouting {
 	/**
 	 * The event is delivered directly to the target
@@ -25,7 +21,7 @@ public enum EventRouting {
 		@Override
 		public Iterable<Component> getCandidateComponents(
 				Component startComponent) {
-			return Iterables.concat(Collections.singleton(startComponent),ComponentTreeUtil.ancestors(startComponent);
+			return ComponentTreeUtil.ancestors(startComponent, true);
 		}
 	},
 
@@ -37,8 +33,7 @@ public enum EventRouting {
 		@Override
 		public Iterable<Component> getCandidateComponents(
 				Component startComponent) {
-			// TODO Auto-generated method stub
-			return null;
+			return ComponentTreeUtil.path(startComponent, true);
 		}
 	},
 
@@ -49,8 +44,7 @@ public enum EventRouting {
 		@Override
 		public Iterable<Component> getCandidateComponents(
 				Component startComponent) {
-			// TODO Auto-generated method stub
-			return null;
+			return ComponentTreeUtil.subTree(startComponent);
 		}
 	};
 

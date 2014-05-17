@@ -28,10 +28,19 @@ public class ComponentTreeUtil {
 	/**
 	 * Returns the ancestors of the given {@link Component}, starting with the
 	 * parent of the component and ending with the root component.
+	 *
+	 * @param includeStartComponent
+	 *            TODO
 	 */
-	static public List<Component> ancestors(Component start) {
+	static public List<Component> ancestors(Component start,
+			boolean includeStartComponent) {
 		ArrayList<Component> result = new ArrayList<>();
-		Component c = start.getParent();
+		Component c;
+		if (includeStartComponent) {
+			c = start;
+		} else {
+			c = start.getParent();
+		}
 		while (c != null) {
 			result.add(c);
 			c = c.getParent();
@@ -42,9 +51,13 @@ public class ComponentTreeUtil {
 	/**
 	 * Returns the path from the root component to the target component, not
 	 * including the target component.
+	 * 
+	 * @param includeStartComponent
+	 *            TODO
 	 */
-	static public Collection<Component> path(Component target) {
-		List<Component> result = ancestors(target);
+	static public Collection<Component> path(Component target,
+			boolean includeStartComponent) {
+		List<Component> result = ancestors(target, includeStartComponent);
 		Collections.reverse(result);
 		return result;
 	}

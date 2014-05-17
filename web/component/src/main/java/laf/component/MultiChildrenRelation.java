@@ -2,17 +2,18 @@ package laf.component;
 
 import java.util.*;
 
-public class MultiChildrenRelation extends ChildRelation {
+public class MultiChildrenRelation<T extends Component> extends ChildRelation {
 
-	private final ArrayList<Component> children = new ArrayList<>();
+	private final ArrayList<T> children = new ArrayList<>();
 
 	public MultiChildrenRelation(ComponentBase parent) {
 		super(parent);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public Iterator<Component> iterator() {
-		return children.iterator();
+		return (Iterator) children.iterator();
 	}
 
 	@Override
@@ -20,17 +21,17 @@ public class MultiChildrenRelation extends ChildRelation {
 		children.remove(child);
 	}
 
-	public void add(Component component) {
+	public void add(T component) {
 		children.add(component);
 		postAdd(component);
 	}
 
-	public void add(int index, Component component) {
+	public void add(int index, T component) {
 		children.add(index, component);
 		postAdd(component);
 	}
 
-	public void remove(Component component) {
+	public void remove(T component) {
 		children.remove(component);
 		postRemove(component);
 	}
@@ -53,7 +54,7 @@ public class MultiChildrenRelation extends ChildRelation {
 	/**
 	 * Returns an unmodifiable view to the children of this relation
 	 */
-	public Collection<Component> getChildren() {
+	public Collection<T> getChildren() {
 		return Collections.unmodifiableCollection(children);
 	}
 

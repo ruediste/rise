@@ -12,11 +12,11 @@ public class DeploymentProvider {
 				.create(WebArchive.class)
 				.addAsLibraries(
 						Maven.resolver()
-								.loadPomFromFile("pom.xml")
-								.resolve("org.slf4j:slf4j-api",
-										"com.google.guava:guava")
+						.loadPomFromFile("pom.xml")
+						.resolve("org.slf4j:slf4j-api",
+								"com.google.guava:guava:16.0.1")
 								.withTransitivity().asFile())
-								.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
-								.addClass(LoggerProducer.class);
+				.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
+				.addClass(LoggerProducer.class);
 	}
 }

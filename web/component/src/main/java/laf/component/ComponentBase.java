@@ -1,13 +1,16 @@
 package laf.component;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import laf.attachedProperties.AttachedPropertyBearerBase;
 
+import org.rendersnake.HtmlCanvas;
+
 import com.google.common.collect.Iterables;
 
-public class ComponentBase extends AttachedPropertyBearerBase implements
-Component {
+public class ComponentBase<TSelf> extends AttachedPropertyBearerBase implements
+		Component {
 
 	private Component parent;
 	ArrayList<ChildRelation> childRelations = new ArrayList<>();
@@ -38,4 +41,15 @@ Component {
 		childRelations.add(childRelation);
 	}
 
+	@Override
+	public void render(HtmlCanvas html) throws IOException {
+		for (Component child : getChildren()) {
+			child.render(html);
+		}
+	}
+
+	@Override
+	public void initialize() {
+
+	}
 }
