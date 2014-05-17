@@ -9,8 +9,13 @@ import javax.inject.Singleton;
 
 import laf.attachedProperties.AttachedProperty;
 import laf.base.ActionContext;
-import laf.controllerInfo.*;
-import net.sf.cglib.proxy.*;
+import laf.controllerInfo.ActionMethodInfo;
+import laf.controllerInfo.ControllerInfo;
+import laf.controllerInfo.ControllerInfoRepository;
+import laf.controllerInfo.ControllerType;
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
 
 import com.google.common.base.Joiner;
 
@@ -69,7 +74,7 @@ public class ActionPathFactory {
 								+ controllerClass.getName());
 			}
 
-			if (controllerInfo.isEmbeddedController()) {
+			if (controllerInfo.getType() == ControllerType.EMBEDDED) {
 				// look for the latest occurrence of the controller class
 				// in the invoked path, and use the prefix for the to be
 				// generated

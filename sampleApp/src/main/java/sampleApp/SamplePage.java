@@ -2,17 +2,19 @@ package sampleApp;
 
 import java.io.IOException;
 
-import laf.component.*;
+import laf.component.Component;
+import laf.component.ComponentBase;
+import laf.component.MultiChildrenRelation;
 
 import org.rendersnake.HtmlCanvas;
 
-public class SamplePage extends ComponentView<SampleComponentController> {
+public class SamplePage extends ComponentBase<SamplePage> {
 
 	public final MultiChildrenRelation<Component> body = new MultiChildrenRelation<>(
 			this);
 
-	public SamplePage(SampleView sampleView) {
-		body.add(sampleView);
+	public SamplePage(Component bodyComponent) {
+		body.add(bodyComponent);
 	}
 
 	@Override

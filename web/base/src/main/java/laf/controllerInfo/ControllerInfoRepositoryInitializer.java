@@ -9,7 +9,10 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import laf.base.*;
+import laf.base.ActionResult;
+import laf.base.ComponentController;
+import laf.base.Controller;
+import laf.base.EmbeddedController;
 
 import org.slf4j.Logger;
 
@@ -38,28 +41,45 @@ public class ControllerInfoRepositoryInitializer {
 			}
 		};
 
+		ComponentController componentControllerAnnotation = new ComponentController() {
+
+			@Override
+			public Class<? extends Annotation> annotationType() {
+				return ComponentController.class;
+			}
+		};
+
 		for (Bean<?> bean : beanManager.getBeans(Object.class,
 				controllerAnnotation)) {
 			log.debug("Found controller " + bean.getBeanClass());
-			putControllerInfo(repository, bean.getBeanClass(), false);
+			putControllerInfo(repository, bean.getBeanClass(),
+					ControllerType.NORMAL);
 		}
 
 		for (Bean<?> bean : beanManager.getBeans(Object.class,
 				embeddedControllerAnnotation)) {
 			log.debug("Found embedded controller " + bean.getBeanClass());
-			putControllerInfo(repository, bean.getBeanClass(), true);
+			putControllerInfo(repository, bean.getBeanClass(),
+					ControllerType.EMBEDDED);
+		}
+
+		for (Bean<?> bean : beanManager.getBeans(Object.class,
+				componentControllerAnnotation)) {
+			log.debug("Found component controller " + bean.getBeanClass());
+			putControllerInfo(repository, bean.getBeanClass(),
+					ControllerType.COMPONENT);
 		}
 	}
 
-	public void putControllerInfo(ControllerInfoRepository repository, Class<?> controllerClass, boolean isEmbedded) {
-		repository.putControllerInfo(createControllerInfo(controllerClass,
-				isEmbedded));
+	public void putControllerInfo(ControllerInfoRepository repository,
+			Class<?> controllerClass, ControllerType type) {
+		repository
+		.putControllerInfo(createControllerInfo(controllerClass, type));
 	}
 
 	public ControllerInfoImpl createControllerInfo(Class<?> controllerClass,
-			boolean isEmbedded) {
-		ControllerInfoImpl info = new ControllerInfoImpl(controllerClass,
-				isEmbedded);
+			ControllerType type) {
+		ControllerInfoImpl info = new ControllerInfoImpl(controllerClass, type);
 		for (Method method : info.getControllerClass().getMethods()) {
 			if (method.getReturnType() == null) {
 				continue;

@@ -33,7 +33,7 @@ public class ControllerInfoRepositoryInitializerTest {
 	public void testCreateNormalController() {
 
 		ControllerInfo info = initializer.createControllerInfo(
-				TestController.class, false);
+				TestController.class, ControllerType.NORMAL);
 
 		assertEquals("Test", info.getName());
 		assertEquals("laf.controllerInfo.impl", info.getPackage());
@@ -60,7 +60,7 @@ public class ControllerInfoRepositoryInitializerTest {
 	@Test
 	public void testCreateEmbeddedController() {
 		ControllerInfo info = initializer.createControllerInfo(
-				EmbeddedTestController.class, true);
+				EmbeddedTestController.class, ControllerType.EMBEDDED);
 
 		assertEquals(1, Iterables.size(info.getActionMethodInfos()));
 

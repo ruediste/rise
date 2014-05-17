@@ -1,14 +1,14 @@
 package sampleApp;
 
 import laf.base.ActionResult;
-import laf.base.Controller;
+import laf.base.ComponentController;
 import laf.component.PageRenderResult;
 
-@Controller
+@ComponentController
 public class SampleComponentController {
 
 	public ActionResult index() {
-		return new PageRenderResult<>(new SamplePage(new SampleView()));
+		return PageRenderResult.create(this, SampleComponentView.class);
 	}
 
 	public String getSampleText() {

@@ -52,7 +52,7 @@ public interface ControllerInfo extends AttachedPropertyBearer {
 	ActionMethodInfo getActionMethodInfo(Method method);
 
 	/**
-	 * Return true if this is an embedded controller.
+	 * Return the type of this controller
 	 */
-	boolean isEmbeddedController();
+	ControllerType getType();
 }

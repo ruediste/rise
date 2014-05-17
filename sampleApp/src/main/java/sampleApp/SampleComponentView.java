@@ -3,15 +3,17 @@ package sampleApp;
 import java.io.IOException;
 
 import laf.component.CRender;
+import laf.component.Component;
 import laf.component.ComponentView;
 
 import org.rendersnake.HtmlCanvas;
 
-public class SampleView extends ComponentView<SampleComponentController> {
+public class SampleComponentView extends
+		ComponentView<SampleComponentController> {
 
 	@Override
-	public void createComponents() {
-		children.add(new CRender() {
+	public Component createComponents() {
+		return new SamplePage(new CRender() {
 
 			@Override
 			public void render(HtmlCanvas html) throws IOException {

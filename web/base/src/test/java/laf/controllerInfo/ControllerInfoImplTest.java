@@ -1,10 +1,10 @@
 package laf.controllerInfo;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import laf.controllerInfo.ActionMethodInfo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import laf.controllerInfo.impl.TestController;
-import laf.controllerInfo.ControllerInfoImpl;
 
 import org.junit.Test;
 
@@ -13,7 +13,7 @@ public class ControllerInfoImplTest {
 	@Test
 	public void checkNames() {
 		ControllerInfoImpl info = new ControllerInfoImpl(TestController.class,
-				false);
+				ControllerType.NORMAL);
 		assertEquals("Test", info.getName());
 		assertEquals("laf.controllerInfo.impl", info.getPackage());
 		assertEquals("laf.controllerInfo.impl.Test", info.getQualifiedName());
@@ -22,7 +22,7 @@ public class ControllerInfoImplTest {
 	@Test
 	public void calculateUnusedMethodName() {
 		ControllerInfoImpl info = new ControllerInfoImpl(TestController.class,
-				true);
+				ControllerType.EMBEDDED);
 		assertEquals("foo", info.calculateUnusedMethodName("foo"));
 		ActionMethodInfo methodInfo = mock(ActionMethodInfo.class);
 		when(methodInfo.getName()).thenReturn("foo");

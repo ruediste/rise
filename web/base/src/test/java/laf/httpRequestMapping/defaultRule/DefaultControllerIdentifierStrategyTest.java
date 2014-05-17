@@ -1,24 +1,23 @@
 package laf.httpRequestMapping.defaultRule;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import laf.controllerInfo.ControllerInfo;
 import laf.controllerInfo.ControllerInfoImpl;
+import laf.controllerInfo.ControllerType;
 import laf.controllerInfo.impl.TestController;
-import laf.httpRequestMapping.defaultRule.DefaultControllerIdentifierStrategy;
 
 import org.junit.Test;
 
 public class DefaultControllerIdentifierStrategyTest {
 
 	@Test
-		public void testApply() throws Exception {
-			DefaultControllerIdentifierStrategy strategy = new DefaultControllerIdentifierStrategy();
-			ControllerInfo info = new ControllerInfoImpl(TestController.class,
-					false);
-	
-			assertEquals("laf/controllerInfo/impl/test",
-					strategy.apply(info));
-		}
+	public void testApply() throws Exception {
+		DefaultControllerIdentifierStrategy strategy = new DefaultControllerIdentifierStrategy();
+		ControllerInfo info = new ControllerInfoImpl(TestController.class,
+				ControllerType.NORMAL);
+
+		assertEquals("laf/controllerInfo/impl/test", strategy.apply(info));
+	}
 
 	@Test
 	public void testWithPrefix() throws Exception {

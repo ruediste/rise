@@ -1,7 +1,9 @@
 package laf.controllerInfo;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import laf.attachedProperties.AttachedPropertyBearerBase;
 
@@ -14,12 +16,11 @@ public class ControllerInfoImpl extends AttachedPropertyBearerBase implements
 	private final HashMap<String, ActionMethodInfo> actionMethodsByName = new LinkedHashMap<>();
 	private final HashMap<Method, ActionMethodInfo> actionMethodsByMethod = new LinkedHashMap<>();
 
-	private boolean isEmbeddedController;
+	private final ControllerType type;
 
-	public ControllerInfoImpl(Class<?> controllerClass,
-			boolean isEmbeddedController) {
+	public ControllerInfoImpl(Class<?> controllerClass, ControllerType type) {
 		this.controllerClass = controllerClass;
-		this.isEmbeddedController = isEmbeddedController;
+		this.type = type;
 	}
 
 	@Override
@@ -87,8 +88,8 @@ public class ControllerInfoImpl extends AttachedPropertyBearerBase implements
 	}
 
 	@Override
-	public boolean isEmbeddedController() {
-		return isEmbeddedController;
+	public ControllerType getType() {
+		return type;
 	}
 
 }

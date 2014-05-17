@@ -4,7 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import laf.attachedProperties.AttachedProperty;
-import laf.controllerInfo.*;
+import laf.controllerInfo.ControllerInfo;
+import laf.controllerInfo.ControllerInfoRepository;
+import laf.controllerInfo.ControllerInfoRepositoryInitializer;
+import laf.controllerInfo.ControllerType;
 import laf.controllerInfo.impl.EmbeddedTestController;
 import laf.controllerInfo.impl.TestController;
 
@@ -23,16 +26,16 @@ public class ActionPathFactoryTest {
 		factory = new ActionPathFactory();
 		factory.controllerInfoRepository = mock(ControllerInfoRepository.class);
 		testControllerInfo = initializer.createControllerInfo(
-				TestController.class, false);
+				TestController.class, ControllerType.NORMAL);
 		embeddedControllerInfo = initializer.createControllerInfo(
-				EmbeddedTestController.class, true);
+				EmbeddedTestController.class, ControllerType.EMBEDDED);
 		when(
 				factory.controllerInfoRepository
-				.getControllerInfo(TestController.class)).thenReturn(
-						testControllerInfo);
+						.getControllerInfo(TestController.class)).thenReturn(
+				testControllerInfo);
 		when(
 				factory.controllerInfoRepository
-				.getControllerInfo(EmbeddedTestController.class))
+						.getControllerInfo(EmbeddedTestController.class))
 				.thenReturn(embeddedControllerInfo);
 
 	}
@@ -113,7 +116,7 @@ public class ActionPathFactoryTest {
 				.controller(TestController.class).actionMethod(2);
 
 		factory.buildActionPath(currentPath)
-				.controller(EmbeddedTestController.class)
-		.actionMethodEmbedded();
+		.controller(EmbeddedTestController.class)
+				.actionMethodEmbedded();
 	}
 }
