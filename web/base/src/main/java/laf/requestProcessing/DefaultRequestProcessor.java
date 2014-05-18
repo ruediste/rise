@@ -14,8 +14,13 @@ public class DefaultRequestProcessor implements RequestProcessor {
 	@Inject
 	DefaultParameterLoader loader;
 
+	@Inject
+	ObjectActionPathProducer objectActionPathProducer;
+
 	@Override
 	public ActionResult process(ActionPath<ParameterValueProvider> path) {
-		return invoker.invoke(loader.load(path));
+		ActionPath<Object> objectPath = loader.load(path);
+		objectActionPathProducer.setPath(objectPath);
+		return invoker.invoke(objectPath);
 	}
 }

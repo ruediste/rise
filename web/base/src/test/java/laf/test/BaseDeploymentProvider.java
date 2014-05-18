@@ -5,7 +5,7 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 
-public class DeploymentProvider {
+public class BaseDeploymentProvider {
 
 	public static WebArchive getDefault() {
 		return ShrinkWrap
@@ -17,6 +17,6 @@ public class DeploymentProvider {
 								"com.google.guava:guava:16.0.1")
 								.withTransitivity().asFile())
 				.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
-				.addClass(LoggerProducer.class);
+				.addClass(BaseLoggerProducer.class);
 	}
 }

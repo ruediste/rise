@@ -1,5 +1,11 @@
 package laf.component;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
+import laf.attachedProperties.AttachedProperty;
+import laf.base.ActionContext;
+
 import org.jabsaw.Module;
 
 /**
@@ -31,6 +37,18 @@ import org.jabsaw.Module;
  * Views can be nested into each other.
  */
 @Module(description = "Core of the Component Framework")
+@ApplicationScoped
 public class ComponentCoreModule {
+	@Inject
+	ActionContext actionContext;
 
+	private final AttachedProperty<ActionContext, Long> pageId = new AttachedProperty<>();
+
+	public Long getPageId() {
+		return pageId.get(actionContext);
+	}
+
+	public void setPageId(long pageId) {
+		this.pageId.set(actionContext, pageId);
+	}
 }

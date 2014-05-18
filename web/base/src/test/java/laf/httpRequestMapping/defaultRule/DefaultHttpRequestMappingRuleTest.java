@@ -14,7 +14,7 @@ import laf.controllerInfo.impl.TestController;
 import laf.httpRequest.HttpRequestImpl;
 import laf.httpRequestMapping.HttpRequestMappingService;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
-import laf.test.DeploymentProvider;
+import laf.test.BaseDeploymentProvider;
 
 import org.jabsaw.util.Modules;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -30,7 +30,7 @@ public class DefaultHttpRequestMappingRuleTest {
 
 	@Deployment
 	public static WebArchive createDeployment() {
-		WebArchive archive = DeploymentProvider
+		WebArchive archive = BaseDeploymentProvider
 				.getDefault()
 				.addClasses(
 						Modules.getAllRequiredClasses(DefaultHttpRequestMappingModule.class))

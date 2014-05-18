@@ -1,9 +1,12 @@
 package laf.component;
 
+import laf.attachedProperties.AttachedPropertyBearerBase;
+
 /**
  * Base class for view displaying {@link Component}s
  */
-public abstract class ComponentView<TController> {
+public abstract class ComponentView<TController> extends
+		AttachedPropertyBearerBase {
 
 	protected TController controller;
 	private Component rootComponent;

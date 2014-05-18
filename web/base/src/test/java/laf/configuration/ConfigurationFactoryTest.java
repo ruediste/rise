@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import javax.inject.Inject;
 
-import laf.test.DeploymentProvider;
+import laf.test.BaseDeploymentProvider;
 
 import org.jabsaw.util.Modules;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -21,7 +21,7 @@ public class ConfigurationFactoryTest {
 
 	@Deployment
 	public static WebArchive createDeployment() {
-		WebArchive archive = DeploymentProvider
+		WebArchive archive = BaseDeploymentProvider
 				.getDefault()
 				.addClasses(
 						Modules.getAllRequiredClasses(ConfigurationModule.class))

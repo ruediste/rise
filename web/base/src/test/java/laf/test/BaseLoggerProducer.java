@@ -6,7 +6,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LoggerProducer {
+public class BaseLoggerProducer {
 	@Produces
 	Logger produceUrlMapping(InjectionPoint point) {
 		return LoggerFactory.getLogger(point.getMember().getDeclaringClass());

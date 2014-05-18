@@ -18,11 +18,15 @@ public class FrontServletBase extends HttpServlet {
 	@Inject
 	HttpRequestProcessingService service;
 
+	@Inject
+	HttpServletResponseProducer httpServletResponseProducer;
+
 	private static final long serialVersionUID = 1L;
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+		httpServletResponseProducer.setResponse(resp);
 
 		service.process(req, resp);
 	}
