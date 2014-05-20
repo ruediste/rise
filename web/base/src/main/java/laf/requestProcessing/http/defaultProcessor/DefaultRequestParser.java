@@ -14,13 +14,12 @@ public class DefaultRequestParser implements RequestParser {
 	HttpRequestMappingService httpRequestMappingService;
 
 	@Override
-	public ActionPath<ParameterValueProvider> parse(
-			HttpServletRequest request) {
+	public ActionPath<ParameterValueProvider> parse(HttpServletRequest request) {
 		ActionPath<ParameterValueProvider> actionPath = httpRequestMappingService
 				.parse(new DelegatingHttpRequest(request));
 
 		if (actionPath == null) {
-			throw new RuntimeException("URL could not be handled "
+			throw new RuntimeException("URL could not be parsed "
 					+ request.getPathInfo());
 		}
 		return actionPath;

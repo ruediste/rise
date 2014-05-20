@@ -6,8 +6,9 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
 import laf.base.RenderResult;
+import laf.requestProcessing.CurrentController;
 
-public class PageRenderResult<TController> implements RenderResult {
+public class PageRenderResult implements RenderResult {
 
 	@Inject
 	PageMap pageMap;
@@ -18,21 +19,18 @@ public class PageRenderResult<TController> implements RenderResult {
 	@Inject
 	ComponentService componentService;
 
-	private ComponentView<TController> view;
+	@Inject
+	ComponentViewRepository repository;
 
-	public static <TController> PageRenderResult<TController> create(
-			TController controller,
-			Class<? extends ComponentView<? super TController>> viewClass) {
-		return new PageRenderResult<>(null);
-
-	}
-
-	private PageRenderResult(ComponentView<TController> view) {
-		this.view = view;
-	}
+	@Inject
+	CurrentController currentController;
 
 	@Override
 	public void sendTo(HttpServletResponse response) throws IOException {
+		// create the view
+		ComponentView<? extends Object> view = repository
+				.createView(currentController.get().getClass());
+
 		// assign the page ID
 		long id = pageMap.register(view);
 		componentCoreModule.setPageId(id);

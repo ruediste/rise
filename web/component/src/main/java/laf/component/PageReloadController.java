@@ -26,6 +26,7 @@ public class PageReloadController {
 		ComponentView<?> view = pageMap.get(pageId);
 
 		// apply request values
+
 		// process events
 
 		// render result

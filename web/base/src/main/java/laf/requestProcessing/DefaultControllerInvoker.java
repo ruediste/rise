@@ -17,6 +17,9 @@ public class DefaultControllerInvoker implements ControllerInvoker {
 	@Controller
 	Instance<Object> controllerInstance;
 
+	@Inject
+	CurrentControllerProducer currentControllerProducer;
+
 	@Override
 	public ActionResult invoke(ActionPath<Object> actionPath) {
 		Object lastActionMethodResult = null;
@@ -33,6 +36,7 @@ public class DefaultControllerInvoker implements ControllerInvoker {
 			}
 
 			// invoke controller
+			currentControllerProducer.setCurrentController(controller);
 			try {
 				lastActionMethodResult = methodInfo.getMethod().invoke(
 						controller, invocation.getArguments().toArray());
