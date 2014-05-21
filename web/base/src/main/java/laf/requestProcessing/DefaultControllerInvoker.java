@@ -7,15 +7,23 @@ import javax.inject.Inject;
 
 import laf.actionPath.ActionInvocation;
 import laf.actionPath.ActionPath;
-import laf.base.ActionResult;
-import laf.base.Controller;
+import laf.base.*;
 import laf.controllerInfo.ActionMethodInfo;
+import laf.controllerInfo.ControllerInfo;
 
 public class DefaultControllerInvoker implements ControllerInvoker {
 
 	@Inject
 	@Controller
 	Instance<Object> controllerInstance;
+
+	@Inject
+	@EmbeddedController
+	Instance<Object> embeddedControllerInstance;
+
+	@Inject
+	@ComponentController
+	Instance<Object> componentControllerInstance;
 
 	@Inject
 	CurrentControllerProducer currentControllerProducer;
@@ -28,9 +36,25 @@ public class DefaultControllerInvoker implements ControllerInvoker {
 			Object controller;
 			ActionMethodInfo methodInfo = invocation.getMethodInfo();
 			if (lastActionMethodResult == null) {
-				controller = controllerInstance.select(
-						methodInfo.getControllerInfo().getControllerClass())
-						.get();
+				ControllerInfo controllerInfo = methodInfo.getControllerInfo();
+				Class<?> controllerClass = controllerInfo.getControllerClass();
+				switch (controllerInfo.getType()) {
+				case COMPONENT:
+					controller = componentControllerInstance.select(
+							controllerClass).get();
+					break;
+				case EMBEDDED:
+					controller = embeddedControllerInstance.select(
+							controllerClass).get();
+					break;
+				case NORMAL:
+					controller = controllerInstance.select(controllerClass)
+							.get();
+					break;
+				default:
+					throw new RuntimeException("Should Not Happen");
+
+				}
 			} else {
 				controller = lastActionMethodResult;
 			}

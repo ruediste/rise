@@ -29,7 +29,7 @@ public class PageRenderResult implements RenderResult {
 	public void sendTo(HttpServletResponse response) throws IOException {
 		// create the view
 		ComponentView<? extends Object> view = repository
-				.createView(currentController.get().getClass());
+				.createView(currentController.get());
 
 		// assign the page ID
 		long id = pageMap.register(view);

@@ -17,7 +17,12 @@ public class DelegatingHttpRequest extends HttpRequestBase {
 
 	@Override
 	public String getPath() {
-		return delegate.getPathInfo().substring(1);
+		String pathInfo = delegate.getPathInfo();
+		if (pathInfo == null) {
+			return "";
+		} else {
+			return pathInfo.substring(1);
+		}
 	}
 
 	@Override

@@ -6,7 +6,7 @@ import laf.attachedProperties.AttachedPropertyBearerBase;
  * Base class for view displaying {@link Component}s
  */
 public abstract class ComponentView<TController> extends
-		AttachedPropertyBearerBase {
+AttachedPropertyBearerBase {
 
 	protected TController controller;
 	private Component rootComponent;
@@ -32,7 +32,7 @@ public abstract class ComponentView<TController> extends
 	 * method is called after the instantiation of the view. The result is
 	 * written to {@link #rootComponent}.
 	 */
-	abstract public Component createComponents();
+	abstract protected Component createComponents();
 
 	/**
 	 * Return the root component of this view. The root component does not

@@ -72,13 +72,14 @@ public class ComponentViewRepository {
 		}
 	}
 
-	public <T> ComponentView<T> createView(Class<T> controllerClass) {
-		return createView(controllerClass, null);
+	public <T> ComponentView<T> createView(T controller) {
+		return createView(controller, null);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> ComponentView<T> createView(Class<T> controllerClass,
+	public <T> ComponentView<T> createView(T controller,
 			Class<? extends IViewQualifier> qualifier) {
+		Class<? extends Object> controllerClass = controller.getClass();
 		// get the list of possible views
 		ViewEntry entry = viewMap.get(Pair.create(controllerClass, qualifier));
 		if (entry == null) {
@@ -89,7 +90,10 @@ public class ComponentViewRepository {
 		}
 
 		// create view instance
-		return (ComponentView<T>) componentViewInstance.select(entry.viewClass)
-				.get();
+		ComponentView<T> result = (ComponentView<T>) componentViewInstance
+				.select(entry.viewClass).get();
+		result.setController(controller);
+		result.initialize();
+		return result;
 	}
 }

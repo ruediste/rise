@@ -2,10 +2,9 @@ package sampleApp;
 
 import java.io.IOException;
 
-import laf.component.Component;
-import laf.component.ComponentBase;
-import laf.component.MultiChildrenRelation;
+import laf.component.*;
 
+import org.rendersnake.HtmlAttributesFactory;
 import org.rendersnake.HtmlCanvas;
 
 public class SamplePage extends ComponentBase<SamplePage> {
@@ -19,8 +18,11 @@ public class SamplePage extends ComponentBase<SamplePage> {
 
 	@Override
 	public void render(HtmlCanvas html) throws IOException {
-		html.html().head()._head().body();
+		// @formatter:off
+		html.html().head().title().content("Yeah")._head().body()
+				.form(HtmlAttributesFactory.method("post").action(null));
 		super.render(html);
-		html._body()._html();
+		html.input(HtmlAttributesFactory.type("submit"))._form()._body()
+		._html();
 	}
 }

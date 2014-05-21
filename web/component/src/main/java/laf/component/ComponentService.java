@@ -1,8 +1,6 @@
 package laf.component;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.nio.charset.Charset;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -28,7 +26,7 @@ public class ComponentService {
 			byte[] byteArray = stream.toByteArray();
 
 			// send answer
-			response.setContentType("application/xhtml+xml; charset=UTF-8");
+			response.setContentType("text/html; charset=UTF-8");
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.getOutputStream().write(byteArray);
 			response.flushBuffer();

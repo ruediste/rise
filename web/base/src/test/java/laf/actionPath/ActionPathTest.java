@@ -10,8 +10,8 @@ import java.util.Arrays;
 import laf.base.Function2;
 import laf.controllerInfo.ActionMethodInfo;
 import laf.controllerInfo.ParameterInfo;
-import laf.httpRequestMapping.HttpRequestMappingService;
-import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
+import laf.httpRequestParsing.HttpRequestParsingService;
+import laf.httpRequestParsing.parameterValueProvider.ParameterValueProvider;
 
 import org.junit.Test;
 

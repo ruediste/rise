@@ -9,13 +9,8 @@ import javax.inject.Singleton;
 
 import laf.attachedProperties.AttachedProperty;
 import laf.base.ActionContext;
-import laf.controllerInfo.ActionMethodInfo;
-import laf.controllerInfo.ControllerInfo;
-import laf.controllerInfo.ControllerInfoRepository;
-import laf.controllerInfo.ControllerType;
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
+import laf.controllerInfo.*;
+import net.sf.cglib.proxy.*;
 
 import com.google.common.base.Joiner;
 
@@ -80,6 +75,12 @@ public class ActionPathFactory {
 				// generated
 				// path
 
+				if (currentActionPath == null) {
+					throw new RuntimeException(
+							"Cannot generate an ActionPath starting with empeddedController "
+									+ controllerClass.getName()
+									+ " since no current action path was specified.");
+				}
 				ArrayList<ActionInvocation<Object>> elements = currentActionPath
 						.getElements();
 				boolean found = false;
@@ -151,7 +152,7 @@ public class ActionPathFactory {
 					throw new RuntimeException(
 							"The method "
 									+ thisMethod.getName()
-									+ " wich is not action method has been called on a controller of type "
+									+ " wich is no action method has been called on a controller of type "
 									+ controllerClass.getName()
 									+ " while generating an ActionPath. Available Methods:\n"
 									+ Joiner.on("\n").join(methods));
