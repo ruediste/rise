@@ -10,10 +10,12 @@ import org.rendersnake.HtmlCanvas;
 import com.google.common.collect.Iterables;
 
 public class ComponentBase<TSelf> extends AttachedPropertyBearerBase implements
-		Component {
+Component {
 
 	private Component parent;
 	ArrayList<ChildRelation> childRelations = new ArrayList<>();
+
+	protected ComponentUtil util = ComponentUtil.getInstance();
 
 	@Override
 	public Iterable<Component> getChildren() {

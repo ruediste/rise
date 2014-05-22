@@ -1,5 +1,7 @@
 package laf.actionPath;
 
+import javax.enterprise.inject.Alternative;
+
 import laf.base.ActionResult;
 
 /**
@@ -7,7 +9,8 @@ import laf.base.ActionResult;
  * {@link ActionPathFactory} to create {@link ActionPath}s, instances of this
  * class is used to represent the result.
  */
+@Alternative
 public class PathActionResult extends ActionPath<Object> implements
-		ActionResult {
+ActionResult {
 
 }

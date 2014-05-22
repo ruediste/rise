@@ -12,6 +12,7 @@ import laf.actionPath.ActionPath.ParameterValueComparator;
 import laf.base.BaseModule;
 import laf.base.BaseModule.ProjectStage;
 import laf.configuration.ConfigValue;
+import laf.controllerInfo.ControllerInfoRepository;
 import laf.httpRequest.HttpRequest;
 import laf.httpRequestParsing.parameterValueProvider.ParameterValueProvider;
 
@@ -20,6 +21,9 @@ public class HttpRequestParsingService {
 
 	@Inject
 	BaseModule baseModule;
+
+	@Inject
+	ControllerInfoRepository controllerInfoRepository;
 
 	final ArrayList<HttpRequestParsingRule> mappingRules = new ArrayList<>();
 
@@ -32,6 +36,7 @@ public class HttpRequestParsingService {
 		for (HttpRequestParsingRuleFactory factory : mappingRuleFactories) {
 			mappingRules.addAll(factory.createRules());
 		}
+
 	}
 
 	/**

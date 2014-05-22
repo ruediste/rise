@@ -2,6 +2,7 @@ package laf.httpRequestParsing.defaultRule;
 
 import javax.inject.Inject;
 
+import laf.actionPath.ActionInvocation;
 import laf.actionPath.ActionPath;
 import laf.base.Function2;
 import laf.controllerInfo.ParameterInfo;
@@ -45,5 +46,18 @@ public class DefaultParameterMapper implements ParameterMapper {
 								.generate(a, b);
 					}
 				});
+	}
+
+	@Override
+	public boolean handles(ActionPath<?> path) {
+		for (ActionInvocation<?> invocation : path.getElements()) {
+			for (ParameterInfo parameter : invocation.getMethodInfo()
+					.getParameters()) {
+				if (handlerRepository.getParameterHandler(parameter) == null) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 }

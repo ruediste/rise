@@ -27,8 +27,9 @@ public class ComponentViewRepositoryTest {
 
 	@Test
 	public void getSimple() {
+		TestControllerA controllerA = new TestControllerA();
 		ComponentView<TestControllerA> view = componentViewRepository
-				.createView(TestControllerA.class);
+				.createView(controllerA);
 		Assert.assertEquals(TestComponentViewA.class, view.getClass());
 	}
 
@@ -36,7 +37,7 @@ public class ComponentViewRepositoryTest {
 	public void getQualifier() {
 
 		ComponentView<TestControllerB> view = componentViewRepository
-				.createView(TestControllerB.class, TestViewQualifier1.class);
+				.createView(new TestControllerB(), TestViewQualifier1.class);
 		Assert.assertTrue(view instanceof TestComponentViewB1);
 	}
 }

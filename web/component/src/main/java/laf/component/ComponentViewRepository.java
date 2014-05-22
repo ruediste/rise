@@ -34,7 +34,6 @@ public class ComponentViewRepository {
 	@SuppressWarnings("unchecked")
 	@PostConstruct
 	public void initialize() {
-
 		for (Bean<?> bean : beanManager.getBeans(
 				new TypeToken<ComponentView<?>>() {
 					private static final long serialVersionUID = 1L;

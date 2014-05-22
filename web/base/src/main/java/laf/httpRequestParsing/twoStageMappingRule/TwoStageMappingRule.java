@@ -47,6 +47,10 @@ public class TwoStageMappingRule implements HttpRequestParsingRule {
 		if (!httpRequestMapper.handles(path)) {
 			return null;
 		}
+
+		if (!parameterMapper.handles(path)) {
+			return null;
+		}
 		ActionPath<String> stringPath = parameterMapper.generate(path);
 
 		signer.sign(stringPath);

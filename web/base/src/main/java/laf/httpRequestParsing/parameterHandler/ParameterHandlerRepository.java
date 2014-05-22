@@ -19,7 +19,7 @@ public class ParameterHandlerRepository {
 	AttachedProperty<ParameterInfo, ParameterHandler> parameterHandler = new AttachedProperty<>();
 
 	@Inject
-	@ConfigValue("laf.httpRequestMapping.parameterHandler.IntegerParameterHandler")
+	@ConfigValue("laf.httpRequestParsing.parameterHandler.IntegerParameterHandler")
 	LinkedList<ParameterHandler> parameterHandlers;
 
 	@Inject
@@ -35,13 +35,17 @@ public class ParameterHandlerRepository {
 				.getControllerInfos()) {
 			// initialize parameter handlers
 			for (ActionMethodInfo method : info.getActionMethodInfos()) {
-				for (ParameterInfo parameter : method.getParameters()) {
+				parameterLoop: for (ParameterInfo parameter : method
+						.getParameters()) {
 					for (ParameterHandler h : parameterHandlers) {
 						if (h.handles(parameter)) {
 							parameterHandler.set(parameter, h);
-							break;
+							continue parameterLoop;
 						}
 					}
+
+					throw new RuntimeException("No Handler found for "
+							+ parameter);
 				}
 			}
 		}

@@ -2,6 +2,8 @@ package laf.actionPath;
 
 import java.util.*;
 
+import javax.enterprise.inject.Alternative;
+
 import laf.attachedProperties.AttachedProperty;
 import laf.attachedProperties.AttachedPropertyBearerBase;
 import laf.base.Function2;
@@ -27,6 +29,7 @@ import com.google.common.base.Objects;
  * </p>
  *
  */
+@Alternative
 public class ActionPath<T> extends AttachedPropertyBearerBase {
 	// public FlashMessage flashMessage;
 	// public HttpMethod forcedHttpMethod;
@@ -59,11 +62,11 @@ public class ActionPath<T> extends AttachedPropertyBearerBase {
 		return isCallToSameActionMethod(other,
 				new ParameterValueComparator<Object, Object>() {
 
-					@Override
-					public boolean equals(Object a, Object b) {
-						return true;
-					}
-				});
+			@Override
+			public boolean equals(Object a, Object b) {
+				return true;
+			}
+		});
 	}
 
 	/**

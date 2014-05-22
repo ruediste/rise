@@ -9,4 +9,6 @@ public interface ParameterMapper {
 
 	ActionPath<String> generate(ActionPath<Object> path);
 
+	boolean handles(ActionPath<?> path);
+
 }

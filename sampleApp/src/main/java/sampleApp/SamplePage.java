@@ -18,11 +18,21 @@ public class SamplePage extends ComponentBase<SamplePage> {
 
 	@Override
 	public void render(HtmlCanvas html) throws IOException {
+		util.url(util.path(PageReloadController.class)
+				.reloadPage(util.pageId()));
+
 		// @formatter:off
-		html.html().head().title().content("Yeah")._head().body()
-				.form(HtmlAttributesFactory.method("post").action(null));
+		html.html()
+				.head()
+				.title()
+				.content("Yeah")
+				._head()
+				.body()
+				.form(HtmlAttributesFactory.method("post").action(
+						util.url(util.path(PageReloadController.class)
+								.reloadPage(util.pageId()))));
 		super.render(html);
 		html.input(HtmlAttributesFactory.type("submit"))._form()._body()
-		._html();
+				._html();
 	}
 }

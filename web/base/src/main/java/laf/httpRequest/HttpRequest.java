@@ -4,14 +4,16 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import laf.attachedProperties.AttachedPropertyBearer;
+
 /**
  * A reduced representation of a {@link HttpServletRequest}
  */
-public interface HttpRequest {
+public interface HttpRequest extends AttachedPropertyBearer {
 
 	/**
 	 * Return the path of this request. Initialized form
-	 * {@link HttpServletRequest#getServletPath()}
+	 * {@link HttpServletRequest#getPathInfo()}
 	 */
 	String getPath();
 
@@ -36,4 +38,9 @@ public interface HttpRequest {
 	 */
 	@Override
 	public boolean equals(Object obj);
+
+	/**
+	 * Return {@link #getPath()} with the parameters appended
+	 */
+	String getPathWithParameters();
 }

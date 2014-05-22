@@ -4,8 +4,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import laf.attachedProperties.AttachedProperty;
 import laf.base.ActionContext;
@@ -28,11 +28,14 @@ import com.google.common.base.Joiner;
  * </pre>
  *
  */
-@Singleton
+@ApplicationScoped
 public class ActionPathFactory {
 
 	@Inject
 	ControllerInfoRepository controllerInfoRepository;
+
+	@Inject
+	ActionPath<Object> injectedCurrentActionPath;
 
 	public class ActionPathBuilder {
 		private PathActionResult path = new PathActionResult();
@@ -118,6 +121,16 @@ public class ActionPathFactory {
 	public ActionPathBuilder buildActionPath(
 			ActionPath<Object> currentActionPath) {
 		return new ActionPathBuilder(currentActionPath);
+	}
+
+	/**
+	 * Create a new {@link ActionPathBuilder} to create an {@link ActionPath}.
+	 * The current action path is beeing injected.
+	 * 
+	 * @see #buildActionPath(ActionPath)
+	 */
+	public ActionPathBuilder buildActionPath() {
+		return new ActionPathBuilder(injectedCurrentActionPath);
 	}
 
 	/**

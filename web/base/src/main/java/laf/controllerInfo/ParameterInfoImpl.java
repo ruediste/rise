@@ -5,7 +5,7 @@ import java.lang.reflect.Type;
 import laf.attachedProperties.AttachedPropertyBearerBase;
 
 public class ParameterInfoImpl extends AttachedPropertyBearerBase implements
-		ParameterInfo {
+ParameterInfo {
 
 	private final Type type;
 	private ActionMethodInfo method;
@@ -28,4 +28,8 @@ public class ParameterInfoImpl extends AttachedPropertyBearerBase implements
 		this.method = method;
 	}
 
+	@Override
+	public String toString() {
+		return "parameter of type " + type + " in method " + method;
+	}
 }

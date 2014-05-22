@@ -1,12 +1,18 @@
 package laf.httpRequest;
 
-import java.util.Objects;
+import java.util.*;
+import java.util.Map.Entry;
+
+import laf.attachedProperties.AttachedPropertyBearerBase;
+
+import com.google.common.base.Joiner;
 
 /**
  * Base implementation of {@link HttpRequest}, providing the
  * {@link #equals(Object)} implementation.
  */
-public abstract class HttpRequestBase implements HttpRequest {
+public abstract class HttpRequestBase extends AttachedPropertyBearerBase
+implements HttpRequest {
 
 	@Override
 	public boolean equals(Object obj) {
@@ -17,6 +23,21 @@ public abstract class HttpRequestBase implements HttpRequest {
 
 		return Objects.equals(getPath(), other.getPath())
 				&& Objects.equals(getParameterMap(), other.getParameterMap());
+	}
+
+	@Override
+	public String getPathWithParameters() {
+		if (getParameterMap().isEmpty()) {
+			return getPath();
+		}
+		ArrayList<String> parameters = new ArrayList<>();
+		for (Entry<String, String[]> entry : getParameterMap().entrySet()) {
+			for (String value : entry.getValue()) {
+				parameters.add(entry.getKey() + "=" + value);
+			}
+		}
+
+		return getPath() + "?" + Joiner.on("&").join(parameters);
 	}
 
 }

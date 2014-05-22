@@ -147,6 +147,7 @@ public class DefaultHttpRequestParser implements HttpRequestMapper {
 
 	@Override
 	public boolean handles(ActionPath<Object> path) {
+
 		return true;
 	}
 

@@ -7,7 +7,6 @@ import javax.inject.Inject;
 import laf.actionPath.ActionPath;
 import laf.actionPath.ActionPathFactory;
 import laf.httpRequest.HttpRequest;
-import laf.httpRequest.HttpRequestImpl;
 import laf.httpRequestParsing.HttpRequestParsingRule;
 import laf.httpRequestParsing.HttpRequestParsingRuleFactory;
 import laf.httpRequestParsing.defaultRule.DefaultHttpRequestParsingRuleFactory;
@@ -37,7 +36,7 @@ public class MappingRuleFactory implements HttpRequestParsingRuleFactory {
 
 			@Override
 			public HttpRequest generate(ActionPath<Object> path) {
-				return new HttpRequestImpl("/");
+				return null;
 			}
 		});
 		return result;

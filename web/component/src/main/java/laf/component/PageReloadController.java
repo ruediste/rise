@@ -6,8 +6,13 @@ import javax.servlet.http.HttpServletResponse;
 import laf.base.ActionResult;
 import laf.base.Controller;
 
+import org.slf4j.Logger;
+
 @Controller
 public class PageReloadController {
+
+	@Inject
+	Logger log;
 
 	@Inject
 	PageMap pageMap;
@@ -21,7 +26,8 @@ public class PageReloadController {
 	@Inject
 	HttpServletResponse response;
 
-	ActionResult reloadPage(long pageId) {
+	public ActionResult reloadPage(long pageId) {
+		log.debug("reloading page " + pageId);
 		componentCoreModule.setPageId(pageId);
 		ComponentView<?> view = pageMap.get(pageId);
 
