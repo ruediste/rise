@@ -4,7 +4,7 @@ import javax.inject.Inject;
 
 import laf.actionPath.ActionPath;
 import laf.base.ActionResult;
-import laf.httpRequestParsing.parameterValueProvider.ParameterValueProvider;
+import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 
 public class DefaultRequestProcessor implements RequestProcessor {
 

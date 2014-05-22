@@ -7,7 +7,7 @@ import laf.actionPath.ActionPath;
 import laf.base.ActionResult;
 import laf.configuration.ConfigInstance;
 import laf.configuration.ConfigValue;
-import laf.httpRequestParsing.parameterValueProvider.ParameterValueProvider;
+import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 
 public class RequestProcessingService {
 

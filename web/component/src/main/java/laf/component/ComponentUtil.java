@@ -9,7 +9,7 @@ import laf.actionPath.*;
 import laf.actionPath.ActionPathFactory.ActionPathBuilder;
 import laf.base.ActionResult;
 import laf.httpRequest.HttpRequest;
-import laf.httpRequestParsing.HttpRequestParsingService;
+import laf.httpRequestMapping.HttpRequestMappingService;
 
 @ApplicationScoped
 public class ComponentUtil {
@@ -17,7 +17,7 @@ public class ComponentUtil {
 	ActionPathFactory actionPathFactory;
 
 	@Inject
-	HttpRequestParsingService httpRequestParsingService;
+	HttpRequestMappingService httpRequestMappingService;
 
 	@Inject
 	HttpServletResponse response;
@@ -42,7 +42,7 @@ public class ComponentUtil {
 
 	public String url(ActionResult path) {
 		@SuppressWarnings("unchecked")
-		HttpRequest url = httpRequestParsingService
+		HttpRequest url = httpRequestMappingService
 		.generate((ActionPath<Object>) path);
 		return response.encodeURL(url.getPathWithParameters());
 	}

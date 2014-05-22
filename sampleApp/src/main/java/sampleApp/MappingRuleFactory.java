@@ -7,24 +7,24 @@ import javax.inject.Inject;
 import laf.actionPath.ActionPath;
 import laf.actionPath.ActionPathFactory;
 import laf.httpRequest.HttpRequest;
-import laf.httpRequestParsing.HttpRequestParsingRule;
-import laf.httpRequestParsing.HttpRequestParsingRuleFactory;
-import laf.httpRequestParsing.defaultRule.DefaultHttpRequestParsingRuleFactory;
-import laf.httpRequestParsing.parameterValueProvider.ParameterValueProvider;
+import laf.httpRequestMapping.HttpRequestMappingRule;
+import laf.httpRequestMapping.HttpRequestMappingRuleFactory;
+import laf.httpRequestMapping.defaultRule.DefaultHttpRequestMappingRuleFactory;
+import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 
-public class MappingRuleFactory implements HttpRequestParsingRuleFactory {
+public class MappingRuleFactory implements HttpRequestMappingRuleFactory {
 
 	@Inject
-	DefaultHttpRequestParsingRuleFactory defaultFactory;
+	DefaultHttpRequestMappingRuleFactory defaultFactory;
 
 	@Inject
 	ActionPathFactory pathFactory;
 
 	@Override
-	public Collection<HttpRequestParsingRule> createRules() {
-		List<HttpRequestParsingRule> result = new ArrayList<>();
+	public Collection<HttpRequestMappingRule> createRules() {
+		List<HttpRequestMappingRule> result = new ArrayList<>();
 		result.addAll(defaultFactory.createRules());
-		result.add(new HttpRequestParsingRule() {
+		result.add(new HttpRequestMappingRule() {
 
 			@SuppressWarnings("unchecked")
 			@Override

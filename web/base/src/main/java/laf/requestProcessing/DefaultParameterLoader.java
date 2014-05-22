@@ -1,7 +1,7 @@
 package laf.requestProcessing;
 
 import laf.actionPath.ActionPath;
-import laf.httpRequestParsing.parameterValueProvider.ParameterValueProvider;
+import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 
 import com.google.common.base.Suppliers;
 

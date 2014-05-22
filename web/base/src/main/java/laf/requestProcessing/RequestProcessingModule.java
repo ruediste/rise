@@ -5,7 +5,7 @@ import javax.inject.Singleton;
 import laf.actionPath.ActionPathModule;
 import laf.base.BaseModule;
 import laf.controllerInfo.ControllerInfoModule;
-import laf.httpRequestParsing.parameterValueProvider.ParameterValueProviderModule;
+import laf.httpRequestMapping.parameterValueProvider.ParameterValueProviderModule;
 
 import org.jabsaw.Module;
 

@@ -5,17 +5,17 @@ import javax.servlet.http.HttpServletRequest;
 
 import laf.actionPath.ActionPath;
 import laf.httpRequest.DelegatingHttpRequest;
-import laf.httpRequestParsing.HttpRequestParsingService;
-import laf.httpRequestParsing.parameterValueProvider.ParameterValueProvider;
+import laf.httpRequestMapping.HttpRequestMappingService;
+import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 import laf.requestProcessing.http.RequestParser;
 
 public class DefaultRequestParser implements RequestParser {
 	@Inject
-	HttpRequestParsingService httpRequestParsingService;
+	HttpRequestMappingService httpRequestMappingService;
 
 	@Override
 	public ActionPath<ParameterValueProvider> parse(HttpServletRequest request) {
-		ActionPath<ParameterValueProvider> actionPath = httpRequestParsingService
+		ActionPath<ParameterValueProvider> actionPath = httpRequestMappingService
 				.parse(new DelegatingHttpRequest(request));
 
 		if (actionPath == null) {
