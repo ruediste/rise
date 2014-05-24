@@ -17,7 +17,7 @@ import org.junit.runner.RunWith;
 import com.google.common.collect.Iterables;
 
 @RunWith(Arquillian.class)
-public class ConfigurationFactoryTest {
+public class ConfigurationFactoryBaseTest {
 
 	@Deployment
 	public static WebArchive createDeployment() {

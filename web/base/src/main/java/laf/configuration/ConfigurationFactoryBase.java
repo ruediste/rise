@@ -3,36 +3,44 @@ package laf.configuration;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
-import javax.servlet.ServletContextEvent;
 
 import org.slf4j.Logger;
 
-@ApplicationScoped
-public class ConfigurationFactory {
+public abstract class ConfigurationFactoryBase implements
+		ConfigurationValueDefiner {
 
 	@Inject
 	Logger log;
 
+	ArrayList<ConfigurationValueProvider> providers = new ArrayList<>();
 	private Properties properties;
 
-	// private ServletContext servletContext;
+	private interface ConfigurationValueProvider {
+		<T> T provideValue(
+				Class<? extends ConfigurationValue<T>> configValueClass);
+	}
 
-	void initialized(@Observes ServletContextEvent e) {
-		// servletContext = e.getServletContext();
+	protected void registerConfigurationValueProviders() {
+		addPropretiesFile("configuration.properties");
+		add(this);
+	}
+
+	protected void add(ConfigurationValueDefiner definer) {
+	}
+
+	protected void addPropretiesFile(String path) {
+
+	}
+
+	protected void add(ConfigurationValueProvider provider) {
+
 	}
 
 	@PostConstruct
@@ -55,6 +63,12 @@ public class ConfigurationFactory {
 		}
 	}
 
+	protected abstract Object getValue(String key);
+
+	String valueToString(Object value) {
+		return Objects.toString(value);
+	}
+
 	String getString(InjectionPoint p) {
 		// search with the qualified name first
 		String configKey = p.getMember().getDeclaringClass().getName() + "."
@@ -71,7 +85,8 @@ public class ConfigurationFactory {
 					// check if the annotation specifies a default
 					ConfigValue annotation = p.getAnnotated().getAnnotation(
 							ConfigValue.class);
-					return annotation.value();
+					// return annotation.value();
+					return null;
 				}
 			}
 		}
@@ -129,6 +144,13 @@ public class ConfigurationFactory {
 				return (T) inst;
 			}
 		};
+	}
+
+	@Produces
+	public <T> ConfigInstance<T> produceInstanceNoAnnotation(InjectionPoint p)
+			throws InstantiationException, IllegalAccessException,
+			ClassNotFoundException {
+		return produceInstance(p);
 	}
 
 	@Produces
