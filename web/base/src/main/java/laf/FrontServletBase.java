@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import laf.requestProcessing.http.HttpRequestProcessingService;
+import laf.httpRequestProcessing.HttpRequestProcessorConfigurationValue;
 
 /**
  * Framework entry point
@@ -16,7 +16,7 @@ import laf.requestProcessing.http.HttpRequestProcessingService;
 public class FrontServletBase extends HttpServlet {
 
 	@Inject
-	HttpRequestProcessingService service;
+	HttpRequestProcessorConfigurationValue processor;
 
 	@Inject
 	HttpServletResponseProducer httpServletResponseProducer;
@@ -28,7 +28,7 @@ public class FrontServletBase extends HttpServlet {
 			throws ServletException, IOException {
 		httpServletResponseProducer.setResponse(resp);
 
-		service.process(req, resp);
+		processor.get().process(req, resp);
 	}
 
 }

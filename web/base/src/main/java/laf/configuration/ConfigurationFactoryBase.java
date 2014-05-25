@@ -1,9 +1,9 @@
 package laf.configuration;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.util.*;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Instance;
@@ -11,228 +11,102 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.inject.Inject;
 
+import laf.base.Val;
+
 import org.slf4j.Logger;
 
-public abstract class ConfigurationFactoryBase implements
-		ConfigurationValueDefiner {
+import com.google.common.reflect.TypeToken;
+
+public abstract class ConfigurationFactoryBase {
 
 	@Inject
 	Logger log;
 
+	@Inject
+	Instance<DefinerConfigurationValueProvider> definerConfigurationValueProviderInstance;
+
+	@Inject
+	Instance<PropertiesConfigrationValueProvider> propertiesConfigrationValueProviderInstance;
+
 	ArrayList<ConfigurationValueProvider> providers = new ArrayList<>();
-	private Properties properties;
 
-	private interface ConfigurationValueProvider {
-		<T> T provideValue(
-				Class<? extends ConfigurationValue<T>> configValueClass);
-	}
+	private Method getMethod;
 
-	protected void registerConfigurationValueProviders() {
-		addPropretiesFile("configuration.properties");
-		add(this);
-	}
+	protected abstract void registerConfigurationValueProviders();
 
-	protected void add(ConfigurationValueDefiner definer) {
+	protected void add(ConfigurationDefiner definer) {
+		DefinerConfigurationValueProvider provider = definerConfigurationValueProviderInstance
+				.get();
+		provider.setDefiner(definer);
+		add(provider);
 	}
 
 	protected void addPropretiesFile(String path) {
-
+		PropertiesConfigrationValueProvider provider = propertiesConfigrationValueProviderInstance
+				.get();
+		provider.loadProperties(path);
+		add(provider);
 	}
 
 	protected void add(ConfigurationValueProvider provider) {
+		providers.add(provider);
 
 	}
 
 	@PostConstruct
-	void loadProperties() {
-		properties = new Properties();
-		String fileName = "configuration.properties";
-		ClassLoader classLoader = Thread.currentThread()
-				.getContextClassLoader();
-
-		try (InputStream in = classLoader.getResourceAsStream(fileName)) {
-			if (in != null) {
-				properties.load(in);
-			} else {
-				log.warn("did not find properties file " + fileName
-						+ " on classpath");
-			}
-		} catch (IOException e) {
-			log.warn("Can't load properties file " + fileName
-					+ " from classpath", e);
+	void initialize() {
+		registerConfigurationValueProviders();
+		try {
+			getMethod = ConfigurationValue.class.getMethod("get");
+		} catch (NoSuchMethodException | SecurityException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
-	protected abstract Object getValue(String key);
-
-	String valueToString(Object value) {
-		return Objects.toString(value);
+	@SuppressWarnings({ "unchecked" })
+	private <V, T extends ConfigurationValue<V>> Val<V> provideValue(
+			ConfigurationValueProvider provider, Class<?> configInterfaceClass,
+			TypeToken<?> configValueClass) {
+		return provider.provideValue((Class<T>) configInterfaceClass,
+				(TypeToken<V>) configValueClass);
 	}
 
-	String getString(InjectionPoint p) {
-		// search with the qualified name first
-		String configKey = p.getMember().getDeclaringClass().getName() + "."
-				+ p.getMember().getName();
-		if (!properties.containsKey(configKey)) {
-			// try with the unqualified class name
-			configKey = p.getMember().getDeclaringClass().getSimpleName() + "."
-					+ p.getMember().getName();
-			if (!properties.containsKey(configKey)) {
-				// try with just the member name
-				configKey = p.getMember().getName();
-
-				if (!properties.containsKey(configKey)) {
-					// check if the annotation specifies a default
-					ConfigValue annotation = p.getAnnotated().getAnnotation(
-							ConfigValue.class);
-					// return annotation.value();
-					return null;
-				}
+	@Produces
+	public <T extends ConfigurationValue<?>> T produceConfigurationValue(
+			InjectionPoint p) {
+		Class<?> configInterfaceClass = TypeToken.of(p.getType()).getRawType();
+		TypeToken<?> valueType = TypeToken.of(configInterfaceClass)
+				.resolveType(ConfigurationValue.class.getTypeParameters()[0]);
+		for (ConfigurationValueProvider provider : providers) {
+			Val<?> value = provideValue(provider, configInterfaceClass,
+					valueType);
+			if (value != null) {
+				return createProxy(configInterfaceClass, value);
 			}
 		}
 
-		return properties.getProperty(configKey);
-	}
-
-	@Produces
-	@ConfigValue
-	public String produceString(InjectionPoint p) {
-		return getString(p);
-	}
-
-	@Produces
-	@ConfigValue
-	public int produceInt(InjectionPoint p) {
-		return Integer.parseInt(getString(p));
-	}
-
-	@Produces
-	@ConfigValue
-	public double produceDouble(InjectionPoint p) {
-		return Double.parseDouble(getString(p));
-	}
-
-	@Produces
-	@ConfigValue
-	public double produceLong(InjectionPoint p) {
-		return Long.parseLong(getString(p));
+		throw new RuntimeException("No configuration value found for "
+				+ p.getMember());
 	}
 
 	@SuppressWarnings("unchecked")
-	@Produces
-	@ConfigValue
-	public <T> Class<T> produceClass(InjectionPoint p)
-			throws ClassNotFoundException {
-		return (Class<T>) Thread.currentThread().getContextClassLoader()
-				.loadClass(getString(p));
-	}
+	private <T extends ConfigurationValue<?>> T createProxy(
+			Class<?> configInterfaceClass, final Object value) {
 
-	@Inject
-	Instance<Object> instance;
-
-	@SuppressWarnings("unchecked")
-	@Produces
-	@ConfigValue
-	public <T> ConfigInstance<T> produceInstance(InjectionPoint p)
-			throws InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		final Object inst = createObject(getString(p));
-		return new ConfigInstance<T>() {
+		return (T) Proxy.newProxyInstance(Thread.currentThread()
+				.getContextClassLoader(),
+				new Class<?>[] { configInterfaceClass },
+				new InvocationHandler() {
 
 			@Override
-			public T get() {
-				return (T) inst;
+			public Object invoke(Object proxy, Method method,
+					Object[] args) throws Throwable {
+				if (getMethod.equals(method)) {
+					return value;
+				}
+				throw new RuntimeException("Method " + method.getName()
+						+ " may not be called on ConfigValue instances");
 			}
-		};
-	}
-
-	@Produces
-	public <T> ConfigInstance<T> produceInstanceNoAnnotation(InjectionPoint p)
-			throws InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		return produceInstance(p);
-	}
-
-	@Produces
-	@ConfigValue
-	public <T> List<T> produceInstancesList(InjectionPoint p)
-			throws InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		return produceInstancesArrayList(p);
-	}
-
-	@Produces
-	@ConfigValue
-	public <T> Collection<T> produceInstancesCollection(InjectionPoint p)
-			throws InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		return produceInstancesArrayList(p);
-	}
-
-	@Produces
-	@ConfigValue
-	public <T> Deque<T> produceInstancesDequeue(InjectionPoint p)
-			throws InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-		return produceInstancesLinkedList(p);
-	}
-
-	@Produces
-	@ConfigValue
-	public <T> ArrayList<T> produceInstancesArrayList(InjectionPoint p)
-			throws InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-
-		final ArrayList<T> objects = new ArrayList<>();
-		addInstances(p, objects);
-		return objects;
-	}
-
-	@Produces
-	@ConfigValue
-	public <T> LinkedList<T> produceInstancesLinkedList(InjectionPoint p)
-			throws InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
-
-		final LinkedList<T> objects = new LinkedList<>();
-		addInstances(p, objects);
-		return objects;
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T> void addInstances(InjectionPoint p, final List<T> objects)
-			throws ClassNotFoundException, InstantiationException,
-			IllegalAccessException {
-		for (String value : getString(p).split(",")) {
-			objects.add((T) createObject(value));
-		}
-	}
-
-	private Object createObject(String value) throws ClassNotFoundException,
-	InstantiationException, IllegalAccessException {
-		String[] parts = value.split(":");
-		final List<Annotation> qualifiers = new ArrayList<>();
-		ClassLoader classLoader = Thread.currentThread()
-				.getContextClassLoader();
-		for (int i = 0; i < parts.length - 1; i++) {
-			Class<?> annotationClass = classLoader.loadClass(parts[i]);
-			Object annotation = annotationClass.newInstance();
-			qualifiers.add((Annotation) annotation);
-		}
-		final Class<?> objectClass = classLoader
-				.loadClass(trim(parts[parts.length - 1]));
-		return instance.select(objectClass,
-				qualifiers.toArray(new Annotation[] {})).get();
-	}
-
-	private String trim(String string) {
-		String result = string;
-		while (result.length() > 0 && result.charAt(0) == ' ') {
-			result = result.substring(1);
-		}
-		while (result.length() > 0 && result.charAt(result.length() - 1) == ' ') {
-			result = result.substring(0, result.length() - 2);
-		}
-		return result;
+		});
 	}
 }

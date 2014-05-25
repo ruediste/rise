@@ -1,14 +1,14 @@
 package laf.httpRequestMapping.parameterHandler;
 
-import java.util.LinkedList;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import laf.attachedProperties.AttachedProperty;
-import laf.configuration.ConfigValue;
-import laf.controllerInfo.*;
+import laf.controllerInfo.ActionMethodInfo;
+import laf.controllerInfo.ControllerInfo;
+import laf.controllerInfo.ControllerInfoRepository;
+import laf.controllerInfo.ParameterInfo;
 
 @ApplicationScoped
 public class ParameterHandlerRepository {
@@ -19,8 +19,7 @@ public class ParameterHandlerRepository {
 	AttachedProperty<ParameterInfo, ParameterHandler> parameterHandler = new AttachedProperty<>();
 
 	@Inject
-	@ConfigValue("laf.httpRequestMapping.parameterHandler.IntegerParameterHandler")
-	LinkedList<ParameterHandler> parameterHandlers;
+	ParameterHandlers parameterHandlers;
 
 	@Inject
 	ControllerInfoRepository controllerInfoRepository;
@@ -37,7 +36,7 @@ public class ParameterHandlerRepository {
 			for (ActionMethodInfo method : info.getActionMethodInfos()) {
 				parameterLoop: for (ParameterInfo parameter : method
 						.getParameters()) {
-					for (ParameterHandler h : parameterHandlers) {
+					for (ParameterHandler h : parameterHandlers.get()) {
 						if (h.handles(parameter)) {
 							parameterHandler.set(parameter, h);
 							continue parameterLoop;

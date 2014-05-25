@@ -1,6 +1,6 @@
 package laf;
 
-import laf.requestProcessing.http.HttpRequestProcessingModule;
+import laf.httpRequestProcessing.HttpRequestProcessingModule;
 
 import org.jabsaw.Module;
 

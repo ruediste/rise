@@ -70,17 +70,19 @@ import org.jabsaw.Module;
  * </p>
  *
  * <strong> Specifying Values in .properties Files</strong> <br/>
+ * <p>
  * Strings and primitives are be parsed using the respective valueOf method.
  * Class instances can be defined by their fully qualified class names. The
  * instances are obtained from CDI. For some common collection types, the
  * elements can be declared as comma separated list. In the case of string
  * lists, the comma has to be escaped using \,
- *
+ * </p>
+ * <p>
  * In all cases the fully qualified name of a subclass of
- * {@link ConfigurationValueFactory} can be given. The factory is instantiated
- * using CDI and the result of the {@link ConfigurationValueFactory#getValue()}
- * is used.
- *
+ * {@link ConfigurationValueFactory} can be given, appending .factory to the
+ * key. The factory is instantiated using CDI and the result of the
+ * {@link ConfigurationValueFactory#getValue()} is used.
+ * </p>
  */
 @Module(description = "Typsafe Configuration System supporting .properties files", hideFromDependencyGraphOutput = true)
 public class ConfigurationModule {

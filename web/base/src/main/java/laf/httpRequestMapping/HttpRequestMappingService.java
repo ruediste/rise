@@ -1,9 +1,5 @@
 package laf.httpRequestMapping;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -11,7 +7,6 @@ import laf.actionPath.ActionPath;
 import laf.actionPath.ActionPath.ParameterValueComparator;
 import laf.base.BaseModule;
 import laf.base.BaseModule.ProjectStage;
-import laf.configuration.ConfigValue;
 import laf.controllerInfo.ControllerInfoRepository;
 import laf.httpRequest.HttpRequest;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
@@ -25,30 +20,19 @@ public class HttpRequestMappingService {
 	@Inject
 	ControllerInfoRepository controllerInfoRepository;
 
-	final ArrayList<HttpRequestMappingRule> mappingRules = new ArrayList<>();
-
 	@Inject
-	@ConfigValue("laf.httpRequestMapping.defaultRule.DefaultHttpRequestParsingRuleFactory")
-	Collection<HttpRequestMappingRuleFactory> mappingRuleFactories;
-
-	@PostConstruct
-	void initialize() {
-		for (HttpRequestMappingRuleFactory factory : mappingRuleFactories) {
-			mappingRules.addAll(factory.createRules());
-		}
-
-	}
+	HttpRequestMappingRules mappingRules;
 
 	/**
 	 * Parse a servlet path. If no matching rule is found, null is returned.
 	 */
 	public ActionPath<ParameterValueProvider> parse(HttpRequest request) {
-		if (mappingRules.isEmpty()) {
+		if (mappingRules.get().isEmpty()) {
 			throw new RuntimeException(
 					"No UrlMappingRules are defined in CoreConfig");
 		}
 
-		for (HttpRequestMappingRule rule : mappingRules) {
+		for (HttpRequestMappingRule rule : mappingRules.get()) {
 			ActionPath<ParameterValueProvider> result = rule.parse(request);
 			if (result != null) {
 				return result;
@@ -62,7 +46,7 @@ public class HttpRequestMappingService {
 	 */
 	public HttpRequest generate(ActionPath<Object> path) {
 		HttpRequest result = null;
-		for (HttpRequestMappingRule rule : mappingRules) {
+		for (HttpRequestMappingRule rule : mappingRules.get()) {
 			result = rule.generate(path);
 			if (result != null) {
 				break;

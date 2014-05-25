@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import laf.configuration.ConfigValue;
 import laf.controllerInfo.ControllerInfo;
 
 import com.google.common.base.CaseFormat;
@@ -20,11 +19,10 @@ import com.google.common.collect.Lists;
  * identifier are separated with a forward slash.
  */
 public class DefaultControllerIdentifierStrategy implements
-		ControllerIdentifierStrategy {
+ControllerIdentifierStrategy {
 
 	@Inject
-	@ConfigValue
-	String basePackage;
+	BasePackage basePackage;
 
 	public String getControllerIdentifier(String controllerClassName) {
 		List<String> parts = getControllerIdentifierParts(controllerClassName);
@@ -43,8 +41,8 @@ public class DefaultControllerIdentifierStrategy implements
 	public List<String> getControllerIdentifierParts(String controllerClassName) {
 		String name = controllerClassName;
 
-		if (!Strings.isNullOrEmpty(basePackage)
-				&& name.startsWith(basePackage + ".")) {
+		if (!Strings.isNullOrEmpty(basePackage.get())
+				&& name.startsWith(basePackage.get() + ".")) {
 			// remove package
 			name = controllerClassName.substring((basePackage + ".").length());
 
