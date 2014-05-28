@@ -5,10 +5,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import laf.attachedProperties.AttachedProperty;
-import laf.controllerInfo.ActionMethodInfo;
-import laf.controllerInfo.ControllerInfo;
-import laf.controllerInfo.ControllerInfoRepository;
-import laf.controllerInfo.ParameterInfo;
+import laf.configuration.ConfigurationValue;
+import laf.controllerInfo.*;
 
 @ApplicationScoped
 public class ParameterHandlerRepository {
@@ -19,7 +17,7 @@ public class ParameterHandlerRepository {
 	AttachedProperty<ParameterInfo, ParameterHandler> parameterHandler = new AttachedProperty<>();
 
 	@Inject
-	ParameterHandlers parameterHandlers;
+	ConfigurationValue<ParameterHandlers> parameterHandlers;
 
 	@Inject
 	ControllerInfoRepository controllerInfoRepository;
@@ -36,7 +34,7 @@ public class ParameterHandlerRepository {
 			for (ActionMethodInfo method : info.getActionMethodInfos()) {
 				parameterLoop: for (ParameterInfo parameter : method
 						.getParameters()) {
-					for (ParameterHandler h : parameterHandlers.get()) {
+					for (ParameterHandler h : parameterHandlers.value().get()) {
 						if (h.handles(parameter)) {
 							parameterHandler.set(parameter, h);
 							continue parameterLoop;

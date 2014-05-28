@@ -6,28 +6,33 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import laf.httpRequestProcessing.HttpRequestProcessor;
-import laf.httpRequestProcessing.RequestParserConfigurationValue;
-import laf.httpRequestProcessing.ResultRendererConfigurationValue;
-import laf.requestProcessing.RequestProcessorConfigurationValue;
+import laf.configuration.ConfigurationValue;
+import laf.httpRequestProcessing.*;
+import laf.requestProcessing.RequestProcessorConfigurationParameter;
 
 public class DefaultHttpRequestProcessor implements HttpRequestProcessor {
 
 	@Inject
-	RequestParserConfigurationValue parser;
+	ConfigurationValue<RequestParserConfigurationParameter> parser;
 
 	@Inject
-	ResultRendererConfigurationValue renderer;
+	ConfigurationValue<ResultRendererConfigurationParameter> renderer;
 
 	@Inject
-	RequestProcessorConfigurationValue innerProcessor;
+	ConfigurationValue<RequestProcessorConfigurationParameter> innerProcessor;
 
 	@Override
 	public void process(HttpServletRequest request, HttpServletResponse response) {
 		try {
-			renderer.get().renderResult(
-					innerProcessor.get().process(parser.get().parse(request)),
-					response);
+			renderer.value()
+					.get()
+					.renderResult(
+							innerProcessor
+									.value()
+									.get()
+									.process(
+											parser.value().get().parse(request)),
+							response);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

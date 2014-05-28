@@ -1,4 +1,4 @@
-package laf.httpRequestProcessing;
+package laf.httpRequestProcessing.defaultProcessor;
 
 import javax.servlet.http.HttpServletRequest;
 

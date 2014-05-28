@@ -2,9 +2,9 @@ package laf.httpRequestMapping.parameterHandler;
 
 import java.util.Collection;
 
-import laf.configuration.ConfigurationValue;
+import laf.configuration.ConfigurationParameter;
 
 public interface ParameterHandlers extends
-		ConfigurationValue<Collection<ParameterHandler>> {
+		ConfigurationParameter<Collection<ParameterHandler>> {
 
 }

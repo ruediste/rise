@@ -4,12 +4,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import laf.configuration.ConfigurationValue;
 import laf.controllerInfo.ControllerInfo;
 
-import com.google.common.base.CaseFormat;
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
+import com.google.common.base.*;
 import com.google.common.collect.Lists;
 
 /**
@@ -19,10 +17,10 @@ import com.google.common.collect.Lists;
  * identifier are separated with a forward slash.
  */
 public class DefaultControllerIdentifierStrategy implements
-ControllerIdentifierStrategy {
+		ControllerIdentifierStrategy {
 
 	@Inject
-	BasePackage basePackage;
+	ConfigurationValue<BasePackage> basePackage;
 
 	public String getControllerIdentifier(String controllerClassName) {
 		List<String> parts = getControllerIdentifierParts(controllerClassName);
@@ -41,10 +39,11 @@ ControllerIdentifierStrategy {
 	public List<String> getControllerIdentifierParts(String controllerClassName) {
 		String name = controllerClassName;
 
-		if (!Strings.isNullOrEmpty(basePackage.get())
-				&& name.startsWith(basePackage.get() + ".")) {
+		if (!Strings.isNullOrEmpty(basePackage.value().get())
+				&& name.startsWith(basePackage.value().get() + ".")) {
 			// remove package
-			name = controllerClassName.substring((basePackage + ".").length());
+			name = controllerClassName
+					.substring((basePackage.value().get() + ".").length());
 
 		}
 

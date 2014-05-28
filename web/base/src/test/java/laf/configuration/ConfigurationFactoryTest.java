@@ -1,11 +1,10 @@
 package laf.configuration;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import laf.base.Val;
 import laf.test.BaseDeploymentProvider;
 
 import org.jabsaw.util.Modules;
@@ -15,38 +14,41 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.google.common.reflect.TypeToken;
-
 @RunWith(Arquillian.class)
-public class DefinerConfigurationValueProviderTest {
+public class ConfigurationFactoryTest {
+
 	@Deployment
 	public static WebArchive createDeployment() {
 		WebArchive archive = BaseDeploymentProvider
 				.getDefault()
 				.addClasses(
 						Modules.getAllRequiredClasses(ConfigurationModule.class))
-						.addClasses(ITestBean.class, TestBean.class);
+				.addClasses(TestConfigurationParameter.class,
+						TestConfigurationDefiner.class);
+		System.out.println(archive.toString(true));
 		return archive;
 	}
 
-	public static class TestDefiner implements ConfigurationDefiner {
-		public void produce(TestConfigurationParameter value) {
-			value.set("Hello");
+	private static interface TestConfigurationParameter extends
+			ConfigurationParameter<String> {
+	}
+
+	static class TestConfigurationDefiner implements ConfigurationDefiner {
+		void observe(@Observes DiscoverConfigruationEvent e) {
+			e.add(this);
 		}
+
+		public void produce(TestConfigurationParameter val) {
+			val.set("Foo");
+		}
+
 	}
 
 	@Inject
-	DefinerConfigurationValueProvider provider;
-
-	@Inject
-	TestDefiner definer;
+	ConfigurationValue<TestConfigurationParameter> configValue;
 
 	@Test
 	public void test() {
-		provider.setDefiner(definer);
-		Val<String> value = provider.provideValue(TestConfigurationParameter.class,
-				TypeToken.of(String.class));
-		assertNotNull(value);
-		assertEquals("Hello", value.get());
+		assertEquals("Foo", configValue.value().get());
 	}
 }

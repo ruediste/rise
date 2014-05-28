@@ -1,7 +1,7 @@
 package laf.httpRequestMapping.defaultRule;
 
-import laf.configuration.ConfigurationValue;
+import laf.configuration.ConfigurationParameter;
 
-public interface BasePackage extends ConfigurationValue<String> {
+public interface BasePackage extends ConfigurationParameter<String> {
 
 }

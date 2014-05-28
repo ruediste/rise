@@ -17,6 +17,6 @@ public class BaseDeploymentProvider {
 								"com.google.guava:guava:16.0.1")
 								.withTransitivity().asFile())
 				.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
-				.addClass(BaseLoggerProducer.class);
+				.addClasses(BaseLoggerProducer.class);
 	}
 }

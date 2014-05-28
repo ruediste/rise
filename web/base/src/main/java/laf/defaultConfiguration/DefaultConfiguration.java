@@ -11,15 +11,11 @@ import laf.httpRequestMapping.defaultRule.BasePackage;
 import laf.httpRequestMapping.defaultRule.DefaultHttpRequestMappingRuleFactory;
 import laf.httpRequestMapping.parameterHandler.ParameterHandler;
 import laf.httpRequestMapping.parameterHandler.ParameterHandlers;
-import laf.httpRequestProcessing.HttpRequestProcessorConfigurationValue;
-import laf.httpRequestProcessing.RequestParserConfigurationValue;
-import laf.httpRequestProcessing.ResultRendererConfigurationValue;
-import laf.httpRequestProcessing.defaultProcessor.DefaultHttpRequestProcessor;
-import laf.httpRequestProcessing.defaultProcessor.DefaultRequestParser;
-import laf.httpRequestProcessing.defaultProcessor.DefaultResultRenderer;
-import laf.requestProcessing.ControllerInvokerConfigurationValue;
-import laf.requestProcessing.ParameterLoaderConfigurationValue;
-import laf.requestProcessing.RequestProcessorConfigurationValue;
+import laf.httpRequestProcessing.HttpRequestProcessorConfigurationParameter;
+import laf.httpRequestProcessing.defaultProcessor.*;
+import laf.requestProcessing.ControllerInvokerConfigurationParameter;
+import laf.requestProcessing.ParameterLoaderConfigurationParameter;
+import laf.requestProcessing.RequestProcessorConfigurationParameter;
 import laf.requestProcessing.defaultProcessor.DefaultControllerInvoker;
 import laf.requestProcessing.defaultProcessor.DefaultParameterLoader;
 import laf.requestProcessing.defaultProcessor.DefaultRequestProcessor;
@@ -50,27 +46,27 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 		parameterHandlers.set(handlers);
 	}
 
-	public void produce(RequestProcessorConfigurationValue val) {
+	public void produce(RequestProcessorConfigurationParameter val) {
 		val.set(instance.select(DefaultRequestProcessor.class).get());
 	}
 
-	public void produce(ControllerInvokerConfigurationValue val) {
+	public void produce(ControllerInvokerConfigurationParameter val) {
 		val.set(instance.select(DefaultControllerInvoker.class).get());
 	}
 
-	public void produce(ParameterLoaderConfigurationValue val) {
+	public void produce(ParameterLoaderConfigurationParameter val) {
 		val.set(instance.select(DefaultParameterLoader.class).get());
 	}
 
-	public void produce(HttpRequestProcessorConfigurationValue val) {
+	public void produce(HttpRequestProcessorConfigurationParameter val) {
 		val.set(instance.select(DefaultHttpRequestProcessor.class).get());
 	}
 
-	public void produce(RequestParserConfigurationValue val) {
+	public void produce(RequestParserConfigurationParameter val) {
 		val.set(instance.select(DefaultRequestParser.class).get());
 	}
 
-	public void produce(ResultRendererConfigurationValue val) {
+	public void produce(ResultRendererConfigurationParameter val) {
 		val.set(instance.select(DefaultResultRenderer.class).get());
 	}
 

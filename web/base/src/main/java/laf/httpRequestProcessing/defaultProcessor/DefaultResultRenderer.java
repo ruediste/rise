@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import laf.base.ActionResult;
 import laf.base.RenderResult;
-import laf.httpRequestProcessing.ResultRenderer;
 
 public class DefaultResultRenderer implements ResultRenderer {
 	@Override

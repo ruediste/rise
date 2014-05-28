@@ -4,27 +4,25 @@ import javax.inject.Inject;
 
 import laf.actionPath.ActionPath;
 import laf.base.ActionResult;
+import laf.configuration.ConfigurationValue;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
-import laf.requestProcessing.ControllerInvokerConfigurationValue;
-import laf.requestProcessing.ObjectActionPathProducer;
-import laf.requestProcessing.ParameterLoaderConfigurationValue;
-import laf.requestProcessing.RequestProcessor;
+import laf.requestProcessing.*;
 
 public class DefaultRequestProcessor implements RequestProcessor {
 
 	@Inject
-	ControllerInvokerConfigurationValue invoker;
+	ConfigurationValue<ControllerInvokerConfigurationParameter> invoker;
 
 	@Inject
-	ParameterLoaderConfigurationValue loader;
+	ConfigurationValue<ParameterLoaderConfigurationParameter> loader;
 
 	@Inject
 	ObjectActionPathProducer objectActionPathProducer;
 
 	@Override
 	public ActionResult process(ActionPath<ParameterValueProvider> path) {
-		ActionPath<Object> objectPath = loader.get().load(path);
+		ActionPath<Object> objectPath = loader.value().get().load(path);
 		objectActionPathProducer.setPath(objectPath);
-		return invoker.get().invoke(objectPath);
+		return invoker.value().get().invoke(objectPath);
 	}
 }

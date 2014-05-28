@@ -48,7 +48,7 @@ ConfigurationValueProvider {
 	}
 
 	@Override
-	public <V, T extends ConfigurationValue<V>> Val<V> provideValue(
+	public <V, T extends ConfigurationParameter<V>> Val<V> provideValue(
 			Class<T> configInterfaceClass, TypeToken<V> configValueType) {
 
 		// try explicitely defined keys

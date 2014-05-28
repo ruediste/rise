@@ -6,9 +6,9 @@ import com.google.common.reflect.TypeToken;
 
 /**
  * Provider of configuration values. Used by the
- * {@link ConfigurationFactoryBase} to load configuration values
+ * {@link ConfigurationFactory} to load configuration values
  */
 interface ConfigurationValueProvider {
-	<V, T extends ConfigurationValue<V>> Val<V> provideValue(
+	<V, T extends ConfigurationParameter<V>> Val<V> provideValue(
 			Class<T> configInterfaceClass, TypeToken<V> configValueType);
 }

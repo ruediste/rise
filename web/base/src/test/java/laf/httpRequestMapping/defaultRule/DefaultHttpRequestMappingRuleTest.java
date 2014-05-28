@@ -5,17 +5,16 @@ import static org.junit.Assert.assertNotNull;
 
 import javax.inject.Inject;
 
-import laf.actionPath.ActionInvocation;
-import laf.actionPath.ActionPath;
-import laf.actionPath.ActionPathFactory;
-import laf.actionPath.PathActionResult;
+import laf.actionPath.*;
 import laf.controllerInfo.ControllerInfoRepository;
 import laf.controllerInfo.impl.TestController;
+import laf.defaultConfiguration.DefaultConfigurationModule;
 import laf.httpRequest.HttpRequestImpl;
 import laf.httpRequestMapping.HttpRequestMappingService;
-import laf.httpRequestMapping.defaultRule.DefaultHttpRequestMappingModule;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
+import laf.requestProcessing.ObjectActionPathProducer;
 import laf.test.BaseDeploymentProvider;
+import laf.test.TestConfigurationFactory;
 
 import org.jabsaw.util.Modules;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -35,7 +34,11 @@ public class DefaultHttpRequestMappingRuleTest {
 				.getDefault()
 				.addClasses(
 						Modules.getAllRequiredClasses(DefaultHttpRequestMappingModule.class))
-						.addClass(TestController.class);
+				.addClasses(
+						Modules.getAllRequiredClasses(DefaultConfigurationModule.class))
+				.addClasses(TestController.class,
+						ObjectActionPathProducer.class,
+						TestConfigurationFactory.class);
 		System.out.println(archive.toString(true));
 		return archive;
 	}

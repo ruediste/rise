@@ -1,19 +1,35 @@
 package laf.httpRequestMapping.defaultRule;
 
 import static org.junit.Assert.assertEquals;
-import laf.controllerInfo.ControllerInfo;
-import laf.controllerInfo.ControllerInfoImpl;
-import laf.controllerInfo.ControllerType;
+import laf.configuration.ConfigurationValueImpl;
+import laf.controllerInfo.*;
 import laf.controllerInfo.impl.TestController;
-import laf.httpRequestMapping.defaultRule.DefaultControllerIdentifierStrategy;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class DefaultControllerIdentifierStrategyTest {
 
+	private DefaultControllerIdentifierStrategy strategy;
+
+	@Before
+	public void setup() {
+		strategy = new DefaultControllerIdentifierStrategy();
+		strategy.basePackage = new ConfigurationValueImpl<BasePackage>(
+				new BasePackage() {
+					@Override
+					public void set(String value) {
+					}
+
+					@Override
+					public String get() {
+						return null;
+					}
+				});
+	}
+
 	@Test
 	public void testApply() throws Exception {
-		DefaultControllerIdentifierStrategy strategy = new DefaultControllerIdentifierStrategy();
 		ControllerInfo info = new ControllerInfoImpl(TestController.class,
 				ControllerType.NORMAL);
 
@@ -22,8 +38,18 @@ public class DefaultControllerIdentifierStrategyTest {
 
 	@Test
 	public void testWithPrefix() throws Exception {
-		DefaultControllerIdentifierStrategy strategy = new DefaultControllerIdentifierStrategy();
-		strategy.basePackage = "laf.controllerInfo";
+		strategy.basePackage = new ConfigurationValueImpl<BasePackage>(
+				new BasePackage() {
+
+					@Override
+					public void set(String value) {
+					}
+
+					@Override
+					public String get() {
+						return "laf.controllerInfo";
+					}
+				});
 		assertEquals(
 				"impl/test",
 				strategy.getControllerIdentifier("laf.controllerInfo.impl.TestController"));

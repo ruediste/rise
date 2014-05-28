@@ -8,11 +8,10 @@ import laf.actionPath.ActionPath;
 import laf.actionPath.ActionPathFactory;
 import laf.httpRequest.HttpRequest;
 import laf.httpRequestMapping.HttpRequestMappingRule;
-import laf.httpRequestMapping.HttpRequestMappingRuleFactory;
 import laf.httpRequestMapping.defaultRule.DefaultHttpRequestMappingRuleFactory;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 
-public class MappingRuleFactory implements HttpRequestMappingRuleFactory {
+public class MappingRuleFactory {
 
 	@Inject
 	DefaultHttpRequestMappingRuleFactory defaultFactory;
@@ -20,7 +19,6 @@ public class MappingRuleFactory implements HttpRequestMappingRuleFactory {
 	@Inject
 	ActionPathFactory pathFactory;
 
-	@Override
 	public Collection<HttpRequestMappingRule> createRules() {
 		List<HttpRequestMappingRule> result = new ArrayList<>();
 		result.addAll(defaultFactory.createRules());

@@ -7,6 +7,7 @@ import laf.actionPath.ActionPath;
 import laf.actionPath.ActionPath.ParameterValueComparator;
 import laf.base.BaseModule;
 import laf.base.BaseModule.ProjectStage;
+import laf.configuration.ConfigurationValue;
 import laf.controllerInfo.ControllerInfoRepository;
 import laf.httpRequest.HttpRequest;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
@@ -21,18 +22,18 @@ public class HttpRequestMappingService {
 	ControllerInfoRepository controllerInfoRepository;
 
 	@Inject
-	HttpRequestMappingRules mappingRules;
+	ConfigurationValue<HttpRequestMappingRules> mappingRules;
 
 	/**
 	 * Parse a servlet path. If no matching rule is found, null is returned.
 	 */
 	public ActionPath<ParameterValueProvider> parse(HttpRequest request) {
-		if (mappingRules.get().isEmpty()) {
+		if (mappingRules.value().get().isEmpty()) {
 			throw new RuntimeException(
-					"No UrlMappingRules are defined in CoreConfig");
+					"No UrlMappingRules are defined in the configuration");
 		}
 
-		for (HttpRequestMappingRule rule : mappingRules.get()) {
+		for (HttpRequestMappingRule rule : mappingRules.value().get()) {
 			ActionPath<ParameterValueProvider> result = rule.parse(request);
 			if (result != null) {
 				return result;
@@ -46,7 +47,7 @@ public class HttpRequestMappingService {
 	 */
 	public HttpRequest generate(ActionPath<Object> path) {
 		HttpRequest result = null;
-		for (HttpRequestMappingRule rule : mappingRules.get()) {
+		for (HttpRequestMappingRule rule : mappingRules.value().get()) {
 			result = rule.generate(path);
 			if (result != null) {
 				break;

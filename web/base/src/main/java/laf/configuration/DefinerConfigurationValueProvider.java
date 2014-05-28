@@ -42,7 +42,7 @@ ConfigurationValueProvider {
 	@PostConstruct
 	void initialize() {
 		try {
-			setMethod = ConfigurationValue.class.getMethod("set", Object.class);
+			setMethod = ConfigurationParameter.class.getMethod("set", Object.class);
 		} catch (NoSuchMethodException | SecurityException e) {
 			throw new RuntimeException(e);
 		}
@@ -50,7 +50,7 @@ ConfigurationValueProvider {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <V, T extends ConfigurationValue<V>> Val<V> provideValue(
+	public <V, T extends ConfigurationParameter<V>> Val<V> provideValue(
 			Class<T> configInterfaceClass, TypeToken<V> configValueClass) {
 		for (Method method : definer.getClass().getMethods()) {
 			if (method.getParameterTypes().length != 1) {
@@ -61,7 +61,7 @@ ConfigurationValueProvider {
 				continue;
 			}
 			InvocationHandlerImplementation handler = new InvocationHandlerImplementation();
-			ConfigurationValue<?> proxy = createProxy(configInterfaceClass,
+			ConfigurationParameter<?> proxy = createProxy(configInterfaceClass,
 					handler);
 			try {
 				method.invoke(definer, proxy);
@@ -82,7 +82,7 @@ ConfigurationValueProvider {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends ConfigurationValue<?>> T createProxy(
+	private <T extends ConfigurationParameter<?>> T createProxy(
 			Class<?> configInterfaceClass, InvocationHandler handler) {
 
 		return (T) Proxy.newProxyInstance(Thread.currentThread()

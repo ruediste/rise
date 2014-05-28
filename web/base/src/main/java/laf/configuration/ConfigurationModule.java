@@ -1,5 +1,7 @@
 package laf.configuration;
 
+import laf.base.BaseModuleImpl;
+
 import org.jabsaw.Module;
 
 /**
@@ -25,7 +27,7 @@ import org.jabsaw.Module;
  * To retrieve and set configuration values in a typesafe way, each
  * configuration value has to have a java representation. We chose to use a type
  * for that. More precise, for each configuration value an interface extending
- * {@link ConfigurationValue} has to be defined:
+ * {@link ConfigurationParameter} has to be defined:
  *
  * <pre>
  * public interface UserName extends ConfigurationValue&lt;String&gt; {
@@ -45,7 +47,7 @@ import org.jabsaw.Module;
  * <strong> Defining Configuration Values </strong> <br/>
  * Configuration values are either defined in java classes or in .properties
  * files. In java, values are defined in a separate class, containing methods
- * which accept a {@link ConfigurationValue} argument. In the method body, the
+ * which accept a {@link ConfigurationParameter} argument. In the method body, the
  * configuration value is set:
  *
  * <pre>
@@ -61,12 +63,12 @@ import org.jabsaw.Module;
  * value, the .properties file is searched for the first matching key.
  *
  * <p>
- * Each application has to define a subclass of {@link ConfigurationFactoryBase}
- * . The base class contains a provider method for {@link ConfigurationValue}s.
+ * Each application has to define a subclass of {@link ConfigurationFactory}
+ * . The base class contains a provider method for {@link ConfigurationParameter}s.
  * By default the .properties file "configuration.properties" is used first, and
  * then the values defined within the subclass of ConfigurationFactoryBase. This
  * can be changed by overriding
- * {@link ConfigurationFactoryBase#registerConfigurationValueProviders()}.
+ * {@link ConfigurationFactory#registerConfigurationValueProviders()}.
  * </p>
  *
  * <strong> Specifying Values in .properties Files</strong> <br/>
@@ -84,7 +86,7 @@ import org.jabsaw.Module;
  * {@link ConfigurationValueFactory#getValue()} is used.
  * </p>
  */
-@Module(description = "Typsafe Configuration System supporting .properties files", hideFromDependencyGraphOutput = true)
+@Module(description = "Typsafe Configuration System supporting .properties files", hideFromDependencyGraphOutput = true, imported = { BaseModuleImpl.class })
 public class ConfigurationModule {
 
 }

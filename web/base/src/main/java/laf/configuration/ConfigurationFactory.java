@@ -1,11 +1,11 @@
 package laf.configuration;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import java.lang.reflect.*;
 import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -17,7 +17,8 @@ import org.slf4j.Logger;
 
 import com.google.common.reflect.TypeToken;
 
-public abstract class ConfigurationFactoryBase {
+@ApplicationScoped
+public class ConfigurationFactory {
 
 	@Inject
 	Logger log;
@@ -32,7 +33,8 @@ public abstract class ConfigurationFactoryBase {
 
 	private Method getMethod;
 
-	protected abstract void registerConfigurationValueProviders();
+	@Inject
+	Event<DiscoverConfigruationEvent> discoverConfigurationEvent;
 
 	protected void add(ConfigurationDefiner definer) {
 		DefinerConfigurationValueProvider provider = definerConfigurationValueProviderInstance
@@ -55,16 +57,37 @@ public abstract class ConfigurationFactoryBase {
 
 	@PostConstruct
 	void initialize() {
-		registerConfigurationValueProviders();
+
 		try {
-			getMethod = ConfigurationValue.class.getMethod("get");
+			getMethod = ConfigurationParameter.class.getMethod("get");
 		} catch (NoSuchMethodException | SecurityException e) {
 			throw new RuntimeException(e);
 		}
+
+		DiscoverConfigruationEvent e = new DiscoverConfigruationEvent() {
+
+			@Override
+			public void addPropretiesFile(String path) {
+				ConfigurationFactory.this.addPropretiesFile(path);
+			}
+
+			@Override
+			public void add(ConfigurationValueProvider provider) {
+				ConfigurationFactory.this.add(provider);
+
+			}
+
+			@Override
+			public void add(ConfigurationDefiner definer) {
+				ConfigurationFactory.this.add(definer);
+
+			}
+		};
+		discoverConfigurationEvent.fire(e);
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	private <V, T extends ConfigurationValue<V>> Val<V> provideValue(
+	private <V, T extends ConfigurationParameter<V>> Val<V> provideValue(
 			ConfigurationValueProvider provider, Class<?> configInterfaceClass,
 			TypeToken<?> configValueClass) {
 		return provider.provideValue((Class<T>) configInterfaceClass,
@@ -72,16 +95,21 @@ public abstract class ConfigurationFactoryBase {
 	}
 
 	@Produces
-	public <T extends ConfigurationValue<?>> T produceConfigurationValue(
+	public <T extends ConfigurationParameter<?>> ConfigurationValue<T> produceConfigurationValue(
 			InjectionPoint p) {
-		Class<?> configInterfaceClass = TypeToken.of(p.getType()).getRawType();
-		TypeToken<?> valueType = TypeToken.of(configInterfaceClass)
-				.resolveType(ConfigurationValue.class.getTypeParameters()[0]);
+		Class<?> parameterInterfaceClass = TypeToken.of(p.getType())
+				.resolveType(ConfigurationValue.class.getTypeParameters()[0])
+				.getRawType();
+		TypeToken<?> valueType = TypeToken.of(parameterInterfaceClass)
+				.resolveType(
+						ConfigurationParameter.class.getTypeParameters()[0]);
 		for (ConfigurationValueProvider provider : providers) {
-			Val<?> value = provideValue(provider, configInterfaceClass,
+			Val<?> value = provideValue(provider, parameterInterfaceClass,
 					valueType);
 			if (value != null) {
-				return createProxy(configInterfaceClass, value);
+				final T parameter = createParameterProxy(
+						parameterInterfaceClass, value.get());
+				return new ConfigurationValueImpl<>(parameter);
 			}
 		}
 
@@ -90,7 +118,7 @@ public abstract class ConfigurationFactoryBase {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends ConfigurationValue<?>> T createProxy(
+	private <T extends ConfigurationParameter<?>> T createParameterProxy(
 			Class<?> configInterfaceClass, final Object value) {
 
 		return (T) Proxy.newProxyInstance(Thread.currentThread()

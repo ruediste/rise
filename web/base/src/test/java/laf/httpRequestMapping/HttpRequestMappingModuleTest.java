@@ -5,11 +5,14 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.util.*;
+
 import laf.actionPath.ActionPath;
 import laf.actionPath.ActionPath.ParameterValueComparator;
 import laf.base.BaseModule;
+import laf.configuration.ConfigurationValueImpl;
 import laf.httpRequest.HttpRequestImpl;
-import laf.httpRequestMapping.*;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
 
 import org.junit.Before;
@@ -41,7 +44,18 @@ public class HttpRequestMappingModuleTest {
 		});
 
 		mappingService.baseModule = baseModule;
-		mappingService.mappingRules.add(rule);
+		mappingService.mappingRules = new ConfigurationValueImpl<HttpRequestMappingRules>(
+				new HttpRequestMappingRules() {
+
+					@Override
+					public void set(Deque<HttpRequestMappingRule> value) {
+					}
+
+					@Override
+					public Deque<HttpRequestMappingRule> get() {
+						return new ArrayDeque<>(Collections.singletonList(rule));
+					}
+				});
 
 		when(rule.parse(new HttpRequestImpl("foo"))).thenReturn(providerPath);
 		when(rule.generate(objectPath)).thenReturn(new HttpRequestImpl("foo"));
@@ -49,7 +63,7 @@ public class HttpRequestMappingModuleTest {
 				objectPath.isCallToSameActionMethod(
 						same(providerPath),
 						Matchers.<ParameterValueComparator<Object, ParameterValueProvider>> any()))
-				.thenReturn(true);
+						.thenReturn(true);
 	}
 
 	@Test

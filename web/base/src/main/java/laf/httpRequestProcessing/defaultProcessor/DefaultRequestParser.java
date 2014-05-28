@@ -7,7 +7,6 @@ import laf.actionPath.ActionPath;
 import laf.httpRequest.DelegatingHttpRequest;
 import laf.httpRequestMapping.HttpRequestMappingService;
 import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
-import laf.httpRequestProcessing.RequestParser;
 
 public class DefaultRequestParser implements RequestParser {
 	@Inject
@@ -19,7 +18,7 @@ public class DefaultRequestParser implements RequestParser {
 				.parse(new DelegatingHttpRequest(request));
 
 		if (actionPath == null) {
-			throw new RuntimeException("URL could not be parsed "
+			throw new RuntimeException("URL could not be parsed: "
 					+ request.getPathInfo());
 		}
 		return actionPath;

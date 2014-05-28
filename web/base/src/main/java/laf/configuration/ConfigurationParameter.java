@@ -1,6 +1,6 @@
 package laf.configuration;
 
-public interface ConfigurationValue<T> {
+public interface ConfigurationParameter<T> {
 
 	T get();
 

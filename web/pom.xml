@@ -16,16 +16,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jabsaw.version>1.2-SNAPSHOT</jabsaw.version>
 	</properties>
-
 	<build>
 		<plugins>
-			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.12</version>
-				<configuration>
-					<!-- <parallel>classes</parallel> <threadCount> 4 </threadCount> -->
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -35,6 +27,14 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.12</version>
+				<configuration>
+					<!-- <parallel>classes</parallel> <threadCount> 4 </threadCount> -->
+				</configuration>
+			</plugin>
+
 			<plugin>
 				<groupId>org.jabsaw</groupId>
 				<artifactId>jabsaw-maven-plugin</artifactId>

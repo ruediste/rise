@@ -7,8 +7,9 @@ import laf.configuration.ConfigurationModule;
 
 import org.jabsaw.Module;
 
-@Module(description = "Base classes of the LAF Framework", exported = {
-		AttachedPropertiesModule.class, ConfigurationModule.class }, hideFromDependencyGraphOutput = true)
+@Module(description = "Meta Module of the Base classes of the LAF Framework", exported = {
+		AttachedPropertiesModule.class, ConfigurationModule.class,
+		BaseModuleImpl.class }, hideFromDependencyGraphOutput = true, includePackage = false)
 @Singleton
 public class BaseModule {
 

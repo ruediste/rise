@@ -1,7 +1,7 @@
 package laf.httpRequestMapping.defaultRule;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -24,12 +24,12 @@ public class DefaultHttpRequestMappingRuleFactory {
 	@Inject
 	Instance<DefaultControllerIdentifierStrategy> strategy;
 
-	public Collection<HttpRequestMappingRule> createRules() {
-		return Collections
-				.<HttpRequestMappingRule> singletonList(new TwoStageMappingRule(
-						requestMapperBuilder.create(strategy.get()),
-						defaultParameterMapper.get(), defaultActionPathSigner
-								.get()));
+	public Deque<HttpRequestMappingRule> createRules() {
+		ArrayDeque<HttpRequestMappingRule> result = new ArrayDeque<HttpRequestMappingRule>();
+		result.add(new TwoStageMappingRule(requestMapperBuilder.create(strategy
+				.get()), defaultParameterMapper.get(), defaultActionPathSigner
+				.get()));
+		return result;
 	}
 
 }
