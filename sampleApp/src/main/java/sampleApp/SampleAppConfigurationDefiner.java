@@ -27,6 +27,7 @@ public class SampleAppConfigurationDefiner implements ConfigurationDefiner {
 		e.add(defaultConfiguration);
 	}
 
+	@Inject
 	ActionPathFactory pathFactory;
 
 	public void produce(HttpRequestMappingRules rules) {

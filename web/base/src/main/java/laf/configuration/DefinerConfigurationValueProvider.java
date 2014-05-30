@@ -1,9 +1,6 @@
 package laf.configuration;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import java.lang.reflect.*;
 
 import javax.annotation.PostConstruct;
 
@@ -12,10 +9,10 @@ import laf.base.Val;
 import com.google.common.reflect.TypeToken;
 
 public class DefinerConfigurationValueProvider implements
-ConfigurationValueProvider {
+		ConfigurationValueProvider {
 
 	private final class InvocationHandlerImplementation implements
-	InvocationHandler {
+			InvocationHandler {
 		public Object value;
 		public boolean argSet;
 
@@ -27,12 +24,22 @@ ConfigurationValueProvider {
 				argSet = true;
 				return null;
 			}
-			throw new RuntimeException("Method " + method.getName()
-					+ " may not be called on ConfigValue instances");
+			if (getMethod.equals(method)) {
+				if (!argSet) {
+					throw new RuntimeException(
+							"The value of this configuration parameter has not been set yet");
+				}
+				return value;
+			}
+			throw new RuntimeException(
+					"Method "
+							+ method.getName()
+							+ " may not be called on ConfigurationParameters during their value definition");
 		}
 	}
 
 	ConfigurationDefiner definer;
+	private Method getMethod;
 	private Method setMethod;
 
 	void setDefiner(ConfigurationDefiner definer) {
@@ -42,7 +49,9 @@ ConfigurationValueProvider {
 	@PostConstruct
 	void initialize() {
 		try {
-			setMethod = ConfigurationParameter.class.getMethod("set", Object.class);
+			setMethod = ConfigurationParameter.class.getMethod("set",
+					Object.class);
+			getMethod = ConfigurationParameter.class.getMethod("get");
 		} catch (NoSuchMethodException | SecurityException e) {
 			throw new RuntimeException(e);
 		}

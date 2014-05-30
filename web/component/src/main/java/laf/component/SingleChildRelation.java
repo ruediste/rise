@@ -4,11 +4,12 @@ import java.util.Iterator;
 
 import com.google.common.collect.Iterators;
 
-public class SingleChildRelation<T extends Component> extends ChildRelation {
+public class SingleChildRelation<T extends Component, TSelf extends ComponentBase<TSelf>>
+extends ChildRelation<TSelf> {
 
 	private T child;
 
-	public SingleChildRelation(ComponentBase parent) {
+	public SingleChildRelation(TSelf parent) {
 		super(parent);
 	}
 
@@ -16,7 +17,7 @@ public class SingleChildRelation<T extends Component> extends ChildRelation {
 		return child;
 	}
 
-	public void setChild(T newChild) {
+	public T setChild(T newChild) {
 		if (child != null && child.getParent() != null) {
 			child.getParent().childRemoved(child);
 			child.parentChanged(null);
@@ -27,6 +28,7 @@ public class SingleChildRelation<T extends Component> extends ChildRelation {
 		if (child != null) {
 			child.parentChanged(parent);
 		}
+		return newChild;
 	}
 
 	@Override

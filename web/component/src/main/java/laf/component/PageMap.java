@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.ejb.Stateful;
+import javax.enterprise.context.SessionScoped;
 
+@SessionScoped
 @Stateful
 public class PageMap {
 

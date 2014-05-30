@@ -7,5 +7,6 @@ import org.rendersnake.HtmlCanvas;
 public abstract class CRender extends ComponentBase<CRender> {
 
 	@Override
-	abstract public void render(HtmlCanvas html) throws IOException;
+	abstract public void render(HtmlCanvas html, RenderUtil util)
+			throws IOException;
 }

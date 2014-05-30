@@ -1,10 +1,11 @@
 package laf.component;
 
-public abstract class ChildRelation implements Iterable<Component> {
+public abstract class ChildRelation<TSelf extends ComponentBase<?>> implements
+		Iterable<Component> {
 
-	protected ComponentBase parent;
+	protected TSelf parent;
 
-	public ChildRelation(ComponentBase parent) {
+	public ChildRelation(TSelf parent) {
 		this.parent = parent;
 		parent.addChildRelation(this);
 	}

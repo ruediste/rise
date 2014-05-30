@@ -20,7 +20,7 @@ public class ComponentEventTest {
 	private InOrder order;
 
 	private static class TestComponent extends ComponentBase<TestComponent> {
-		public final MultiChildrenRelation<Component> children = new MultiChildrenRelation<>(
+		public final MultiChildrenRelation<Component, TestComponent> children = new MultiChildrenRelation<>(
 				this);
 
 	}

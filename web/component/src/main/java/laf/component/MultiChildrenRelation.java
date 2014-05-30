@@ -2,11 +2,12 @@ package laf.component;
 
 import java.util.*;
 
-public class MultiChildrenRelation<T extends Component> extends ChildRelation {
+public class MultiChildrenRelation<T extends Component, TSelf extends ComponentBase<TSelf>>
+extends ChildRelation<TSelf> {
 
 	private final ArrayList<T> children = new ArrayList<>();
 
-	public MultiChildrenRelation(ComponentBase parent) {
+	public MultiChildrenRelation(TSelf parent) {
 		super(parent);
 	}
 
@@ -21,14 +22,16 @@ public class MultiChildrenRelation<T extends Component> extends ChildRelation {
 		children.remove(child);
 	}
 
-	public void add(T component) {
+	public TSelf add(T component) {
 		children.add(component);
 		postAdd(component);
+		return parent;
 	}
 
-	public void add(int index, T component) {
+	public TSelf add(int index, T component) {
 		children.add(index, component);
 		postAdd(component);
+		return parent;
 	}
 
 	public void remove(T component) {

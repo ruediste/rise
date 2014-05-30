@@ -10,12 +10,11 @@ import org.rendersnake.HtmlCanvas;
 import com.google.common.collect.Iterables;
 
 public class ComponentBase<TSelf> extends AttachedPropertyBearerBase implements
-Component {
+		Component {
 
 	private Component parent;
-	ArrayList<ChildRelation> childRelations = new ArrayList<>();
-
-	protected ComponentUtil util = ComponentUtil.getInstance();
+	ArrayList<ChildRelation<?>> childRelations = new ArrayList<>();
+	private Integer id;
 
 	@Override
 	public Iterable<Component> getChildren() {
@@ -34,24 +33,46 @@ Component {
 
 	@Override
 	public void childRemoved(Component child) {
-		for (ChildRelation relation : childRelations) {
+		for (ChildRelation<?> relation : childRelations) {
 			relation.childRemoved(child);
 		}
 	}
 
-	public void addChildRelation(ChildRelation childRelation) {
+	public void addChildRelation(ChildRelation<?> childRelation) {
 		childRelations.add(childRelation);
 	}
 
 	@Override
-	public void render(HtmlCanvas html) throws IOException {
+	public void render(HtmlCanvas html, RenderUtil util) throws IOException {
 		for (Component child : getChildren()) {
-			child.render(html);
+			child.render(html, util.forChild(child));
 		}
 	}
 
 	@Override
 	public void initialize() {
 
+	}
+
+	@Override
+	public void applyValues(ApplyValuesUtil util) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void raiseEvents(RaiseEventsUtil util) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public Integer getComponentId() {
+		return id;
+	}
+
+	@Override
+	public void setComponentId(Integer id) {
+		this.id = id;
 	}
 }

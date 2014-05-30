@@ -38,17 +38,25 @@ public interface Component extends AttachedPropertyBearer {
 	void childRemoved(Component child);
 
 	/**
-	 * Render the component to the given {@link HtmlCanvas}
-	 *
-	 * @param html
-	 * @throws IOException
-	 */
-	void render(HtmlCanvas html) throws IOException;
-
-	/**
 	 * Called on the root component before rendering a page for the first time.
 	 * The implementation of this method has to call the {@link #initialize()}
 	 * method of all child components.
 	 */
 	void initialize();
+
+	/**
+	 * Render the component to the given {@link HtmlCanvas}
+	 *
+	 * @param html
+	 * @throws IOException
+	 */
+	void render(HtmlCanvas html, RenderUtil util) throws IOException;
+
+	void applyValues(ApplyValuesUtil util);
+
+	void raiseEvents(RaiseEventsUtil util);
+
+	Integer getComponentId();
+
+	void setComponentId(Integer id);
 }
