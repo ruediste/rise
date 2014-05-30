@@ -1,4 +1,4 @@
-package laf.component;
+package laf.component.core;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
@@ -34,6 +34,7 @@ public class ComponentViewRepository {
 	@SuppressWarnings("unchecked")
 	@PostConstruct
 	public void initialize() {
+		// iterate over all views
 		for (Bean<?> bean : beanManager.getBeans(
 				new TypeToken<ComponentView<?>>() {
 					private static final long serialVersionUID = 1L;
@@ -44,11 +45,14 @@ public class ComponentViewRepository {
 						return Any.class;
 					}
 				})) {
+			// find the controller class of the view
 			Class<?> controllerClass = TypeToken.of(bean.getBeanClass())
 					.resolveType(ComponentView.class.getTypeParameters()[0])
 					.getRawType();
 
+			// create an entry for the view
 			ViewEntry entry = new ViewEntry();
+
 			entry.viewClass = (Class<? extends ComponentView<?>>) bean
 					.getBeanClass();
 			ViewQualifier viewQualifierAnnotation = bean.getBeanClass()
@@ -57,6 +61,7 @@ public class ComponentViewRepository {
 			if (viewQualifierAnnotation != null) {
 				qualifier = viewQualifierAnnotation.value();
 			}
+
 			ViewEntry existing = viewMap.put(
 					new Pair<Class<?>, Class<? extends IViewQualifier>>(
 							controllerClass, qualifier), entry);
@@ -71,10 +76,16 @@ public class ComponentViewRepository {
 		}
 	}
 
+	/**
+	 * Create a view for the given controller
+	 */
 	public <T> ComponentView<T> createView(T controller) {
 		return createView(controller, null);
 	}
 
+	/**
+	 * Create a view for the given controller and qualifier
+	 */
 	@SuppressWarnings("unchecked")
 	public <T> ComponentView<T> createView(T controller,
 			Class<? extends IViewQualifier> qualifier) {

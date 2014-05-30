@@ -1,7 +1,10 @@
-package laf.component;
+package laf.component.html;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+
+import laf.component.ComponentService;
+import laf.component.core.Component;
 
 public class ApplyValuesUtilImpl implements ApplyValuesUtil {
 

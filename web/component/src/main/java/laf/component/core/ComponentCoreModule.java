@@ -1,4 +1,4 @@
-package laf.component;
+package laf.component.core;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;

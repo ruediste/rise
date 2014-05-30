@@ -1,4 +1,4 @@
-package laf.component;
+package laf.component.html;
 
 import java.util.List;
 
@@ -7,6 +7,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import laf.base.ActionResult;
 import laf.base.Controller;
+import laf.component.ComponentService;
+import laf.component.PageMap;
+import laf.component.core.Component;
+import laf.component.core.ComponentCoreModule;
+import laf.component.core.ComponentTreeUtil;
+import laf.component.core.ComponentView;
+import laf.component.html.template.RaiseEventsUtil;
 
 import org.slf4j.Logger;
 

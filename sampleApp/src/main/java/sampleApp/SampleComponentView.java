@@ -3,7 +3,11 @@ package sampleApp;
 import java.io.IOException;
 
 import laf.component.*;
+import laf.component.basic.CRender;
 import laf.component.basic.CTextField;
+import laf.component.core.Component;
+import laf.component.core.ComponentView;
+import laf.component.html.RenderUtil;
 
 import org.rendersnake.HtmlCanvas;
 

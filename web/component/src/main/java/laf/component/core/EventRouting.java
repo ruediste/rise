@@ -1,4 +1,4 @@
-package laf.component;
+package laf.component.core;
 
 import java.util.Collections;
 

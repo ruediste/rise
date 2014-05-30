@@ -6,6 +6,8 @@ import java.util.Map;
 import javax.ejb.Stateful;
 import javax.enterprise.context.SessionScoped;
 
+import laf.component.core.ComponentView;
+
 @SessionScoped
 @Stateful
 public class PageMap {

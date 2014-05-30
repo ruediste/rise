@@ -1,6 +1,9 @@
-package laf.component;
+package laf.component.basic;
 
 import java.io.IOException;
+
+import laf.component.core.ComponentBase;
+import laf.component.html.RenderUtil;
 
 import org.rendersnake.HtmlCanvas;
 

@@ -1,4 +1,4 @@
-package laf.component;
+package laf.component.html.template;
 
 public interface RaiseEventsUtil {
 

@@ -1,7 +1,8 @@
-package laf.component;
+package laf.component.html;
 
 import laf.actionPath.ActionPathFactory.ActionPathBuilder;
 import laf.base.ActionResult;
+import laf.component.core.Component;
 
 public interface RenderUtil {
 

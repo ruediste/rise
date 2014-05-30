@@ -1,16 +1,19 @@
-package laf.component;
+package laf.component.core;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 import laf.attachedProperties.AttachedPropertyBearerBase;
+import laf.component.html.ApplyValuesUtil;
+import laf.component.html.RenderUtil;
+import laf.component.html.template.RaiseEventsUtil;
 
 import org.rendersnake.HtmlCanvas;
 
 import com.google.common.collect.Iterables;
 
 public class ComponentBase<TSelf> extends AttachedPropertyBearerBase implements
-		Component {
+Component {
 
 	private Component parent;
 	ArrayList<ChildRelation<?>> childRelations = new ArrayList<>();

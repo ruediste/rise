@@ -1,4 +1,4 @@
-package laf.component;
+package laf.component.core;
 
 /**
  * Event handler for {@link ComponentEvent}

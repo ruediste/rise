@@ -1,4 +1,4 @@
-package laf.component;
+package laf.component.html;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -8,6 +8,9 @@ import javax.servlet.http.HttpServletResponse;
 import laf.actionPath.*;
 import laf.actionPath.ActionPathFactory.ActionPathBuilder;
 import laf.base.ActionResult;
+import laf.component.ComponentService;
+import laf.component.core.Component;
+import laf.component.core.ComponentCoreModule;
 import laf.httpRequest.HttpRequest;
 import laf.httpRequestMapping.HttpRequestMappingService;
 

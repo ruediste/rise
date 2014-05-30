@@ -3,6 +3,11 @@ package sampleApp;
 import java.io.IOException;
 
 import laf.component.*;
+import laf.component.core.Component;
+import laf.component.core.ComponentBase;
+import laf.component.core.MultiChildrenRelation;
+import laf.component.html.PageReloadController;
+import laf.component.html.RenderUtil;
 
 import org.rendersnake.HtmlAttributesFactory;
 import org.rendersnake.HtmlCanvas;

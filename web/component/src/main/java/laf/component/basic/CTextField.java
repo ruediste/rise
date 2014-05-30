@@ -5,6 +5,9 @@ import static org.rendersnake.HtmlAttributesFactory.type;
 import java.io.IOException;
 
 import laf.component.*;
+import laf.component.core.ComponentBase;
+import laf.component.html.ApplyValuesUtil;
+import laf.component.html.RenderUtil;
 
 import org.rendersnake.HtmlCanvas;
 

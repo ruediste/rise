@@ -1,4 +1,5 @@
-package laf.component;
+package laf.component.core;
+
 
 public abstract class ChildRelation<TSelf extends ComponentBase<?>> implements
 		Iterable<Component> {

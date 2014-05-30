@@ -6,6 +6,9 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
 import laf.base.RenderResult;
+import laf.component.core.ComponentCoreModule;
+import laf.component.core.ComponentView;
+import laf.component.core.ComponentViewRepository;
 import laf.requestProcessing.CurrentController;
 
 public class PageRenderResult implements RenderResult {

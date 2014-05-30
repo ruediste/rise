@@ -1,10 +1,10 @@
-package laf.component;
+package laf.component.core;
 
-import static laf.MockitoExt.mock;
-import static org.mockito.Mockito.*;
+import laf.MockitoExt;
 
 import org.junit.Test;
 import org.mockito.InOrder;
+import org.mockito.Mockito;
 
 import com.google.common.reflect.TypeToken;
 
@@ -33,24 +33,27 @@ public class ComponentEventTest {
 		component3 = new TestComponent();
 		component1.children.add(component2);
 		component1.children.add(component3);
-		listener1 = mock(new TypeToken<ComponentEventListener<Integer>>() {
-		}, "listener1");
-		listener2 = mock(new TypeToken<ComponentEventListener<Integer>>() {
-		}, "listener2");
-		listener3 = mock(new TypeToken<ComponentEventListener<Integer>>() {
-		}, "listener3");
+		listener1 = MockitoExt.mock(
+				new TypeToken<ComponentEventListener<Integer>>() {
+				}, "listener1");
+		listener2 = MockitoExt.mock(
+				new TypeToken<ComponentEventListener<Integer>>() {
+				}, "listener2");
+		listener3 = MockitoExt.mock(
+				new TypeToken<ComponentEventListener<Integer>>() {
+				}, "listener3");
 		event.register(component1, listener1);
 		event.register(component2, listener2);
 		event.register(component3, listener3);
-		order = inOrder(listener1, listener2, listener3);
+		order = Mockito.inOrder(listener1, listener2, listener3);
 	}
 
 	@Test
 	public void sendEventSimple() {
 		setup(EventRouting.DIRECT);
 		event.send(component1, 3);
-		verify(listener1, times(1)).handle(3);
-		verify(listener2, times(0)).handle(3);
+		Mockito.verify(listener1, Mockito.times(1)).handle(3);
+		Mockito.verify(listener2, Mockito.times(0)).handle(3);
 	}
 
 	@Test
@@ -59,51 +62,51 @@ public class ComponentEventTest {
 		event.unregister(component1, listener1);
 		event.send(component1, 3);
 
-		verify(listener1, times(0)).handle(3);
-		verify(listener2, times(0)).handle(3);
+		Mockito.verify(listener1, Mockito.times(0)).handle(3);
+		Mockito.verify(listener2, Mockito.times(0)).handle(3);
 	}
 
 	@Test
 	public void sendEventBubble() {
 		setup(EventRouting.BUBBLE);
 		event.send(component2, 3);
-		order.verify(listener2, times(1)).handle(3);
-		order.verify(listener1, times(1)).handle(3);
+		order.verify(listener2, Mockito.times(1)).handle(3);
+		order.verify(listener1, Mockito.times(1)).handle(3);
 	}
 
 	@Test
 	public void sendEventHandledSuppresses() {
 		setup(EventRouting.BUBBLE);
-		when(listener2.handle(3)).thenReturn(true);
+		Mockito.when(listener2.handle(3)).thenReturn(true);
 		event.send(component2, 3);
-		order.verify(listener2, times(1)).handle(3);
-		order.verify(listener1, times(0)).handle(3);
+		order.verify(listener2, Mockito.times(1)).handle(3);
+		order.verify(listener1, Mockito.times(0)).handle(3);
 	}
 
 	@Test
 	public void sendEventHandlesTooWorks() {
 		setup(EventRouting.BUBBLE);
-		when(listener2.handle(3)).thenReturn(true);
+		Mockito.when(listener2.handle(3)).thenReturn(true);
 		event.register(component1, listener1, true);
 		event.send(component2, 3);
-		order.verify(listener2, times(1)).handle(3);
-		order.verify(listener1, times(1)).handle(3);
+		order.verify(listener2, Mockito.times(1)).handle(3);
+		order.verify(listener1, Mockito.times(1)).handle(3);
 	}
 
 	@Test
 	public void sendEventTunnel() {
 		setup(EventRouting.TUNNEL);
 		event.send(component2, 3);
-		order.verify(listener1, times(1)).handle(3);
-		order.verify(listener2, times(1)).handle(3);
+		order.verify(listener1, Mockito.times(1)).handle(3);
+		order.verify(listener2, Mockito.times(1)).handle(3);
 	}
 
 	@Test
 	public void sendEventBroadcast() {
 		setup(EventRouting.BROADCAST);
 		event.send(component1, 3);
-		order.verify(listener1, times(1)).handle(3);
-		order.verify(listener2, times(1)).handle(3);
-		order.verify(listener3, times(1)).handle(3);
+		order.verify(listener1, Mockito.times(1)).handle(3);
+		order.verify(listener2, Mockito.times(1)).handle(3);
+		order.verify(listener3, Mockito.times(1)).handle(3);
 	}
 }

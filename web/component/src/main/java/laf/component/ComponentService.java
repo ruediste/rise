@@ -8,6 +8,10 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
+import laf.component.core.Component;
+import laf.component.core.ComponentView;
+import laf.component.html.RenderUtilImpl;
+
 import org.rendersnake.HtmlCanvas;
 
 @ApplicationScoped

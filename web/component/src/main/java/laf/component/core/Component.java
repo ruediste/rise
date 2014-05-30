@@ -1,8 +1,11 @@
-package laf.component;
+package laf.component.core;
 
 import java.io.IOException;
 
 import laf.attachedProperties.AttachedPropertyBearer;
+import laf.component.html.ApplyValuesUtil;
+import laf.component.html.RenderUtil;
+import laf.component.html.template.RaiseEventsUtil;
 
 import org.rendersnake.HtmlCanvas;
 
