@@ -1,12 +1,17 @@
 package laf.http.request;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.enterprise.inject.Alternative;
 
 import com.google.common.base.Objects;
 
 /**
  * Mutable implementation of the {@link HttpRequest} interface
  */
+@Alternative
 public class HttpRequestImpl extends HttpRequestBase {
 
 	String path;

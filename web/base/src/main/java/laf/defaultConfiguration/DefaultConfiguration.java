@@ -7,6 +7,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import laf.configuration.ConfigurationDefiner;
+import laf.http.ContentType;
 import laf.http.requestMapping.HttpRequestMappingRules;
 import laf.http.requestMapping.defaultRule.BasePackage;
 import laf.http.requestMapping.defaultRule.DefaultHttpRequestMappingRuleFactory;
@@ -76,6 +77,10 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 		ArrayDeque<ResultRenderer> renderers = new ArrayDeque<>();
 		renderers.add(instance.select(DefaultResultRenderer.class).get());
 		val.set(renderers);
+	}
+
+	public void produce(ContentType type) {
+		type.set("application/xhtml+xml");
 	}
 
 }

@@ -61,10 +61,14 @@ public class RenderUtilImpl implements RenderUtil {
 	public String url(ActionResult path) {
 		@SuppressWarnings("unchecked")
 		HttpRequest url = httpRequestMappingService
-		.generate((ActionPath<Object>) path);
+				.generate((ActionPath<Object>) path);
+		return url(url.getPathWithParameters());
+	}
+
+	private String url(String path) {
 		String prefix = request.getContextPath();
 		prefix += request.getServletPath();
-		return response.encodeURL(prefix + "/" + url.getPathWithParameters());
+		return response.encodeURL(prefix + "/" + path);
 	}
 
 	@Override
@@ -91,7 +95,20 @@ public class RenderUtilImpl implements RenderUtil {
 		util.setComponent(component);
 
 		htmlTemplateService.getTemplate(component)
-		.render(component, html, util);
+				.render(component, html, util);
 	}
 
+	/**
+	 * Return the URL of a resource
+	 */
+	@Override
+	public String resourceUrl(String resource) {
+		return response.encodeURL(request.getContextPath() + "/static/"
+				+ resource);
+	}
+
+	@Override
+	public long getComponentId() {
+		return componentService.getComponentId(component);
+	}
 }

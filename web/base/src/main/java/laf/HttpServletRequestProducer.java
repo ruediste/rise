@@ -4,6 +4,9 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
 import javax.servlet.http.HttpServletRequest;
 
+import laf.http.request.DelegatingHttpRequest;
+import laf.http.request.HttpRequest;
+
 @RequestScoped
 public class HttpServletRequestProducer {
 
@@ -11,8 +14,14 @@ public class HttpServletRequestProducer {
 
 	@Produces
 	@RequestScoped
-	public HttpServletRequest produceResponse() {
+	public HttpServletRequest produceServletRequest() {
 		return request;
+	}
+
+	@Produces
+	@RequestScoped
+	public HttpRequest produceRequest() {
+		return new DelegatingHttpRequest(request);
 	}
 
 	public HttpServletRequest getRequest() {

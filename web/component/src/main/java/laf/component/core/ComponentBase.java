@@ -7,11 +7,10 @@ import laf.attachedProperties.AttachedPropertyBearerBase;
 import com.google.common.collect.Iterables;
 
 public class ComponentBase<TSelf> extends AttachedPropertyBearerBase implements
-		Component {
+Component {
 
 	private Component parent;
 	ArrayList<ChildRelation<?>> childRelations = new ArrayList<>();
-	private Long id;
 
 	@Override
 	public Iterable<Component> getChildren() {
@@ -44,13 +43,4 @@ public class ComponentBase<TSelf> extends AttachedPropertyBearerBase implements
 
 	}
 
-	@Override
-	public Long getComponentId() {
-		return id;
-	}
-
-	@Override
-	public void setComponentId(Long id) {
-		this.id = id;
-	}
 }

@@ -40,7 +40,4 @@ public interface Component extends AttachedPropertyBearer {
 	 */
 	void initialize();
 
-	Long getComponentId();
-
-	void setComponentId(Long id);
 }

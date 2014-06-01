@@ -13,6 +13,7 @@ import laf.component.core.ComponentTreeUtil;
 import laf.component.core.ComponentView;
 import laf.component.html.template.HtmlTemplateService;
 import laf.component.html.template.RaiseEventsUtil;
+import laf.http.request.HttpRequest;
 
 import org.slf4j.Logger;
 
@@ -32,6 +33,9 @@ public class PageReloadController {
 	HtmlComponentService componentService;
 
 	@Inject
+	HttpRequest request;
+
+	@Inject
 	HttpServletResponse response;
 
 	@Inject
@@ -44,13 +48,18 @@ public class PageReloadController {
 	HtmlTemplateService htmlTemplateService;
 
 	public ActionResult reloadPage(long pageId) {
+
 		log.debug("reloading page " + pageId);
 		componentCoreModule.setPageId(pageId);
 		ComponentView<?> view = pageMap.get(pageId);
 
+		long componentId = Long.parseLong(request.getParameter("componentId"));
+		Component reloadComponent = componentService.getComponent(view,
+				componentId);
+
 		// apply request values
-		List<Component> components = ComponentTreeUtil.subTree(view
-				.getRootComponent());
+		List<Component> components = ComponentTreeUtil.subTree(reloadComponent);
+
 		for (Component c : components) {
 			applyValuesUtil.setComponent(c);
 			htmlTemplateService.getTemplate(c).applyValues(c, applyValuesUtil);
@@ -62,7 +71,7 @@ public class PageReloadController {
 		}
 
 		// render result
-		componentService.renderPage(view, response);
+		componentService.renderPage(view, reloadComponent, response);
 		return null;
 	}
 }

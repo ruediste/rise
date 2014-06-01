@@ -21,4 +21,8 @@ public interface RenderUtil {
 	String getKey(String key);
 
 	void render(HtmlCanvas html, Component component) throws IOException;
+
+	String resourceUrl(String string);
+
+	long getComponentId();
 }

@@ -8,6 +8,7 @@ import javax.inject.Inject;
 
 import laf.component.basic.html.CButtonHtmlTemplate;
 import laf.component.basic.html.CPageHtmlTemplate;
+import laf.component.basic.html.CReloadHtmlTemplate;
 import laf.component.basic.html.CRenderHtmlTemplate;
 import laf.component.basic.html.CTextFieldHtmlTemplate;
 import laf.component.html.HtmlPageResultRenderer;
@@ -45,7 +46,8 @@ public class DefaultComponentConfiguration implements ConfigurationDefiner {
 				HtmlTemplateFactoryImpl.class).get();
 		factory.setTemplates(this.<HtmlTemplate<?>> getInstances(
 				CButtonHtmlTemplate.class, CPageHtmlTemplate.class,
-				CRenderHtmlTemplate.class, CTextFieldHtmlTemplate.class));
+				CRenderHtmlTemplate.class, CTextFieldHtmlTemplate.class,
+				CReloadHtmlTemplate.class));
 		value.add(factory);
 		factories.set(value);
 	}

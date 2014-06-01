@@ -46,7 +46,7 @@ public class HtmlPageResultRenderer implements ResultRenderer {
 		componentCoreModule.setPageId(id);
 
 		// render page
-		componentService.renderPage(view, response);
+		componentService.renderPage(view, view.getRootComponent(), response);
 
 		return true;
 	}
