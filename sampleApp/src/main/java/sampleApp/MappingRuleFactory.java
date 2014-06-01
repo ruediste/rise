@@ -6,10 +6,10 @@ import javax.inject.Inject;
 
 import laf.actionPath.ActionPath;
 import laf.actionPath.ActionPathFactory;
-import laf.httpRequest.HttpRequest;
-import laf.httpRequestMapping.HttpRequestMappingRule;
-import laf.httpRequestMapping.defaultRule.DefaultHttpRequestMappingRuleFactory;
-import laf.httpRequestMapping.parameterValueProvider.ParameterValueProvider;
+import laf.http.request.HttpRequest;
+import laf.http.requestMapping.HttpRequestMappingRule;
+import laf.http.requestMapping.defaultRule.DefaultHttpRequestMappingRuleFactory;
+import laf.http.requestMapping.parameterValueProvider.ParameterValueProvider;
 
 public class MappingRuleFactory {
 

@@ -1,13 +1,6 @@
 package laf.component.core;
 
-import java.io.IOException;
-
 import laf.attachedProperties.AttachedPropertyBearer;
-import laf.component.html.ApplyValuesUtil;
-import laf.component.html.RenderUtil;
-import laf.component.html.template.RaiseEventsUtil;
-
-import org.rendersnake.HtmlCanvas;
 
 /**
  * Interface of all components
@@ -47,19 +40,7 @@ public interface Component extends AttachedPropertyBearer {
 	 */
 	void initialize();
 
-	/**
-	 * Render the component to the given {@link HtmlCanvas}
-	 *
-	 * @param html
-	 * @throws IOException
-	 */
-	void render(HtmlCanvas html, RenderUtil util) throws IOException;
+	Long getComponentId();
 
-	void applyValues(ApplyValuesUtil util);
-
-	void raiseEvents(RaiseEventsUtil util);
-
-	Integer getComponentId();
-
-	void setComponentId(Integer id);
+	void setComponentId(Long id);
 }

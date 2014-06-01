@@ -7,7 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
 import laf.configuration.ConfigurationValue;
-import laf.httpRequestProcessing.HttpRequestProcessorConfigurationParameter;
+import laf.http.requestProcessing.HttpRequestProcessorConfigurationParameter;
 
 /**
  * Framework entry point

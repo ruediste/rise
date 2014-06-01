@@ -3,7 +3,6 @@ package laf.component.html;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 
-import laf.component.ComponentService;
 import laf.component.core.Component;
 
 public class ApplyValuesUtilImpl implements ApplyValuesUtil {
@@ -12,7 +11,7 @@ public class ApplyValuesUtilImpl implements ApplyValuesUtil {
 	HttpServletRequest request;
 
 	@Inject
-	ComponentService componentService;
+	HtmlComponentService componentService;
 
 	private Component component;
 

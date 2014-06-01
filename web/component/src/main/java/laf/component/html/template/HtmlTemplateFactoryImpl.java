@@ -17,13 +17,17 @@ public class HtmlTemplateFactoryImpl implements HtmlTemplateFactory {
 		// try the component class or any super class
 		Class<?> c = component.getClass();
 		HtmlTemplate<?> result = null;
-		do {
+		while (c != null) {
 			result = templates.get(c);
-		} while (result == null);
-		return (HtmlTemplate<T>) result;
+			if (result != null) {
+				return (HtmlTemplate<T>) result;
+			}
+			c = c.getSuperclass();
+		}
+		return null;
 	}
 
-	void setTemplates(Iterable<HtmlTemplate<?>> templates) {
+	public void setTemplates(Iterable<HtmlTemplate<?>> templates) {
 		for (HtmlTemplate<?> template : templates) {
 			Class<?> componentType = TypeToken.of(template.getClass())
 					.resolveType(HtmlTemplate.class.getTypeParameters()[0])

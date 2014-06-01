@@ -1,7 +1,7 @@
 package laf;
 
 import laf.base.BaseModule;
-import laf.httpRequestProcessing.HttpRequestProcessingModule;
+import laf.http.requestProcessing.HttpRequestProcessingModule;
 
 import org.jabsaw.Module;
 

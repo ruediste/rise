@@ -5,12 +5,12 @@ import javax.inject.Inject;
 
 import laf.base.ActionResult;
 import laf.base.ComponentController;
-import laf.component.PageRenderResult;
+import laf.component.PageActionResult;
 
 @ComponentController
 public class SampleComponentController {
 	@Inject
-	Instance<PageRenderResult> pageRenderResult;
+	Instance<PageActionResult> pageRenderResult;
 
 	public ActionResult index() {
 		return pageRenderResult.get();

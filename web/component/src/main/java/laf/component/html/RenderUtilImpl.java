@@ -1,18 +1,23 @@
 package laf.component.html;
 
+import java.io.IOException;
+
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import laf.actionPath.*;
+import laf.actionPath.ActionPath;
+import laf.actionPath.ActionPathFactory;
 import laf.actionPath.ActionPathFactory.ActionPathBuilder;
 import laf.base.ActionResult;
-import laf.component.ComponentService;
 import laf.component.core.Component;
 import laf.component.core.ComponentCoreModule;
-import laf.httpRequest.HttpRequest;
-import laf.httpRequestMapping.HttpRequestMappingService;
+import laf.component.html.template.HtmlTemplateService;
+import laf.http.request.HttpRequest;
+import laf.http.requestMapping.HttpRequestMappingService;
+
+import org.rendersnake.HtmlCanvas;
 
 public class RenderUtilImpl implements RenderUtil {
 
@@ -35,7 +40,10 @@ public class RenderUtilImpl implements RenderUtil {
 	Instance<RenderUtilImpl> renderUtilInstance;
 
 	@Inject
-	ComponentService componentService;
+	HtmlComponentService componentService;
+
+	@Inject
+	HtmlTemplateService htmlTemplateService;
 
 	private Component component;
 
@@ -60,13 +68,6 @@ public class RenderUtilImpl implements RenderUtil {
 	}
 
 	@Override
-	public RenderUtil forChild(Component child) {
-		RenderUtilImpl result = renderUtilInstance.get();
-		result.setComponent(child);
-		return result;
-	}
-
-	@Override
 	public long pageId() {
 		return componentCoreModule.getPageId();
 	}
@@ -82,6 +83,15 @@ public class RenderUtilImpl implements RenderUtil {
 
 	public void setComponent(Component component) {
 		this.component = component;
+	}
+
+	@Override
+	public void render(HtmlCanvas html, Component component) throws IOException {
+		RenderUtilImpl util = renderUtilInstance.get();
+		util.setComponent(component);
+
+		htmlTemplateService.getTemplate(component)
+		.render(component, html, util);
 	}
 
 }

@@ -1,23 +1,17 @@
 package laf.component.core;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import laf.attachedProperties.AttachedPropertyBearerBase;
-import laf.component.html.ApplyValuesUtil;
-import laf.component.html.RenderUtil;
-import laf.component.html.template.RaiseEventsUtil;
-
-import org.rendersnake.HtmlCanvas;
 
 import com.google.common.collect.Iterables;
 
 public class ComponentBase<TSelf> extends AttachedPropertyBearerBase implements
-Component {
+		Component {
 
 	private Component parent;
 	ArrayList<ChildRelation<?>> childRelations = new ArrayList<>();
-	private Integer id;
+	private Long id;
 
 	@Override
 	public Iterable<Component> getChildren() {
@@ -46,36 +40,17 @@ Component {
 	}
 
 	@Override
-	public void render(HtmlCanvas html, RenderUtil util) throws IOException {
-		for (Component child : getChildren()) {
-			child.render(html, util.forChild(child));
-		}
-	}
-
-	@Override
 	public void initialize() {
 
 	}
 
 	@Override
-	public void applyValues(ApplyValuesUtil util) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void raiseEvents(RaiseEventsUtil util) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public Integer getComponentId() {
+	public Long getComponentId() {
 		return id;
 	}
 
 	@Override
-	public void setComponentId(Integer id) {
+	public void setComponentId(Long id) {
 		this.id = id;
 	}
 }

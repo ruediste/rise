@@ -1,12 +1,14 @@
 package laf.component.html;
 
+import java.io.IOException;
+
 import laf.actionPath.ActionPathFactory.ActionPathBuilder;
 import laf.base.ActionResult;
 import laf.component.core.Component;
 
-public interface RenderUtil {
+import org.rendersnake.HtmlCanvas;
 
-	RenderUtil forChild(Component child);
+public interface RenderUtil {
 
 	<T> T path(Class<T> controller);
 
@@ -18,4 +20,5 @@ public interface RenderUtil {
 
 	String getKey(String key);
 
+	void render(HtmlCanvas html, Component component) throws IOException;
 }

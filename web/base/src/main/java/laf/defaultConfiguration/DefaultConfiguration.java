@@ -1,18 +1,24 @@
 package laf.defaultConfiguration;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import laf.configuration.ConfigurationDefiner;
-import laf.httpRequestMapping.HttpRequestMappingRules;
-import laf.httpRequestMapping.defaultRule.BasePackage;
-import laf.httpRequestMapping.defaultRule.DefaultHttpRequestMappingRuleFactory;
-import laf.httpRequestMapping.parameterHandler.ParameterHandler;
-import laf.httpRequestMapping.parameterHandler.ParameterHandlers;
-import laf.httpRequestProcessing.HttpRequestProcessorConfigurationParameter;
-import laf.httpRequestProcessing.defaultProcessor.*;
+import laf.http.requestMapping.HttpRequestMappingRules;
+import laf.http.requestMapping.defaultRule.BasePackage;
+import laf.http.requestMapping.defaultRule.DefaultHttpRequestMappingRuleFactory;
+import laf.http.requestMapping.parameterHandler.ParameterHandler;
+import laf.http.requestMapping.parameterHandler.ParameterHandlers;
+import laf.http.requestProcessing.HttpRequestProcessorConfigurationParameter;
+import laf.http.requestProcessing.defaultProcessor.DefaultHttpRequestProcessor;
+import laf.http.requestProcessing.defaultProcessor.DefaultRequestParser;
+import laf.http.requestProcessing.defaultProcessor.DefaultResultRenderer;
+import laf.http.requestProcessing.defaultProcessor.RequestParserConfigurationParameter;
+import laf.http.requestProcessing.defaultProcessor.ResultRenderer;
+import laf.http.requestProcessing.defaultProcessor.ResultRenderers;
 import laf.requestProcessing.ControllerInvokerConfigurationParameter;
 import laf.requestProcessing.ParameterLoaderConfigurationParameter;
 import laf.requestProcessing.RequestProcessorConfigurationParameter;
@@ -66,8 +72,10 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 		val.set(instance.select(DefaultRequestParser.class).get());
 	}
 
-	public void produce(ResultRendererConfigurationParameter val) {
-		val.set(instance.select(DefaultResultRenderer.class).get());
+	public void produce(ResultRenderers val) {
+		ArrayDeque<ResultRenderer> renderers = new ArrayDeque<>();
+		renderers.add(instance.select(DefaultResultRenderer.class).get());
+		val.set(renderers);
 	}
 
 }

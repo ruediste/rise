@@ -1,6 +1,9 @@
 package laf.configuration;
 
-import java.lang.reflect.*;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 import javax.annotation.PostConstruct;
 
@@ -8,13 +11,20 @@ import laf.base.Val;
 
 import com.google.common.reflect.TypeToken;
 
-public class DefinerConfigurationValueProvider implements
-		ConfigurationValueProvider {
+public class DefinerConfigurationValueProvider extends
+ConfigurationParameterBase {
 
 	private final class InvocationHandlerImplementation implements
 			InvocationHandler {
 		public Object value;
 		public boolean argSet;
+
+		InvocationHandlerImplementation(Val<?> successorResult) {
+			if (successorResult != null) {
+				argSet = true;
+				value = successorResult.get();
+			}
+		}
 
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] args)
@@ -62,6 +72,7 @@ public class DefinerConfigurationValueProvider implements
 	public <V, T extends ConfigurationParameter<V>> Val<V> provideValue(
 			Class<T> configInterfaceClass, TypeToken<V> configValueClass) {
 		for (Method method : definer.getClass().getMethods()) {
+			// check if method matches
 			if (method.getParameterTypes().length != 1) {
 				continue;
 			}
@@ -69,9 +80,24 @@ public class DefinerConfigurationValueProvider implements
 			if (!configInterfaceClass.equals(parameterType)) {
 				continue;
 			}
-			InvocationHandlerImplementation handler = new InvocationHandlerImplementation();
+
+			Val<V> successorResult = null;
+
+			ExtendConfiguration extendConfiguration = method
+					.getAnnotation(ExtendConfiguration.class);
+
+			if (extendConfiguration != null && getSuccessor() != null) {
+				successorResult = getSuccessor().provideValue(
+						configInterfaceClass, configValueClass);
+			}
+
+			// create ConfigurationParameter proxy
+			InvocationHandlerImplementation handler = new InvocationHandlerImplementation(
+					successorResult);
 			ConfigurationParameter<?> proxy = createProxy(configInterfaceClass,
 					handler);
+
+			// invoke method
 			try {
 				method.invoke(definer, proxy);
 			} catch (IllegalAccessException | IllegalArgumentException
@@ -80,14 +106,23 @@ public class DefinerConfigurationValueProvider implements
 						"Error while invoking configuration value producer method",
 						e);
 			}
+
+			// check if the definer method did set the value
 			if (!handler.argSet) {
 				throw new RuntimeException("The config value producer method "
 						+ method + " has to set the configuration value");
 			}
 
+			// return result
 			return Val.of((V) handler.value);
 		}
-		return null;
+
+		if (getSuccessor() == null) {
+			return null;
+		} else {
+			return getSuccessor().provideValue(configInterfaceClass,
+					configValueClass);
+		}
 	}
 
 	@SuppressWarnings("unchecked")

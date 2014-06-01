@@ -1,7 +1,8 @@
 package laf.configuration;
 
-import java.lang.reflect.*;
-import java.util.ArrayList;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -29,12 +30,12 @@ public class ConfigurationFactory {
 	@Inject
 	Instance<PropertiesConfigrationValueProvider> propertiesConfigrationValueProviderInstance;
 
-	ArrayList<ConfigurationValueProvider> providers = new ArrayList<>();
-
-	private Method getMethod;
-
 	@Inject
 	Event<DiscoverConfigruationEvent> discoverConfigurationEvent;
+
+	private ConfigurationValueProvider provider;
+
+	private Method getMethod;
 
 	protected void add(ConfigurationDefiner definer) {
 		DefinerConfigurationValueProvider provider = definerConfigurationValueProviderInstance
@@ -51,7 +52,8 @@ public class ConfigurationFactory {
 	}
 
 	protected void add(ConfigurationValueProvider provider) {
-		providers.add(provider);
+		provider.setSuccessor(this.provider);
+		this.provider = provider;
 
 	}
 
@@ -97,24 +99,29 @@ public class ConfigurationFactory {
 	@Produces
 	public <T extends ConfigurationParameter<?>> ConfigurationValue<T> produceConfigurationValue(
 			InjectionPoint p) {
+		// create arguments
 		Class<?> parameterInterfaceClass = TypeToken.of(p.getType())
 				.resolveType(ConfigurationValue.class.getTypeParameters()[0])
 				.getRawType();
 		TypeToken<?> valueType = TypeToken.of(parameterInterfaceClass)
 				.resolveType(
 						ConfigurationParameter.class.getTypeParameters()[0]);
-		for (ConfigurationValueProvider provider : providers) {
-			Val<?> value = provideValue(provider, parameterInterfaceClass,
-					valueType);
-			if (value != null) {
-				final T parameter = createParameterProxy(
-						parameterInterfaceClass, value.get());
-				return new ConfigurationValueImpl<>(parameter);
-			}
+
+		// invoke provider
+		Val<?> value = provideValue(provider, parameterInterfaceClass,
+				valueType);
+
+		// throw error if no value has been found
+		if (value == null) {
+			throw new RuntimeException("No configuration value found for "
+					+ p.getMember());
 		}
 
-		throw new RuntimeException("No configuration value found for "
-				+ p.getMember());
+		// create result
+		final T parameter = createParameterProxy(parameterInterfaceClass,
+				value.get());
+		return new ConfigurationValueImpl<>(parameter);
+
 	}
 
 	@SuppressWarnings("unchecked")

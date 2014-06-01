@@ -4,7 +4,7 @@ import javax.inject.Singleton;
 
 import laf.actionPath.ActionPathModule;
 import laf.base.BaseModule;
-import laf.httpRequestMapping.parameterValueProvider.ParameterValueProviderModule;
+import laf.http.requestMapping.parameterValueProvider.ParameterValueProviderModule;
 
 import org.jabsaw.Module;
 

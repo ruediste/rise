@@ -7,7 +7,10 @@ import javax.inject.Inject;
 
 import laf.actionPath.ActionInvocation;
 import laf.actionPath.ActionPath;
-import laf.base.*;
+import laf.base.ActionResult;
+import laf.base.ComponentController;
+import laf.base.Controller;
+import laf.base.EmbeddedController;
 import laf.controllerInfo.ActionMethodInfo;
 import laf.controllerInfo.ControllerInfo;
 import laf.requestProcessing.ControllerInvoker;
@@ -51,7 +54,7 @@ public class DefaultControllerInvoker implements ControllerInvoker {
 					break;
 				case NORMAL:
 					controller = controllerInstance.select(controllerClass)
-							.get();
+					.get();
 					break;
 				default:
 					throw new RuntimeException("Should Not Happen");
@@ -75,10 +78,6 @@ public class DefaultControllerInvoker implements ControllerInvoker {
 								+ methodInfo, e.getCause());
 			}
 
-			if (lastActionMethodResult == null) {
-				throw new RuntimeException("Action method " + methodInfo
-						+ " returned null");
-			}
 		}
 
 		return (ActionResult) lastActionMethodResult;

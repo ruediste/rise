@@ -13,8 +13,8 @@ import org.slf4j.Logger;
 
 import com.google.common.reflect.TypeToken;
 
-public class PropertiesConfigrationValueProvider implements
-ConfigurationValueProvider {
+public class PropertiesConfigrationValueProvider extends
+ConfigurationParameterBase {
 
 	@Inject
 	Logger log;
@@ -88,7 +88,12 @@ ConfigurationValueProvider {
 		}
 
 		// nothing found
-		return null;
+		if (getSuccessor() == null) {
+			return null;
+		} else {
+			return getSuccessor().provideValue(configInterfaceClass,
+					configValueType);
+		}
 	}
 
 }
