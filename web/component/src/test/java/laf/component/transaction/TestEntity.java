@@ -1,10 +1,12 @@
 package laf.component.transaction;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-public class TestEntity {
+public class TestEntity implements Serializable {
 
 	@Id
 	private long id;

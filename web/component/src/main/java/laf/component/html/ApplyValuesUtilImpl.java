@@ -1,14 +1,14 @@
 package laf.component.html;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 
 import laf.component.core.Component;
+import laf.http.request.HttpRequest;
 
 public class ApplyValuesUtilImpl implements ApplyValuesUtil {
 
 	@Inject
-	HttpServletRequest request;
+	HttpRequest request;
 
 	@Inject
 	HtmlComponentService componentService;
@@ -27,6 +27,12 @@ public class ApplyValuesUtilImpl implements ApplyValuesUtil {
 
 	public void setComponent(Component component) {
 		this.component = component;
+	}
+
+	@Override
+	public boolean isDefined(String key) {
+		return request.getParameterMap().containsKey(
+				componentService.calculateKey(component, key));
 	}
 
 }
