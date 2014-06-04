@@ -1,5 +1,7 @@
 package laf.attachedProperties;
 
+import com.google.common.base.Supplier;
+
 /**
  * Identifies a property which can be attached to any
  * {@link AttachedPropertyBearer}
@@ -38,4 +40,36 @@ public class AttachedProperty<Bearer extends AttachedPropertyBearer, T> {
 		return bearer.getAttachedPropertyMap().isSet(this);
 	}
 
+	/**
+	 * Set a property to the specified value if it is not set.
+	 *
+	 * @return the current value of the property
+	 */
+	public T setIfAbsent(Bearer bearer, T value) {
+		synchronized (bearer.getAttachedPropertyMap()) {
+			if (!isSet(bearer)) {
+				set(bearer, value);
+				return value;
+			} else {
+				return get(bearer);
+			}
+		}
+	}
+
+	/**
+	 * Set a property to the specified value if it is not set.
+	 *
+	 * @return the current value of the property
+	 */
+	public T setIfAbsent(Bearer bearer, Supplier<T> valueSupplier) {
+		synchronized (bearer.getAttachedPropertyMap()) {
+			if (!isSet(bearer)) {
+				T value = valueSupplier.get();
+				set(bearer, value);
+				return value;
+			} else {
+				return get(bearer);
+			}
+		}
+	}
 }

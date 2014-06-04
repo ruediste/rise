@@ -1,19 +1,26 @@
 package laf.component.basic;
 
-import laf.component.core.ComponentBase;
+import laf.component.core.*;
 
 public class CButton extends ComponentBase<CButton> {
-	private String text;
+	public MultiChildrenRelation<Component, CButton> children = new MultiChildrenRelation<>(
+			this);
+	private Runnable handler;
+
+	public CButton() {
+	}
 
 	public CButton(String text) {
-		this.text = text;
+		children.add(new CText(text));
 	}
 
-	public String getText() {
-		return text;
+	CButton withHandler(Runnable handler) {
+		this.handler = handler;
+		return this;
 	}
 
-	public void setText(String text) {
-		this.text = text;
+	public Runnable getHandler() {
+		return handler;
 	}
+
 }

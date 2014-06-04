@@ -13,20 +13,23 @@ import laf.component.core.ComponentView;
 public class PageMap {
 
 	private long nextId = 0;
-	private Map<Long, ComponentView<?>> map = new HashMap<>();
+	private Map<Long, PageManager> map = new HashMap<>();
 
 	public long register(ComponentView<?> view) {
 		long id = nextId++;
-		map.put(id, view);
+		PageManager manager = new PageManager();
+		manager.initialize(view);
+		map.put(id, manager);
 		return id;
 	}
 
-	public ComponentView<?> get(long id) {
+	public PageManager get(long id) {
 		return map.get(id);
 	}
 
 	public void remove(long id) {
-		map.remove(id);
+		PageManager manager = map.remove(id);
+		manager.destroy();
 	}
 
 }
