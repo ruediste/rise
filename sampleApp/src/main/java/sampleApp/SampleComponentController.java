@@ -5,7 +5,7 @@ import javax.inject.Inject;
 
 import laf.base.ActionResult;
 import laf.base.ComponentController;
-import laf.component.PageActionResult;
+import laf.component.core.PageActionResult;
 
 @ComponentController
 public class SampleComponentController {

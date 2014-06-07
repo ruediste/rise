@@ -1,23 +1,33 @@
 package laf.component.transaction;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class TestEntity implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	@Id
-	private long id;
+	@GeneratedValue
+	private Long id;
 
 	private String value;
 
-	public long getId() {
+	@ManyToOne
+	private TestEntity parent;
+
+	@OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+	private Set<TestEntity> children = new HashSet<>();
+
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -27,6 +37,18 @@ public class TestEntity implements Serializable {
 
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	public Set<TestEntity> getChildren() {
+		return children;
+	}
+
+	public TestEntity getParent() {
+		return parent;
+	}
+
+	public void setParent(TestEntity parent) {
+		this.parent = parent;
 	}
 
 }

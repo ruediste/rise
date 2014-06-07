@@ -71,7 +71,7 @@ public class ControllerInfoRepositoryInitializer {
 	public void putControllerInfo(ControllerInfoRepository repository,
 			Class<?> controllerClass, ControllerType type) {
 		repository
-				.putControllerInfo(createControllerInfo(controllerClass, type));
+		.putControllerInfo(createControllerInfo(controllerClass, type));
 	}
 
 	public ControllerInfoImpl createControllerInfo(Class<?> controllerClass,
@@ -90,8 +90,8 @@ public class ControllerInfoRepositoryInitializer {
 			if (method.getDeclaringClass().getAnnotation(Controller.class) == null
 					&& method.getDeclaringClass().getAnnotation(
 							EmbeddedController.class) == null
-					&& method.getDeclaringClass().getAnnotation(
-							ComponentController.class) == null) {
+							&& method.getDeclaringClass().getAnnotation(
+									ComponentController.class) == null) {
 				continue;
 			}
 			// create method info
@@ -100,7 +100,7 @@ public class ControllerInfoRepositoryInitializer {
 
 			// calculate name
 			methodInfo
-			.setName(info.calculateUnusedMethodName(method.getName()));
+					.setName(info.calculateUnusedMethodName(method.getName()));
 
 			// add to repository
 			info.putActionMethodInfo(methodInfo);

@@ -6,10 +6,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
 import laf.base.ActionResult;
-import laf.component.PageActionResult;
-import laf.component.core.ComponentCoreModule;
-import laf.component.core.ComponentView;
-import laf.component.core.ComponentViewRepository;
+import laf.component.core.*;
 import laf.http.requestProcessing.defaultProcessor.ResultRenderer;
 import laf.requestProcessing.CurrentController;
 
