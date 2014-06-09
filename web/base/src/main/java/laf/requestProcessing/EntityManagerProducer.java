@@ -1,9 +1,13 @@
 package laf.requestProcessing;
 
+import java.io.Serializable;
+
 import javax.enterprise.inject.Produces;
 import javax.persistence.EntityManager;
 
-public class EntityManagerProducer {
+public class EntityManagerProducer implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	ThreadLocal<EntityManager> manager = new ThreadLocal<>();
 
 	@Produces

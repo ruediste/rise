@@ -1,5 +1,7 @@
 package laf.component;
 
+import laf.component.core.ControllerUtil;
+
 import org.jabsaw.Module;
 
 /**

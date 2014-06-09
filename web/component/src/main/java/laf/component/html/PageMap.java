@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.ejb.Stateful;
 import javax.enterprise.context.SessionScoped;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
 
 import laf.component.core.ComponentView;
 
@@ -12,12 +14,15 @@ import laf.component.core.ComponentView;
 @Stateful
 public class PageMap {
 
+	@Inject
+	Instance<PageManager> pageManagerInstance;
+
 	private long nextId = 0;
 	private Map<Long, PageManager> map = new HashMap<>();
 
 	public long register(ComponentView<?> view) {
 		long id = nextId++;
-		PageManager manager = new PageManager();
+		PageManager manager = pageManagerInstance.get();
 		manager.initialize(view);
 		map.put(id, manager);
 		return id;

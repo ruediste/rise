@@ -13,7 +13,7 @@ public class NormalRenderResult implements HttpRenderResult {
 	}
 
 	@Override
-	public void sendTo(HttpServletResponse response) throws IOException {
+	public void sendTo(HttpServletResponse response, HttpRenderResultUtil util) throws IOException {
 		response.setCharacterEncoding("UTF-8");
 		response.setStatus(HttpServletResponse.SC_OK);
 		PrintWriter writer = response.getWriter();

@@ -7,9 +7,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import laf.base.ActionResult;
 import laf.base.Controller;
-import laf.component.core.*;
+import laf.base.Val;
+import laf.component.core.Component;
+import laf.component.core.ComponentCoreModule;
+import laf.component.core.ComponentTreeUtil;
+import laf.component.core.ComponentView;
+import laf.component.core.ControllerUtilImpl;
+import laf.component.core.ControllerUtilProducer;
 import laf.component.html.template.HtmlTemplateService;
 import laf.component.html.template.RaiseEventsUtil;
+import laf.http.RedirectRenderResult;
 import laf.http.request.HttpRequest;
 
 import org.slf4j.Logger;
@@ -47,6 +54,12 @@ public class PageReloadController {
 	@Inject
 	PageManagerProducer pageManagerProducer;
 
+	@Inject
+	ControllerUtilProducer controllerUtilProducer;
+
+	@Inject
+	ControllerUtilImpl controllerUtil;
+
 	public ActionResult reloadPage(long pageId) {
 
 		log.debug("reloading page " + pageId);
@@ -54,7 +67,11 @@ public class PageReloadController {
 		final PageManager manager = pageMap.get(pageId);
 		pageManagerProducer.setPageManager(manager);
 
-		manager.runInTransaction(new Runnable() {
+		controllerUtil.initialize(manager.persistenceManager);
+		controllerUtilProducer.setControllerUtil(null);
+
+		final Val<ActionResult> result = new Val<>();
+		manager.persistenceManager.withManager(new Runnable() {
 
 			@Override
 			public void run() {
@@ -82,11 +99,17 @@ public class PageReloadController {
 							raiseEventsUtil);
 				}
 
-				// render result
-				componentService.renderPage(view, reloadComponent, response);
-
+				// check if a destination has been defined
+				if (controllerUtil.getDestination() != null) {
+					result.set(new RedirectRenderResult(controllerUtil
+							.getDestination()));
+				} else {
+					// render result
+					componentService
+							.renderPage(view, reloadComponent, response);
+				}
 			}
 		});
-		return null;
+		return result.get();
 	}
 }

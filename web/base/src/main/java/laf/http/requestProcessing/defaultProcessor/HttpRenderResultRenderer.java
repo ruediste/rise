@@ -9,11 +9,15 @@ import laf.base.ActionResult;
 import laf.configuration.ConfigurationValue;
 import laf.http.ContentType;
 import laf.http.HttpRenderResult;
+import laf.http.HttpRenderResultUtil;
 
-public class DefaultResultRenderer implements ResultRenderer {
+public class HttpRenderResultRenderer implements ResultRenderer {
 
 	@Inject
 	ConfigurationValue<ContentType> contentType;
+
+	@Inject
+	HttpRenderResultUtil httpRenderResultUtil;
 
 	@Override
 	public boolean renderResult(ActionResult result,
@@ -21,7 +25,7 @@ public class DefaultResultRenderer implements ResultRenderer {
 		if (result instanceof HttpRenderResult) {
 			HttpRenderResult renderResult = (HttpRenderResult) result;
 			response.setContentType(contentType.value().get());
-			renderResult.sendTo(response);
+			renderResult.sendTo(response, httpRenderResultUtil);
 			return true;
 		} else {
 			return false;

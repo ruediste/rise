@@ -11,6 +11,7 @@ import laf.component.basic.html.CPageHtmlTemplate;
 import laf.component.basic.html.CReloadHtmlTemplate;
 import laf.component.basic.html.CRenderHtmlTemplate;
 import laf.component.basic.html.CTextFieldHtmlTemplate;
+import laf.component.basic.html.CTextHtmlTemplate;
 import laf.component.html.HtmlPageResultRenderer;
 import laf.component.html.template.HtmlTemplate;
 import laf.component.html.template.HtmlTemplateFactories;
@@ -28,7 +29,7 @@ public class DefaultComponentConfiguration implements ConfigurationDefiner {
 	@ExtendConfiguration
 	public void produce(ResultRenderers renderers) {
 		renderers.get()
-				.add(instance.select(HtmlPageResultRenderer.class).get());
+		.add(instance.select(HtmlPageResultRenderer.class).get());
 	}
 
 	@SafeVarargs
@@ -47,7 +48,7 @@ public class DefaultComponentConfiguration implements ConfigurationDefiner {
 		factory.setTemplates(this.<HtmlTemplate<?>> getInstances(
 				CButtonHtmlTemplate.class, CPageHtmlTemplate.class,
 				CRenderHtmlTemplate.class, CTextFieldHtmlTemplate.class,
-				CReloadHtmlTemplate.class));
+				CReloadHtmlTemplate.class, CTextHtmlTemplate.class));
 		value.add(factory);
 		factories.set(value);
 	}

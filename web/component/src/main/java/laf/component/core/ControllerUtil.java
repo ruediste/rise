@@ -1,4 +1,4 @@
-package laf.component;
+package laf.component.core;
 
 import laf.base.ActionResult;
 
@@ -13,4 +13,6 @@ public interface ControllerUtil {
 	void checkAndCommit(Runnable checker, Runnable inTransaction);
 
 	void setErrorDestination(ActionResult target);
+
+	void setDestination(ActionResult target);
 }

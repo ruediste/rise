@@ -16,7 +16,7 @@ import laf.http.requestMapping.parameterHandler.ParameterHandlers;
 import laf.http.requestProcessing.HttpRequestProcessorConfigurationParameter;
 import laf.http.requestProcessing.defaultProcessor.DefaultHttpRequestProcessor;
 import laf.http.requestProcessing.defaultProcessor.DefaultRequestParser;
-import laf.http.requestProcessing.defaultProcessor.DefaultResultRenderer;
+import laf.http.requestProcessing.defaultProcessor.HttpRenderResultRenderer;
 import laf.http.requestProcessing.defaultProcessor.RequestParserConfigurationParameter;
 import laf.http.requestProcessing.defaultProcessor.ResultRenderer;
 import laf.http.requestProcessing.defaultProcessor.ResultRenderers;
@@ -75,7 +75,7 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 
 	public void produce(ResultRenderers val) {
 		ArrayDeque<ResultRenderer> renderers = new ArrayDeque<>();
-		renderers.add(instance.select(DefaultResultRenderer.class).get());
+		renderers.add(instance.select(HttpRenderResultRenderer.class).get());
 		val.set(renderers);
 	}
 

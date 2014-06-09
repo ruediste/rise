@@ -10,7 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import laf.base.Val;
-import laf.component.core.persistence.PagePersistenceManager;
+import laf.component.core.PagePersistenceManager;
 import laf.test.ComponentDeploymentProvider;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -111,7 +111,7 @@ public class TransactionTest {
 		});
 
 		// reload page, no transaction, same PC
-		sessionBean.reload(new Runnable() {
+		sessionBean.withManager(new Runnable() {
 
 			@Override
 			public void run() {
@@ -148,7 +148,7 @@ public class TransactionTest {
 		});
 
 		// reload page, no transaction, same PC
-		sessionBean.reload(new Runnable() {
+		sessionBean.withManager(new Runnable() {
 
 			@Override
 			public void run() {

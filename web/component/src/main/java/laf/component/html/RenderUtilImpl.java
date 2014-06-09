@@ -7,14 +7,13 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import laf.actionPath.ActionPath;
 import laf.actionPath.ActionPathFactory;
 import laf.actionPath.ActionPathFactory.ActionPathBuilder;
 import laf.base.ActionResult;
 import laf.component.core.Component;
 import laf.component.core.ComponentCoreModule;
 import laf.component.html.template.HtmlTemplateService;
-import laf.http.request.HttpRequest;
+import laf.http.HttpService;
 import laf.http.requestMapping.HttpRequestMappingService;
 
 import org.rendersnake.HtmlCanvas;
@@ -45,6 +44,9 @@ public class RenderUtilImpl implements RenderUtil {
 	@Inject
 	HtmlTemplateService htmlTemplateService;
 
+	@Inject
+	HttpService httpService;
+
 	private Component component;
 
 	@Override
@@ -59,16 +61,7 @@ public class RenderUtilImpl implements RenderUtil {
 
 	@Override
 	public String url(ActionResult path) {
-		@SuppressWarnings("unchecked")
-		HttpRequest url = httpRequestMappingService
-				.generate((ActionPath<Object>) path);
-		return url(url.getPathWithParameters());
-	}
-
-	private String url(String path) {
-		String prefix = request.getContextPath();
-		prefix += request.getServletPath();
-		return response.encodeURL(prefix + "/" + path);
+		return httpService.url(path);
 	}
 
 	@Override

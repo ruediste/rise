@@ -4,7 +4,7 @@ import javax.ejb.*;
 import javax.inject.Inject;
 
 import laf.component.core.ComponentView;
-import laf.component.core.persistence.PagePersistenceManager;
+import laf.component.core.PagePersistenceManager;
 
 /**
  * A Page Manager manages a single page
