@@ -1,5 +1,9 @@
 package laf.component;
 
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import laf.component.core.ControllerUtil;
 
 import org.jabsaw.Module;
@@ -50,6 +54,17 @@ import org.jabsaw.Module;
  * wide strategy is used to determine the destination. At any time, the
  * controller can set an error destination using
  * {@link ControllerUtil#setErrorDestination(laf.base.ActionResult)}.
+ * </p>
+ *
+ * <strong> Managing Persstence Contexts</strong>
+ * <p>
+ * Unfortunately, we can not rely on the standard Java EE mechanisms to manage
+ * the {@link EntityManager}s due to the rules of PC propagation: We need an
+ * extended PC outside of a JTA transaction to propagate with the control flow,
+ * which is not possible using the standard Java EE mechanism. Therefore we
+ * require {@link EntityManager}s to be injected via the {@link Inject}
+ * annotation (NOT the {@link PersistenceContext} annotation) and manage them as
+ * required by the framework.
  * </p>
  */
 @Module

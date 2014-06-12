@@ -27,11 +27,7 @@ public class TransactionTest {
 
 	@Deployment
 	public static WebArchive deployment() {
-		WebArchive result = ComponentDeploymentProvider
-				.getDefault()
-				.addAsResource("test-persistence.xml",
-						"META-INF/persistence.xml")
-				.addAsResource("test-openejb.xml", "META-INF/openejb.xml")
+		WebArchive result = ComponentDeploymentProvider.getPersistence()
 				.addClasses(TestEntity.class);
 		System.out.println(result.toString(true));
 		return result;
