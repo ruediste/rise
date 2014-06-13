@@ -23,7 +23,7 @@ import laf.http.requestProcessing.defaultProcessor.ResultRenderers;
 import laf.requestProcessing.ControllerInvokerConfigurationParameter;
 import laf.requestProcessing.ParameterLoaderConfigurationParameter;
 import laf.requestProcessing.RequestProcessorConfigurationParameter;
-import laf.requestProcessing.defaultProcessor.DefaultControllerInvoker;
+import laf.requestProcessing.defaultProcessor.InnerControllerInvoker;
 import laf.requestProcessing.defaultProcessor.DefaultParameterLoader;
 import laf.requestProcessing.defaultProcessor.DefaultRequestProcessor;
 
@@ -58,7 +58,7 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 	}
 
 	public void produce(ControllerInvokerConfigurationParameter val) {
-		val.set(instance.select(DefaultControllerInvoker.class).get());
+		val.set(instance.select(InnerControllerInvoker.class).get());
 	}
 
 	public void produce(ParameterLoaderConfigurationParameter val) {

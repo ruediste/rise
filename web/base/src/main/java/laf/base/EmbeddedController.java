@@ -7,6 +7,7 @@ import javax.inject.Qualifier;
 @Qualifier
 @Target({ ElementType.METHOD, ElementType.FIELD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
+@Documented
 public @interface EmbeddedController {
 
 }

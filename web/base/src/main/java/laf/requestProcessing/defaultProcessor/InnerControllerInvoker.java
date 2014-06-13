@@ -13,7 +13,7 @@ import laf.controllerInfo.ControllerInfo;
 import laf.requestProcessing.ControllerInvoker;
 import laf.requestProcessing.CurrentControllerProducer;
 
-public class DefaultControllerInvoker implements ControllerInvoker {
+public class InnerControllerInvoker implements ControllerInvoker {
 
 	@Inject
 	@Controller

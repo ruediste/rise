@@ -44,9 +44,15 @@ public interface ActionMethodInfo extends AttachedPropertyBearer {
 	boolean returnsEmbeddedController();
 
 	/**
-	 * Return a signature including method name, argument types and return type
+	 * Return a signature including method name, argument types and return type.
+	 * Should be used for printing purposes only.
+	 */
+	String getSignature();
+
+	/**
+	 * Return true if the Method is intended to perform DatabaseUpdates.
 	 * 
 	 * @return
 	 */
-	String getSignature();
+	boolean isUpdating();
 }

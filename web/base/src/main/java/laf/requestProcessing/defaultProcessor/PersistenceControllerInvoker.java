@@ -5,6 +5,7 @@ import javax.transaction.*;
 
 import laf.actionPath.ActionPath;
 import laf.base.ActionResult;
+import laf.persistence.LafPersistenceContextManager;
 import laf.requestProcessing.ControllerInvoker;
 
 /**
@@ -17,11 +18,12 @@ public class PersistenceControllerInvoker implements ControllerInvoker {
 	@Inject
 	UserTransaction transaction;
 
-	// @Inject
-	// EntityManagerFactory factory;
+	@Inject
+	LafPersistenceContextManager contextManager;
 
 	@Override
 	public ActionResult invoke(ActionPath<Object> actionPath) {
+		actionPath.getLast().getMethodInfo().isUpdating();
 		try {
 			try {
 				transaction.begin();

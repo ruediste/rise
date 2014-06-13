@@ -1,9 +1,7 @@
 package laf.controllerInfo;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import laf.attachedProperties.AttachedPropertyBearerBase;
 import laf.base.ActionResult;
@@ -11,12 +9,13 @@ import laf.base.ActionResult;
 import com.google.common.base.Joiner;
 
 public class ActionMethodInfoImpl extends AttachedPropertyBearerBase implements
-		ActionMethodInfo {
+ActionMethodInfo {
 
 	private String name;
 	private final Method method;
 	private ControllerInfo controllerInfo;
 	private ArrayList<ParameterInfo> parameters = new ArrayList<>();
+	private boolean updating;
 
 	public ActionMethodInfoImpl(Method method) {
 		this.method = method;
@@ -58,8 +57,8 @@ public class ActionMethodInfoImpl extends AttachedPropertyBearerBase implements
 		}
 		String parameterString = Joiner.on(", ").join(parameterTypes);
 		return method.getReturnType() + " "
-				+ getControllerInfo().getQualifiedName() + "." + getName()
-				+ "(" + parameterString + ")";
+		+ getControllerInfo().getQualifiedName() + "." + getName()
+		+ "(" + parameterString + ")";
 	}
 
 	@Override
@@ -74,6 +73,15 @@ public class ActionMethodInfoImpl extends AttachedPropertyBearerBase implements
 			types.add(Objects.toString(p.getType().toString()));
 		}
 		return method.getReturnType().getSimpleName() + " " + getName() + "("
-		+ Joiner.on(",").join(types) + ")";
+				+ Joiner.on(",").join(types) + ")";
+	}
+
+	@Override
+	public boolean isUpdating() {
+		return updating;
+	}
+
+	public void setUpdating(boolean updating) {
+		this.updating = updating;
 	}
 }
