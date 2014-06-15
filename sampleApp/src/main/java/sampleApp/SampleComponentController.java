@@ -4,7 +4,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import laf.base.ActionResult;
-import laf.base.ComponentController;
+import laf.component.ComponentController;
 import laf.component.core.PageActionResult;
 
 @ComponentController

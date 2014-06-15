@@ -6,7 +6,6 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
 import laf.base.ActionResult;
-import laf.base.Controller;
 import laf.base.Val;
 import laf.component.core.Component;
 import laf.component.core.ComponentCoreModule;
@@ -18,6 +17,7 @@ import laf.component.html.template.HtmlTemplateService;
 import laf.component.html.template.RaiseEventsUtil;
 import laf.http.RedirectRenderResult;
 import laf.http.request.HttpRequest;
+import laf.mvc.Controller;
 
 import org.slf4j.Logger;
 

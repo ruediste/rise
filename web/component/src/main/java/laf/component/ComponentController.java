@@ -1,4 +1,4 @@
-package laf.base;
+package laf.component;
 
 import java.lang.annotation.*;
 

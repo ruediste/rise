@@ -10,6 +10,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import laf.base.*;
+import laf.component.ComponentController;
+import laf.mvc.EmbeddedController;
+import laf.mvc.Controller;
 
 import org.slf4j.Logger;
 
