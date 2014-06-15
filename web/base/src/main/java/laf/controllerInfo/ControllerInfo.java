@@ -54,5 +54,12 @@ public interface ControllerInfo extends AttachedPropertyBearer {
 	/**
 	 * Return the type of this controller
 	 */
-	ControllerType getType();
+	Object getType();
+
+	/**
+	 * Return true if this controller is an embedded controller
+	 * 
+	 * @return
+	 */
+	boolean isEmbeddedController();
 }

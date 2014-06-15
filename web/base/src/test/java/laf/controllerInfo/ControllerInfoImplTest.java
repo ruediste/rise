@@ -13,7 +13,7 @@ public class ControllerInfoImplTest {
 	@Test
 	public void checkNames() {
 		ControllerInfoImpl info = new ControllerInfoImpl(TestController.class,
-				ControllerType.NORMAL);
+				ControllerType.NORMAL, false);
 		assertEquals("Test", info.getName());
 		assertEquals("laf.controllerInfo.impl", info.getPackage());
 		assertEquals("laf.controllerInfo.impl.Test", info.getQualifiedName());
@@ -22,7 +22,7 @@ public class ControllerInfoImplTest {
 	@Test
 	public void calculateUnusedMethodName() {
 		ControllerInfoImpl info = new ControllerInfoImpl(TestController.class,
-				ControllerType.EMBEDDED);
+				ControllerType.EMBEDDED, false);
 		assertEquals("foo", info.calculateUnusedMethodName("foo"));
 		ActionMethodInfo methodInfo = mock(ActionMethodInfo.class);
 		when(methodInfo.getName()).thenReturn("foo");

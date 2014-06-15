@@ -1,20 +1,20 @@
 package laf.controllerInfo;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import laf.base.*;
-import laf.component.ComponentController;
-import laf.mvc.EmbeddedController;
-import laf.mvc.Controller;
+import laf.configuration.ConfigurationValue;
+import laf.controllerInfo.ControllerDiscoverer.ControllerInfocCollector;
 
 import org.slf4j.Logger;
+
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 
 @Singleton
 public class ControllerInfoRepositoryInitializer {
@@ -23,104 +23,47 @@ public class ControllerInfoRepositoryInitializer {
 	Logger log;
 
 	@Inject
-	BeanManager beanManager;
+	ConfigurationValue<ControllerDiscoverers> discoverers;
 
 	public void initialize(ControllerInfoRepository repository) {
-		Controller controllerAnnotation = new Controller() {
+		final List<Function<Predicate<Class<?>>, ControllerInfo>> controllerInfoSuppliers = new ArrayList<>();
+		final Map<Class<?>, Function<Predicate<Class<?>>, ControllerInfo>> embeddedControllers = new HashMap<>();
+
+		ControllerInfocCollector collector = new ControllerInfocCollector() {
+
 			@Override
-			public Class<? extends Annotation> annotationType() {
-				return Controller.class;
+			public void addControllerInfo(
+					Function<Predicate<Class<?>>, ControllerInfo> supplier) {
+				controllerInfoSuppliers.add(supplier);
+			}
+
+			@Override
+			public void addEmbeddedControllerInfo(Class<?> clazz,
+					Function<Predicate<Class<?>>, ControllerInfo> supplier) {
+				embeddedControllers.put(clazz, supplier);
+			}
+
+		};
+
+		for (ControllerDiscoverer d : discoverers.value().get()) {
+			d.discoverControllers(collector);
+		}
+		Predicate<Class<?>> isEmbeddedController = new Predicate<Class<?>>() {
+
+			@Override
+			public boolean apply(Class<?> input) {
+				return embeddedControllers.containsKey(input);
 			}
 		};
 
-		EmbeddedController embeddedControllerAnnotation = new EmbeddedController() {
-
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return EmbeddedController.class;
-			}
-		};
-
-		ComponentController componentControllerAnnotation = new ComponentController() {
-
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return ComponentController.class;
-			}
-		};
-
-		for (Bean<?> bean : beanManager.getBeans(Object.class,
-				controllerAnnotation)) {
-			log.debug("Found controller " + bean.getBeanClass());
-			putControllerInfo(repository, bean.getBeanClass(),
-					ControllerType.NORMAL);
+		for (Function<Predicate<Class<?>>, ControllerInfo> sup : controllerInfoSuppliers) {
+			repository.putControllerInfo(sup.apply(isEmbeddedController));
 		}
 
-		for (Bean<?> bean : beanManager.getBeans(Object.class,
-				embeddedControllerAnnotation)) {
-			log.debug("Found embedded controller " + bean.getBeanClass());
-			putControllerInfo(repository, bean.getBeanClass(),
-					ControllerType.EMBEDDED);
+		for (Function<Predicate<Class<?>>, ControllerInfo> sup : embeddedControllers
+				.values()) {
+			repository.putControllerInfo(sup.apply(isEmbeddedController));
 		}
 
-		for (Bean<?> bean : beanManager.getBeans(Object.class,
-				componentControllerAnnotation)) {
-			log.debug("Found component controller " + bean.getBeanClass());
-			putControllerInfo(repository, bean.getBeanClass(),
-					ControllerType.COMPONENT);
-		}
-	}
-
-	public void putControllerInfo(ControllerInfoRepository repository,
-			Class<?> controllerClass, ControllerType type) {
-		repository
-				.putControllerInfo(createControllerInfo(controllerClass, type));
-	}
-
-	public ControllerInfoImpl createControllerInfo(Class<?> controllerClass,
-			ControllerType type) {
-		ControllerInfoImpl info = new ControllerInfoImpl(controllerClass, type);
-		for (Method method : info.getControllerClass().getMethods()) {
-			if (method.getReturnType() == null) {
-				continue;
-			}
-
-			if (!(ActionResult.class.isAssignableFrom(method.getReturnType()) || method
-					.getReturnType().getAnnotation(EmbeddedController.class) != null)) {
-				continue;
-			}
-
-			if (method.getDeclaringClass().getAnnotation(Controller.class) == null
-					&& method.getDeclaringClass().getAnnotation(
-							EmbeddedController.class) == null
-					&& method.getDeclaringClass().getAnnotation(
-							ComponentController.class) == null) {
-				continue;
-			}
-			// create method info
-			ActionMethodInfoImpl methodInfo = new ActionMethodInfoImpl(method);
-			methodInfo.setControllerInfo(info);
-			methodInfo.setUpdating(method.isAnnotationPresent(Updating.class));
-
-			// calculate name
-			methodInfo
-			.setName(info.calculateUnusedMethodName(method.getName()));
-
-			// add to repository
-			info.putActionMethodInfo(methodInfo);
-
-			// create parameter infos
-			createParameterInfos(methodInfo);
-		}
-		return info;
-	}
-
-	private void createParameterInfos(ActionMethodInfoImpl actionMethodInfo) {
-		for (Type type : actionMethodInfo.getMethod()
-				.getGenericParameterTypes()) {
-			ParameterInfoImpl parameterInfo = new ParameterInfoImpl(type);
-			parameterInfo.setMethod(actionMethodInfo);
-			actionMethodInfo.getParameters().add(parameterInfo);
-		}
 	}
 }

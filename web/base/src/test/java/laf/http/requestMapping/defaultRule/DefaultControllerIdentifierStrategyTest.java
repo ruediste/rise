@@ -33,7 +33,7 @@ public class DefaultControllerIdentifierStrategyTest {
 	@Test
 	public void testApply() throws Exception {
 		ControllerInfo info = new ControllerInfoImpl(TestController.class,
-				ControllerType.NORMAL);
+				ControllerType.NORMAL, false);
 
 		assertEquals("laf/controllerInfo/impl/test", strategy.apply(info));
 	}

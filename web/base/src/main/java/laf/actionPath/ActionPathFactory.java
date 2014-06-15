@@ -9,8 +9,12 @@ import javax.inject.Inject;
 
 import laf.attachedProperties.AttachedProperty;
 import laf.base.ActionContext;
-import laf.controllerInfo.*;
-import net.sf.cglib.proxy.*;
+import laf.controllerInfo.ActionMethodInfo;
+import laf.controllerInfo.ControllerInfo;
+import laf.controllerInfo.ControllerInfoRepository;
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
 
 import com.google.common.base.Joiner;
 
@@ -72,7 +76,7 @@ public class ActionPathFactory {
 								+ controllerClass.getName());
 			}
 
-			if (controllerInfo.getType() == ControllerType.EMBEDDED) {
+			if (controllerInfo.isEmbeddedController()) {
 				// look for the latest occurrence of the controller class
 				// in the invoked path, and use the prefix for the to be
 				// generated
@@ -126,7 +130,7 @@ public class ActionPathFactory {
 	/**
 	 * Create a new {@link ActionPathBuilder} to create an {@link ActionPath}.
 	 * The current action path is beeing injected.
-	 * 
+	 *
 	 * @see #buildActionPath(ActionPath)
 	 */
 	public ActionPathBuilder buildActionPath() {

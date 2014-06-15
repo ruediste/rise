@@ -10,17 +10,21 @@ import laf.attachedProperties.AttachedPropertyBearerBase;
 import com.google.common.base.Strings;
 
 public class ControllerInfoImpl extends AttachedPropertyBearerBase implements
-		ControllerInfo {
+ControllerInfo {
 	final private Class<?> controllerClass;
+
+	final private Object type;
 
 	private final HashMap<String, ActionMethodInfo> actionMethodsByName = new LinkedHashMap<>();
 	private final HashMap<Method, ActionMethodInfo> actionMethodsByMethod = new LinkedHashMap<>();
 
-	private final ControllerType type;
+	final boolean embedded;
 
-	public ControllerInfoImpl(Class<?> controllerClass, ControllerType type) {
+	public ControllerInfoImpl(Class<?> controllerClass, Object type,
+			boolean embedded) {
 		this.controllerClass = controllerClass;
 		this.type = type;
+		this.embedded = embedded;
 	}
 
 	@Override
@@ -88,8 +92,13 @@ public class ControllerInfoImpl extends AttachedPropertyBearerBase implements
 	}
 
 	@Override
-	public ControllerType getType() {
+	public Object getType() {
 		return type;
+	}
+
+	@Override
+	public boolean isEmbeddedController() {
+		return embedded;
 	}
 
 }
