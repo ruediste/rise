@@ -1,7 +1,8 @@
 package sampleApp;
 
-import laf.base.*;
+import laf.base.ActionResult;
 import laf.http.NormalRenderResult;
+import laf.mvc.Controller;
 
 @Controller
 public class SampleController {

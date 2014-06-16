@@ -1,18 +1,19 @@
 package laf.actionPath;
 
+import static laf.MockitoExt.mock;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import laf.attachedProperties.AttachedProperty;
-import laf.controllerInfo.ControllerInfo;
-import laf.controllerInfo.ControllerInfoRepository;
-import laf.controllerInfo.ControllerInfoRepositoryInitializer;
-import laf.controllerInfo.ControllerType;
+import laf.controllerInfo.*;
 import laf.controllerInfo.impl.EmbeddedTestController;
 import laf.controllerInfo.impl.TestController;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.google.common.base.Predicate;
+import com.google.common.reflect.TypeToken;
 
 public class ActionPathFactoryTest {
 
@@ -22,13 +23,19 @@ public class ActionPathFactoryTest {
 
 	@Before
 	public void setup() {
-		ControllerInfoRepositoryInitializer initializer = new ControllerInfoRepositoryInitializer();
+		ControllerInfoService service = new ControllerInfoService();
+		Predicate<Class<?>> isEmbeddedController = mock(new TypeToken<Predicate<Class<?>>>() {
+			private static final long serialVersionUID = 1L;
+		});
+		when(isEmbeddedController.apply(EmbeddedTestController.class))
+				.thenReturn(true);
+
 		factory = new ActionPathFactory();
 		factory.controllerInfoRepository = mock(ControllerInfoRepository.class);
-		testControllerInfo = initializer.createControllerInfo(
-				TestController.class, ControllerType.NORMAL);
-		embeddedControllerInfo = initializer.createControllerInfo(
-				EmbeddedTestController.class, ControllerType.EMBEDDED);
+		testControllerInfo = service.createControllerInfo(TestController.class,
+				null, isEmbeddedController, null);
+		embeddedControllerInfo = service.createControllerInfo(
+				EmbeddedTestController.class, null, isEmbeddedController, null);
 		when(
 				factory.controllerInfoRepository
 						.getControllerInfo(TestController.class)).thenReturn(
@@ -116,7 +123,7 @@ public class ActionPathFactoryTest {
 				.controller(TestController.class).actionMethod(2);
 
 		factory.buildActionPath(currentPath)
-		.controller(EmbeddedTestController.class)
-				.actionMethodEmbedded();
+				.controller(EmbeddedTestController.class)
+		.actionMethodEmbedded();
 	}
 }

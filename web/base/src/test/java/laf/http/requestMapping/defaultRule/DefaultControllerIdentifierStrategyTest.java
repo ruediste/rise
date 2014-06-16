@@ -2,10 +2,9 @@ package laf.http.requestMapping.defaultRule;
 
 import static org.junit.Assert.assertEquals;
 import laf.configuration.ConfigurationValueImpl;
-import laf.controllerInfo.*;
+import laf.controllerInfo.ControllerInfo;
+import laf.controllerInfo.ControllerInfoImpl;
 import laf.controllerInfo.impl.TestController;
-import laf.http.requestMapping.defaultRule.BasePackage;
-import laf.http.requestMapping.defaultRule.DefaultControllerIdentifierStrategy;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +32,7 @@ public class DefaultControllerIdentifierStrategyTest {
 	@Test
 	public void testApply() throws Exception {
 		ControllerInfo info = new ControllerInfoImpl(TestController.class,
-				ControllerType.NORMAL, false);
+				null, false);
 
 		assertEquals("laf/controllerInfo/impl/test", strategy.apply(info));
 	}

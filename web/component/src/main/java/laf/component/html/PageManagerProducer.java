@@ -17,6 +17,7 @@ public class PageManagerProducer {
 	}
 
 	@Produces
+	@RequestScoped
 	public PageManager produce() {
 		return pageManager;
 	}

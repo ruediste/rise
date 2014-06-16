@@ -6,19 +6,13 @@ import java.util.ArrayList;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import laf.component.basic.html.CButtonHtmlTemplate;
-import laf.component.basic.html.CPageHtmlTemplate;
-import laf.component.basic.html.CReloadHtmlTemplate;
-import laf.component.basic.html.CRenderHtmlTemplate;
-import laf.component.basic.html.CTextFieldHtmlTemplate;
-import laf.component.basic.html.CTextHtmlTemplate;
+import laf.component.ComponentControllerDiscoverer;
+import laf.component.basic.html.*;
 import laf.component.html.HtmlPageResultRenderer;
-import laf.component.html.template.HtmlTemplate;
-import laf.component.html.template.HtmlTemplateFactories;
-import laf.component.html.template.HtmlTemplateFactory;
-import laf.component.html.template.HtmlTemplateFactoryImpl;
+import laf.component.html.template.*;
 import laf.configuration.ConfigurationDefiner;
 import laf.configuration.ExtendConfiguration;
+import laf.controllerInfo.ControllerDiscoverers;
 import laf.http.requestProcessing.defaultProcessor.ResultRenderers;
 
 public class DefaultComponentConfiguration implements ConfigurationDefiner {
@@ -29,7 +23,13 @@ public class DefaultComponentConfiguration implements ConfigurationDefiner {
 	@ExtendConfiguration
 	public void produce(ResultRenderers renderers) {
 		renderers.get()
-		.add(instance.select(HtmlPageResultRenderer.class).get());
+				.add(instance.select(HtmlPageResultRenderer.class).get());
+	}
+
+	@ExtendConfiguration
+	public void produce(ControllerDiscoverers discoverers) {
+		discoverers.get().add(
+				instance.select(ComponentControllerDiscoverer.class).get());
 	}
 
 	@SafeVarargs

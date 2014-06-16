@@ -7,6 +7,8 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import laf.configuration.ConfigurationDefiner;
+import laf.controllerInfo.ControllerDiscoverer;
+import laf.controllerInfo.ControllerDiscoverers;
 import laf.http.ContentType;
 import laf.http.requestMapping.HttpRequestMappingRules;
 import laf.http.requestMapping.defaultRule.BasePackage;
@@ -14,18 +16,10 @@ import laf.http.requestMapping.defaultRule.DefaultHttpRequestMappingRuleFactory;
 import laf.http.requestMapping.parameterHandler.ParameterHandler;
 import laf.http.requestMapping.parameterHandler.ParameterHandlers;
 import laf.http.requestProcessing.HttpRequestProcessorConfigurationParameter;
-import laf.http.requestProcessing.defaultProcessor.DefaultHttpRequestProcessor;
-import laf.http.requestProcessing.defaultProcessor.DefaultRequestParser;
-import laf.http.requestProcessing.defaultProcessor.HttpRenderResultRenderer;
-import laf.http.requestProcessing.defaultProcessor.RequestParserConfigurationParameter;
-import laf.http.requestProcessing.defaultProcessor.ResultRenderer;
-import laf.http.requestProcessing.defaultProcessor.ResultRenderers;
-import laf.requestProcessing.ControllerInvokerConfigurationParameter;
-import laf.requestProcessing.ParameterLoaderConfigurationParameter;
-import laf.requestProcessing.RequestProcessorConfigurationParameter;
-import laf.requestProcessing.defaultProcessor.InnerControllerInvoker;
-import laf.requestProcessing.defaultProcessor.DefaultParameterLoader;
-import laf.requestProcessing.defaultProcessor.DefaultRequestProcessor;
+import laf.http.requestProcessing.defaultProcessor.*;
+import laf.mvc.MvcControllerDiscoverer;
+import laf.requestProcessing.*;
+import laf.requestProcessing.defaultProcessor.*;
 
 import com.google.common.collect.Iterators;
 
@@ -83,4 +77,9 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 		type.set("application/xhtml+xml");
 	}
 
+	public void produce(ControllerDiscoverers val) {
+		ArrayDeque<ControllerDiscoverer> discoverers = new ArrayDeque<>();
+		discoverers.add(instance.select(MvcControllerDiscoverer.class).get());
+		val.set(discoverers);
+	}
 }

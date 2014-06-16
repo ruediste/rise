@@ -1,6 +1,7 @@
 package laf.component.html;
 
 import javax.ejb.*;
+import javax.enterprise.inject.Alternative;
 import javax.inject.Inject;
 
 import laf.component.core.ComponentView;
@@ -10,6 +11,7 @@ import laf.component.core.PagePersistenceManager;
  * A Page Manager manages a single page
  */
 @Stateful
+@Alternative
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class PageManager {
 

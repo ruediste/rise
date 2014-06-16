@@ -2,33 +2,23 @@ package laf.requestProcessing.defaultProcessor;
 
 import java.lang.reflect.InvocationTargetException;
 
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import laf.actionPath.ActionInvocation;
 import laf.actionPath.ActionPath;
-import laf.base.*;
-import laf.component.ComponentController;
+import laf.base.ActionResult;
 import laf.controllerInfo.ActionMethodInfo;
 import laf.controllerInfo.ControllerInfo;
-import laf.mvc.EmbeddedController;
-import laf.mvc.Controller;
 import laf.requestProcessing.ControllerInvoker;
 import laf.requestProcessing.CurrentControllerProducer;
 
 public class InnerControllerInvoker implements ControllerInvoker {
 
 	@Inject
-	@Controller
+	@Any
 	Instance<Object> controllerInstance;
-
-	@Inject
-	@EmbeddedController
-	Instance<Object> embeddedControllerInstance;
-
-	@Inject
-	@ComponentController
-	Instance<Object> componentControllerInstance;
 
 	@Inject
 	CurrentControllerProducer currentControllerProducer;
@@ -43,23 +33,8 @@ public class InnerControllerInvoker implements ControllerInvoker {
 			if (lastActionMethodResult == null) {
 				ControllerInfo controllerInfo = methodInfo.getControllerInfo();
 				Class<?> controllerClass = controllerInfo.getControllerClass();
-				switch (controllerInfo.getType()) {
-				case COMPONENT:
-					controller = componentControllerInstance.select(
-							controllerClass).get();
-					break;
-				case EMBEDDED:
-					controller = embeddedControllerInstance.select(
-							controllerClass).get();
-					break;
-				case NORMAL:
-					controller = controllerInstance.select(controllerClass)
-							.get();
-					break;
-				default:
-					throw new RuntimeException("Should Not Happen");
 
-				}
+				controller = controllerInstance.select(controllerClass).get();
 			} else {
 				controller = lastActionMethodResult;
 			}
