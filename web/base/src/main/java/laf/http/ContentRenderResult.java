@@ -5,10 +5,10 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletResponse;
 
-public class NormalRenderResult implements HttpRenderResult {
+public class ContentRenderResult implements HttpRenderResult {
 	public final String string;
 
-	public NormalRenderResult(String string) {
+	public ContentRenderResult(String string) {
 		this.string = string;
 	}
 

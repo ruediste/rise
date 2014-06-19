@@ -7,20 +7,21 @@ import javax.inject.Inject;
 import laf.actionPath.ActionPath;
 import laf.actionPath.ActionPathFactory;
 import laf.component.defaultConfiguration.DefaultComponentConfiguration;
-import laf.configuration.ConfigurationDefiner;
-import laf.configuration.DiscoverConfigruationEvent;
-import laf.configuration.ExtendConfiguration;
+import laf.configuration.*;
 import laf.defaultConfiguration.DefaultConfiguration;
 import laf.http.request.HttpRequest;
 import laf.http.requestMapping.HttpRequestMappingRule;
 import laf.http.requestMapping.HttpRequestMappingRules;
 import laf.http.requestMapping.parameterValueProvider.ParameterValueProvider;
+import laf.mvc.configuration.MvcDefaultConfiguration;
 
 @ApplicationScoped
 public class SampleAppConfiguration implements ConfigurationDefiner {
 
 	@Inject
 	DefaultConfiguration defaultConfiguration;
+	@Inject
+	MvcDefaultConfiguration mvcDefaultConfiguration;
 
 	@Inject
 	DefaultComponentConfiguration defaultComponentConfiguration;
@@ -28,6 +29,7 @@ public class SampleAppConfiguration implements ConfigurationDefiner {
 	protected void registerConfigurationValueProviders(
 			@Observes DiscoverConfigruationEvent e) {
 		e.add(defaultConfiguration);
+		e.add(mvcDefaultConfiguration);
 		e.add(defaultComponentConfiguration);
 		e.add(this);
 		e.addPropretiesFile("configuration.properties");
@@ -45,7 +47,7 @@ public class SampleAppConfiguration implements ConfigurationDefiner {
 			public ActionPath<ParameterValueProvider> parse(HttpRequest request) {
 				return (ActionPath<ParameterValueProvider>) pathFactory
 						.buildActionPath(null)
-						.controller(SampleComponentController.class).index();
+						.controller(SampleController.class).index();
 			}
 
 			@Override

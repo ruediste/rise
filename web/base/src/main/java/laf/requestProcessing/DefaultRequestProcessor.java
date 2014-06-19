@@ -1,4 +1,4 @@
-package laf.requestProcessing.defaultProcessor;
+package laf.requestProcessing;
 
 import javax.inject.Inject;
 

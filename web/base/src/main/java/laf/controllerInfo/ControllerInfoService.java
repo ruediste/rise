@@ -21,6 +21,23 @@ public class ControllerInfoService {
 		void customize(ParameterInfoImpl parameterInfo);
 	}
 
+	public static class ControllerInfoCustomizerBase implements
+	ControllerInfoCustomizer {
+
+		@Override
+		public void customize(ControllerInfoImpl controllerInfo) {
+		}
+
+		@Override
+		public void customize(ActionMethodInfoImpl actionMethod) {
+		}
+
+		@Override
+		public void customize(ParameterInfoImpl parameterInfo) {
+		}
+
+	}
+
 	public ControllerInfoImpl createControllerInfo(Class<?> controllerClass,
 			Object type, Predicate<Class<?>> isEmbeddedController,
 			ControllerInfoCustomizer customizer) {
@@ -44,6 +61,7 @@ public class ControllerInfoService {
 
 			// create method info
 			ActionMethodInfoImpl methodInfo = new ActionMethodInfoImpl(method);
+
 			methodInfo.setControllerInfo(info);
 			methodInfo.setUpdating(method.isAnnotationPresent(Updating.class));
 

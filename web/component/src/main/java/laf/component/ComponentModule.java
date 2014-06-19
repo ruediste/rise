@@ -26,8 +26,9 @@ import org.jabsaw.Module;
  * runnable is provided, that runnable is executed in the transaction using a
  * fresh PC. This allows to perform checks without the risk of using stale data
  * retrieved in previous transactions. The PC is flushed and closed after
- * executing the checker runnable. Closing the PC cannot be done, since the
- * changes which would get flushed are implementation dependent.
+ * executing the checker runnable. Onlu closing the PC without flushing cannot
+ * be done, since the changes which would get flushed are implementation
+ * dependent.
  * </p>
  *
  * <p>
@@ -56,7 +57,7 @@ import org.jabsaw.Module;
  * {@link ControllerUtil#setErrorDestination(laf.base.ActionResult)}.
  * </p>
  *
- * <strong> Managing Persstence Contexts</strong>
+ * <strong> Managing Persistence Contexts</strong>
  * <p>
  * Unfortunately, we can not rely on the standard Java EE mechanisms to manage
  * the {@link EntityManager}s due to the rules of PC propagation: We need an
@@ -65,6 +66,10 @@ import org.jabsaw.Module;
  * require {@link EntityManager}s to be injected via the {@link Inject}
  * annotation (NOT the {@link PersistenceContext} annotation) and manage them as
  * required by the framework.
+ * </p>
+ *
+ * <p>
+ * <img src="doc-files/requestHandlingPipelineComponent.png"/>
  * </p>
  */
 @Module

@@ -2,9 +2,7 @@ package sampleApp;
 
 import java.io.IOException;
 
-import laf.component.basic.CButton;
-import laf.component.basic.CPage;
-import laf.component.basic.CTextField;
+import laf.component.basic.*;
 import laf.component.basic.html.CRender;
 import laf.component.core.Component;
 import laf.component.core.ComponentView;
@@ -13,7 +11,7 @@ import laf.component.html.RenderUtil;
 import org.rendersnake.HtmlCanvas;
 
 public class SampleComponentView extends
-ComponentView<SampleComponentController> {
+		ComponentView<SampleComponentController> {
 
 	@Override
 	public Component createComponents() {

@@ -1,4 +1,4 @@
-package laf.requestProcessing.defaultProcessor;
+package laf.mvc;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -14,7 +14,7 @@ import laf.controllerInfo.ControllerInfo;
 import laf.requestProcessing.ControllerInvoker;
 import laf.requestProcessing.CurrentControllerProducer;
 
-public class InnerControllerInvoker implements ControllerInvoker {
+public class MvcControllerInvoker implements ControllerInvoker {
 
 	@Inject
 	@Any

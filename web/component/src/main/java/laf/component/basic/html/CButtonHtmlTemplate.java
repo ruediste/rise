@@ -17,7 +17,7 @@ public class CButtonHtmlTemplate extends HtmlTemplateBase<CButton> {
 	public void render(CButton component, HtmlCanvas html, RenderUtil util)
 			throws IOException {
 		html.button(class_("c_button")).span(class_("_componentId c_hidden"))
-		.content(String.valueOf(util.getComponentId()));
+				.content(String.valueOf(util.getComponentId()));
 		super.render(component, html, util);
 		html._button();
 	}

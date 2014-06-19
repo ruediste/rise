@@ -62,11 +62,11 @@ public class ActionPath<T> extends AttachedPropertyBearerBase {
 		return isCallToSameActionMethod(other,
 				new ParameterValueComparator<Object, Object>() {
 
-					@Override
-					public boolean equals(Object a, Object b) {
-						return true;
-					}
-				});
+			@Override
+			public boolean equals(Object a, Object b) {
+				return true;
+			}
+		});
 	}
 
 	/**
@@ -133,6 +133,10 @@ public class ActionPath<T> extends AttachedPropertyBearerBase {
 			}
 		}
 		return result;
+	}
+
+	public ActionInvocation<T> getFirst() {
+		return elements.get(0);
 	}
 
 	public ActionInvocation<T> getLast() {

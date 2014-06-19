@@ -15,4 +15,5 @@ public interface ControllerUtil {
 	void setErrorDestination(ActionResult target);
 
 	void setDestination(ActionResult target);
+
 }

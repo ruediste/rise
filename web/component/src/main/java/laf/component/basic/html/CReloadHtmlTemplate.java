@@ -17,8 +17,8 @@ public class CReloadHtmlTemplate extends HtmlTemplateBase<CReload> {
 	public void render(CReload component, HtmlCanvas html, RenderUtil util)
 			throws IOException {
 		html.form(xmlns("http://www.w3.org/1999/xhtml").class_("c_reload"))
-		.span(class_("_componentId c_hidden"))
-		.content(String.valueOf(util.getComponentId()));
+				.span(class_("_componentId c_hidden"))
+				.content(String.valueOf(util.getComponentId()));
 		super.render(component, html, util);
 		html._form();
 	}

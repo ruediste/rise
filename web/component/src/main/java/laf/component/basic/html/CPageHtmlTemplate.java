@@ -1,9 +1,6 @@
 package laf.component.basic.html;
 
-import static org.rendersnake.HtmlAttributesFactory.rel;
-import static org.rendersnake.HtmlAttributesFactory.src;
-import static org.rendersnake.HtmlAttributesFactory.type;
-import static org.rendersnake.HtmlAttributesFactory.xmlns;
+import static org.rendersnake.HtmlAttributesFactory.*;
 
 import java.io.IOException;
 

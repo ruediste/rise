@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<openejb>
+<Resource id="sampleApp" type="javax.sql.DataSource">
+</Resource>
+</openejb>

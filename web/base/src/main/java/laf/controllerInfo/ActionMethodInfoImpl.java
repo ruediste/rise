@@ -1,24 +1,32 @@
 package laf.controllerInfo;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.*;
 
 import laf.attachedProperties.AttachedPropertyBearerBase;
 import laf.base.ActionResult;
 
 import com.google.common.base.Joiner;
+import com.google.common.reflect.TypeToken;
 
 public class ActionMethodInfoImpl extends AttachedPropertyBearerBase implements
-ActionMethodInfo {
+		ActionMethodInfo {
 
 	private String name;
-	private final Method method;
+	private Method method;
+	private Type returnType;
 	private ControllerInfo controllerInfo;
 	private ArrayList<ParameterInfo> parameters = new ArrayList<>();
 	private boolean updating;
 
+	public ActionMethodInfoImpl() {
+
+	}
+
 	public ActionMethodInfoImpl(Method method) {
 		this.method = method;
+		returnType = method.getGenericReturnType();
 	}
 
 	@Override
@@ -56,14 +64,13 @@ ActionMethodInfo {
 			parameterTypes.add(p.getType().toString());
 		}
 		String parameterString = Joiner.on(", ").join(parameterTypes);
-		return method.getReturnType() + " "
-		+ getControllerInfo().getQualifiedName() + "." + getName()
-		+ "(" + parameterString + ")";
+		return getReturnType() + " " + getControllerInfo().getQualifiedName()
+				+ "." + getName() + "(" + parameterString + ")";
 	}
 
 	@Override
 	public boolean returnsEmbeddedController() {
-		return method.getReturnType() != ActionResult.class;
+		return getReturnType() != ActionResult.class;
 	}
 
 	@Override
@@ -72,8 +79,8 @@ ActionMethodInfo {
 		for (ParameterInfo p : parameters) {
 			types.add(Objects.toString(p.getType().toString()));
 		}
-		return method.getReturnType().getSimpleName() + " " + getName() + "("
-				+ Joiner.on(",").join(types) + ")";
+		return TypeToken.of(getReturnType()).getRawType().getSimpleName() + " "
+		+ getName() + "(" + Joiner.on(",").join(types) + ")";
 	}
 
 	@Override
@@ -83,5 +90,17 @@ ActionMethodInfo {
 
 	public void setUpdating(boolean updating) {
 		this.updating = updating;
+	}
+
+	public Type getReturnType() {
+		return returnType;
+	}
+
+	public void setReturnType(Type returnType) {
+		this.returnType = returnType;
+	}
+
+	public void setMethod(Method method) {
+		this.method = method;
 	}
 }

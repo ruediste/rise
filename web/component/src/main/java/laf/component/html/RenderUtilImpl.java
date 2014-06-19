@@ -4,33 +4,15 @@ import java.io.IOException;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import laf.actionPath.ActionPathFactory;
-import laf.actionPath.ActionPathFactory.ActionPathBuilder;
-import laf.base.ActionResult;
 import laf.component.core.Component;
 import laf.component.core.ComponentCoreModule;
 import laf.component.html.template.HtmlTemplateService;
-import laf.http.HttpService;
-import laf.http.requestMapping.HttpRequestMappingService;
+import laf.html.RenderUtilBaseImpl;
 
 import org.rendersnake.HtmlCanvas;
 
-public class RenderUtilImpl implements RenderUtil {
-
-	@Inject
-	ActionPathFactory actionPathFactory;
-
-	@Inject
-	HttpRequestMappingService httpRequestMappingService;
-
-	@Inject
-	HttpServletRequest request;
-
-	@Inject
-	HttpServletResponse response;
+public class RenderUtilImpl extends RenderUtilBaseImpl implements RenderUtil {
 
 	@Inject
 	ComponentCoreModule componentCoreModule;
@@ -44,25 +26,7 @@ public class RenderUtilImpl implements RenderUtil {
 	@Inject
 	HtmlTemplateService htmlTemplateService;
 
-	@Inject
-	HttpService httpService;
-
 	private Component component;
-
-	@Override
-	public <T> T path(Class<T> controller) {
-		return path().controller(controller);
-	}
-
-	@Override
-	public ActionPathBuilder path() {
-		return actionPathFactory.buildActionPath();
-	}
-
-	@Override
-	public String url(ActionResult path) {
-		return httpService.url(path);
-	}
 
 	@Override
 	public long pageId() {
@@ -89,15 +53,6 @@ public class RenderUtilImpl implements RenderUtil {
 
 		htmlTemplateService.getTemplate(component)
 				.render(component, html, util);
-	}
-
-	/**
-	 * Return the URL of a resource
-	 */
-	@Override
-	public String resourceUrl(String resource) {
-		return response.encodeURL(request.getContextPath() + "/static/"
-				+ resource);
 	}
 
 	@Override

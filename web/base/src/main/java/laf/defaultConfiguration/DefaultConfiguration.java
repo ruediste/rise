@@ -1,7 +1,6 @@
 package laf.defaultConfiguration;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
+import java.util.*;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -19,7 +18,6 @@ import laf.http.requestProcessing.HttpRequestProcessorConfigurationParameter;
 import laf.http.requestProcessing.defaultProcessor.*;
 import laf.mvc.MvcControllerDiscoverer;
 import laf.requestProcessing.*;
-import laf.requestProcessing.defaultProcessor.*;
 
 import com.google.common.collect.Iterators;
 
@@ -52,7 +50,11 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 	}
 
 	public void produce(ControllerInvokerConfigurationParameter val) {
-		val.set(instance.select(InnerControllerInvoker.class).get());
+		val.set(instance.select(TypeSwitchControllerInvoker.class).get());
+	}
+
+	public void produce(ControllerTypeRequestProcessors map) {
+		map.set(new HashMap<Object, RequestProcessor>());
 	}
 
 	public void produce(ParameterLoaderConfigurationParameter val) {
