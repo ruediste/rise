@@ -6,11 +6,23 @@ import java.util.ArrayList;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+import laf.component.ComponentActionRequestProcessorCP;
 import laf.component.ComponentController;
 import laf.component.ComponentControllerDiscoverer;
-import laf.component.basic.html.*;
+import laf.component.InitialRequestProcessorCP;
+import laf.component.ReloadRequestProcessorCP;
+import laf.component.SwitchComponentRequestProcessor;
+import laf.component.basic.html.CButtonHtmlTemplate;
+import laf.component.basic.html.CPageHtmlTemplate;
+import laf.component.basic.html.CReloadHtmlTemplate;
+import laf.component.basic.html.CRenderHtmlTemplate;
+import laf.component.basic.html.CTextFieldHtmlTemplate;
+import laf.component.basic.html.CTextHtmlTemplate;
 import laf.component.html.HtmlPageResultRenderer;
-import laf.component.html.template.*;
+import laf.component.html.template.HtmlTemplate;
+import laf.component.html.template.HtmlTemplateFactories;
+import laf.component.html.template.HtmlTemplateFactory;
+import laf.component.html.template.HtmlTemplateFactoryImpl;
 import laf.configuration.ConfigurationDefiner;
 import laf.configuration.ExtendConfiguration;
 import laf.controllerInfo.ControllerDiscoverers;
@@ -25,7 +37,7 @@ public class DefaultComponentConfiguration implements ConfigurationDefiner {
 	@ExtendConfiguration
 	public void produce(ResultRenderers renderers) {
 		renderers.get()
-		.add(instance.select(HtmlPageResultRenderer.class).get());
+				.add(instance.select(HtmlPageResultRenderer.class).get());
 	}
 
 	@ExtendConfiguration
@@ -36,7 +48,20 @@ public class DefaultComponentConfiguration implements ConfigurationDefiner {
 
 	@ExtendConfiguration
 	public void produce(ControllerTypeRequestProcessors map) {
-		map.get().put(ComponentController.class, null);
+		map.get().put(ComponentController.class,
+				instance.select(SwitchComponentRequestProcessor.class).get());
+	}
+
+	public void produce(InitialRequestProcessorCP map) {
+
+	}
+
+	public void produce(ReloadRequestProcessorCP map) {
+
+	}
+
+	public void produce(ComponentActionRequestProcessorCP map) {
+
 	}
 
 	@SafeVarargs

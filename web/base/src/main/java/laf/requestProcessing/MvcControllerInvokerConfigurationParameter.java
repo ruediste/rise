@@ -2,7 +2,7 @@ package laf.requestProcessing;
 
 import laf.configuration.ConfigurationParameter;
 
-public interface ControllerInvokerConfigurationParameter extends
+public interface MvcControllerInvokerConfigurationParameter extends
 		ConfigurationParameter<ControllerInvoker> {
 
 }

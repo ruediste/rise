@@ -2,7 +2,7 @@ package laf.requestProcessing;
 
 import laf.configuration.ConfigurationParameter;
 
-public interface ParameterLoaderConfigurationParameter extends
+public interface MvcParameterLoaderConfigurationParameter extends
 		ConfigurationParameter<ParameterLoader> {
 
 }

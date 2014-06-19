@@ -5,8 +5,14 @@ import javax.inject.Inject;
 
 import laf.configuration.ConfigurationDefiner;
 import laf.configuration.ExtendConfiguration;
-import laf.mvc.*;
-import laf.requestProcessing.ControllerInvokerMap;
+import laf.mvc.Controller;
+import laf.mvc.MvcControllerInvoker;
+import laf.mvc.MvcPersistenceRequestProcessor;
+import laf.requestProcessing.ControllerTypeRequestProcessors;
+import laf.requestProcessing.DefaultParameterLoader;
+import laf.requestProcessing.MvcControllerInvokerConfigurationParameter;
+import laf.requestProcessing.MvcLoadAndInvokeControllerRequestProcessor;
+import laf.requestProcessing.MvcParameterLoaderConfigurationParameter;
 
 public class MvcDefaultConfiguration implements ConfigurationDefiner {
 
@@ -14,12 +20,22 @@ public class MvcDefaultConfiguration implements ConfigurationDefiner {
 	Instance<Object> instance;
 
 	@ExtendConfiguration
-	public void produce(ControllerInvokerMap map) {
-		MvcPersistenceControllerInvoker persistenceInvoker = instance.select(
-				MvcPersistenceControllerInvoker.class).get();
-		persistenceInvoker.setDelegate(instance.select(
-				MvcControllerInvoker.class).get());
-		map.get().put(Controller.class, persistenceInvoker);
+	public void produce(ControllerTypeRequestProcessors map) {
+		MvcPersistenceRequestProcessor persistenceProcessor = instance.select(
+				MvcPersistenceRequestProcessor.class).get();
+
+		persistenceProcessor.initialize(instance.select(
+				MvcLoadAndInvokeControllerRequestProcessor.class).get());
+
+		map.get().put(Controller.class, persistenceProcessor);
+	}
+
+	public void produce(MvcControllerInvokerConfigurationParameter val) {
+		val.set(instance.select(MvcControllerInvoker.class).get());
+	}
+
+	public void produce(MvcParameterLoaderConfigurationParameter val) {
+		val.set(instance.select(DefaultParameterLoader.class).get());
 	}
 
 }

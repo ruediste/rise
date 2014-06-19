@@ -4,6 +4,13 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+/**
+ * Manages the Page Scope.
+ *
+ * <p>
+ * This class is used to enter and leave the page scope
+ * </p>
+ */
 @ApplicationScoped
 public class PageScopeManager {
 

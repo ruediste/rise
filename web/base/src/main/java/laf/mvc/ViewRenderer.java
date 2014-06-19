@@ -1,5 +1,7 @@
 package laf.mvc;
 
+import java.io.IOException;
+
 import laf.base.ActionResult;
 
 /**
@@ -11,6 +13,8 @@ public interface ViewRenderer {
 	/**
 	 * Render the given view with the given data. Return the action result
 	 * representing the view, or null if the view could not be rendered
+	 * 
+	 * @throws IOException
 	 */
-	ActionResult renderView(Class<?> viewClass, Object data);
+	ActionResult renderView(Class<?> viewClass, Object data) throws IOException;
 }

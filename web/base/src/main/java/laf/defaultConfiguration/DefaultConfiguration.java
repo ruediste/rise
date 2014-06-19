@@ -1,6 +1,8 @@
 package laf.defaultConfiguration;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -15,9 +17,18 @@ import laf.http.requestMapping.defaultRule.DefaultHttpRequestMappingRuleFactory;
 import laf.http.requestMapping.parameterHandler.ParameterHandler;
 import laf.http.requestMapping.parameterHandler.ParameterHandlers;
 import laf.http.requestProcessing.HttpRequestProcessorConfigurationParameter;
-import laf.http.requestProcessing.defaultProcessor.*;
+import laf.http.requestProcessing.defaultProcessor.DefaultHttpRequestProcessor;
+import laf.http.requestProcessing.defaultProcessor.DefaultRequestParser;
+import laf.http.requestProcessing.defaultProcessor.HttpRenderResultRenderer;
+import laf.http.requestProcessing.defaultProcessor.RequestParserConfigurationParameter;
+import laf.http.requestProcessing.defaultProcessor.ResultRenderer;
+import laf.http.requestProcessing.defaultProcessor.ResultRenderers;
 import laf.mvc.MvcControllerDiscoverer;
-import laf.requestProcessing.*;
+import laf.requestProcessing.ControllerTypeRequestProcessors;
+import laf.requestProcessing.ErrorHandlingRequestProcessor;
+import laf.requestProcessing.RequestProcessor;
+import laf.requestProcessing.RequestProcessorConfigurationParameter;
+import laf.requestProcessing.SwitchControllerTypeRequestProcessor;
 
 import com.google.common.collect.Iterators;
 
@@ -46,19 +57,17 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 	}
 
 	public void produce(RequestProcessorConfigurationParameter val) {
-		val.set(instance.select(DefaultRequestProcessor.class).get());
-	}
+		SwitchControllerTypeRequestProcessor switchProcessor = instance.select(
+				SwitchControllerTypeRequestProcessor.class).get();
+		ErrorHandlingRequestProcessor errorProcessor = instance.select(
+				ErrorHandlingRequestProcessor.class).get();
+		errorProcessor.initialize(switchProcessor);
 
-	public void produce(ControllerInvokerConfigurationParameter val) {
-		val.set(instance.select(TypeSwitchControllerInvoker.class).get());
+		val.set(errorProcessor);
 	}
 
 	public void produce(ControllerTypeRequestProcessors map) {
 		map.set(new HashMap<Object, RequestProcessor>());
-	}
-
-	public void produce(ParameterLoaderConfigurationParameter val) {
-		val.set(instance.select(DefaultParameterLoader.class).get());
 	}
 
 	public void produce(HttpRequestProcessorConfigurationParameter val) {

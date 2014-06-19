@@ -1,18 +1,35 @@
 package laf.component;
 
-import laf.actionPath.ActionPath;
-import laf.base.ActionResult;
-import laf.http.requestMapping.parameterValueProvider.ParameterValueProvider;
+import javax.inject.Inject;
+
+import laf.configuration.ConfigurationValue;
 import laf.requestProcessing.RequestProcessor;
 
-public class SwitchComponentRequestProcessor implements RequestProcessor {
+public class SwitchComponentRequestProcessor extends
+		SwitchComponentRequestProcessorBase {
+
+	@Inject
+	ConfigurationValue<InitialRequestProcessorCP> initial;
+
+	@Inject
+	ConfigurationValue<ReloadRequestProcessorCP> reload;
+
+	@Inject
+	ConfigurationValue<ComponentActionRequestProcessorCP> componentAction;
 
 	@Override
-	public ActionResult process(ActionPath<ParameterValueProvider> path) {
-		if (path.getFirst()) {
-			// TODO Auto-generated method stub
-			return null;
-		}
+	protected RequestProcessor getReloadProcessor() {
+		return reload.value().get();
+	}
+
+	@Override
+	protected RequestProcessor getComponentActionProcessor() {
+		return componentAction.value().get();
+	}
+
+	@Override
+	protected RequestProcessor getInitialProcessor() {
+		return initial.value().get();
 	}
 
 }

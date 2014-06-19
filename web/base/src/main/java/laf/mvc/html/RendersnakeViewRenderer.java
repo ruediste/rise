@@ -30,7 +30,8 @@ public class RendersnakeViewRenderer implements ViewRenderer {
 	}
 
 	@Override
-	public ActionResult renderView(Class<?> viewClass, Object data) {
+	public ActionResult renderView(Class<?> viewClass, Object data)
+			throws IOException {
 		if (RendersnakeView.class.isAssignableFrom(viewClass)) {
 			RendersnakeView<?> view = (RendersnakeView<?>) viewInstance.select(
 					viewClass).get();
