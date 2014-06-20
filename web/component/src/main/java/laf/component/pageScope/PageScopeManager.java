@@ -39,6 +39,13 @@ public class PageScopeManager {
 		}
 		PageScopeHolder holder = map.create();
 		currentHolder.set(holder);
+
+		try {
+			holder.semaphore.acquire();
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+
 		return holder.getId();
 	}
 
@@ -50,6 +57,11 @@ public class PageScopeManager {
 			throw new IllegalStateException("Scope already active");
 		}
 		PageScopeHolder holder = map.get(id);
+		try {
+			holder.semaphore.acquire();
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 		currentHolder.set(holder);
 	}
 
@@ -72,6 +84,7 @@ public class PageScopeManager {
 		if (!isActive()) {
 			throw new IllegalStateException("no scope active");
 		}
+		currentHolder.get().semaphore.release();
 		currentHolder.set(null);
 	}
 

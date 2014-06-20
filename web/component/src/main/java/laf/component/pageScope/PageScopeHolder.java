@@ -1,6 +1,7 @@
 package laf.component.pageScope;
 
 import java.util.HashMap;
+import java.util.concurrent.Semaphore;
 
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
@@ -8,6 +9,8 @@ import javax.enterprise.context.spi.CreationalContext;
 public class PageScopeHolder {
 
 	private long id;
+
+	public final Semaphore semaphore = new Semaphore(1);
 
 	public long getId() {
 		return id;

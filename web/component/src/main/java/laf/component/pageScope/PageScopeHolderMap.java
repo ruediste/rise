@@ -33,8 +33,15 @@ public class PageScopeHolderMap implements Serializable {
 	}
 
 	public void destroy(long id) {
-		PageScopeHolder holder = map.remove(id);
+		PageScopeHolder holder = get(id);
+		try {
+			holder.semaphore.acquire();
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+		map.remove(id);
 		holder.destroy();
+		holder.semaphore.release();
 	}
 
 	@PostRemove
