@@ -1,10 +1,14 @@
 package laf.persistence;
 
-import javax.annotation.PostConstruct;
+import static org.junit.Assert.assertSame;
+
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
 
 import laf.persistence.LafEntityManager.NoPersistenceContextException;
 import laf.test.BaseDeploymentProvider;
@@ -27,7 +31,6 @@ public class LafPersistenceContextManagerTest {
 		return result;
 	}
 
-	@ApplicationScoped
 	static class EMProducer {
 		@Inject
 		LafPersistenceContextManager contextManager;
@@ -35,11 +38,10 @@ public class LafPersistenceContextManagerTest {
 		@PersistenceUnit
 		EntityManagerFactory factory;
 
-		EntityManager manager;
-
-		@PostConstruct
-		public void initialize() {
-			manager = contextManager
+		@Produces
+		@ApplicationScoped
+		EntityManager produceManager() {
+			return contextManager
 					.produceManagerDelegate(new LafEntityManagerFactory() {
 
 						@Override
@@ -47,11 +49,6 @@ public class LafPersistenceContextManagerTest {
 							return factory.createEntityManager();
 						}
 					});
-		}
-
-		@Produces
-		EntityManager produceManager() {
-			return manager;
 		}
 	}
 
@@ -66,13 +63,13 @@ public class LafPersistenceContextManagerTest {
 	@Inject
 	LafPersistenceContextManager contextManager;
 
+	@Inject
+	LafPersistenceHolder holder;
+
 	@Test(expected = NoPersistenceContextException.class)
 	public void errorNoPersistenceContext() {
 		bean.manager.getFlushMode();
 	}
-
-	@Inject
-	LafPersistenceHolder holder;
 
 	@Test
 	public void simple() {
@@ -83,5 +80,15 @@ public class LafPersistenceContextManagerTest {
 				bean.manager.getFlushMode();
 			}
 		});
+	}
+
+	@Inject
+	Instance<EntityManager> entityManagerInstance;
+
+	@Test
+	public void repeatedRetrieval() {
+		EntityManager em1 = entityManagerInstance.get();
+		EntityManager em2 = entityManagerInstance.get();
+		assertSame(em1, em2);
 	}
 }
