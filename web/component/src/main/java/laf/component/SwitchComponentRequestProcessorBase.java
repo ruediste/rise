@@ -1,23 +1,49 @@
 package laf.component;
 
+import javax.inject.Inject;
+
 import laf.actionPath.ActionPath;
 import laf.base.ActionResult;
+import laf.component.pageScope.PageScopeManager;
 import laf.http.requestMapping.parameterValueProvider.ParameterValueProvider;
 import laf.requestProcessing.RequestProcessor;
 
 public abstract class SwitchComponentRequestProcessorBase implements
-		RequestProcessor {
+RequestProcessor {
+
+	@Inject
+	PageScopeManager pageScopeManager;
 
 	@Override
 	public ActionResult process(ActionPath<ParameterValueProvider> path) {
 		String name = path.getFirst().getMethodInfo().getName();
 
+		Long pageId = null;
+		RequestProcessor delegate;
+
+		// determine page id and delegate processor
 		if (ComponentConstants.reloadMethodName.equals(name)) {
-			return getReloadProcessor().process(path);
+			pageId = (Long) path.getFirst().getArguments().get(0).get();
+			delegate = getReloadProcessor();
 		} else if (ComponentConstants.componentActionMethodName.equals(name)) {
-			return getComponentActionProcessor().process(path);
+			pageId = (Long) path.getFirst().getArguments().get(0).get();
+			delegate = getComponentActionProcessor();
 		} else {
-			return getInitialProcessor().process(path);
+			delegate = getInitialProcessor();
+			pageScopeManager.enterNew();
+		}
+
+		// enter the page scope, if it did not happen already (initial processor
+		// case)
+		if (pageId != null) {
+			pageScopeManager.enter(pageId);
+		}
+
+		// run the delegate and leave the page scope
+		try {
+			return delegate.process(path);
+		} finally {
+			pageScopeManager.leave();
 		}
 	}
 

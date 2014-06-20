@@ -6,6 +6,10 @@ import java.util.Map;
 import javax.annotation.PreDestroy;
 import javax.persistence.EntityManager;
 
+/**
+ * Represents a map of {@link LafEntityManagerFactory}s to the corresponding
+ * {@link EntityManager}s
+ */
 public class LafPersistenceHolder {
 
 	private Map<LafEntityManagerFactory, EntityManager> entityManagers = new HashMap<LafEntityManagerFactory, EntityManager>();

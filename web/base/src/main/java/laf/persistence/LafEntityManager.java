@@ -16,6 +16,8 @@ import javax.persistence.metamodel.Metamodel;
 class LafEntityManager implements EntityManager {
 
 	public static class NoPersistenceContextException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
 		public NoPersistenceContextException() {
 			super("No Persistence Context is active. Use "
 					+ LafPersistenceContextManager.class.getSimpleName()

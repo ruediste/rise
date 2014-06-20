@@ -5,7 +5,7 @@
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>150</x>
-      <y>190</y>
+      <y>110</y>
       <w>970</w>
       <h>90</h>
     </coordinates>
@@ -21,22 +21,24 @@ of the first controller in the path
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>150</x>
-      <y>340</y>
+      <y>260</y>
       <w>560</w>
-      <h>80</h>
+      <h>120</h>
     </coordinates>
     <panel_attributes>SwitchComponent
 RequestProcessor
 --
 switch between processors based on the
-invoked action method</panel_attributes>
+enter page scope
+invoked action method
+leave page scope</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <type>com.umlet.element.Relation</type>
     <coordinates>
       <x>160</x>
-      <y>250</y>
+      <y>170</y>
       <w>138</w>
       <h>110</h>
     </coordinates>
@@ -48,18 +50,16 @@ component</panel_attributes>
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>150</x>
-      <y>470</y>
+      <y>440</y>
       <w>180</w>
-      <h>160</h>
+      <h>120</h>
     </coordinates>
     <panel_attributes>PersistenceInitial
 RequestProcessor
 --
-enter new page scope
 start serializable TX
 delegate.invoke()
 commit()
-leave page scope
 error: rollback</panel_attributes>
     <additional_attributes/>
   </element>
@@ -67,49 +67,47 @@ error: rollback</panel_attributes>
     <type>com.umlet.element.Relation</type>
     <coordinates>
       <x>180</x>
-      <y>390</y>
+      <y>350</y>
       <w>94</w>
-      <h>100</h>
+      <h>110</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 initial</panel_attributes>
-    <additional_attributes>50;80;50;30</additional_attributes>
+    <additional_attributes>50;90;50;30</additional_attributes>
   </element>
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>350</x>
-      <y>470</y>
+      <y>440</y>
       <w>360</w>
-      <h>140</h>
+      <h>120</h>
     </coordinates>
     <panel_attributes>PersistenceInPage
 RequestProcessor
 --
-enter page scope
 set page error destiatnon
 make page PC current
-delegate.invoke()
-leave page scope</panel_attributes>
+delegate.invoke()</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <type>com.umlet.element.Relation</type>
     <coordinates>
       <x>390</x>
-      <y>390</y>
+      <y>350</y>
       <w>90</w>
-      <h>100</h>
+      <h>110</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 reload</panel_attributes>
-    <additional_attributes>50;80;50;30</additional_attributes>
+    <additional_attributes>50;90;50;30</additional_attributes>
   </element>
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>350</x>
-      <y>700</y>
+      <y>620</y>
       <w>170</w>
       <h>100</h>
     </coordinates>
@@ -124,18 +122,18 @@ render page</panel_attributes>
     <type>com.umlet.element.Relation</type>
     <coordinates>
       <x>400</x>
-      <y>580</y>
+      <y>530</y>
       <w>50</w>
-      <h>140</h>
+      <h>110</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
-    <additional_attributes>30;120;30;30</additional_attributes>
+    <additional_attributes>30;90;30;30</additional_attributes>
   </element>
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>150</x>
-      <y>700</y>
+      <y>620</y>
       <w>180</w>
       <h>100</h>
     </coordinates>
@@ -151,32 +149,32 @@ render page</panel_attributes>
     <type>com.umlet.element.Relation</type>
     <coordinates>
       <x>190</x>
-      <y>600</y>
+      <y>530</y>
       <w>50</w>
-      <h>120</h>
+      <h>110</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 </panel_attributes>
-    <additional_attributes>30;100;30;30</additional_attributes>
+    <additional_attributes>30;90;30;30</additional_attributes>
   </element>
   <element>
     <type>com.umlet.element.Relation</type>
     <coordinates>
       <x>550</x>
-      <y>390</y>
+      <y>350</y>
       <w>138</w>
-      <h>100</h>
+      <h>110</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 component
 action</panel_attributes>
-    <additional_attributes>70;80;70;30</additional_attributes>
+    <additional_attributes>70;90;70;30</additional_attributes>
   </element>
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>540</x>
-      <y>700</y>
+      <y>620</y>
       <w>190</w>
       <h>100</h>
     </coordinates>
@@ -191,18 +189,18 @@ component</panel_attributes>
     <type>com.umlet.element.Relation</type>
     <coordinates>
       <x>590</x>
-      <y>580</y>
+      <y>530</y>
       <w>50</w>
-      <h>140</h>
+      <h>110</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
-    <additional_attributes>30;120;30;30</additional_attributes>
+    <additional_attributes>30;90;30;30</additional_attributes>
   </element>
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>150</x>
-      <y>80</y>
+      <y>0</y>
       <w>970</w>
       <h>80</h>
     </coordinates>
@@ -216,7 +214,7 @@ error: redirect to error destination</panel_attributes>
     <type>com.umlet.element.Relation</type>
     <coordinates>
       <x>570</x>
-      <y>130</y>
+      <y>50</y>
       <w>50</w>
       <h>80</h>
     </coordinates>
@@ -228,7 +226,7 @@ error: redirect to error destination</panel_attributes>
     <type>com.umlet.element.Relation</type>
     <coordinates>
       <x>890</x>
-      <y>250</y>
+      <y>170</y>
       <w>86</w>
       <h>240</h>
     </coordinates>
@@ -240,7 +238,7 @@ mvc</panel_attributes>
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>820</x>
-      <y>470</y>
+      <y>390</y>
       <w>300</w>
       <h>130</h>
     </coordinates>
@@ -258,7 +256,7 @@ end transaction</panel_attributes>
     <type>com.umlet.element.Class</type>
     <coordinates>
       <x>830</x>
-      <y>700</y>
+      <y>620</y>
       <w>290</w>
       <h>100</h>
     </coordinates>
@@ -273,7 +271,7 @@ embedded controllers</panel_attributes>
     <type>com.umlet.element.Relation</type>
     <coordinates>
       <x>910</x>
-      <y>570</y>
+      <y>490</y>
       <w>50</w>
       <h>150</h>
     </coordinates>
