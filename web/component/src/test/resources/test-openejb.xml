@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<openejb>
-<Resource id="arquillian/dataSource" type="javax.sql.DataSource">
-</Resource>
-</openejb>

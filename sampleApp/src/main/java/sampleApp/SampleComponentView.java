@@ -3,10 +3,10 @@ package sampleApp;
 import java.io.IOException;
 
 import laf.component.basic.*;
-import laf.component.basic.html.CRender;
-import laf.component.core.Component;
+import laf.component.basic.htmlTemplate.CRender;
 import laf.component.core.ComponentView;
 import laf.component.html.RenderUtil;
+import laf.component.tree.Component;
 
 import org.rendersnake.HtmlCanvas;
 

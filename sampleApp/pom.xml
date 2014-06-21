@@ -79,7 +79,7 @@
 
 		<dependency>
 			<groupId>ch.laf</groupId>
-			<artifactId>laf-web-component</artifactId>
+			<artifactId>laf-web</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
