@@ -62,8 +62,8 @@ public class ControllerUtilImpl implements ControllerUtil {
 			pageScopeHolder.joinTransaction();
 			if (inTransaction != null) {
 				manager.withPersistenceHolder(pageScopeHolder, inTransaction);
-
 			}
+			pageScopeHolder.flush();
 			trx.commit();
 		} catch (NotSupportedException | SystemException
 				| IllegalStateException | SecurityException

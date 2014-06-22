@@ -24,6 +24,10 @@ public class LafPersistenceHolder {
 		return result;
 	}
 
+	LafPersistenceHolder() {
+
+	}
+
 	@PreDestroy
 	public void destroy() {
 		for (EntityManager em : entityManagers.values()) {
@@ -35,5 +39,12 @@ public class LafPersistenceHolder {
 		for (EntityManager em : entityManagers.values()) {
 			em.joinTransaction();
 		}
+	}
+
+	public void flush() {
+		for (EntityManager em : entityManagers.values()) {
+			em.flush();
+		}
+
 	}
 }
