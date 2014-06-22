@@ -1,11 +1,6 @@
 package laf.component.tree.event;
 
-import laf.component.core.ComponentEventListener;
-import laf.component.tree.Component;
-import laf.component.tree.ComponentBase;
-import laf.component.tree.MultiChildrenRelation;
-import laf.component.tree.event.ComponentEvent;
-import laf.component.tree.event.ComponentEventListener;
+import laf.component.tree.*;
 import laf.test.MockitoExt;
 
 import org.junit.Test;

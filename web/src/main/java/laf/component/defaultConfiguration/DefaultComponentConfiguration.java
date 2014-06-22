@@ -1,31 +1,23 @@
 package laf.component.defaultConfiguration;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
+import java.util.*;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+import laf.base.ViewTechnology;
 import laf.component.ComponentControllerDiscoverer;
-import laf.component.basic.htmlTemplate.CButtonHtmlTemplate;
-import laf.component.basic.htmlTemplate.CPageHtmlTemplate;
-import laf.component.basic.htmlTemplate.CReloadHtmlTemplate;
-import laf.component.basic.htmlTemplate.CRenderHtmlTemplate;
-import laf.component.basic.htmlTemplate.CTextFieldHtmlTemplate;
-import laf.component.basic.htmlTemplate.CTextHtmlTemplate;
+import laf.component.basic.htmlTemplate.*;
 import laf.component.core.ComponentController;
-import laf.component.html.template.HtmlTemplate;
-import laf.component.html.template.HtmlTemplateFactories;
-import laf.component.html.template.HtmlTemplateFactory;
-import laf.component.html.template.HtmlTemplateFactoryImpl;
-import laf.component.reqestProcessing.ComponentActionRequestProcessorCP;
-import laf.component.reqestProcessing.InitialRequestProcessorCP;
-import laf.component.reqestProcessing.ReloadRequestProcessorCP;
-import laf.component.reqestProcessing.SwitchComponentRequestProcessor;
+import laf.component.html.impl.HtmlInvokeReloadReqestProcessor;
+import laf.component.html.template.*;
+import laf.component.reqestProcessing.*;
 import laf.configuration.ConfigurationDefiner;
 import laf.configuration.ExtendConfiguration;
 import laf.controllerInfo.ControllerDiscoverers;
+import laf.html.HtmlViewTechnology;
 import laf.requestProcessing.ControllerTypeRequestProcessors;
+import laf.requestProcessing.RequestProcessor;
 
 public class DefaultComponentConfiguration implements ConfigurationDefiner {
 
@@ -76,4 +68,12 @@ public class DefaultComponentConfiguration implements ConfigurationDefiner {
 		value.add(factory);
 		factories.set(value);
 	}
+
+	public void produce(InvokeReloadReqestProcessorsCP val) {
+		Map<Class<? extends ViewTechnology>, RequestProcessor> map = new HashMap<>();
+		map.put(HtmlViewTechnology.class,
+				instance.select(HtmlInvokeReloadReqestProcessor.class).get());
+		val.set(map);
+	}
+
 }
