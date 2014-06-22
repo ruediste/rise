@@ -10,7 +10,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jabsaw.version>1.2-SNAPSHOT</jabsaw.version>
+		<jabsaw.version>1.3-SNAPSHOT</jabsaw.version>
 	</properties>
 	<build>
 		<plugins>
@@ -38,6 +38,7 @@
 				<configuration>
 					<moduleGraphFormat>svg</moduleGraphFormat>
 					<useModuleNames>true</useModuleNames>
+					<graphvizLayoutHorizontal>true</graphvizLayoutHorizontal>
 				</configuration>
 				<executions>
 					<execution>

@@ -1,7 +1,13 @@
 package laf.component.reqestProcessing;
 
 import javax.inject.Inject;
-import javax.transaction.*;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.Status;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
 
 import laf.actionPath.ActionPath;
 import laf.base.ActionResult;
@@ -12,7 +18,7 @@ import laf.persistence.LafPersistenceContextManager;
 import laf.persistence.LafPersistenceHolder;
 import laf.requestProcessing.DelegatingRequestProcessor;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 
 public class PersistenceInitialRequestProcessor extends
 DelegatingRequestProcessor {

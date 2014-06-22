@@ -1,4 +1,4 @@
-package laf.component.transaction;
+package laf.test;
 
 import java.io.Serializable;
 import java.util.HashSet;

@@ -6,6 +6,7 @@ import laf.base.BaseModule;
 import laf.component.pageScope.PageScopeModule;
 import laf.component.tree.Component;
 import laf.component.tree.ComponentTreeModule;
+import laf.component.tree.event.ComponentEventModule;
 
 import org.jabsaw.Module;
 
@@ -37,8 +38,9 @@ import org.jabsaw.Module;
  * </dl>
  * Views can be nested into each other.
  */
-@Module(description = "Core of the Component Framework", imported = {
-		ComponentTreeModule.class, BaseModule.class, PageScopeModule.class })
+@Module(description = "Core of the Component Framework", exported = {
+		ComponentTreeModule.class, BaseModule.class, PageScopeModule.class,
+		ComponentEventModule.class, ComponentEventModule.class })
 @ApplicationScoped
 public class ComponentCoreModule {
 

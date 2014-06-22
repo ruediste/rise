@@ -7,9 +7,6 @@
         <dependent-module archiveName="laf-web-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/laf-web/laf-web">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="jabsaw-api-1.2-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/jabsaw-api/jabsaw-api">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <property name="context-root" value="laf-sampleApp"/>
         <property name="java-output-path" value="/laf-sampleApp/target/classes"/>
     </wb-module>

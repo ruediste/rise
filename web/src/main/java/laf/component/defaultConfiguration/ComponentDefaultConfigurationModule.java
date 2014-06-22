@@ -14,7 +14,7 @@ import org.jabsaw.Module;
 		BaseModule.class, HtmlTemplateModule.class,
 		ComponentRequestProcessingModule.class, ComponentHtmlImplModule.class,
 		HtmlTemplateModule.class, BasicComponentsHtmlTemplateModule.class,
-		RequestProcessingModule.class, ComponentModule.class })
+		RequestProcessingModule.class, ComponentModule.class }, hideFromDependencyGraphOutput = true)
 public class ComponentDefaultConfigurationModule {
 
 }

@@ -11,7 +11,7 @@ import org.jabsaw.Module;
 @Module(description = "Module containing the default configuration of the framework", imported = {
 		DefaultHttpRequestMappingModule.class, ParameterHandlerModule.class,
 		DefaultHttpRequestProcessorModule.class, ConfigurationModule.class,
-		RequestProcessingModule.class })
+		RequestProcessingModule.class }, hideFromDependencyGraphOutput = true)
 public class DefaultConfigurationModule {
 
 }

@@ -11,10 +11,10 @@ import laf.persistence.LafPersistenceContextManager;
 import laf.persistence.LafPersistenceHolder;
 import laf.requestProcessing.DelegatingRequestProcessor;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 
 public class PersistenceInPageRequestProcessor extends
-DelegatingRequestProcessor {
+		DelegatingRequestProcessor {
 
 	@Inject
 	Logger log;
