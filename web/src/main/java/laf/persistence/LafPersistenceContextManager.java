@@ -20,15 +20,15 @@ public class LafPersistenceContextManager {
 		return new LafEntityManager(this, factory);
 	}
 
-	private final ThreadLocal<LafPersistenceHolderBase> currentHolder = new ThreadLocal<>();
+	private final ThreadLocal<LafPersistenceHolder> currentHolder = new ThreadLocal<>();
 
-	public LafPersistenceHolderBase getCurrentHolder() {
+	public LafPersistenceHolder getCurrentHolder() {
 		return currentHolder.get();
 	}
 
-	public void withPersistenceHolder(LafPersistenceHolderBase holder,
+	public void withPersistenceHolder(LafPersistenceHolder holder,
 			Runnable runnable) {
-		LafPersistenceHolderBase oldHolder = currentHolder.get();
+		LafPersistenceHolder oldHolder = currentHolder.get();
 		try {
 			log.debug("entering holder " + holder.implToString());
 			currentHolder.set(holder);

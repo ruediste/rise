@@ -55,7 +55,7 @@ public class ControllerUtilImpl implements ControllerUtil {
 				manager.withPersistenceHolder(holder, checker);
 				holder.destroy();
 			}
-			LafPersistenceHolderBase pageScopeHolder = pageScopedHolderInstance
+			LafPersistenceHolder pageScopeHolder = pageScopedHolderInstance
 					.get();
 			log.debug("commiting holder " + pageScopeHolder.implToString());
 			pageScopeHolder.joinTransaction();

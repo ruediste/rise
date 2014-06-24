@@ -1,8 +1,8 @@
 package laf.component.reqestProcessing;
 
-import javax.ejb.Stateful;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
+import static org.junit.Assert.assertEquals;
+
+import javax.ejb.*;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -22,10 +22,7 @@ import org.jabsaw.util.Modules;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
@@ -37,14 +34,17 @@ public class PersistenceInPageRequestProcessorTest {
 				.getPersistence()
 				.addClasses(
 						Modules.getAllRequiredClasses(ComponentRequestProcessingModule.class))
-				.addClasses(
-						Modules.getAllRequiredClasses(ComponentCoreImplModule.class));
+						.addClasses(
+								Modules.getAllRequiredClasses(ComponentCoreImplModule.class));
 		System.out.println(result.toString(true));
 		return result;
 	}
 
 	@Inject
 	PersistenceInPageRequestProcessor processor;
+
+	@Inject
+	Helper helper;
 
 	@Inject
 	Instance<EntityManager> entityManagerInstance;
@@ -85,9 +85,6 @@ public class PersistenceInPageRequestProcessorTest {
 			this.entity = entity;
 		}
 	}
-
-	@Inject
-	Helper helper;
 
 	@Before
 	public void before() {
@@ -142,6 +139,38 @@ public class PersistenceInPageRequestProcessorTest {
 						.getId());
 				en.setValue("bar");
 				util.commit();
+				return null;
+			}
+		});
+
+		processor.process(null);
+
+		helper.check("bar");
+	}
+
+	@Test
+	public void testCommitChecker() {
+
+		helper.check("foo");
+
+		processor.initialize(new RequestProcessor() {
+
+			@Override
+			public ActionResult process(ActionPath<ParameterValueProvider> path) {
+				final EntityManager em = entityManagerInstance.get();
+				Assert.assertTrue(em.isOpen());
+				TestEntity en = em.find(TestEntity.class, helper.getEntity()
+						.getId());
+				en.setValue("bar");
+				util.checkAndCommit(new Runnable() {
+
+					@Override
+					public void run() {
+						TestEntity en2 = em.find(TestEntity.class, helper
+								.getEntity().getId());
+						assertEquals("foo", en2.getValue());
+					}
+				});
 				return null;
 			}
 		});
