@@ -2,23 +2,22 @@ package laf.component.core.impl;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
+import javax.transaction.*;
 
 import laf.base.ActionResult;
 import laf.component.core.ControllerUtil;
-import laf.component.pageScope.PageScoped;
-import laf.persistence.LafPersistenceContextManager;
-import laf.persistence.LafPersistenceHolder;
+import laf.component.reqestProcessing.PageScopedPersistenceHolder;
+import laf.persistence.*;
+
+import org.slf4j.Logger;
 
 public class ControllerUtilImpl implements ControllerUtil {
 
 	private ActionResult errorDestination;
 	private ActionResult destination;
+
+	@Inject
+	Logger log;
 
 	@Inject
 	UserTransaction trx;
@@ -30,8 +29,7 @@ public class ControllerUtilImpl implements ControllerUtil {
 	Instance<LafPersistenceHolder> holderInstance;
 
 	@Inject
-	@PageScoped
-	Instance<LafPersistenceHolder> pageScopedHolderInstance;
+	Instance<PageScopedPersistenceHolder> pageScopedHolderInstance;
 
 	@Override
 	public void commit() {
@@ -57,11 +55,14 @@ public class ControllerUtilImpl implements ControllerUtil {
 				manager.withPersistenceHolder(holder, checker);
 				holder.destroy();
 			}
-			LafPersistenceHolder pageScopeHolder = pageScopedHolderInstance
+			LafPersistenceHolderBase pageScopeHolder = pageScopedHolderInstance
 					.get();
+			log.debug("commiting holder " + pageScopeHolder.implToString());
 			pageScopeHolder.joinTransaction();
 			if (inTransaction != null) {
-				manager.withPersistenceHolder(pageScopeHolder, inTransaction);
+				inTransaction.run();
+				// manager.withPersistenceHolder(pageScopeHolder,
+				// inTransaction);
 			}
 			pageScopeHolder.flush();
 			trx.commit();

@@ -1,4 +1,4 @@
-package laf;
+package laf.http;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;

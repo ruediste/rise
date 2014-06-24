@@ -2,13 +2,9 @@ package laf.persistence;
 
 import static org.junit.Assert.assertSame;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
 
 import laf.persistence.LafEntityManager.NoPersistenceContextException;
 import laf.test.DeploymentProvider;
@@ -29,27 +25,6 @@ public class LafPersistenceContextManagerTest {
 				Modules.getAllRequiredClasses(PersistenceModule.class));
 		System.out.println(result.toString(true));
 		return result;
-	}
-
-	static class EMProducer {
-		@Inject
-		LafPersistenceContextManager contextManager;
-
-		@PersistenceUnit
-		EntityManagerFactory factory;
-
-		@Produces
-		@ApplicationScoped
-		EntityManager produceManager() {
-			return contextManager
-					.produceManagerDelegate(new LafEntityManagerFactory() {
-
-						@Override
-						public EntityManager createEntityManager() {
-							return factory.createEntityManager();
-						}
-					});
-		}
 	}
 
 	static class TestBean {

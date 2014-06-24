@@ -36,11 +36,11 @@ class LafEntityManager implements EntityManager {
 	}
 
 	private EntityManager delegate() {
-		LafPersistenceHolder delegate = manager.getCurrentHolder();
-		if (delegate == null) {
+		LafPersistenceHolderBase holder = manager.getCurrentHolder();
+		if (holder == null) {
 			throw new NoPersistenceContextException();
 		}
-		return delegate.getEntityManager(factory);
+		return holder.getEntityManager(factory);
 	}
 
 	@Override

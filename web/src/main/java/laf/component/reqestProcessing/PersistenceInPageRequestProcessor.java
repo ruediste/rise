@@ -3,28 +3,22 @@ package laf.component.reqestProcessing;
 import javax.inject.Inject;
 
 import laf.actionPath.ActionPath;
-import laf.base.ActionResult;
-import laf.base.Val;
-import laf.component.pageScope.PageScoped;
+import laf.base.*;
 import laf.http.requestMapping.parameterValueProvider.ParameterValueProvider;
 import laf.persistence.LafPersistenceContextManager;
-import laf.persistence.LafPersistenceHolder;
 import laf.requestProcessing.DelegatingRequestProcessor;
-
-import org.slf4j.Logger;
 
 public class PersistenceInPageRequestProcessor extends
 		DelegatingRequestProcessor {
 
 	@Inject
-	Logger log;
+	LafLogger log;
 
 	@Inject
 	LafPersistenceContextManager manager;
 
 	@Inject
-	@PageScoped
-	LafPersistenceHolder holder;
+	PageScopedPersistenceHolder holder;
 
 	@Override
 	public ActionResult process(final ActionPath<ParameterValueProvider> path) {

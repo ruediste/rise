@@ -11,8 +11,8 @@ import laf.controllerInfo.impl.TestController;
 import laf.defaultConfiguration.DefaultConfigurationModule;
 import laf.http.request.HttpRequestImpl;
 import laf.http.requestMapping.HttpRequestMappingService;
-import laf.http.requestMapping.defaultRule.DefaultHttpRequestMappingModule;
 import laf.http.requestMapping.parameterValueProvider.ParameterValueProvider;
+import laf.mvc.configuration.MvcDefaultConfigurationModule;
 import laf.requestProcessing.ObjectActionPathProducer;
 import laf.test.DeploymentProvider;
 import laf.test.TestConfigurationFactory;
@@ -34,12 +34,13 @@ public class DefaultHttpRequestMappingRuleTest {
 		WebArchive archive = DeploymentProvider
 				.getDefault()
 				.addClasses(
-						Modules.getAllRequiredClasses(DefaultHttpRequestMappingModule.class))
-				.addClasses(
-						Modules.getAllRequiredClasses(DefaultConfigurationModule.class))
-				.addClasses(TestController.class,
-						ObjectActionPathProducer.class,
-						TestConfigurationFactory.class);
+						Modules.getAllRequiredClasses(
+								DefaultHttpRequestMappingModule.class,
+								DefaultConfigurationModule.class,
+								MvcDefaultConfigurationModule.class))
+								.addClasses(TestController.class,
+										ObjectActionPathProducer.class,
+										TestConfigurationFactory.class);
 		System.out.println(archive.toString(true));
 		return archive;
 	}
