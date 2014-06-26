@@ -7,7 +7,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import laf.base.ActionResult;
+import laf.base.ViewTechnologyManager;
 import laf.configuration.ConfigurationValue;
+import laf.html.HtmlViewTechnology;
 import laf.http.requestProcessing.HttpRequestProcessor;
 import laf.requestProcessing.RequestProcessorConfigurationParameter;
 
@@ -22,8 +24,13 @@ public class DefaultHttpRequestProcessor implements HttpRequestProcessor {
 	@Inject
 	ConfigurationValue<RequestProcessorConfigurationParameter> innerProcessor;
 
+	@Inject
+	ViewTechnologyManager viewTechnologyManager;
+
 	@Override
 	public void process(HttpServletRequest request, HttpServletResponse response) {
+		viewTechnologyManager.setViewTechnology(HtmlViewTechnology.class);
+
 		try {
 			ActionResult actionResult = innerProcessor.value().get()
 					.process(parser.value().get().parse(request));

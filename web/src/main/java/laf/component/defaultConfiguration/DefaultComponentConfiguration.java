@@ -7,8 +7,9 @@ import javax.inject.Inject;
 
 import laf.base.ViewTechnology;
 import laf.component.ComponentControllerDiscoverer;
-import laf.component.basic.htmlTemplate.*;
+import laf.component.basic.htmlTemplate.BasicComponentsHtmlTemplateModule;
 import laf.component.core.ComponentController;
+import laf.component.html.impl.HtmlInvokeInitialRequestProcessor;
 import laf.component.html.impl.HtmlInvokeReloadReqestProcessor;
 import laf.component.html.template.*;
 import laf.component.reqestProcessing.*;
@@ -16,37 +17,13 @@ import laf.configuration.ConfigurationDefiner;
 import laf.configuration.ExtendConfiguration;
 import laf.controllerInfo.ControllerDiscoverers;
 import laf.html.HtmlViewTechnology;
-import laf.requestProcessing.ControllerTypeRequestProcessors;
-import laf.requestProcessing.RequestProcessor;
+import laf.http.requestProcessing.DefaultControllerInvoker;
+import laf.requestProcessing.*;
 
 public class DefaultComponentConfiguration implements ConfigurationDefiner {
 
 	@Inject
 	Instance<Object> instance;
-
-	@ExtendConfiguration
-	public void produce(ControllerDiscoverers discoverers) {
-		discoverers.get().add(
-				instance.select(ComponentControllerDiscoverer.class).get());
-	}
-
-	@ExtendConfiguration
-	public void produce(ControllerTypeRequestProcessors map) {
-		map.get().put(ComponentController.class,
-				instance.select(SwitchComponentRequestProcessor.class).get());
-	}
-
-	public void produce(InitialRequestProcessorCP val) {
-
-	}
-
-	public void produce(ReloadRequestProcessorCP val) {
-
-	}
-
-	public void produce(ComponentActionRequestProcessorCP val) {
-
-	}
 
 	@SafeVarargs
 	final private <T> Iterable<T> getInstances(Class<? extends T>... classes) {
@@ -57,14 +34,43 @@ public class DefaultComponentConfiguration implements ConfigurationDefiner {
 		return result;
 	}
 
+	private <T> T getInstance(Class<T> cls) {
+		return instance.select(cls).get();
+	}
+
+	@ExtendConfiguration
+	public void produce(ControllerDiscoverers discoverers) {
+		discoverers.get().add(
+				instance.select(ComponentControllerDiscoverer.class).get());
+	}
+
+	@ExtendConfiguration
+	public void produce(ControllerTypeRequestProcessors map) {
+		map.get().put(ComponentController.class,
+				getInstance(SwitchComponentRequestProcessor.class));
+	}
+
+	public void produce(InitialRequestProcessorCP val) {
+		PersistenceInitialRequestProcessor persistence = getInstance(PersistenceInitialRequestProcessor.class);
+		persistence.initialize(getInstance(InvokeInitialReqestProcessor.class));
+		val.set(persistence);
+	}
+
+	public void produce(ReloadRequestProcessorCP val) {
+		PersistenceInPageRequestProcessor persistence = getInstance(PersistenceInPageRequestProcessor.class);
+		persistence.initialize(getInstance(InvokeReloadReqestProcessor.class));
+		val.set(persistence);
+	}
+
+	public void produce(ComponentActionRequestProcessorCP val) {
+		val.set(null);
+	}
+
 	public void produce(HtmlTemplateFactories factories) {
 		ArrayDeque<HtmlTemplateFactory> value = new ArrayDeque<>();
-		HtmlTemplateFactoryImpl factory = instance.select(
-				HtmlTemplateFactoryImpl.class).get();
-		factory.setTemplates(this.<HtmlTemplate<?>> getInstances(
-				CButtonHtmlTemplate.class, CPageHtmlTemplate.class,
-				CRenderHtmlTemplate.class, CTextFieldHtmlTemplate.class,
-				CReloadHtmlTemplate.class, CTextHtmlTemplate.class));
+		HtmlTemplateFactoryImpl factory = getInstance(HtmlTemplateFactoryImpl.class);
+		factory.addTemplatesFromPackage(BasicComponentsHtmlTemplateModule.class
+				.getPackage().getName());
 		value.add(factory);
 		factories.set(value);
 	}
@@ -76,4 +82,18 @@ public class DefaultComponentConfiguration implements ConfigurationDefiner {
 		val.set(map);
 	}
 
+	public void produce(InvokeInitialReqestProcessorsCP val) {
+		Map<Class<? extends ViewTechnology>, RequestProcessor> map = new HashMap<>();
+		map.put(HtmlViewTechnology.class,
+				instance.select(HtmlInvokeInitialRequestProcessor.class).get());
+		val.set(map);
+	}
+
+	public void produce(InitialParameterLoaderCP val) {
+		val.set(getInstance(DefaultParameterLoader.class));
+	}
+
+	public void produce(InitialControllerInvokerCP val) {
+		val.set(getInstance(DefaultControllerInvoker.class));
+	}
 }

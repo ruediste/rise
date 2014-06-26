@@ -1,5 +1,7 @@
 package laf.mvc.html;
 
-public class MvcRenderUtil {
+import laf.html.RenderUtilBaseImpl;
+
+public class MvcRenderUtil extends RenderUtilBaseImpl {
 
 }

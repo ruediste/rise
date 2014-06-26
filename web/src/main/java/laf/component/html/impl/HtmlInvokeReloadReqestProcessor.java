@@ -13,7 +13,7 @@ import laf.component.core.impl.ControllerUtilImpl;
 import laf.component.html.ApplyValuesUtilImpl;
 import laf.component.html.HtmlComponentService;
 import laf.component.html.template.HtmlTemplateService;
-import laf.component.html.template.RaiseEventsUtil;
+import laf.component.html.template.RaiseEventsUtilImpl;
 import laf.component.pageScope.PageScopeManager;
 import laf.component.tree.Component;
 import laf.component.tree.ComponentTreeUtil;
@@ -35,7 +35,7 @@ public class HtmlInvokeReloadReqestProcessor implements RequestProcessor {
 	ApplyValuesUtilImpl applyValuesUtil;
 
 	@Inject
-	RaiseEventsUtil raiseEventsUtil;
+	RaiseEventsUtilImpl raiseEventsUtil;
 
 	@Inject
 	Page page;
@@ -76,6 +76,7 @@ public class HtmlInvokeReloadReqestProcessor implements RequestProcessor {
 
 		// process events
 		for (Component c : components) {
+			raiseEventsUtil.setComponent(c);
 			htmlTemplateService.getTemplate(c).raiseEvents(c, raiseEventsUtil);
 		}
 

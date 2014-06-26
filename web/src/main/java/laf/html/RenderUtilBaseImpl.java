@@ -1,5 +1,7 @@
 package laf.html;
 
+import java.io.IOException;
+
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +12,9 @@ import laf.actionPath.ActionPathFactory.ActionPathBuilder;
 import laf.base.ActionResult;
 import laf.http.HttpService;
 import laf.http.requestMapping.HttpRequestMappingService;
+
+import org.rendersnake.HtmlAttributesFactory;
+import org.rendersnake.HtmlCanvas;
 
 public class RenderUtilBaseImpl implements RenderUtilBase {
 
@@ -53,5 +58,13 @@ public class RenderUtilBaseImpl implements RenderUtilBase {
 	public String resourceUrl(String resource) {
 		return response.encodeURL(request.getContextPath() + "/static/"
 				+ resource);
+	}
+
+	@Override
+	public void startHtmlPage(HtmlCanvas html) throws IOException {
+		html.write(
+				"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">",
+				false);
+		html.html(HtmlAttributesFactory.xmlns("http://www.w3.org/1999/xhtml"));
 	}
 }

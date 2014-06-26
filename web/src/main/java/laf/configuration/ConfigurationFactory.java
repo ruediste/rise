@@ -1,8 +1,6 @@
 package laf.configuration;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import java.lang.reflect.*;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -100,9 +98,9 @@ public class ConfigurationFactory {
 	public <T extends ConfigurationParameter<?>> ConfigurationValue<T> produceConfigurationValue(
 			InjectionPoint p) {
 		// create arguments
-		Class<?> parameterInterfaceClass = TypeToken.of(p.getType())
-				.resolveType(ConfigurationValue.class.getTypeParameters()[0])
-				.getRawType();
+		TypeToken<?> parameterInterfaceType = TypeToken.of(p.getType())
+				.resolveType(ConfigurationValue.class.getTypeParameters()[0]);
+		Class<?> parameterInterfaceClass = parameterInterfaceType.getRawType();
 		TypeToken<?> valueType = TypeToken.of(parameterInterfaceClass)
 				.resolveType(
 						ConfigurationParameter.class.getTypeParameters()[0]);
@@ -114,7 +112,9 @@ public class ConfigurationFactory {
 		// throw error if no value has been found
 		if (value == null) {
 			throw new RuntimeException("No configuration value found for "
-					+ p.getMember());
+					+ parameterInterfaceType + ".\nRequired for member"
+					+ p.getMember().getDeclaringClass() + "."
+					+ p.getMember().getName());
 		}
 
 		// create result

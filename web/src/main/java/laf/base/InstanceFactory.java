@@ -6,6 +6,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.enterprise.inject.Instance;
+import javax.enterprise.util.TypeLiteral;
 import javax.inject.Inject;
 
 /**
@@ -20,6 +21,11 @@ public class InstanceFactory {
 
 	public static <T> T getInstance(Class<T> clazz, Annotation... qualifiers) {
 		return instance.select(clazz, qualifiers).get();
+	}
+
+	public static <T> T getInstance(TypeLiteral<T> typeLiteral,
+			Annotation... qualifiers) {
+		return instance.select(typeLiteral, qualifiers).get();
 	}
 
 	@Inject

@@ -7,10 +7,15 @@ import laf.attachedProperties.AttachedPropertyBearerBase;
 import com.google.common.collect.Iterables;
 
 public class ComponentBase<TSelf> extends AttachedPropertyBearerBase implements
-Component {
+		Component {
 
 	private Component parent;
 	ArrayList<ChildRelation<?>> childRelations = new ArrayList<>();
+
+	@SuppressWarnings("unchecked")
+	protected TSelf self() {
+		return (TSelf) this;
+	}
 
 	@Override
 	public Iterable<Component> getChildren() {

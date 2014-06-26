@@ -11,6 +11,6 @@ import org.rendersnake.HtmlCanvas;
  */
 public abstract class RendersnakeView<TData> extends View<TData> {
 
-	abstract public void render(HtmlCanvas canvas, MvcRenderUtil util)
+	abstract public void render(HtmlCanvas html, MvcRenderUtil util)
 			throws IOException;
 }

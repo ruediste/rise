@@ -28,7 +28,7 @@ public class ActionPathFactoryTest {
 			private static final long serialVersionUID = 1L;
 		});
 		when(isEmbeddedController.apply(EmbeddedTestController.class))
-				.thenReturn(true);
+		.thenReturn(true);
 
 		factory = new ActionPathFactory();
 		factory.controllerInfoRepository = mock(ControllerInfoRepository.class);
@@ -38,11 +38,11 @@ public class ActionPathFactoryTest {
 				EmbeddedTestController.class, null, isEmbeddedController, null);
 		when(
 				factory.controllerInfoRepository
-						.getControllerInfo(TestController.class)).thenReturn(
-				testControllerInfo);
+				.getControllerInfo(TestController.class)).thenReturn(
+						testControllerInfo);
 		when(
 				factory.controllerInfoRepository
-						.getControllerInfo(EmbeddedTestController.class))
+				.getControllerInfo(EmbeddedTestController.class))
 				.thenReturn(embeddedControllerInfo);
 
 	}
@@ -123,7 +123,7 @@ public class ActionPathFactoryTest {
 				.controller(TestController.class).actionMethod(2);
 
 		factory.buildActionPath(currentPath)
-				.controller(EmbeddedTestController.class)
-		.actionMethodEmbedded();
+		.controller(EmbeddedTestController.class)
+				.actionMethodEmbedded();
 	}
 }

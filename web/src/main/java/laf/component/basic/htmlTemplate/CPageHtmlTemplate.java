@@ -16,11 +16,8 @@ public class CPageHtmlTemplate extends HtmlTemplateBase<CPage> {
 			throws IOException {
 
 		// @formatter:off
-		html.write(
-				"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">",
-				false);
-		html.html(HtmlAttributesFactory.xmlns("http://www.w3.org/1999/xhtml"))
-		.head()
+		util.startHtmlPage(html);
+		html.head()
 		.title()
 		.content("Yeah")
 		.script(HtmlAttributesFactory.src(util

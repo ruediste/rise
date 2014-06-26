@@ -1,20 +1,17 @@
 package laf.mvc.configuration;
 
+import java.util.ArrayDeque;
+
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import laf.configuration.ConfigurationDefiner;
 import laf.configuration.ExtendConfiguration;
 import laf.controllerInfo.ControllerDiscoverers;
-import laf.mvc.Controller;
-import laf.mvc.MvcControllerDiscoverer;
-import laf.mvc.MvcControllerInvoker;
-import laf.mvc.MvcPersistenceRequestProcessor;
-import laf.requestProcessing.ControllerTypeRequestProcessors;
-import laf.requestProcessing.DefaultParameterLoader;
-import laf.requestProcessing.MvcControllerInvokerConfigurationParameter;
-import laf.requestProcessing.MvcLoadAndInvokeControllerRequestProcessor;
-import laf.requestProcessing.MvcParameterLoaderConfigurationParameter;
+import laf.http.requestProcessing.DefaultControllerInvoker;
+import laf.mvc.*;
+import laf.mvc.html.RendersnakeViewRenderer;
+import laf.requestProcessing.*;
 
 public class MvcDefaultConfiguration implements ConfigurationDefiner {
 
@@ -33,7 +30,7 @@ public class MvcDefaultConfiguration implements ConfigurationDefiner {
 	}
 
 	public void produce(MvcControllerInvokerConfigurationParameter val) {
-		val.set(instance.select(MvcControllerInvoker.class).get());
+		val.set(instance.select(DefaultControllerInvoker.class).get());
 	}
 
 	public void produce(MvcParameterLoaderConfigurationParameter val) {
@@ -43,5 +40,11 @@ public class MvcDefaultConfiguration implements ConfigurationDefiner {
 	@ExtendConfiguration
 	public void produce(ControllerDiscoverers val) {
 		val.get().add(instance.select(MvcControllerDiscoverer.class).get());
+	}
+
+	public void produce(ViewRenderers val) {
+		ArrayDeque<ViewRenderer> renderers = new ArrayDeque<>();
+		renderers.add(instance.select(RendersnakeViewRenderer.class).get());
+		val.set(renderers);
 	}
 }
