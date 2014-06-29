@@ -11,6 +11,13 @@ import laf.controllerInfo.ControllerInfoModule;
 
 import org.jabsaw.Module;
 
+/*
+ * @startuml doc-files/testImage.png
+ * Bob -> Alice : hello
+ * Alice --> Bob : OK
+ * @enduml
+ */
+
 /**
  *
  * <strong> Persistence </strong>

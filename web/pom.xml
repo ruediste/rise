@@ -54,6 +54,43 @@
 				<!-- <executions> <execution> <id>attach-javadocs</id> <goals> <goal>javadoc</goal> 
 					</goals> <phase>generate-test-resources</phase> </execution> </executions> -->
 			</plugin>
+
+			<plugin>
+				<groupId>com.github.jeluard</groupId>
+				<artifactId>maven-plantuml-plugin</artifactId>
+				<version>7940</version>
+				<configuration>
+					<sourceFiles>
+						<directory>${basedir}/src/main/java</directory>
+						<includes>
+							<include>**/*.java</include>
+						</includes>
+					</sourceFiles>
+				</configuration>
+				<executions>
+					<execution>
+						<id>plantuml-javadoc-site</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<phase>pre-site</phase>
+						<configuration>
+							<outputDirectory>${basedir}/target/site/apidocs</outputDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>plantuml-javadoc</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<phase>generate-sources</phase>
+						<configuration>
+							<!-- <outputDirectory>${basedir}/target/apidocs</outputDirectory> -->
+							<outputInSourceDirectory>true</outputInSourceDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -96,6 +133,25 @@
 										</versionRange>
 										<goals>
 											<goal>javadoc</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											com.github.jeluard
+										</groupId>
+										<artifactId>
+											maven-plantuml-plugin
+										</artifactId>
+										<versionRange>
+											[7940,)
+										</versionRange>
+										<goals>
+											<goal>generate</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
@@ -208,7 +264,7 @@
 			<artifactId>xrendersnake</artifactId>
 			<version>1.8-SNAPSHOT</version>
 		</dependency>
-			
+
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-jpamodelgen</artifactId>
