@@ -2,6 +2,7 @@ package laf.component.core;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import laf.actionPath.ActionPathModule;
 import laf.base.BaseModule;
 import laf.component.pageScope.PageScopeModule;
 import laf.component.tree.Component;
@@ -40,7 +41,8 @@ import org.jabsaw.Module;
  */
 @Module(description = "Core of the Component Framework", exported = {
 		ComponentTreeModule.class, BaseModule.class, PageScopeModule.class,
-		ComponentEventModule.class, ComponentEventModule.class })
+		ComponentEventModule.class, ComponentEventModule.class,
+		ActionPathModule.class })
 @ApplicationScoped
 public class ComponentCoreModule {
 

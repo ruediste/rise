@@ -6,6 +6,7 @@ import laf.component.basic.htmlTemplate.BasicComponentsHtmlTemplateModule;
 import laf.component.html.impl.ComponentHtmlImplModule;
 import laf.component.html.template.HtmlTemplateModule;
 import laf.component.reqestProcessing.ComponentRequestProcessingModule;
+import laf.http.requestProcessing.HttpRequestProcessingModule;
 import laf.requestProcessing.RequestProcessingModule;
 
 import org.jabsaw.Module;
@@ -14,7 +15,8 @@ import org.jabsaw.Module;
 		BaseModule.class, HtmlTemplateModule.class,
 		ComponentRequestProcessingModule.class, ComponentHtmlImplModule.class,
 		HtmlTemplateModule.class, BasicComponentsHtmlTemplateModule.class,
-		RequestProcessingModule.class, ComponentModule.class }, hideFromDependencyGraphOutput = true)
+		RequestProcessingModule.class, ComponentModule.class,
+		HttpRequestProcessingModule.class }, hideFromDependencyGraphOutput = true)
 public class ComponentDefaultConfigurationModule {
 
 }
