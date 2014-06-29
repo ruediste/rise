@@ -6,9 +6,11 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
+import laf.controllerInfo.ActionMethodInfoImpl;
 import laf.controllerInfo.ControllerDiscoverer;
 import laf.controllerInfo.ControllerInfo;
 import laf.controllerInfo.ControllerInfoService;
+import laf.controllerInfo.ControllerInfoService.ControllerInfoCustomizerBase;
 
 import org.slf4j.Logger;
 
@@ -25,6 +27,18 @@ public class MvcControllerDiscoverer implements ControllerDiscoverer {
 
 	@Inject
 	ControllerInfoService controllerInfoService;
+
+	@Inject
+	MvcService mvcService;
+
+	private class Customizer extends ControllerInfoCustomizerBase {
+		@Override
+		public void customize(ActionMethodInfoImpl actionMethod) {
+			if (actionMethod.getMethod().isAnnotationPresent(Updating.class)) {
+				mvcService.setUpdating(actionMethod, true);
+			}
+		}
+	}
 
 	@Override
 	public void discoverControllers(ControllerInfocCollector collector) {
@@ -53,7 +67,7 @@ public class MvcControllerDiscoverer implements ControllerDiscoverer {
 				public ControllerInfo apply(Predicate<Class<?>> input) {
 					return controllerInfoService.createControllerInfo(
 							bean.getBeanClass(), Controller.class,
-							input, null);
+							input, new Customizer());
 				}
 			});
 		}
@@ -68,7 +82,7 @@ public class MvcControllerDiscoverer implements ControllerDiscoverer {
 						public ControllerInfo apply(Predicate<Class<?>> input) {
 							return controllerInfoService.createControllerInfo(
 									bean.getBeanClass(), Controller.class,
-									input, null);
+									input, new Customizer());
 						}
 					});
 		}

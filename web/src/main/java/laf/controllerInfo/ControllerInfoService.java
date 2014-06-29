@@ -6,7 +6,6 @@ import java.lang.reflect.Type;
 import javax.enterprise.context.ApplicationScoped;
 
 import laf.base.ActionResult;
-import laf.base.Updating;
 
 import com.google.common.base.Predicate;
 
@@ -22,7 +21,7 @@ public class ControllerInfoService {
 	}
 
 	public static class ControllerInfoCustomizerBase implements
-	ControllerInfoCustomizer {
+			ControllerInfoCustomizer {
 
 		@Override
 		public void customize(ControllerInfoImpl controllerInfo) {
@@ -63,11 +62,10 @@ public class ControllerInfoService {
 			ActionMethodInfoImpl methodInfo = new ActionMethodInfoImpl(method);
 
 			methodInfo.setControllerInfo(info);
-			methodInfo.setUpdating(method.isAnnotationPresent(Updating.class));
 
 			// calculate name
 			methodInfo
-			.setName(info.calculateUnusedMethodName(method.getName()));
+					.setName(info.calculateUnusedMethodName(method.getName()));
 
 			// add to repository
 			info.putActionMethodInfo(methodInfo);

@@ -23,9 +23,13 @@ public class MvcPersistenceRequestProcessor extends DelegatingRequestProcessor {
 	@Inject
 	LafPersistenceContextManager contextManager;
 
+	@Inject
+	MvcService mvcService;
+
 	@Override
 	public ActionResult process(ActionPath<ParameterValueProvider> actionPath) {
-		boolean updating = actionPath.getLast().getMethodInfo().isUpdating();
+		boolean updating = mvcService.isUpdating(actionPath.getLast()
+				.getMethodInfo());
 		if (updating) {
 			// TODO: start serializable transaction
 		}

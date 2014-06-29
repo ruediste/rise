@@ -49,10 +49,4 @@ public interface ActionMethodInfo extends AttachedPropertyBearer {
 	 */
 	String getSignature();
 
-	/**
-	 * Return true if the Method is intended to perform DatabaseUpdates.
-	 * 
-	 * @return
-	 */
-	boolean isUpdating();
 }
