@@ -7,7 +7,6 @@ import java.util.Arrays;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import laf.base.ActionContext;
 import laf.base.attachedProperties.AttachedProperty;
 import laf.controllerInfo.ActionMethodInfo;
 import laf.controllerInfo.ControllerInfo;
@@ -62,7 +61,7 @@ public class ActionPathFactory {
 		/**
 		 * An instance of the supplied controllerClass is returned. If the call
 		 * is targeted at an embedded controller, the current
-		 * {@link ActionContext#getInvokedPath()} is scanned for the last
+		 * {@link ActionContext} is scanned for the last
 		 * occurence of the supplied controller class, and the elements of the
 		 * invoked path up to this point are prepended to the {@link ActionPath}
 		 * .
