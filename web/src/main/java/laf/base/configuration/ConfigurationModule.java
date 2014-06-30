@@ -23,55 +23,64 @@ import org.jabsaw.Module;
  * <li>multiple configuration sources can be combined</li>
  * </ul>
  *
- * <strong> Accessing Configuration Values </strong> <br/>
+ * <strong> Declaring Configuration Parameters </strong> <br/>
+ *  
  * To retrieve and set configuration values in a typesafe way, each
  * configuration value has to have a java representation. We chose to use a type
- * for that. More precise, for each configuration value an interface extending
+ * for that. More precise, for each configuration parameter an interface extending
  * {@link ConfigurationParameter} has to be defined:
  *
  * <pre>
- * public interface UserName extends ConfigurationValue&lt;String&gt; {
+ * public interface UserName extends ConfigurationParameter&lt;String&gt; {
  * }
  * </pre>
  *
+ * <strong> Accessing Configuration Values </strong> <br/>
  * To access the configuration value, an instance of the defined interface has
  * to be injected:
  *
  * <pre>
  * {@literal @}Inject
- * UserName userName;
+ * ConfigurationValue&lt;UserName&gt; userName;
  * </pre>
  *
- * The value can the be accessed using {@code userName.get()}.
+ * The value can the be accessed using {@code userName.value().get()}.
  *
  * <strong> Defining Configuration Values </strong> <br/>
- * Configuration values are either defined in java classes or in .properties
- * files. In java, values are defined in a separate class, containing methods
- * which accept a {@link ConfigurationParameter} argument. In the method body, the
+ * <p>
+ * When the first {@link ConfigurationValue} is accessed (typically during application startup),
+ * the {@link DiscoverConfigruationEvent} is raised. The application has to observe this event and
+ * register some {@link ConfigurationValueProvider}s. Providers registered later override earlier
+ * providers.  
+ * </p>
+ * 
+ * <p>
+ * Configuration values can be defined by creating a class extending from {@link ConfigurationDefiner}.
+ * The class defines values for {@link ConfigurationParameter}s by declaring methods
+ * with parameter interface as argument. In the method body, the
  * configuration value is set:
+ * </p>
  *
  * <pre>
- * void defineUserName(UserName userName){
+ * void define(UserName userName){
  *   userName.set("Frank")
  * }
  * </pre>
- *
- * For the properties file, each configuration value has one or more keys. By
- * default, the only key is the fully qualified class name of the configuration
- * value interface. This key can optionally prepended by further keys using the
- * {@link ConfigurationKey} annotation. When determining the configuration
- * value, the .properties file is searched for the first matching key.
- *
+ * 
  * <p>
- * Each application has to define a subclass of {@link ConfigurationFactory}
- * . The base class contains a provider method for {@link ConfigurationParameter}s.
- * By default the .properties file "configuration.properties" is used first, and
- * then the values defined within the subclass of ConfigurationFactoryBase. This
- * can be changed by overriding
- * {@link ConfigurationFactory#registerConfigurationValueProviders()}.
+ * An instance of such a class can be registered as {@link ConfigurationValueProvider} by calling
+ * {@link DiscoverConfigruationEvent#add(ConfigurationDefiner)}
  * </p>
  *
- * <strong> Specifying Values in .properties Files</strong> <br/>
+ * <p>
+ * Properties files are registered using {@link DiscoverConfigruationEvent#addPropretiesFile(String)}.
+ * Each configuration parameter has one or more keys. By
+ * default, the only key is the fully qualified class name of the configuration
+ * parameter interface. This key can optionally prepended by further keys using the
+ * {@link ConfigurationKey} annotation. When determining the configuration
+ * value, the .properties file is searched for the first matching key.
+ *</p>
+ *
  * <p>
  * Strings and primitives are be parsed using the respective valueOf method.
  * Class instances can be defined by their fully qualified class names. The

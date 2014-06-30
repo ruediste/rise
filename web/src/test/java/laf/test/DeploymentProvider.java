@@ -17,7 +17,6 @@ public class DeploymentProvider {
 										"com.google.guava:guava:16.0.1")
 								.withTransitivity().asFile())
 								.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
-								.addClasses(TestLoggerProducer.class)
 								.addAsResource("test-log4j.properties", "log4j.properties");
 	}
 

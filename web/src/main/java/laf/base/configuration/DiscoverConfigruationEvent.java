@@ -18,4 +18,11 @@ public interface DiscoverConfigruationEvent {
 	 * precedence
 	 */
 	void add(ConfigurationValueProvider provider);
+	
+	/**
+	 * Locks the configuration event. Any further method invocation on this object
+	 * will result in an event. Should be called after setting up the configuration to detect
+	 * multiple observers.
+	 */
+	void lock();
 }

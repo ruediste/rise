@@ -65,22 +65,35 @@ public class ConfigurationFactory {
 		}
 
 		DiscoverConfigruationEvent e = new DiscoverConfigruationEvent() {
+			boolean locked;
 
+			private void checkLocked(){
+				if (locked)
+					throw new RuntimeException("Event is locked. There are probably multiple observers for this event");
+			}
 			@Override
 			public void addPropretiesFile(String path) {
+				checkLocked();
 				ConfigurationFactory.this.addPropretiesFile(path);
 			}
 
 			@Override
 			public void add(ConfigurationValueProvider provider) {
+				checkLocked();
 				ConfigurationFactory.this.add(provider);
 
 			}
 
 			@Override
 			public void add(ConfigurationDefiner definer) {
+				checkLocked();
 				ConfigurationFactory.this.add(definer);
 
+			}
+
+			@Override
+			public void lock() {
+				locked=true;
 			}
 		};
 		discoverConfigurationEvent.fire(e);

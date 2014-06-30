@@ -33,6 +33,7 @@ public class SampleAppConfiguration implements ConfigurationDefiner {
 		e.add(defaultComponentConfiguration);
 		e.add(this);
 		e.addPropretiesFile("configuration.properties");
+		e.lock();
 	}
 
 	@Inject

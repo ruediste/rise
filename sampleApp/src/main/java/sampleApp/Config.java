@@ -10,8 +10,5 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class Config {
 
-	@Produces
-	Logger produceUrlMapping(InjectionPoint point) {
-		return LoggerFactory.getLogger(point.getMember().getDeclaringClass());
-	}
+	
 }

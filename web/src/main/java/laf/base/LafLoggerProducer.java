@@ -11,6 +11,9 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Producer for {@link Logger} and {@link LafLogger} instances. 
+ */
 public class LafLoggerProducer {
 	/**
 	 * Serializable handler for the {@link Logger} interface
@@ -44,5 +47,11 @@ public class LafLoggerProducer {
 		return (LafLogger) Proxy.newProxyInstance(this.getClass()
 				.getClassLoader(), new Class<?>[] { LafLogger.class },
 				new Handler(point.getMember().getDeclaringClass()));
+	}
+	
+	@Produces
+	@Typed(Logger.class)
+	Logger produceLogger(InjectionPoint point) {
+		return LoggerFactory.getLogger(point.getMember().getDeclaringClass());
 	}
 }
