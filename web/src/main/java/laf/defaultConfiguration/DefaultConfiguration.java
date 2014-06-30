@@ -5,7 +5,7 @@ import java.util.*;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import laf.configuration.ConfigurationDefiner;
+import laf.base.configuration.ConfigurationDefiner;
 import laf.controllerInfo.ControllerDiscoverer;
 import laf.controllerInfo.ControllerDiscoverers;
 import laf.http.ContentType;

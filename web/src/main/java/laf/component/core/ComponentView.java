@@ -1,6 +1,6 @@
 package laf.component.core;
 
-import laf.attachedProperties.AttachedPropertyBearerBase;
+import laf.base.attachedProperties.AttachedPropertyBearerBase;
 import laf.component.tree.Component;
 
 /**

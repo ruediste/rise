@@ -3,7 +3,7 @@ package laf.controllerInfo;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
-import laf.attachedProperties.AttachedPropertyBearer;
+import laf.base.attachedProperties.AttachedPropertyBearer;
 
 /**
  * Contains information about an action method. An action method is a method of

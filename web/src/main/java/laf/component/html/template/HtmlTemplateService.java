@@ -3,9 +3,9 @@ package laf.component.html.template;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import laf.attachedProperties.AttachedProperty;
+import laf.base.attachedProperties.AttachedProperty;
+import laf.base.configuration.ConfigurationValue;
 import laf.component.tree.Component;
-import laf.configuration.ConfigurationValue;
 
 @ApplicationScoped
 public class HtmlTemplateService {

@@ -1,6 +1,6 @@
 package laf.requestProcessing;
 
-import laf.configuration.ConfigurationParameter;
+import laf.base.configuration.ConfigurationParameter;
 
 public interface RequestProcessorConfigurationParameter extends
 		ConfigurationParameter<RequestProcessor> {

@@ -2,7 +2,7 @@ package laf.controllerInfo;
 
 import java.lang.reflect.Type;
 
-import laf.attachedProperties.AttachedPropertyBearerBase;
+import laf.base.attachedProperties.AttachedPropertyBearerBase;
 
 public class ParameterInfoImpl extends AttachedPropertyBearerBase implements
 ParameterInfo {

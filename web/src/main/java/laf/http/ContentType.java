@@ -1,6 +1,6 @@
 package laf.http;
 
-import laf.configuration.ConfigurationParameter;
+import laf.base.configuration.ConfigurationParameter;
 
 public interface ContentType extends ConfigurationParameter<String> {
 

@@ -1,6 +1,6 @@
 package laf.component.tree;
 
-import laf.attachedProperties.AttachedPropertyBearer;
+import laf.base.attachedProperties.AttachedPropertyBearer;
 
 /**
  * Interface of all components

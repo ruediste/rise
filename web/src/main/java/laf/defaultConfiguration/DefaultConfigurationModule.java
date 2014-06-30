@@ -1,6 +1,6 @@
 package laf.defaultConfiguration;
 
-import laf.configuration.ConfigurationModule;
+import laf.base.configuration.ConfigurationModule;
 import laf.http.requestMapping.defaultRule.DefaultHttpRequestMappingModule;
 import laf.http.requestMapping.parameterHandler.ParameterHandlerModule;
 import laf.http.requestProcessing.defaultProcessor.DefaultHttpRequestProcessorModule;

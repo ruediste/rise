@@ -5,8 +5,8 @@ import java.util.ArrayDeque;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import laf.configuration.ConfigurationDefiner;
-import laf.configuration.ExtendConfiguration;
+import laf.base.configuration.ConfigurationDefiner;
+import laf.base.configuration.ExtendConfiguration;
 import laf.controllerInfo.ControllerDiscoverers;
 import laf.http.requestProcessing.DefaultControllerInvoker;
 import laf.mvc.*;

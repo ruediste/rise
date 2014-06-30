@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import laf.configuration.ConfigurationValue;
+import laf.base.configuration.ConfigurationValue;
 import laf.controllerInfo.ControllerInfo;
 
 import com.google.common.base.*;

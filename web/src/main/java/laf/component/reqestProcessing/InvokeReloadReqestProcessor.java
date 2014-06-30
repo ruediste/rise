@@ -5,7 +5,7 @@ import javax.inject.Inject;
 import laf.actionPath.ActionPath;
 import laf.base.ActionResult;
 import laf.base.ViewTechnologyManager;
-import laf.configuration.ConfigurationValue;
+import laf.base.configuration.ConfigurationValue;
 import laf.http.requestMapping.parameterValueProvider.ParameterValueProvider;
 import laf.requestProcessing.RequestProcessor;
 

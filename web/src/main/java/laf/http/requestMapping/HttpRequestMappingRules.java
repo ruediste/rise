@@ -3,7 +3,7 @@ package laf.http.requestMapping;
 import java.util.Deque;
 
 import laf.actionPath.ActionPath;
-import laf.configuration.ConfigurationParameter;
+import laf.base.configuration.ConfigurationParameter;
 import laf.http.request.HttpRequest;
 
 /**

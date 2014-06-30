@@ -6,8 +6,8 @@ import javax.inject.Inject;
 
 import laf.actionPath.ActionPath;
 import laf.actionPath.ActionPathFactory;
+import laf.base.configuration.*;
 import laf.component.defaultConfiguration.DefaultComponentConfiguration;
-import laf.configuration.*;
 import laf.defaultConfiguration.DefaultConfiguration;
 import laf.http.request.HttpRequest;
 import laf.http.requestMapping.HttpRequestMappingRule;

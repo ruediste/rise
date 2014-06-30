@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import laf.attachedProperties.AttachedPropertyBearerBase;
+import laf.base.attachedProperties.AttachedPropertyBearerBase;
 
 import com.google.common.base.Strings;
 

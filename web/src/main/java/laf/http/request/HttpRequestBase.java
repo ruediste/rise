@@ -3,7 +3,7 @@ package laf.http.request;
 import java.util.*;
 import java.util.Map.Entry;
 
-import laf.attachedProperties.AttachedPropertyBearerBase;
+import laf.base.attachedProperties.AttachedPropertyBearerBase;
 
 import com.google.common.base.Joiner;
 

@@ -7,7 +7,7 @@ import laf.actionPath.ActionPath;
 import laf.actionPath.ActionPath.ParameterValueComparator;
 import laf.base.BaseModule;
 import laf.base.BaseModule.ProjectStage;
-import laf.configuration.ConfigurationValue;
+import laf.base.configuration.ConfigurationValue;
 import laf.controllerInfo.ControllerInfoRepository;
 import laf.http.request.HttpRequest;
 import laf.http.requestMapping.parameterValueProvider.ParameterValueProvider;

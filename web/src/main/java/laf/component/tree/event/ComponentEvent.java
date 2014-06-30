@@ -3,7 +3,7 @@ package laf.component.tree.event;
 import java.util.*;
 import java.util.Map.Entry;
 
-import laf.attachedProperties.AttachedProperty;
+import laf.base.attachedProperties.AttachedProperty;
 import laf.component.tree.Component;
 
 /**

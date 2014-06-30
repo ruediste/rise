@@ -6,7 +6,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
 import laf.base.ActionResult;
-import laf.configuration.ConfigurationValue;
+import laf.base.configuration.ConfigurationValue;
 import laf.http.ContentType;
 import laf.http.HttpRenderResult;
 import laf.http.HttpRenderResultUtil;

@@ -4,7 +4,7 @@ import static laf.test.MockitoExt.mock;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import laf.attachedProperties.AttachedProperty;
+import laf.base.attachedProperties.AttachedProperty;
 import laf.controllerInfo.*;
 import laf.controllerInfo.impl.EmbeddedTestController;
 import laf.controllerInfo.impl.TestController;

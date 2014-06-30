@@ -4,8 +4,8 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import laf.attachedProperties.AttachedProperty;
-import laf.configuration.ConfigurationValue;
+import laf.base.attachedProperties.AttachedProperty;
+import laf.base.configuration.ConfigurationValue;
 import laf.controllerInfo.*;
 
 @ApplicationScoped

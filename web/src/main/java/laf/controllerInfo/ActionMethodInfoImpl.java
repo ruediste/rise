@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import laf.attachedProperties.AttachedPropertyBearerBase;
 import laf.base.ActionResult;
+import laf.base.attachedProperties.AttachedPropertyBearerBase;
 
 import com.google.common.base.Joiner;
 import com.google.common.reflect.TypeToken;

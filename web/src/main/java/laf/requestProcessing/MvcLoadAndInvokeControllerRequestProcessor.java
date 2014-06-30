@@ -2,7 +2,7 @@ package laf.requestProcessing;
 
 import javax.inject.Inject;
 
-import laf.configuration.ConfigurationValue;
+import laf.base.configuration.ConfigurationValue;
 
 public class MvcLoadAndInvokeControllerRequestProcessor extends LoadAndInvokeRequestProcessor {
 

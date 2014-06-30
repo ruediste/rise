@@ -2,7 +2,7 @@ package laf.requestProcessing;
 
 import java.util.Map;
 
-import laf.configuration.ConfigurationParameter;
+import laf.base.configuration.ConfigurationParameter;
 
 /**
  * Configures the {@link RequestProcessor}s used by the

@@ -6,6 +6,8 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import laf.base.ViewTechnology;
+import laf.base.configuration.ConfigurationDefiner;
+import laf.base.configuration.ExtendConfiguration;
 import laf.component.ComponentControllerDiscoverer;
 import laf.component.basic.htmlTemplate.BasicComponentsHtmlTemplateModule;
 import laf.component.core.ComponentController;
@@ -13,8 +15,6 @@ import laf.component.html.impl.HtmlInvokeInitialRequestProcessor;
 import laf.component.html.impl.HtmlInvokeReloadReqestProcessor;
 import laf.component.html.template.*;
 import laf.component.reqestProcessing.*;
-import laf.configuration.ConfigurationDefiner;
-import laf.configuration.ExtendConfiguration;
 import laf.controllerInfo.ControllerDiscoverers;
 import laf.html.HtmlViewTechnology;
 import laf.http.requestProcessing.DefaultControllerInvoker;

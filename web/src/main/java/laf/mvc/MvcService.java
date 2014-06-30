@@ -2,8 +2,8 @@ package laf.mvc;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import laf.attachedProperties.AttachedProperty;
-import laf.attachedProperties.AttachedPropertyBearer;
+import laf.base.attachedProperties.AttachedProperty;
+import laf.base.attachedProperties.AttachedPropertyBearer;
 import laf.controllerInfo.ActionMethodInfo;
 
 @ApplicationScoped

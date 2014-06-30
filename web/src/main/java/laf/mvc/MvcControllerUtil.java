@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import laf.base.ActionResult;
-import laf.configuration.ConfigurationValue;
+import laf.base.configuration.ConfigurationValue;
 
 /**
  * Utility classes for controllers for the MVC framework

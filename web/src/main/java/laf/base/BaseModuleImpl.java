@@ -1,6 +1,6 @@
 package laf.base;
 
-import laf.attachedProperties.AttachedPropertiesModule;
+import laf.base.attachedProperties.AttachedPropertiesModule;
 
 import org.jabsaw.Module;
 

@@ -2,8 +2,8 @@ package laf.base;
 
 import javax.inject.Singleton;
 
-import laf.attachedProperties.AttachedPropertiesModule;
-import laf.configuration.ConfigurationModule;
+import laf.base.attachedProperties.AttachedPropertiesModule;
+import laf.base.configuration.ConfigurationModule;
 
 import org.jabsaw.Module;
 

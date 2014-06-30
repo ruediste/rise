@@ -2,7 +2,7 @@ package laf.controllerInfo;
 
 import java.lang.reflect.Type;
 
-import laf.attachedProperties.AttachedPropertyBearer;
+import laf.base.attachedProperties.AttachedPropertyBearer;
 
 /**
  * Information of a parameter to an action method. Implementations of this

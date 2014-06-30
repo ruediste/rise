@@ -4,9 +4,9 @@ import java.util.*;
 
 import javax.enterprise.inject.Alternative;
 
-import laf.attachedProperties.AttachedProperty;
-import laf.attachedProperties.AttachedPropertyBearerBase;
 import laf.base.Function2;
+import laf.base.attachedProperties.AttachedProperty;
+import laf.base.attachedProperties.AttachedPropertyBearerBase;
 import laf.controllerInfo.ParameterInfo;
 
 import com.google.common.base.Function;

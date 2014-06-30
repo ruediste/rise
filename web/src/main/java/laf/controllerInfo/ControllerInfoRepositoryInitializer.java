@@ -8,7 +8,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import laf.configuration.ConfigurationValue;
+import laf.base.configuration.ConfigurationValue;
 import laf.controllerInfo.ControllerDiscoverer.ControllerInfocCollector;
 
 import org.slf4j.Logger;

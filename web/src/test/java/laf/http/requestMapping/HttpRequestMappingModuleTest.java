@@ -11,7 +11,7 @@ import java.util.*;
 import laf.actionPath.ActionPath;
 import laf.actionPath.ActionPath.ParameterValueComparator;
 import laf.base.BaseModule;
-import laf.configuration.ConfigurationValueImpl;
+import laf.base.configuration.ConfigurationValueImpl;
 import laf.http.request.HttpRequestImpl;
 import laf.http.requestMapping.HttpRequestMappingModule;
 import laf.http.requestMapping.HttpRequestMappingRule;

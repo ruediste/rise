@@ -2,7 +2,7 @@ package laf.base;
 
 import javax.enterprise.context.RequestScoped;
 
-import laf.attachedProperties.AttachedPropertyBearer;
+import laf.base.attachedProperties.AttachedPropertyBearer;
 
 /**
  * Bearer for request scoped information

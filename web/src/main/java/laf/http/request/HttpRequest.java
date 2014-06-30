@@ -4,7 +4,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import laf.attachedProperties.AttachedPropertyBearer;
+import laf.base.attachedProperties.AttachedPropertyBearer;
 
 /**
  * A reduced representation of a {@link HttpServletRequest}

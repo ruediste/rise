@@ -12,12 +12,12 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
-import laf.attachedProperties.AttachedProperty;
+import laf.base.attachedProperties.AttachedProperty;
+import laf.base.configuration.ConfigurationValue;
 import laf.component.core.ComponentView;
 import laf.component.html.HtmlComponentService;
 import laf.component.tree.Component;
 import laf.component.tree.ComponentTreeUtil;
-import laf.configuration.ConfigurationValue;
 import laf.http.ContentType;
 
 import org.rendersnake.HtmlCanvas;

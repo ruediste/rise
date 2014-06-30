@@ -2,7 +2,7 @@ package laf.component.tree;
 
 import java.util.ArrayList;
 
-import laf.attachedProperties.AttachedPropertyBearerBase;
+import laf.base.attachedProperties.AttachedPropertyBearerBase;
 
 import com.google.common.collect.Iterables;
 

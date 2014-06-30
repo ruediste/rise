@@ -3,7 +3,7 @@ package laf.controllerInfo;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
-import laf.attachedProperties.AttachedPropertyBearer;
+import laf.base.attachedProperties.AttachedPropertyBearer;
 
 /**
  * Provides information about a controller. A controller contains action

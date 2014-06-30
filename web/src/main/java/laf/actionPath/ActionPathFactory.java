@@ -7,8 +7,8 @@ import java.util.Arrays;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import laf.attachedProperties.AttachedProperty;
 import laf.base.ActionContext;
+import laf.base.attachedProperties.AttachedProperty;
 import laf.controllerInfo.ActionMethodInfo;
 import laf.controllerInfo.ControllerInfo;
 import laf.controllerInfo.ControllerInfoRepository;
