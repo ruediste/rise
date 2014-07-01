@@ -11,7 +11,7 @@ import org.jabsaw.Module;
  * Such properties are called attached.
  * </p>
  */
-@Module(hideFromDependencyGraphOutput = true)
+@Module(description="", hideFromDependencyGraphOutput = true)
 public class AttachedPropertiesModule {
 
 }

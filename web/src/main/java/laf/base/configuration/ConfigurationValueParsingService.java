@@ -1,7 +1,9 @@
 package laf.base.configuration;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.List;
 
 import javax.enterprise.inject.Instance;
@@ -10,7 +12,7 @@ import javax.inject.Inject;
 import com.google.common.reflect.TypeToken;
 
 /**
- * Service for parsing cofniguration values from strings.
+ * Service for parsing configuration values from strings.
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class ConfigurationValueParsingService {
@@ -21,7 +23,12 @@ public class ConfigurationValueParsingService {
 			return (V) new ArrayList(parseElements(
 					targetType.resolveType(List.class.getTypeParameters()[0]),
 					value));
-		} else {
+		} else 
+			if (rawType.equals(Deque.class)) {
+				return (V) new ArrayDeque(parseElements(
+						targetType.resolveType(Deque.class.getTypeParameters()[0]),
+						value));
+			} else {
 			return parseSingleValue(targetType, value);
 		}
 	}
@@ -99,7 +106,7 @@ public class ConfigurationValueParsingService {
 				Class<?> objectClass = classLoader.loadClass(value);
 				return (T) instance.select(objectClass).get();
 			} catch (ClassNotFoundException e) {
-				throw new RuntimeException(e);
+				throw new RuntimeException("Unable to load class "+value+" as configuration value",e);
 			}
 		}
 	}

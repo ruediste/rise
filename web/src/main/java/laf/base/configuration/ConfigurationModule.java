@@ -58,7 +58,7 @@ import org.jabsaw.Module;
  * Configuration values can be defined by creating a class extending from {@link ConfigurationDefiner}.
  * The class defines values for {@link ConfigurationParameter}s by declaring methods
  * with parameter interface as argument. In the method body, the
- * configuration value is set:
+ * configuration value must be set:
  * </p>
  *
  * <pre>
@@ -70,6 +70,11 @@ import org.jabsaw.Module;
  * <p>
  * An instance of such a class can be registered as {@link ConfigurationValueProvider} by calling
  * {@link DiscoverConfigruationEvent#add(ConfigurationDefiner)}
+ * </p>
+ * 
+ * <p>
+ * To modify the value of an earlier provider, the define method can be annotate with {@link ExtendConfiguration}.
+ * The existing configuration value can be accessed using {@link ConfigurationParameter#get()}
  * </p>
  *
  * <p>
