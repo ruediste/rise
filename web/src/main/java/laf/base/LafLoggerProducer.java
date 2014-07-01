@@ -41,12 +41,20 @@ public class LafLoggerProducer {
 		}
 	}
 
-	@Produces
-	@Typed(LafLogger.class)
-	public LafLogger produce(InjectionPoint point) {
+	public LafLogger getLogger(Object obj){
+		return getLogger(obj.getClass());
+	}
+	
+	public LafLogger getLogger(Class<?> cls){
 		return (LafLogger) Proxy.newProxyInstance(this.getClass()
 				.getClassLoader(), new Class<?>[] { LafLogger.class },
-				new Handler(point.getMember().getDeclaringClass()));
+				new Handler(cls));
+	}
+	
+	@Produces
+	@Typed(LafLogger.class)
+	 LafLogger produce(InjectionPoint point) {
+		return getLogger(point.getMember().getDeclaringClass());
 	}
 	
 	@Produces
