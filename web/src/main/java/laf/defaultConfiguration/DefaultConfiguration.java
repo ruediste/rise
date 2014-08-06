@@ -6,8 +6,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import laf.base.configuration.ConfigurationDefiner;
-import laf.controllerInfo.ControllerDiscoverer;
-import laf.controllerInfo.ControllerDiscoverersCP;
+import laf.controllerInfo.*;
 import laf.http.ContentType;
 import laf.http.requestMapping.HttpRequestMappingRules;
 import laf.http.requestMapping.defaultRule.BasePackage;
@@ -54,8 +53,8 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 		val.set(errorProcessor);
 	}
 
-	public void produce(ControllerTypeRequestProcessors map) {
-		map.set(new HashMap<Object, RequestProcessor>());
+	public void produce(ControllerTypeRequestProcessorsCP map) {
+		map.set(new HashMap<Class<? extends ControllerType>, RequestProcessor>());
 	}
 
 	public void produce(HttpRequestProcessorConfigurationParameter val) {

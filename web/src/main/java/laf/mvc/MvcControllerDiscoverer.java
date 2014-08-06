@@ -6,10 +6,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
-import laf.controllerInfo.ActionMethodInfoImpl;
-import laf.controllerInfo.ControllerDiscoverer;
-import laf.controllerInfo.ControllerInfo;
-import laf.controllerInfo.ControllerInfoCreationService;
+import laf.controllerInfo.*;
 import laf.controllerInfo.ControllerInfoCreationService.ControllerInfoCustomizerBase;
 
 import org.slf4j.Logger;
@@ -61,15 +58,16 @@ public class MvcControllerDiscoverer implements ControllerDiscoverer {
 				controllerAnnotation)) {
 			log.debug("Found controller " + bean.getBeanClass());
 			collector
-			.addControllerInfo(new Function<Predicate<Class<?>>, ControllerInfo>() {
+					.addControllerInfo(new Function<Predicate<Class<?>>, ControllerInfo>() {
 
-				@Override
-				public ControllerInfo apply(Predicate<Class<?>> input) {
-					return controllerInfoService.createControllerInfo(
-							bean.getBeanClass(), Controller.class,
-							input, new Customizer());
-				}
-			});
+						@Override
+						public ControllerInfo apply(Predicate<Class<?>> input) {
+							return controllerInfoService.createControllerInfo(
+									bean.getBeanClass(),
+									MvcControllerType.class, input,
+									new Customizer());
+						}
+					});
 		}
 
 		for (final Bean<?> bean : beanManager.getBeans(Object.class,
@@ -81,8 +79,9 @@ public class MvcControllerDiscoverer implements ControllerDiscoverer {
 						@Override
 						public ControllerInfo apply(Predicate<Class<?>> input) {
 							return controllerInfoService.createControllerInfo(
-									bean.getBeanClass(), Controller.class,
-									input, new Customizer());
+									bean.getBeanClass(),
+									MvcControllerType.class, input,
+									new Customizer());
 						}
 					});
 		}

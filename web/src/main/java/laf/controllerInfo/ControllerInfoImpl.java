@@ -1,27 +1,25 @@
 package laf.controllerInfo;
 
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 import laf.base.attachedProperties.AttachedPropertyBearerBase;
 
 import com.google.common.base.Strings;
 
 public class ControllerInfoImpl extends AttachedPropertyBearerBase implements
-ControllerInfo {
+		ControllerInfo {
 	final private Class<?> controllerClass;
 
-	final private Object type;
+	final private Class<? extends ControllerType> type;
 
 	private final HashMap<String, ActionMethodInfo> actionMethodsByName = new LinkedHashMap<>();
 	private final HashMap<Method, ActionMethodInfo> actionMethodsByMethod = new LinkedHashMap<>();
 
 	final boolean embedded;
 
-	public ControllerInfoImpl(Class<?> controllerClass, Object type,
-			boolean embedded) {
+	public ControllerInfoImpl(Class<?> controllerClass,
+			Class<? extends ControllerType> type, boolean embedded) {
 		this.controllerClass = controllerClass;
 		this.type = type;
 		this.embedded = embedded;
@@ -92,7 +90,7 @@ ControllerInfo {
 	}
 
 	@Override
-	public Object getType() {
+	public Class<? extends ControllerType> getType() {
 		return type;
 	}
 

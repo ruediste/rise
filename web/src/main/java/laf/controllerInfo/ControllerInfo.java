@@ -8,7 +8,7 @@ import laf.base.attachedProperties.AttachedPropertyBearer;
 /**
  * Provides information about a controller. A controller contains action
  * methods, which can be called via requests.
- *
+ * 
  * Implementations of this interface may not be modified after initialization.
  */
 public interface ControllerInfo extends AttachedPropertyBearer {
@@ -54,7 +54,7 @@ public interface ControllerInfo extends AttachedPropertyBearer {
 	/**
 	 * Return the type of this controller
 	 */
-	Object getType();
+	Class<? extends ControllerType> getType();
 
 	/**
 	 * Return true if this controller is an embedded controller

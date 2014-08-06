@@ -19,14 +19,14 @@ public class MvcDefaultConfiguration implements ConfigurationDefiner {
 	Instance<Object> instance;
 
 	@ExtendConfiguration
-	public void produce(ControllerTypeRequestProcessors map) {
+	public void produce(ControllerTypeRequestProcessorsCP map) {
 		MvcPersistenceRequestProcessor persistenceProcessor = instance.select(
 				MvcPersistenceRequestProcessor.class).get();
 
 		persistenceProcessor.initialize(instance.select(
 				MvcLoadAndInvokeControllerRequestProcessor.class).get());
 
-		map.get().put(Controller.class, persistenceProcessor);
+		map.get().put(MvcControllerType.class, persistenceProcessor);
 	}
 
 	public void produce(MvcControllerInvokerConfigurationParameter val) {

@@ -49,14 +49,20 @@ public class ControllerInfoCreationService {
 	/**
 	 * Create a {@link ControllerInfo} using reflection based on the supplied
 	 * controller class.
-	 * @param controllerClass class to create {@link ControllerInfo} for
-	 * @param type type of the controller info
-	 * @param isEmbeddedController flag indicating if the info represents an embedded controller
-	 * @param customizer customizer to customize the created info. Can be null.
+	 * 
+	 * @param controllerClass
+	 *            class to create {@link ControllerInfo} for
+	 * @param type
+	 *            type of the controller info
+	 * @param isEmbeddedController
+	 *            flag indicating if the info represents an embedded controller
+	 * @param customizer
+	 *            customizer to customize the created info. Can be null.
 	 * @return
 	 */
 	public ControllerInfoImpl createControllerInfo(Class<?> controllerClass,
-			Object type, Predicate<Class<?>> isEmbeddedController,
+			Class<? extends ControllerType> type,
+			Predicate<Class<?>> isEmbeddedController,
 			ControllerInfoCustomizer customizer) {
 		ControllerInfoImpl info = new ControllerInfoImpl(controllerClass, type,
 				isEmbeddedController.apply(controllerClass));

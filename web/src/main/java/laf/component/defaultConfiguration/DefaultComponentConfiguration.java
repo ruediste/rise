@@ -9,8 +9,8 @@ import laf.base.ViewTechnology;
 import laf.base.configuration.ConfigurationDefiner;
 import laf.base.configuration.ExtendConfiguration;
 import laf.component.ComponentControllerDiscoverer;
+import laf.component.ComponentControllerType;
 import laf.component.basic.htmlTemplate.BasicComponentsHtmlTemplateModule;
-import laf.component.core.ComponentController;
 import laf.component.html.impl.HtmlInvokeInitialRequestProcessor;
 import laf.component.html.impl.HtmlInvokeReloadReqestProcessor;
 import laf.component.html.template.*;
@@ -25,6 +25,7 @@ public class DefaultComponentConfiguration implements ConfigurationDefiner {
 	@Inject
 	Instance<Object> instance;
 
+	@SuppressWarnings("unused")
 	@SafeVarargs
 	final private <T> Iterable<T> getInstances(Class<? extends T>... classes) {
 		ArrayList<T> result = new ArrayList<>();
@@ -45,8 +46,8 @@ public class DefaultComponentConfiguration implements ConfigurationDefiner {
 	}
 
 	@ExtendConfiguration
-	public void produce(ControllerTypeRequestProcessors map) {
-		map.get().put(ComponentController.class,
+	public void produce(ControllerTypeRequestProcessorsCP map) {
+		map.get().put(ComponentControllerType.class,
 				getInstance(SwitchComponentRequestProcessor.class));
 	}
 

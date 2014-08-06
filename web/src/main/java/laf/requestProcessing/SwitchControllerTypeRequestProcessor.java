@@ -10,7 +10,7 @@ import laf.http.requestMapping.parameterValueProvider.ParameterValueProvider;
 public class SwitchControllerTypeRequestProcessor implements RequestProcessor {
 
 	@Inject
-	ConfigurationValue<ControllerTypeRequestProcessors> processors;
+	ConfigurationValue<ControllerTypeRequestProcessorsCP> processors;
 
 	@Override
 	public ActionResult process(ActionPath<ParameterValueProvider> path) {

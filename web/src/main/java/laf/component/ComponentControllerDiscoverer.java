@@ -9,13 +9,8 @@ import javax.inject.Inject;
 import laf.base.ActionResult;
 import laf.component.core.ComponentConstants;
 import laf.component.core.ComponentController;
-import laf.controllerInfo.ActionMethodInfoImpl;
-import laf.controllerInfo.ControllerDiscoverer;
-import laf.controllerInfo.ControllerInfo;
-import laf.controllerInfo.ControllerInfoImpl;
-import laf.controllerInfo.ControllerInfoCreationService;
+import laf.controllerInfo.*;
 import laf.controllerInfo.ControllerInfoCreationService.ControllerInfoCustomizerBase;
-import laf.controllerInfo.ParameterInfoImpl;
 
 import org.slf4j.Logger;
 
@@ -46,16 +41,16 @@ public class ComponentControllerDiscoverer implements ControllerDiscoverer {
 				controllerAnnotation)) {
 			log.debug("Found controller " + bean.getBeanClass());
 			collector
-			.addControllerInfo(new Function<Predicate<Class<?>>, ControllerInfo>() {
+					.addControllerInfo(new Function<Predicate<Class<?>>, ControllerInfo>() {
 
-				@Override
-				public ControllerInfo apply(Predicate<Class<?>> input) {
-					return controllerInfoService.createControllerInfo(
-							bean.getBeanClass(),
-							ComponentController.class, input,
-							new Customizer());
-				}
-			});
+						@Override
+						public ControllerInfo apply(Predicate<Class<?>> input) {
+							return controllerInfoService.createControllerInfo(
+									bean.getBeanClass(),
+									ComponentControllerType.class, input,
+									new Customizer());
+						}
+					});
 		}
 
 	}
