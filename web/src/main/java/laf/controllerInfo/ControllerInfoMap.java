@@ -7,8 +7,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 
 /**
- * Lazily initialized bidirectional map from {@link ControllerInfo} to some
- * data.
+ * Bidirectional map from {@link ControllerInfo} to some data. The
+ * initialization occurs when {@link #getMap()} is called for the first time.
  */
 public class ControllerInfoMap<V> {
 	@Inject
@@ -25,7 +25,7 @@ public class ControllerInfoMap<V> {
 	/**
 	 * Get the {@link BiMap}. Lazily initializes the map the fist time it is
 	 * accessed. Thread safe.
-	 *
+	 * 
 	 * @throws IllegalArgumentException
 	 *             if duplicate values were generated
 	 */

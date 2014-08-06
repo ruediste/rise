@@ -48,7 +48,7 @@ public class ControllerInfoCreationService {
 
 	/**
 	 * Create a {@link ControllerInfo} using reflection based on the supplied
-	 * controller class.
+	 * controller class. The {@link NoActionMethod} annotation is respected.
 	 * 
 	 * @param controllerClass
 	 *            class to create {@link ControllerInfo} for

@@ -1,14 +1,11 @@
 package laf.controllerInfo;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Marks Methods as non-action methods, or types as not containing any action
- * methods.
+ * methods. This annotation is respected by the
+ * {@link ControllerInfoCreationService}
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
