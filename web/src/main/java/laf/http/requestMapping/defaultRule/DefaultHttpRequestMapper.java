@@ -14,33 +14,17 @@ import laf.http.requestMapping.twoStageMappingRule.HttpRequestMapper;
 import org.slf4j.Logger;
 
 public class DefaultHttpRequestMapper implements HttpRequestMapper {
+	@Inject
+	Logger log;
+	
+	@Inject
+	ControllerInfoRepository controllerInfoRepository;
+	
+	@Inject
+	ControllerInfoMap<String> identifiers;
 
-	public static class Builder {
-		@Inject
-		ControllerInfoMap.Builder mapBuilder;
-
-		@Inject
-		Logger log;
-
-		@Inject
-		ControllerInfoRepository controllerInfoRepository;
-
-		public DefaultHttpRequestMapper create(
-				ControllerIdentifierStrategy controllerIdentifierStrategy) {
-			return new DefaultHttpRequestMapper(controllerInfoRepository,
-					mapBuilder.create(controllerIdentifierStrategy), log);
-		}
-	}
-
-	private final ControllerInfoMap<String> identifiers;
-	private Logger log;
-	private ControllerInfoRepository controllerInfoRepository;
-
-	DefaultHttpRequestMapper(ControllerInfoRepository controllerInfoRepository,
-			ControllerInfoMap<String> identifiers, Logger log) {
-		this.controllerInfoRepository = controllerInfoRepository;
-		this.identifiers = identifiers;
-		this.log = log;
+	public void initialize(ControllerIdentifierStrategy controllerIdentifierStrategy){
+		identifiers.initialize(controllerIdentifierStrategy);
 	}
 
 	@Override

@@ -17,14 +17,14 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.reflect.TypeToken;
 
-public class ControllerInfoServiceTest {
+public class ControllerInfoCreationServiceTest {
 
-	private ControllerInfoService service;
+	private ControllerInfoCreationService service;
 	private Predicate<Class<?>> isEmbeddedController;
 
 	@Before
 	public void setup() {
-		service = new ControllerInfoService();
+		service = new ControllerInfoCreationService();
 		isEmbeddedController = mock(new TypeToken<Predicate<Class<?>>>() {
 			private static final long serialVersionUID = 1L;
 		});

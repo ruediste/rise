@@ -15,7 +15,7 @@ import laf.component.html.impl.HtmlInvokeInitialRequestProcessor;
 import laf.component.html.impl.HtmlInvokeReloadReqestProcessor;
 import laf.component.html.template.*;
 import laf.component.reqestProcessing.*;
-import laf.controllerInfo.ControllerDiscoverers;
+import laf.controllerInfo.ControllerDiscoverersCP;
 import laf.html.HtmlViewTechnology;
 import laf.http.requestProcessing.DefaultControllerInvoker;
 import laf.requestProcessing.*;
@@ -39,7 +39,7 @@ public class DefaultComponentConfiguration implements ConfigurationDefiner {
 	}
 
 	@ExtendConfiguration
-	public void produce(ControllerDiscoverers discoverers) {
+	public void produce(ControllerDiscoverersCP discoverers) {
 		discoverers.get().add(
 				instance.select(ComponentControllerDiscoverer.class).get());
 	}

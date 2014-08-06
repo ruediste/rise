@@ -9,9 +9,15 @@ import laf.base.ActionResult;
 
 import com.google.common.base.Predicate;
 
+/**
+ * Service to create {@link ControllerInfo}s based on reflection.
+ */
 @ApplicationScoped
-public class ControllerInfoService {
+public class ControllerInfoCreationService {
 
+	/**
+	 * Customizer to customize {@link ControllerInfo}s after their construction
+	 */
 	public interface ControllerInfoCustomizer {
 		void customize(ControllerInfoImpl controllerInfo);
 
@@ -20,6 +26,9 @@ public class ControllerInfoService {
 		void customize(ParameterInfoImpl parameterInfo);
 	}
 
+	/**
+	 * Base class for {@link ControllerInfoCustomizer}s
+	 */
 	public static class ControllerInfoCustomizerBase implements
 			ControllerInfoCustomizer {
 
@@ -37,6 +46,15 @@ public class ControllerInfoService {
 
 	}
 
+	/**
+	 * Create a {@link ControllerInfo} using reflection based on the supplied
+	 * controller class.
+	 * @param controllerClass class to create {@link ControllerInfo} for
+	 * @param type type of the controller info
+	 * @param isEmbeddedController flag indicating if the info represents an embedded controller
+	 * @param customizer customizer to customize the created info. Can be null.
+	 * @return
+	 */
 	public ControllerInfoImpl createControllerInfo(Class<?> controllerClass,
 			Object type, Predicate<Class<?>> isEmbeddedController,
 			ControllerInfoCustomizer customizer) {

@@ -11,27 +11,14 @@ import com.google.common.collect.ImmutableBiMap;
  * data.
  */
 public class ControllerInfoMap<V> {
+	@Inject
+	ControllerInfoRepository controllerInfoRepository;
 
-	private final ControllerInfoRepository controllerInfoRepository;
-
-	private final Function<ControllerInfo, V> valueLoader;
-
-	public static class Builder {
-		@Inject
-		ControllerInfoRepository controllerInfoRepository;
-
-		public <V> ControllerInfoMap<V> create(
-				Function<ControllerInfo, V> valueLoader) {
-			return new ControllerInfoMap<>(controllerInfoRepository,
-					valueLoader);
-		}
-	}
+	private Function<ControllerInfo, V> valueLoader;
 
 	private BiMap<ControllerInfo, V> map;
 
-	ControllerInfoMap(ControllerInfoRepository controllerInfoRepository,
-			Function<ControllerInfo, V> valueLoader) {
-		this.controllerInfoRepository = controllerInfoRepository;
+	public void initialize(Function<ControllerInfo, V> valueLoader) {
 		this.valueLoader = valueLoader;
 	}
 

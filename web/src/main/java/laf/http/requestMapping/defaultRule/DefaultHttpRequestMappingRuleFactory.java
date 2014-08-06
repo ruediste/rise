@@ -13,7 +13,7 @@ import laf.http.requestMapping.twoStageMappingRule.TwoStageMappingRule;
 public class DefaultHttpRequestMappingRuleFactory {
 
 	@Inject
-	DefaultHttpRequestMapper.Builder requestMapperBuilder;
+	Instance<DefaultHttpRequestMapper> requestMapperInstance;
 
 	@Inject
 	Instance<DefaultActionPathSigner> defaultActionPathSigner;
@@ -26,8 +26,9 @@ public class DefaultHttpRequestMappingRuleFactory {
 
 	public Deque<HttpRequestMappingRule> createRules() {
 		ArrayDeque<HttpRequestMappingRule> result = new ArrayDeque<HttpRequestMappingRule>();
-		result.add(new TwoStageMappingRule(requestMapperBuilder.create(strategy
-				.get()), defaultParameterMapper.get(), defaultActionPathSigner
+		DefaultHttpRequestMapper requestMapper = requestMapperInstance.get();
+		requestMapper.initialize(strategy.get());
+		result.add(new TwoStageMappingRule(requestMapper, defaultParameterMapper.get(), defaultActionPathSigner
 				.get()));
 		return result;
 	}

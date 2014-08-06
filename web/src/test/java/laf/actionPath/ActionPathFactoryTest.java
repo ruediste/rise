@@ -23,7 +23,7 @@ public class ActionPathFactoryTest {
 
 	@Before
 	public void setup() {
-		ControllerInfoService service = new ControllerInfoService();
+		ControllerInfoCreationService service = new ControllerInfoCreationService();
 		Predicate<Class<?>> isEmbeddedController = mock(new TypeToken<Predicate<Class<?>>>() {
 			private static final long serialVersionUID = 1L;
 		});

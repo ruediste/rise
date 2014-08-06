@@ -4,7 +4,7 @@ import java.util.Deque;
 
 import laf.base.configuration.ConfigurationParameter;
 
-public interface ControllerDiscoverers extends
+public interface ControllerDiscoverersCP extends
 		ConfigurationParameter<Deque<ControllerDiscoverer>> {
 
 }

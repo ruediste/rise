@@ -13,8 +13,8 @@ import laf.controllerInfo.ActionMethodInfoImpl;
 import laf.controllerInfo.ControllerDiscoverer;
 import laf.controllerInfo.ControllerInfo;
 import laf.controllerInfo.ControllerInfoImpl;
-import laf.controllerInfo.ControllerInfoService;
-import laf.controllerInfo.ControllerInfoService.ControllerInfoCustomizerBase;
+import laf.controllerInfo.ControllerInfoCreationService;
+import laf.controllerInfo.ControllerInfoCreationService.ControllerInfoCustomizerBase;
 import laf.controllerInfo.ParameterInfoImpl;
 
 import org.slf4j.Logger;
@@ -31,10 +31,10 @@ public class ComponentControllerDiscoverer implements ControllerDiscoverer {
 	BeanManager beanManager;
 
 	@Inject
-	ControllerInfoService controllerInfoService;
+	ControllerInfoCreationService controllerInfoService;
 
 	@Override
-	public void discoverControllers(ControllerInfocCollector collector) {
+	public void discoverControllers(ControllerInfoCollector collector) {
 		ComponentController controllerAnnotation = new ComponentController() {
 			@Override
 			public Class<? extends Annotation> annotationType() {

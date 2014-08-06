@@ -7,7 +7,7 @@ import javax.inject.Inject;
 
 import laf.base.configuration.ConfigurationDefiner;
 import laf.controllerInfo.ControllerDiscoverer;
-import laf.controllerInfo.ControllerDiscoverers;
+import laf.controllerInfo.ControllerDiscoverersCP;
 import laf.http.ContentType;
 import laf.http.requestMapping.HttpRequestMappingRules;
 import laf.http.requestMapping.defaultRule.BasePackage;
@@ -77,7 +77,7 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 		// type.set("text/html");
 	}
 
-	public void produce(ControllerDiscoverers val) {
+	public void produce(ControllerDiscoverersCP val) {
 		val.set(new ArrayDeque<ControllerDiscoverer>());
 	}
 }

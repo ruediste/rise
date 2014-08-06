@@ -7,7 +7,7 @@ import javax.inject.Inject;
 
 import laf.base.configuration.ConfigurationDefiner;
 import laf.base.configuration.ExtendConfiguration;
-import laf.controllerInfo.ControllerDiscoverers;
+import laf.controllerInfo.ControllerDiscoverersCP;
 import laf.http.requestProcessing.DefaultControllerInvoker;
 import laf.mvc.*;
 import laf.mvc.html.RendersnakeViewRenderer;
@@ -38,7 +38,7 @@ public class MvcDefaultConfiguration implements ConfigurationDefiner {
 	}
 
 	@ExtendConfiguration
-	public void produce(ControllerDiscoverers val) {
+	public void produce(ControllerDiscoverersCP val) {
 		val.get().add(instance.select(MvcControllerDiscoverer.class).get());
 	}
 
