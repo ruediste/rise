@@ -7,7 +7,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import laf.base.ActionResult;
-import laf.http.ContentRenderResult;
+import laf.core.http.ContentRenderResult;
 import laf.mvc.ViewRenderer;
 
 import org.rendersnake.HtmlCanvas;

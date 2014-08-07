@@ -6,11 +6,11 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
-import laf.actionPath.ActionPath;
 import laf.base.ActionResult;
-import laf.http.requestMapping.parameterValueProvider.ParameterValueProvider;
-import laf.persistence.LafPersistenceContextManager;
-import laf.requestProcessing.DelegatingRequestProcessor;
+import laf.core.actionPath.ActionPath;
+import laf.core.http.requestMapping.parameterValueProvider.ParameterValueProvider;
+import laf.core.persistence.LafPersistenceContextManager;
+import laf.core.requestProcessing.DelegatingRequestProcessor;
 
 /**
  * Controller managing transactions and entity managers

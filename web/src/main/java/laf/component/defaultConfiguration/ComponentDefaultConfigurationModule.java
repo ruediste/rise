@@ -6,8 +6,8 @@ import laf.component.basic.htmlTemplate.BasicComponentsHtmlTemplateModule;
 import laf.component.html.impl.ComponentHtmlImplModule;
 import laf.component.html.template.HtmlTemplateModule;
 import laf.component.reqestProcessing.ComponentRequestProcessingModule;
-import laf.http.requestProcessing.HttpRequestProcessingModule;
-import laf.requestProcessing.RequestProcessingModule;
+import laf.core.http.requestProcessing.HttpRequestProcessingModule;
+import laf.core.requestProcessing.RequestProcessingModule;
 
 import org.jabsaw.Module;
 

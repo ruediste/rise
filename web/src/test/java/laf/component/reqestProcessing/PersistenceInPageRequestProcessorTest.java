@@ -8,13 +8,13 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import laf.actionPath.ActionPath;
 import laf.base.ActionResult;
 import laf.component.core.ControllerUtil;
 import laf.component.core.impl.ComponentCoreImplModule;
 import laf.component.pageScope.PageScopeManager;
-import laf.http.requestMapping.parameterValueProvider.ParameterValueProvider;
-import laf.requestProcessing.RequestProcessor;
+import laf.core.actionPath.ActionPath;
+import laf.core.http.requestMapping.parameterValueProvider.ParameterValueProvider;
+import laf.core.requestProcessing.RequestProcessor;
 import laf.test.DeploymentProvider;
 import laf.test.TestEntity;
 

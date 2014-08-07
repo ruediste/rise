@@ -7,8 +7,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 
-import laf.persistence.LafEntityManagerFactory;
-import laf.persistence.LafPersistenceContextManager;
+import laf.core.persistence.LafEntityManagerFactory;
+import laf.core.persistence.LafPersistenceContextManager;
 
 public class TestEntityManagerProducer {
 	@Inject

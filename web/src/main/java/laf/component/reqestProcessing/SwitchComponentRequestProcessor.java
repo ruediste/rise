@@ -3,7 +3,7 @@ package laf.component.reqestProcessing;
 import javax.inject.Inject;
 
 import laf.base.configuration.ConfigurationValue;
-import laf.requestProcessing.RequestProcessor;
+import laf.core.requestProcessing.RequestProcessor;
 
 public class SwitchComponentRequestProcessor extends
 		SwitchComponentRequestProcessorBase {

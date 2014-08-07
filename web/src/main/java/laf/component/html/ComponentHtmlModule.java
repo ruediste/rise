@@ -2,7 +2,7 @@ package laf.component.html;
 
 import laf.base.BaseModule;
 import laf.component.core.ComponentCoreModule;
-import laf.http.HttpModule;
+import laf.core.http.HttpModule;
 
 import org.jabsaw.Module;
 

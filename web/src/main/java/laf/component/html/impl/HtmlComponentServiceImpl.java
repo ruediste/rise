@@ -18,7 +18,7 @@ import laf.component.core.ComponentView;
 import laf.component.html.HtmlComponentService;
 import laf.component.tree.Component;
 import laf.component.tree.ComponentTreeUtil;
-import laf.http.ContentType;
+import laf.core.http.ContentType;
 
 import org.rendersnake.HtmlCanvas;
 

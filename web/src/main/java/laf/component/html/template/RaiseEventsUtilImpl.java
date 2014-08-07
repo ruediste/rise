@@ -4,7 +4,7 @@ import javax.inject.Inject;
 
 import laf.component.html.HtmlComponentService;
 import laf.component.tree.Component;
-import laf.http.request.HttpRequest;
+import laf.core.http.request.HttpRequest;
 
 public class RaiseEventsUtilImpl implements RaiseEventsUtil {
 

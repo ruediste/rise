@@ -1,6 +1,6 @@
 package laf.component;
 
-import laf.controllerInfo.ControllerType;
+import laf.core.controllerInfo.ControllerType;
 
 /**
  * Controller type used by the component framework

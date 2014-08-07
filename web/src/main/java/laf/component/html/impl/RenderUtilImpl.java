@@ -5,9 +5,6 @@ import java.io.IOException;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import laf.actionPath.ActionInvocation;
-import laf.actionPath.ActionPath;
-import laf.actionPath.PathActionResult;
 import laf.component.core.ComponentConstants;
 import laf.component.core.ComponentCoreModule;
 import laf.component.html.HtmlComponentService;
@@ -15,7 +12,8 @@ import laf.component.html.RenderUtil;
 import laf.component.html.template.HtmlTemplateService;
 import laf.component.pageScope.PageScopeManager;
 import laf.component.tree.Component;
-import laf.html.RenderUtilBaseImpl;
+import laf.core.actionPath.*;
+import laf.core.html.RenderUtilBaseImpl;
 
 import org.rendersnake.HtmlCanvas;
 

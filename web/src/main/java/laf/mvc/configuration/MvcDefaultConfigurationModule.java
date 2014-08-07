@@ -1,9 +1,9 @@
 package laf.mvc.configuration;
 
 import laf.base.BaseModule;
-import laf.http.requestProcessing.HttpRequestProcessingModule;
+import laf.core.http.requestProcessing.HttpRequestProcessingModule;
+import laf.core.requestProcessing.RequestProcessingModule;
 import laf.mvc.html.MvcHtmlModule;
-import laf.requestProcessing.RequestProcessingModule;
 
 import org.jabsaw.Module;
 

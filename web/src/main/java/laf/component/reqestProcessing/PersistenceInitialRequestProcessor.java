@@ -9,14 +9,14 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
-import laf.actionPath.ActionPath;
 import laf.base.ActionResult;
 import laf.base.Val;
 import laf.component.pageScope.PageScoped;
-import laf.http.requestMapping.parameterValueProvider.ParameterValueProvider;
-import laf.persistence.LafPersistenceContextManager;
-import laf.persistence.LafPersistenceHolder;
-import laf.requestProcessing.DelegatingRequestProcessor;
+import laf.core.actionPath.ActionPath;
+import laf.core.http.requestMapping.parameterValueProvider.ParameterValueProvider;
+import laf.core.persistence.LafPersistenceContextManager;
+import laf.core.persistence.LafPersistenceHolder;
+import laf.core.requestProcessing.DelegatingRequestProcessor;
 
 import org.slf4j.Logger;
 

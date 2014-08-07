@@ -1,6 +1,6 @@
 package laf.mvc;
 
-import laf.controllerInfo.ControllerType;
+import laf.core.controllerInfo.ControllerType;
 
 /**
  * Controller type used by the MVC framework

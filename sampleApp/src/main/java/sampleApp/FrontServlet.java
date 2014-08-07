@@ -2,7 +2,7 @@ package sampleApp;
 
 import javax.servlet.annotation.WebServlet;
 
-import laf.FrontServletBase;
+import laf.core.http.FrontServletBase;
 
 @WebServlet(value = "/front/*", loadOnStartup = 10)
 public class FrontServlet extends FrontServletBase {

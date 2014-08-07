@@ -4,7 +4,7 @@ import javax.enterprise.context.ApplicationScoped;
 
 import laf.base.attachedProperties.AttachedProperty;
 import laf.base.attachedProperties.AttachedPropertyBearer;
-import laf.controllerInfo.ActionMethodInfo;
+import laf.core.controllerInfo.ActionMethodInfo;
 
 @ApplicationScoped
 public class MvcService {

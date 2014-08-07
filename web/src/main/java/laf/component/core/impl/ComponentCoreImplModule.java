@@ -3,7 +3,7 @@ package laf.component.core.impl;
 import laf.base.BaseModule;
 import laf.component.core.ComponentCoreModule;
 import laf.component.reqestProcessing.ComponentRequestProcessingModule;
-import laf.persistence.PersistenceModule;
+import laf.core.persistence.PersistenceModule;
 
 import org.jabsaw.Module;
 

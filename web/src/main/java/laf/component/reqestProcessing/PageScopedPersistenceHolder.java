@@ -5,7 +5,7 @@ import java.io.Serializable;
 import javax.enterprise.inject.Typed;
 
 import laf.component.pageScope.PageScoped;
-import laf.persistence.LafPersistenceHolder;
+import laf.core.persistence.LafPersistenceHolder;
 
 @PageScoped
 @Typed(PageScopedPersistenceHolder.class)

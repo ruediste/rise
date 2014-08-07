@@ -7,7 +7,7 @@ import javax.persistence.PersistenceContext;
 import laf.base.BaseModule;
 import laf.component.core.ComponentCoreModule;
 import laf.component.core.ControllerUtil;
-import laf.controllerInfo.ControllerInfoModule;
+import laf.core.controllerInfo.ControllerInfoModule;
 
 import org.jabsaw.Module;
 

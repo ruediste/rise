@@ -3,7 +3,7 @@ package laf.component.html;
 import javax.inject.Inject;
 
 import laf.component.tree.Component;
-import laf.http.request.HttpRequest;
+import laf.core.http.request.HttpRequest;
 
 public class ApplyValuesUtilImpl implements ApplyValuesUtil {
 

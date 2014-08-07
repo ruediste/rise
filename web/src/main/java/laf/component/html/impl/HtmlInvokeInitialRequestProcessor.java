@@ -3,7 +3,6 @@ package laf.component.html.impl;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
-import laf.actionPath.ActionPath;
 import laf.base.ActionResult;
 import laf.base.configuration.ConfigurationValue;
 import laf.component.core.*;
@@ -11,9 +10,10 @@ import laf.component.core.impl.ControllerUtilImpl;
 import laf.component.html.HtmlComponentService;
 import laf.component.reqestProcessing.InitialControllerInvokerCP;
 import laf.component.reqestProcessing.InitialParameterLoaderCP;
-import laf.http.RedirectRenderResult;
-import laf.http.requestMapping.parameterValueProvider.ParameterValueProvider;
-import laf.requestProcessing.*;
+import laf.core.actionPath.ActionPath;
+import laf.core.http.RedirectRenderResult;
+import laf.core.http.requestMapping.parameterValueProvider.ParameterValueProvider;
+import laf.core.requestProcessing.*;
 
 public class HtmlInvokeInitialRequestProcessor extends
 		LoadAndInvokeRequestProcessor {

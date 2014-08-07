@@ -4,12 +4,12 @@ import java.util.*;
 
 import javax.inject.Inject;
 
-import laf.actionPath.ActionPath;
-import laf.actionPath.ActionPathFactory;
-import laf.http.request.HttpRequest;
-import laf.http.requestMapping.HttpRequestMappingRule;
-import laf.http.requestMapping.defaultRule.DefaultHttpRequestMappingRuleFactory;
-import laf.http.requestMapping.parameterValueProvider.ParameterValueProvider;
+import laf.core.actionPath.ActionPath;
+import laf.core.actionPath.ActionPathFactory;
+import laf.core.http.request.HttpRequest;
+import laf.core.http.requestMapping.HttpRequestMappingRule;
+import laf.core.http.requestMapping.defaultRule.DefaultHttpRequestMappingRuleFactory;
+import laf.core.http.requestMapping.parameterValueProvider.ParameterValueProvider;
 
 public class MappingRuleFactory {
 

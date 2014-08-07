@@ -1,7 +1,7 @@
 package laf.mvc.html;
 
 import laf.base.BaseModule;
-import laf.http.HttpModule;
+import laf.core.http.HttpModule;
 import laf.mvc.MvcModule;
 
 import org.jabsaw.Module;

@@ -5,7 +5,6 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
-import laf.actionPath.ActionPath;
 import laf.base.ActionResult;
 import laf.component.core.ComponentView;
 import laf.component.core.Page;
@@ -17,10 +16,11 @@ import laf.component.html.template.RaiseEventsUtilImpl;
 import laf.component.pageScope.PageScopeManager;
 import laf.component.tree.Component;
 import laf.component.tree.ComponentTreeUtil;
-import laf.http.RedirectRenderResult;
-import laf.http.request.HttpRequest;
-import laf.http.requestMapping.parameterValueProvider.ParameterValueProvider;
-import laf.requestProcessing.RequestProcessor;
+import laf.core.actionPath.ActionPath;
+import laf.core.http.RedirectRenderResult;
+import laf.core.http.request.HttpRequest;
+import laf.core.http.requestMapping.parameterValueProvider.ParameterValueProvider;
+import laf.core.requestProcessing.RequestProcessor;
 
 import org.slf4j.Logger;
 

@@ -4,7 +4,7 @@ import laf.base.BaseModule;
 import laf.component.core.impl.ComponentCoreImplModule;
 import laf.component.html.template.HtmlTemplateModule;
 import laf.component.reqestProcessing.ComponentRequestProcessingModule;
-import laf.requestProcessing.RequestProcessingModule;
+import laf.core.requestProcessing.RequestProcessingModule;
 
 import org.jabsaw.Module;
 

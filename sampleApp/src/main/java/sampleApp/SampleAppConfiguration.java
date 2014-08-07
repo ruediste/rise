@@ -4,15 +4,15 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import laf.actionPath.ActionPath;
-import laf.actionPath.ActionPathFactory;
 import laf.base.configuration.*;
 import laf.component.defaultConfiguration.DefaultComponentConfiguration;
-import laf.defaultConfiguration.DefaultConfiguration;
-import laf.http.request.HttpRequest;
-import laf.http.requestMapping.HttpRequestMappingRule;
-import laf.http.requestMapping.HttpRequestMappingRules;
-import laf.http.requestMapping.parameterValueProvider.ParameterValueProvider;
+import laf.core.actionPath.ActionPath;
+import laf.core.actionPath.ActionPathFactory;
+import laf.core.defaultConfiguration.DefaultConfiguration;
+import laf.core.http.request.HttpRequest;
+import laf.core.http.requestMapping.HttpRequestMappingRule;
+import laf.core.http.requestMapping.HttpRequestMappingRules;
+import laf.core.http.requestMapping.parameterValueProvider.ParameterValueProvider;
 import laf.mvc.configuration.MvcDefaultConfiguration;
 
 @ApplicationScoped

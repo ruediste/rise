@@ -5,7 +5,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import laf.base.configuration.DiscoverConfigruationEvent;
-import laf.defaultConfiguration.DefaultConfiguration;
+import laf.core.defaultConfiguration.DefaultConfiguration;
 import laf.mvc.configuration.MvcDefaultConfiguration;
 
 @ApplicationScoped

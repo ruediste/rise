@@ -1,8 +1,8 @@
 package laf.mvc;
 
 import laf.base.BaseModule;
-import laf.persistence.PersistenceModule;
-import laf.requestProcessing.RequestProcessingModule;
+import laf.core.persistence.PersistenceModule;
+import laf.core.requestProcessing.RequestProcessingModule;
 
 import org.jabsaw.Module;
 

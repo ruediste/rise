@@ -6,8 +6,8 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
-import laf.controllerInfo.*;
-import laf.controllerInfo.ControllerInfoCreationService.ControllerInfoCustomizerBase;
+import laf.core.controllerInfo.*;
+import laf.core.controllerInfo.ControllerInfoCreationService.ControllerInfoCustomizerBase;
 
 import org.slf4j.Logger;
 

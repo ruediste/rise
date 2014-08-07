@@ -2,8 +2,8 @@ package laf.component.reqestProcessing;
 
 import laf.base.BaseModule;
 import laf.component.pageScope.PageScopeModule;
-import laf.persistence.PersistenceModule;
-import laf.requestProcessing.RequestProcessingModule;
+import laf.core.persistence.PersistenceModule;
+import laf.core.requestProcessing.RequestProcessingModule;
 
 import org.jabsaw.Module;
 

@@ -4,7 +4,7 @@ import java.util.Map;
 
 import laf.base.ViewTechnology;
 import laf.base.configuration.ConfigurationParameter;
-import laf.requestProcessing.RequestProcessor;
+import laf.core.requestProcessing.RequestProcessor;
 
 public interface InvokeReloadReqestProcessorsCP
 		extends

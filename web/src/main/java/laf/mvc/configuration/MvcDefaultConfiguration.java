@@ -7,11 +7,11 @@ import javax.inject.Inject;
 
 import laf.base.configuration.ConfigurationDefiner;
 import laf.base.configuration.ExtendConfiguration;
-import laf.controllerInfo.ControllerDiscoverersCP;
-import laf.http.requestProcessing.DefaultControllerInvoker;
+import laf.core.controllerInfo.ControllerDiscoverersCP;
+import laf.core.http.requestProcessing.DefaultControllerInvoker;
+import laf.core.requestProcessing.*;
 import laf.mvc.*;
 import laf.mvc.html.RendersnakeViewRenderer;
-import laf.requestProcessing.*;
 
 public class MvcDefaultConfiguration implements ConfigurationDefiner {
 

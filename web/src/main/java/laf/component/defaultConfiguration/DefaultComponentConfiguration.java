@@ -15,10 +15,10 @@ import laf.component.html.impl.HtmlInvokeInitialRequestProcessor;
 import laf.component.html.impl.HtmlInvokeReloadReqestProcessor;
 import laf.component.html.template.*;
 import laf.component.reqestProcessing.*;
-import laf.controllerInfo.ControllerDiscoverersCP;
-import laf.html.HtmlViewTechnology;
-import laf.http.requestProcessing.DefaultControllerInvoker;
-import laf.requestProcessing.*;
+import laf.core.controllerInfo.ControllerDiscoverersCP;
+import laf.core.html.HtmlViewTechnology;
+import laf.core.http.requestProcessing.DefaultControllerInvoker;
+import laf.core.requestProcessing.*;
 
 public class DefaultComponentConfiguration implements ConfigurationDefiner {
 

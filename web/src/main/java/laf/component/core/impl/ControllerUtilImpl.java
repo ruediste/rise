@@ -7,7 +7,7 @@ import javax.transaction.*;
 import laf.base.ActionResult;
 import laf.component.core.ControllerUtil;
 import laf.component.reqestProcessing.PageScopedPersistenceHolder;
-import laf.persistence.*;
+import laf.core.persistence.*;
 
 import org.slf4j.Logger;
 

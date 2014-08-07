@@ -9,8 +9,8 @@ import javax.inject.Inject;
 import laf.base.ActionResult;
 import laf.component.core.ComponentConstants;
 import laf.component.core.ComponentController;
-import laf.controllerInfo.*;
-import laf.controllerInfo.ControllerInfoCreationService.ControllerInfoCustomizerBase;
+import laf.core.controllerInfo.*;
+import laf.core.controllerInfo.ControllerInfoCreationService.ControllerInfoCustomizerBase;
 
 import org.slf4j.Logger;
 
