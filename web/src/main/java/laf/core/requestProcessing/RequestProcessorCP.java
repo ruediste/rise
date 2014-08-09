@@ -2,7 +2,7 @@ package laf.core.requestProcessing;
 
 import laf.base.configuration.ConfigurationParameter;
 
-public interface RequestProcessorConfigurationParameter extends
+public interface RequestProcessorCP extends
 		ConfigurationParameter<RequestProcessor> {
 
 }

@@ -11,7 +11,7 @@ import laf.base.ViewTechnologyManager;
 import laf.base.configuration.ConfigurationValue;
 import laf.core.html.HtmlViewTechnology;
 import laf.core.http.requestProcessing.HttpRequestProcessor;
-import laf.core.requestProcessing.RequestProcessorConfigurationParameter;
+import laf.core.requestProcessing.RequestProcessorCP;
 
 public class DefaultHttpRequestProcessor implements HttpRequestProcessor {
 
@@ -22,7 +22,7 @@ public class DefaultHttpRequestProcessor implements HttpRequestProcessor {
 	ConfigurationValue<ResultRenderers> renderers;
 
 	@Inject
-	ConfigurationValue<RequestProcessorConfigurationParameter> innerProcessor;
+	ConfigurationValue<RequestProcessorCP> innerProcessor;
 
 	@Inject
 	ViewTechnologyManager viewTechnologyManager;

@@ -43,7 +43,7 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 		parameterHandlers.set(handlers);
 	}
 
-	public void produce(RequestProcessorConfigurationParameter val) {
+	public void produce(RequestProcessorCP val) {
 		SwitchControllerTypeRequestProcessor switchProcessor = instance.select(
 				SwitchControllerTypeRequestProcessor.class).get();
 		ErrorHandlingRequestProcessor errorProcessor = instance.select(
