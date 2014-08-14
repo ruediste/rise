@@ -1,14 +1,15 @@
 package laf.test;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
+import javax.persistence.*;
 
-import laf.core.persistence.LafEntityManagerFactory;
+import laf.core.persistence.EntityManagerSupplierToken;
 import laf.core.persistence.LafPersistenceContextManager;
+
+import com.google.common.base.Supplier;
 
 public class TestEntityManagerProducer {
 	@Inject
@@ -17,16 +18,23 @@ public class TestEntityManagerProducer {
 	@PersistenceUnit
 	EntityManagerFactory factory;
 
-	@Produces
-	@ApplicationScoped
-	EntityManager produceManager() {
-		return contextManager
-				.produceManagerDelegate(new LafEntityManagerFactory() {
+	private EntityManagerSupplierToken token;
+
+	@PostConstruct
+	public void initialize() {
+		token = contextManager
+				.registerEntityManagerSupplier(new Supplier<EntityManager>() {
 
 					@Override
-					public EntityManager createEntityManager() {
+					public EntityManager get() {
 						return factory.createEntityManager();
 					}
 				});
+	}
+
+	@Produces
+	@ApplicationScoped
+	EntityManager produceManager() {
+		return contextManager.produceManagerDelegate(token);
 	}
 }

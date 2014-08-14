@@ -7,41 +7,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.metamodel.Metamodel;
 
-/**
- * {@link EntityManager} implementation associated with a
- * {@link LafEntityManagerFactory} which always delegates to the
- * {@link EntityManager} provided by the {@link LafPersistenceHolder} returned
- * by {@link LafPersistenceContextManager#getCurrentHolder()}
- */
-class LafEntityManager implements EntityManager {
-
-	public static class NoPersistenceContextException extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-
-		public NoPersistenceContextException() {
-			super("No Persistence Context is active. Use "
-					+ LafPersistenceContextManager.class.getSimpleName()
-					+ " to make one active");
-		}
-	}
-
-	private LafPersistenceContextManager manager;
-	private LafEntityManagerFactory factory;
-
-	LafEntityManager(LafPersistenceContextManager manager,
-			LafEntityManagerFactory factory) {
-		this.manager = manager;
-		this.factory = factory;
-
-	}
-
-	private EntityManager delegate() {
-		LafPersistenceHolder holder = manager.getCurrentHolder();
-		if (holder == null) {
-			throw new NoPersistenceContextException();
-		}
-		return holder.getEntityManager(factory);
-	}
+public abstract class DelegatingEntityManager implements EntityManager {
 
 	@Override
 	public void persist(Object entity) {
@@ -194,8 +160,7 @@ class LafEntityManager implements EntityManager {
 	}
 
 	@Override
-	public Query createNativeQuery(String sqlString,
-			@SuppressWarnings("rawtypes") Class resultClass) {
+	public Query createNativeQuery(String sqlString, Class resultClass) {
 		return delegate().createNativeQuery(sqlString, resultClass);
 	}
 
@@ -249,4 +214,5 @@ class LafEntityManager implements EntityManager {
 		return delegate().getMetamodel();
 	}
 
+	abstract protected EntityManager delegate();
 }

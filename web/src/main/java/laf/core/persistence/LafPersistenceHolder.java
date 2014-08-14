@@ -19,16 +19,19 @@ public class LafPersistenceHolder {
 	@Inject
 	LafLogger log;
 
-	private Map<LafEntityManagerFactory, EntityManager> entityManagers = new HashMap<LafEntityManagerFactory, EntityManager>();
+	@Inject
+	LafPersistenceContextManager manager;
 
-	public EntityManager getEntityManager(LafEntityManagerFactory factory) {
+	private Map<EntityManagerSupplierToken, EntityManager> entityManagers = new HashMap<>();
 
-		EntityManager result = entityManagers.get(factory);
+	public EntityManager getEntityManager(EntityManagerSupplierToken token) {
+
+		EntityManager result = entityManagers.get(token);
 		if (result == null) {
-			result = factory.createEntityManager();
-			log.debug("Created entity manager " + result + " for factory "
-					+ factory + " in persistence holder " + this);
-			entityManagers.put(factory, result);
+			result = manager.produceEntityManager(token);
+			log.debug("Created entity manager " + result + " for token "
+					+ token + " in persistence holder " + this);
+			entityManagers.put(token, result);
 		}
 		return result;
 	}
@@ -51,9 +54,5 @@ public class LafPersistenceHolder {
 			em.flush();
 		}
 
-	}
-
-	public String implToString() {
-		return toString();
 	}
 }
