@@ -2,8 +2,8 @@ package laf.component.core;
 
 import javax.inject.Inject;
 
-import laf.core.actionPath.ActionPathFactory;
-import laf.core.actionPath.ActionPathFactory.ActionPathBuilder;
+import laf.mvc.actionPath.ActionPathFactory;
+import laf.mvc.actionPath.ActionPathFactory.ActionPathBuilder;
 
 public class ComponentViewUtil {
 

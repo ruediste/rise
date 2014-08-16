@@ -6,9 +6,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import laf.base.ActionResult;
-import laf.core.actionPath.ActionPath;
 import laf.core.http.request.HttpRequest;
 import laf.core.http.requestMapping.HttpRequestMappingService;
+import laf.mvc.actionPath.ActionPath;
 
 @ApplicationScoped
 public class HttpService {

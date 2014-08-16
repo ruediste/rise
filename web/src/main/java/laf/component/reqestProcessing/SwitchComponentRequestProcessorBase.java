@@ -5,9 +5,9 @@ import javax.inject.Inject;
 import laf.base.ActionResult;
 import laf.component.core.ComponentConstants;
 import laf.component.pageScope.PageScopeManager;
-import laf.core.actionPath.ActionPath;
 import laf.core.http.requestMapping.parameterValueProvider.ParameterValueProvider;
 import laf.core.requestProcessing.RequestProcessor;
+import laf.mvc.actionPath.ActionPath;
 
 public abstract class SwitchComponentRequestProcessorBase implements
 RequestProcessor {

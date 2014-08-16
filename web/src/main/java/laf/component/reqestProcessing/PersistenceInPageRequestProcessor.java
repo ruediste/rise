@@ -3,10 +3,10 @@ package laf.component.reqestProcessing;
 import javax.inject.Inject;
 
 import laf.base.*;
-import laf.core.actionPath.ActionPath;
 import laf.core.http.requestMapping.parameterValueProvider.ParameterValueProvider;
 import laf.core.persistence.LafPersistenceContextManager;
 import laf.core.requestProcessing.DelegatingRequestProcessor;
+import laf.mvc.actionPath.ActionPath;
 
 public class PersistenceInPageRequestProcessor extends
 		DelegatingRequestProcessor {

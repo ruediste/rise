@@ -12,9 +12,9 @@ import laf.base.ActionResult;
 import laf.component.core.ControllerUtil;
 import laf.component.core.impl.ComponentCoreImplModule;
 import laf.component.pageScope.PageScopeManager;
-import laf.core.actionPath.ActionPath;
 import laf.core.http.requestMapping.parameterValueProvider.ParameterValueProvider;
 import laf.core.requestProcessing.RequestProcessor;
+import laf.mvc.actionPath.ActionPath;
 import laf.test.DeploymentProvider;
 import laf.test.TestEntity;
 

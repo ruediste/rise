@@ -6,11 +6,11 @@ import javax.inject.Singleton;
 import laf.base.BaseModule;
 import laf.base.BaseModule.ProjectStage;
 import laf.base.configuration.ConfigurationValue;
-import laf.core.actionPath.ActionPath;
-import laf.core.actionPath.ActionPath.ParameterValueComparator;
 import laf.core.controllerInfo.ControllerInfoRepository;
 import laf.core.http.request.HttpRequest;
 import laf.core.http.requestMapping.parameterValueProvider.ParameterValueProvider;
+import laf.mvc.actionPath.ActionPath;
+import laf.mvc.actionPath.ActionPath.ParameterValueComparator;
 
 @Singleton
 public class HttpRequestMappingService {

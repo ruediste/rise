@@ -3,8 +3,8 @@ package laf.component.html;
 import java.io.IOException;
 
 import laf.component.tree.Component;
-import laf.core.actionPath.PathActionResult;
 import laf.core.html.RenderUtilBase;
+import laf.mvc.actionPath.PathActionResult;
 
 import org.rendersnake.HtmlCanvas;
 

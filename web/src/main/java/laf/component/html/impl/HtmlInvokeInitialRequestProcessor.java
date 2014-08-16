@@ -10,10 +10,10 @@ import laf.component.core.impl.ControllerUtilImpl;
 import laf.component.html.HtmlComponentService;
 import laf.component.reqestProcessing.InitialControllerInvokerCP;
 import laf.component.reqestProcessing.InitialParameterLoaderCP;
-import laf.core.actionPath.ActionPath;
 import laf.core.http.RedirectRenderResult;
 import laf.core.http.requestMapping.parameterValueProvider.ParameterValueProvider;
 import laf.core.requestProcessing.*;
+import laf.mvc.actionPath.ActionPath;
 
 public class HtmlInvokeInitialRequestProcessor extends
 		LoadAndInvokeRequestProcessor {

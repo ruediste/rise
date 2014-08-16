@@ -7,7 +7,6 @@ import javax.inject.Inject;
 
 import laf.actionPath.*;
 import laf.controllerInfo.impl.TestController;
-import laf.core.actionPath.*;
 import laf.core.controllerInfo.ControllerInfoRepository;
 import laf.core.defaultConfiguration.DefaultConfigurationModule;
 import laf.core.http.request.HttpRequestImpl;
@@ -15,6 +14,7 @@ import laf.core.http.requestMapping.HttpRequestMappingService;
 import laf.core.http.requestMapping.defaultRule.DefaultHttpRequestMappingModule;
 import laf.core.http.requestMapping.parameterValueProvider.ParameterValueProvider;
 import laf.core.requestProcessing.ObjectActionPathProducer;
+import laf.mvc.actionPath.*;
 import laf.mvc.configuration.MvcDefaultConfigurationModule;
 import laf.test.DeploymentProvider;
 import laf.test.TestConfigurationFactory;

@@ -12,8 +12,8 @@ import laf.component.html.RenderUtil;
 import laf.component.html.template.HtmlTemplateService;
 import laf.component.pageScope.PageScopeManager;
 import laf.component.tree.Component;
-import laf.core.actionPath.*;
 import laf.core.html.RenderUtilBaseImpl;
+import laf.mvc.actionPath.*;
 
 import org.rendersnake.HtmlCanvas;
 

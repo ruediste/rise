@@ -9,9 +9,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import laf.base.ActionResult;
-import laf.core.actionPath.ActionPath;
 import laf.core.http.requestMapping.parameterValueProvider.ParameterValueProvider;
 import laf.core.requestProcessing.RequestProcessor;
+import laf.mvc.actionPath.ActionPath;
 import laf.test.DeploymentProvider;
 import laf.test.TestEntity;
 

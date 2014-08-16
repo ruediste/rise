@@ -7,10 +7,10 @@ import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 import laf.base.ActionResult;
-import laf.core.actionPath.ActionPath;
 import laf.core.http.requestMapping.parameterValueProvider.ParameterValueProvider;
 import laf.core.persistence.LafPersistenceContextManager;
 import laf.core.requestProcessing.DelegatingRequestProcessor;
+import laf.mvc.actionPath.ActionPath;
 
 /**
  * Controller managing transactions and entity managers

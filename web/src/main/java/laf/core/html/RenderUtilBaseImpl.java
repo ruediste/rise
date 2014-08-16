@@ -8,10 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import laf.base.ActionResult;
-import laf.core.actionPath.ActionPathFactory;
-import laf.core.actionPath.ActionPathFactory.ActionPathBuilder;
 import laf.core.http.HttpService;
 import laf.core.http.requestMapping.HttpRequestMappingService;
+import laf.mvc.actionPath.ActionPathFactory;
+import laf.mvc.actionPath.ActionPathFactory.ActionPathBuilder;
 
 import org.rendersnake.HtmlAttributesFactory;
 import org.rendersnake.HtmlCanvas;

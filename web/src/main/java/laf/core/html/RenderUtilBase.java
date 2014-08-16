@@ -3,7 +3,7 @@ package laf.core.html;
 import java.io.IOException;
 
 import laf.base.ActionResult;
-import laf.core.actionPath.ActionPathFactory.ActionPathBuilder;
+import laf.mvc.actionPath.ActionPathFactory.ActionPathBuilder;
 
 import org.rendersnake.HtmlCanvas;
 

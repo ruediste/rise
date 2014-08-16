@@ -16,11 +16,11 @@ import laf.component.html.template.RaiseEventsUtilImpl;
 import laf.component.pageScope.PageScopeManager;
 import laf.component.tree.Component;
 import laf.component.tree.ComponentTreeUtil;
-import laf.core.actionPath.ActionPath;
 import laf.core.http.RedirectRenderResult;
 import laf.core.http.request.HttpRequest;
 import laf.core.http.requestMapping.parameterValueProvider.ParameterValueProvider;
 import laf.core.requestProcessing.RequestProcessor;
+import laf.mvc.actionPath.ActionPath;
 
 import org.slf4j.Logger;
 

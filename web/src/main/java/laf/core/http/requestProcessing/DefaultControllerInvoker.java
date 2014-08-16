@@ -7,12 +7,12 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import laf.base.ActionResult;
-import laf.core.actionPath.ActionInvocation;
-import laf.core.actionPath.ActionPath;
 import laf.core.controllerInfo.ActionMethodInfo;
 import laf.core.controllerInfo.ControllerInfo;
 import laf.core.requestProcessing.ControllerInvoker;
 import laf.core.requestProcessing.CurrentControllerProducer;
+import laf.mvc.actionPath.ActionInvocation;
+import laf.mvc.actionPath.ActionPath;
 
 public class DefaultControllerInvoker implements ControllerInvoker {
 

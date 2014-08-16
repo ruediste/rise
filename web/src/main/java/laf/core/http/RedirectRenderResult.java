@@ -6,9 +6,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import laf.base.ActionResult;
 import laf.base.InstanceFactory;
-import laf.core.actionPath.PathActionResult;
 import laf.core.http.request.HttpRequest;
 import laf.core.http.requestMapping.HttpRequestMappingService;
+import laf.mvc.actionPath.PathActionResult;
 
 public class RedirectRenderResult implements HttpRenderResult {
 

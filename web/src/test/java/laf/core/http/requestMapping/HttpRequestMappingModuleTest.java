@@ -10,11 +10,11 @@ import java.util.*;
 
 import laf.base.BaseModule;
 import laf.base.configuration.ConfigurationValueImpl;
-import laf.core.actionPath.ActionPath;
-import laf.core.actionPath.ActionPath.ParameterValueComparator;
 import laf.core.http.request.HttpRequestImpl;
 import laf.core.http.requestMapping.*;
 import laf.core.http.requestMapping.parameterValueProvider.ParameterValueProvider;
+import laf.mvc.actionPath.ActionPath;
+import laf.mvc.actionPath.ActionPath.ParameterValueComparator;
 
 import org.junit.Before;
 import org.junit.Test;

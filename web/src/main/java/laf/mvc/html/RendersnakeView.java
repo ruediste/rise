@@ -2,8 +2,6 @@ package laf.mvc.html;
 
 import java.io.IOException;
 
-import laf.mvc.View;
-
 import org.rendersnake.HtmlCanvas;
 
 /**

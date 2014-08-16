@@ -7,7 +7,7 @@ import laf.component.pageScope.PageScopeModule;
 import laf.component.tree.Component;
 import laf.component.tree.ComponentTreeModule;
 import laf.component.tree.event.ComponentEventModule;
-import laf.core.actionPath.ActionPathModule;
+import laf.mvc.actionPath.ActionPathModule;
 
 import org.jabsaw.Module;
 

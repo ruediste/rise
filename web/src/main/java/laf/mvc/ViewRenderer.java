@@ -3,6 +3,7 @@ package laf.mvc;
 import java.io.IOException;
 
 import laf.base.ActionResult;
+import laf.mvc.html.View;
 
 /**
  * Renderer for {@link View} instances. Used by the {@link ViewActionResult} to
