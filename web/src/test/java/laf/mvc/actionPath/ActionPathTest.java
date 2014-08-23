@@ -43,32 +43,32 @@ public class ActionPathTest {
 	}
 
 	@Test
-	public void testMapWithParameter() throws Exception {
-		ActionPath<String> path = new ActionPath<String>();
-		ActionInvocation<String> invocation = new ActionInvocation<>();
-		path.getElements().add(invocation);
-		invocation.getArguments().add("foo");
-
-		ActionMethodInfo methodInfo = mock(ActionMethodInfo.class);
-		invocation.setMethodInfo(methodInfo);
-
-		ParameterInfo parameterInfo = mock(ParameterInfo.class);
-		when(methodInfo.getParameters()).thenReturn(
-				Arrays.asList(parameterInfo));
-
-		ActionPath<String> result = path
-				.mapWithParameter(new Function2<ParameterInfo, String, String>() {
-
-					@Override
-					public String apply(ParameterInfo a, String b) {
-						assertEquals("foo", b);
-						return "bar";
-					}
-				});
-
-		assertEquals(1, result.getElements().size());
-		assertSame(methodInfo, result.getElements().get(0).getMethodInfo());
-		assertSame("bar", result.getElements().get(0).getArguments().get(0));
-
-	}
+		public void testMapWithType() throws Exception {
+			ActionPath<String> path = new ActionPath<String>();
+			ActionInvocation<String> invocation = new ActionInvocation<>();
+			path.getElements().add(invocation);
+			invocation.getArguments().add("foo");
+	
+			ActionMethodInfo methodInfo = mock(ActionMethodInfo.class);
+			invocation.setMethodInfo(methodInfo);
+	
+			ParameterInfo parameterInfo = mock(ParameterInfo.class);
+			when(methodInfo.getParameters()).thenReturn(
+					Arrays.asList(parameterInfo));
+	
+			ActionPath<String> result = path
+					.mapWithType(new Function2<ParameterInfo, String, String>() {
+	
+						@Override
+						public String apply(ParameterInfo a, String b) {
+							assertEquals("foo", b);
+							return "bar";
+						}
+					});
+	
+			assertEquals(1, result.getElements().size());
+			assertSame(methodInfo, result.getElements().get(0).getMethodInfo());
+			assertSame("bar", result.getElements().get(0).getArguments().get(0));
+	
+		}
 }

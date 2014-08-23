@@ -1,8 +1,11 @@
 package laf.mvc.actionPath;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
-import laf.mvc.EmbeddedController;
+import laf.base.ActionResult;
+import laf.mvc.api.EmbeddedController;
+import laf.mvc.api.Updating;
 
 public class ControllerReflectionUtil {
 
@@ -10,8 +13,13 @@ public class ControllerReflectionUtil {
 		return cls.isAnnotationPresent(EmbeddedController.class);
 	}
 
-	public static boolean isActionMethod(Method thisMethod) {
-		// TODO Auto-generated method stub
-		return false;
+	public static boolean isActionMethod(Method method) {
+		return Modifier.isPublic(method.getModifiers())
+				&& (ActionResult.class.isAssignableFrom(method.getReturnType()) || isEmbeddedController(method
+						.getReturnType()));
+	}
+
+	public static boolean isUpdating(Method method) {
+		return method.isAnnotationPresent(Updating.class);
 	}
 }

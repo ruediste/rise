@@ -5,12 +5,6 @@ import static org.junit.Assert.assertEquals;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import laf.base.configuration.ConfigurationDefiner;
-import laf.base.configuration.ConfigurationModule;
-import laf.base.configuration.ConfigurationParameter;
-import laf.base.configuration.ConfigurationValue;
-import laf.base.configuration.DiscoverConfigruationEvent;
-import laf.base.configuration.ExtendConfiguration;
 import laf.test.DeploymentProvider;
 
 import org.jabsaw.util.Modules;
@@ -48,7 +42,11 @@ public class ConfigurationFactoryTest {
 	}
 
 	private static interface TestConfigurationParameterD extends
-	ConfigurationParameter<String> {
+			ConfigurationParameter<String> {
+	}
+
+	private static interface TestConfigurationParameterE extends
+			ConfigurationParameter<String> {
 	}
 
 	static class TestConfigurationDefinerA implements ConfigurationDefiner {
@@ -87,6 +85,11 @@ public class ConfigurationFactoryTest {
 		public void produce(TestConfigurationParameterD val) {
 			val.set("FooB");
 		}
+
+		public void produce(TestConfigurationParameterE val,
+				TestConfigurationParameterD theD) {
+			val.set("e" + theD.get());
+		}
 	}
 
 	@Inject
@@ -98,6 +101,8 @@ public class ConfigurationFactoryTest {
 	ConfigurationValue<TestConfigurationParameterC> configValueC;
 	@Inject
 	ConfigurationValue<TestConfigurationParameterD> configValueD;
+	@Inject
+	ConfigurationValue<TestConfigurationParameterE> configValueE;
 
 	@Test
 	public void test() {
@@ -105,5 +110,6 @@ public class ConfigurationFactoryTest {
 		assertEquals("FooA", configValueB.value().get());
 		assertEquals("FooBFooA", configValueC.value().get());
 		assertEquals("FooB", configValueD.value().get());
+		assertEquals("eFooB", configValueE.value().get());
 	}
 }

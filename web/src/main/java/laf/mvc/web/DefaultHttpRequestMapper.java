@@ -11,8 +11,8 @@ import javax.inject.Inject;
 
 import laf.core.http.request.HttpRequest;
 import laf.core.http.request.HttpRequestImpl;
-import laf.mvc.Controller;
 import laf.mvc.actionPath.*;
+import laf.mvc.api.Controller;
 
 import org.slf4j.Logger;
 
@@ -31,8 +31,7 @@ public class DefaultHttpRequestMapper implements HttpRequestMapper {
 
 	private HashMap<Class<?>, BiMap<Method, String>> actionMethodNameMap = new HashMap<>();
 
-	public void initialize(ControllerRepository controllerRepository,
-			Function<Class<?>, String> nameMapper) {
+	public void initialize(Function<Class<?>, String> nameMapper) {
 
 		// initialize controller name map
 		Controller controller = new Controller() {

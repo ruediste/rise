@@ -16,10 +16,7 @@ public interface HttpRenderResult extends ActionResult {
 
 	/**
 	 * Send the render result to the given response.
-	 * @param util TODO
-	 * 
-	 * @throws IOException
-	 *             if there is an issue with the provided response
 	 */
-	public void sendTo(HttpServletResponse response, HttpRenderResultUtil util) throws IOException;
+	public void sendTo(HttpServletResponse response, HttpRenderResultUtil util)
+			throws IOException;
 }

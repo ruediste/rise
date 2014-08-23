@@ -1,4 +1,4 @@
-package laf.mvc.html;
+package laf.mvc;
 
 /**
  * Base Class for views of the MVC framework

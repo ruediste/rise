@@ -1,4 +1,4 @@
-package laf.core.http.requestProcessing;
+package laf.mvc;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -7,14 +7,11 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import laf.base.ActionResult;
-import laf.core.controllerInfo.ActionMethodInfo;
-import laf.core.controllerInfo.ControllerInfo;
-import laf.core.requestProcessing.ControllerInvoker;
 import laf.core.requestProcessing.CurrentControllerProducer;
 import laf.mvc.actionPath.ActionInvocation;
 import laf.mvc.actionPath.ActionPath;
 
-public class DefaultControllerInvoker implements ControllerInvoker {
+public class ControllerInvoker implements RequestHandler<Object> {
 
 	@Inject
 	@Any
@@ -24,16 +21,13 @@ public class DefaultControllerInvoker implements ControllerInvoker {
 	CurrentControllerProducer currentControllerProducer;
 
 	@Override
-	public ActionResult invoke(ActionPath<Object> actionPath) {
+	public ActionResult handle(ActionPath<Object> actionPath) {
 		Object lastActionMethodResult = null;
 		for (ActionInvocation<Object> invocation : actionPath.getElements()) {
 			// determine controller
 			Object controller;
-			ActionMethodInfo methodInfo = invocation.getMethodInfo();
 			if (lastActionMethodResult == null) {
-				ControllerInfo controllerInfo = methodInfo.getControllerInfo();
-				Class<?> controllerClass = controllerInfo.getControllerClass();
-
+				Class<?> controllerClass = invocation.getControllerClass();
 				controller = controllerInstance.select(controllerClass).get();
 			} else {
 				controller = lastActionMethodResult;
@@ -42,15 +36,15 @@ public class DefaultControllerInvoker implements ControllerInvoker {
 			// invoke controller
 			currentControllerProducer.setCurrentController(controller);
 			try {
-				lastActionMethodResult = methodInfo.getMethod().invoke(
+				lastActionMethodResult = invocation.getMethod().invoke(
 						controller, invocation.getArguments().toArray());
 			} catch (IllegalAccessException | IllegalArgumentException e) {
 				throw new RuntimeException("Error calling action method "
-						+ methodInfo, e);
+						+ invocation.getMethod(), e);
 			} catch (InvocationTargetException e) {
 				throw new RuntimeException(
 						"Error during invocation of action method "
-								+ methodInfo, e.getCause());
+								+ invocation.getMethod(), e.getCause());
 			}
 
 		}

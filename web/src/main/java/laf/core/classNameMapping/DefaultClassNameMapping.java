@@ -8,10 +8,10 @@ import com.google.common.collect.Iterables;
 
 public class DefaultClassNameMapping implements Function<Class<?>, String> {
 
-	final private String basePackage;
-	final private String suffix;
+	private String basePackage;
+	private String suffix;
 
-	public DefaultClassNameMapping(String basePackage, String suffix) {
+	public void initialize(String basePackage, String suffix) {
 		this.basePackage = basePackage;
 		this.suffix = suffix;
 	}

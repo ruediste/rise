@@ -6,7 +6,6 @@ import javax.inject.Inject;
 
 import laf.base.ActionResult;
 import laf.base.configuration.ConfigurationValue;
-import laf.mvc.html.View;
 
 /**
  * Utility classes for controllers for the MVC framework

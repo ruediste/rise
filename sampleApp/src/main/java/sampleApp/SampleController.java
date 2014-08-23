@@ -4,8 +4,8 @@ import javax.inject.Inject;
 import javax.transaction.UserTransaction;
 
 import laf.base.ActionResult;
-import laf.mvc.Controller;
 import laf.mvc.MvcControllerUtil;
+import laf.mvc.api.Controller;
 
 @Controller
 public class SampleController {

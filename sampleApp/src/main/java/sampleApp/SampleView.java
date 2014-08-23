@@ -5,7 +5,7 @@ import static org.rendersnake.HtmlAttributesFactory.href;
 import java.io.IOException;
 
 import laf.mvc.html.MvcRenderUtil;
-import laf.mvc.html.RendersnakeView;
+import laf.mvc.web.RendersnakeView;
 
 import org.rendersnake.HtmlCanvas;
 

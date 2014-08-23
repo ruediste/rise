@@ -1,21 +1,18 @@
 package laf.mvc;
 
 import javax.inject.Inject;
-import javax.transaction.NotSupportedException;
-import javax.transaction.Status;
-import javax.transaction.SystemException;
-import javax.transaction.UserTransaction;
+import javax.transaction.*;
 
 import laf.base.ActionResult;
-import laf.core.http.requestMapping.parameterValueProvider.ParameterValueProvider;
 import laf.core.persistence.LafPersistenceContextManager;
-import laf.core.requestProcessing.DelegatingRequestProcessor;
 import laf.mvc.actionPath.ActionPath;
+import laf.mvc.actionPath.ControllerReflectionUtil;
 
 /**
  * Controller managing transactions and entity managers
  */
-public class MvcPersistenceRequestProcessor extends DelegatingRequestProcessor {
+public class PersistenceRequestHandler extends
+		DelegatingRequestHandler<String, String> {
 
 	@Inject
 	UserTransaction transaction;
@@ -23,13 +20,10 @@ public class MvcPersistenceRequestProcessor extends DelegatingRequestProcessor {
 	@Inject
 	LafPersistenceContextManager contextManager;
 
-	@Inject
-	MvcService mvcService;
-
 	@Override
-	public ActionResult process(ActionPath<ParameterValueProvider> actionPath) {
-		boolean updating = mvcService.isUpdating(actionPath.getLast()
-				.getMethodInfo());
+	public ActionResult handle(ActionPath<String> actionPath) {
+		boolean updating = ControllerReflectionUtil.isUpdating(actionPath
+				.getLast().getMethod());
 		if (updating) {
 			// TODO: start serializable transaction
 		}
@@ -42,7 +36,7 @@ public class MvcPersistenceRequestProcessor extends DelegatingRequestProcessor {
 					transaction.setRollbackOnly();
 				}
 
-				return getDelegate().process(actionPath);
+				return getDelegate().handle(actionPath);
 			} finally {
 				if (transaction.getStatus() == Status.STATUS_ACTIVE
 						|| transaction.getStatus() == Status.STATUS_MARKED_ROLLBACK) {

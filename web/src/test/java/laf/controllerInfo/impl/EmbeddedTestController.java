@@ -1,7 +1,7 @@
 package laf.controllerInfo.impl;
 
 import laf.base.ActionResult;
-import laf.mvc.EmbeddedController;
+import laf.mvc.api.EmbeddedController;
 
 @EmbeddedController
 public class EmbeddedTestController {

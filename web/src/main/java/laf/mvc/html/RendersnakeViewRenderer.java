@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import laf.base.ActionResult;
 import laf.core.http.ContentRenderResult;
 import laf.mvc.ViewRenderer;
+import laf.mvc.web.RendersnakeView;
 
 import org.rendersnake.HtmlCanvas;
 
