@@ -5,11 +5,11 @@ import static org.rendersnake.HtmlAttributesFactory.href;
 import java.io.IOException;
 
 import laf.mvc.html.MvcRenderUtil;
-import laf.mvc.web.RendersnakeView;
+import laf.mvc.web.MvcWebView;
 
 import org.rendersnake.HtmlCanvas;
 
-public class SampleView extends RendersnakeView<String> {
+public class SampleView extends MvcWebView<String> {
 
 	@Override
 	public void render(HtmlCanvas html, MvcRenderUtil util) throws IOException {

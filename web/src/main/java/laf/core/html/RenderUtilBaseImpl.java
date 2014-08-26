@@ -10,8 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 import laf.base.ActionResult;
 import laf.core.http.HttpService;
 import laf.core.http.requestMapping.HttpRequestMappingService;
+import laf.mvc.actionPath.ActionPathBuilderBase;
 import laf.mvc.actionPath.ActionPathFactory;
-import laf.mvc.actionPath.ActionPathFactory.ActionPathBuilder;
 
 import org.rendersnake.HtmlAttributesFactory;
 import org.rendersnake.HtmlCanvas;
@@ -42,7 +42,7 @@ public class RenderUtilBaseImpl implements RenderUtilBase {
 	}
 
 	@Override
-	public ActionPathBuilder path() {
+	public ActionPathBuilderBase path() {
 		return actionPathFactory.buildActionPath();
 	}
 

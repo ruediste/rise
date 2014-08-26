@@ -1,5 +1,7 @@
 package laf.mvc.web;
 
+import javax.inject.Inject;
+
 import laf.core.http.request.HttpRequest;
 import laf.core.requestParserChain.RequestParseResult;
 import laf.core.requestParserChain.RequestParser;
@@ -7,6 +9,9 @@ import laf.mvc.RequestHandler;
 import laf.mvc.actionPath.ActionPath;
 
 public class MvcWebRequestParser implements RequestParser<HttpRequest> {
+
+	@Inject
+	RenderUtilImpl renderUtil;
 
 	private final class ParseResult implements RequestParseResult<HttpRequest> {
 		private ActionPath<String> path;

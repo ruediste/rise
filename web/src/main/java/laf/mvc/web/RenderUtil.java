@@ -1,19 +1,18 @@
-package laf.core.html;
+package laf.mvc.web;
 
 import java.io.IOException;
 
 import laf.base.ActionResult;
-import laf.mvc.actionPath.ActionPathBuilderBase;
 
 import org.rendersnake.HtmlCanvas;
 
-public interface RenderUtilBase {
+public interface RenderUtil {
 
 	public abstract <T> T path(Class<T> controller);
 
 	public abstract String url(ActionResult path);
 
-	public abstract ActionPathBuilderBase path();
+	public abstract ActionPathBuilder path();
 
 	public abstract String resourceUrl(String string);
 

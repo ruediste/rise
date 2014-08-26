@@ -9,8 +9,7 @@ import laf.core.classNameMapping.DefaultClassNameMapping;
 import laf.core.defaultConfiguration.ArgumentSerializerChainCP;
 import laf.core.defaultConfiguration.HttpRequestParserChainCP;
 import laf.mvc.*;
-import laf.mvc.web.DefaultHttpRequestMapper;
-import laf.mvc.web.MvcWebRequestParser;
+import laf.mvc.web.*;
 
 public class MvcWebDefaultConfiguration implements ConfigurationDefiner {
 
@@ -52,19 +51,32 @@ public class MvcWebDefaultConfiguration implements ConfigurationDefiner {
 		val.set(instance.select(ControllerInvoker.class).get());
 	}
 
+	public void produce(RequestMappingUtilInitializerCP val,
+			HttpRequestMapperCP requestMapperCP,
+			ArgumentSerializerChainCP serializerChainCP) {
+		RequestMappingUtilInitializer result = instance.select(
+				RequestMappingUtilInitializer.class).get();
+
+		result.initialize(requestMapperCP.get(), serializerChainCP.get());
+		val.set(result);
+	}
+
+	public void produce(RenderResultRendererCP val) {
+		val.set(instance.select(ResultRenderer.class).get());
+	}
+
 	public void produce(RequestHandlerCP val,
+			RequestMappingUtilInitializerCP requestMappingUtilInitializerCV,
+			RenderResultRendererCP resultRendererCV,
 			PersistenceRequestHandlerCP persistenceCV,
 			ArgumentLoadingRequestHandlerCP argumentLoaderCV,
 			ControllerInvokerCP invokerCV) {
-		DelegatingRequestHandler<String, String> persistence = persistenceCV
-				.get();
-		DelegatingRequestHandler<String, Object> loader = argumentLoaderCV
-				.get();
-		RequestHandler<Object> invoker = invokerCV.get();
-
-		persistence.setDelegate(loader);
-		loader.setDelegate(invoker);
-		val.set(persistence);
+		requestMappingUtilInitializerCV.get().setDelegate(
+				resultRendererCV.get());
+		resultRendererCV.get().setDelegate(persistenceCV.get());
+		persistenceCV.get().setDelegate(argumentLoaderCV.get());
+		argumentLoaderCV.get().setDelegate(invokerCV.get());
+		val.set(requestMappingUtilInitializerCV.get());
 	}
 
 	public void produce(RequestParserCP val, HttpRequestMapperCP mapper,

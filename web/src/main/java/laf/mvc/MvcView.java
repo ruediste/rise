@@ -3,7 +3,7 @@ package laf.mvc;
 /**
  * Base Class for views of the MVC framework
  */
-public class View<TData> {
+public class MvcView<TData> {
 
 	private TData data;
 

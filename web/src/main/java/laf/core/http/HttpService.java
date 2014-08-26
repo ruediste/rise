@@ -1,14 +1,14 @@
 package laf.core.http;
 
+import java.io.IOException;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import laf.base.ActionResult;
-import laf.core.http.request.HttpRequest;
-import laf.core.http.requestMapping.HttpRequestMappingService;
-import laf.mvc.actionPath.ActionPath;
+import org.rendersnake.HtmlAttributesFactory;
+import org.rendersnake.HtmlCanvas;
 
 @ApplicationScoped
 public class HttpService {
@@ -18,27 +18,10 @@ public class HttpService {
 	@Inject
 	HttpServletResponse response;
 
-	@Inject
-	HttpRequestMappingService httpRequestMappingService;
-
-	public String url(ActionResult path) {
-		@SuppressWarnings("unchecked")
-		HttpRequest url = httpRequestMappingService
-		.generate((ActionPath<Object>) path);
-		return url(url.getPathWithParameters());
-	}
-
 	public String url(String path) {
 		String prefix = request.getContextPath();
 		prefix += request.getServletPath();
 		return response.encodeURL(prefix + "/" + path);
-	}
-
-	public String redirectUrl(ActionResult path) {
-		@SuppressWarnings("unchecked")
-		HttpRequest url = httpRequestMappingService
-		.generate((ActionPath<Object>) path);
-		return redirectUrl(url.getPathWithParameters());
 	}
 
 	public String redirectUrl(String path) {
@@ -47,4 +30,18 @@ public class HttpService {
 		return response.encodeRedirectURL(prefix + "/" + path);
 	}
 
+	public void startHtmlPage(HtmlCanvas html) throws IOException {
+		html.write(
+				"<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">",
+				false);
+		html.html(HtmlAttributesFactory.xmlns("http://www.w3.org/1999/xhtml"));
+	}
+
+	/**
+	 * Return the URL of a resource
+	 */
+	public String resourceUrl(String resource) {
+		return response.encodeURL(request.getContextPath() + "/static/"
+				+ resource);
+	}
 }
