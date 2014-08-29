@@ -2,16 +2,16 @@ package laf.mvc.web;
 
 import javax.inject.Inject;
 
-import laf.base.ActionResult;
 import laf.core.argumentSerializer.ArgumentSerializerChain;
-import laf.mvc.DelegatingRequestHandler;
-import laf.mvc.actionPath.ActionPath;
+import laf.core.base.ActionResult;
+import laf.mvc.core.DelegatingRequestHandler;
+import laf.mvc.core.actionPath.ActionPath;
 
 public class RequestMappingUtilInitializer extends
 		DelegatingRequestHandler<String, String> {
 
 	@Inject
-	RequestMappingUtilImpl mappingUtil;
+	RequestMappingUtil mappingUtil;
 
 	private HttpRequestMapper requestMapper;
 

@@ -1,9 +1,9 @@
 package laf.controllerInfo.impl;
 
-import laf.base.ActionResult;
-import laf.mvc.api.Controller;
+import laf.core.base.ActionResult;
+import laf.mvc.core.api.MController;
 
-@Controller
+@MController
 public class TestController {
 
 	public void nonActionMethod() {

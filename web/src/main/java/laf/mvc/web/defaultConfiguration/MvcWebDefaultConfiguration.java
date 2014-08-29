@@ -3,12 +3,10 @@ package laf.mvc.web.defaultConfiguration;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import laf.base.configuration.ConfigurationDefiner;
-import laf.base.configuration.ExtendConfiguration;
-import laf.core.classNameMapping.DefaultClassNameMapping;
-import laf.core.defaultConfiguration.ArgumentSerializerChainCP;
-import laf.core.defaultConfiguration.HttpRequestParserChainCP;
-import laf.mvc.*;
+import laf.core.base.configuration.ConfigurationDefiner;
+import laf.core.base.configuration.ExtendConfiguration;
+import laf.core.defaultConfiguration.*;
+import laf.mvc.core.*;
 import laf.mvc.web.*;
 
 public class MvcWebDefaultConfiguration implements ConfigurationDefiner {
@@ -18,13 +16,6 @@ public class MvcWebDefaultConfiguration implements ConfigurationDefiner {
 
 	public void produce(BasePackageCP val) {
 		val.set("");
-	}
-
-	public void produce(ControllerNameMappingCP val, BasePackageCP basePackage) {
-		DefaultClassNameMapping mapping = instance.select(
-				DefaultClassNameMapping.class).get();
-		mapping.initialize(basePackage.get(), "Controller");
-		val.set(mapping);
 	}
 
 	public void produce(HttpRequestMapperCP val,

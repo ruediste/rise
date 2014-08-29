@@ -1,6 +1,6 @@
 package laf.core.http.request;
 
-import laf.base.BaseModule;
+import laf.core.base.BaseModule;
 
 import org.jabsaw.Module;
 

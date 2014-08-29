@@ -1,9 +1,9 @@
 package laf.component;
 
-import laf.component.core.ComponentView;
-import laf.component.tree.Component;
+import laf.component.core.api.CView;
+import laf.component.core.tree.Component;
 
-public class TestComponentViewA extends ComponentView<TestControllerA> {
+public class TestComponentViewA extends CView<TestControllerA> {
 
 	@Override
 	public Component createComponents() {

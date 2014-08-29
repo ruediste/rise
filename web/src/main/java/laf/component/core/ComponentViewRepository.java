@@ -12,7 +12,8 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
-import laf.base.Pair;
+import laf.component.core.api.CView;
+import laf.core.base.Pair;
 
 import com.google.common.reflect.TypeToken;
 
@@ -20,7 +21,7 @@ import com.google.common.reflect.TypeToken;
 public class ComponentViewRepository {
 
 	@Inject
-	Instance<ComponentView<?>> componentViewInstance;
+	Instance<CView<?>> componentViewInstance;
 
 	@Inject
 	BeanManager beanManager;
@@ -28,7 +29,7 @@ public class ComponentViewRepository {
 	Map<Pair<Class<?>, Class<? extends IViewQualifier>>, ViewEntry> viewMap = new HashMap<>();
 
 	private static class ViewEntry {
-		public Class<? extends ComponentView<?>> viewClass;
+		public Class<? extends CView<?>> viewClass;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -36,7 +37,7 @@ public class ComponentViewRepository {
 	public void initialize() {
 		// iterate over all views
 		for (Bean<?> bean : beanManager.getBeans(
-				new TypeToken<ComponentView<?>>() {
+				new TypeToken<CView<?>>() {
 					private static final long serialVersionUID = 1L;
 				}.getType(), new Any() {
 
@@ -47,13 +48,13 @@ public class ComponentViewRepository {
 				})) {
 			// find the controller class of the view
 			Class<?> controllerClass = TypeToken.of(bean.getBeanClass())
-					.resolveType(ComponentView.class.getTypeParameters()[0])
+					.resolveType(CView.class.getTypeParameters()[0])
 					.getRawType();
 
 			// create an entry for the view
 			ViewEntry entry = new ViewEntry();
 
-			entry.viewClass = (Class<? extends ComponentView<?>>) bean
+			entry.viewClass = (Class<? extends CView<?>>) bean
 					.getBeanClass();
 			ViewQualifier viewQualifierAnnotation = bean.getBeanClass()
 					.getAnnotation(ViewQualifier.class);
@@ -70,8 +71,8 @@ public class ComponentViewRepository {
 				throw new RuntimeException("Two views found for controller "
 						+ controllerClass.getName() + " and qualifier "
 						+ qualifier == null ? "null" : qualifier.getName()
-								+ ": " + entry.viewClass.getName() + ", "
-								+ existing.viewClass.getName());
+						+ ": " + entry.viewClass.getName() + ", "
+						+ existing.viewClass.getName());
 			}
 		}
 	}
@@ -79,7 +80,7 @@ public class ComponentViewRepository {
 	/**
 	 * Create a view for the given controller
 	 */
-	public <T> ComponentView<T> createView(T controller) {
+	public <T> CView<T> createView(T controller) {
 		return createView(controller, null);
 	}
 
@@ -87,7 +88,7 @@ public class ComponentViewRepository {
 	 * Create a view for the given controller and qualifier
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> ComponentView<T> createView(T controller,
+	public <T> CView<T> createView(T controller,
 			Class<? extends IViewQualifier> qualifier) {
 		Class<? extends Object> controllerClass = controller.getClass();
 		// get the list of possible views
@@ -100,10 +101,9 @@ public class ComponentViewRepository {
 		}
 
 		// create view instance
-		ComponentView<T> result = (ComponentView<T>) componentViewInstance
+		CView<T> result = (CView<T>) componentViewInstance
 				.select(entry.viewClass).get();
-		result.setController(controller);
-		result.initialize();
+		result.initialize(controller);
 		return result;
 	}
 }

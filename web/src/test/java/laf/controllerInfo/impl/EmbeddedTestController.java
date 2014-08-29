@@ -1,9 +1,9 @@
 package laf.controllerInfo.impl;
 
-import laf.base.ActionResult;
-import laf.mvc.api.EmbeddedController;
+import laf.core.base.ActionResult;
+import laf.mvc.core.api.MEmbeddedController;
 
-@EmbeddedController
+@MEmbeddedController
 public class EmbeddedTestController {
 	public ActionResult actionMethodEmbedded() {
 		return null;

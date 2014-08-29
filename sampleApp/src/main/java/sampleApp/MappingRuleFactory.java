@@ -8,8 +8,8 @@ import laf.core.http.request.HttpRequest;
 import laf.core.http.requestMapping.HttpRequestMappingRule;
 import laf.core.http.requestMapping.defaultRule.DefaultHttpRequestMappingRuleFactory;
 import laf.core.http.requestMapping.parameterValueProvider.ParameterValueProvider;
-import laf.mvc.actionPath.ActionPath;
-import laf.mvc.actionPath.ActionPathFactory;
+import laf.mvc.core.actionPath.ActionPath;
+import laf.mvc.core.actionPath.ActionPathFactory;
 
 public class MappingRuleFactory {
 

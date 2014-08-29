@@ -1,8 +1,8 @@
 package laf.core.http.requestMapping.defaultRule;
 
 import static org.junit.Assert.assertEquals;
-import laf.base.configuration.ConfigurationValueImpl;
 import laf.controllerInfo.impl.TestController;
+import laf.core.base.configuration.ConfigurationValueImpl;
 import laf.core.controllerInfo.ControllerInfo;
 import laf.core.controllerInfo.ControllerInfoImpl;
 import laf.core.http.requestMapping.defaultRule.BasePackage;

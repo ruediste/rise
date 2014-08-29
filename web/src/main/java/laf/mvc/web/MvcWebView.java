@@ -2,7 +2,8 @@ package laf.mvc.web;
 
 import java.io.IOException;
 
-import laf.mvc.MvcView;
+import laf.mvc.core.MvcView;
+import laf.mvc.web.api.RenderUtil;
 
 import org.rendersnake.HtmlCanvas;
 

@@ -2,12 +2,12 @@ package laf.component.core;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import laf.base.BaseModule;
-import laf.component.pageScope.PageScopeModule;
-import laf.component.tree.Component;
-import laf.component.tree.ComponentTreeModule;
-import laf.component.tree.event.ComponentEventModule;
-import laf.mvc.actionPath.ActionPathModule;
+import laf.component.core.pageScope.PageScopeModule;
+import laf.component.core.tree.Component;
+import laf.component.core.tree.ComponentTreeModule;
+import laf.component.core.tree.event.ComponentEventModule;
+import laf.core.base.BaseModule;
+import laf.mvc.core.actionPath.ActionPathModule;
 
 import org.jabsaw.Module;
 

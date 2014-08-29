@@ -8,7 +8,7 @@ import javax.enterprise.inject.Typed;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
-import laf.base.LafLogger;
+import laf.core.base.LafLogger;
 
 /**
  * Represents a map of {@link LafEntityManagerFactory}s to the corresponding

@@ -6,7 +6,7 @@ import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
-import laf.base.configuration.ConfigurationValue;
+import laf.core.base.configuration.ConfigurationValue;
 import laf.core.http.requestProcessing.HttpRequestProcessorConfigurationParameter;
 
 /**

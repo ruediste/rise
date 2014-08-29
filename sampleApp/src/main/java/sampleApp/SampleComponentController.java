@@ -1,9 +1,9 @@
 package sampleApp;
 
-import laf.base.ActionResult;
-import laf.component.core.ComponentController;
+import laf.component.core.api.CController;
+import laf.core.base.ActionResult;
 
-@ComponentController
+@CController
 public class SampleComponentController {
 
 	public ActionResult index() {

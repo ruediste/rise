@@ -1,9 +1,9 @@
 package laf.component;
 
-import laf.component.core.ComponentController;
+import laf.component.core.api.CController;
 
 
-@ComponentController
+@CController
 public class TestControllerB {
 
 }

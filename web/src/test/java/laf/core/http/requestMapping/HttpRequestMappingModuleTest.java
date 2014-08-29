@@ -8,13 +8,13 @@ import static org.mockito.Mockito.when;
 
 import java.util.*;
 
-import laf.base.BaseModule;
-import laf.base.configuration.ConfigurationValueImpl;
+import laf.core.base.BaseModule;
+import laf.core.base.configuration.ConfigurationValueImpl;
 import laf.core.http.request.HttpRequestImpl;
 import laf.core.http.requestMapping.*;
 import laf.core.http.requestMapping.parameterValueProvider.ParameterValueProvider;
-import laf.mvc.actionPath.ActionPath;
-import laf.mvc.actionPath.ActionPath.ParameterValueComparator;
+import laf.mvc.core.actionPath.ActionPath;
+import laf.mvc.core.actionPath.ActionPath.ParameterValueComparator;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -61,7 +61,7 @@ public class HttpRequestMappingModuleTest {
 		when(rule.parse(new HttpRequestImpl("foo"))).thenReturn(providerPath);
 		when(rule.generate(objectPath)).thenReturn(new HttpRequestImpl("foo"));
 		when(
-				objectPath.isCallToSameActionMethod(
+				objectPath.isCallToSameMethod(
 						same(providerPath),
 						Matchers.<ParameterValueComparator<Object, ParameterValueProvider>> any()))
 						.thenReturn(true);
@@ -97,7 +97,7 @@ public class HttpRequestMappingModuleTest {
 		when(rule.parse(new HttpRequestImpl("foo"))).thenReturn(
 				new ActionPath<ParameterValueProvider>());
 		when(baseModule.getProjectStage()).thenReturn(
-				laf.base.BaseModule.ProjectStage.PRODUCTION);
+				laf.core.base.BaseModule.ProjectStage.PRODUCTION);
 
 		mappingService.generate(objectPath);
 

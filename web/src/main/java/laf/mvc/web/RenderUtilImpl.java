@@ -6,9 +6,10 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import laf.base.ActionResult;
+import laf.core.base.ActionResult;
 import laf.core.http.HttpService;
-import laf.mvc.actionPath.PathActionResult;
+import laf.mvc.core.actionPath.PathActionResult;
+import laf.mvc.web.api.RenderUtil;
 
 import org.rendersnake.HtmlCanvas;
 

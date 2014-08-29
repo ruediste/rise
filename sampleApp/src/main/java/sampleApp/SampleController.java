@@ -3,11 +3,11 @@ package sampleApp;
 import javax.inject.Inject;
 import javax.transaction.UserTransaction;
 
-import laf.base.ActionResult;
+import laf.core.base.ActionResult;
 import laf.mvc.MvcControllerUtil;
-import laf.mvc.api.Controller;
+import laf.mvc.core.api.MController;
 
-@Controller
+@MController
 public class SampleController {
 
 	@Inject

@@ -1,7 +1,7 @@
 package laf.mvc.web.defaultConfiguration;
 
-import laf.base.configuration.ConfigurationParameter;
-import laf.mvc.DelegatingRequestHandler;
+import laf.core.base.configuration.ConfigurationParameter;
+import laf.mvc.core.DelegatingRequestHandler;
 
 public interface RenderResultRendererCP extends
 		ConfigurationParameter<DelegatingRequestHandler<String, String>> {

@@ -5,8 +5,8 @@ import javax.inject.Inject;
 import laf.core.http.request.HttpRequest;
 import laf.core.requestParserChain.RequestParseResult;
 import laf.core.requestParserChain.RequestParser;
-import laf.mvc.RequestHandler;
-import laf.mvc.actionPath.ActionPath;
+import laf.mvc.core.RequestHandler;
+import laf.mvc.core.actionPath.ActionPath;
 
 public class MvcWebRequestParser implements RequestParser<HttpRequest> {
 

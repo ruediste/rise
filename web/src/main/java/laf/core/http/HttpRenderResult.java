@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
-import laf.base.ActionResult;
+import laf.core.base.ActionResult;
 
 /**
  * Contains the result of handling a http request. The result should be kept in

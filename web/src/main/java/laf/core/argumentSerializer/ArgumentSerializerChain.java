@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import laf.base.Function2;
+import laf.core.base.Function2;
 
 import com.google.common.base.Supplier;
 

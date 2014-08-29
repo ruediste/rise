@@ -4,7 +4,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import laf.base.BaseModule;
+import laf.core.base.BaseModule;
 
 import org.jabsaw.Module;
 

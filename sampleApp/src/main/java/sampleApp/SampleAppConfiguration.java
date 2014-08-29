@@ -4,16 +4,16 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import laf.base.configuration.*;
 import laf.component.defaultConfiguration.DefaultComponentConfiguration;
+import laf.core.base.configuration.*;
 import laf.core.defaultConfiguration.DefaultConfiguration;
 import laf.core.http.request.HttpRequest;
 import laf.core.http.requestMapping.HttpRequestMappingRule;
 import laf.core.http.requestMapping.HttpRequestMappingRules;
 import laf.core.http.requestMapping.parameterValueProvider.ParameterValueProvider;
-import laf.mvc.actionPath.ActionPath;
-import laf.mvc.actionPath.ActionPathFactory;
 import laf.mvc.configuration.MvcDefaultConfiguration;
+import laf.mvc.core.actionPath.ActionPath;
+import laf.mvc.core.actionPath.ActionPathFactory;
 
 @ApplicationScoped
 public class SampleAppConfiguration implements ConfigurationDefiner {

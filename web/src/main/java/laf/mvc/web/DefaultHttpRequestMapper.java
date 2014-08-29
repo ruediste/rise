@@ -9,10 +9,12 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
+import laf.core.MethodInvocation;
 import laf.core.http.request.HttpRequest;
 import laf.core.http.request.HttpRequestImpl;
-import laf.mvc.actionPath.*;
-import laf.mvc.api.Controller;
+import laf.mvc.core.actionPath.ActionPath;
+import laf.mvc.core.actionPath.ControllerReflectionUtil;
+import laf.mvc.core.api.MController;
 
 import org.slf4j.Logger;
 
@@ -34,11 +36,11 @@ public class DefaultHttpRequestMapper implements HttpRequestMapper {
 	public void initialize(Function<Class<?>, String> nameMapper) {
 
 		// initialize controller name map
-		Controller controller = new Controller() {
+		MController controller = new MController() {
 
 			@Override
 			public Class<? extends Annotation> annotationType() {
-				return Controller.class;
+				return MController.class;
 			}
 		};
 		for (Bean<?> bean : beanManager.getBeans(Object.class, controller)) {
@@ -102,7 +104,7 @@ public class DefaultHttpRequestMapper implements HttpRequestMapper {
 				return null;
 			}
 
-			ActionInvocation<String> invocation = new ActionInvocation<>(
+			MethodInvocation<String> invocation = new MethodInvocation<>(
 					controllerClass, actionMethod);
 
 			for (; i < parts.length; i++) {
@@ -125,26 +127,26 @@ public class DefaultHttpRequestMapper implements HttpRequestMapper {
 		StringBuilder sb = new StringBuilder();
 		// add indentifier
 		{
-			Iterator<ActionInvocation<String>> it = path.getElements()
+			Iterator<MethodInvocation<String>> it = path.getElements()
 					.iterator();
 			if (!it.hasNext()) {
 				throw new RuntimeException(
 						"Tried to generate URL of empty ActionPath");
 			}
 
-			ActionInvocation<String> element = it.next();
-			sb.append(controllerNameMap.get(element.getControllerClass()));
+			MethodInvocation<String> element = it.next();
+			sb.append(controllerNameMap.get(element.getInstanceClass()));
 		}
 
 		// add methods
-		for (ActionInvocation<String> element : path.getElements()) {
+		for (MethodInvocation<String> element : path.getElements()) {
 			sb.append(".");
-			sb.append(actionMethodNameMap.get(element.getControllerClass())
-					.get(element.getMethod()));
+			sb.append(actionMethodNameMap.get(element.getInstanceClass()).get(
+					element.getMethod()));
 		}
 
 		// add arguments
-		for (ActionInvocation<String> element : path.getElements()) {
+		for (MethodInvocation<String> element : path.getElements()) {
 			for (String argument : element.getArguments()) {
 				sb.append("/");
 				sb.append(argument);

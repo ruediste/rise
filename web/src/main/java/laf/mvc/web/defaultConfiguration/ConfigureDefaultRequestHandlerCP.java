@@ -1,6 +1,6 @@
 package laf.mvc.web.defaultConfiguration;
 
-import laf.base.configuration.ConfigurationParameter;
+import laf.core.base.configuration.ConfigurationParameter;
 
 public interface ConfigureDefaultRequestHandlerCP extends
 		ConfigurationParameter<Boolean> {

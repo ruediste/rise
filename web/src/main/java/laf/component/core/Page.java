@@ -2,7 +2,8 @@ package laf.component.core;
 
 import java.io.Serializable;
 
-import laf.component.pageScope.PageScoped;
+import laf.component.core.api.CView;
+import laf.component.core.pageScope.PageScoped;
 
 /**
  * Contains various page related information
@@ -10,13 +11,13 @@ import laf.component.pageScope.PageScoped;
 @PageScoped
 public class Page implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private ComponentView<?> view;
+	private CView<?> view;
 
-	public ComponentView<?> getView() {
+	public CView<?> getView() {
 		return view;
 	}
 
-	public void setView(ComponentView<?> view) {
+	public void setView(CView<?> view) {
 		this.view = view;
 	}
 }

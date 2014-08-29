@@ -5,7 +5,7 @@ import javax.ejb.Startup;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import laf.base.configuration.ConfigurationValue;
+import laf.core.base.configuration.ConfigurationValue;
 
 @Startup
 @ApplicationScoped

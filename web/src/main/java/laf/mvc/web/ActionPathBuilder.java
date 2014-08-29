@@ -1,6 +1,6 @@
 package laf.mvc.web;
 
-import laf.mvc.actionPath.ActionPathBuilderBase;
+import laf.mvc.core.actionPath.ActionPathBuilderBase;
 
 public class ActionPathBuilder extends ActionPathBuilderBase {
 

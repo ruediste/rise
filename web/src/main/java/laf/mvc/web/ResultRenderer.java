@@ -5,11 +5,11 @@ import java.io.IOException;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
-import laf.base.ActionResult;
-import laf.base.LafLogger;
+import laf.core.base.ActionResult;
+import laf.core.base.LafLogger;
 import laf.core.http.HttpRenderResult;
-import laf.mvc.DelegatingRequestHandler;
-import laf.mvc.actionPath.ActionPath;
+import laf.mvc.core.DelegatingRequestHandler;
+import laf.mvc.core.actionPath.ActionPath;
 
 public class ResultRenderer extends DelegatingRequestHandler<String, String> {
 

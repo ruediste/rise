@@ -8,6 +8,7 @@ import laf.component.TestComponentViewB2;
 import laf.component.TestControllerA;
 import laf.component.TestControllerB;
 import laf.component.TestViewQualifier1;
+import laf.component.core.api.CView;
 import laf.test.DeploymentProvider;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -25,7 +26,7 @@ public class ComponentViewRepositoryTest {
 		return DeploymentProvider.getDefault().addClasses(
 				ComponentViewRepository.class, TestComponentViewA.class,
 				TestComponentViewB1.class, TestComponentViewB2.class,
-				ComponentView.class);
+				CView.class);
 	}
 
 	@Inject
@@ -34,7 +35,7 @@ public class ComponentViewRepositoryTest {
 	@Test
 	public void getSimple() {
 		TestControllerA controllerA = new TestControllerA();
-		ComponentView<TestControllerA> view = componentViewRepository
+		CView<TestControllerA> view = componentViewRepository
 				.createView(controllerA);
 		Assert.assertEquals(TestComponentViewA.class, view.getClass());
 	}
@@ -42,7 +43,7 @@ public class ComponentViewRepositoryTest {
 	@Test
 	public void getQualifier() {
 
-		ComponentView<TestControllerB> view = componentViewRepository
+		CView<TestControllerB> view = componentViewRepository
 				.createView(new TestControllerB(), TestViewQualifier1.class);
 		Assert.assertTrue(view instanceof TestComponentViewB1);
 	}
