@@ -7,7 +7,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
 import laf.core.base.configuration.ConfigurationValue;
-import laf.core.http.requestProcessing.HttpRequestProcessorConfigurationParameter;
+import laf.core.defaultConfiguration.HttpRequestParserChainCP;
+import laf.core.http.request.DelegatingHttpRequest;
 
 /**
  * Framework entry point
@@ -15,7 +16,7 @@ import laf.core.http.requestProcessing.HttpRequestProcessorConfigurationParamete
 public class FrontServletBase extends HttpServlet {
 
 	@Inject
-	ConfigurationValue<HttpRequestProcessorConfigurationParameter> processor;
+	ConfigurationValue<HttpRequestParserChainCP> parserChain;
 
 	@Inject
 	HttpServletResponseProducer httpServletResponseProducer;
@@ -41,7 +42,8 @@ public class FrontServletBase extends HttpServlet {
 		httpServletRequestProducer.setRequest(req);
 		httpServletResponseProducer.setResponse(resp);
 
-		processor.value().get().process(req, resp);
+		DelegatingHttpRequest request = new DelegatingHttpRequest(req);
+		parserChain.value().get().parse(request).handle(request);
 	}
 
 }
