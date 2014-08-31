@@ -42,7 +42,14 @@ import org.jabsaw.Module;
 @Module(description = "Core of the Component Framework", exported = {
 		ComponentTreeModule.class, CoreBaseModule.class, PageScopeModule.class,
 		ComponentEventModule.class, ComponentEventModule.class,
-		MvcActionPathModule.class })
+		MvcActionPathModule.class }, imported = {
+		laf.component.core.reqestProcessing.ComponentCoreRequestProcessingModule.class,
+		laf.core.base.attachedProperties.CoreAttachedPropertiesModule.class,
+		laf.core.http.request.CoreHttpRequestModule.class,
+		laf.core.persistence.PersistenceModule.class,
+		laf.core.http.CoreHttpModule.class, laf.core.base.BaseModuleImpl.class,
+		laf.core.CoreModule.class,
+		laf.component.core.api.ComponentCoreApiModule.class })
 @ApplicationScoped
 public class ComponentCoreModule {
 

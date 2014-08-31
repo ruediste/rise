@@ -4,8 +4,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import laf.core.base.CoreBaseModule;
-
 import org.jabsaw.Module;
 
 /**
@@ -23,7 +21,7 @@ import org.jabsaw.Module;
  * If a context is destroyed, the containing {@link EntityManager}s are closed.
  * </p>
  */
-@Module(description = "Manage EntityManagers", imported = { CoreBaseModule.class })
+@Module(description = "Manage EntityManagers", imported = { laf.core.base.BaseModuleImpl.class })
 public class PersistenceModule {
 
 }
