@@ -2,10 +2,8 @@ package laf.component.web.api;
 
 import java.io.IOException;
 
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import laf.component.core.ComponentCoreModule;
 import laf.component.core.pageScope.PageScopeManager;
 import laf.component.core.tree.Component;
 import laf.component.web.HtmlComponentService;
@@ -17,12 +15,6 @@ import org.rendersnake.HtmlCanvas;
 public class CWRenderUtil extends PathGeneratingUtilImpl {
 
 	@Inject
-	ComponentCoreModule componentCoreModule;
-
-	@Inject
-	Instance<CWRenderUtil> renderUtilInstance;
-
-	@Inject
 	HtmlComponentService componentService;
 
 	@Inject
@@ -31,34 +23,33 @@ public class CWRenderUtil extends PathGeneratingUtilImpl {
 	@Inject
 	PageScopeManager pageScopeManager;
 
-	private Component component;
+	private ThreadLocal<Component> currentComponent = new ThreadLocal<Component>();
 
 	public long pageId() {
 		return pageScopeManager.getId();
 	}
 
 	public String getKey(String key) {
-		return componentService.calculateKey(component, key);
+		return componentService.calculateKey(getComponent(), key);
 	}
 
 	public Component getComponent() {
-		return component;
-	}
-
-	public void setComponent(Component component) {
-		this.component = component;
+		return currentComponent.get();
 	}
 
 	public void render(HtmlCanvas html, Component component) throws IOException {
-		CWRenderUtil util = renderUtilInstance.get();
-		util.setComponent(component);
+		Component old = currentComponent.get();
+		try {
+			currentComponent.set(component);
+			htmlTemplateService.getTemplate(component).render(component, html);
+		} finally {
+			currentComponent.set(old);
+		}
 
-		htmlTemplateService.getTemplate(component)
-				.render(component, html, util);
 	}
 
 	public long getComponentId() {
-		return componentService.getComponentId(component);
+		return componentService.getComponentId(getComponent());
 	}
 
 	public String getReloadPath() {

@@ -5,7 +5,9 @@ import javax.inject.Inject;
 import javax.transaction.*;
 
 import laf.component.core.reqestProcessing.PageScopedPersistenceHolder;
+import laf.component.web.RequestMappingUtil;
 import laf.core.base.ActionResult;
+import laf.core.http.HttpService;
 import laf.core.persistence.LafPersistenceContextManager;
 import laf.core.persistence.LafPersistenceHolder;
 
@@ -14,7 +16,7 @@ import org.slf4j.Logger;
 public class ControllerUtilBase {
 
 	private ActionResult errorDestination;
-	private ActionResult destination;
+	private String destinationUrl;
 
 	@Inject
 	Logger log;
@@ -30,6 +32,12 @@ public class ControllerUtilBase {
 
 	@Inject
 	Instance<PageScopedPersistenceHolder> pageScopedHolderInstance;
+
+	@Inject
+	RequestMappingUtil requestMappingUtil;
+
+	@Inject
+	HttpService httpService;
 
 	public void commit() {
 		checkAndCommit(null, null);
@@ -79,12 +87,14 @@ public class ControllerUtilBase {
 
 	}
 
-	public ActionResult getDestination() {
-		return destination;
+	public String getDestinationUrl() {
+		return destinationUrl;
 	}
 
 	public void setDestination(ActionResult target) {
-		destination = target;
+		PathActionInvocation invocation = (PathActionInvocation) target;
+		destinationUrl = httpService.url(requestMappingUtil
+				.generate(invocation).getPathWithParameters());
 	}
 
 }

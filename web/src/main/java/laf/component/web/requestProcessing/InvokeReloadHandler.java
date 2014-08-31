@@ -79,8 +79,8 @@ public class InvokeReloadHandler implements RequestHandler<PageReloadRequest> {
 		}
 
 		// check if a destination has been defined
-		if (controllerUtil.getDestination() != null) {
-			return new RedirectRenderResult(null);
+		if (controllerUtil.getDestinationUrl() != null) {
+			return new RedirectRenderResult(controllerUtil.getDestinationUrl());
 		} else {
 			// render result
 			componentService.renderPage(view, reloadComponent, response);

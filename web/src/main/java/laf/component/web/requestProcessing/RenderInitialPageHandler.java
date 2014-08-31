@@ -12,8 +12,8 @@ import laf.core.http.RedirectRenderResult;
 import laf.core.requestProcessing.CurrentController;
 
 public class RenderInitialPageHandler
-		extends
-		DelegatingRequestHandler<ActionInvocation<Object>, ActionInvocation<Object>> {
+extends
+DelegatingRequestHandler<ActionInvocation<Object>, ActionInvocation<Object>> {
 
 	@Inject
 	CWControllerUtil controllerUtil;
@@ -38,8 +38,8 @@ public class RenderInitialPageHandler
 		getDelegate().handle(invocation);
 
 		// check if a destination has been defined
-		if (controllerUtil.getDestination() != null) {
-			return new RedirectRenderResult(null);
+		if (controllerUtil.getDestinationUrl() != null) {
+			return new RedirectRenderResult(controllerUtil.getDestinationUrl());
 		} else {
 
 			CView<Object> view = viewRepository.createView(currentController
@@ -49,7 +49,7 @@ public class RenderInitialPageHandler
 
 			// render result
 			componentService
-					.renderPage(view, view.getRootComponent(), response);
+			.renderPage(view, view.getRootComponent(), response);
 			return null;
 		}
 	}

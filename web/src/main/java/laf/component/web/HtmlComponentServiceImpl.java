@@ -1,4 +1,4 @@
-package laf.component.web.impl;
+package laf.component.web;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -6,14 +6,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
 import laf.component.core.api.CView;
 import laf.component.core.tree.Component;
 import laf.component.core.tree.ComponentTreeUtil;
-import laf.component.web.HtmlComponentService;
 import laf.component.web.api.CWRenderUtil;
 import laf.core.base.attachedProperties.AttachedProperty;
 import laf.core.base.configuration.ConfigurationValue;
@@ -31,10 +29,10 @@ public class HtmlComponentServiceImpl implements HtmlComponentService {
 	private final AttachedProperty<CView<?>, Long> maxComponentId = new AttachedProperty<>();
 
 	@Inject
-	Instance<CWRenderUtil> renderUtilInstance;
+	ConfigurationValue<ContentTypeCP> contentType;
 
 	@Inject
-	ConfigurationValue<ContentTypeCP> contentType;
+	CWRenderUtil renderUtil;
 
 	@Override
 	public String calculateKey(Component component, String key) {
@@ -78,8 +76,6 @@ public class HtmlComponentServiceImpl implements HtmlComponentService {
 				HtmlComponentServiceImpl.UTF8);
 		HtmlCanvas canvas = new HtmlCanvas(writer);
 		try {
-			CWRenderUtil renderUtil = renderUtilInstance.get();
-			renderUtil.setComponent(rootComponent);
 			renderUtil.render(canvas, rootComponent);
 			writer.close();
 			byte[] byteArray = stream.toByteArray();

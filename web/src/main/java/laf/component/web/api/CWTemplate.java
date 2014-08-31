@@ -19,7 +19,7 @@ import org.rendersnake.HtmlCanvas;
  */
 public interface CWTemplate<T extends Component> {
 
-	void render(T component, HtmlCanvas html, CWRenderUtil util)
+	void render(T component, HtmlCanvas html)
 			throws IOException;
 
 	void applyValues(T component, ApplyValuesUtil util);

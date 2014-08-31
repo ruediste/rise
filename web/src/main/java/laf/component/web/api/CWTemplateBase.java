@@ -15,9 +15,11 @@ public class CWTemplateBase<T extends Component> implements CWTemplate<T> {
 	@Inject
 	protected HtmlTemplateService htmlTemplateService;
 
+	@Inject
+	CWRenderUtil util;
+
 	@Override
-	public void render(T component, HtmlCanvas html, CWRenderUtil util)
-			throws IOException {
+	public void render(T component, HtmlCanvas html) throws IOException {
 		for (Component child : component.getChildren()) {
 			util.render(html, child);
 		}

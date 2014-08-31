@@ -1,29 +1,21 @@
 package laf.component.web.api;
 
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import laf.component.core.ControllerUtilBase;
-import laf.component.web.*;
-import laf.core.base.ActionResult;
+import laf.component.web.PathGeneratingUtil;
+import laf.component.web.PathGeneratingUtilDependencies;
 
+@RequestScoped
 public class CWControllerUtil extends ControllerUtilBase implements
-		PathGeneratingUtil {
+PathGeneratingUtil {
 
 	@Inject
-	PathGeneratingUtilImpl pathGeneratingUtilImpl;
+	PathGeneratingUtilDependencies pathGeneratingUtilDependencies;
 
 	@Override
-	public ActionInvocationBuilder path() {
-		return pathGeneratingUtilImpl.path();
-	}
-
-	@Override
-	public <T> T path(Class<T> controllerClass) {
-		return pathGeneratingUtilImpl.path(controllerClass);
-	}
-
-	@Override
-	public String url(ActionResult result) {
-		return pathGeneratingUtilImpl.url(result);
+	public PathGeneratingUtilDependencies getPathGeneratingUtilDependencies() {
+		return pathGeneratingUtilDependencies;
 	}
 }

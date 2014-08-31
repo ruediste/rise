@@ -1,7 +1,5 @@
 package laf.mvc.web;
 
-import java.io.IOException;
-
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -10,8 +8,6 @@ import laf.core.base.ActionResult;
 import laf.core.http.HttpService;
 import laf.mvc.core.actionPath.PathActionResult;
 import laf.mvc.web.api.RenderUtil;
-
-import org.rendersnake.HtmlCanvas;
 
 @RequestScoped
 public class RenderUtilImpl implements RenderUtil {
@@ -40,16 +36,6 @@ public class RenderUtilImpl implements RenderUtil {
 		ActionPathBuilder builder = actionPathBuilderInstance.get();
 		builder.initialize();
 		return builder;
-	}
-
-	@Override
-	public String resourceUrl(String string) {
-		return httpService.resourceUrl(string);
-	}
-
-	@Override
-	public void startHtmlPage(HtmlCanvas html) throws IOException {
-		httpService.startHtmlPage(html);
 	}
 
 }
