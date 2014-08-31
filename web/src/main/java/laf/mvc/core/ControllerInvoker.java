@@ -8,7 +8,6 @@ import javax.inject.Inject;
 
 import laf.core.MethodInvocation;
 import laf.core.base.ActionResult;
-import laf.core.requestProcessing.CurrentControllerProducer;
 import laf.mvc.core.actionPath.ActionPath;
 
 public class ControllerInvoker implements RequestHandler<Object> {
@@ -16,9 +15,6 @@ public class ControllerInvoker implements RequestHandler<Object> {
 	@Inject
 	@Any
 	Instance<Object> controllerInstance;
-
-	@Inject
-	CurrentControllerProducer currentControllerProducer;
 
 	@Override
 	public ActionResult handle(ActionPath<Object> actionPath) {
@@ -34,7 +30,6 @@ public class ControllerInvoker implements RequestHandler<Object> {
 			}
 
 			// invoke controller
-			currentControllerProducer.setCurrentController(controller);
 			try {
 				lastActionMethodResult = invocation.getMethod().invoke(
 						controller, invocation.getArguments().toArray());

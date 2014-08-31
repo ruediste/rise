@@ -25,7 +25,7 @@ public class DefinerConfigurationValueProviderTest {
 		WebArchive archive = DeploymentProvider
 				.getDefault()
 				.addClasses(
-						Modules.getAllRequiredClasses(ConfigurationModule.class))
+						Modules.getAllRequiredClasses(CoreBaseConfigurationModule.class))
 						.addClasses(ITestBean.class, TestBean.class);
 		return archive;
 	}

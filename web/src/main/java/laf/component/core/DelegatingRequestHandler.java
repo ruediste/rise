@@ -9,7 +9,8 @@ public abstract class DelegatingRequestHandler<THandler, TDelegate> implements
 		return delegate;
 	}
 
-	public void setDelegate(RequestHandler<TDelegate> delegate) {
+	public <T extends RequestHandler<TDelegate>> T setDelegate(T delegate) {
 		this.delegate = delegate;
+		return delegate;
 	}
 }

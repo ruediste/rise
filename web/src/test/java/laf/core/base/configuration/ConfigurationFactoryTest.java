@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import laf.core.base.configuration.*;
 import laf.test.DeploymentProvider;
 
 import org.jabsaw.util.Modules;
@@ -23,7 +22,7 @@ public class ConfigurationFactoryTest {
 		WebArchive archive = DeploymentProvider
 				.getDefault()
 				.addClasses(
-						Modules.getAllRequiredClasses(ConfigurationModule.class))
+						Modules.getAllRequiredClasses(CoreBaseConfigurationModule.class))
 				.addClasses(TestConfigurationParameterA.class,
 						TestConfigurationDefinerA.class);
 		System.out.println(archive.toString(true));

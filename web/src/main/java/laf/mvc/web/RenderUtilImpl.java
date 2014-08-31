@@ -7,10 +7,10 @@ import javax.inject.Inject;
 import laf.core.base.ActionResult;
 import laf.core.http.HttpService;
 import laf.mvc.core.actionPath.PathActionResult;
-import laf.mvc.web.api.RenderUtil;
+import laf.mvc.web.api.MWRenderUtil;
 
 @RequestScoped
-public class RenderUtilImpl implements RenderUtil {
+public class RenderUtilImpl implements MWRenderUtil {
 
 	@Inject
 	Instance<ActionPathBuilder> actionPathBuilderInstance;

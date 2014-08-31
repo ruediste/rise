@@ -1,11 +1,16 @@
 package laf.mvc.core;
 
+import javax.inject.Inject;
+
 import laf.core.argumentSerializer.ArgumentSerializerChain;
 import laf.core.base.ActionResult;
 import laf.mvc.core.actionPath.ActionPath;
 
 public class ArgumentLoadingRequestHandler extends
 		DelegatingRequestHandler<String, Object> {
+
+	@Inject
+	MvcRequestInfo requestInfo;
 
 	private ArgumentSerializerChain chain;
 
@@ -16,8 +21,10 @@ public class ArgumentLoadingRequestHandler extends
 
 	@Override
 	public ActionResult handle(ActionPath<String> path) {
-		return getDelegate().handle(
-				path.mapWithType(chain.parseToObjectFunction()));
+		ActionPath<Object> objectActionPath = path.mapWithType(chain
+				.parseToObjectFunction());
+		requestInfo.setObjectActionPath(objectActionPath);
+		return getDelegate().handle(objectActionPath);
 	}
 
 }

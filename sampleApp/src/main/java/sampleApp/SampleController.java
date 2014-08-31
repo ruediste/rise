@@ -4,8 +4,8 @@ import javax.inject.Inject;
 import javax.transaction.UserTransaction;
 
 import laf.core.base.ActionResult;
-import laf.mvc.MvcControllerUtil;
 import laf.mvc.core.api.MController;
+import laf.mvc.web.api.MWControllerUtil;
 
 @MController
 public class SampleController {
@@ -14,7 +14,7 @@ public class SampleController {
 	UserTransaction transaction;
 
 	@Inject
-	MvcControllerUtil util;
+	MWControllerUtil util;
 
 	public ActionResult index() {
 		return util.view(SampleView.class, "Hello World");

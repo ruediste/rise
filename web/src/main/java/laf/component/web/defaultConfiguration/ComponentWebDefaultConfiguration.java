@@ -4,7 +4,6 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import laf.component.core.DelegatingRequestHandler;
-import laf.component.core.RequestHandler;
 import laf.component.core.reqestProcessing.*;
 import laf.component.web.RequestMappingUtilInitializer;
 import laf.component.web.requestProcessing.*;
@@ -17,39 +16,36 @@ public class ComponentWebDefaultConfiguration implements ConfigurationDefiner {
 	@Inject
 	Instance<Object> instance;
 
-	public void produce(RequestMapperCP val,
+	private <T> T instance(Class<T> cls) {
+		return instance.select(cls).get();
+	}
+
+	public void produce(RequestMapperCP requestMapper,
 			ControllerNameMappingCP nameMappingCV) {
 		RequestMapperImpl mapper = instance.select(RequestMapperImpl.class)
 				.get();
 		mapper.initialize(nameMappingCV.get());
-		val.set(mapper);
+		requestMapper.set(mapper);
 	}
 
 	public void produce(InitialRequestParserCP val,
 			RequestMapperCP requestMapperCV,
 			ArgumentSerializerChainCP serializerChainCV,
 			RequestMappingUtilInitializerCP requestMappingUtilInitializerCV) {
-		InvokeInitialHandler invoker = instance.select(
-				InvokeInitialHandler.class).get();
-		RenderInitialPageHandler renderer = instance.select(
-				RenderInitialPageHandler.class).get();
-		ArgumentLoadingRequestHandler argumentLoader = instance.select(
-				ArgumentLoadingRequestHandler.class).get();
-		argumentLoader.initialize(serializerChainCV.get());
-		PersistenceInitialRequestHandler persistence = instance.select(
-				PersistenceInitialRequestHandler.class).get();
-		EnterNewPageScopeHandler enterScopeHandler = instance.select(
-				EnterNewPageScopeHandler.class).get();
-		renderer.setDelegate(invoker);
-		argumentLoader.setDelegate(renderer);
-		persistence.setDelegate(argumentLoader);
-		enterScopeHandler.setDelegate(persistence);
 
-		ComponentWebInitialRequestParser parser = instance.select(
-				ComponentWebInitialRequestParser.class).get();
-		parser.initialize(requestMapperCV.get(), enterScopeHandler,
-				requestMappingUtilInitializerCV.get());
-		val.set(parser);
+		EnterNewPageScopeHandler enterScopeHandler = instance(EnterNewPageScopeHandler.class);
+
+		enterScopeHandler
+				.setDelegate(instance(PersistenceInitialRequestHandler.class))
+				.setDelegate(
+						instance(ArgumentLoadingRequestHandler.class)
+								.initialize(serializerChainCV.get()))
+				.setDelegate(instance(RenderInitialPageHandler.class))
+				.setDelegate(instance(InvokeInitialHandler.class));
+
+		val.set(instance(ComponentWebInitialRequestParser.class).initialize(
+				requestMapperCV.get(), enterScopeHandler,
+				requestMappingUtilInitializerCV.get()));
 	}
 
 	public void produce(ComponentActionPersistenceHandlerCP val) {
@@ -64,16 +60,14 @@ public class ComponentWebDefaultConfiguration implements ConfigurationDefiner {
 			ComponentActionPersistenceHandlerCP persistenceHandlerCV,
 			ComponentActionInvokerCP invokerCP,
 			RequestMappingUtilInitializerCP requestMappingUtilInitializerCV) {
-		RequestHandler<ComponentActionRequest> invoker = invokerCP.get();
 		DelegatingRequestHandler<ComponentActionRequest, ComponentActionRequest> persistenceHandler = persistenceHandlerCV
 				.get();
 
-		persistenceHandler.setDelegate(invoker);
-		ComponentWebComponentActionRequestParser parser = instance.select(
-				ComponentWebComponentActionRequestParser.class).get();
-		parser.initialize(prefix.get(), persistenceHandler,
-				requestMappingUtilInitializerCV.get());
-		val.set(parser);
+		persistenceHandler.setDelegate(invokerCP.get());
+
+		val.set(instance(ComponentWebComponentActionRequestParser.class)
+				.initialize(prefix.get(), persistenceHandler,
+						requestMappingUtilInitializerCV.get()));
 	}
 
 	public void produce(ReloadPersistenceHandlerCP val) {
@@ -97,16 +91,13 @@ public class ComponentWebDefaultConfiguration implements ConfigurationDefiner {
 			ReloadInvokerCP invokerCV,
 			RequestMappingUtilInitializerCP requestMappingUtilInitializerCV) {
 
-		RequestHandler<PageReloadRequest> invoker = invokerCV.get();
 		DelegatingRequestHandler<PageReloadRequest, PageReloadRequest> persistence = persistenceCV
 				.get();
-		persistence.setDelegate(invoker);
+		persistence.setDelegate(invokerCV.get());
 
-		ComponentWebReloadRequestParser parser = instance.select(
-				ComponentWebReloadRequestParser.class).get();
-		parser.initialize(prefix.get(), persistence,
-				requestMappingUtilInitializerCV.get());
-		val.set(parser);
+		val.set(instance(ComponentWebReloadRequestParser.class).initialize(
+				prefix.get(), persistence,
+				requestMappingUtilInitializerCV.get()));
 	}
 
 	@ExtendConfiguration

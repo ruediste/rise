@@ -3,12 +3,12 @@ package laf.component.web;
 import javax.inject.Inject;
 
 import laf.component.core.tree.Component;
-import laf.core.http.request.HttpRequest;
+import laf.core.http.CoreRequestInfo;
 
 public class ApplyValuesUtilImpl implements ApplyValuesUtil {
 
 	@Inject
-	HttpRequest request;
+	CoreRequestInfo coreRequestInfo;
 
 	@Inject
 	HtmlComponentService componentService;
@@ -17,8 +17,8 @@ public class ApplyValuesUtilImpl implements ApplyValuesUtil {
 
 	@Override
 	public String getValue(String key) {
-		return request.getParameter(componentService.calculateKey(component,
-				key));
+		return coreRequestInfo.getRequest().getParameter(
+				componentService.calculateKey(component, key));
 	}
 
 	public Component getComponent() {
@@ -31,8 +31,8 @@ public class ApplyValuesUtilImpl implements ApplyValuesUtil {
 
 	@Override
 	public boolean isDefined(String key) {
-		return request.getParameterMap().containsKey(
-				componentService.calculateKey(component, key));
+		return coreRequestInfo.getRequest().getParameterMap()
+				.containsKey(componentService.calculateKey(component, key));
 	}
 
 }

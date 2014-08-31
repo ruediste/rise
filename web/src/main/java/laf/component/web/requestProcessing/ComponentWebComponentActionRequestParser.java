@@ -23,17 +23,18 @@ public class ComponentWebComponentActionRequestParser implements
 	private RequestMappingUtilInitializer requestMappingUtilInitializer;
 
 	/**
-	 * 
+	 *
 	 * @param mapper
 	 *            only used to initialize the {@link RequestMappingUtil}
+	 * @return
 	 */
-	public void initialize(String prefix,
+	public ComponentWebComponentActionRequestParser initialize(String prefix,
 			RequestHandler<ComponentActionRequest> handler,
 			RequestMappingUtilInitializer requestMappingUtilInitializer) {
 		this.prefix = prefix;
 		this.handler = handler;
 		this.requestMappingUtilInitializer = requestMappingUtilInitializer;
-
+		return this;
 	}
 
 	@Override

@@ -2,7 +2,7 @@ package laf.core.base.configuration;
 
 import javax.inject.Inject;
 
-import laf.core.base.configuration.ConfigurationModule;
+import laf.core.base.configuration.CoreBaseConfigurationModule;
 import laf.core.base.configuration.ConfigurationValueParsingService;
 import laf.test.DeploymentProvider;
 
@@ -23,7 +23,7 @@ public class ConfigurationValueParsingServiceIntegrationTest {
 		WebArchive archive = DeploymentProvider
 				.getDefault()
 				.addClasses(
-						Modules.getAllRequiredClasses(ConfigurationModule.class))
+						Modules.getAllRequiredClasses(CoreBaseConfigurationModule.class))
 				.addClasses(ITestBean.class, TestBean.class);
 		return archive;
 	}

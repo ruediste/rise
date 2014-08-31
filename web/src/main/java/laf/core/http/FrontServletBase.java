@@ -9,6 +9,8 @@ import javax.servlet.http.*;
 import laf.core.base.configuration.ConfigurationValue;
 import laf.core.defaultConfiguration.HttpRequestParserChainCP;
 import laf.core.http.request.DelegatingHttpRequest;
+import laf.core.http.request.HttpRequest;
+import laf.core.requestParserChain.RequestParseResult;
 
 /**
  * Framework entry point
@@ -19,10 +21,7 @@ public class FrontServletBase extends HttpServlet {
 	ConfigurationValue<HttpRequestParserChainCP> parserChain;
 
 	@Inject
-	HttpServletResponseProducer httpServletResponseProducer;
-
-	@Inject
-	HttpServletRequestProducer httpServletRequestProducer;
+	CoreRequestInfo coreRequestInfo;
 
 	private static final long serialVersionUID = 1L;
 
@@ -39,11 +38,19 @@ public class FrontServletBase extends HttpServlet {
 	}
 
 	private void handle(HttpServletRequest req, HttpServletResponse resp) {
-		httpServletRequestProducer.setRequest(req);
-		httpServletResponseProducer.setResponse(resp);
-
 		DelegatingHttpRequest request = new DelegatingHttpRequest(req);
-		parserChain.value().get().parse(request).handle(request);
+
+		coreRequestInfo.setRequest(request);
+		coreRequestInfo.setServletRequest(req);
+		coreRequestInfo.setServletResponse(resp);
+
+		RequestParseResult<HttpRequest> parseResult = parserChain.value().get()
+				.parse(request);
+		if (parseResult == null) {
+			throw new RuntimeException("unable to parse path "
+					+ request.getPath());
+		}
+		parseResult.handle(request);
 	}
 
 }

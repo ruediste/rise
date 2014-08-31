@@ -3,7 +3,7 @@ package laf.mvc.web;
 import java.io.IOException;
 
 import laf.mvc.core.MvcView;
-import laf.mvc.web.api.RenderUtil;
+import laf.mvc.web.api.MWRenderUtil;
 
 import org.rendersnake.HtmlCanvas;
 
@@ -12,6 +12,6 @@ import org.rendersnake.HtmlCanvas;
  */
 public abstract class MvcWebView<TData> extends MvcView<TData> {
 
-	abstract public void render(HtmlCanvas html, RenderUtil util)
+	abstract public void render(HtmlCanvas html, MWRenderUtil util)
 			throws IOException;
 }

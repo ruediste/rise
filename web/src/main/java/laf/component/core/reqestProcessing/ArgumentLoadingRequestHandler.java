@@ -11,8 +11,10 @@ public class ArgumentLoadingRequestHandler
 
 	private ArgumentSerializerChain argumentSerializerChain;
 
-	public void initialize(ArgumentSerializerChain argumentSerializerChain) {
+	public ArgumentLoadingRequestHandler initialize(
+			ArgumentSerializerChain argumentSerializerChain) {
 		this.argumentSerializerChain = argumentSerializerChain;
+		return this;
 	}
 
 	@Override

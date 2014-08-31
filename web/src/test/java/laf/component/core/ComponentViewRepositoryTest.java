@@ -2,12 +2,6 @@ package laf.component.core;
 
 import javax.inject.Inject;
 
-import laf.component.TestComponentViewA;
-import laf.component.TestComponentViewB1;
-import laf.component.TestComponentViewB2;
-import laf.component.TestControllerA;
-import laf.component.TestControllerB;
-import laf.component.TestViewQualifier1;
 import laf.component.core.api.CView;
 import laf.test.DeploymentProvider;
 

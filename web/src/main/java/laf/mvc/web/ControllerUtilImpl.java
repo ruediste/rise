@@ -10,12 +10,12 @@ import laf.core.base.ActionResult;
 import laf.core.http.ContentRenderResult;
 import laf.core.http.RedirectRenderResult;
 import laf.mvc.core.actionPath.PathActionResult;
-import laf.mvc.web.api.ControllerUtil;
-import laf.mvc.web.api.RenderUtil;
+import laf.mvc.web.api.MWControllerUtil;
+import laf.mvc.web.api.MWRenderUtil;
 
 import org.rendersnake.HtmlCanvas;
 
-public class ControllerUtilImpl implements ControllerUtil {
+public class ControllerUtilImpl implements MWControllerUtil {
 
 	private static Charset UTF8 = Charset.forName("UTF-8");
 
@@ -23,7 +23,7 @@ public class ControllerUtilImpl implements ControllerUtil {
 	Instance<Object> viewInstance;
 
 	@Inject
-	RenderUtil renderUtil;
+	MWRenderUtil renderUtil;
 
 	@Inject
 	RequestMappingUtil mappingUtil;

@@ -51,12 +51,13 @@ public class ComponentWebInitialRequestParser implements
 	private RequestHandler<ActionInvocation<String>> handler;
 	private RequestMappingUtilInitializer requestMappingUtilInitializer;
 
-	public void initialize(RequestMapper mapper,
+	public ComponentWebInitialRequestParser initialize(RequestMapper mapper,
 			RequestHandler<ActionInvocation<String>> handler,
 			RequestMappingUtilInitializer requestMappingUtilInitializer) {
 		this.mapper = mapper;
 		this.handler = handler;
 		this.requestMappingUtilInitializer = requestMappingUtilInitializer;
+		return this;
 	}
 
 	@Override

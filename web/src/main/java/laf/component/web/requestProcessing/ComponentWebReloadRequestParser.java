@@ -25,13 +25,13 @@ public class ComponentWebReloadRequestParser implements
 
 	private RequestMappingUtilInitializer requestMappingUtilInitializer;
 
-	public void initialize(String prefix,
+	public ComponentWebReloadRequestParser initialize(String prefix,
 			RequestHandler<PageReloadRequest> handler,
 			RequestMappingUtilInitializer requestMappingUtilInitializer) {
 		this.prefix = prefix;
 		this.handler = handler;
 		this.requestMappingUtilInitializer = requestMappingUtilInitializer;
-
+		return this;
 	}
 
 	@Override

@@ -3,7 +3,6 @@ package laf.component.web.requestProcessing;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
 
 import laf.component.core.Page;
 import laf.component.core.RequestHandler;
@@ -18,8 +17,8 @@ import laf.component.web.api.CWControllerUtil;
 import laf.component.web.template.HtmlTemplateService;
 import laf.component.web.template.RaiseEventsUtilImpl;
 import laf.core.base.ActionResult;
+import laf.core.http.CoreRequestInfo;
 import laf.core.http.RedirectRenderResult;
-import laf.core.http.request.HttpRequest;
 
 import org.slf4j.Logger;
 
@@ -40,10 +39,7 @@ public class InvokeReloadHandler implements RequestHandler<PageReloadRequest> {
 	Page page;
 
 	@Inject
-	HttpRequest request;
-
-	@Inject
-	HttpServletResponse response;
+	CoreRequestInfo coreRequestInfo;
 
 	@Inject
 	HtmlComponentService componentService;
@@ -83,7 +79,8 @@ public class InvokeReloadHandler implements RequestHandler<PageReloadRequest> {
 			return new RedirectRenderResult(controllerUtil.getDestinationUrl());
 		} else {
 			// render result
-			componentService.renderPage(view, reloadComponent, response);
+			componentService.renderPage(view, reloadComponent,
+					coreRequestInfo.getServletResponse());
 			return null;
 		}
 	}

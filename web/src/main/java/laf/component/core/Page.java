@@ -12,6 +12,7 @@ import laf.component.core.pageScope.PageScoped;
 public class Page implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private CView<?> view;
+	private Object controller;
 
 	public CView<?> getView() {
 		return view;
@@ -19,5 +20,13 @@ public class Page implements Serializable {
 
 	public void setView(CView<?> view) {
 		this.view = view;
+	}
+
+	public Object getController() {
+		return controller;
+	}
+
+	public void setController(Object controller) {
+		this.controller = controller;
 	}
 }

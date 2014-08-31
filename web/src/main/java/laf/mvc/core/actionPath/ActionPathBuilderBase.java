@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 import laf.core.MethodInvocation;
 import laf.core.base.attachedProperties.AttachedProperty;
+import laf.mvc.core.MvcRequestInfo;
 import net.sf.cglib.proxy.*;
 
 import com.google.common.base.Joiner;
@@ -15,7 +16,7 @@ import com.google.common.base.Joiner;
  * Builder to create {@link ActionPath}s for controller method invocations using
  * a fluent interface. The class must be subclassed by each view technology to
  * allow for extendsions. Example:
- * 
+ *
  * <pre>
  * <code>
  * ActionPathBuilder builder=instance.get();
@@ -25,12 +26,12 @@ import com.google.common.base.Joiner;
  * 			.controller(TestController.class).actionMethod(5);
  * </code>
  * </pre>
- * 
+ *
  */
 public abstract class ActionPathBuilderBase {
 
 	@Inject
-	ActionPath<Object> injectedCurrentActionPath;
+	MvcRequestInfo requestInfo;
 
 	private PathActionResult path = new PathActionResult();
 	private ActionPath<Object> currentActionPath;
@@ -38,17 +39,17 @@ public abstract class ActionPathBuilderBase {
 	/**
 	 * Initialize the {@link ActionPathBuilderBase} to create an
 	 * {@link ActionPath}. The current action path is beeing injected.
-	 * 
+	 *
 	 * @see #initialize(ActionPath)
 	 */
 	public void initialize() {
-		currentActionPath = injectedCurrentActionPath;
+		currentActionPath = requestInfo.getObjectActionPath();
 	}
 
 	/**
 	 * Initialize the {@link ActionPathBuilderBase} used to create
 	 * {@link ActionPath}s
-	 * 
+	 *
 	 * @param currentActionPath
 	 *            the {@link ActionPath} which is currently being processed.
 	 *            Used to determine the full path if a path is started with an
@@ -118,9 +119,8 @@ public abstract class ActionPathBuilderBase {
 	 * action method is called on the returned instance, the invoked invocation
 	 * is appended to the path.
 	 */
-	protected @SuppressWarnings("unchecked")
-	<T> T createActionPath(final Class<T> controllerClass,
-			final PathActionResult path) {
+	protected @SuppressWarnings("unchecked") <T> T createActionPath(
+			final Class<T> controllerClass, final PathActionResult path) {
 		Enhancer enhancer = new Enhancer();
 		enhancer.setSuperclass(controllerClass);
 
