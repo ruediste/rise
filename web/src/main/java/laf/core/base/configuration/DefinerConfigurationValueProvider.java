@@ -1,25 +1,53 @@
 package laf.core.base.configuration;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import java.lang.reflect.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 import laf.core.base.Val;
 
+import com.google.common.collect.Iterators;
 import com.google.common.reflect.TypeToken;
 
 public class DefinerConfigurationValueProvider extends
-ConfigurationParameterBase {
+		ConfigurationValueProviderBase {
 
-	private final class InvocationHandlerImplementation implements
+	@Inject
+	ConfigurationFactory configurationFactory;
+
+	private final class ArgumentParameterHandler implements InvocationHandler {
+
+		private Class<?> parameterInterfaceClass;
+
+		public ArgumentParameterHandler(Class<?> parameterInterfaceClass) {
+			super();
+			this.parameterInterfaceClass = parameterInterfaceClass;
+		}
+
+		@Override
+		public Object invoke(Object proxy, Method method, Object[] args)
+				throws Throwable {
+			if (getMethod.equals(method)) {
+				return configurationFactory
+						.createParameterInstance(parameterInterfaceClass);
+			}
+			throw new RuntimeException(
+					"Method "
+							+ method.getName()
+							+ " may not be called on ConfigurationParameters during their value definition");
+
+		}
+	}
+
+	private final class ToBeDefinedParameterHandler implements
 			InvocationHandler {
 		public Object value;
 		public boolean argSet;
 
-		InvocationHandlerImplementation(Val<?> successorResult) {
+		ToBeDefinedParameterHandler(Val<?> successorResult) {
 			if (successorResult != null) {
 				argSet = true;
 				value = successorResult.get();
@@ -73,7 +101,7 @@ ConfigurationParameterBase {
 			Class<T> configInterfaceClass, TypeToken<V> configValueClass) {
 		for (Method method : definer.getClass().getMethods()) {
 			// check if method matches
-			if (method.getParameterTypes().length != 1) {
+			if (method.getParameterTypes().length < 1) {
 				continue;
 			}
 			Class<?> parameterType = method.getParameterTypes()[0];
@@ -83,23 +111,31 @@ ConfigurationParameterBase {
 
 			Val<V> successorResult = null;
 
-			ExtendConfiguration extendConfiguration = method
-					.getAnnotation(ExtendConfiguration.class);
-
-			if (extendConfiguration != null && getSuccessor() != null) {
+			if (method.isAnnotationPresent(ExtendConfiguration.class)
+					&& getSuccessor() != null) {
 				successorResult = getSuccessor().provideValue(
 						configInterfaceClass, configValueClass);
 			}
 
+			ArrayList<Object> arguments = new ArrayList<Object>();
+
 			// create ConfigurationParameter proxy
-			InvocationHandlerImplementation handler = new InvocationHandlerImplementation(
+			ToBeDefinedParameterHandler handler = new ToBeDefinedParameterHandler(
 					successorResult);
-			ConfigurationParameter<?> proxy = createProxy(configInterfaceClass,
-					handler);
+			arguments.add(createProxy(configInterfaceClass, handler));
+
+			// create arguments
+			Iterators.addAll(
+					arguments,
+					Arrays.asList(method.getParameterTypes())
+							.stream()
+							.skip(1)
+							.map(cls -> configurationFactory
+									.createParameterInstance(cls)).iterator());
 
 			// invoke method
 			try {
-				method.invoke(definer, proxy);
+				method.invoke(definer, arguments.toArray());
 			} catch (IllegalAccessException | IllegalArgumentException
 					| InvocationTargetException e) {
 				throw new RuntimeException(

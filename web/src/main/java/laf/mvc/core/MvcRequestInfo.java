@@ -2,8 +2,6 @@ package laf.mvc.core;
 
 import javax.enterprise.context.RequestScoped;
 
-import laf.mvc.core.actionPath.ActionPath;
-
 @RequestScoped
 public class MvcRequestInfo {
 

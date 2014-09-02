@@ -9,11 +9,11 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
-import laf.core.MethodInvocation;
+import laf.core.base.MethodInvocation;
 import laf.core.http.request.HttpRequest;
 import laf.core.http.request.HttpRequestImpl;
-import laf.mvc.core.actionPath.ActionPath;
-import laf.mvc.core.actionPath.ControllerReflectionUtil;
+import laf.mvc.core.ActionPath;
+import laf.mvc.core.ControllerReflectionUtil;
 import laf.mvc.core.api.MController;
 
 import org.slf4j.Logger;

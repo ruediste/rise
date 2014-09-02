@@ -1,7 +1,7 @@
 package laf.component.core;
 
-import laf.core.MethodInvocation;
 import laf.core.base.ActionResult;
+import laf.core.base.MethodInvocation;
 
 public class PathActionInvocation extends ActionInvocation<Object> implements
 		ActionResult {

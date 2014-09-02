@@ -4,8 +4,8 @@ import javax.inject.Inject;
 
 import laf.core.argumentSerializer.ArgumentSerializerChain;
 import laf.core.base.ActionResult;
+import laf.mvc.core.ActionPath;
 import laf.mvc.core.DelegatingRequestHandler;
-import laf.mvc.core.actionPath.ActionPath;
 
 public class RequestMappingUtilInitializer extends
 		DelegatingRequestHandler<String, String> {

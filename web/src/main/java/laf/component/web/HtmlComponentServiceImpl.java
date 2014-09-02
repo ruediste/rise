@@ -12,10 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import laf.component.core.api.CView;
 import laf.component.core.tree.Component;
 import laf.component.core.tree.ComponentTreeUtil;
-import laf.component.web.api.CWRenderUtil;
 import laf.core.base.attachedProperties.AttachedProperty;
-import laf.core.base.configuration.ConfigurationValue;
-import laf.core.defaultConfiguration.ContentTypeCP;
 
 import org.rendersnake.HtmlCanvas;
 
@@ -29,10 +26,10 @@ public class HtmlComponentServiceImpl implements HtmlComponentService {
 	private final AttachedProperty<CView<?>, Long> maxComponentId = new AttachedProperty<>();
 
 	@Inject
-	ConfigurationValue<ContentTypeCP> contentType;
+	CWRenderUtil renderUtil;
 
 	@Inject
-	CWRenderUtil renderUtil;
+	ComponentWebRequestInfo requestInfo;
 
 	@Override
 	public String calculateKey(Component component, String key) {
@@ -81,8 +78,11 @@ public class HtmlComponentServiceImpl implements HtmlComponentService {
 			byte[] byteArray = stream.toByteArray();
 
 			// send answer
-			response.setContentType(contentType.value().get()
-					+ "; charset=UTF-8");
+			if (requestInfo.getContentType() != null) {
+				response.setContentType("text/html; charset=UTF-8");
+			} else {
+				response.setContentType(requestInfo.getContentType());
+			}
 			response.setStatus(HttpServletResponse.SC_OK);
 			response.getOutputStream().write(byteArray);
 			response.flushBuffer();

@@ -3,10 +3,8 @@ package laf.component.web.defaultConfiguration;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import laf.component.core.DelegatingRequestHandler;
-import laf.component.core.reqestProcessing.*;
-import laf.component.web.RequestMappingUtilInitializer;
-import laf.component.web.requestProcessing.*;
+import laf.component.core.*;
+import laf.component.web.*;
 import laf.core.base.configuration.ConfigurationDefiner;
 import laf.core.base.configuration.ExtendConfiguration;
 import laf.core.defaultConfiguration.*;

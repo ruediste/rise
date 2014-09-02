@@ -3,7 +3,7 @@ package laf.core.defaultConfiguration;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import laf.core.DefaultClassNameMapping;
+import laf.core.base.DefaultClassNameMapping;
 import laf.core.base.configuration.ConfigurationDefiner;
 
 /**
@@ -13,11 +13,6 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 
 	@Inject
 	Instance<Object> instance;
-
-	public void produce(ContentTypeCP type) {
-		// type.set("application/xhtml+xml");
-		type.set("text/html; charset=utf-8");
-	}
 
 	public void produce(ControllerNameMappingCP val, BasePackageCP basePackage) {
 		DefaultClassNameMapping mapping = instance.select(

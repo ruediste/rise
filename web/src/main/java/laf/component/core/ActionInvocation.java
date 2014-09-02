@@ -2,8 +2,8 @@ package laf.component.core;
 
 import java.lang.reflect.Type;
 
-import laf.core.MethodInvocation;
 import laf.core.base.Function2;
+import laf.core.base.MethodInvocation;
 import laf.core.base.attachedProperties.AttachedPropertyBearerBase;
 
 /**

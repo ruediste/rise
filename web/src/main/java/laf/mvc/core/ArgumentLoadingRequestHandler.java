@@ -4,7 +4,6 @@ import javax.inject.Inject;
 
 import laf.core.argumentSerializer.ArgumentSerializerChain;
 import laf.core.base.ActionResult;
-import laf.mvc.core.actionPath.ActionPath;
 
 public class ArgumentLoadingRequestHandler extends
 		DelegatingRequestHandler<String, Object> {

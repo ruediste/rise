@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import laf.core.MethodInvocation;
+import laf.core.base.MethodInvocation;
 import net.sf.cglib.proxy.*;
 
 import com.google.common.base.Joiner;

@@ -6,8 +6,7 @@ import laf.component.core.pageScope.PageScopeModule;
 import laf.component.core.tree.Component;
 import laf.component.core.tree.ComponentTreeModule;
 import laf.component.core.tree.event.ComponentEventModule;
-import laf.core.base.CoreBaseModule;
-import laf.mvc.core.actionPath.MvcActionPathModule;
+import laf.core.CoreModule;
 
 import org.jabsaw.Module;
 
@@ -40,15 +39,8 @@ import org.jabsaw.Module;
  * Views can be nested into each other.
  */
 @Module(description = "Core of the Component Framework", exported = {
-		ComponentTreeModule.class, CoreBaseModule.class, PageScopeModule.class,
+		CoreModule.class, ComponentTreeModule.class, PageScopeModule.class,
 		ComponentEventModule.class, ComponentEventModule.class,
-		MvcActionPathModule.class }, imported = {
-		laf.component.core.reqestProcessing.ComponentCoreRequestProcessingModule.class,
-		laf.core.base.attachedProperties.CoreAttachedPropertiesModule.class,
-		laf.core.http.request.CoreHttpRequestModule.class,
-		laf.core.persistence.PersistenceModule.class,
-		laf.core.http.CoreHttpModule.class, laf.core.base.BaseModuleImpl.class,
-		laf.core.CoreModule.class,
 		laf.component.core.api.ComponentCoreApiModule.class })
 @ApplicationScoped
 public class ComponentCoreModule {

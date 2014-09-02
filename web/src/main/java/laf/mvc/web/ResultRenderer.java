@@ -7,8 +7,8 @@ import javax.inject.Inject;
 import laf.core.base.ActionResult;
 import laf.core.base.LafLogger;
 import laf.core.http.*;
+import laf.mvc.core.ActionPath;
 import laf.mvc.core.DelegatingRequestHandler;
-import laf.mvc.core.actionPath.ActionPath;
 
 public class ResultRenderer extends DelegatingRequestHandler<String, String> {
 

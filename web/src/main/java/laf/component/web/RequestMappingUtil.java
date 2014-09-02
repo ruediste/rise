@@ -3,7 +3,6 @@ package laf.component.web;
 import javax.enterprise.context.RequestScoped;
 
 import laf.component.core.ActionInvocation;
-import laf.component.web.requestProcessing.RequestMapper;
 import laf.core.argumentSerializer.ArgumentSerializerChain;
 import laf.core.http.request.HttpRequest;
 

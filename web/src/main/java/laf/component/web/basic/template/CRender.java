@@ -3,7 +3,7 @@ package laf.component.web.basic.template;
 import java.io.IOException;
 
 import laf.component.core.tree.ComponentBase;
-import laf.component.web.api.CWRenderUtil;
+import laf.component.web.CWRenderUtil;
 
 import org.rendersnake.HtmlCanvas;
 

@@ -122,11 +122,21 @@ public class ConfigurationFactory {
 					result = provider.provideValue(
 							(Class<T>) configInterfaceClass,
 							(TypeToken<V>) configValueClass);
-					cache.put(configInterfaceClass, result);
+					if (result != null) {
+						cache.put(configInterfaceClass, result);
+					}
 				}
 			}
 		}
 		return result;
+	}
+
+	public static class NoValueFoundException extends RuntimeException {
+
+		public NoValueFoundException(Class<?> parameterInterfaceClass) {
+			super("No configuration value found for " + parameterInterfaceClass);
+		}
+
 	}
 
 	@Produces
@@ -139,15 +149,28 @@ public class ConfigurationFactory {
 		Class<?> parameterInterfaceClass = parameterInterfaceType.getRawType();
 
 		// create result
-		final T parameter = createParameterProxy(parameterInterfaceClass,
-				injectionPoint);
-		return new ConfigurationValueImpl<>(parameter);
+		try {
+			return createValueInstance(parameterInterfaceClass);
+		} catch (NoValueFoundException e) {
+			throw new RuntimeException(
+					"Error while retrieving configuration value for "
+							+ parameterInterfaceClass
+							+ ".\nRequired for member"
+							+ injectionPoint.getMember().getDeclaringClass()
+							+ "." + injectionPoint.getMember().getName());
+		}
 
 	}
 
+	public <T extends ConfigurationParameter<?>> ConfigurationValue<T> createValueInstance(
+			Class<?> parameterInterfaceClass) {
+		final T parameter = createParameterInstance(parameterInterfaceClass);
+		return new ConfigurationValueImpl<>(parameter);
+	}
+
 	@SuppressWarnings("unchecked")
-	private <T extends ConfigurationParameter<?>> T createParameterProxy(
-			final Class<?> parameterInterfaceClass, final InjectionPoint injectionPoint) {
+	public <T extends ConfigurationParameter<?>> T createParameterInstance(
+			final Class<?> parameterInterfaceClass) {
 
 		return (T) Proxy.newProxyInstance(Thread.currentThread()
 				.getContextClassLoader(),
@@ -169,14 +192,11 @@ public class ConfigurationFactory {
 
 							// throw error if no value has been found
 							if (value == null) {
-								throw new RuntimeException(
-										"No configuration value found for "
-												+ parameterInterfaceClass
-												+ ".\nRequired for member"
-												+ injectionPoint.getMember()
-														.getDeclaringClass()
-												+ "." + injectionPoint.getMember().getName());
+								throw new NoValueFoundException(
+										parameterInterfaceClass);
 							}
+
+							return value.get();
 						}
 						throw new RuntimeException("Method " + method.getName()
 								+ " may not be called on ConfigValue instances");

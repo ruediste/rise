@@ -1,7 +1,7 @@
 package laf.component.web.defaultConfiguration;
 
 import laf.component.core.DelegatingRequestHandler;
-import laf.component.core.reqestProcessing.PageReloadRequest;
+import laf.component.core.PageReloadRequest;
 import laf.core.base.configuration.ConfigurationParameter;
 
 public interface ReloadPersistenceHandlerCP

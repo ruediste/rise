@@ -2,7 +2,6 @@ package laf.component.web;
 
 import javax.inject.Inject;
 
-import laf.component.web.requestProcessing.RequestMapper;
 import laf.core.argumentSerializer.ArgumentSerializerChain;
 
 public class RequestMappingUtilInitializer {

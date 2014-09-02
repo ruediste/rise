@@ -3,7 +3,7 @@ package laf.mvc.web;
 import javax.enterprise.context.RequestScoped;
 
 import laf.core.argumentSerializer.ArgumentSerializerChain;
-import laf.mvc.core.actionPath.ActionPath;
+import laf.mvc.core.ActionPath;
 
 @RequestScoped
 public class RequestMappingUtil {

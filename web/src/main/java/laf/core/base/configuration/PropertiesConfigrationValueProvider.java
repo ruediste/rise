@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import com.google.common.reflect.TypeToken;
 
 public class PropertiesConfigrationValueProvider extends
-ConfigurationParameterBase {
+ConfigurationValueProviderBase {
 
 	@Inject
 	Logger log;

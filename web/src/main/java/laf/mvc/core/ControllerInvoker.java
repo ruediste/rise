@@ -6,9 +6,8 @@ import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import laf.core.MethodInvocation;
 import laf.core.base.ActionResult;
-import laf.mvc.core.actionPath.ActionPath;
+import laf.core.base.MethodInvocation;
 
 public class ControllerInvoker implements RequestHandler<Object> {
 

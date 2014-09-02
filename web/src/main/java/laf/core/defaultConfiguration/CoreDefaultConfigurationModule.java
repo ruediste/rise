@@ -1,13 +1,10 @@
 package laf.core.defaultConfiguration;
 
+import laf.core.CoreModule;
+
 import org.jabsaw.Module;
 
-@Module(imported = {
-		laf.core.requestParserChain.CoreRequestParserChainModule.class,
-		laf.core.base.configuration.CoreBaseConfigurationModule.class,
-		laf.core.argumentSerializer.CoreArgumentSerializerModule.class,
-		laf.core.http.request.CoreHttpRequestModule.class,
-		laf.core.CoreModule.class })
+@Module(exported = { CoreModule.class })
 public class CoreDefaultConfigurationModule {
 
 }

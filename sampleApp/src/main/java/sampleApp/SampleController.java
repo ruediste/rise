@@ -5,7 +5,7 @@ import javax.transaction.UserTransaction;
 
 import laf.core.base.ActionResult;
 import laf.mvc.core.api.MController;
-import laf.mvc.web.api.MWControllerUtil;
+import laf.mvc.web.MWControllerUtil;
 
 @MController
 public class SampleController {

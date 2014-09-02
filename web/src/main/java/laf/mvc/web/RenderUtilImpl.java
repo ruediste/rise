@@ -6,8 +6,7 @@ import javax.inject.Inject;
 
 import laf.core.base.ActionResult;
 import laf.core.http.HttpService;
-import laf.mvc.core.actionPath.PathActionResult;
-import laf.mvc.web.api.MWRenderUtil;
+import laf.mvc.core.PathActionResult;
 
 @RequestScoped
 public class RenderUtilImpl implements MWRenderUtil {

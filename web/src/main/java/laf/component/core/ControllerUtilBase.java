@@ -4,8 +4,6 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.transaction.*;
 
-import laf.component.core.reqestProcessing.PageScopedPersistenceHolder;
-import laf.component.web.RequestMappingUtil;
 import laf.core.base.ActionResult;
 import laf.core.http.HttpService;
 import laf.core.persistence.LafPersistenceContextManager;
@@ -34,10 +32,7 @@ public class ControllerUtilBase {
 	Instance<PageScopedPersistenceHolder> pageScopedHolderInstance;
 
 	@Inject
-	RequestMappingUtil requestMappingUtil;
-
-	@Inject
-	HttpService httpService;
+	protected HttpService httpService;
 
 	public void commit() {
 		checkAndCommit(null, null);
@@ -91,10 +86,8 @@ public class ControllerUtilBase {
 		return destinationUrl;
 	}
 
-	public void setDestination(ActionResult target) {
-		PathActionInvocation invocation = (PathActionInvocation) target;
-		destinationUrl = httpService.url(requestMappingUtil
-				.generate(invocation).getPathWithParameters());
-	}
+	public void setDestinationUrl(String destinationUrl) {
+		this.destinationUrl = destinationUrl;
 
+	}
 }

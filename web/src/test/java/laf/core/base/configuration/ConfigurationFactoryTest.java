@@ -24,32 +24,39 @@ public class ConfigurationFactoryTest {
 				.addClasses(
 						Modules.getAllRequiredClasses(CoreBaseConfigurationModule.class))
 				.addClasses(TestConfigurationParameterA.class,
-						TestConfigurationDefinerA.class);
+						TestConfigurationDefinerA.class,
+						TestConfigurationParameterB.class,
+						TestConfigurationDefinerB.class,
+						TestConfigurationParameterC.class,
+						TestConfigurationParameterD.class,
+						TestConfigurationParameterE.class,
+						ConfigurationFactoryTest.class);
 		System.out.println(archive.toString(true));
 		return archive;
 	}
 
-	private static interface TestConfigurationParameterA extends
+	public static interface TestConfigurationParameterA extends
 			ConfigurationParameter<String> {
 	}
 
-	private static interface TestConfigurationParameterB extends
+	public static interface TestConfigurationParameterB extends
 			ConfigurationParameter<String> {
 	}
 
-	private static interface TestConfigurationParameterC extends
+	public static interface TestConfigurationParameterC extends
 			ConfigurationParameter<String> {
 	}
 
-	private static interface TestConfigurationParameterD extends
+	public static interface TestConfigurationParameterD extends
 			ConfigurationParameter<String> {
 	}
 
-	private static interface TestConfigurationParameterE extends
+	public static interface TestConfigurationParameterE extends
 			ConfigurationParameter<String> {
 	}
 
-	static class TestConfigurationDefinerA implements ConfigurationDefiner {
+	public static class TestConfigurationDefinerA implements
+			ConfigurationDefiner {
 		@Inject
 		TestConfigurationDefinerB definerB;
 
@@ -73,7 +80,8 @@ public class ConfigurationFactoryTest {
 
 	}
 
-	static class TestConfigurationDefinerB implements ConfigurationDefiner {
+	public static class TestConfigurationDefinerB implements
+			ConfigurationDefiner {
 		public void produce(TestConfigurationParameterB val) {
 			val.set("FooB");
 		}

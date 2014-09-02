@@ -4,8 +4,8 @@ import static org.rendersnake.HtmlAttributesFactory.href;
 
 import java.io.IOException;
 
+import laf.mvc.web.MWRenderUtil;
 import laf.mvc.web.MvcWebView;
-import laf.mvc.web.api.MWRenderUtil;
 
 import org.rendersnake.HtmlCanvas;
 

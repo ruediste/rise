@@ -7,7 +7,7 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import laf.component.core.basic.CButton;
-import laf.component.web.api.*;
+import laf.component.web.*;
 
 import org.rendersnake.HtmlCanvas;
 
@@ -18,7 +18,7 @@ public class CButtonHtmlTemplate extends CWTemplateBase<CButton> {
 	@Override
 	public void render(CButton component, HtmlCanvas html) throws IOException {
 		html.button(class_("c_button")).span(class_("_componentId c_hidden"))
-		.content(String.valueOf(util.getComponentId()));
+				.content(String.valueOf(util.getComponentId()));
 		super.render(component, html);
 		html._button();
 	}
