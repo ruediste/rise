@@ -53,10 +53,11 @@ public class RequestMapperImpl implements RequestMapper {
 				// find unique name
 				if (methodNameMap.inverse().containsKey(name)) {
 					int i = 1;
-					String tmp = name + "_" + i;
-					while (methodNameMap.inverse().containsKey(tmp)) {
+					String tmp;
+					do {
+						tmp = name + "_" + i;
 						i += 1;
-					}
+					} while (methodNameMap.inverse().containsKey(tmp));
 					name = tmp;
 				}
 

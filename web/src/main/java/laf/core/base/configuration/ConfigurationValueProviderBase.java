@@ -1,7 +1,7 @@
 package laf.core.base.configuration;
 
 public abstract class ConfigurationValueProviderBase implements
-ConfigurationValueProvider {
+		ConfigurationValueProvider {
 
 	private ConfigurationValueProvider successor;
 
@@ -10,7 +10,8 @@ ConfigurationValueProvider {
 		this.successor = successor;
 	}
 
-	ConfigurationValueProvider getSuccessor() {
+	protected ConfigurationValueProvider getSuccessor() {
 		return successor;
 	}
+
 }

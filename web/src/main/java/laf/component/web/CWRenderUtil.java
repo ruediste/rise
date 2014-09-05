@@ -15,7 +15,7 @@ public class CWRenderUtil extends PathGeneratingUtilImpl {
 	HtmlComponentService componentService;
 
 	@Inject
-	HtmlTemplateService htmlTemplateService;
+	TemplateUtil templateUtil;
 
 	@Inject
 	PageScopeManager pageScopeManager;
@@ -38,7 +38,7 @@ public class CWRenderUtil extends PathGeneratingUtilImpl {
 		Component old = currentComponent.get();
 		try {
 			currentComponent.set(component);
-			htmlTemplateService.getTemplate(component).render(component, html);
+			templateUtil.getTemplate(component).render(component, html);
 		} finally {
 			currentComponent.set(old);
 		}

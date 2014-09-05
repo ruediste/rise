@@ -1,10 +1,14 @@
 package laf.component.web.defaultConfiguration;
 
+import java.util.ArrayDeque;
+import java.util.Arrays;
+
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import laf.component.core.*;
 import laf.component.web.*;
+import laf.component.web.basic.template.CLinkHtmlTemplate;
 import laf.core.base.configuration.ConfigurationDefiner;
 import laf.core.base.configuration.ExtendConfiguration;
 import laf.core.defaultConfiguration.*;
@@ -18,6 +22,14 @@ public class ComponentWebDefaultConfiguration implements ConfigurationDefiner {
 		return instance.select(cls).get();
 	}
 
+	public void produce(HtmlTemplateFactoriesCP val) {
+		ArrayDeque<HtmlTemplateFactory> queue = new ArrayDeque<>();
+		HtmlTemplateFactoryImpl factory = instance(HtmlTemplateFactoryImpl.class);
+		queue.add(factory);
+		factory.addTemplatesFromPackage(CLinkHtmlTemplate.class.getPackage());
+		val.set(queue);
+	}
+
 	public void produce(RequestMapperCP requestMapper,
 			ControllerNameMappingCP nameMappingCV) {
 		RequestMapperImpl mapper = instance.select(RequestMapperImpl.class)
@@ -29,7 +41,7 @@ public class ComponentWebDefaultConfiguration implements ConfigurationDefiner {
 	public void produce(InitialRequestParserCP val,
 			RequestMapperCP requestMapperCV,
 			ArgumentSerializerChainCP serializerChainCV,
-			RequestMappingUtilInitializerCP requestMappingUtilInitializerCV) {
+			UtilInitializersCP utilInitializersCV) {
 
 		EnterNewPageScopeHandler enterScopeHandler = instance(EnterNewPageScopeHandler.class);
 
@@ -43,7 +55,7 @@ public class ComponentWebDefaultConfiguration implements ConfigurationDefiner {
 
 		val.set(instance(ComponentWebInitialRequestParser.class).initialize(
 				requestMapperCV.get(), enterScopeHandler,
-				requestMappingUtilInitializerCV.get()));
+				utilInitializersCV.get()));
 	}
 
 	public void produce(ComponentActionPersistenceHandlerCP val) {
@@ -57,7 +69,7 @@ public class ComponentWebDefaultConfiguration implements ConfigurationDefiner {
 	public void produce(ActionRequestParserCP val, ActionPrefixCP prefix,
 			ComponentActionPersistenceHandlerCP persistenceHandlerCV,
 			ComponentActionInvokerCP invokerCP,
-			RequestMappingUtilInitializerCP requestMappingUtilInitializerCV) {
+			UtilInitializersCP utilInitializersCV) {
 		DelegatingRequestHandler<ComponentActionRequest, ComponentActionRequest> persistenceHandler = persistenceHandlerCV
 				.get();
 
@@ -65,7 +77,7 @@ public class ComponentWebDefaultConfiguration implements ConfigurationDefiner {
 
 		val.set(instance(ComponentWebComponentActionRequestParser.class)
 				.initialize(prefix.get(), persistenceHandler,
-						requestMappingUtilInitializerCV.get()));
+						utilInitializersCV.get()));
 	}
 
 	public void produce(ReloadPersistenceHandlerCP val) {
@@ -76,26 +88,31 @@ public class ComponentWebDefaultConfiguration implements ConfigurationDefiner {
 		val.set(instance.select(InvokeReloadHandler.class).get());
 	}
 
-	public void produce(RequestMappingUtilInitializerCP val,
-			RequestMapperCP requestMapperCV, ArgumentSerializerChainCP chainCV) {
-		RequestMappingUtilInitializer initializer = instance.select(
-				RequestMappingUtilInitializer.class).get();
-		initializer.initialize(requestMapperCV.get(), chainCV.get());
-		val.set(initializer);
+	public void produce(UtilInitializersCP val,
+			RequestMapperCP requestMapperCV, ArgumentSerializerChainCP chainCV,
+			HtmlTemplateFactoriesCP htmlTemplateFactoriesCV) {
+
+		RequestMappingUtilInitializer requestMappingUtilInitializer = instance(RequestMappingUtilInitializer.class);
+		requestMappingUtilInitializer.initialize(requestMapperCV.get(),
+				chainCV.get());
+
+		TemplateUtilInitializer templateUtilInitializer = instance(TemplateUtilInitializer.class);
+		templateUtilInitializer.initialize(htmlTemplateFactoriesCV.get());
+
+		val.set(Arrays.asList(requestMappingUtilInitializer,
+				templateUtilInitializer));
 	}
 
 	public void produce(ReloadRequestParserCP val, ReloadPrefixCP prefix,
 			ReloadPersistenceHandlerCP persistenceCV,
-			ReloadInvokerCP invokerCV,
-			RequestMappingUtilInitializerCP requestMappingUtilInitializerCV) {
+			ReloadInvokerCP invokerCV, UtilInitializersCP utilInitializers) {
 
 		DelegatingRequestHandler<PageReloadRequest, PageReloadRequest> persistence = persistenceCV
 				.get();
 		persistence.setDelegate(invokerCV.get());
 
 		val.set(instance(ComponentWebReloadRequestParser.class).initialize(
-				prefix.get(), persistence,
-				requestMappingUtilInitializerCV.get()));
+				prefix.get(), persistence, utilInitializers.get()));
 	}
 
 	@ExtendConfiguration

@@ -1,5 +1,7 @@
 package laf.component.web;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import laf.component.core.ComponentActionRequest;
@@ -18,7 +20,7 @@ public class ComponentWebComponentActionRequestParser implements
 	private RequestHandler<ComponentActionRequest> handler;
 	private String prefix;
 
-	private RequestMappingUtilInitializer requestMappingUtilInitializer;
+	private List<Runnable> utilInitializers;
 
 	/**
 	 *
@@ -28,10 +30,10 @@ public class ComponentWebComponentActionRequestParser implements
 	 */
 	public ComponentWebComponentActionRequestParser initialize(String prefix,
 			RequestHandler<ComponentActionRequest> handler,
-			RequestMappingUtilInitializer requestMappingUtilInitializer) {
+			List<Runnable> utilInitializers) {
 		this.prefix = prefix;
 		this.handler = handler;
-		this.requestMappingUtilInitializer = requestMappingUtilInitializer;
+		this.utilInitializers = utilInitializers;
 		return this;
 	}
 
@@ -55,7 +57,7 @@ public class ComponentWebComponentActionRequestParser implements
 
 			@Override
 			public void handle(HttpRequest request) {
-				requestMappingUtilInitializer.performInitialization();
+				utilInitializers.stream().forEach(x -> x.run());
 				pageScopeManager.enter(actionRequest.pageNr);
 				try {
 					handler.handle(actionRequest);

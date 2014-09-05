@@ -2,8 +2,7 @@ package laf.mvc.web;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -33,7 +32,7 @@ public class DefaultHttpRequestMapper implements HttpRequestMapper {
 
 	private HashMap<Class<?>, BiMap<Method, String>> actionMethodNameMap = new HashMap<>();
 
-	public void initialize(Function<Class<?>, String> nameMapper) {
+	public void initialize(Function<Class<?>, String> controllerNameMapper) {
 
 		// initialize controller name map
 		MController controller = new MController() {
@@ -45,20 +44,27 @@ public class DefaultHttpRequestMapper implements HttpRequestMapper {
 		};
 		for (Bean<?> bean : beanManager.getBeans(Object.class, controller)) {
 			Class<?> beanClass = bean.getBeanClass();
-			controllerNameMap.put(beanClass, nameMapper.apply(beanClass));
+			String controllerName = controllerNameMapper.apply(beanClass);
+			log.debug("found controller " + beanClass + " -> " + controllerName);
+			controllerNameMap.put(beanClass, controllerName);
 
 			// build method name map
 			BiMap<Method, String> methodNameMap = HashBiMap.create();
 			for (Method m : beanClass.getMethods()) {
+				if (!ControllerReflectionUtil.isActionMethod(m)) {
+					continue;
+				}
 				String name = m.getName();
+				log.debug("found action method " + name);
 
 				// find unique name
 				if (methodNameMap.inverse().containsKey(name)) {
 					int i = 1;
-					String tmp = name + "_" + i;
-					while (methodNameMap.inverse().containsKey(tmp)) {
+					String tmp;
+					do {
+						tmp = name + "_" + i;
 						i += 1;
-					}
+					} while (methodNameMap.inverse().containsKey(tmp));
 					name = tmp;
 				}
 
@@ -122,6 +128,17 @@ public class DefaultHttpRequestMapper implements HttpRequestMapper {
 		return call;
 	}
 
+	private <V> V getHierarchical(Map<Class<?>, V> map, Class<?> cls) {
+		Class<?> c = cls;
+		while (c != null) {
+			if (map.containsKey(c)) {
+				return map.get(c);
+			}
+			c = c.getSuperclass();
+		}
+		return null;
+	}
+
 	@Override
 	public HttpRequest generate(ActionPath<String> path) {
 		StringBuilder sb = new StringBuilder();
@@ -135,14 +152,21 @@ public class DefaultHttpRequestMapper implements HttpRequestMapper {
 			}
 
 			MethodInvocation<String> element = it.next();
-			sb.append(controllerNameMap.get(element.getInstanceClass()));
+			sb.append(getHierarchical(controllerNameMap,
+					element.getInstanceClass()));
 		}
 
 		// add methods
 		for (MethodInvocation<String> element : path.getElements()) {
 			sb.append(".");
-			sb.append(actionMethodNameMap.get(element.getInstanceClass()).get(
-					element.getMethod()));
+			BiMap<Method, String> methodNameMap = getHierarchical(
+					actionMethodNameMap, element.getInstanceClass());
+			if (methodNameMap == null) {
+				throw new RuntimeException(
+						"Unable to find controller or embedded controller class "
+								+ element.getInstanceClass());
+			}
+			sb.append(methodNameMap.get(element.getMethod()));
 		}
 
 		// add arguments

@@ -1,9 +1,6 @@
 package laf.core.base.configuration;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Indicates that a method of a {@link ConfigurationDefiner} extends the

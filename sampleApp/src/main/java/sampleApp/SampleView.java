@@ -24,8 +24,10 @@ public class SampleView extends MvcWebView<String> {
 				.div()
 				.write(getData())
 				._div()
-				.a(href(util.url(util.path(SampleComponentController.class)
-						.index()))).content("Component Controller")
+				//.a(href(util.url(util.path(SampleComponentController.class)
+				//		.index()))).content("Component Controller")
+				.a(href(util.url(util.path(SampleController.class)
+						.index()))).content("Self")
 			._body()
 		._html();
 

@@ -11,9 +11,6 @@ import org.rendersnake.HtmlCanvas;
 public class CWTemplateBase<T extends Component> implements CWTemplate<T> {
 
 	@Inject
-	protected HtmlTemplateService htmlTemplateService;
-
-	@Inject
 	CWRenderUtil util;
 
 	@Override

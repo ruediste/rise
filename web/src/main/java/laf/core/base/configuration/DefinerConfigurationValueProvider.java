@@ -3,44 +3,26 @@ package laf.core.base.configuration;
 import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import laf.core.base.ReflectionUtil;
 import laf.core.base.Val;
 
-import com.google.common.collect.Iterators;
+import org.slf4j.Logger;
+
 import com.google.common.reflect.TypeToken;
 
 public class DefinerConfigurationValueProvider extends
 		ConfigurationValueProviderBase {
 
 	@Inject
+	Logger log;
+
+	@Inject
 	ConfigurationFactory configurationFactory;
-
-	private final class ArgumentParameterHandler implements InvocationHandler {
-
-		private Class<?> parameterInterfaceClass;
-
-		public ArgumentParameterHandler(Class<?> parameterInterfaceClass) {
-			super();
-			this.parameterInterfaceClass = parameterInterfaceClass;
-		}
-
-		@Override
-		public Object invoke(Object proxy, Method method, Object[] args)
-				throws Throwable {
-			if (getMethod.equals(method)) {
-				return configurationFactory
-						.createParameterInstance(parameterInterfaceClass);
-			}
-			throw new RuntimeException(
-					"Method "
-							+ method.getName()
-							+ " may not be called on ConfigurationParameters during their value definition");
-
-		}
-	}
 
 	private final class ToBeDefinedParameterHandler implements
 			InvocationHandler {
@@ -95,6 +77,20 @@ public class DefinerConfigurationValueProvider extends
 		}
 	}
 
+	public static class ExtendedParameterNotDefined extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+
+		public ExtendedParameterNotDefined(Class<?> parameter, Class<?> definer) {
+			super(
+					"Definer "
+							+ definer.getName()
+							+ " extends configuration parameter "
+							+ parameter.getName()
+							+ " but the parameter is not defined by the definers "
+							+ "further down the chain. Define the parameter in an underlying definer");
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public <V, T extends ConfigurationParameter<V>> Val<V> provideValue(
@@ -111,10 +107,16 @@ public class DefinerConfigurationValueProvider extends
 
 			Val<V> successorResult = null;
 
-			if (method.isAnnotationPresent(ExtendConfiguration.class)
-					&& getSuccessor() != null) {
-				successorResult = getSuccessor().provideValue(
-						configInterfaceClass, configValueClass);
+			if (ReflectionUtil.isAnnotationPresent(definer.getClass(), method,
+					ExtendConfiguration.class)) {
+				if (getSuccessor() != null) {
+					successorResult = getSuccessor().provideValue(
+							configInterfaceClass, configValueClass);
+				}
+				if (successorResult == null) {
+					throw new ExtendedParameterNotDefined(configInterfaceClass,
+							definer.getClass());
+				}
 			}
 
 			ArrayList<Object> arguments = new ArrayList<Object>();
@@ -125,15 +127,15 @@ public class DefinerConfigurationValueProvider extends
 			arguments.add(createProxy(configInterfaceClass, handler));
 
 			// create arguments
-			Iterators.addAll(
-					arguments,
-					Arrays.asList(method.getParameterTypes())
-							.stream()
-							.skip(1)
-							.map(cls -> configurationFactory
-									.createParameterInstance(cls)).iterator());
+			arguments.addAll(Arrays
+					.stream(method.getParameterTypes())
+					.skip(1)
+					.map(cls -> configurationFactory
+							.createParameterInstance(cls))
+					.collect(Collectors.toList()));
 
 			// invoke method
+			log.debug("invoking " + method);
 			try {
 				method.invoke(definer, arguments.toArray());
 			} catch (IllegalAccessException | IllegalArgumentException
@@ -142,6 +144,7 @@ public class DefinerConfigurationValueProvider extends
 						"Error while invoking configuration value producer method",
 						e);
 			}
+			log.debug("returned from " + method);
 
 			// check if the definer method did set the value
 			if (!handler.argSet) {

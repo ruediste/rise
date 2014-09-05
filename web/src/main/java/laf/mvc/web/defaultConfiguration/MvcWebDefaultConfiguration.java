@@ -14,8 +14,8 @@ public class MvcWebDefaultConfiguration implements ConfigurationDefiner {
 	@Inject
 	Instance<Object> instance;
 
-	public void produce(BasePackageCP val) {
-		val.set("");
+	private <T> T get(Class<T> cls) {
+		return instance.select(cls).get();
 	}
 
 	public void produce(HttpRequestMapperCP val,

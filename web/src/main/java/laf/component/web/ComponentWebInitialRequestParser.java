@@ -23,8 +23,7 @@ public class ComponentWebInitialRequestParser implements
 
 		@Override
 		public void handle(HttpRequest request) {
-			requestMappingUtilInitializer.performInitialization();
-
+			initializers.spliterator().forEachRemaining(x -> x.run());
 			handler.handle(path);
 		}
 
@@ -47,14 +46,14 @@ public class ComponentWebInitialRequestParser implements
 
 	private RequestMapper mapper;
 	private RequestHandler<ActionInvocation<String>> handler;
-	private RequestMappingUtilInitializer requestMappingUtilInitializer;
+	private Iterable<Runnable> initializers;
 
 	public ComponentWebInitialRequestParser initialize(RequestMapper mapper,
 			RequestHandler<ActionInvocation<String>> handler,
-			RequestMappingUtilInitializer requestMappingUtilInitializer) {
+			Iterable<Runnable> initializers) {
 		this.mapper = mapper;
 		this.handler = handler;
-		this.requestMappingUtilInitializer = requestMappingUtilInitializer;
+		this.initializers = initializers;
 		return this;
 	}
 

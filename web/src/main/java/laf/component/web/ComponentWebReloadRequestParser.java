@@ -1,5 +1,7 @@
 package laf.component.web;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import laf.component.core.PageReloadRequest;
@@ -21,14 +23,14 @@ public class ComponentWebReloadRequestParser implements
 	private RequestHandler<PageReloadRequest> handler;
 	private String prefix;
 
-	private RequestMappingUtilInitializer requestMappingUtilInitializer;
+	private List<Runnable> utilInitializers;
 
 	public ComponentWebReloadRequestParser initialize(String prefix,
 			RequestHandler<PageReloadRequest> handler,
-			RequestMappingUtilInitializer requestMappingUtilInitializer) {
+			List<Runnable> utilInitializers) {
 		this.prefix = prefix;
 		this.handler = handler;
-		this.requestMappingUtilInitializer = requestMappingUtilInitializer;
+		this.utilInitializers = utilInitializers;
 		return this;
 	}
 
@@ -51,7 +53,7 @@ public class ComponentWebReloadRequestParser implements
 
 			@Override
 			public void handle(HttpRequest request) {
-				requestMappingUtilInitializer.performInitialization();
+				utilInitializers.stream().forEach(x -> x.run());
 				manager.enter(reloadRequest.pageNr);
 				try {
 					handler.handle(reloadRequest);

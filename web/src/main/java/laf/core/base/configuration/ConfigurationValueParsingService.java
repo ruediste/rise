@@ -1,10 +1,6 @@
 package laf.core.base.configuration;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.List;
+import java.util.*;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -16,6 +12,10 @@ import com.google.common.reflect.TypeToken;
  */
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class ConfigurationValueParsingService {
+	/**
+	 * Parse the provided string. If the string cannot be parsed an error is
+	 * thrown.
+	 */
 	public <V> V parse(TypeToken<V> targetType, String value) {
 		Class<?> rawType = targetType.getRawType();
 
@@ -23,12 +23,11 @@ public class ConfigurationValueParsingService {
 			return (V) new ArrayList(parseElements(
 					targetType.resolveType(List.class.getTypeParameters()[0]),
 					value));
-		} else 
-			if (rawType.equals(Deque.class)) {
-				return (V) new ArrayDeque(parseElements(
-						targetType.resolveType(Deque.class.getTypeParameters()[0]),
-						value));
-			} else {
+		} else if (rawType.equals(Deque.class)) {
+			return (V) new ArrayDeque(parseElements(
+					targetType.resolveType(Deque.class.getTypeParameters()[0]),
+					value));
+		} else {
 			return parseSingleValue(targetType, value);
 		}
 	}
@@ -106,7 +105,8 @@ public class ConfigurationValueParsingService {
 				Class<?> objectClass = classLoader.loadClass(value);
 				return (T) instance.select(objectClass).get();
 			} catch (ClassNotFoundException e) {
-				throw new RuntimeException("Unable to load class "+value+" as configuration value",e);
+				throw new RuntimeException("Unable to load class " + value
+						+ " as configuration value", e);
 			}
 		}
 	}

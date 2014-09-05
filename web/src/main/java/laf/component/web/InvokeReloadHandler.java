@@ -9,7 +9,6 @@ import laf.component.core.api.CView;
 import laf.component.core.pageScope.PageScopeManager;
 import laf.component.core.tree.Component;
 import laf.component.core.tree.ComponentTreeUtil;
-import laf.component.web.*;
 import laf.core.base.ActionResult;
 import laf.core.http.CoreRequestInfo;
 import laf.core.http.RedirectRenderResult;
@@ -39,7 +38,7 @@ public class InvokeReloadHandler implements RequestHandler<PageReloadRequest> {
 	HtmlComponentService componentService;
 
 	@Inject
-	HtmlTemplateService htmlTemplateService;
+	TemplateUtil templateUtil;
 
 	@Inject
 	CWControllerUtil controllerUtil;
@@ -59,13 +58,13 @@ public class InvokeReloadHandler implements RequestHandler<PageReloadRequest> {
 
 		for (Component c : components) {
 			applyValuesUtil.setComponent(c);
-			htmlTemplateService.getTemplate(c).applyValues(c, applyValuesUtil);
+			templateUtil.getTemplate(c).applyValues(c, applyValuesUtil);
 		}
 
 		// process events
 		for (Component c : components) {
 			raiseEventsUtil.setComponent(c);
-			htmlTemplateService.getTemplate(c).raiseEvents(c, raiseEventsUtil);
+			templateUtil.getTemplate(c).raiseEvents(c, raiseEventsUtil);
 		}
 
 		// check if a destination has been defined

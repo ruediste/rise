@@ -1,9 +1,7 @@
 package laf.component.web;
 
-import java.lang.annotation.Annotation;
 import java.util.*;
 
-import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -50,12 +48,6 @@ public class HtmlTemplateFactoryImpl implements HtmlTemplateFactory {
 	}
 
 	public void addTemplatesFromPackage(String pkg) {
-		Default defaultAnnotation = new Default() {
-			@Override
-			public Class<? extends Annotation> annotationType() {
-				return Default.class;
-			}
-		};
 		ArrayList<CWTemplate<?>> templates = new ArrayList<>();
 		for (Bean<?> bean : beanManager
 				.getBeans(new TypeLiteral<CWTemplate<?>>() {
@@ -68,5 +60,9 @@ public class HtmlTemplateFactoryImpl implements HtmlTemplateFactory {
 			}
 		}
 		addTemplates(templates);
+	}
+
+	public void addTemplatesFromPackage(Package pck) {
+		addTemplatesFromPackage(pck.getName());
 	}
 }

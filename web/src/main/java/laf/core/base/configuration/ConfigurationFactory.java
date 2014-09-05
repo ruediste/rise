@@ -31,6 +31,8 @@ public class ConfigurationFactory {
 	Instance<PropertiesConfigrationValueProvider> propertiesConfigrationValueProviderInstance;
 
 	@Inject
+	DefaultAnnotationConfigurationValueProvider defaultAnnotationConfigurationValueProvider;
+	@Inject
 	Event<DiscoverConfigruationEvent> discoverConfigurationEvent;
 
 	private ConfigurationValueProvider provider;
@@ -61,6 +63,7 @@ public class ConfigurationFactory {
 
 	@PostConstruct
 	void initialize() {
+		add(defaultAnnotationConfigurationValueProvider);
 
 		try {
 			getMethod = ConfigurationParameter.class.getMethod("get");
@@ -112,7 +115,7 @@ public class ConfigurationFactory {
 			TypeToken<?> configValueClass) {
 
 		Val<V> result;
-		if (cache.containsKey(configValueClass)) {
+		if (cache.containsKey(configInterfaceClass)) {
 			result = (Val<V>) cache.get(configInterfaceClass);
 		} else {
 			synchronized (this) {

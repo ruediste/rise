@@ -6,11 +6,19 @@ import java.util.List;
 import com.google.common.base.*;
 import com.google.common.collect.Iterables;
 
+/**
+ * Map a class to it's fully qualified name. If a base package is specified it
+ * is removed from the result. If a suffix is specified, it is removed from the
+ * result. The class name is transformed to lower camel form.
+ */
 public class DefaultClassNameMapping implements Function<Class<?>, String> {
 
 	private String basePackage;
 	private String suffix;
 
+	/**
+	 * Initialize mapping. Arguments can be null.
+	 */
 	public void initialize(String basePackage, String suffix) {
 		this.basePackage = basePackage;
 		this.suffix = suffix;
@@ -23,7 +31,7 @@ public class DefaultClassNameMapping implements Function<Class<?>, String> {
 		// remove the base package
 		if (!Strings.isNullOrEmpty(basePackage)) {
 			if (name.startsWith(basePackage + ".")) {
-				name = name.substring(basePackage.length() - 1);
+				name = name.substring(basePackage.length() + 1);
 			}
 		}
 
@@ -41,7 +49,7 @@ public class DefaultClassNameMapping implements Function<Class<?>, String> {
 				parts.size() - 1,
 				CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL,
 						parts.get(parts.size() - 1)));
-		name = Joiner.on('.').join(parts);
+		name = Joiner.on('/').join(parts);
 		return name;
 	}
 

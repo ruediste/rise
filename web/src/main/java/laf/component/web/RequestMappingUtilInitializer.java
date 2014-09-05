@@ -4,7 +4,7 @@ import javax.inject.Inject;
 
 import laf.core.argumentSerializer.ArgumentSerializerChain;
 
-public class RequestMappingUtilInitializer {
+public class RequestMappingUtilInitializer implements Runnable {
 	@Inject
 	RequestMappingUtil util;
 
@@ -17,7 +17,8 @@ public class RequestMappingUtilInitializer {
 
 	}
 
-	public void performInitialization() {
+	@Override
+	public void run() {
 		util.initialize(mapper, chain);
 	}
 }
