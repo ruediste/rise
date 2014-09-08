@@ -22,7 +22,7 @@ public class RenderInitialPageHandler
 	ComponentViewRepository viewRepository;
 
 	@Inject
-	Page page;
+	PageInfo page;
 
 	@Inject
 	CoreRequestInfo coreRequestInfo;

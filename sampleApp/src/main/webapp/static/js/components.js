@@ -16,23 +16,24 @@ var components = (function () {
   };
  
   return {
-  	reloadUrl: "",
      register: function( bar ) {
  
     	// handler for partial reloads
     		$(document).on("c_viewReload",".c_reload",function(event){
     			var receiver=$(this);
-    			var data="componentId="+receiver.children("._componentId").first().text()+"&"+receiver.serialize();
+    			var data=receiver.serialize();
     			event.preventDefault();
     			event.stopPropagation();
+    			var foo=$("body").attr("data-reloadpath");
     			$.ajax({
     				  type: "POST",
-    				  url: components.reloadUrl,
+    				  url: $("body").attr("data-reloadpath")+"/"+receiver.children("._componentId").first().text(),
     				  data: data,
     				  success: function(data){
-    						receiver.replaceWith($(data).children());
+    						// receiver.replaceWith($(data).children());
+    						receiver.replaceWith(data);
     					},
-    				  dataType: "xml"
+    				  dataType: "html"
     				});
     		});
     		

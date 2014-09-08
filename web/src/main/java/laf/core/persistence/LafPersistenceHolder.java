@@ -11,7 +11,7 @@ import javax.persistence.EntityManager;
 import laf.core.base.LafLogger;
 
 /**
- * Represents a map of {@link LafEntityManagerFactory}s to the corresponding
+ * Represents a map of {@link EntityManagerSupplierToken}s to the corresponding
  * {@link EntityManager}s
  */
 @Typed(LafPersistenceHolder.class)

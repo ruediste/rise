@@ -29,7 +29,7 @@ public class InvokeReloadHandler implements RequestHandler<PageReloadRequest> {
 	RaiseEventsUtilImpl raiseEventsUtil;
 
 	@Inject
-	Page page;
+	PageInfo page;
 
 	@Inject
 	CoreRequestInfo coreRequestInfo;

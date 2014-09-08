@@ -22,19 +22,19 @@ public class CPageHtmlTemplate extends CWTemplateBase<CPage> {
 	public void render(CPage component, HtmlCanvas html) throws IOException {
 
 		//@formatter:off
-		html.write("<!DOCTYPE html>")
+		html.write("<!DOCTYPE html>",false)
 		.html()
 			.head()
 				.title().content("Yeah")
-				.script(src(util.url("js/jquery-1.11.1.js")))._script()
-				.script(src(util.url("js/components.js")))._script()
-				.link(rel("stylesheet").type("text/css").href(util.url("css/components.css")))
+				.script(src("/laf-sampleApp/static/js/jquery-1.11.1.js"))._script()
+				.script(src("/laf-sampleApp//static/js/components.js"))._script()
+				.link(rel("stylesheet").type("text/css").href("/laf-sampleApp/static/css/components.css"))
 				.script(HtmlAttributesFactory.type("text/javascript")).content(
 					"<![CDATA[\n components.reloadUrl=\""
 					+ util.url(util.getReloadPath()) + "\" \n]]>",
 					false)
 			._head()
-			.body();
+			.body(data("reloadpath", util.url(util.getReloadPath()+"/"+util.getPageId())));
 				super.render(component, html);
 			html._body()
 		._html();

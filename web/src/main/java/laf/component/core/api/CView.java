@@ -6,8 +6,7 @@ import laf.core.base.attachedProperties.AttachedPropertyBearerBase;
 /**
  * Base class for view displaying {@link Component}s
  */
-public abstract class CView<TController> extends
-		AttachedPropertyBearerBase {
+public abstract class CView<TController> extends AttachedPropertyBearerBase {
 
 	protected TController controller;
 	private Component rootComponent;
@@ -21,6 +20,7 @@ public abstract class CView<TController> extends
 	 * controller ({@link #setController(Object)})
 	 */
 	public final void initialize(TController controller) {
+		this.controller = controller;
 		rootComponent = createComponents();
 	}
 

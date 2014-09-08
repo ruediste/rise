@@ -53,9 +53,9 @@ public class ComponentWebReloadRequestParser implements
 
 			@Override
 			public void handle(HttpRequest request) {
-				utilInitializers.stream().forEach(x -> x.run());
 				manager.enter(reloadRequest.pageNr);
 				try {
+					utilInitializers.stream().forEach(x -> x.run());
 					handler.handle(reloadRequest);
 				} finally {
 					manager.leave();

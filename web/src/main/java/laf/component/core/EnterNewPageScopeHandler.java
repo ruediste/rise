@@ -14,7 +14,7 @@ public class EnterNewPageScopeHandler
 	PageScopeManager mgr;
 
 	@Inject
-	Page page;
+	PageInfo page;
 
 	@Override
 	public ActionResult handle(ActionInvocation<String> request) {

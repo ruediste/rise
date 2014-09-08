@@ -2,6 +2,7 @@ package laf.component.web;
 
 import java.io.IOException;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import laf.component.core.pageScope.PageScopeManager;
@@ -9,6 +10,7 @@ import laf.component.core.tree.Component;
 
 import org.rendersnake.HtmlCanvas;
 
+@ApplicationScoped
 public class CWRenderUtil extends PathGeneratingUtilImpl {
 
 	@Inject
@@ -19,6 +21,9 @@ public class CWRenderUtil extends PathGeneratingUtilImpl {
 
 	@Inject
 	PageScopeManager pageScopeManager;
+
+	@Inject
+	PathUtil pathUtil;
 
 	private ThreadLocal<Component> currentComponent = new ThreadLocal<Component>();
 
@@ -31,7 +36,12 @@ public class CWRenderUtil extends PathGeneratingUtilImpl {
 	}
 
 	public Component getComponent() {
-		return currentComponent.get();
+		Component result = currentComponent.get();
+		if (result == null) {
+			throw new RuntimeException(
+					"Current Component not set. Is CWRenderUtil used outside of the render method of a template?");
+		}
+		return result;
 	}
 
 	public void render(HtmlCanvas html, Component component) throws IOException {
@@ -50,6 +60,10 @@ public class CWRenderUtil extends PathGeneratingUtilImpl {
 	}
 
 	public String getReloadPath() {
-		throw new UnsupportedOperationException();
+		return pathUtil.getReloadPath();
+	}
+
+	public long getPageId() {
+		return pageScopeManager.getId();
 	}
 }

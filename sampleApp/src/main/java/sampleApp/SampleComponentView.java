@@ -32,7 +32,7 @@ public class SampleComponentView extends CView<SampleComponentController> {
 				})
 				.add(new CGroup().add(new CTextField()).add(
 						new CButton("Reload")))
-				.add(new CLink("MVC controller", util.path(
-						SampleController.class).index()));
+				.add(new CLink("Self", util.path(
+						SampleComponentController.class).index()));
 	}
 }

@@ -18,7 +18,7 @@ public class InvokeInitialHandler implements
 	Instance<Object> controllerInstance;
 
 	@Inject
-	Page page;
+	PageInfo page;
 
 	@Override
 	public ActionResult handle(ActionInvocation<Object> request) {

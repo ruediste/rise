@@ -78,7 +78,7 @@ public class HtmlComponentServiceImpl implements HtmlComponentService {
 			byte[] byteArray = stream.toByteArray();
 
 			// send answer
-			if (requestInfo.getContentType() != null) {
+			if (requestInfo.getContentType() == null) {
 				response.setContentType("text/html; charset=UTF-8");
 			} else {
 				response.setContentType(requestInfo.getContentType());

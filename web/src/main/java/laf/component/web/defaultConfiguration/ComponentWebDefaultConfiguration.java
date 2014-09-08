@@ -18,13 +18,13 @@ public class ComponentWebDefaultConfiguration implements ConfigurationDefiner {
 	@Inject
 	Instance<Object> instance;
 
-	private <T> T instance(Class<T> cls) {
+	private <T> T get(Class<T> cls) {
 		return instance.select(cls).get();
 	}
 
 	public void produce(HtmlTemplateFactoriesCP val) {
 		ArrayDeque<HtmlTemplateFactory> queue = new ArrayDeque<>();
-		HtmlTemplateFactoryImpl factory = instance(HtmlTemplateFactoryImpl.class);
+		HtmlTemplateFactoryImpl factory = get(HtmlTemplateFactoryImpl.class);
 		queue.add(factory);
 		factory.addTemplatesFromPackage(CLinkHtmlTemplate.class.getPackage());
 		val.set(queue);
@@ -43,17 +43,17 @@ public class ComponentWebDefaultConfiguration implements ConfigurationDefiner {
 			ArgumentSerializerChainCP serializerChainCV,
 			UtilInitializersCP utilInitializersCV) {
 
-		EnterNewPageScopeHandler enterScopeHandler = instance(EnterNewPageScopeHandler.class);
+		EnterNewPageScopeHandler enterScopeHandler = get(EnterNewPageScopeHandler.class);
 
 		enterScopeHandler
-				.setDelegate(instance(PersistenceInitialRequestHandler.class))
+				.setDelegate(get(PersistenceInitialRequestHandler.class))
 				.setDelegate(
-						instance(ArgumentLoadingRequestHandler.class)
-								.initialize(serializerChainCV.get()))
-				.setDelegate(instance(RenderInitialPageHandler.class))
-				.setDelegate(instance(InvokeInitialHandler.class));
+						get(ArgumentLoadingRequestHandler.class).initialize(
+								serializerChainCV.get()))
+				.setDelegate(get(RenderInitialPageHandler.class))
+				.setDelegate(get(InvokeInitialHandler.class));
 
-		val.set(instance(ComponentWebInitialRequestParser.class).initialize(
+		val.set(get(ComponentWebInitialRequestParser.class).initialize(
 				requestMapperCV.get(), enterScopeHandler,
 				utilInitializersCV.get()));
 	}
@@ -66,7 +66,7 @@ public class ComponentWebDefaultConfiguration implements ConfigurationDefiner {
 		val.set(instance.select(InvokeComponentActionHandler.class).get());
 	}
 
-	public void produce(ActionRequestParserCP val, ActionPrefixCP prefix,
+	public void produce(ActionRequestParserCP val, ActionPathCP prefix,
 			ComponentActionPersistenceHandlerCP persistenceHandlerCV,
 			ComponentActionInvokerCP invokerCP,
 			UtilInitializersCP utilInitializersCV) {
@@ -75,9 +75,8 @@ public class ComponentWebDefaultConfiguration implements ConfigurationDefiner {
 
 		persistenceHandler.setDelegate(invokerCP.get());
 
-		val.set(instance(ComponentWebComponentActionRequestParser.class)
-				.initialize(prefix.get(), persistenceHandler,
-						utilInitializersCV.get()));
+		val.set(get(ComponentWebComponentActionRequestParser.class).initialize(
+				prefix.get(), persistenceHandler, utilInitializersCV.get()));
 	}
 
 	public void produce(ReloadPersistenceHandlerCP val) {
@@ -90,20 +89,24 @@ public class ComponentWebDefaultConfiguration implements ConfigurationDefiner {
 
 	public void produce(UtilInitializersCP val,
 			RequestMapperCP requestMapperCV, ArgumentSerializerChainCP chainCV,
-			HtmlTemplateFactoriesCP htmlTemplateFactoriesCV) {
+			HtmlTemplateFactoriesCP htmlTemplateFactoriesCV,
+			ReloadPathCP reloadPrefixCV) {
 
-		RequestMappingUtilInitializer requestMappingUtilInitializer = instance(RequestMappingUtilInitializer.class);
+		RequestMappingUtilInitializer requestMappingUtilInitializer = get(RequestMappingUtilInitializer.class);
 		requestMappingUtilInitializer.initialize(requestMapperCV.get(),
 				chainCV.get());
 
-		TemplateUtilInitializer templateUtilInitializer = instance(TemplateUtilInitializer.class);
+		TemplateUtilInitializer templateUtilInitializer = get(TemplateUtilInitializer.class);
 		templateUtilInitializer.initialize(htmlTemplateFactoriesCV.get());
 
+		PathUtilInitializer pathUtilInitializer = get(PathUtilInitializer.class);
+		pathUtilInitializer.initialize(reloadPrefixCV.get());
+
 		val.set(Arrays.asList(requestMappingUtilInitializer,
-				templateUtilInitializer));
+				templateUtilInitializer, pathUtilInitializer));
 	}
 
-	public void produce(ReloadRequestParserCP val, ReloadPrefixCP prefix,
+	public void produce(ReloadRequestParserCP val, ReloadPathCP prefix,
 			ReloadPersistenceHandlerCP persistenceCV,
 			ReloadInvokerCP invokerCV, UtilInitializersCP utilInitializers) {
 
@@ -111,7 +114,7 @@ public class ComponentWebDefaultConfiguration implements ConfigurationDefiner {
 				.get();
 		persistence.setDelegate(invokerCV.get());
 
-		val.set(instance(ComponentWebReloadRequestParser.class).initialize(
+		val.set(get(ComponentWebReloadRequestParser.class).initialize(
 				prefix.get(), persistence, utilInitializers.get()));
 	}
 

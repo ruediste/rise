@@ -9,7 +9,7 @@ import laf.component.core.pageScope.PageScoped;
  * Contains various page related information
  */
 @PageScoped
-public class Page implements Serializable {
+public class PageInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private CView<?> view;
 	private Object controller;

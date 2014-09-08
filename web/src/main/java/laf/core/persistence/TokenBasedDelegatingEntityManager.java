@@ -4,7 +4,7 @@ import javax.persistence.EntityManager;
 
 /**
  * {@link EntityManager} implementation associated with a
- * {@link LafEntityManagerFactory} which always delegates to the
+ * {@link EntityManagerSupplierToken} which always delegates to the
  * {@link EntityManager} provided by the {@link LafPersistenceHolder} returned
  * by {@link LafPersistenceContextManager#getCurrentHolder()}
  */

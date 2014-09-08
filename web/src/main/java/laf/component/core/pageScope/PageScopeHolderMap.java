@@ -10,6 +10,10 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.persistence.PostRemove;
 
+/**
+ * Session scoped map between page IDs and the associated
+ * {@link PageScopeHolder}s.
+ */
 @SessionScoped
 public class PageScopeHolderMap implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -20,6 +24,10 @@ public class PageScopeHolderMap implements Serializable {
 	private final AtomicLong nextId = new AtomicLong();
 	private ConcurrentMap<Long, PageScopeHolder> map = new ConcurrentHashMap<>();
 
+	/**
+	 * Create a new {@link PageScopeHolder}, used to hold the page scope of a
+	 * new page
+	 */
 	public PageScopeHolder create() {
 		long id = nextId.incrementAndGet();
 		PageScopeHolder holder = holderInstance.get();
@@ -28,10 +36,16 @@ public class PageScopeHolderMap implements Serializable {
 		return holder;
 	}
 
+	/**
+	 * Return a {@link PageScopeHolder} by the page id
+	 */
 	public PageScopeHolder get(long id) {
 		return map.get(id);
 	}
 
+	/**
+	 * Destroy a {@link PageScopeHolder}
+	 */
 	public void destroy(long id) {
 		PageScopeHolder holder = get(id);
 		try {
@@ -44,6 +58,9 @@ public class PageScopeHolderMap implements Serializable {
 		holder.semaphore.release();
 	}
 
+	/**
+	 * Called when the session is destroyed. Destroy all page scopes.
+	 */
 	@PostRemove
 	public void remove() {
 		for (PageScopeHolder holder : map.values()) {

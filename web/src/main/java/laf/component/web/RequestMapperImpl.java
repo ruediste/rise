@@ -111,8 +111,14 @@ public class RequestMapperImpl implements RequestMapper {
 
 		// add method
 		sb.append(".");
-		sb.append(actionMethodNameMap.get(invocation.getInstanceClass()).get(
-				invocation.getMethod()));
+		BiMap<Method, String> methodNameMap = actionMethodNameMap
+				.get(invocation.getInstanceClass());
+		if (methodNameMap == null) {
+			throw new RuntimeException("The class"
+					+ invocation.getInstanceClass().getName()
+					+ " is not registered as component controller");
+		}
+		sb.append(methodNameMap.get(invocation.getMethod()));
 
 		// add arguments
 		for (String argument : invocation.getArguments()) {
