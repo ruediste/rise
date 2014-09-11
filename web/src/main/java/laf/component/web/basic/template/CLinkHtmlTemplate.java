@@ -18,7 +18,7 @@ public class CLinkHtmlTemplate extends CWTemplateBase<CLink> {
 
 	@Override
 	public void render(CLink component, HtmlCanvas html) throws IOException {
-		html.a(href(util.url(component.getDestination())));
+		html.a(href(component.getDestinationUrl()));
 		super.render(component, html);
 		html._a();
 	}

@@ -4,20 +4,23 @@ import java.util.Iterator;
 
 import com.google.common.collect.Iterators;
 
-public class SingleChildRelation<T extends Component, TSelf extends ComponentBase<TSelf>>
-extends ChildRelation<TSelf> {
+/**
+ * Manages a relation referencing a single child
+ */
+public class SingleChildRelation<TChild extends Component, TContainingComponent extends ComponentBase<TContainingComponent>>
+		extends ChildRelation<TContainingComponent> {
 
-	private T child;
+	private TChild child;
 
-	public SingleChildRelation(TSelf parent) {
-		super(parent);
+	public SingleChildRelation(TContainingComponent containingComponent) {
+		super(containingComponent);
 	}
 
 	public Component getChild() {
 		return child;
 	}
 
-	public T setChild(T newChild) {
+	public TChild setChild(TChild newChild) {
 		if (child != null && child.getParent() != null) {
 			child.getParent().childRemoved(child);
 			child.parentChanged(null);
@@ -26,7 +29,7 @@ extends ChildRelation<TSelf> {
 		child = newChild;
 
 		if (child != null) {
-			child.parentChanged(parent);
+			child.parentChanged(containingComponent);
 		}
 		return newChild;
 	}

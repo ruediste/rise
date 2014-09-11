@@ -92,30 +92,23 @@ public class ComponentWebDefaultConfiguration implements ConfigurationDefiner {
 			HtmlTemplateFactoriesCP htmlTemplateFactoriesCV,
 			ReloadPathCP reloadPrefixCV) {
 
-		RequestMappingUtilInitializer requestMappingUtilInitializer = get(RequestMappingUtilInitializer.class);
-		requestMappingUtilInitializer.initialize(requestMapperCV.get(),
-				chainCV.get());
+		WebRequestInfoInitializer initializer = get(WebRequestInfoInitializer.class);
+		initializer.initialize(chainCV.get(), reloadPrefixCV.get(),
+				requestMapperCV.get(), htmlTemplateFactoriesCV.get());
 
-		TemplateUtilInitializer templateUtilInitializer = get(TemplateUtilInitializer.class);
-		templateUtilInitializer.initialize(htmlTemplateFactoriesCV.get());
-
-		PathUtilInitializer pathUtilInitializer = get(PathUtilInitializer.class);
-		pathUtilInitializer.initialize(reloadPrefixCV.get());
-
-		val.set(Arrays.asList(requestMappingUtilInitializer,
-				templateUtilInitializer, pathUtilInitializer));
+		val.set(Arrays.asList(initializer));
 	}
 
 	public void produce(ReloadRequestParserCP val, ReloadPathCP prefix,
 			ReloadPersistenceHandlerCP persistenceCV,
-			ReloadInvokerCP invokerCV, UtilInitializersCP utilInitializers) {
+			ReloadInvokerCP invokerCV, UtilInitializersCP utilInitializersCV) {
 
 		DelegatingRequestHandler<PageReloadRequest, PageReloadRequest> persistence = persistenceCV
 				.get();
 		persistence.setDelegate(invokerCV.get());
 
 		val.set(get(ComponentWebReloadRequestParser.class).initialize(
-				prefix.get(), persistence, utilInitializers.get()));
+				prefix.get(), persistence, utilInitializersCV.get()));
 	}
 
 	@ExtendConfiguration

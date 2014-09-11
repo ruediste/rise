@@ -1,24 +1,18 @@
 package laf.component.web;
 
-import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 
 import laf.component.core.ActionInvocation;
-import laf.core.argumentSerializer.ArgumentSerializerChain;
 import laf.core.http.request.HttpRequest;
 
-@RequestScoped
 public class RequestMappingUtil {
 
-	private RequestMapper mapper;
-	private ArgumentSerializerChain chain;
-
-	public void initialize(RequestMapper mapper, ArgumentSerializerChain chain) {
-		this.mapper = mapper;
-		this.chain = chain;
-
-	}
+	@Inject
+	public WebRequestInfo webRequestInfo;
 
 	public HttpRequest generate(ActionInvocation<Object> invocation) {
-		return mapper.generate(invocation.map(chain.generateFunction()));
+		return webRequestInfo.getRequestMapper().generate(
+				invocation.map(webRequestInfo.getArgumentSerializerChain()
+						.generateFunction()));
 	}
 }

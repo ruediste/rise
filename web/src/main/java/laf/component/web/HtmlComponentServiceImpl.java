@@ -26,7 +26,7 @@ public class HtmlComponentServiceImpl implements HtmlComponentService {
 	private final AttachedProperty<CView<?>, Long> maxComponentId = new AttachedProperty<>();
 
 	@Inject
-	CWRenderUtil renderUtil;
+	CWRenderUtil cwRenderUtil;
 
 	@Inject
 	ComponentWebRequestInfo requestInfo;
@@ -73,7 +73,7 @@ public class HtmlComponentServiceImpl implements HtmlComponentService {
 				HtmlComponentServiceImpl.UTF8);
 		HtmlCanvas canvas = new HtmlCanvas(writer);
 		try {
-			renderUtil.render(canvas, rootComponent);
+			cwRenderUtil.render(canvas, rootComponent);
 			writer.close();
 			byte[] byteArray = stream.toByteArray();
 

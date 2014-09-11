@@ -1,18 +1,14 @@
 package laf.component.web;
 
-import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 
 import laf.component.core.tree.Component;
 import laf.core.base.attachedProperties.AttachedProperty;
 
-@RequestScoped
 public class TemplateUtil {
-	private Iterable<HtmlTemplateFactory> factories;
+	@Inject
+	WebRequestInfo webRequestInfo;
 	private static AttachedProperty<Component, CWTemplate<?>> templateProperty = new AttachedProperty<>();
-
-	public void initialize(Iterable<HtmlTemplateFactory> factories) {
-		this.factories = factories;
-	}
 
 	@SuppressWarnings("unchecked")
 	public <T extends Component> CWTemplate<T> getTemplate(T component) {
@@ -22,7 +18,8 @@ public class TemplateUtil {
 		}
 
 		// otherwise create template and associate
-		for (HtmlTemplateFactory factory : factories) {
+		for (HtmlTemplateFactory factory : webRequestInfo
+				.getTemplateFactories()) {
 			CWTemplate<T> template = factory.createTemplate(component);
 			if (template != null) {
 				templateProperty.set(component, template);

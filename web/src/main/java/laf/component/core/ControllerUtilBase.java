@@ -47,6 +47,7 @@ public class ControllerUtilBase {
 	}
 
 	public void checkAndCommit(Runnable checker, Runnable inTransaction) {
+		boolean commited = false;
 		try {
 			trx.begin();
 			if (checker != null) {
@@ -60,16 +61,24 @@ public class ControllerUtilBase {
 			pageScopeHolder.joinTransaction();
 			if (inTransaction != null) {
 				inTransaction.run();
-				// manager.withPersistenceHolder(pageScopeHolder,
-				// inTransaction);
 			}
 			pageScopeHolder.flush();
 			trx.commit();
+			commited = true;
 		} catch (NotSupportedException | SystemException
 				| IllegalStateException | SecurityException
 				| HeuristicMixedException | HeuristicRollbackException
 				| RollbackException e) {
 			throw new RuntimeException(e);
+		} finally {
+			if (!commited) {
+				try {
+					trx.rollback();
+				} catch (IllegalStateException | SecurityException
+						| SystemException e) {
+					log.error("Error during rollback", e);
+				}
+			}
 		}
 	}
 

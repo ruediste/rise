@@ -23,7 +23,7 @@ public class CWRenderUtil extends PathGeneratingUtilImpl {
 	PageScopeManager pageScopeManager;
 
 	@Inject
-	PathUtil pathUtil;
+	WebRequestInfo webRequestInfo;
 
 	private ThreadLocal<Component> currentComponent = new ThreadLocal<Component>();
 
@@ -60,7 +60,7 @@ public class CWRenderUtil extends PathGeneratingUtilImpl {
 	}
 
 	public String getReloadPath() {
-		return pathUtil.getReloadPath();
+		return webRequestInfo.getReloadPath();
 	}
 
 	public long getPageId() {

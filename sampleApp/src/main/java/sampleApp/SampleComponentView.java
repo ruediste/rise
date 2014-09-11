@@ -11,6 +11,7 @@ import laf.component.web.CWRenderUtil;
 import laf.component.web.CWViewUtil;
 import laf.component.web.basic.CLink;
 import laf.component.web.basic.template.CRender;
+import laf.integration.IntegrationUtil;
 
 import org.rendersnake.HtmlCanvas;
 
@@ -18,6 +19,9 @@ public class SampleComponentView extends CView<SampleComponentController> {
 
 	@Inject
 	CWViewUtil util;
+
+	@Inject
+	IntegrationUtil integrationUtil;
 
 	@Override
 	public Component createComponents() {
@@ -32,6 +36,9 @@ public class SampleComponentView extends CView<SampleComponentController> {
 				})
 				.add(new CGroup().add(new CTextField()).add(
 						new CButton("Reload")))
+				.add(new CLink("MVC Controller", () -> integrationUtil
+						.mwUrl(integrationUtil.mwPath(SampleController.class)
+								.index())))
 				.add(new CLink("Self", util.path(
 						SampleComponentController.class).index()));
 	}

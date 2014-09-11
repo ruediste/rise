@@ -43,7 +43,10 @@ public class RequestMapperImpl implements RequestMapper {
 		};
 		for (Bean<?> bean : beanManager.getBeans(Object.class, controller)) {
 			Class<?> beanClass = bean.getBeanClass();
-			controllerNameMap.put(beanClass, nameMapper.apply(beanClass));
+			String controllerName = nameMapper.apply(beanClass);
+			log.info("Found Controller " + beanClass.getName() + " -> "
+					+ controllerName);
+			controllerNameMap.put(beanClass, controllerName);
 
 			// build method name map
 			BiMap<Method, String> methodNameMap = HashBiMap.create();
@@ -62,6 +65,7 @@ public class RequestMapperImpl implements RequestMapper {
 				}
 
 				methodNameMap.put(m, name);
+				log.info("found method " + name);
 			}
 
 			actionMethodNameMap.put(beanClass, methodNameMap);

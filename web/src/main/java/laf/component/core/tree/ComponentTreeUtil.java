@@ -8,6 +8,10 @@ import java.util.*;
  */
 public class ComponentTreeUtil {
 
+	private ComponentTreeUtil() {
+
+	}
+
 	/**
 	 * Return all components in the sub tree rooted in the given component. That
 	 * is the component itself and all children, transitively.
@@ -26,11 +30,12 @@ public class ComponentTreeUtil {
 	}
 
 	/**
-	 * Returns the ancestors of the given {@link Component}, starting with the
-	 * parent of the component and ending with the root component.
+	 * Returns the ancestors of the given {@link Component}, up to and including
+	 * the root component.
 	 *
 	 * @param includeStartComponent
-	 *            TODO
+	 *            if true, start with the provided component, otherwise start
+	 *            with it's parent
 	 */
 	static public List<Component> ancestors(Component start,
 			boolean includeStartComponent) {
@@ -49,11 +54,11 @@ public class ComponentTreeUtil {
 	}
 
 	/**
-	 * Returns the path from the root component to the target component, not
-	 * including the target component.
-	 * 
+	 * Returns the path from the root component to the target component.
+	 *
 	 * @param includeStartComponent
-	 *            TODO
+	 *            if true, include the target component, otherwise stop at the
+	 *            target component's parent
 	 */
 	static public Collection<Component> path(Component target,
 			boolean includeStartComponent) {

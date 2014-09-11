@@ -4,12 +4,18 @@ import static org.rendersnake.HtmlAttributesFactory.href;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+
+import laf.integration.IntegrationUtil;
 import laf.mvc.web.MWRenderUtil;
 import laf.mvc.web.MvcWebView;
 
 import org.rendersnake.HtmlCanvas;
 
 public class SampleView extends MvcWebView<String> {
+
+	@Inject
+	IntegrationUtil integrationUtil;
 
 	@Override
 	public void render(HtmlCanvas html, MWRenderUtil util) throws IOException {
@@ -24,8 +30,8 @@ public class SampleView extends MvcWebView<String> {
 				.div()
 				.write(getData())
 				._div()
-				//.a(href(util.url(util.path(SampleComponentController.class)
-				//		.index()))).content("Component Controller")
+					.a(href(integrationUtil.cwUrl(integrationUtil.cwPath(SampleComponentController.class)
+						.index()))).content("Component Controller")
 				.a(href(util.url(util.path(SampleController.class)
 						.index()))).content("Self")
 			._body()

@@ -2,13 +2,16 @@ package laf.component.core.tree;
 
 import java.util.*;
 
-public class MultiChildrenRelation<T extends Component, TSelf extends ComponentBase<TSelf>>
-extends ChildRelation<TSelf> {
+/**
+ * Relation of a component to multiple children.
+ */
+public class MultiChildrenRelation<TChild extends Component, TContainingComponent extends ComponentBase<TContainingComponent>>
+		extends ChildRelation<TContainingComponent> {
 
-	private final ArrayList<T> children = new ArrayList<>();
+	private final ArrayList<TChild> children = new ArrayList<>();
 
-	public MultiChildrenRelation(TSelf parent) {
-		super(parent);
+	public MultiChildrenRelation(TContainingComponent containingComponent) {
+		super(containingComponent);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -22,23 +25,36 @@ extends ChildRelation<TSelf> {
 		children.remove(child);
 	}
 
-	public TSelf add(T component) {
+	/**
+	 * Add the given component to the children referenced by this relation
+	 */
+	public TContainingComponent add(TChild component) {
 		children.add(component);
 		postAdd(component);
-		return parent;
+		return containingComponent;
 	}
 
-	public TSelf add(int index, T component) {
+	/**
+	 * Add the given component to the children referenced by this relation at a
+	 * given index
+	 */
+	public TContainingComponent add(int index, TChild component) {
 		children.add(index, component);
 		postAdd(component);
-		return parent;
+		return containingComponent;
 	}
 
-	public void remove(T component) {
+	/**
+	 * remove a child
+	 */
+	public void remove(TChild component) {
 		children.remove(component);
 		postRemove(component);
 	}
 
+	/**
+	 * remove a child
+	 */
 	public void remove(int index) {
 		postRemove(children.remove(index));
 	}
@@ -51,13 +67,13 @@ extends ChildRelation<TSelf> {
 		if (component.getParent() != null) {
 			component.getParent().childRemoved(component);
 		}
-		component.parentChanged(parent);
+		component.parentChanged(containingComponent);
 	}
 
 	/**
-	 * Returns an unmodifiable view to the children of this relation
+	 * Return an unmodifiable view to the children of this relation
 	 */
-	public Collection<T> getChildren() {
+	public Collection<TChild> getChildren() {
 		return Collections.unmodifiableCollection(children);
 	}
 
