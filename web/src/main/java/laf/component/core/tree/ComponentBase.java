@@ -1,6 +1,7 @@
 package laf.component.core.tree;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 import laf.core.base.attachedProperties.AttachedPropertyBearerBase;
 
@@ -96,6 +97,10 @@ public class ComponentBase<TSelf> extends AttachedPropertyBearerBase implements
 	@Override
 	public void initialize() {
 
+	}
+
+	public TSelf bind(Consumer<TSelf> property) {
+		return self();
 	}
 
 }
