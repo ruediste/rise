@@ -1,8 +1,20 @@
 package laf.component.core.binding;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
+import laf.component.core.binding.ProxyManger.BindingInformation;
+import laf.component.core.binding.ProxyManger.MethodInvocation;
 import laf.component.core.tree.ComponentBase;
+import laf.core.base.attachedProperties.AttachedProperty;
+import laf.core.base.attachedProperties.AttachedPropertyBearer;
+import net.sf.cglib.proxy.*;
+
+import com.google.common.base.Defaults;
+import com.google.common.reflect.TypeToken;
 
 /**
  * A group of bindings managed by a controller.
@@ -39,44 +51,175 @@ import laf.component.core.tree.ComponentBase;
  * </p>
  *
  * <p>
- * Bindings can be
- * <dl>
- * <dt> {@link BindingDirection#TWO_WAY TWO_WAY}</dt>
- * <dd>Bididrectional binding between view and model property</dd>
- * <dt> {@link BindingDirection#ONE_WAY ONE_WAY}</dt>
- * <dd>Reading a property of the model and setting a property of the view</dd>
- * <dt> {@link BindingDirection#ONE_WAY_TO_MODEL ONE_WAY_TO_MODEL}</dt>
- * <dd>Reading a property of the view and setting a property of the model</dd>
- * </dl>
- * For TWO_WAY bindings both involved properties have to be readable and
- * writeable.
- * </p>
- * <p>
- * Both the value returned from {@link BindingGroup#proxy()} and the component
- * instance passed to the binding lambda expression are dynamic proxies which
- * record the methods being called. When the lambda expression returns, this
- * information is used to determine the properties which were accessed and to
- * construct a bi-directional between them.
+ * When the involved properties are known, it is determined if the property read
+ * by the lambda expression is writeable and if the property set by the lambda
+ * expression is readable. If both conditions are true, the binding is two-way,
+ * otherwise it is one-way, in the same direction as specified by the lambda
+ * expression.
  * </p>
  *
  * <p>
- * In the case of one-way bindings, the lambda expression is used to directly
- * transfer the data.
+ * When the binding is established, the lambda expression is not called again.
+ * The properties are read and written using reflection. Thus any processing
+ * logic contained in the expression does not affect the binding.
+ * </p>
+ *
+ * <p>
+ * <strong> One Way Bindings </strong><br/>
+ * Using {@link ComponentBase#bindOneWay(java.util.function.Consumer)} the check
+ * if a binding could be two way is suppressed and the binding always takes the
+ * direction as specified by the lambda expression.
+ * </p>
+ *
+ * <p>
+ * <strong> Explicit Bindings </strong><br/>
+ * Using
+ * {@link ComponentBase#bind(java.util.function.Consumer, java.util.function.Consumer)}
+ * an explicit binding is established. The two lambda expressions are always
+ * invoked with the real objects. This can be used to easily define
+ * one-of-a-kind transformations in place. Either expression can be null, in
+ * which case it is ignored.
+ * </p>
+ *
+ * <p>
+ * <strong> Transformers </strong><br/>
+ * Transformers allow a value to be transformed. When a lambda expression is
+ * executed to establish a binding, the usage of any transformer is recorded and
+ * integrated in the binding. Transformers can be one-way (implementing only
+ * {@link BindingTransformer}) or two-way (implementing
+ * {@link TwoWayBindingTransformer}). If it is attempted to establish a two-way
+ * binding using an one-way transformer, an exception is raised.
  * </p>
  */
 public class BindingGroup<T> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public T proxy() {
-		return null;
+	private final Class<?> tClass;
+
+	private final AttachedProperty<AttachedPropertyBearer, Set<Binding<T>>> bindings = new AttachedProperty<>();
+
+	WeakHashMap<AttachedPropertyBearer, Object> components = new WeakHashMap<>();
+
+	private interface Binding<T> {
+		void pullUp(T model);
+
+		void pushDown(T model);
+	}
+
+	public BindingGroup(Class<T> cls) {
+		tClass = cls;
+	}
+
+	public BindingGroup(TypeToken<T> token) {
+		tClass = token.getRawType();
+	}
+
+	private Stream<Binding<T>> getBindings() {
+		return components.keySet().stream()
+				.flatMap(c -> bindings.get(c).stream());
 	}
 
 	public void pullUp(T data) {
-
+		getBindings().forEach(b -> b.pullUp(data));
 	}
 
 	public void pushDown(T data) {
+		getBindings().forEach(b -> b.pushDown(data));
+	}
 
+	public T proxy() {
+		BindingInformation info = ProxyManger.getCurrentInformation();
+		info.involvedBindingGroup = this;
+		return createModelProxy(tClass);
+	}
+
+	@SuppressWarnings("unchecked")
+	private <TModel> TModel createModelProxy(Class<?> modelClass) {
+		Enhancer e = new Enhancer();
+		e.setSuperclass(modelClass);
+		e.setCallback(new MethodInterceptor() {
+
+			@Override
+			public Object intercept(Object obj, Method method, Object[] args,
+					MethodProxy proxy) throws Throwable {
+				BindingInformation info = ProxyManger.getCurrentInformation();
+				info.modelPath.add(new MethodInvocation(method, args));
+
+				Class<?> returnType = method.getReturnType();
+				if (isTerminal(returnType)) {
+					return Defaults.defaultValue(returnType);
+				}
+				return createModelProxy(returnType);
+			}
+
+		});
+
+		return (TModel) e.create();
+	}
+
+	private boolean isTerminal(Class<?> clazz) {
+		return clazz.isPrimitive() || String.class.equals(clazz)
+				|| Date.class.equals(clazz);
+	}
+
+	/**
+	 * Create a dummy usable for use with beanutils
+	 *
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	T createDummyProxy() {
+		return (T) createDummyProxy(tClass);
+	}
+
+	private Object createDummyProxy(Class<?> cls) {
+		Enhancer e = new Enhancer();
+		e.setSuperclass(cls);
+		e.setCallback(new MethodInterceptor() {
+
+			@Override
+			public Object intercept(Object obj, Method method, Object[] args,
+					MethodProxy proxy) throws Throwable {
+				if (isTerminal(method.getReturnType())) {
+					return Defaults.defaultValue(method.getReturnType());
+				}
+				return createDummyProxy(method.getReturnType());
+			}
+		});
+
+		return e.create();
+	}
+
+	@SuppressWarnings("unchecked")
+	void addBindingUntyped(AttachedPropertyBearer component,
+			Consumer<?> pullUp, Consumer<?> pushDown) {
+		addBinding(component, (Consumer<T>) pullUp, (Consumer<T>) pushDown);
+	}
+
+	void addBinding(AttachedPropertyBearer component, Consumer<T> pullUp,
+			Consumer<T> pushDown) {
+		Set<Binding<T>> set = bindings.get(component);
+		if (set == null) {
+			set = new HashSet<>();
+			bindings.set(component, set);
+			components.put(component, null);
+		}
+		set.add(new Binding<T>() {
+
+			@Override
+			public void pushDown(T model) {
+				if (pushDown != null) {
+					pushDown.accept(model);
+				}
+			}
+
+			@Override
+			public void pullUp(T model) {
+				if (pullUp != null) {
+					pullUp.accept(model);
+				}
+			}
+		});
 	}
 }

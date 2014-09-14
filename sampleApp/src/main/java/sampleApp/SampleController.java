@@ -16,8 +16,11 @@ public class SampleController {
 	@Inject
 	MWControllerUtil util;
 
+	@Inject
+	Repo repo;
+
 	public ActionResult index() {
-		return util.view(SampleView.class, "Hello World");
+		return util.view(SampleView.class, repo.getUser());
 	}
 
 	public ActionResult add() throws Exception {

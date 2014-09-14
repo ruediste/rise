@@ -1,27 +1,25 @@
 package laf.component.core.binding;
 
-/**
- * Transform a value between a representation in the view and another
- * representation in the model.
- */
-public abstract class BindingTransformer<TView, TModel> {
+import laf.component.core.binding.ProxyManger.BindingInformation;
 
-	/**
-	 * Transform the model value to the view value
-	 */
-	public abstract TView transformPullUp(TModel model);
+/**
+ * Transform a value from one representation to another
+ */
+public abstract class BindingTransformer<TSource, TTarget> {
 
 	/**
 	 * Transform the view value to the model value
 	 */
-	public abstract TModel transformPushDown(TView view);
-
-	/**
-	 * Transform the model value to the view model. If used in a bidirectional
-	 * binding, the use of the binding transformer is recorded and registered
-	 * with the binding
-	 */
-	public TView transform(TModel model) {
-		return transformPullUp(model);
+	public final TTarget transform(TSource source) {
+		BindingInformation info = ProxyManger.getCurrentInformation();
+		if (info == null) {
+			return transformImpl(source);
+		} else {
+			info.transformer = this;
+			return null;
+		}
 	}
+
+	protected abstract TTarget transformImpl(TSource source);
+
 }

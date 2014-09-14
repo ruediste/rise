@@ -12,7 +12,9 @@ import laf.mvc.web.MvcWebView;
 
 import org.rendersnake.HtmlCanvas;
 
-public class SampleView extends MvcWebView<String> {
+import sampleApp.entities.User;
+
+public class SampleView extends MvcWebView<User> {
 
 	@Inject
 	IntegrationUtil integrationUtil;
@@ -28,7 +30,7 @@ public class SampleView extends MvcWebView<String> {
 			._head()
 			.body()
 				.div()
-				.write(getData())
+				.write(getData().getFistName()+" "+getData().getLastName())
 				._div()
 					.a(href(integrationUtil.cwUrl(integrationUtil.cwPath(SampleComponentController.class)
 						.index()))).content("Component Controller")

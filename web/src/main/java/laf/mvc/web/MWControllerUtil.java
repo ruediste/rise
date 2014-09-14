@@ -4,7 +4,8 @@ import laf.core.base.ActionResult;
 
 public interface MWControllerUtil {
 
-	ActionResult view(Class<?> viewClass, Object data);
+	<TView extends MvcWebView<TData>, TData> ActionResult view(
+			Class<TView> viewClass, TData data);
 
 	ActionResult redirect(ActionResult path);
 }

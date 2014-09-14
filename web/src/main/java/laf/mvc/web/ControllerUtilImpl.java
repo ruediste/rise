@@ -32,9 +32,10 @@ public class ControllerUtilImpl implements MWControllerUtil {
 	}
 
 	@Override
-	public ActionResult view(Class<?> viewClass, Object data) {
-		MvcWebView<?> view = (MvcWebView<?>) viewInstance.select(viewClass)
-				.get();
+	public <TView extends MvcWebView<TData>, TData> ActionResult view(
+			Class<TView> viewClass, TData data) {
+
+		MvcWebView<?> view = viewInstance.select(viewClass).get();
 		initializeView(view, data);
 
 		ByteArrayOutputStream stream = new ByteArrayOutputStream(1024);
@@ -56,4 +57,5 @@ public class ControllerUtilImpl implements MWControllerUtil {
 		return new RedirectRenderResult(
 				mappingUtil.generate((PathActionResult) path));
 	}
+
 }

@@ -1,6 +1,5 @@
 package laf.component.core.basic;
 
-
 public class CButton extends MultiChildrenComponent<CButton> {
 	private Runnable handler;
 
@@ -11,7 +10,7 @@ public class CButton extends MultiChildrenComponent<CButton> {
 		children.add(new CText(text));
 	}
 
-	CButton withHandler(Runnable handler) {
+	public CButton withHandler(Runnable handler) {
 		this.handler = handler;
 		return this;
 	}
