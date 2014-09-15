@@ -28,7 +28,7 @@ public class SampleComponentView extends CView<SampleComponentController> {
 	@Override
 	public Component createComponents() {
 		// @formatter:off
-		Component result=new CPage()
+		return new CPage()
 		.add(new CRender() {
 
 			@Override
@@ -46,7 +46,5 @@ public class SampleComponentView extends CView<SampleComponentController> {
 				)
 		.add(new CLink("MVC Controller", () -> integrationUtil.mwUrl(integrationUtil.mwPath(SampleController.class).index())))
 		.add(new CLink("Self", util.path(SampleComponentController.class).index()));
-		controller.hack();
-		return result;
 	}
 }

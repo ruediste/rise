@@ -101,10 +101,12 @@ public class BindingGroup<T> implements Serializable {
 
 	WeakHashMap<AttachedPropertyBearer, Object> components = new WeakHashMap<>();
 
-	private interface Binding<T> {
-		void pullUp(T model);
+	T data;
 
-		void pushDown(T model);
+	private interface Binding<T> {
+		void pullUp();
+
+		void pushDown();
 	}
 
 	public BindingGroup(Class<T> cls) {
@@ -120,12 +122,20 @@ public class BindingGroup<T> implements Serializable {
 				.flatMap(c -> bindings.get(c).stream());
 	}
 
-	public void pullUp(T data) {
-		getBindings().forEach(b -> b.pullUp(data));
+	public void pullUp() {
+		getBindings().forEach(b -> b.pullUp());
 	}
 
-	public void pushDown(T data) {
-		getBindings().forEach(b -> b.pushDown(data));
+	public void pushDown() {
+		getBindings().forEach(b -> b.pushDown());
+	}
+
+	public T get() {
+		return data;
+	}
+
+	public void set(T data) {
+		this.data = data;
 	}
 
 	public T proxy() {
@@ -208,18 +218,22 @@ public class BindingGroup<T> implements Serializable {
 		set.add(new Binding<T>() {
 
 			@Override
-			public void pushDown(T model) {
+			public void pushDown() {
 				if (pushDown != null) {
-					pushDown.accept(model);
+					pushDown.accept(data);
 				}
 			}
 
 			@Override
-			public void pullUp(T model) {
+			public void pullUp() {
 				if (pullUp != null) {
-					pullUp.accept(model);
+					pullUp.accept(data);
 				}
 			}
 		});
+
+		if (pullUp != null) {
+			pullUp.accept(data);
+		}
 	}
 }

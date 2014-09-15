@@ -20,6 +20,7 @@ public class SampleComponentController {
 	}
 
 	public ActionResult index() {
+		binding.set(repo.getUser());
 		return null;
 	}
 
@@ -28,14 +29,10 @@ public class SampleComponentController {
 	}
 
 	public void save() {
-		binding.pushDown(repo.getUser());
-	}
-
-	public void hack() {
-		binding.pullUp(repo.getUser());
+		binding.pushDown();
 	}
 
 	public void reload() {
-		binding.pullUp(repo.getUser());
+		binding.pullUp();
 	}
 }

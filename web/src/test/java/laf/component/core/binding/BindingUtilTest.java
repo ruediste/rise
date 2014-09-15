@@ -103,18 +103,19 @@ public class BindingUtilTest {
 		TestB b = new TestB();
 
 		BindingGroup<TestB> groupB = new BindingGroup<>(TestB.class);
+		groupB.set(b);
 
 		// establish binding
 		BindingUtil.bind(a, x -> x.setValueA(groupB.proxy().getValueB()));
 
 		// pull up
 		b.valueB = 2;
-		groupB.pullUp(b);
+		groupB.pullUp();
 		assertEquals(2, a.valueA);
 
 		// push down
 		a.valueA = 3;
-		groupB.pushDown(b);
+		groupB.pushDown();
 		assertEquals(3, b.valueB);
 	}
 
@@ -124,6 +125,7 @@ public class BindingUtilTest {
 		TestB b = new TestB();
 
 		BindingGroup<TestB> groupB = new BindingGroup<>(TestB.class);
+		groupB.set(b);
 
 		// establish binding
 		BindingUtil.bind(a, x -> x.setValueString(dateToString(groupB.proxy()
@@ -134,12 +136,12 @@ public class BindingUtilTest {
 		cal.clear();
 		cal.set(2014, 0, 1);
 		b.valueDate = cal.getTime();
-		groupB.pullUp(b);
+		groupB.pullUp();
 		assertEquals("1/1/14", a.valueString);
 
 		// push down
 		a.valueString = "1/2/14";
-		groupB.pushDown(b);
+		groupB.pushDown();
 		cal.set(2014, 0, 2);
 		assertEquals(cal.getTime(), b.valueDate);
 	}
@@ -150,18 +152,19 @@ public class BindingUtilTest {
 		TestB b = new TestB();
 
 		BindingGroup<TestB> groupB = new BindingGroup<>(TestB.class);
+		groupB.set(b);
 
 		// establish binding
 		BindingUtil.bindOneWay(a, x -> x.setValueA(groupB.proxy().getValueB()));
 
 		// pull up
 		b.valueB = 2;
-		groupB.pullUp(b);
+		groupB.pullUp();
 		assertEquals(2, a.valueA);
 
 		// push down, nothing should happen
 		a.valueA = 3;
-		groupB.pushDown(b);
+		groupB.pushDown();
 		assertEquals(2, b.valueB);
 	}
 
@@ -180,18 +183,19 @@ public class BindingUtilTest {
 		TestB b = new TestB();
 
 		BindingGroup<TestB> groupB = new BindingGroup<>(TestB.class);
+		groupB.set(b);
 
 		// establish binding
 		BindingUtil.bind(a, x -> groupB.proxy().setValueB(x.getValueRO()));
 
 		// pull up
 		b.valueB = 2;
-		groupB.pullUp(b);
+		groupB.pullUp();
 		assertEquals(0, a.valueRO);
 
 		// push down
 		a.valueRO = 3;
-		groupB.pushDown(b);
+		groupB.pushDown();
 		assertEquals(3, b.valueB);
 	}
 
@@ -203,6 +207,7 @@ public class BindingUtilTest {
 		b.setC(c);
 
 		BindingGroup<TestB> groupB = new BindingGroup<>(TestB.class);
+		groupB.set(b);
 
 		// establish binding
 		BindingUtil
@@ -210,12 +215,12 @@ public class BindingUtilTest {
 
 		// pull up
 		c.valueC = 2;
-		groupB.pullUp(b);
+		groupB.pullUp();
 		assertEquals(2, a.valueA);
 
 		// push down
 		a.valueA = 3;
-		groupB.pushDown(b);
+		groupB.pushDown();
 		assertEquals(3, c.valueC);
 	}
 
@@ -225,6 +230,7 @@ public class BindingUtilTest {
 		TestB b = new TestB();
 
 		BindingGroup<TestB> groupB = new BindingGroup<>(TestB.class);
+		groupB.set(b);
 
 		// establish binding
 		BindingUtil.bind(a, () -> groupB.proxy(),
@@ -233,12 +239,12 @@ public class BindingUtilTest {
 
 		// pull up
 		b.valueB = 2;
-		groupB.pullUp(b);
+		groupB.pullUp();
 		assertEquals(3, a.valueA);
 
 		// push down
 		a.valueA = 5;
-		groupB.pushDown(b);
+		groupB.pushDown();
 		assertEquals(4, b.valueB);
 	}
 
