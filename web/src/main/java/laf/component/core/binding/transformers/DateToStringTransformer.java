@@ -6,6 +6,8 @@ import java.util.*;
 
 import laf.component.core.binding.TwoWayBindingTransformer;
 
+import com.google.common.base.Strings;
+
 public class DateToStringTransformer extends
 		TwoWayBindingTransformer<Date, String> {
 
@@ -18,11 +20,17 @@ public class DateToStringTransformer extends
 
 	@Override
 	public String transformImpl(Date source) {
+		if (source == null) {
+			return "";
+		}
 		return format.format(source);
 	}
 
 	@Override
 	protected Date transformInvImpl(String target) {
+		if (Strings.isNullOrEmpty(target)) {
+			return null;
+		}
 		try {
 			return format.parse(target);
 		} catch (ParseException e) {

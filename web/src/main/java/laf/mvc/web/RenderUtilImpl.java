@@ -6,7 +6,10 @@ import javax.inject.Inject;
 
 import laf.core.base.ActionResult;
 import laf.core.http.HttpService;
+import laf.core.web.resource.ResourceRenderUtil;
 import laf.mvc.core.PathActionResult;
+
+import org.rendersnake.Renderable;
 
 @RequestScoped
 public class RenderUtilImpl implements MWRenderUtil {
@@ -20,6 +23,9 @@ public class RenderUtilImpl implements MWRenderUtil {
 	@Inject
 	RequestMappingUtil mappingUtil;
 
+	@Inject
+	ResourceRenderUtil resourceRenderUtil;
+
 	@Override
 	public <T> T path(Class<T> controller) {
 		return path().controller(controller);
@@ -27,7 +33,12 @@ public class RenderUtilImpl implements MWRenderUtil {
 
 	@Override
 	public String url(ActionResult path) {
-		return httpService.url(mappingUtil.generate((PathActionResult) path));
+		return url(mappingUtil.generate((PathActionResult) path));
+	}
+
+	@Override
+	public String url(String path) {
+		return httpService.url(path);
 	}
 
 	@Override
@@ -37,4 +48,13 @@ public class RenderUtilImpl implements MWRenderUtil {
 		return builder;
 	}
 
+	@Override
+	public Renderable jsBundle(String... files) {
+		return resourceRenderUtil.jsBundle(this::url, files);
+	}
+
+	@Override
+	public Renderable cssBundle(String... files) {
+		return resourceRenderUtil.cssBundle(this::url, files);
+	}
 }

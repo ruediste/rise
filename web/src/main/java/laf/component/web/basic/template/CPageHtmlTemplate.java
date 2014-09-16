@@ -1,6 +1,6 @@
 package laf.component.web.basic.template;
 
-import static org.rendersnake.HtmlAttributesFactory.*;
+import static org.rendersnake.HtmlAttributesFactory.data;
 
 import java.io.IOException;
 
@@ -10,7 +10,6 @@ import laf.component.core.basic.CPage;
 import laf.component.web.CWRenderUtil;
 import laf.component.web.CWTemplateBase;
 
-import org.rendersnake.HtmlAttributesFactory;
 import org.rendersnake.HtmlCanvas;
 
 public class CPageHtmlTemplate extends CWTemplateBase<CPage> {
@@ -26,13 +25,8 @@ public class CPageHtmlTemplate extends CWTemplateBase<CPage> {
 		.html()
 			.head()
 				.title().content("Yeah")
-				.script(src("/laf-sampleApp/static/js/jquery-1.11.1.js"))._script()
-				.script(src("/laf-sampleApp//static/js/components.js"))._script()
-				.link(rel("stylesheet").type("text/css").href("/laf-sampleApp/static/css/components.css"))
-				.script(HtmlAttributesFactory.type("text/javascript")).content(
-					"<![CDATA[\n components.reloadUrl=\""
-					+ util.url(util.getReloadPath()) + "\" \n]]>",
-					false)
+				.render(util.jsBundle("js/jquery-1.11.1.js", "js/components.js"))
+				.render(util.cssBundle("css/components.css","css/test.sass"))
 			._head()
 			.body(data("reloadpath", util.url(util.getReloadPath()+"/"+util.getPageId())));
 				super.render(component, html);

@@ -8,6 +8,7 @@ import javax.servlet.http.*;
 
 import laf.core.base.configuration.ConfigurationValue;
 import laf.core.defaultConfiguration.HttpRequestParserChainCP;
+import laf.core.defaultConfiguration.ResourceRequestHandlerCP;
 import laf.core.http.CoreRequestInfo;
 import laf.core.http.request.DelegatingHttpRequest;
 import laf.core.http.request.HttpRequest;
@@ -20,6 +21,9 @@ public class FrontServletBase extends HttpServlet {
 
 	@Inject
 	ConfigurationValue<HttpRequestParserChainCP> parserChain;
+
+	@Inject
+	ConfigurationValue<ResourceRequestHandlerCP> resourceRequestHandler;
 
 	@Inject
 	CoreRequestInfo coreRequestInfo;
@@ -44,6 +48,8 @@ public class FrontServletBase extends HttpServlet {
 		coreRequestInfo.setRequest(request);
 		coreRequestInfo.setServletRequest(req);
 		coreRequestInfo.setServletResponse(resp);
+		coreRequestInfo.setResourceRequestHandler(resourceRequestHandler
+				.value().get());
 
 		RequestParseResult<HttpRequest> parseResult = parserChain.value().get()
 				.parse(request);

@@ -1,23 +1,23 @@
 package laf.core.web.resource;
 
-import java.util.Objects;
+import java.util.*;
 
 public class ResourceBundle {
 
 	final private ResourceType type;
-	final private String[] resources;
+	final private List<String> resources;
 
 	public ResourceBundle(ResourceType type, String... resources) {
 		this.type = type;
-		this.resources = resources;
+		this.resources = Arrays.asList(resources);
 	}
 
 	public ResourceType getType() {
 		return type;
 	}
 
-	public String[] getResources() {
-		return resources;
+	public List<String> getResourceNames() {
+		return Collections.unmodifiableList(resources);
 	}
 
 	@Override

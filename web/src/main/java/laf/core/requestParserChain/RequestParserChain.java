@@ -16,4 +16,10 @@ public class RequestParserChain<T> {
 		}
 		return null;
 	}
+
+	public void add(RequestParser<T> parser) {
+		if (parser != null) {
+			parsers.add(parser);
+		}
+	}
 }

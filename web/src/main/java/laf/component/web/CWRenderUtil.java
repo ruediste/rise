@@ -7,8 +7,10 @@ import javax.inject.Inject;
 
 import laf.component.core.pageScope.PageScopeManager;
 import laf.component.core.tree.Component;
+import laf.core.web.resource.ResourceRenderUtil;
 
 import org.rendersnake.HtmlCanvas;
+import org.rendersnake.Renderable;
 
 @ApplicationScoped
 public class CWRenderUtil extends PathGeneratingUtilImpl {
@@ -24,6 +26,9 @@ public class CWRenderUtil extends PathGeneratingUtilImpl {
 
 	@Inject
 	WebRequestInfo webRequestInfo;
+
+	@Inject
+	ResourceRenderUtil resourceRenderUtil;
 
 	private ThreadLocal<Component> currentComponent = new ThreadLocal<Component>();
 
@@ -66,4 +71,13 @@ public class CWRenderUtil extends PathGeneratingUtilImpl {
 	public long getPageId() {
 		return pageScopeManager.getId();
 	}
+
+	public Renderable jsBundle(String... files) {
+		return resourceRenderUtil.jsBundle(this::url, files);
+	}
+
+	public Renderable cssBundle(String... files) {
+		return resourceRenderUtil.cssBundle(this::url, files);
+	}
+
 }
