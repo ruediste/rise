@@ -9,45 +9,6 @@ import laf.core.base.attachedProperties.AttachedPropertyBearerBase;
 
 import com.google.common.collect.Iterables;
 
-/*
- @startuml doc-files/test.png
- Class01 "1" *-- "many" Class02 : contains
- Class03 o-- Class04 : agregation
- Class05 --> "1" Class06
- @enduml
-
- */
-
-/*
- @startuml doc-files/childRelation.png
- class ComponentBase {
- Iterable<Component> getComponents(): \n get components from\n child relations
- }
- ComponentBase ->  ChildRelation
- class ChildRelation {
- }
-
- class "Iterable<Component>" as iterable{
- }
-
- iterable <|-- ChildRelation
-
- class "SingleChildRelation<TChild>" as SingleChildRelation {
- setChild(TChild child)
- TChild getChild()
- }
- ChildRelation <|-- SingleChildRelation
-
- class "MultiChildrenRelation<TChild>" as MultiChildrenRelation {
- addChild(TChild child)
- removeChild(TChild child)
- Collection<TChild> getChildren()
- }
- ChildRelation <|-- MultiChildrenRelation
-
- @enduml
- */
-
 /**
  * Base class for the {@link Component} interface. Implements the parent-child
  * relation using {@link ChildRelation}s.

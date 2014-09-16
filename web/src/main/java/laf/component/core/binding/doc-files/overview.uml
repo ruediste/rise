@@ -1,0 +1,27 @@
+@startuml
+
+class View {
+}
+
+class Controller{
+}
+class Component{
+}
+
+class BindingGroup{
+}
+
+class BindingEntry{
+}
+
+class Entity {
+}
+View -right-> Controller
+View -right-> Component
+BindingGroup -up-> BindingEntry
+Controller -down-> BindingGroup
+Controller -down-> Entity
+BindingEntry -down-> Entity
+BindingEntry -up-> Component
+
+@enduml

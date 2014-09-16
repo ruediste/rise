@@ -1,0 +1,27 @@
+@startuml
+ class ComponentBase {
+ Iterable<Component> getComponents(): \n get components from\n child relations
+ }
+ ComponentBase ->  ChildRelation
+ class ChildRelation {
+ }
+
+ class "Iterable<Component>" as iterable{
+ }
+
+ iterable <|-- ChildRelation
+
+ class "SingleChildRelation<TChild>" as SingleChildRelation {
+ setChild(TChild child)
+ TChild getChild()
+ }
+ ChildRelation <|-- SingleChildRelation
+
+ class "MultiChildrenRelation<TChild>" as MultiChildrenRelation {
+ addChild(TChild child)
+ removeChild(TChild child)
+ Collection<TChild> getChildren()
+ }
+ ChildRelation <|-- MultiChildrenRelation
+
+@enduml

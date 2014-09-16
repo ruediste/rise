@@ -3,54 +3,6 @@ package laf.component.core.binding;
 import java.lang.reflect.Method;
 import java.util.Date;
 
-/*
- * @startuml doc-files/bindingInformationCollector.png
- *
- * class BindingUtil {
- * 	createViewProxy()
- * }
- *
- * BindingUtil ..> ViewProxy
- *
- * class ViewProxy{
- * }
- *
- * note left of ViewProxy
- * record invoked methos
- * in current BindingExpressionExecutionLog
- * end note
- *
- * class BindingGroup {
- *   createModelProxy()
- * }
- *
- * BindingGroup ..> ModelProxy
- * class ModelProxy {
- * }
- *
- * note right of ModelProxy
- * record invoked methos
- * in current BindingExpressionExecutionLog
- * end note
- *
- * class BindingExpressionExecutionLogManager {
- *   getCurrentBindingInformation()
- *   collectBindingInformation(Runnable)
- * }
- *
- * class BindingExpressionExecutionLog {
- *   involvedBindingGroup
- *   modelPath
- *   viewPath
- *   transformer
- * }
- *
- * BindingUtil ..> BindingExpressionExecutionLogManager
- * BindingGroup ..> BindingExpressionExecutionLogManager
- * BindingExpressionExecutionLogManager --> BindingExpressionExecutionLog
- * @enduml
- */
-
 /**
  * Helper class to record binding information while executing a binding
  * expression.
