@@ -1,6 +1,5 @@
 package laf.component.core.binding;
 
-import laf.component.core.binding.ProxyManger.BindingInformation;
 
 /**
  * Two-way transformation between two representations of a value
@@ -13,7 +12,7 @@ public abstract class TwoWayBindingTransformer<TSource, TTarget> extends
 	 */
 	public final TSource transformInv(TTarget target) {
 
-		BindingInformation info = ProxyManger.getCurrentInformation();
+		BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager.getCurrentLog();
 		if (info == null) {
 			return transformInvImpl(target);
 		} else {

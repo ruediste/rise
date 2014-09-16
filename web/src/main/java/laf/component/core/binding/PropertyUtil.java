@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import laf.component.core.binding.ProxyManger.MethodInvocation;
+import laf.component.core.binding.BindingExpressionExecutionLogManager.MethodInvocation;
 import laf.core.base.Pair;
 
 import com.google.common.base.CaseFormat;

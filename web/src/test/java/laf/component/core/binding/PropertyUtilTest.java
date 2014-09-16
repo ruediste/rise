@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
-import laf.component.core.binding.ProxyManger.MethodInvocation;
+import laf.component.core.binding.BindingExpressionExecutionLogManager.MethodInvocation;
 import laf.core.base.Pair;
 import laf.core.base.Val;
 import net.sf.cglib.proxy.Enhancer;

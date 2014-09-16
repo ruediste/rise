@@ -1,6 +1,5 @@
 package laf.component.core.binding;
 
-import laf.component.core.binding.ProxyManger.BindingInformation;
 
 /**
  * Transform a value from one representation to another
@@ -11,7 +10,7 @@ public abstract class BindingTransformer<TSource, TTarget> {
 	 * Transform the view value to the model value
 	 */
 	public final TTarget transform(TSource source) {
-		BindingInformation info = ProxyManger.getCurrentInformation();
+		BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager.getCurrentLog();
 		if (info == null) {
 			return transformImpl(source);
 		} else {

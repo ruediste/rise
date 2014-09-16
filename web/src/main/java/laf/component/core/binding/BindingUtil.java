@@ -5,8 +5,7 @@ import java.lang.reflect.Method;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import laf.component.core.binding.ProxyManger.BindingInformation;
-import laf.component.core.binding.ProxyManger.MethodInvocation;
+import laf.component.core.binding.BindingExpressionExecutionLogManager.MethodInvocation;
 import laf.core.base.attachedProperties.AttachedPropertyBearer;
 import net.sf.cglib.proxy.*;
 
@@ -33,7 +32,7 @@ public class BindingUtil {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	static public <TView extends AttachedPropertyBearer> void bind(TView view,
 			Consumer<TView> expression, boolean oneWay) {
-		BindingInformation info = ProxyManger.collectBindingInformation(() -> {
+		BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager.collectBindingExpressionLog(() -> {
 			expression.accept(BindingUtil.<TView> createViewProxy(view
 					.getClass()));
 		});
@@ -123,10 +122,10 @@ public class BindingUtil {
 			@Override
 			public Object intercept(Object obj, Method method, Object[] args,
 					MethodProxy proxy) throws Throwable {
-				BindingInformation info = ProxyManger.getCurrentInformation();
+				BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager.getCurrentLog();
 				info.viewPath.add(new MethodInvocation(method, args));
 
-				if (ProxyManger.isTerminal(method.getReturnType())) {
+				if (BindingExpressionExecutionLogManager.isTerminal(method.getReturnType())) {
 					return Defaults.defaultValue(method.getReturnType());
 				}
 				return createViewProxy(method.getReturnType());
@@ -159,7 +158,7 @@ public class BindingUtil {
 	static public <T> void bind(AttachedPropertyBearer component,
 			Supplier<T> bindingAccessor, Consumer<T> pullUp,
 			Consumer<T> pushDown) {
-		BindingInformation info = ProxyManger.collectBindingInformation(() -> {
+		BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager.collectBindingExpressionLog(() -> {
 			bindingAccessor.get();
 		});
 

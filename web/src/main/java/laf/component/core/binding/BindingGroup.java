@@ -6,8 +6,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import laf.component.core.binding.ProxyManger.BindingInformation;
-import laf.component.core.binding.ProxyManger.MethodInvocation;
+import laf.component.core.binding.BindingExpressionExecutionLogManager.MethodInvocation;
 import laf.component.core.tree.ComponentBase;
 import laf.core.base.attachedProperties.AttachedProperty;
 import laf.core.base.attachedProperties.AttachedPropertyBearer;
@@ -16,6 +15,35 @@ import net.sf.cglib.proxy.*;
 import com.google.common.base.Defaults;
 import com.google.common.reflect.TypeToken;
 
+/*
+ * @startuml doc-files/overview.png
+ *
+ * class View {
+ * }
+ *
+ * class Controller{
+ * }
+ * class Component{
+ * }
+ *
+ * class BindingGroup{
+ * }
+ *
+ * class BindingEntry{
+ * }
+ *
+ * class Entity {
+ * }
+ * View -right-> Controller
+ * View -right-> Component
+ * BindingGroup -up-> BindingEntry
+ * Controller -down-> BindingGroup
+ * Controller -down-> Entity
+ * BindingEntry -down-> Entity
+ * BindingEntry -up-> Component
+ *
+ * @enduml
+ */
 /**
  * A group of bindings managed by a controller.
  *
@@ -23,6 +51,10 @@ import com.google.common.reflect.TypeToken;
  * Data binding is used to move data between the domain objects and the view
  * components. Properties are bound together in a typesafe manner using lambda
  * expressions.
+ * </p>
+ *
+ * <p>
+ * <img src="doc-files/overview.png" />
  * </p>
  *
  * <p>
@@ -139,7 +171,7 @@ public class BindingGroup<T> implements Serializable {
 	}
 
 	public T proxy() {
-		BindingInformation info = ProxyManger.getCurrentInformation();
+		BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager.getCurrentLog();
 		info.involvedBindingGroup = this;
 		return createModelProxy(tClass);
 	}
@@ -153,7 +185,7 @@ public class BindingGroup<T> implements Serializable {
 			@Override
 			public Object intercept(Object obj, Method method, Object[] args,
 					MethodProxy proxy) throws Throwable {
-				BindingInformation info = ProxyManger.getCurrentInformation();
+				BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager.getCurrentLog();
 				info.modelPath.add(new MethodInvocation(method, args));
 
 				Class<?> returnType = method.getReturnType();
