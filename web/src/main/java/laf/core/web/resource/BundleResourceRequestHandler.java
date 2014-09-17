@@ -13,14 +13,12 @@ import laf.core.base.Consumer2;
 import laf.core.base.LafLogger;
 import laf.core.http.CoreRequestInfo;
 import laf.core.http.request.HttpRequest;
-import laf.core.requestParserChain.RequestParseResult;
-import laf.core.requestParserChain.RequestParser;
 
 import com.google.common.hash.Hashing;
 import com.google.common.io.ByteSource;
 import com.google.common.io.CharStreams;
 
-public class ResourceRequestHandler implements RequestParser<HttpRequest> {
+public class BundleResourceRequestHandler extends ResourceRequestHandler {
 
 	private static final String BUNDLES_PREFIX = "bundles/";
 
@@ -38,26 +36,8 @@ public class ResourceRequestHandler implements RequestParser<HttpRequest> {
 	private final Map<ResourceType, Consumer2<Reader, Writer>> resourceHandlers = new HashMap<>();
 	private final Map<ResourceType, Consumer2<Reader, Writer>> concatenatedResourceHandlers = new HashMap<>();
 
-	private String filePathPrefix;
-	private String requestPrefix;
-	private boolean useBundles;
-
-	public void initialize(String filePathPrefix, String requestPrefix,
-			boolean useBundles) {
-		this.filePathPrefix = filePathPrefix;
-		this.requestPrefix = requestPrefix;
-		this.useBundles = useBundles;
-	}
-
 	@Override
-	public RequestParseResult<HttpRequest> parse(HttpRequest request) {
-		if (request.getPath().startsWith(requestPrefix)) {
-			return this::accept;
-		}
-		return null;
-	}
-
-	public void accept(HttpRequest request) {
+	public void handle(HttpRequest request) {
 		String path = request.getPath().substring(requestPrefix.length());
 		ResourceType resourceType = ResourceType.fromExtension(path);
 
@@ -104,8 +84,9 @@ public class ResourceRequestHandler implements RequestParser<HttpRequest> {
 	/**
 	 * Call the linkWriter with the links required to render the bundle
 	 */
+	@Override
 	public void render(ResourceBundle bundle, Consumer<String> linkWriter) {
-		if (useBundles) {
+		if (serveBundles) {
 			BundleEntry entry = bundles.get(bundle);
 			if (entry == null) {
 				synchronized (lock) {
@@ -118,7 +99,7 @@ public class ResourceRequestHandler implements RequestParser<HttpRequest> {
 				}
 			}
 			linkWriter.accept(requestPrefix + BUNDLES_PREFIX + entry.key
-					+ bundle.getType().getExtension());
+					+ bundle.getTargetType().getExtension());
 		} else {
 			for (String resourceName : bundle.getResourceNames()) {
 				ResourceType t = ResourceType.fromExtension(resourceName);
@@ -146,7 +127,7 @@ public class ResourceRequestHandler implements RequestParser<HttpRequest> {
 
 			// process concatenated resources
 			Consumer2<Reader, Writer> concatenatedResourceHandler = getConcatenatedResourceHandlers()
-					.get(bundle.getType());
+					.get(bundle.getTargetType());
 			if (concatenatedResourceHandler != null) {
 				ByteArrayInputStream bais = new ByteArrayInputStream(
 						baos.toByteArray());
@@ -159,7 +140,7 @@ public class ResourceRequestHandler implements RequestParser<HttpRequest> {
 				} catch (Throwable t) {
 					throw new RuntimeException(
 							"Error while processing bundle ("
-									+ bundle.getType() + ") "
+									+ bundle.getTargetType() + ") "
 									+ bundle.getResourceNames(), t);
 				}
 				out.close();

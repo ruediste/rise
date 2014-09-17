@@ -2,18 +2,27 @@ package laf.core.web.resource;
 
 import java.util.*;
 
+/**
+ * Immutable collection of resources
+ */
 public class ResourceBundle {
 
-	final private ResourceType type;
+	final private ResourceType targetType;
 	final private List<String> resources;
+	final private int hashCode;
 
+	/**
+	 * Create a new resource bundle. The provided resources should be
+	 * transformed to the given target type.
+	 */
 	public ResourceBundle(ResourceType type, String... resources) {
-		this.type = type;
+		targetType = type;
 		this.resources = Arrays.asList(resources);
+		hashCode = Objects.hash(type, resources);
 	}
 
-	public ResourceType getType() {
-		return type;
+	public ResourceType getTargetType() {
+		return targetType;
 	}
 
 	public List<String> getResourceNames() {
@@ -30,11 +39,12 @@ public class ResourceBundle {
 		}
 
 		ResourceBundle other = (ResourceBundle) obj;
-		return type == other.type && resources.equals(other.resources);
+		return targetType == other.targetType
+				&& resources.equals(other.resources);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(type, resources);
+		return hashCode;
 	}
 }
