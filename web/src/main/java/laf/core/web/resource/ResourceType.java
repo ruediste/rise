@@ -3,9 +3,14 @@ package laf.core.web.resource;
 import java.util.Objects;
 
 public class ResourceType {
+
 	final private String identifier;
 
-	public ResourceType(String identifier) {
+	public static final ResourceType CSS = valueOf("css");
+	public static final ResourceType JS = valueOf("js");
+	public static final ResourceType SASS = valueOf("sass");
+
+	private ResourceType(String identifier) {
 		this.identifier = identifier;
 	}
 
@@ -15,6 +20,9 @@ public class ResourceType {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
 		if (obj == null) {
 			return false;
 		}
@@ -36,14 +44,21 @@ public class ResourceType {
 	}
 
 	/**
+	 * Return a new or existing resource type of the given identifier
+	 */
+	public static ResourceType valueOf(String identifier) {
+		return new ResourceType(identifier);
+	}
+
+	/**
 	 * Create a new {@link ResourceType} using the extension of the provided
 	 * resource name.
 	 */
-	public static ResourceType of(String resourceName) {
+	public static ResourceType fromExtension(String resourceName) {
 		int idx = resourceName.lastIndexOf('.');
 		if (idx < 0 || idx > resourceName.length() - 2) {
 			throw new RuntimeException("No extension found in " + resourceName);
 		}
-		return new ResourceType(resourceName.substring(idx + 1));
+		return valueOf(resourceName.substring(idx + 1));
 	}
 }

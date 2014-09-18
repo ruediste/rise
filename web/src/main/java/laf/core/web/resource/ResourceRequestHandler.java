@@ -7,9 +7,10 @@ import java.util.function.Consumer;
 
 import javax.inject.Inject;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import laf.core.base.Consumer2;
-import laf.core.base.Pair;
+import laf.core.base.*;
 import laf.core.http.CoreRequestInfo;
 import laf.core.http.request.HttpRequest;
 import laf.core.requestParserChain.RequestParseResult;
@@ -19,27 +20,40 @@ import laf.core.requestParserChain.RequestParser;
  * Request Handler for Resource Requests
  *
  * <p>
- * To reduce page loading times, web applications concatenate multiple CSS and
- * JavaScript files to a single file and remove comments and whitespaces as far
- * as possible. This reduces the amount of data which has to be transferred and
- * the number of time consuming server requests.
+ * Most HTML pages use various CSS and JavaScript resources. After loading a
+ * html page, the browser loads all referenced resources to complete page
+ * loading.
+ * </p>
+ *
+ * </p> To reduce page loading times, it is preferable to concatenate multiple
+ * CSS and JavaScript resources and remove comments and whitespace as far as
+ * possible. This reduces the amount of data which has to be transferred and the
+ * number of time consuming server requests. In addition, the source of a CSS or
+ * JavaScript resource is written in a different language which is transformed
+ * or compiled. </p>
+ *
+ * <p>
+ * These transformations can either performed at build time or at run time.
+ * Runtime transformation was chosen since it removes the need of maintaining a
+ * complex build system.
  * </p>
  *
  * <p>
- * To reference resources from a web page, resources of the same type are
- * grouped in a {@link ResourceBundle}. The
+ * To reference resources in a web page, resources which are transformed to the
+ * same resource type are grouped in a {@link ResourceBundle}. The
  * {@link #render(ResourceBundle, Consumer)} method is then used to generate the
- * servlet paths necessary to retrieve the resources from the server.
+ * servlet paths to be used to reference the resources in the web page. When the
+ * servlet paths are requested, the {@link ResourceRequestHandler} will serve
+ * the transformed resources from the bundle.
  * </p>
  *
  * <p>
  * There are two {@link ResourceRequestHandler} implementations: the
  * {@link BundleResourceRequestHandler} concatenates the resources from a bundle
  * and serves them upon a single request. This is well suited for production.
- * The {@link IndividualResourceRequestHandler} serves the resources with one
- * request per resource. The intended use for this handler is during
- * development. For details, see the documentation of the individual resource
- * handlers.
+ * The {@link IndividualResourceRequestHandler} serves the resources
+ * individually. The intended use for this handler is during development. For
+ * details, see the documentation of the individual resource handlers.
  * </p>
  *
  * <p>
@@ -66,7 +80,7 @@ public abstract class ResourceRequestHandler implements
 	CoreRequestInfo coreRequestInfo;
 
 	protected String contextPathPrefix;
-	protected String requestPrefix;
+	protected String servletPathPrefix;
 	private final Map<Pair<ResourceType, ResourceType>, Consumer2<Reader, Writer>> resourceTransformers = new HashMap<>();
 	private final Map<ResourceType, String> contentTypeMap = new HashMap<>();
 
@@ -75,7 +89,7 @@ public abstract class ResourceRequestHandler implements
 	}
 
 	public abstract void render(ResourceBundle bundle,
-			Consumer<String> linkWriter);
+			Consumer<String> servletPathConsumer);
 
 	/**
 	 * Initialize this instance
@@ -86,27 +100,37 @@ public abstract class ResourceRequestHandler implements
 	 *            path prefix is prepended to the requested path. It is thus the
 	 *            subdirectory in the war archive under which the resources are
 	 *            placed. No leading slash allowed, trailing slash required.
-	 * @param requestPrefix
-	 *            request path (url) prefix used to access resources. No leading
-	 *            slash allowed, trailing slash required.
+	 * @param servletPathPrefix
+	 *            {@link HttpServletRequest#getServletPath()} prefix used to
+	 *            access resources. No leading slash allowed, trailing slash
+	 *            required.
 	 */
-	protected void initialize(String contextPathPrefix, String requestPrefix) {
+	protected void initialize(String contextPathPrefix, String servletPathPrefix) {
 		this.contextPathPrefix = contextPathPrefix;
-		this.requestPrefix = requestPrefix;
+		this.servletPathPrefix = servletPathPrefix;
 	}
 
 	@Override
 	public RequestParseResult<HttpRequest> parse(HttpRequest request) {
-		if (request.getPath().startsWith(requestPrefix)) {
-			return this::handle;
+		if (request.getPath().startsWith(servletPathPrefix)) {
+			return x -> handle(x.getPath()
+					.substring(servletPathPrefix.length()),
+					coreRequestInfo.getServletResponse());
 		}
 		return null;
 	}
 
-	public abstract void handle(HttpRequest request);
+	public abstract void handle(String path, HttpServletResponse response);
 
 	public Map<Pair<ResourceType, ResourceType>, Consumer2<Reader, Writer>> getResourceTransformers() {
 		return resourceTransformers;
+	}
+
+	public void addResourceTransformer(ResourceType sourceType,
+			ResourceType targetType,
+			ThrowingConsumer2<Reader, Writer> transformer) {
+		resourceTransformers.put(Pair.of(sourceType, targetType),
+				Consumer2.nonThrowing(transformer));
 	}
 
 	protected InputStream loadResource(String resourceName) {
@@ -115,21 +139,35 @@ public abstract class ResourceRequestHandler implements
 		result = coreRequestInfo.getServletContext().getResourceAsStream(
 				contextFileName);
 		if (result == null) {
-			String classloaderResourceName = "/" + resourceName;
-			getClass().getClassLoader().getResourceAsStream(
+			String classloaderResourceName = "" + resourceName;
+			result = getClass().getClassLoader().getResourceAsStream(
 					classloaderResourceName);
 
 			if (result == null) {
 				throw new RuntimeException("Unable to find resource "
 						+ resourceName + ", neither under " + contextFileName
 						+ " in the servlet context nor under "
-						+ classloaderResourceName + " by using the classloader");
+						+ classloaderResourceName + " using the classloader");
 			}
 		}
 		return result;
 	}
 
-	protected String url(String subPath) {
-		return requestPrefix + subPath;
+	protected String servletPath(String subPath) {
+		return servletPathPrefix + subPath;
+	}
+
+	public Map<ResourceType, String> getContentTypeMap() {
+		return contentTypeMap;
+	}
+
+	protected void setContentType(ResourceType resourceType,
+			HttpServletResponse response) {
+		{
+			String contentType = getContentTypeMap().get(resourceType);
+			if (contentType != null) {
+				response.setContentType(contentType);
+			}
+		}
 	}
 }

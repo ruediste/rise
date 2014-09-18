@@ -8,32 +8,31 @@ import java.util.function.Consumer;
 
 import javax.inject.Inject;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 
-import laf.core.base.Consumer2;
-import laf.core.base.LafLogger;
+import laf.core.base.*;
 import laf.core.http.CoreRequestInfo;
-import laf.core.http.request.HttpRequest;
 
 import com.google.common.hash.Hashing;
 import com.google.common.io.ByteSource;
-import com.google.common.io.CharStreams;
+import com.google.common.io.ByteStreams;
 
 /**
  * {@link ResourceRequestHandler} concatenating the resources from a
  * {@link ResourceBundle} to a bundle and serving them by a single request.
  *
  * <p>
- * After applying per resource transformers the contents of a
- * {@link ResourceBundle} are concatenated. If a
- * {@link #bundleResourceTransformers} is registered for the
- * {@link ResourceBundle#getTargetType()}, the concatenated bundle is
- * transformed. Finally the bundle is hashed using SHA-256 and placed in a map.
- * The generated servlet path starts with the hash, followed by the extension
- * from the target resource type of the bundle.
+ * The source resources are loaded and transformed to
+ * {@link ResourceBundle#getTargetType()}. Then the transformed resources are
+ * concatenated. If a {@link #bundleResourceTransformers} is registered for the
+ * bundle target type, the concatenated bundle is transformed. Finally the
+ * bundle is hashed using SHA-256 and placed in a map. The generated servlet
+ * path starts with the hash, followed by the extension from the target resource
+ * type of the bundle.
  * </p>
  *
  * <p>
- * When a bundle is requested, the hash is extracted from the request, the
+ * When a bundle is requested, the hash is extracted from the path, the
  * corresponding data is looked up and serve using the mime-type matching the
  * extension from the request.
  * </p>
@@ -46,53 +45,32 @@ public class BundleResourceRequestHandler extends ResourceRequestHandler {
 	@Inject
 	LafLogger log;
 
-	private Map<ResourceBundle, BundleEntry> bundles = new ConcurrentHashMap<>();
-	private Map<String, BundleEntry> bundlesByKey = new ConcurrentHashMap<>();
+	private Map<ResourceBundle, String> bundles = new ConcurrentHashMap<>();
+	private Map<String, byte[]> bundlesByKey = new ConcurrentHashMap<>();
 
 	private Object lock = new Object();
 
 	private final Map<ResourceType, Consumer2<Reader, Writer>> bundleResourceTransformers = new HashMap<>();
 
 	@Override
-	public void handle(HttpRequest request) {
-		String path = request.getPath().substring(requestPrefix.length());
+	public void initialize(String contextPathPrefix, String servletPathPrefix) {
+		super.initialize(contextPathPrefix, servletPathPrefix);
+	}
+
+	@Override
+	public void handle(String path, HttpServletResponse response) {
+
 		ResourceType resourceType = ResourceType.fromExtension(path);
 
-		String pathWithoutExtension = path.substring(0, path.length()
-				- resourceType.getExtension().length());
+		String hash = path.substring(0, path.length()
+				- resourceType.getIdentifier().length() - 1);
 
-		try {
-			coreRequestInfo.getServletResponse().setContentType(
-					resourceType.getContentType());
-			ServletOutputStream out = coreRequestInfo.getServletResponse()
-					.getOutputStream();
+		setContentType(resourceType, response);
+		try (ServletOutputStream out = coreRequestInfo.getServletResponse()
+				.getOutputStream();) {
 
-			if (path.startsWith(BUNDLES_PREFIX)) {
-				// serve bundle
-				String key = pathWithoutExtension.substring(BUNDLES_PREFIX
-						.length());
-				BundleEntry entry = bundlesByKey.get(key);
-				ByteSource.wrap(entry.data).copyTo(out);
-			} else {
-				// serve resource directly, possibly processing it first
-				OutputStreamWriter writer = new OutputStreamWriter(out, "UTF-8");
-				boolean found = false;
-
-				// try to load it from the different source types, breaking as
-				// soon as one is found
-				for (ResourceType t : resourceType.getSourceTypes()) {
-					if (loadAndProcessResource(
-							pathWithoutExtension + t.getExtension(), writer)) {
-						found = true;
-						break;
-					}
-				}
-				if (!found) {
-					throw new RuntimeException("resource not found: " + path);
-				}
-				writer.close();
-			}
-			out.close();
+			byte[] data = bundlesByKey.get(hash);
+			ByteSource.wrap(data).copyTo(out);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -103,57 +81,44 @@ public class BundleResourceRequestHandler extends ResourceRequestHandler {
 	 */
 	@Override
 	public void render(ResourceBundle bundle, Consumer<String> linkWriter) {
-		if (serveBundles) {
-			BundleEntry entry = bundles.get(bundle);
-			if (entry == null) {
-				synchronized (lock) {
-					entry = bundles.get(bundle);
-					if (entry == null) {
-						entry = generateEntry(bundle);
-						bundles.put(bundle, entry);
-						bundlesByKey.put(entry.key, entry);
-					}
+		String hash = bundles.get(bundle);
+		if (!bundles.containsKey(bundle)) {
+			synchronized (lock) {
+				if (!bundles.containsKey(bundle)) {
+					byte[] data = generateBundle(bundle);
+					hash = Hashing.sha256().hashBytes(data).toString();
+					bundles.put(bundle, hash);
+					bundlesByKey.put(hash, data);
 				}
 			}
-			linkWriter.accept(requestPrefix + BUNDLES_PREFIX + entry.key
-					+ bundle.getTargetType().getExtension());
-		} else {
-			for (String resourceName : bundle.getResourceNames()) {
-				ResourceType t = ResourceType.fromExtension(resourceName);
-				String nameWithoutExtension = resourceName.substring(0,
-						resourceName.length() - t.getExtension().length());
-				linkWriter.accept(requestPrefix + nameWithoutExtension
-						+ t.getFinalType().getExtension());
-			}
 		}
+
+		linkWriter.accept(servletPath(hash) + "."
+				+ bundle.getTargetType().getIdentifier());
 	}
 
-	private BundleEntry generateEntry(ResourceBundle bundle) {
+	private byte[] generateBundle(ResourceBundle bundle) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try {
 			// collect and concatenate resource
-			Writer out = new BufferedWriter(new OutputStreamWriter(baos,
-					"UTF-8"));
 			for (String resourceName : bundle.getResourceNames()) {
-				if (!loadAndProcessResource(resourceName, out)) {
-					throw new RuntimeException("resource not found: "
-							+ getResourceFilePath(resourceName));
-				}
+				loadAndProcessResource(resourceName, bundle.getTargetType(),
+						baos);
 			}
-			out.close();
 
-			// process concatenated resources
-			Consumer2<Reader, Writer> concatenatedResourceHandler = getConcatenatedResourceHandlers()
+			// transform concatenated resources
+			Consumer2<Reader, Writer> bundleTransformer = bundleResourceTransformers
 					.get(bundle.getTargetType());
-			if (concatenatedResourceHandler != null) {
+			if (bundleTransformer != null) {
 				ByteArrayInputStream bais = new ByteArrayInputStream(
 						baos.toByteArray());
 				baos = new ByteArrayOutputStream();
-				out = new BufferedWriter(new OutputStreamWriter(baos, "UTF-8"));
+				BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
+						baos, "UTF-8"));
 
 				try {
-					concatenatedResourceHandler.accept(new InputStreamReader(
-							bais, "UTF-8"), out);
+					bundleTransformer.accept(new InputStreamReader(bais,
+							"UTF-8"), out);
 				} catch (Throwable t) {
 					throw new RuntimeException(
 							"Error while processing bundle ("
@@ -165,61 +130,37 @@ public class BundleResourceRequestHandler extends ResourceRequestHandler {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		BundleEntry result = new BundleEntry(baos.toByteArray());
-		return result;
+		return baos.toByteArray();
 	}
 
-	private boolean loadAndProcessResource(String resourceName, Writer out) {
+	private void loadAndProcessResource(String resourceName,
+			ResourceType targetType, OutputStream out) {
 		ResourceType resourceType = ResourceType.fromExtension(resourceName);
-		try (InputStream in = getResourceAsStream(resourceName)) {
-			if (in == null) {
-				return false;
-			}
-			Consumer2<Reader, Writer> handler = getResourceTransformers().get(
-					resourceType);
-			InputStreamReader reader = new InputStreamReader(in, "UTF-8");
-			if (handler != null) {
-				handler.accept(reader, out);
+		try (InputStream in = loadResource(resourceName)) {
+			Consumer2<Reader, Writer> transformer = getResourceTransformers()
+					.get(resourceType);
+			if (transformer != null) {
+				InputStreamReader reader = new InputStreamReader(in, "UTF-8");
+				Writer writer = new BufferedWriter(new OutputStreamWriter(out,
+						"UTF-8"));
+				transformer.accept(reader, writer);
+				writer.close();
+				reader.close();
 			} else {
-				CharStreams.copy(reader, out);
+				ByteStreams.copy(in, out);
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		return true;
-	}
-
-	private InputStream getResourceAsStream(String resourceName) {
-		return coreRequestInfo.getServletContext().getResourceAsStream(
-				getResourceFilePath(resourceName));
-	}
-
-	private String getResourceFilePath(String resourceName) {
-		return "/" + contextPathPrefix + resourceName;
-	}
-
-	public Map<ResourceType, Consumer2<Reader, Writer>> getConcatenatedResourceHandlers() {
-		return concatenatedResourceHandlers;
-	}
-
-	public Map<ResourceType, Consumer2<Reader, Writer>> getBundleResourceTransformer() {
-		return bundleResourceTransformer;
 	}
 
 	public Map<ResourceType, Consumer2<Reader, Writer>> getBundleResourceTransformers() {
 		return bundleResourceTransformers;
 	}
 
-	private static class BundleEntry {
-
-		byte[] data;
-		String key;
-
-		public BundleEntry(byte[] data) {
-			this.data = data;
-			key = Hashing.sha256().hashBytes(data).toString();
-		}
-
+	public void addBundleTransformer(ResourceType type,
+			ThrowingConsumer2<Reader, Writer> transformer) {
+		bundleResourceTransformers
+				.put(type, Consumer2.nonThrowing(transformer));
 	}
-
 }

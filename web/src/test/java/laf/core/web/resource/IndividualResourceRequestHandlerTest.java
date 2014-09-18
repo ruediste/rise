@@ -1,17 +1,21 @@
 package laf.core.web.resource;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.function.Consumer;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletResponse;
 
 import laf.core.base.Pair;
 import laf.core.http.CoreRequestInfo;
 
 import org.apache.activemq.util.ByteArrayInputStream;
+import org.apache.openejb.server.httpd.ServletByteArrayOutputStream;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,8 +28,12 @@ public class IndividualResourceRequestHandlerTest {
 
 	@Mock
 	CoreRequestInfo coreRequestInfo;
+
 	@Mock
 	ServletContext ctx;
+
+	@Mock
+	HttpServletResponse response;
 
 	@Mock
 	Consumer<String> consumer;
@@ -44,24 +52,42 @@ public class IndividualResourceRequestHandlerTest {
 	}
 
 	@Test
-	public void simpleNoTransform() {
+	public void simpleNoTransform() throws IOException {
 
-		handler.render(new ResourceBundle(new ResourceType("css"), "test.css"),
+		handler.render(new ResourceBundle(ResourceType.CSS, "test.css"),
 				consumer);
 
 		verify(consumer).accept("urlPre/orig/test.css");
+
+		ServletByteArrayOutputStream out = new ServletByteArrayOutputStream();
+		when(response.getOutputStream()).thenReturn(out);
+
+		handler.handle("orig/test.css", response);
+
+		assertEquals("foo", new String(out.getOutputStream().toByteArray(),
+				"UTF-8"));
+	}
+
+	@Test
+	public void simpleRepeatRender() throws IOException {
+
+		ResourceBundle bundle = new ResourceBundle(ResourceType.CSS, "test.css");
+		handler.render(bundle, consumer);
+		handler.render(bundle, consumer);
+
+		verify(consumer, times(2)).accept("urlPre/orig/test.css");
+
 	}
 
 	@Test
 	public void simpleTransform() {
 
 		handler.getResourceTransformers().put(
-				Pair.of(new ResourceType("css"), new ResourceType("css1")),
+				Pair.of(ResourceType.CSS, ResourceType.valueOf("css1")),
 				(in, out) -> {
 				});
-		handler.render(
-				new ResourceBundle(new ResourceType("css1"), "test.css"),
-				consumer);
+		handler.render(new ResourceBundle(ResourceType.valueOf("css1"),
+				"test.css"), consumer);
 
 		verify(consumer).accept("urlPre/transformed/test.css1");
 	}
@@ -70,12 +96,11 @@ public class IndividualResourceRequestHandlerTest {
 	public void simpleTransformNoTransformer() {
 
 		handler.getResourceTransformers().put(
-				Pair.of(new ResourceType("css"), new ResourceType("css2")),
+				Pair.of(ResourceType.CSS, ResourceType.valueOf("css2")),
 				(in, out) -> {
 				});
-		handler.render(
-				new ResourceBundle(new ResourceType("css1"), "test.css"),
-				consumer);
+		handler.render(new ResourceBundle(ResourceType.valueOf("css1"),
+				"test.css"), consumer);
 
 	}
 
@@ -84,7 +109,7 @@ public class IndividualResourceRequestHandlerTest {
 		when(
 				coreRequestInfo.getServletContext().getResourceAsStream(
 						anyString())).thenReturn(null);
-		handler.render(new ResourceBundle(new ResourceType("css"), "test.css"),
+		handler.render(new ResourceBundle(ResourceType.CSS, "test.css"),
 				consumer);
 
 	}

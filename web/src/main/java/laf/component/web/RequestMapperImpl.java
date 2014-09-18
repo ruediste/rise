@@ -10,6 +10,7 @@ import javax.inject.Inject;
 
 import laf.component.core.ActionInvocation;
 import laf.component.core.api.CController;
+import laf.core.base.ActionResult;
 import laf.core.base.MethodInvocation;
 import laf.core.http.request.HttpRequest;
 import laf.core.http.request.HttpRequestImpl;
@@ -51,6 +52,9 @@ public class RequestMapperImpl implements RequestMapper {
 			// build method name map
 			BiMap<Method, String> methodNameMap = HashBiMap.create();
 			for (Method m : beanClass.getMethods()) {
+				if (!ActionResult.class.isAssignableFrom(m.getReturnType())) {
+					continue;
+				}
 				String name = m.getName();
 
 				// find unique name

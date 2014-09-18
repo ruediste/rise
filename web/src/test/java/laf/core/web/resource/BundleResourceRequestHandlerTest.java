@@ -1,7 +1,7 @@
 package laf.core.web.resource;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
@@ -16,31 +16,31 @@ import org.apache.catalina.ssi.ByteArrayServletOutputStream;
 import org.fusesource.hawtbuf.ByteArrayInputStream;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
-public class ResourceRequestHandlerTest {
+@RunWith(MockitoJUnitRunner.class)
+public class BundleResourceRequestHandlerTest {
 
-	private ResourceRequestHandler handler;
+	@Mock
 	private ServletContext ctx;
-	private HttpServletResponse response;
+
+	@Mock
+	CoreRequestInfo coreRequestInfo;
+
+	@Mock
+	HttpServletResponse response;
+
+	@InjectMocks
+	BundleResourceRequestHandler handler;
 
 	@Before
 	public void setup() {
-		handler = new ResourceRequestHandler();
-		handler.coreRequestInfo = mock(CoreRequestInfo.class);
-		ctx = mock(ServletContext.class);
-		when(handler.coreRequestInfo.getServletContext()).thenReturn(ctx);
+		when(coreRequestInfo.getServletContext()).thenReturn(ctx);
 
-		response = mock(HttpServletResponse.class);
-		when(handler.coreRequestInfo.getServletResponse()).thenReturn(response);
-	}
-
-	@Test
-	public void noBundles() {
-		handler.initialize("assets/", "static/", false);
-		StringBuilder sb = new StringBuilder();
-		handler.render(new ResourceBundle(ResourceType.JS, "foo.js", "bar.js"),
-				s -> sb.append(s + ", "));
-		assertEquals("static/foo.js, static/bar.js, ", sb.toString());
+		when(coreRequestInfo.getServletResponse()).thenReturn(response);
 	}
 
 	@Test
@@ -49,13 +49,13 @@ public class ResourceRequestHandlerTest {
 				new ByteArrayInputStream("foo".getBytes("UTF-8")));
 		when(ctx.getResourceAsStream("/assets/bar.js")).thenReturn(
 				new ByteArrayInputStream("bar".getBytes("UTF-8")));
-		handler.initialize("assets/", "static/", true);
+		handler.initialize("assets/", "static/");
 
 		// check render
 		StringBuilder sb = new StringBuilder();
-		handler.render(new ResourceBundle(ResourceType.JS, "foo.js", "bar.js"),
-				s -> sb.append(s));
-		String expectedPath = "static/bundles/c3ab8ff13720e8ad9047dd39466b3c8974e592c2fa383d4a3960714caef0c4f2.js";
+		handler.render(new ResourceBundle(ResourceType.JS, "foo.js",
+				"bar.js"), s -> sb.append(s));
+		String expectedPath = "static/c3ab8ff13720e8ad9047dd39466b3c8974e592c2fa383d4a3960714caef0c4f2.js";
 		assertEquals(expectedPath, sb.toString());
 
 		// check request handling
