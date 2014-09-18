@@ -8,6 +8,7 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 public class DeploymentProvider {
 
 	public static WebArchive getDefault() {
+		//@formatter:off
 		return ShrinkWrap
 				.create(WebArchive.class)
 				.addAsLibraries(
@@ -16,8 +17,8 @@ public class DeploymentProvider {
 								.resolve("org.slf4j:slf4j-api",
 										"com.google.guava:guava:16.0.1")
 								.withTransitivity().asFile())
-								.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
-								.addAsResource("test-log4j.properties", "log4j.properties");
+				.addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
+				.addAsResource("test-log4j.properties", "log4j.properties");
 	}
 
 	public static WebArchive getPersistence() {

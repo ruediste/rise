@@ -154,10 +154,14 @@ public class BundleResourceRequestHandler extends ResourceRequestHandler {
 
 	private boolean loadAndProcessResource(String resourceName, Writer out) {
 		ResourceType resourceType = ResourceType.fromExtension(resourceName);
-		try (InputStream in = getResourceAsStream(resourceName)) {
-			if (in == null) {
-				return false;
-			}
+		InputStream in = getResourceAsStream(resourceName);
+		if (in == null) {
+			in = getClass().getClassLoader().getResourceAsStream(resourceName);
+		}
+		if (in == null) {
+			return false;
+		}
+		try {
 			Consumer2<Reader, Writer> handler = getResourceHandlers().get(
 					resourceType);
 			InputStreamReader reader = new InputStreamReader(in, "UTF-8");
@@ -168,6 +172,14 @@ public class BundleResourceRequestHandler extends ResourceRequestHandler {
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					log.error("Error while closing input", e);
+				}
+			}
 		}
 		return true;
 	}

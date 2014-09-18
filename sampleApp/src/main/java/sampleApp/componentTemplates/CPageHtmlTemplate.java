@@ -1,4 +1,4 @@
-package laf.component.web.basic.template;
+package sampleApp.componentTemplates;
 
 import static org.rendersnake.HtmlAttributesFactory.data;
 
@@ -25,10 +25,10 @@ public class CPageHtmlTemplate extends CWTemplateBase<CPage> {
 		.html()
 			.head()
 				.title().content("Yeah")
-				.render(util.jsBundle("js/jquery-1.11.1.js", "js/components.js"))
+				.render(util.jsBundle("js/jquery-1.11.1.js", "js/componentWeb.js"))
 				.render(util.cssBundle("css/components.css","css/test.sass"))
 			._head()
-			.body(data("reloadpath", util.url(util.getReloadPath()+"/"+util.getPageId())));
+			.body(data("reloadurl", util.getReloadUrl()));
 				super.render(component, html);
 			html._body()
 		._html();

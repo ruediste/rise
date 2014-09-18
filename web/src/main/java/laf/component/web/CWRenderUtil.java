@@ -64,12 +64,12 @@ public class CWRenderUtil extends PathGeneratingUtilImpl {
 		return componentService.getComponentId(getComponent());
 	}
 
-	public String getReloadPath() {
-		return webRequestInfo.getReloadPath();
-	}
-
 	public long getPageId() {
 		return pageScopeManager.getId();
+	}
+
+	public String getReloadUrl() {
+		return url(webRequestInfo.getReloadPath() + "/" + getPageId());
 	}
 
 	public Renderable jsBundle(String... files) {

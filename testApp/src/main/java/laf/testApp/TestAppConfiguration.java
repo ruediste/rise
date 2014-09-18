@@ -1,20 +1,20 @@
-package sampleApp;
+package laf.testApp;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import sampleApp.componentTemplates.CPageHtmlTemplate;
 import laf.component.web.HtmlTemplateFactoriesCP;
 import laf.component.web.HtmlTemplateFactoryImpl;
 import laf.component.web.defaultConfiguration.ComponentWebDefaultConfiguration;
 import laf.core.base.configuration.*;
 import laf.core.defaultConfiguration.DefaultConfiguration;
 import laf.mvc.web.defaultConfiguration.MvcWebDefaultConfiguration;
+import laf.testApp.componentTemplates.CPageHtmlTemplate;
 
 @ApplicationScoped
-public class SampleAppConfiguration implements ConfigurationDefiner {
+public class TestAppConfiguration implements ConfigurationDefiner {
 
 	@Inject
 	DefaultConfiguration defaultConfiguration;

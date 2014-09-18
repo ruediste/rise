@@ -1,6 +1,5 @@
 var components = (function () {
- 
-	
+
   var myPrivateVar, myPrivateMethod;
  
   // A private counter variable
@@ -24,10 +23,9 @@ var components = (function () {
     			var data=receiver.serialize();
     			event.preventDefault();
     			event.stopPropagation();
-    			var foo=$("body").attr("data-reloadpath");
     			$.ajax({
     				  type: "POST",
-    				  url: $("body").attr("data-reloadpath")+"/"+receiver.children("._componentId").first().text(),
+    				  url: $("body").attr("data-reloadurl")+"/"+receiver.children("._componentId").first().text(),
     				  data: data,
     				  success: function(data){
     						// receiver.replaceWith($(data).children());

@@ -52,7 +52,7 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 	}
 
 	public void produce(ProjectStageCP val) {
-		val.set(ProjectStage.TESTING);
+		val.set(ProjectStage.DEVELOPMENT);
 	}
 
 	public void produce(ResourceRequestHandlerCP val,

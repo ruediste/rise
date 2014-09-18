@@ -65,8 +65,8 @@ public class IntegrationUtil {
 	/**
 	 * Generate an URL from a servlet path
 	 */
-	public String url(String path) {
-		return httpService.url(path);
+	public String url(String servletPath) {
+		return httpService.url(servletPath);
 	}
 
 	/**
@@ -78,7 +78,11 @@ public class IntegrationUtil {
 	 * </pre>
 	 */
 	public String mwUrl(ActionResult path) {
-		return httpService.url(mwMappingUtil.generate((PathActionResult) path));
+		return url(mwServletPath(path));
+	}
+
+	public String mwServletPath(ActionResult path) {
+		return mwMappingUtil.generate((PathActionResult) path);
 	}
 
 	/**
@@ -138,7 +142,11 @@ public class IntegrationUtil {
 	 * </pre>
 	 */
 	public String cwUrl(ActionResult result) {
-		return url(cwRequestMappingUtil.generate((PathActionInvocation) result)
-				.getPathWithParameters());
+		return url(cwServletPath(result));
+	}
+
+	public String cwServletPath(ActionResult result) {
+		return cwRequestMappingUtil.generate((PathActionInvocation) result)
+				.getPathWithParameters();
 	}
 }
