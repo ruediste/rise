@@ -61,7 +61,7 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 		handler.initialize("static/", "static/",
 				projectStage.get() != ProjectStage.DEVELOPMENT);
 
-		handler.getResourceHandlers().put(ResourceType.SASS, (in, out) -> {
+		handler.getResourceTransformers().put(ResourceType.SASS, (in, out) -> {
 			try {
 				new RubySassCssProcessor().process(in, out);
 			} catch (IOException e) {

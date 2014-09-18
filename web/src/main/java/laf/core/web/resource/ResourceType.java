@@ -1,51 +1,49 @@
 package laf.core.web.resource;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Objects;
 
-public enum ResourceType {
-	JS(null, "application/javascript", ".js"), CSS(null, "text/css", ".css"), SASS(
-			CSS, null, ".sass");
+public class ResourceType {
+	final private String identifier;
 
-	final private String contentType;
-	final private String extension;
-	final private ResourceType finalType;
-
-	private ResourceType(ResourceType finalType, String contentType,
-			String extension) {
-		this.finalType = finalType == null ? this : finalType;
-		this.contentType = contentType;
-		this.extension = extension;
+	public ResourceType(String identifier) {
+		this.identifier = identifier;
 	}
 
-	public String getContentType() {
-		return contentType;
+	public String getIdentifier() {
+		return identifier;
 	}
 
-	public String getExtension() {
-		return extension;
-	}
-
-	public static ResourceType fromExtension(String resourceName) {
-		for (ResourceType type : values()) {
-			if (resourceName.endsWith(type.getExtension())) {
-				return type;
-			}
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
 		}
-		return null;
-	}
-
-	public Collection<ResourceType> getSourceTypes() {
-		ArrayList<ResourceType> result = new ArrayList<>();
-		for (ResourceType type : values()) {
-			if (type.getFinalType() == this) {
-				result.add(type);
-			}
+		if (obj.getClass() != getClass()) {
+			return false;
 		}
-		return result;
+		ResourceType other = (ResourceType) obj;
+		return Objects.equals(identifier, other.identifier);
 	}
 
-	public ResourceType getFinalType() {
-		return finalType;
+	@Override
+	public String toString() {
+		return identifier;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(identifier);
+	}
+
+	/**
+	 * Create a new {@link ResourceType} using the extension of the provided
+	 * resource name.
+	 */
+	public static ResourceType of(String resourceName) {
+		int idx = resourceName.lastIndexOf('.');
+		if (idx < 0 || idx > resourceName.length() - 2) {
+			throw new RuntimeException("No extension found in " + resourceName);
+		}
+		return new ResourceType(resourceName.substring(idx + 1));
 	}
 }

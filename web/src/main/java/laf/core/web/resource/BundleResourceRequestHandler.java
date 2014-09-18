@@ -18,9 +18,27 @@ import com.google.common.hash.Hashing;
 import com.google.common.io.ByteSource;
 import com.google.common.io.CharStreams;
 
+/**
+ * {@link ResourceRequestHandler} concatenating the resources from a
+ * {@link ResourceBundle} to a bundle and serving them by a single request.
+ *
+ * <p>
+ * After applying per resource transformers the contents of a
+ * {@link ResourceBundle} are concatenated. If a
+ * {@link #bundleResourceTransformers} is registered for the
+ * {@link ResourceBundle#getTargetType()}, the concatenated bundle is
+ * transformed. Finally the bundle is hashed using SHA-256 and placed in a map.
+ * The generated servlet path starts with the hash, followed by the extension
+ * from the target resource type of the bundle.
+ * </p>
+ *
+ * <p>
+ * When a bundle is requested, the hash is extracted from the request, the
+ * corresponding data is looked up and serve using the mime-type matching the
+ * extension from the request.
+ * </p>
+ */
 public class BundleResourceRequestHandler extends ResourceRequestHandler {
-
-	private static final String BUNDLES_PREFIX = "bundles/";
 
 	@Inject
 	CoreRequestInfo coreRequestInfo;
@@ -33,8 +51,7 @@ public class BundleResourceRequestHandler extends ResourceRequestHandler {
 
 	private Object lock = new Object();
 
-	private final Map<ResourceType, Consumer2<Reader, Writer>> resourceHandlers = new HashMap<>();
-	private final Map<ResourceType, Consumer2<Reader, Writer>> concatenatedResourceHandlers = new HashMap<>();
+	private final Map<ResourceType, Consumer2<Reader, Writer>> bundleResourceTransformers = new HashMap<>();
 
 	@Override
 	public void handle(HttpRequest request) {
@@ -154,15 +171,11 @@ public class BundleResourceRequestHandler extends ResourceRequestHandler {
 
 	private boolean loadAndProcessResource(String resourceName, Writer out) {
 		ResourceType resourceType = ResourceType.fromExtension(resourceName);
-		InputStream in = getResourceAsStream(resourceName);
-		if (in == null) {
-			in = getClass().getClassLoader().getResourceAsStream(resourceName);
-		}
-		if (in == null) {
-			return false;
-		}
-		try {
-			Consumer2<Reader, Writer> handler = getResourceHandlers().get(
+		try (InputStream in = getResourceAsStream(resourceName)) {
+			if (in == null) {
+				return false;
+			}
+			Consumer2<Reader, Writer> handler = getResourceTransformers().get(
 					resourceType);
 			InputStreamReader reader = new InputStreamReader(in, "UTF-8");
 			if (handler != null) {
@@ -172,14 +185,6 @@ public class BundleResourceRequestHandler extends ResourceRequestHandler {
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
-		} finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch (IOException e) {
-					log.error("Error while closing input", e);
-				}
-			}
 		}
 		return true;
 	}
@@ -190,15 +195,19 @@ public class BundleResourceRequestHandler extends ResourceRequestHandler {
 	}
 
 	private String getResourceFilePath(String resourceName) {
-		return "/" + filePathPrefix + resourceName;
-	}
-
-	public Map<ResourceType, Consumer2<Reader, Writer>> getResourceHandlers() {
-		return resourceHandlers;
+		return "/" + contextPathPrefix + resourceName;
 	}
 
 	public Map<ResourceType, Consumer2<Reader, Writer>> getConcatenatedResourceHandlers() {
 		return concatenatedResourceHandlers;
+	}
+
+	public Map<ResourceType, Consumer2<Reader, Writer>> getBundleResourceTransformer() {
+		return bundleResourceTransformer;
+	}
+
+	public Map<ResourceType, Consumer2<Reader, Writer>> getBundleResourceTransformers() {
+		return bundleResourceTransformers;
 	}
 
 	private static class BundleEntry {
