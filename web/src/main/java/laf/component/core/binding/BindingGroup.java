@@ -3,7 +3,6 @@ package laf.component.core.binding;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import laf.component.core.binding.BindingExpressionExecutionLogManager.MethodInvocation;
@@ -47,18 +46,16 @@ import com.google.common.reflect.TypeToken;
  *
  * <p>
  * While establishing the binding, the lambda expression is called with a
- * dynamic proxy of the component class as parameter. During the invocation,
- * {@link BindingGroup#proxy()} is configured to return a dynamic proxy, too.
- * The two dynamic proxies record the methods invoked on themselves. This
- * information is used to determine which properties are accessed.
+ * dynamic proxy of the component class as parameter.
+ * {@link BindingGroup#proxy()} returns a dynamic proxy. The two dynamic proxies
+ * record the methods invoked on themselves. This information is used to
+ * determine which properties are accessed.
  * </p>
  *
  * <p>
- * When the involved properties are known, it is determined if the property read
- * by the lambda expression is writeable and if the property set by the lambda
- * expression is readable. If both conditions are true, the binding is two-way,
- * otherwise it is one-way, in the same direction as specified by the lambda
- * expression.
+ * When the involved properties are known, it is determined if they are readable
+ * and writeable. If both are, a two-way binding is set up. Otherwise an
+ * appropriate one-way binding is used.
  * </p>
  *
  * <p>
@@ -106,12 +103,6 @@ public class BindingGroup<T> implements Serializable {
 
 	T data;
 
-	private interface Binding<T> {
-		void pullUp();
-
-		void pushDown();
-	}
-
 	public BindingGroup(Class<T> cls) {
 		tClass = cls;
 	}
@@ -120,17 +111,19 @@ public class BindingGroup<T> implements Serializable {
 		tClass = token.getRawType();
 	}
 
-	private Stream<Binding<T>> getBindings() {
+	public Stream<Binding<T>> getBindings() {
 		return components.keySet().stream()
 				.flatMap(c -> bindings.get(c).stream());
 	}
 
 	public void pullUp() {
-		getBindings().forEach(b -> b.pullUp());
+		getBindings().filter(b -> b.getPullUp() != null).forEach(
+				b -> b.getPullUp().accept(data));
 	}
 
 	public void pushDown() {
-		getBindings().forEach(b -> b.pushDown());
+		getBindings().filter(b -> b.getPushDown() != null).forEach(
+				b -> b.getPushDown().accept(data));
 	}
 
 	public T get() {
@@ -141,10 +134,17 @@ public class BindingGroup<T> implements Serializable {
 		this.data = data;
 	}
 
+	/**
+	 * While evaluating a binding expression, return a recording proxy.
+	 * Otherwise return {@link #data}.
+	 */
 	public T proxy() {
-		BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager
+		BindingExpressionExecutionLog log = BindingExpressionExecutionLogManager
 				.getCurrentLog();
-		info.involvedBindingGroup = this;
+		if (log == null) {
+			return data;
+		}
+		log.involvedBindingGroup = this;
 		return createModelProxy(tClass);
 	}
 
@@ -206,39 +206,24 @@ public class BindingGroup<T> implements Serializable {
 		return e.create();
 	}
 
-	@SuppressWarnings("unchecked")
-	void addBindingUntyped(AttachedPropertyBearer component,
-			Consumer<?> pullUp, Consumer<?> pushDown) {
-		addBinding(component, (Consumer<T>) pullUp, (Consumer<T>) pushDown);
+	@SuppressWarnings({ "unchecked" })
+	void addBindingUntyped(Binding<?> binding) {
+		addBinding((Binding<T>) binding);
 	}
 
-	void addBinding(AttachedPropertyBearer component, Consumer<T> pullUp,
-			Consumer<T> pushDown) {
+	void addBinding(Binding<T> binding) {
+		AttachedPropertyBearer component = binding.getComponent();
 		Set<Binding<T>> set = bindings.get(component);
 		if (set == null) {
 			set = new HashSet<>();
 			bindings.set(component, set);
 			components.put(component, null);
 		}
-		set.add(new Binding<T>() {
 
-			@Override
-			public void pushDown() {
-				if (pushDown != null) {
-					pushDown.accept(data);
-				}
-			}
+		set.add(binding);
 
-			@Override
-			public void pullUp() {
-				if (pullUp != null) {
-					pullUp.accept(data);
-				}
-			}
-		});
-
-		if (pullUp != null) {
-			pullUp.accept(data);
+		if (binding.getPullUp() != null) {
+			binding.getPullUp().accept(data);
 		}
 	}
 }

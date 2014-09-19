@@ -232,10 +232,12 @@ public class BindingUtilTest {
 		BindingGroup<TestB> groupB = new BindingGroup<>(TestB.class);
 		groupB.set(b);
 
+		Binding<TestB> binding = new Binding<>();
+		binding.setComponent(a);
+		binding.setPullUp(data -> a.valueA = data.valueB + 1);
+		binding.setPushDown(data -> data.valueB = a.valueA - 1);
 		// establish binding
-		BindingUtil.bind(a, () -> groupB.proxy(),
-				data -> a.valueA = data.valueB + 1,
-				data -> data.valueB = a.valueA - 1);
+		BindingUtil.bind(() -> groupB.proxy(), binding);
 
 		// pull up
 		b.valueB = 2;

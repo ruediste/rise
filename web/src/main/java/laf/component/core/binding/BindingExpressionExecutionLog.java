@@ -8,7 +8,7 @@ import laf.component.core.binding.BindingExpressionExecutionLogManager.MethodInv
 class BindingExpressionExecutionLog {
 	BindingGroup<?> involvedBindingGroup;
 	List<MethodInvocation> modelPath = new ArrayList<>();
-	List<MethodInvocation> viewPath = new ArrayList<>();
+	List<MethodInvocation> componentPath = new ArrayList<>();
 	BindingTransformer<?, ?> transformer;
 	boolean transformInv;
 }

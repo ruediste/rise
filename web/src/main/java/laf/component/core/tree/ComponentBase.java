@@ -2,7 +2,9 @@ package laf.component.core.tree;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
+import laf.component.core.binding.Binding;
 import laf.component.core.binding.BindingUtil;
 import laf.core.base.attachedProperties.AttachedPropertyBearer;
 import laf.core.base.attachedProperties.AttachedPropertyBearerBase;
@@ -72,10 +74,16 @@ public class ComponentBase<TSelf extends AttachedPropertyBearer> extends
 		return self();
 	}
 
-	public TSelf bind(Runnable bindingAccessor, Consumer<TSelf> pullUp,
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public TSelf bind(Supplier<?> bindingAccessor, Consumer<TSelf> pullUp,
 			Consumer<TSelf> pushDown) {
 
-		// BindingUtil.bind(self(), bindingAccessor, pullUp, pushDown);
+		Binding<?> binding = new Binding<>();
+		binding.setComponent(this);
+		binding.setPullUp(d -> pullUp.accept(self()));
+		binding.setPushDown(d -> pushDown.accept(self()));
+
+		BindingUtil.bind(bindingAccessor, (Binding) binding);
 		return self();
 	}
 

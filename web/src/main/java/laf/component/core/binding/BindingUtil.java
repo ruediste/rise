@@ -29,13 +29,16 @@ public class BindingUtil {
 		bind(view, expression, false);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	static public <TView extends AttachedPropertyBearer> void bind(TView view,
-			Consumer<TView> expression, boolean oneWay) {
-		BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager.collectBindingExpressionLog(() -> {
-			expression.accept(BindingUtil.<TView> createViewProxy(view
-					.getClass()));
-		});
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	static public <TComponent extends AttachedPropertyBearer> void bind(
+			TComponent component, Consumer<TComponent> expression,
+			boolean oneWay) {
+		BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager
+				.collectBindingExpressionLog(() -> {
+					expression.accept(BindingUtil
+							.<TComponent> createComponentProxy(component
+									.getClass()));
+				});
 
 		if (info.involvedBindingGroup == null) {
 			throw new RuntimeException(
@@ -43,25 +46,41 @@ public class BindingUtil {
 							+ "Make sure you accsss BindingGroup::proxy() during the execution of the binding expression");
 		}
 
-		String viewPath = PropertyUtil.getProperty(info.viewPath);
-		String modelPath = PropertyUtil.getProperty(info.modelPath);
-
-		Consumer<Object> pullUp = null;
-		Consumer<Object> pushDown = null;
+		Binding<?> binding = new Binding<>();
+		binding.setComponent(component);
+		binding.setComponentProperty(PropertyUtil
+				.getProperty(info.componentPath));
+		binding.setModelProperty(PropertyUtil.getProperty(info.modelPath));
 
 		boolean isModelRead = PropertyUtil.isGetter(info.modelPath
 				.get(info.modelPath.size() - 1));
 
+		boolean doPullUp;
+		boolean doPushDown;
+
+		// determine binding direction
+		if (oneWay) {
+			doPullUp = isModelRead;
+			doPushDown = !doPullUp;
+		} else {
+			doPushDown = PropertyUtils.isReadable(component,
+					binding.getComponentProperty())
+					&& PropertyUtils.isWriteable(
+							info.involvedBindingGroup.createDummyProxy(),
+							binding.getModelProperty());
+			doPullUp = PropertyUtils.isWriteable(component,
+					binding.getComponentProperty())
+					&& PropertyUtils.isReadable(
+							info.involvedBindingGroup.createDummyProxy(),
+							binding.getModelProperty());
+		}
 		// set push down lambda if possible
-		if ((!oneWay || !isModelRead)
-				&& PropertyUtils.isReadable(view, viewPath)
-				&& PropertyUtils
-						.isWriteable(
-								info.involvedBindingGroup.createDummyProxy(),
-								modelPath)) {
-			pushDown = model -> {
+		if (doPushDown) {
+
+			binding.setPushDown(model -> {
 				try {
-					Object value = PropertyUtils.getProperty(view, viewPath);
+					Object value = PropertyUtils.getProperty(component,
+							binding.getComponentProperty());
 					if (info.transformer != null) {
 						if (isModelRead && !info.transformInv) {
 							value = ((TwoWayBindingTransformer) info.transformer)
@@ -71,26 +90,23 @@ public class BindingUtil {
 									.transform(value);
 						}
 					}
-					PropertyUtils.setProperty(model, modelPath, value);
+					PropertyUtils.setProperty(model,
+							binding.getModelProperty(), value);
 				} catch (IllegalAccessException | NoSuchMethodException e) {
 					throw new RuntimeException(e);
 				} catch (InvocationTargetException e) {
 					throw new RuntimeException(e.getCause());
 				}
-			};
+			});
 		}
 
 		// set pull up lambda if possible
-		if ((!oneWay || isModelRead)
-				&& PropertyUtils
-						.isReadable(
-								info.involvedBindingGroup.createDummyProxy(),
-								modelPath)
-				&& PropertyUtils.isWriteable(view, viewPath)) {
+		if (doPullUp) {
 
-			pullUp = model -> {
+			binding.setPullUp(model -> {
 				try {
-					Object value = PropertyUtils.getProperty(model, modelPath);
+					Object value = PropertyUtils.getProperty(model,
+							binding.getModelProperty());
 					if (info.transformer != null) {
 						if (isModelRead && !info.transformInv) {
 							value = ((BindingTransformer) info.transformer)
@@ -100,21 +116,22 @@ public class BindingUtil {
 									.transformInv(value);
 						}
 					}
-					PropertyUtils.setProperty(view, viewPath, value);
+					PropertyUtils.setProperty(component,
+							binding.getComponentProperty(), value);
 				} catch (IllegalAccessException | NoSuchMethodException e) {
 					throw new RuntimeException(e);
 				} catch (InvocationTargetException e) {
 					throw new RuntimeException(e.getCause());
 				}
-			};
+			});
 		}
 
 		// register binding
-		info.involvedBindingGroup.addBindingUntyped(view, pullUp, pushDown);
+		info.involvedBindingGroup.addBindingUntyped(binding);
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <TView> TView createViewProxy(Class<?> viewClass) {
+	private static <TView> TView createComponentProxy(Class<?> viewClass) {
 		Enhancer e = new Enhancer();
 		e.setSuperclass(viewClass);
 		e.setCallback(new MethodInterceptor() {
@@ -122,13 +139,15 @@ public class BindingUtil {
 			@Override
 			public Object intercept(Object obj, Method method, Object[] args,
 					MethodProxy proxy) throws Throwable {
-				BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager.getCurrentLog();
-				info.viewPath.add(new MethodInvocation(method, args));
+				BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager
+						.getCurrentLog();
+				info.componentPath.add(new MethodInvocation(method, args));
 
-				if (BindingExpressionExecutionLogManager.isTerminal(method.getReturnType())) {
+				if (BindingExpressionExecutionLogManager.isTerminal(method
+						.getReturnType())) {
 					return Defaults.defaultValue(method.getReturnType());
 				}
-				return createViewProxy(method.getReturnType());
+				return createComponentProxy(method.getReturnType());
 			}
 		});
 
@@ -146,7 +165,6 @@ public class BindingUtil {
 	/**
 	 * Establish a binding for a given binding, using the two provided lambda
 	 * expressions.
-	 *
 	 * @param bindingAccessor
 	 *            supplier of the proxy of a binding group (
 	 *            {@link BindingGroup#proxy()})
@@ -155,14 +173,13 @@ public class BindingUtil {
 	 * @param pushDown
 	 *            lambda expression to push down
 	 */
-	static public <T> void bind(AttachedPropertyBearer component,
-			Supplier<T> bindingAccessor, Consumer<T> pullUp,
-			Consumer<T> pushDown) {
-		BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager.collectBindingExpressionLog(() -> {
-			bindingAccessor.get();
-		});
+	public static <T> void bind(Supplier<T> bindingAccessor,
+			Binding<T> binding) {
+		BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager
+				.collectBindingExpressionLog(() -> {
+					bindingAccessor.get();
+				});
 
-		info.involvedBindingGroup
-				.addBindingUntyped(component, pullUp, pushDown);
+		info.involvedBindingGroup.addBindingUntyped(binding);
 	}
 }
