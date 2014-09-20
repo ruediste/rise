@@ -1,8 +1,12 @@
 package sampleApp;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
@@ -24,14 +28,28 @@ public class SampleComponentController {
 	@Inject
 	CWControllerUtil util;
 
-	private BindingGroup<User> binding = new BindingGroup<>(User.class);
+	@Inject
+	EntityManager manager;
+
+	private BindingGroup<User> userBinding = new BindingGroup<>(User.class);
 
 	public User user() {
-		return binding.proxy();
+		return userBinding.proxy();
 	}
 
 	public ActionResult index() {
-		binding.set(repo.getUser());
+		CriteriaBuilder cb = manager.getCriteriaBuilder();
+		CriteriaQuery<User> q = cb.createQuery(User.class);
+		q.from(User.class);
+		List<User> users = manager.createQuery(q).getResultList();
+		User user;
+		if (users.isEmpty()) {
+			user = new User();
+		} else {
+			user = users.get(0);
+		}
+
+		userBinding.set(user);
 		return null;
 	}
 
@@ -40,13 +58,25 @@ public class SampleComponentController {
 	}
 
 	public void save() {
-		binding.pushDown();
-		Set<ConstraintViolation<User>> res = validator.validate(binding.get());
-		util.setConstraintViolations(binding, res);
+		userBinding.pushDown();
+		Set<ConstraintViolation<User>> res = validator.validate(userBinding
+				.get());
+		util.setConstraintViolations(userBinding, res);
+		if (res.isEmpty()) {
+			if (!manager.contains(user())) {
+				manager.persist(user());
+			}
+			util.commit();
+		}
 	}
 
 	public void reload() {
-		binding.pullUp();
-		util.clearConstraintViolations(binding);
+		if (manager.contains(user())) {
+			manager.refresh(user());
+		} else {
+			userBinding.set(new User());
+		}
+		userBinding.pullUp();
+		util.clearConstraintViolations(userBinding);
 	}
 }

@@ -3,11 +3,9 @@ package laf.component.core;
 import javax.inject.Inject;
 import javax.transaction.*;
 
-import laf.component.core.pageScope.PageScoped;
 import laf.core.base.ActionResult;
 import laf.core.base.Val;
 import laf.core.persistence.LafPersistenceContextManager;
-import laf.core.persistence.LafPersistenceHolder;
 
 import org.slf4j.Logger;
 
@@ -22,8 +20,7 @@ public class PersistenceInitialRequestHandler
 	LafPersistenceContextManager manager;
 
 	@Inject
-	@PageScoped
-	LafPersistenceHolder holder;
+	PageScopedPersistenceHolder holder;
 
 	@Inject
 	UserTransaction trx;
