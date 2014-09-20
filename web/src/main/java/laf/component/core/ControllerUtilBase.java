@@ -1,15 +1,23 @@
 package laf.component.core;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.transaction.*;
+import javax.validation.ConstraintViolation;
 
+import laf.component.core.binding.*;
 import laf.core.base.ActionResult;
 import laf.core.http.HttpService;
 import laf.core.persistence.LafPersistenceContextManager;
 import laf.core.persistence.LafPersistenceHolder;
 
 import org.slf4j.Logger;
+
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 
 public class ControllerUtilBase {
 
@@ -97,6 +105,37 @@ public class ControllerUtilBase {
 
 	public void setDestinationUrl(String destinationUrl) {
 		this.destinationUrl = destinationUrl;
+	}
 
+	public <T> void setConstraintViolations(BindingGroup<?> group,
+			Set<ConstraintViolation<T>> violations) {
+		Multimap<String, ConstraintViolation<?>> violationMap = MultimapBuilder
+				.hashKeys().arrayListValues().build();
+
+		for (ConstraintViolation<?> v : violations) {
+			violationMap.put(BeanutilPropertyGenerationUtil
+					.toBeanUtilsProperty(v.getPropertyPath()), v);
+		}
+
+		for (Binding<?> b : group.getBindings().collect(Collectors.toList())) {
+
+			if (b.getComponent() instanceof ConstraintViolationAware) {
+
+				ConstraintViolationAware aware = (ConstraintViolationAware) b
+						.getComponent();
+				aware.setConstraintViolations(violationMap.get(b
+						.getModelProperty()));
+			}
+		}
+	}
+
+	public void clearConstraintViolations(BindingGroup<?> group) {
+		for (Binding<?> b : group.getBindings().collect(Collectors.toList())) {
+			if (b.getComponent() instanceof ConstraintViolationAware) {
+				ConstraintViolationAware aware = (ConstraintViolationAware) b
+						.getComponent();
+				aware.clearConstraintViolations();
+			}
+		}
 	}
 }

@@ -82,9 +82,10 @@ public class BundleResourceRequestHandler extends ResourceRequestHandler {
 	@Override
 	public void render(ResourceBundle bundle, Consumer<String> linkWriter) {
 		String hash = bundles.get(bundle);
-		if (!bundles.containsKey(bundle)) {
+		if (hash == null) {
 			synchronized (lock) {
-				if (!bundles.containsKey(bundle)) {
+				hash = bundles.get(bundle);
+				if (hash == null) {
 					byte[] data = generateBundle(bundle);
 					hash = Hashing.sha256().hashBytes(data).toString();
 					bundles.put(bundle, hash);

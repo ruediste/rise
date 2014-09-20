@@ -25,7 +25,7 @@ var components = (function () {
     			event.stopPropagation();
     			$.ajax({
     				  type: "POST",
-    				  url: $("body").attr("data-reloadurl")+"/"+receiver.children("._componentId").first().text(),
+    				  url: $("body").attr("data-reloadurl")+"/"+receiver.data("c-component-nr"),
     				  data: data,
     				  success: function(data){
     						// receiver.replaceWith($(data).children());
@@ -41,7 +41,7 @@ var components = (function () {
     		});
     		
     		$(document).on("click",".c_button", function(){
-    			var componentId=$(this).children("._componentId").first().text();
+    			var componentId=$(this).data("c-component-nr");
     			$(this).after("<input type=\"text\" class=\"c_hidden\" name=\""+generateKey(componentId,"clicked")+"\" />");
     			$(this).trigger("c_viewReload");
     			return false;

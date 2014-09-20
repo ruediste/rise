@@ -3,10 +3,15 @@ package sampleApp.entities;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.validation.constraints.Pattern;
 
 @Entity
 public class User extends SimpleIdEntity {
 
+	public static final String foo = "foo";
+
+	@Pattern.List({ @Pattern(regexp = "ABC", message = "Must match ABC"),
+			@Pattern(regexp = "AB.*", message = foo) })
 	private String fistName;
 	private String lastName;
 	private Date lastLogin;

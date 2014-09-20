@@ -16,7 +16,7 @@ import org.junit.Test;
 
 import com.google.common.base.Defaults;
 
-public class PropertyUtilTest {
+public class BeanutilPropertyGenerationUtilTest {
 
 	static class TestBean {
 
@@ -43,20 +43,20 @@ public class PropertyUtilTest {
 	@Test
 	public void simple() {
 		assertEquals(Pair.of("mouthWidth", true),
-				PropertyUtil.getPropertyInfo(getInvocation(TestBean.class,
+				BeanutilPropertyGenerationUtil.getPropertyInfo(getInvocation(TestBean.class,
 						b -> b.getMouthWidth())));
 		assertEquals(Pair.of("mouthWidth", false),
-				PropertyUtil.getPropertyInfo(getInvocation(TestBean.class,
+				BeanutilPropertyGenerationUtil.getPropertyInfo(getInvocation(TestBean.class,
 						b -> b.setMouthWidth(1))));
 	}
 
 	@Test
 	public void indexed() {
 		assertEquals(Pair.of("testGrades[2]", true),
-				PropertyUtil.getPropertyInfo(getInvocation(TestBean.class,
+				BeanutilPropertyGenerationUtil.getPropertyInfo(getInvocation(TestBean.class,
 						b -> b.getTestGrades(2))));
 		assertEquals(Pair.of("testGrades[2]", false),
-				PropertyUtil.getPropertyInfo(getInvocation(TestBean.class,
+				BeanutilPropertyGenerationUtil.getPropertyInfo(getInvocation(TestBean.class,
 						b -> b.setTestGrades(2, 3))));
 	}
 
@@ -64,10 +64,10 @@ public class PropertyUtilTest {
 	public void dynaSimple() {
 
 		assertEquals(Pair.of("foo", true),
-				PropertyUtil.getPropertyInfo(getInvocation(LazyDynaBean.class,
+				BeanutilPropertyGenerationUtil.getPropertyInfo(getInvocation(LazyDynaBean.class,
 						b -> b.get("foo"))));
 		assertEquals(Pair.of("foo", false),
-				PropertyUtil.getPropertyInfo(getInvocation(LazyDynaBean.class,
+				BeanutilPropertyGenerationUtil.getPropertyInfo(getInvocation(LazyDynaBean.class,
 						b -> b.set("foo", null))));
 
 	}
@@ -76,10 +76,10 @@ public class PropertyUtilTest {
 	public void dynaIndexed() {
 
 		assertEquals(Pair.of("foo[1]", true),
-				PropertyUtil.getPropertyInfo(getInvocation(LazyDynaBean.class,
+				BeanutilPropertyGenerationUtil.getPropertyInfo(getInvocation(LazyDynaBean.class,
 						b -> b.get("foo", 1))));
 		assertEquals(Pair.of("foo[1]", false),
-				PropertyUtil.getPropertyInfo(getInvocation(LazyDynaBean.class,
+				BeanutilPropertyGenerationUtil.getPropertyInfo(getInvocation(LazyDynaBean.class,
 						b -> b.set("foo", 1, null))));
 
 	}
@@ -87,10 +87,10 @@ public class PropertyUtilTest {
 	@Test
 	public void dynaMapped() {
 		assertEquals(Pair.of("foo(bar)", true),
-				PropertyUtil.getPropertyInfo(getInvocation(LazyDynaBean.class,
+				BeanutilPropertyGenerationUtil.getPropertyInfo(getInvocation(LazyDynaBean.class,
 						b -> b.get("foo", "bar"))));
 		assertEquals(Pair.of("foo(bar)", false),
-				PropertyUtil.getPropertyInfo(getInvocation(LazyDynaBean.class,
+				BeanutilPropertyGenerationUtil.getPropertyInfo(getInvocation(LazyDynaBean.class,
 						b -> b.set("foo", "bar", null))));
 
 	}

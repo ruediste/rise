@@ -18,7 +18,7 @@ public class ResourceBundle {
 	public ResourceBundle(ResourceType type, String... resources) {
 		targetType = type;
 		this.resources = Arrays.asList(resources);
-		hashCode = Objects.hash(type, resources);
+		hashCode = Objects.hash(type, Arrays.hashCode(resources));
 	}
 
 	public ResourceType getTargetType() {
@@ -39,7 +39,7 @@ public class ResourceBundle {
 		}
 
 		ResourceBundle other = (ResourceBundle) obj;
-		return targetType == other.targetType
+		return targetType.equals(other.targetType)
 				&& resources.equals(other.resources);
 	}
 

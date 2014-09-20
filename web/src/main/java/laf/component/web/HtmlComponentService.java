@@ -12,7 +12,7 @@ public interface HtmlComponentService {
 	public abstract void renderPage(CView<?> view,
 			Component rootComponent, HttpServletResponse response);
 
-	public abstract long getComponentId(Component component);
+	public abstract long getComponentNr(Component component);
 
 	public abstract Component getComponent(CView<?> view,
 			long componentId);

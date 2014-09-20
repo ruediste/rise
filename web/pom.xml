@@ -212,13 +212,8 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.jboss.spec</groupId>
-			<artifactId>jboss-javaee-6.0</artifactId>
-			<version>1.0.0.Final</version>
-			<type>pom</type>
-			<scope>provided</scope>
-		</dependency> -->
+		<!-- <dependency> <groupId>org.jboss.spec</groupId> <artifactId>jboss-javaee-6.0</artifactId> 
+			<version>1.0.0.Final</version> <type>pom</type> <scope>provided</scope> </dependency> -->
 		<dependency>
 			<groupId>org.apache.openejb</groupId>
 			<artifactId>javaee-api</artifactId>
@@ -251,11 +246,6 @@
 			<version>${jabsaw.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.rendersnake</groupId>
-			<artifactId>xrendersnake</artifactId>
-			<version>1.8-SNAPSHOT</version>
-		</dependency>
 
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -280,6 +270,11 @@
 			<groupId>ro.isdc.wro4j</groupId>
 			<artifactId>wro4j-extensions</artifactId>
 			<version>1.7.6</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.rendersnake</groupId>
+		    <artifactId>rendersnake</artifactId>
+		    <version>1.8</version>
 		</dependency>
 	</dependencies>
 	<parent>

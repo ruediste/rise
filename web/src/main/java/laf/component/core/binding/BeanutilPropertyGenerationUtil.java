@@ -3,16 +3,36 @@ package laf.component.core.binding;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import javax.validation.Path;
 
 import laf.component.core.binding.BindingExpressionExecutionLogManager.MethodInvocation;
 import laf.core.base.Pair;
 
 import com.google.common.base.CaseFormat;
 
-public class PropertyUtil {
+public class BeanutilPropertyGenerationUtil {
+
+	public static String toBeanUtilsProperty(Path path) {
+		return StreamSupport.stream(path.spliterator(), false)
+				.map(BeanutilPropertyGenerationUtil::toBeanUtilsProperty)
+				.collect(Collectors.joining("."));
+	}
+
+	public static String toBeanUtilsProperty(Path.Node node) {
+		if (!node.isInIterable()) {
+			return node.getName();
+		} else {
+			if (node.getIndex() != null) {
+				return node.getName() + "[" + node.getIndex() + "]";
+			}
+			return node.getName() + "(" + node.getIndex() + ")";
+		}
+	}
 
 	public static String getProperty(List<MethodInvocation> path) {
-		return path.stream().map(PropertyUtil::getProperty)
+		return path.stream().map(BeanutilPropertyGenerationUtil::getProperty)
 				.collect(Collectors.joining("."));
 	}
 

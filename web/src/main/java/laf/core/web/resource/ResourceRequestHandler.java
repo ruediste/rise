@@ -86,6 +86,9 @@ public abstract class ResourceRequestHandler implements
 
 	public ResourceRequestHandler() {
 		super();
+		contentTypeMap.put(ResourceType.JS,
+				"application/javascript; ; charset=UTF-8");
+		contentTypeMap.put(ResourceType.CSS, "text/css; ; charset=UTF-8");
 	}
 
 	public abstract void render(ResourceBundle bundle,

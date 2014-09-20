@@ -1,14 +1,16 @@
 package laf.component.web.basic.template;
 
-import java.io.IOException;
-
 import laf.component.core.tree.ComponentBase;
-import laf.component.web.CWRenderUtil;
 
-import org.rendersnake.HtmlCanvas;
+public class CRender extends ComponentBase<CRender> {
 
-public abstract class CRender extends ComponentBase<CRender> {
+	private final Renderer renderer;
 
-	abstract public void render(HtmlCanvas html, CWRenderUtil util)
-			throws IOException;
+	public CRender(Renderer renderer) {
+		this.renderer = renderer;
+	}
+
+	public Renderer getRenderer() {
+		return renderer;
+	}
 }

@@ -17,8 +17,8 @@ public class CButtonHtmlTemplate extends CWTemplateBase<CButton> {
 
 	@Override
 	public void render(CButton component, HtmlCanvas html) throws IOException {
-		html.button(class_("c_button")).span(class_("_componentId c_hidden"))
-				.content(String.valueOf(util.getComponentId()));
+		html.button(class_("c_button").add("data-c-component-nr",
+				String.valueOf(util.getComponentNr())));
 		super.render(component, html);
 		html._button();
 	}

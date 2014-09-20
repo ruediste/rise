@@ -21,9 +21,9 @@ public class HtmlComponentServiceImpl implements HtmlComponentService {
 
 	private static Charset UTF8 = Charset.forName("UTF-8");
 
-	private final AttachedProperty<Component, Long> componentId = new AttachedProperty<>();
+	private final AttachedProperty<Component, Long> componentNr = new AttachedProperty<>();
 	private final AttachedProperty<CView<?>, Map<Long, Component>> componentIdMap = new AttachedProperty<>();
-	private final AttachedProperty<CView<?>, Long> maxComponentId = new AttachedProperty<>();
+	private final AttachedProperty<CView<?>, Long> maxComponentNr = new AttachedProperty<>();
 
 	@Inject
 	CWRenderUtil cwRenderUtil;
@@ -33,7 +33,7 @@ public class HtmlComponentServiceImpl implements HtmlComponentService {
 
 	@Override
 	public String calculateKey(Component component, String key) {
-		return "c_" + componentId.get(component) + "_" + key;
+		return "c_" + componentNr.get(component) + "_" + key;
 	}
 
 	@Override
@@ -49,21 +49,21 @@ public class HtmlComponentServiceImpl implements HtmlComponentService {
 				map = new HashMap<>();
 				componentIdMap.set(view, map);
 			}
-			long id;
+			long nr;
 			{
-				Long tmp = maxComponentId.get(view);
+				Long tmp = maxComponentNr.get(view);
 				if (tmp == null) {
 					tmp = 0L;
 				}
-				id = tmp;
+				nr = tmp;
 			}
 			for (Component c : ComponentTreeUtil.subTree(rootComponent)) {
-				if (!componentId.isSet(c)) {
-					map.put(id, c);
-					componentId.set(c, id++);
+				if (!componentNr.isSet(c)) {
+					map.put(nr, c);
+					componentNr.set(c, nr++);
 				}
 			}
-			maxComponentId.set(view, id);
+			maxComponentNr.set(view, nr);
 		}
 
 		// render the view first, to detect possible errors
@@ -92,8 +92,8 @@ public class HtmlComponentServiceImpl implements HtmlComponentService {
 	}
 
 	@Override
-	public long getComponentId(Component component) {
-		return componentId.get(component);
+	public long getComponentNr(Component component) {
+		return componentNr.get(component);
 	}
 
 	@Override

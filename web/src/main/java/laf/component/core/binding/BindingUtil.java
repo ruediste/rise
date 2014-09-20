@@ -48,11 +48,11 @@ public class BindingUtil {
 
 		Binding<?> binding = new Binding<>();
 		binding.setComponent(component);
-		binding.setComponentProperty(PropertyUtil
+		binding.setComponentProperty(BeanutilPropertyGenerationUtil
 				.getProperty(info.componentPath));
-		binding.setModelProperty(PropertyUtil.getProperty(info.modelPath));
+		binding.setModelProperty(BeanutilPropertyGenerationUtil.getProperty(info.modelPath));
 
-		boolean isModelRead = PropertyUtil.isGetter(info.modelPath
+		boolean isModelRead = BeanutilPropertyGenerationUtil.isGetter(info.modelPath
 				.get(info.modelPath.size() - 1));
 
 		boolean doPullUp;

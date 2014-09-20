@@ -15,6 +15,6 @@ public class CRenderHtmlTemplate extends CWTemplateBase<CRender> {
 
 	@Override
 	public void render(CRender component, HtmlCanvas html) throws IOException {
-		component.render(html, util);
+		component.getRenderer().accept(html);
 	}
 }

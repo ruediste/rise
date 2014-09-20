@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import laf.component.core.pageScope.PageScopeManager;
 import laf.component.core.tree.Component;
 import laf.core.web.resource.ResourceRenderUtil;
+import laf.core.web.resource.ResourceType;
 
 import org.rendersnake.HtmlCanvas;
 import org.rendersnake.Renderable;
@@ -60,8 +61,15 @@ public class CWRenderUtil extends PathGeneratingUtilImpl {
 
 	}
 
-	public long getComponentId() {
-		return componentService.getComponentId(getComponent());
+	public long getComponentNr() {
+		return componentService.getComponentNr(getComponent());
+	}
+
+	/**
+	 * Return the appropriate value for the html element id attribute.
+	 */
+	public String getComponentId() {
+		return "c_" + getComponentNr();
 	}
 
 	public long getPageId() {
@@ -80,4 +88,7 @@ public class CWRenderUtil extends PathGeneratingUtilImpl {
 		return resourceRenderUtil.cssBundle(this::url, files);
 	}
 
+	public String singleResource(ResourceType targetType, String resource) {
+		return url(resourceRenderUtil.singleResource(targetType, resource));
+	}
 }

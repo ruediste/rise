@@ -12,8 +12,8 @@ import laf.core.http.request.HttpRequest;
 import laf.core.requestParserChain.RequestParserChain;
 import laf.core.web.resource.*;
 import ro.isdc.wro.extensions.processor.css.RubySassCssProcessor;
-import ro.isdc.wro.extensions.processor.css.YUICssCompressorProcessor;
-import ro.isdc.wro.extensions.processor.js.UglifyJsProcessor;
+import ro.isdc.wro.model.resource.processor.impl.css.JawrCssMinifierProcessor;
+import ro.isdc.wro.model.resource.processor.impl.js.JSMinProcessor;
 
 /**
  * Defines the default configuration of the framework.
@@ -49,7 +49,7 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 	}
 
 	public void produce(ProjectStageCP val) {
-		val.set(ProjectStage.DEVELOPMENT);
+		val.set(ProjectStage.TESTING);
 	}
 
 	public void produce(ResourceRequestHandlerCP val,
@@ -67,11 +67,11 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 			handler = bundleHandler;
 
 			bundleHandler.addBundleTransformer(ResourceType.CSS,
-					(in, out) -> new YUICssCompressorProcessor().process(in,
-							out));
+					(in, out) -> new JawrCssMinifierProcessor()
+							.process(in, out));
 
 			bundleHandler.addBundleTransformer(ResourceType.JS,
-					(in, out) -> new UglifyJsProcessor().process(in, out));
+					(in, out) -> new JSMinProcessor().process(in, out));
 		}
 
 		handler.addResourceTransformer(ResourceType.SASS, ResourceType.CSS, (

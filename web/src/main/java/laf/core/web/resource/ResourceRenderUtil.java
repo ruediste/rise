@@ -7,6 +7,7 @@ import java.util.function.Function;
 
 import javax.inject.Inject;
 
+import laf.core.base.Val;
 import laf.core.http.CoreRequestInfo;
 
 import org.rendersnake.Renderable;
@@ -19,8 +20,7 @@ public class ResourceRenderUtil {
 	public Renderable jsBundle(Function<String, String> url, String... files) {
 		return html -> {
 			coreRequestInfo.getResourceRequestHandler().render(
-					new ResourceBundle(ResourceType.JS, files),
-					path -> {
+					new ResourceBundle(ResourceType.JS, files), path -> {
 						try {
 							html.script(src(url.apply(path)))._script();
 						} catch (IOException e) {
@@ -43,5 +43,12 @@ public class ResourceRenderUtil {
 						}
 					});
 		};
+	}
+
+	public String singleResource(ResourceType targetType, String resource) {
+		Val<String> result = new Val<>();
+		ResourceBundle bundle = new ResourceBundle(targetType, resource);
+		coreRequestInfo.getResourceRequestHandler().render(bundle, result::set);
+		return result.get();
 	}
 }
