@@ -43,43 +43,13 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.9.1</version>
-				<!-- <executions> <execution> <id>attach-javadocs</id> <goals> <goal>javadoc</goal> 
-					</goals> <phase>generate-test-resources</phase> </execution> </executions> -->
-			</plugin>
-
-			<plugin>
-				<groupId>com.github.jeluard</groupId>
-				<artifactId>maven-plantuml-plugin</artifactId>
-				<version>7940</version>
-				<configuration>
-					<sourceFiles>
-						<directory>${basedir}/src/main/java</directory>
-						<includes>
-							<include>**/*.java</include>
-						</includes>
-					</sourceFiles>
-				</configuration>
 				<executions>
 					<execution>
-						<id>plantuml-javadoc-site</id>
+						<id>attach-javadocs</id>
 						<goals>
-							<goal>generate</goal>
+							<goal>javadoc</goal>
 						</goals>
-						<phase>pre-site</phase>
-						<configuration>
-							<outputDirectory>${basedir}/target/site/apidocs</outputDirectory>
-						</configuration>
-					</execution>
-					<execution>
-						<id>plantuml-javadoc</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<phase>generate-sources</phase>
-						<configuration>
-							<!-- <outputDirectory>${basedir}/target/apidocs</outputDirectory> -->
-							<outputInSourceDirectory>true</outputInSourceDirectory>
-						</configuration>
+						<phase>package</phase>
 					</execution>
 				</executions>
 			</plugin>
@@ -272,9 +242,9 @@
 			<version>1.7.6</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.rendersnake</groupId>
-		    <artifactId>rendersnake</artifactId>
-		    <version>1.8</version>
+			<groupId>org.rendersnake</groupId>
+			<artifactId>rendersnake</artifactId>
+			<version>1.8</version>
 		</dependency>
 	</dependencies>
 	<parent>
