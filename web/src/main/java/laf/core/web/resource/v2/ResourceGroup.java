@@ -247,7 +247,7 @@ public class ResourceGroup {
 
 		@Override
 		public DataEqualityTracker getDataEqualityTracker() {
-			return null; // delegate.getDataEqualityTracker();
+			return delegate.getDataEqualityTracker();
 		}
 
 	}

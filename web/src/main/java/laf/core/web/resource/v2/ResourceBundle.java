@@ -24,7 +24,7 @@ public class ResourceBundle {
 	@Inject
 	ServletContext servletContext;
 
-	private List<ResourceOutput> resourceOutputs = new ArrayList<>();
+	private final List<ResourceOutput> resourceOutputs = new ArrayList<>();
 
 	private volatile AttachedPropertyBearer resourceCache = new AttachedPropertyBearerBase();
 
@@ -45,6 +45,31 @@ public class ResourceBundle {
 								.getResourceAsStream(name));
 					}
 
+					@Override
+					public DataEqualityTracker getDataEqualityTracker() {
+						return new DataEqualityTrackerImpl(name);
+					};
+
+					final class DataEqualityTrackerImpl implements
+							DataEqualityTracker {
+
+						private String name;
+
+						public DataEqualityTrackerImpl(String name) {
+							this.name = name;
+						}
+
+						@Override
+						public boolean containsSameDataAs(
+								DataEqualityTracker other) {
+							if (getClass() != other.getClass()) {
+								return false;
+							}
+							DataEqualityTrackerImpl o = (DataEqualityTrackerImpl) other;
+							return name.equals(o.name);
+						}
+
+					}
 				}));
 	}
 
@@ -61,6 +86,32 @@ public class ResourceBundle {
 					public byte[] getData() {
 						return toByteArray(servletContext
 								.getResourceAsStream(name));
+					}
+
+					@Override
+					public DataEqualityTracker getDataEqualityTracker() {
+						return new DataEqualityTrackerImpl(name);
+					}
+
+					final class DataEqualityTrackerImpl implements
+							DataEqualityTracker {
+
+						private String name;
+
+						public DataEqualityTrackerImpl(String name) {
+							this.name = name;
+						}
+
+						@Override
+						public boolean containsSameDataAs(
+								DataEqualityTracker other) {
+							if (getClass() != other.getClass()) {
+								return false;
+							}
+							DataEqualityTrackerImpl o = (DataEqualityTrackerImpl) other;
+							return name.equals(o.name);
+						}
+
 					}
 
 				}));
@@ -104,6 +155,10 @@ public class ResourceBundle {
 
 	public void clearCache() {
 		resourceCache = new AttachedPropertyBearerBase();
+	}
+
+	public List<ResourceOutput> getResourceOutputs() {
+		return Collections.unmodifiableList(resourceOutputs);
 	}
 
 }

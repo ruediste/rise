@@ -120,7 +120,12 @@ public class IndividualResourceRequestHandler extends ResourceRequestHandler {
 		try {
 			InputStream in = loadResource(source);
 
-			setContentType(sourceType, response);
+			{
+				String contentType = getContentTypeMap().get(sourceType);
+				if (contentType != null) {
+					response.setContentType(contentType);
+				}
+			}
 
 			ServletOutputStream out = response.getOutputStream();
 

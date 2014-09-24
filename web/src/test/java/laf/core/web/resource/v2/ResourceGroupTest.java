@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.common.collect.Iterables;
@@ -18,7 +19,10 @@ import com.google.common.collect.Iterables;
 public class ResourceGroupTest {
 
 	@Mock
-	Resource resource;
+	DataEqualityTracker dataEqualityTracker;
+
+	@Spy
+	TestResourceImpl resource = new TestResourceImpl("foo", "Hello");
 
 	ResourceBundle bundle;
 
@@ -27,8 +31,7 @@ public class ResourceGroupTest {
 	@Before
 	public void setup() throws UnsupportedEncodingException {
 		bundle = new ResourceBundle();
-		when(resource.getName()).thenReturn("foo");
-		when(resource.getData()).thenReturn(byteArray("Hello"));
+
 		group = new ResourceGroup(bundle, Arrays.asList(resource));
 	}
 

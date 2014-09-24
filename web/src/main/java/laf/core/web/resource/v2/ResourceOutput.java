@@ -13,7 +13,7 @@ public class ResourceOutput implements Consumer<Resource> {
 
 	@Override
 	public void accept(Resource t) {
-		getResources().add(t);
+		resources.add(t);
 	}
 
 	public List<Resource> getResources() {

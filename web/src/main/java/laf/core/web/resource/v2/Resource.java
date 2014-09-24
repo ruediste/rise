@@ -6,4 +6,10 @@ public interface Resource {
 	byte[] getData();
 
 	DataEqualityTracker getDataEqualityTracker();
+
+	default boolean containsSameDataAs(Resource other) {
+		return getDataEqualityTracker().containsSameDataAs(
+				other.getDataEqualityTracker());
+
+	}
 }

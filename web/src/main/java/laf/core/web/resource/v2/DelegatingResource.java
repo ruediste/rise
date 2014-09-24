@@ -18,4 +18,9 @@ public class DelegatingResource implements Resource {
 	public byte[] getData() {
 		return delegate.getData();
 	}
+
+	@Override
+	public DataEqualityTracker getDataEqualityTracker() {
+		return delegate.getDataEqualityTracker();
+	}
 }

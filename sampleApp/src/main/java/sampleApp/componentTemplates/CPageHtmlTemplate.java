@@ -21,14 +21,11 @@ public class CPageHtmlTemplate extends CWTemplateBase<CPage> {
 
 	public static class Bundle extends ResourceBundle {
 
-		@Inject
-		ResourceOutput css;
+		ResourceOutput css = new ResourceOutput(this);
 
-		@Inject
-		ResourceOutput js;
+		ResourceOutput js = new ResourceOutput(this);
 
-		@Inject
-		ResourceOutput fonts;
+		ResourceOutput fonts = new ResourceOutput(this);
 
 		@PostConstruct
 		public void initialize() {

@@ -23,11 +23,14 @@ class TestResourceImpl implements Resource {
 	String name;
 	byte[] data;
 
-	public TestResourceImpl(String name, String data)
-			throws UnsupportedEncodingException {
+	public TestResourceImpl(String name, String data) {
 		super();
 		this.name = name;
-		this.data = data.getBytes("UTF-8");
+		try {
+			this.data = data.getBytes("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
