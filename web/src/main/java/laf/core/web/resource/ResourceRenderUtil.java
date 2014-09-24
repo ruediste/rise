@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import laf.core.base.Val;
 import laf.core.http.CoreRequestInfo;
+import laf.core.web.resource.v2.ResourceOutput;
 
 import org.rendersnake.Renderable;
 
@@ -50,5 +51,30 @@ public class ResourceRenderUtil {
 		ResourceBundle bundle = new ResourceBundle(targetType, resource);
 		coreRequestInfo.getResourceRequestHandler().render(bundle, result::set);
 		return result.get();
+	}
+
+	public Renderable cssBundle(Function<String, String> url, ResourceOutput css) {
+		return html -> {
+			css.forEach(r -> {
+				try {
+					html.link(rel("stylesheet").type("text/css").href(
+							url.apply(r.name)));
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			});
+		};
+	}
+
+	public Renderable jsBundle(Function<String, String> url, ResourceOutput js) {
+		return html -> {
+			js.forEach(r -> {
+				try {
+					html.script(src(url.apply(r.name)))._script();
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			});
+		};
 	}
 }

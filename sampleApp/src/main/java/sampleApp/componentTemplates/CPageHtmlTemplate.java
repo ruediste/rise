@@ -4,12 +4,13 @@ import static org.rendersnake.HtmlAttributesFactory.*;
 
 import java.io.IOException;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import laf.component.core.basic.CPage;
 import laf.component.web.CWRenderUtil;
 import laf.component.web.CWTemplateBase;
-import laf.core.web.resource.ResourceType;
+import laf.core.web.resource.v2.*;
 
 import org.rendersnake.HtmlCanvas;
 
@@ -17,6 +18,59 @@ public class CPageHtmlTemplate extends CWTemplateBase<CPage> {
 
 	@Inject
 	CWRenderUtil util;
+
+	public static class Bundle extends ResourceBundle {
+
+		@Inject
+		ResourceOutput css;
+
+		@Inject
+		ResourceOutput js;
+
+		@Inject
+		ResourceOutput fonts;
+
+		@PostConstruct
+		public void initialize() {
+
+			ResourceGroup preMinified = paths("/static/js/jquery-1.11.1.js",
+					"/static/bootstrap/js/bootstrap.js",
+					"/static/bootstrap/css/bootstrap.css").insertMinInProd()
+					.load(servletContext());
+			ResourceGroup normal = paths("/static/css/sample-app.css").load(
+					servletContext()).merge(
+					paths("/js/componentWeb.js").load(classPath()).name(
+							"/static{path}.{ext}"));
+
+			// provide fonts
+			ResourceGroup fontGroup = paths(
+					"/static/bootstrap/fonts/glyphicons-halflings-regular.eot",
+					"/static/bootstrap/fonts/glyphicons-halflings-regular.woff",
+					"/static/bootstrap/fonts/glyphicons-halflings-regular.tts",
+					"/static/bootstrap/fonts/glyphicons-halflings-regular.svg")
+					.load(servletContext());
+
+			if (dev()) {
+				preMinified.merge(normal).fork(x -> x.filter("js").send(js))
+						.filter("css").send(css);
+				fontGroup.send(fonts);
+			}
+
+			if (prod()) {
+				normal.filter("css").process(processors.minifyCss())
+						.merge(preMinified.filter("css"))
+						.name("/static/css/{hash}.css").send(css);
+
+				normal.filter("js").process(processors.minifyJs())
+						.merge(preMinified.filter("js"))
+						.name("/static/js/{hash}.js").send(js);
+				fontGroup.name("/static/fonts/{name}.{ext}").send(fonts);
+			}
+		}
+	}
+
+	@Inject
+	Bundle bundle;
 
 	@Override
 	public void render(CPage component, HtmlCanvas html) throws IOException {
@@ -27,31 +81,12 @@ public class CPageHtmlTemplate extends CWTemplateBase<CPage> {
 			.head()
 				.meta(name("viewport").content("width=device-width, initial-scale=1"))
 				.title().content("Yeah")
-				.render(util.cssBundle("bootstrap/css/bootstrap.min.css","css/components.css"))
-				// override the font-face definition from bootstrap
-				.style().content(String.format("@font-face {\n" +
-						"  font-family: 'Glyphicons Halflings';\n" +
-						"\n" +
-						"  src: url('%s');\n" +
-						"  src: url('%s?#iefix') format('embedded-opentype'), \n" +
-						"  url('%s') format('woff'), \n" +
-						"  url('%s') format('truetype'), \n" +
-						"  url('%s#glyphicons_halflingsregular') format('svg');\n" +
-						"}",
-						util.singleResource(ResourceType.valueOf("eot"), "bootstrap/fonts/glyphicons-halflings-regular.eot"),
-						util.singleResource(ResourceType.valueOf("eot"), "bootstrap/fonts/glyphicons-halflings-regular.eot"),
-						util.singleResource(ResourceType.valueOf("woff"), "bootstrap/fonts/glyphicons-halflings-regular.woff"),
-						util.singleResource(ResourceType.valueOf("ttf"), "bootstrap/fonts/glyphicons-halflings-regular.ttf"),
-						util.singleResource(ResourceType.valueOf("svg"), "bootstrap/fonts/glyphicons-halflings-regular.svg")
-						),false)
-
+				.render(util.cssBundle(bundle.css))
 			._head()
 			.body(data("reloadurl", util.getReloadUrl()));
 
 				super.render(component, html);
-				html.render(util.jsBundle("js/jquery-1.11.1.js",
-						"bootstrap/js/bootstrap.js",
-						"js/componentWeb.js"))
+				html.render(util.jsBundle(bundle.js))
 			._body()
 		._html();
 	}

@@ -1,16 +1,26 @@
 package laf.core.web.resource.v2;
 
+import java.util.*;
 import java.util.function.Consumer;
 
-public class ResourceOutput<T> implements Consumer<T> {
+public class ResourceOutput implements Consumer<Resource> {
 
-	void forEach() {
+	final private List<Resource> resources = new ArrayList<>();
 
+	public ResourceOutput(ResourceBundle bundle) {
+		bundle.registerOutput(this);
 	}
 
 	@Override
-	public void accept(T t) {
-		// TODO Auto-generated method stub
+	public void accept(Resource t) {
+		getResources().add(t);
+	}
 
+	public List<Resource> getResources() {
+		return Collections.unmodifiableList(resources);
+	}
+
+	public void forEach(Consumer<Resource> consumer) {
+		resources.stream().forEach(consumer);
 	}
 }

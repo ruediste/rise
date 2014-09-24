@@ -11,6 +11,8 @@ import laf.core.base.configuration.ConfigurationDefiner;
 import laf.core.http.request.HttpRequest;
 import laf.core.requestParserChain.RequestParserChain;
 import laf.core.web.resource.*;
+import laf.core.web.resource.v2.ResourceMode;
+import laf.core.web.resource.v2.ResourceModeCP;
 import ro.isdc.wro.extensions.processor.css.RubySassCssProcessor;
 import ro.isdc.wro.model.resource.processor.impl.css.JawrCssMinifierProcessor;
 import ro.isdc.wro.model.resource.processor.impl.js.JSMinProcessor;
@@ -50,6 +52,14 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 
 	public void produce(ProjectStageCP val) {
 		val.set(ProjectStage.TESTING);
+	}
+
+	public void produce(ResourceModeCP val, ProjectStageCP projectStage) {
+		if (projectStage.get() == ProjectStage.DEVELOPMENT) {
+			val.set(ResourceMode.DEVELOPMENT);
+		} else {
+			val.set(ResourceMode.PRODUCTION);
+		}
 	}
 
 	public void produce(ResourceRequestHandlerCP val,

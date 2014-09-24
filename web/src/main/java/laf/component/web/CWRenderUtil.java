@@ -9,6 +9,7 @@ import laf.component.core.pageScope.PageScopeManager;
 import laf.component.core.tree.Component;
 import laf.core.web.resource.ResourceRenderUtil;
 import laf.core.web.resource.ResourceType;
+import laf.core.web.resource.v2.ResourceOutput;
 
 import org.rendersnake.HtmlCanvas;
 import org.rendersnake.Renderable;
@@ -90,5 +91,13 @@ public class CWRenderUtil extends PathGeneratingUtilImpl {
 
 	public String singleResource(ResourceType targetType, String resource) {
 		return url(resourceRenderUtil.singleResource(targetType, resource));
+	}
+
+	public Renderable cssBundle(ResourceOutput css) {
+		return resourceRenderUtil.cssBundle(this::url, css);
+	}
+
+	public Renderable jsBundle(ResourceOutput js) {
+		return resourceRenderUtil.jsBundle(this::url, js);
 	}
 }

@@ -7,19 +7,12 @@ public class ResourceUtilTest {
 	@Test
 	public void test() {
 		ResourceContext ctx = null;
-		ResourceOutput<ResourceJs> out = null;
+		ResourceOutput out = null;
 
-		DataSources.classPath("foo.js", "bar.js")
-				.toResourceGroup(ctx, ResourceJs::new)
-				.fork(x -> x.dev().send(out)).prod()
-				.collect("{hash}.js", ResourceJs::new).send(out);
+		ctx.classPath("foo.js", "bar.js").fork(x -> x.dev().send(out)).prod()
+				.collect("{hash}.js").send(out);
 
-		DataSources
-				.servletContext("foo.js")
-				.toResourceGroup(ctx, ResourceJs::new)
-				.dev()
-				.merge(DataSources.servletContext("foo.min.js")
-						.toResourceGroup(ctx, ResourceJs::new).prod())
-				.name("foo.js", ResourceJs::new);
+		ctx.servletContext("foo.js").dev()
+				.merge(ctx.servletContext("foo.min.js").prod()).name("foo.js");
 	}
 }

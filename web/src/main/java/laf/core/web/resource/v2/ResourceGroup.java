@@ -3,97 +3,252 @@ package laf.core.web.resource.v2;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import laf.core.base.Function2;
+import laf.core.base.attachedProperties.AttachedProperty;
+import laf.core.base.attachedProperties.AttachedPropertyBearer;
+
+import com.google.common.hash.Hashing;
 
 /**
  * Represents a group of resources
  */
-public class ResourceGroup<T extends ResourceBase<T>> {
-	public List<T> resources;
-	public ResourceContext ctx;
+public class ResourceGroup {
+	public final List<Resource> resources;
+	public final ResourceBundle bundle;
 
-	public ResourceGroup(ResourceContext ctx, List<T> resources) {
-		this.ctx = ctx;
+	public ResourceGroup(ResourceBundle bundle, List<Resource> resources) {
+		this.bundle = bundle;
 		this.resources = resources;
 	}
 
-	public ResourceGroup(ResourceContext ctx, DataSourceGroup group,
-			Function<DataSource, T> creator) {
-		this(ctx, group.sources.stream().map(creator)
-				.collect(Collectors.toList()));
-
+	public ResourceGroup(ResourceBundle bundle, Stream<Resource> resources) {
+		this(bundle, resources.collect(Collectors.toList()));
 	}
 
-	public <R extends ResourceBase<R>> ResourceGroup<R> process(
-			Function<? super T, ? extends R> processor) {
-		return new ResourceGroup<>(ctx, resources.stream().map(processor)
+	public ResourceGroup process(Function<Resource, Resource> processor) {
+		return new ResourceGroup(bundle, resources.stream().map(processor)
 				.collect(Collectors.toList()));
 	}
 
-	public void send(Consumer<? super T> consumer) {
+	public void send(Consumer<Resource> consumer) {
 		resources.forEach(consumer);
 	}
 
 	@SafeVarargs
-	final public ResourceGroup<T> fork(
-			final Consumer<ResourceGroup<T>>... consumers) {
-		for (Consumer<ResourceGroup<T>> consumer : consumers) {
+	final public ResourceGroup fork(final Consumer<ResourceGroup>... consumers) {
+		for (Consumer<ResourceGroup> consumer : consumers) {
 			consumer.accept(this);
 		}
 
 		return this;
 	}
 
-	public ResourceGroup<T> filter(ResourceMode mode) {
-		if (ctx.mode == mode) {
+	public ResourceGroup filter(ResourceMode mode) {
+		if (bundle.getMode() == mode) {
 			return this;
 		} else {
-			return new ResourceGroup<>(ctx, Collections.emptyList());
+			return new ResourceGroup(bundle, Collections.emptyList());
 		}
 
 	}
 
-	public ResourceGroup<T> prod() {
+	public ResourceGroup prod() {
 		return filter(ResourceMode.PRODUCTION);
 	}
 
-	public ResourceGroup<T> dev() {
+	public ResourceGroup dev() {
 		return filter(ResourceMode.DEVELOPMENT);
 	}
 
-	public ResourceGroup<T> merge(ResourceGroup<? extends T> other) {
-		ArrayList<T> list = new ArrayList<>();
+	public ResourceGroup merge(ResourceGroup other) {
+		ArrayList<Resource> list = new ArrayList<>();
 		list.addAll(resources);
 		list.addAll(other.resources);
-		return new ResourceGroup<>(ctx, list);
+		return new ResourceGroup(bundle, list);
 	}
 
-	public ResourceGroup<T> collect(String name,
-			Function2<String, byte[], T> creator) {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		try {
-			for (T res : resources) {
-				baos.write(res.data);
+	public ResourceGroup collect(String name) {
+
+		return new ResourceGroup(bundle,
+				Collections.singletonList(new CollectResource(name, resources)));
+	}
+
+	public ResourceGroup name(String template) {
+		Pattern p = Pattern.compile("(\\A|[^\\\\])\\{hash\\}");
+		Matcher m = p.matcher(template);
+		boolean usesHash = m.find();
+
+		// delegate to a caching resource to avoid retrieving the
+		// data multiple times if hashing is used
+		ResourceGroup underlying = usesHash ? cache() : this;
+
+		ResourceGroup result = new ResourceGroup(bundle, underlying.resources
+				.stream().map(x -> new DelegatingResource(x) {
+
+					@Override
+					public String getName() {
+						return resolveNameTemplate(x, template);
+					}
+				}));
+
+		// cache again to avoid calculating the name multiple time
+		// when hashing is used
+		return usesHash ? result.cache() : result;
+	}
+
+	String resolveNameTemplate(Resource resource, String template) {
+		String name = resource.getName();
+		Pattern p = Pattern
+				.compile("(\\A|[^\\\\])\\{(?<placeholder>[^\\}]*)\\}");
+		Matcher m = p.matcher(template);
+		StringBuilder sb = new StringBuilder();
+		int lastEnd = 0;
+		while (m.find()) {
+			sb.append(template.substring(lastEnd,
+					m.start() == 0 ? 0 : m.start() + 1));
+			lastEnd = m.end();
+			String placeholder = m.group("placeholder");
+			switch (placeholder) {
+			case "hash":
+				sb.append(Hashing.sha256().hashBytes(resource.getData())
+						.toString());
+				break;
+			case "name": {
+				String[] parts = name.split("/");
+				parts = parts[parts.length - 1].split("\\.");
+
+				sb.append(Arrays.asList(parts)
+						.subList(0, parts.length == 1 ? 1 : parts.length - 1)
+						.stream().collect(Collectors.joining(".")));
 			}
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		return new ResourceGroup<T>(ctx, Collections.singletonList(creator
-				.apply(name, baos.toByteArray())));
+				break;
+			case "qname": {
+				String[] parts = name.split("\\.");
 
+				sb.append(Arrays.asList(parts)
+						.subList(0, parts.length == 1 ? 1 : parts.length - 1)
+						.stream().collect(Collectors.joining(".")));
+			}
+				break;
+			case "ext": {
+				String[] parts = name.split("\\.");
+				sb.append(parts[parts.length - 1]);
+			}
+				break;
+			default:
+				throw new RuntimeException("Unknown placeholder " + placeholder);
+			}
+		}
+		sb.append(template.substring(lastEnd, template.length()));
+		return sb.toString().replace("\\{", "{").replace("\\\\", "\\");
 	}
 
-	public ResourceGroup<T> name(String template,
-			Function2<String, byte[], T> creator) {
-		return new ResourceGroup<>(ctx,
-				resources
-						.stream()
-						.map(x -> creator.apply(
-								x.resolveNameTemplate(template), x.data))
-						.collect(Collectors.toList()));
+	public ResourceGroup filter(Predicate<String> predicate) {
+		return new ResourceGroup(bundle, resources.stream().filter(
+				r -> predicate.test(r.getName())));
+	}
+
+	/**
+	 * Filter by file extension
+	 *
+	 * @param extension
+	 *            extension to filter for, without leading period. Example: "js"
+	 */
+	public ResourceGroup filter(String extension) {
+		return filter(name -> name.endsWith("." + extension));
+	}
+
+	public ResourceGroup cache() {
+		return new ResourceGroup(bundle, resources.stream().<Resource> map(
+				r -> new CachingResource(r)));
+	}
+
+	private final static class CollectResource implements Resource,
+			DataEqualityTracker {
+		private String name;
+		private List<Resource> resources;
+
+		public CollectResource(String name, List<Resource> resources) {
+			this.name = name;
+			this.resources = resources;
+		}
+
+		@Override
+		public String getName() {
+			return name;
+		}
+
+		@Override
+		public byte[] getData() {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			try {
+				for (Resource res : resources) {
+					baos.write(res.getData());
+				}
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			return baos.toByteArray();
+		}
+
+		@Override
+		public DataEqualityTracker getDataEqualityTracker() {
+			return this;
+		}
+
+		@Override
+		public boolean containsSameDataAs(DataEqualityTracker other) {
+			if (getClass() != other.getClass()) {
+				return false;
+			}
+			CollectResource o = (CollectResource) other;
+
+			if (resources.size() != o.resources.size()) {
+				return false;
+			}
+			Iterator<Resource> it = resources.iterator();
+			Iterator<Resource> oit = o.resources.iterator();
+			while (it.hasNext()) {
+				if (!it.next()
+						.getDataEqualityTracker()
+						.containsSameDataAs(oit.next().getDataEqualityTracker())) {
+					return false;
+				}
+			}
+			return true;
+		}
+	}
+
+	private final class CachingResource implements Resource {
+		private Resource delegate;
+		AttachedProperty<AttachedPropertyBearer, String> nameCacheProperty = new AttachedProperty<>();
+		AttachedProperty<AttachedPropertyBearer, byte[]> dataCacheProperty = new AttachedProperty<>();
+
+		public CachingResource(Resource delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public String getName() {
+			return nameCacheProperty.setIfAbsent(bundle.getResourceCache(),
+					() -> delegate.getName());
+		}
+
+		@Override
+		public byte[] getData() {
+			return dataCacheProperty.setIfAbsent(bundle.getResourceCache(),
+					() -> delegate.getData());
+		}
+
+		@Override
+		public DataEqualityTracker getDataEqualityTracker() {
+			return null; // delegate.getDataEqualityTracker();
+		}
+
 	}
 }

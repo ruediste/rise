@@ -38,6 +38,12 @@ import laf.core.requestParserChain.RequestParser;
  * complex build system.
  * </p>
  *
+ *
+ *
+ * <p>
+ * Resources are grouped to
+ * </p>
+ *
  * <p>
  * To reference resources in a web page, resources which are transformed to the
  * same resource type are grouped in a {@link ResourceBundle}. The
