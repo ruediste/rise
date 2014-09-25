@@ -1,6 +1,9 @@
-package laf.core.web.resource.v2;
+package laf.core.web.resource;
 
 import java.io.UnsupportedEncodingException;
+
+import laf.core.web.resource.DataEqualityTracker;
+import laf.core.web.resource.Resource;
 
 class TestResourceImpl implements Resource {
 

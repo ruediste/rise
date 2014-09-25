@@ -1,4 +1,4 @@
-package laf.core.web.resource.v2;
+package laf.core.web.resource;
 
 import static org.junit.Assert.assertNotNull;
 import laf.core.http.request.HttpRequest;
@@ -20,7 +20,8 @@ public class ResourceRequestHandlerTest {
 	private class TestResourceBundle extends ResourceBundle {
 		ResourceOutput js = new ResourceOutput(this);
 
-		public void initialize() {
+		@Override
+		public void initializeImpl() {
 			js.accept(resource);
 		}
 	}
@@ -32,9 +33,9 @@ public class ResourceRequestHandlerTest {
 	public void setup() {
 		resource = new TestResourceImpl("foo", "bar");
 		bundle = new TestResourceBundle();
-		bundle.initialize();
+		bundle.initializeImpl();
 
-		handler.initialize(bundle);
+		handler.initialize(ResourceMode.PRODUCTION, bundle);
 	}
 
 	@Test

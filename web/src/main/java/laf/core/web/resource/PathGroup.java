@@ -1,4 +1,4 @@
-package laf.core.web.resource.v2;
+package laf.core.web.resource;
 
 import java.util.*;
 import java.util.function.Function;
@@ -46,12 +46,12 @@ public class PathGroup {
 		return new PathGroup(bundle, getPaths().stream().filter(filter));
 	}
 
-	private String insertMin(String path) {
+	String insertMin(String path) {
 		String[] parts = path.split("\\.");
 		if (parts.length == 1) {
 			return path;
 		} else {
-			return Arrays.asList(parts).subList(0, parts.length - 2).stream()
+			return Arrays.asList(parts).subList(0, parts.length - 1).stream()
 					.collect(Collectors.joining("."))
 					+ ".min." + parts[parts.length - 1];
 		}

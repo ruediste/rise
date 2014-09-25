@@ -4,13 +4,12 @@ import static org.rendersnake.HtmlAttributesFactory.*;
 
 import java.io.IOException;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import laf.component.core.basic.CPage;
 import laf.component.web.CWRenderUtil;
 import laf.component.web.CWTemplateBase;
-import laf.core.web.resource.v2.*;
+import laf.core.web.resource.*;
 
 import org.rendersnake.HtmlCanvas;
 
@@ -21,14 +20,14 @@ public class CPageHtmlTemplate extends CWTemplateBase<CPage> {
 
 	public static class Bundle extends ResourceBundle {
 
-		ResourceOutput css = new ResourceOutput(this);
+		private final ResourceOutput css = new ResourceOutput(this);
 
-		ResourceOutput js = new ResourceOutput(this);
+		private final ResourceOutput js = new ResourceOutput(this);
 
-		ResourceOutput fonts = new ResourceOutput(this);
+		private final ResourceOutput fonts = new ResourceOutput(this);
 
-		@PostConstruct
-		public void initialize() {
+		@Override
+		protected void initializeImpl() {
 
 			ResourceGroup preMinified = paths("/static/js/jquery-1.11.1.js",
 					"/static/bootstrap/js/bootstrap.js",
@@ -36,8 +35,8 @@ public class CPageHtmlTemplate extends CWTemplateBase<CPage> {
 					.load(servletContext());
 			ResourceGroup normal = paths("/static/css/sample-app.css").load(
 					servletContext()).merge(
-					paths("/js/componentWeb.js").load(classPath()).name(
-							"/static{path}.{ext}"));
+					paths("js/componentWeb.js").load(classPath()).name(
+							"/static{qname}.{ext}"));
 
 			// provide fonts
 			ResourceGroup fontGroup = paths(
@@ -54,15 +53,31 @@ public class CPageHtmlTemplate extends CWTemplateBase<CPage> {
 			}
 
 			if (prod()) {
-				normal.filter("css").process(processors.minifyCss())
-						.merge(preMinified.filter("css"))
-						.name("/static/css/{hash}.css").send(css);
+				preMinified
+						.filter("css")
+						.merge(normal.filter("css").process(
+								processors.minifyCss()))
+						.collect("/static/css/{hash}.css").send(css);
 
-				normal.filter("js").process(processors.minifyJs())
-						.merge(preMinified.filter("js"))
-						.name("/static/js/{hash}.js").send(js);
+				preMinified
+						.filter("js")
+						.merge(normal.filter("js").process(
+								processors.minifyJs()))
+						.collect("/static/js/{hash}.js").send(js);
 				fontGroup.name("/static/fonts/{name}.{ext}").send(fonts);
 			}
+		}
+
+		public ResourceOutput getCss() {
+			return css;
+		}
+
+		public ResourceOutput getJs() {
+			return js;
+		}
+
+		public ResourceOutput getFonts() {
+			return fonts;
 		}
 	}
 
@@ -78,12 +93,12 @@ public class CPageHtmlTemplate extends CWTemplateBase<CPage> {
 			.head()
 				.meta(name("viewport").content("width=device-width, initial-scale=1"))
 				.title().content("Yeah")
-				.render(util.cssBundle(bundle.css))
+				.render(util.cssBundle(bundle.getCss()))
 			._head()
 			.body(data("reloadurl", util.getReloadUrl()));
 
 				super.render(component, html);
-				html.render(util.jsBundle(bundle.js))
+				html.render(util.jsBundle(bundle.getJs()))
 			._body()
 		._html();
 	}

@@ -14,10 +14,15 @@ import laf.core.http.request.DelegatingHttpRequest;
 import laf.core.http.request.HttpRequest;
 import laf.core.requestParserChain.RequestParseResult;
 
+import org.slf4j.Logger;
+
 /**
  * Framework entry point
  */
 public class FrontServletBase extends HttpServlet {
+
+	@Inject
+	Logger log;
 
 	@Inject
 	ConfigurationValue<HttpRequestParserChainCP> parserChain;
@@ -42,22 +47,30 @@ public class FrontServletBase extends HttpServlet {
 		handle(req, resp);
 	}
 
-	private void handle(HttpServletRequest req, HttpServletResponse resp) {
-		DelegatingHttpRequest request = new DelegatingHttpRequest(req);
+	private void handle(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException {
+		try {
+			DelegatingHttpRequest request = new DelegatingHttpRequest(req);
 
-		coreRequestInfo.setRequest(request);
-		coreRequestInfo.setServletRequest(req);
-		coreRequestInfo.setServletResponse(resp);
-		coreRequestInfo.setResourceRequestHandler(resourceRequestHandler
-				.value().get());
+			coreRequestInfo.setRequest(request);
+			coreRequestInfo.setServletRequest(req);
+			coreRequestInfo.setServletResponse(resp);
+			coreRequestInfo.setResourceRequestHandler(resourceRequestHandler
+					.value().get());
 
-		RequestParseResult<HttpRequest> parseResult = parserChain.value().get()
-				.parse(request);
-		if (parseResult == null) {
-			throw new RuntimeException("unable to parse path "
-					+ request.getPath());
+			RequestParseResult<HttpRequest> parseResult = parserChain.value()
+					.get().parse(request);
+			if (parseResult == null) {
+				throw new ServletException("unable to parse path "
+						+ request.getPath());
+			}
+			parseResult.handle(request);
+		} catch (Throwable t) {
+			log.error(
+					"Error while handling request to path " + req.getPathInfo(),
+					t);
+			throw t;
 		}
-		parseResult.handle(request);
 	}
 
 }

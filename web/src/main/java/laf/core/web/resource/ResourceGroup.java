@@ -1,4 +1,4 @@
-package laf.core.web.resource.v2;
+package laf.core.web.resource;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -72,10 +72,11 @@ public class ResourceGroup {
 		return new ResourceGroup(bundle, list);
 	}
 
-	public ResourceGroup collect(String name) {
+	public ResourceGroup collect(String nameTemplate) {
 
 		return new ResourceGroup(bundle,
-				Collections.singletonList(new CollectResource(name, resources)));
+				Collections.singletonList(new CollectResource(resources)))
+				.name(nameTemplate);
 	}
 
 	public ResourceGroup name(String template) {
@@ -141,7 +142,8 @@ public class ResourceGroup {
 			}
 				break;
 			default:
-				throw new RuntimeException("Unknown placeholder " + placeholder);
+				throw new RuntimeException("Unknown placeholder " + placeholder
+						+ " in name template " + template);
 			}
 		}
 		sb.append(template.substring(lastEnd, template.length()));
@@ -170,17 +172,15 @@ public class ResourceGroup {
 
 	private final static class CollectResource implements Resource,
 			DataEqualityTracker {
-		private String name;
 		private List<Resource> resources;
 
-		public CollectResource(String name, List<Resource> resources) {
-			this.name = name;
+		public CollectResource(List<Resource> resources) {
 			this.resources = resources;
 		}
 
 		@Override
 		public String getName() {
-			return name;
+			return "";
 		}
 
 		@Override

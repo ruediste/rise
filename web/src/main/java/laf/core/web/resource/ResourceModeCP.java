@@ -1,4 +1,4 @@
-package laf.core.web.resource.v2;
+package laf.core.web.resource;
 
 import laf.core.base.configuration.ConfigurationParameter;
 

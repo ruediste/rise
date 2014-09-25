@@ -7,9 +7,8 @@ import javax.inject.Inject;
 
 import laf.component.core.pageScope.PageScopeManager;
 import laf.component.core.tree.Component;
+import laf.core.web.resource.ResourceOutput;
 import laf.core.web.resource.ResourceRenderUtil;
-import laf.core.web.resource.ResourceType;
-import laf.core.web.resource.v2.ResourceOutput;
 
 import org.rendersnake.HtmlCanvas;
 import org.rendersnake.Renderable;
@@ -79,18 +78,6 @@ public class CWRenderUtil extends PathGeneratingUtilImpl {
 
 	public String getReloadUrl() {
 		return url(webRequestInfo.getReloadPath() + "/" + getPageId());
-	}
-
-	public Renderable jsBundle(String... files) {
-		return resourceRenderUtil.jsBundle(this::url, files);
-	}
-
-	public Renderable cssBundle(String... files) {
-		return resourceRenderUtil.cssBundle(this::url, files);
-	}
-
-	public String singleResource(ResourceType targetType, String resource) {
-		return url(resourceRenderUtil.singleResource(targetType, resource));
 	}
 
 	public Renderable cssBundle(ResourceOutput css) {

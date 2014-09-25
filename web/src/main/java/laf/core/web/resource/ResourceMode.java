@@ -1,4 +1,4 @@
-package laf.core.web.resource.v2;
+package laf.core.web.resource;
 
 public enum ResourceMode {
 	DEVELOPMENT, PRODUCTION

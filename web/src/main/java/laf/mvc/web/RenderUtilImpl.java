@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import laf.core.base.ActionResult;
 import laf.core.http.HttpService;
+import laf.core.web.resource.ResourceOutput;
 import laf.core.web.resource.ResourceRenderUtil;
 import laf.mvc.core.PathActionResult;
 
@@ -49,12 +50,12 @@ public class RenderUtilImpl implements MWRenderUtil {
 	}
 
 	@Override
-	public Renderable jsBundle(String... files) {
-		return resourceRenderUtil.jsBundle(this::url, files);
+	public Renderable jsBundle(ResourceOutput output) {
+		return resourceRenderUtil.jsBundle(this::url, output);
 	}
 
 	@Override
-	public Renderable cssBundle(String... files) {
-		return resourceRenderUtil.cssBundle(this::url, files);
+	public Renderable cssBundle(ResourceOutput output) {
+		return resourceRenderUtil.cssBundle(this::url, output);
 	}
 }

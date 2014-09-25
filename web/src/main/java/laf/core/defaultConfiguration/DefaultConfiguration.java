@@ -1,5 +1,8 @@
 package laf.core.defaultConfiguration;
 
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 import javax.enterprise.inject.Instance;
 import javax.enterprise.util.TypeLiteral;
 import javax.inject.Inject;
@@ -11,11 +14,6 @@ import laf.core.base.configuration.ConfigurationDefiner;
 import laf.core.http.request.HttpRequest;
 import laf.core.requestParserChain.RequestParserChain;
 import laf.core.web.resource.*;
-import laf.core.web.resource.v2.ResourceMode;
-import laf.core.web.resource.v2.ResourceModeCP;
-import ro.isdc.wro.extensions.processor.css.RubySassCssProcessor;
-import ro.isdc.wro.model.resource.processor.impl.css.JawrCssMinifierProcessor;
-import ro.isdc.wro.model.resource.processor.impl.js.JSMinProcessor;
 
 /**
  * Defines the default configuration of the framework.
@@ -64,28 +62,14 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 
 	public void produce(ResourceRequestHandlerCP val,
 			ProjectStageCP projectStage) {
-		ResourceRequestHandler handler;
+		ResourceRequestHandler handler = get(ResourceRequestHandler.class);
 
-		if (projectStage.get() == ProjectStage.DEVELOPMENT) {
-			IndividualResourceRequestHandler individualHandler = get(IndividualResourceRequestHandler.class);
-			individualHandler.initialize("static/", "static/");
-			handler = individualHandler;
-		} else {
-
-			BundleResourceRequestHandler bundleHandler = get(BundleResourceRequestHandler.class);
-			bundleHandler.initialize("static/", "static/");
-			handler = bundleHandler;
-
-			bundleHandler.addBundleTransformer(ResourceType.CSS,
-					(in, out) -> new JawrCssMinifierProcessor()
-							.process(in, out));
-
-			bundleHandler.addBundleTransformer(ResourceType.JS,
-					(in, out) -> new JSMinProcessor().process(in, out));
-		}
-
-		handler.addResourceTransformer(ResourceType.SASS, ResourceType.CSS, (
-				in, out) -> new RubySassCssProcessor().process(in, out));
+		handler.initialize(
+				projectStage.get() == ProjectStage.DEVELOPMENT ? ResourceMode.DEVELOPMENT
+						: ResourceMode.PRODUCTION,
+				StreamSupport.stream(
+						instance.select(ResourceBundle.class).spliterator(),
+						false).collect(Collectors.toList()));
 
 		val.set(handler);
 	}

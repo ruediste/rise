@@ -1,6 +1,7 @@
 package laf.mvc.web;
 
 import laf.core.base.ActionResult;
+import laf.core.web.resource.ResourceOutput;
 
 import org.rendersnake.Renderable;
 
@@ -14,8 +15,8 @@ public interface MWRenderUtil {
 
 	String url(String path);
 
-	Renderable jsBundle(String... files);
+	Renderable jsBundle(ResourceOutput output);
 
-	Renderable cssBundle(String... files);
+	Renderable cssBundle(ResourceOutput output);
 
 }

@@ -1,4 +1,4 @@
-package laf.core.web.resource.v2;
+package laf.core.web.resource;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -30,7 +30,11 @@ public class ResourceGroupTest {
 
 	@Before
 	public void setup() throws UnsupportedEncodingException {
-		bundle = new ResourceBundle();
+		bundle = new ResourceBundle() {
+			@Override
+			protected void initializeImpl() {
+			}
+		};
 
 		group = new ResourceGroup(bundle, Arrays.asList(resource));
 	}

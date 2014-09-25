@@ -1,6 +1,8 @@
-package laf.core.web.resource.v2;
+package laf.core.web.resource;
 
 import static org.junit.Assert.*;
+import laf.core.web.resource.Processors;
+import laf.core.web.resource.Resource;
 
 import org.junit.Test;
 

@@ -10,6 +10,7 @@
 	<modules>
 		<module>web</module>
 		<module>sampleApp</module>
+		<module>testApp</module>
 	</modules>
 
 	<properties>
