@@ -9,7 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.slf4j.Logger;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ResourceRequestHandlerTest {
@@ -26,12 +28,15 @@ public class ResourceRequestHandlerTest {
 		}
 	}
 
+	@Mock
+	Logger log;
+
 	@InjectMocks
 	ResourceRequestHandler handler;
 
 	@Before
 	public void setup() {
-		resource = new TestResourceImpl("foo", "bar");
+		resource = new TestResourceImpl("/foo", "bar");
 		bundle = new TestResourceBundle();
 		bundle.initializeImpl();
 

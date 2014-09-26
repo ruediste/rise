@@ -1,5 +1,7 @@
 package laf.component.core.tree;
 
+import laf.component.core.binding.BindingModule;
+
 import org.jabsaw.Module;
 
 /**
@@ -26,7 +28,9 @@ import org.jabsaw.Module;
  * Finally, the {@link ComponentTreeUtil} class provides utility methods for
  * tree navigation.
  */
-@Module(description = "Base Classes for the Component Tree", imported = { laf.core.base.attachedProperties.CoreAttachedPropertiesModule.class })
+@Module(description = "Base Classes for the Component Tree", exported = {
+		laf.core.base.attachedProperties.CoreAttachedPropertiesModule.class,
+		BindingModule.class })
 public class ComponentTreeModule {
 
 }

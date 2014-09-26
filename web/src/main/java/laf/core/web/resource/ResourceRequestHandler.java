@@ -11,7 +11,6 @@ import laf.core.http.request.HttpRequest;
 import laf.core.requestParserChain.RequestParseResult;
 import laf.core.requestParserChain.RequestParser;
 
-import org.fusesource.hawtbuf.ByteArrayInputStream;
 import org.slf4j.Logger;
 
 import com.google.common.io.ByteStreams;

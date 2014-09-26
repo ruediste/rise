@@ -1,21 +1,15 @@
 package laf.testApp;
 
-import java.net.URL;
-
-import javax.inject.Inject;
-
-import laf.integration.IntegrationUtil;
-
-import org.jboss.arquillian.test.api.ArquillianResource;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 public class TestBase {
-	@Inject
-	protected IntegrationUtil util;
-
-	@ArquillianResource
-	private URL deploymentUrl;
 
 	protected String url(String servletPath) {
-		return deploymentUrl + servletPath;
+		return "http://localhost:9090/laf-testApp/" + servletPath;
+	}
+
+	protected WebDriver driver() {
+		return new HtmlUnitDriver();
 	}
 }

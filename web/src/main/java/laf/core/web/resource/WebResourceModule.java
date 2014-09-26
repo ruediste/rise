@@ -26,7 +26,9 @@ import org.jabsaw.Module;
  * </p>
  *
  */
-@Module(description = "Serve and transform web resources (CSS, JavaScript)")
+@Module(description = "Serve and transform web resources (CSS, JavaScript)", imported = {
+		laf.core.http.CoreHttpModule.class,
+		laf.core.requestParserChain.CoreRequestParserChainModule.class })
 public class WebResourceModule {
 
 }

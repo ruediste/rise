@@ -1,4 +1,4 @@
-package laf.component.web.basic.template;
+package laf.component.web.basic;
 
 import laf.component.core.tree.ComponentBase;
 

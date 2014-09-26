@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import laf.component.web.CWRenderUtil;
 import laf.component.web.CWTemplateBase;
+import laf.component.web.basic.CRender;
 
 import org.rendersnake.HtmlCanvas;
 

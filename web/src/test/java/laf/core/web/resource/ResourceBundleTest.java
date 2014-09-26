@@ -51,7 +51,7 @@ public class ResourceBundleTest {
 		when(servletContext.getResourceAsStream("test.css")).thenReturn(
 				new ByteArrayInputStream("Hello".getBytes("UTF-8")));
 
-		sampleResource = new TestResourceImpl("foo", null);
+		sampleResource = new TestResourceImpl("foo", "Hello");
 		when(processors.minifyCss()).thenReturn(r -> sampleResource);
 	}
 

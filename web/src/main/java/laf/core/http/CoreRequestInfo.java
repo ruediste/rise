@@ -6,14 +6,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import laf.core.http.request.HttpRequest;
-import laf.core.web.resource.ResourceRequestHandler;
 
 @RequestScoped
 public class CoreRequestInfo {
 	private HttpRequest request;
 	private HttpServletRequest servletRequest;
 	private HttpServletResponse servletResponse;
-	private ResourceRequestHandler resourceRequestHandler;
 
 	public HttpRequest getRequest() {
 		return request;
@@ -43,13 +41,4 @@ public class CoreRequestInfo {
 		return servletRequest.getServletContext();
 	}
 
-	public void setResourceRequestHandler(
-			ResourceRequestHandler resourceRequestHandler) {
-		this.resourceRequestHandler = resourceRequestHandler;
-
-	}
-
-	public ResourceRequestHandler getResourceRequestHandler() {
-		return resourceRequestHandler;
-	}
 }

@@ -6,8 +6,6 @@ import java.util.function.Function;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.fusesource.hawtbuf.ByteArrayInputStream;
-
 import ro.isdc.wro.model.resource.processor.ResourcePostProcessor;
 import ro.isdc.wro.model.resource.processor.impl.css.CssMinProcessor;
 import ro.isdc.wro.model.resource.processor.impl.js.JSMinProcessor;

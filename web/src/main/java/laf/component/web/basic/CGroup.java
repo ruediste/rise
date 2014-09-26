@@ -1,7 +1,6 @@
-package laf.component.core.basic;
+package laf.component.web.basic;
 
-import laf.component.web.basic.template.CRender;
-import laf.component.web.basic.template.Renderer;
+import laf.component.core.basic.MultiChildrenComponent;
 
 public class CGroup extends MultiChildrenComponent<CGroup> {
 

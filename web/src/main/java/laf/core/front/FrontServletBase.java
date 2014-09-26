@@ -55,8 +55,6 @@ public class FrontServletBase extends HttpServlet {
 			coreRequestInfo.setRequest(request);
 			coreRequestInfo.setServletRequest(req);
 			coreRequestInfo.setServletResponse(resp);
-			coreRequestInfo.setResourceRequestHandler(resourceRequestHandler
-					.value().get());
 
 			RequestParseResult<HttpRequest> parseResult = parserChain.value()
 					.get().parse(request);

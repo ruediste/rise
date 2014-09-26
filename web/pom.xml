@@ -47,7 +47,7 @@
 					<execution>
 						<id>attach-javadocs</id>
 						<goals>
-							<goal>javadoc</goal>
+<!-- 							<goal>javadoc</goal> -->
 						</goals>
 						<phase>package</phase>
 					</execution>
