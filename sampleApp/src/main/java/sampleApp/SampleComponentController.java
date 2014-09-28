@@ -5,8 +5,6 @@ import java.util.Set;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
@@ -14,6 +12,7 @@ import laf.component.core.api.CController;
 import laf.component.core.binding.BindingGroup;
 import laf.component.web.CWControllerUtil;
 import laf.core.base.ActionResult;
+import laf.core.persistence.PersistenceHelper;
 import sampleApp.entities.User;
 
 @CController
@@ -31,6 +30,9 @@ public class SampleComponentController {
 	@Inject
 	EntityManager manager;
 
+	@Inject
+	PersistenceHelper ph;
+
 	private BindingGroup<User> userBinding = new BindingGroup<>(User.class);
 
 	public User user() {
@@ -38,10 +40,7 @@ public class SampleComponentController {
 	}
 
 	public ActionResult index() {
-		CriteriaBuilder cb = manager.getCriteriaBuilder();
-		CriteriaQuery<User> q = cb.createQuery(User.class);
-		q.from(User.class);
-		List<User> users = manager.createQuery(q).getResultList();
+		List<User> users = ph.loadAll(User.class);
 		User user;
 		if (users.isEmpty()) {
 			user = new User();

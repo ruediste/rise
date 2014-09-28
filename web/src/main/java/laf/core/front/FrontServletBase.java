@@ -52,6 +52,8 @@ public class FrontServletBase extends HttpServlet {
 		try {
 			DelegatingHttpRequest request = new DelegatingHttpRequest(req);
 
+			log.debug("received request " + request.getPath());
+
 			coreRequestInfo.setRequest(request);
 			coreRequestInfo.setServletRequest(req);
 			coreRequestInfo.setServletResponse(resp);

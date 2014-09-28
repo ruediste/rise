@@ -9,10 +9,8 @@ import org.openqa.selenium.WebDriver;
 public class SmokeTest extends TestBase {
 
 	@Test
-	public void should_login_successfully() {
-		WebDriver driver = driver();
-		driver.get(url("laf/testApp/smokeTest/smokeTest.index"));
-
+	public void should_login_successfully() throws InterruptedException {
+		WebDriver driver = driver("TestComponent");
 		assertEquals("Smoke Passed", driver.findElement(By.cssSelector("body"))
 				.getText());
 	}

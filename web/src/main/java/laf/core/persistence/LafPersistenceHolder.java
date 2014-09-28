@@ -11,7 +11,7 @@ import javax.persistence.EntityManager;
 import laf.core.base.LafLogger;
 
 /**
- * Represents a map of {@link EntityManagerSupplierToken}s to the corresponding
+ * Represents a map of {@link EntityManagerToken}s to the corresponding
  * {@link EntityManager}s
  */
 @Typed(LafPersistenceHolder.class)
@@ -22,13 +22,13 @@ public class LafPersistenceHolder {
 	@Inject
 	LafPersistenceContextManager manager;
 
-	private Map<EntityManagerSupplierToken, EntityManager> entityManagers = new HashMap<>();
+	private Map<EntityManagerToken, EntityManager> entityManagers = new HashMap<>();
 
-	public EntityManager getEntityManager(EntityManagerSupplierToken token) {
+	public EntityManager getEntityManager(EntityManagerToken token) {
 
 		EntityManager result = entityManagers.get(token);
 		if (result == null) {
-			result = manager.produceEntityManager(token);
+			result = manager.createNewEntityManager(token);
 			log.debug("Created entity manager " + result + " for token "
 					+ token + " in persistence holder " + this);
 			entityManagers.put(token, result);

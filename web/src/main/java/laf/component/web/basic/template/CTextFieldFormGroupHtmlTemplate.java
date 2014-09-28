@@ -25,7 +25,8 @@ public class CTextFieldFormGroupHtmlTemplate extends
 	@Override
 	public void innerRender(CTextFieldFormGroup component, HtmlCanvas html)
 			throws IOException {
-		html.input(type("text").class_("form-control")
+		html.input(type("text")
+				.class_(util.combineClasses("form-control", component.tag()))
 				.value(component.getText()).name(util.getKey("value"))
 				.id(util.getComponentId()));
 	}

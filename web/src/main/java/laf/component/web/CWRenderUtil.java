@@ -1,6 +1,8 @@
 package laf.component.web;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -12,6 +14,9 @@ import laf.core.web.resource.ResourceRenderUtil;
 
 import org.rendersnake.HtmlCanvas;
 import org.rendersnake.Renderable;
+
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Strings;
 
 @ApplicationScoped
 public class CWRenderUtil extends PathGeneratingUtilImpl {
@@ -86,5 +91,12 @@ public class CWRenderUtil extends PathGeneratingUtilImpl {
 
 	public Renderable jsBundle(ResourceOutput js) {
 		return resourceRenderUtil.jsBundle(this::url, js);
+	}
+
+	public String combineClasses(String... classes) {
+		return Arrays.asList(classes).stream()
+				.filter(x -> !Strings.isNullOrEmpty(x))
+				.map(CharMatcher.WHITESPACE::trimFrom)
+				.collect(Collectors.joining(" "));
 	}
 }

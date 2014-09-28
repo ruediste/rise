@@ -1,5 +1,7 @@
 package laf.core.defaultConfiguration;
 
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -7,7 +9,11 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.util.TypeLiteral;
 import javax.inject.Inject;
 
+import laf.core.argumentSerializer.ArgumentSerializer;
 import laf.core.argumentSerializer.ArgumentSerializerChain;
+import laf.core.argumentSerializer.defaultSerializers.*;
+import laf.core.argumentSerializer.defaultSerializers.idSerializers.IntIdSerializer;
+import laf.core.argumentSerializer.defaultSerializers.idSerializers.LongIdSerializer;
 import laf.core.base.DefaultClassNameMapping;
 import laf.core.base.ProjectStage;
 import laf.core.base.configuration.ConfigurationDefiner;
@@ -33,8 +39,22 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 		val.set(mapping);
 	}
 
-	public void produce(ArgumentSerializerChainCP val) {
-		val.set(get(ArgumentSerializerChain.class));
+	public void produce(IdSerializersCP val) {
+		LinkedList<IdentifierSerializer> serializers = new LinkedList<>();
+		serializers.add(get(IntIdSerializer.class));
+		serializers.add(get(LongIdSerializer.class));
+		val.set(serializers);
+	}
+
+	public void produce(ArgumentSerializerChainCP val,
+			IdSerializersCP idSerializers) {
+		ArgumentSerializerChain chain = get(ArgumentSerializerChain.class);
+		EntitySerializer entitySerializer = get(EntitySerializer.class);
+		entitySerializer.initialize(idSerializers.get());
+		chain.initialize(Arrays.<ArgumentSerializer> asList(
+				get(IntSerializer.class), get(LongSerializer.class),
+				entitySerializer));
+		val.set(chain);
 	}
 
 	public void produce(HttpRequestParserChainCP val,

@@ -1,11 +1,13 @@
 package laf.core.persistence;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.annotation.Annotation;
+import java.util.*;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
+import javax.persistence.*;
+import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.Metamodel;
 
 import org.slf4j.Logger;
 
@@ -17,24 +19,69 @@ public class LafPersistenceContextManager {
 	@Inject
 	Logger log;
 
+	private static class TokenEntry {
+		Supplier<EntityManager> supplier;
+		EntityManagerFactory factory;
+
+		HashMap<Class<?>, EntityType<?>> classToEntityMap = new HashMap<>();
+
+		public TokenEntry(EntityManagerFactory factory,
+				Supplier<EntityManager> supplier) {
+			super();
+			this.supplier = supplier;
+			this.factory = factory;
+			factory.getMetamodel().getEntities()
+					.forEach(e -> classToEntityMap.put(e.getJavaType(), e));
+		}
+
+	}
+
+	private final Map<EntityManagerToken, TokenEntry> tokenMap = new HashMap<>();
+	private final Map<Set<Class<? extends Annotation>>, EntityManagerToken> qualifierMap = new HashMap<>();
+
 	/**
 	 * To be used by application provided {@link EntityManager} producer
 	 * methods.
 	 */
-	public EntityManager produceManagerDelegate(EntityManagerSupplierToken token) {
+	public EntityManager produceManager(EntityManagerToken token) {
 		return new TokenBasedDelegatingEntityManager(this, token);
 	}
 
-	private final Map<EntityManagerSupplierToken, Supplier<EntityManager>> supplierMap = new HashMap<>();
-
-	public EntityManager produceEntityManager(EntityManagerSupplierToken token) {
-		return supplierMap.get(token).get();
+	EntityManager createNewEntityManager(EntityManagerToken token) {
+		return tokenMap.get(token).supplier.get();
 	}
 
-	public EntityManagerSupplierToken registerEntityManagerSupplier(
-			Supplier<EntityManager> supplier) {
-		EntityManagerSupplierToken token = new EntityManagerSupplierToken();
-		supplierMap.put(token, supplier);
+	public EntityManagerToken getToken(
+			List<Class<? extends Annotation>> qualifiers) {
+		return qualifierMap.get(new HashSet<>(qualifiers));
+	}
+
+	public Metamodel getMetamodel(EntityManagerToken token) {
+		return tokenMap.get(token).factory.getMetamodel();
+	}
+
+	public PersistenceUnitUtil getPersistenceUnitUtil(EntityManagerToken token) {
+		return tokenMap.get(token).factory.getPersistenceUnitUtil();
+	}
+
+	public EntityType<?> getEntity(EntityManagerToken token,
+			Class<?> entityClass) {
+		return tokenMap.get(token).classToEntityMap.get(entityClass);
+	}
+
+	public EntityManagerToken createToken(
+			EntityManagerFactory factory,
+			@SuppressWarnings("unchecked") Class<? extends Annotation>... qualifiers) {
+		return createToken(factory, factory::createEntityManager, qualifiers);
+	}
+
+	public EntityManagerToken createToken(
+			EntityManagerFactory factory,
+			Supplier<EntityManager> supplier,
+			@SuppressWarnings("unchecked") Class<? extends Annotation>... qualifiers) {
+		EntityManagerToken token = new EntityManagerToken();
+		tokenMap.put(token, new TokenEntry(factory, supplier));
+		qualifierMap.put(new HashSet<>(Arrays.asList(qualifiers)), token);
 		return token;
 	}
 

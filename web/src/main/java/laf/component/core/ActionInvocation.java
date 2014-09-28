@@ -1,6 +1,6 @@
 package laf.component.core;
 
-import java.lang.reflect.Type;
+import java.lang.reflect.AnnotatedType;
 
 import laf.core.base.Function2;
 import laf.core.base.MethodInvocation;
@@ -28,7 +28,8 @@ public class ActionInvocation<T> extends AttachedPropertyBearerBase {
 		this.invocation = invocation;
 	}
 
-	public <P> ActionInvocation<P> map(Function2<Type, ? super T, P> func) {
+	public <P> ActionInvocation<P> map(
+			Function2<AnnotatedType, ? super T, P> func) {
 		MethodInvocation<P> invocation = this.invocation.map(func);
 		ActionInvocation<P> result = new ActionInvocation<>(invocation);
 		return result;

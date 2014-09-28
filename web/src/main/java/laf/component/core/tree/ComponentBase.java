@@ -27,6 +27,7 @@ public class ComponentBase<TSelf extends AttachedPropertyBearer> extends
 
 	private Component parent;
 	ArrayList<ChildRelation<?>> childRelations = new ArrayList<>();
+	private String tag;
 
 	@SuppressWarnings("unchecked")
 	protected TSelf self() {
@@ -87,4 +88,12 @@ public class ComponentBase<TSelf extends AttachedPropertyBearer> extends
 		return self();
 	}
 
+	public TSelf tag(String tag) {
+		this.tag = tag;
+		return self();
+	}
+
+	public String tag() {
+		return tag;
+	}
 }

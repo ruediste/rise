@@ -10,7 +10,7 @@ public class CButton extends MultiChildrenComponent<CButton> {
 		children.add(new CText(text));
 	}
 
-	public CButton withHandler(Runnable handler) {
+	public CButton handler(Runnable handler) {
 		this.handler = handler;
 		return this;
 	}

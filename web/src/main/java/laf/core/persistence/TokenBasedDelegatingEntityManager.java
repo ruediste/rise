@@ -4,7 +4,7 @@ import javax.persistence.EntityManager;
 
 /**
  * {@link EntityManager} implementation associated with a
- * {@link EntityManagerSupplierToken} which always delegates to the
+ * {@link EntityManagerToken} which always delegates to the
  * {@link EntityManager} provided by the {@link LafPersistenceHolder} returned
  * by {@link LafPersistenceContextManager#getCurrentHolder()}
  */
@@ -21,10 +21,10 @@ class TokenBasedDelegatingEntityManager extends DelegatingEntityManager {
 	}
 
 	private LafPersistenceContextManager manager;
-	private EntityManagerSupplierToken token;
+	private EntityManagerToken token;
 
 	TokenBasedDelegatingEntityManager(LafPersistenceContextManager manager,
-			EntityManagerSupplierToken token) {
+			EntityManagerToken token) {
 		this.manager = manager;
 		this.token = token;
 

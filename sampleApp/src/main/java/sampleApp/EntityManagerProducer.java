@@ -6,7 +6,7 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.persistence.*;
 
-import laf.core.persistence.EntityManagerSupplierToken;
+import laf.core.persistence.EntityManagerToken;
 import laf.core.persistence.LafPersistenceContextManager;
 
 public class EntityManagerProducer {
@@ -16,17 +16,16 @@ public class EntityManagerProducer {
 	@PersistenceUnit
 	EntityManagerFactory factory;
 
-	private EntityManagerSupplierToken token;
+	private EntityManagerToken token;
 
 	@PostConstruct
 	public void initialize() {
-		token = contextManager.registerEntityManagerSupplier(() -> factory
-				.createEntityManager());
+		token = contextManager.createToken(factory);
 	}
 
 	@Produces
 	@ApplicationScoped
 	EntityManager produceManager() {
-		return contextManager.produceManagerDelegate(token);
+		return contextManager.produceManager(token);
 	}
 }

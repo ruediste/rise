@@ -12,7 +12,6 @@ public class RequestMappingUtil {
 
 	public HttpRequest generate(ActionInvocation<Object> invocation) {
 		return webRequestInfo.getRequestMapper().generate(
-				invocation.map(webRequestInfo.getArgumentSerializerChain()
-						.generateFunction()));
+				invocation.map(webRequestInfo.getArgumentSerializerChain()::generate));
 	}
 }

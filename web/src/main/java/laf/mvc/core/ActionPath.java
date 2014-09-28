@@ -1,6 +1,6 @@
 package laf.mvc.core;
 
-import java.lang.reflect.Type;
+import java.lang.reflect.AnnotatedType;
 import java.util.*;
 
 import javax.enterprise.inject.Alternative;
@@ -18,18 +18,18 @@ import com.google.common.base.Objects;
  * An action path represents an invocation of an action method. It is composed
  * of {@link ActionInvocation} elements, which describe the path over possibly
  * multiple embedded controllers to the final action.
- * 
+ *
  * <p>
  * {@link AttachedProperty AttachedProperties} can be attached to an action
  * path, allowing other modules to transport information via action paths.
  * However, they are not sent along with an action path to the client
  * </p>
- * 
+ *
  * <p>
  * Using {@link ActionPathParameter}, arbitrary strings can be attached to
  * {@link ActionPath}s.
  * </p>
- * 
+ *
  */
 @Alternative
 public class ActionPath<T> extends AttachedPropertyBearerBase {
@@ -58,7 +58,8 @@ public class ActionPath<T> extends AttachedPropertyBearerBase {
 	 * method. The parameters values are ignored.
 	 */
 	public boolean isCallToSameActionMethod(ActionPath<?> other) {
-		return isCallToSameActionMethod(other,
+		return isCallToSameActionMethod(
+				other,
 				new MethodInvocation.ParameterValueComparator<Object, Object>() {
 
 					@Override
@@ -72,7 +73,8 @@ public class ActionPath<T> extends AttachedPropertyBearerBase {
 	 * Determine if this and the other path represent calls to the same action
 	 * method. The Parameters are compared by the provided
 	 */
-	public <O> boolean isCallToSameActionMethod(ActionPath<O> other,
+	public <O> boolean isCallToSameActionMethod(
+			ActionPath<O> other,
 			MethodInvocation.ParameterValueComparator<? super T, ? super O> comparator) {
 		if (elements.size() != other.getElements().size()) {
 			return false;
@@ -94,16 +96,11 @@ public class ActionPath<T> extends AttachedPropertyBearerBase {
 	 * function. The associated {@link ActionPathParameter}s are copied
 	 */
 	public <P> ActionPath<P> map(final Function<? super T, P> func) {
-		return mapWithType(new Function2<Type, T, P>() {
-
-			@Override
-			public P apply(Type a, T b) {
-				return func.apply(b);
-			}
-		});
+		return mapWithType((a, b) -> func.apply(b));
 	}
 
-	public <P> ActionPath<P> mapWithType(Function2<Type, ? super T, P> func) {
+	public <P> ActionPath<P> mapWithType(
+			Function2<AnnotatedType, ? super T, P> func) {
 		ActionPath<P> result = new ActionPath<>();
 		result.parameters.putAll(parameters);
 

@@ -19,7 +19,7 @@ public class RequestMappingUtil {
 
 	public String generate(ActionPath<Object> path) {
 		return requestMapper.generate(
-				path.mapWithType(serializerChain.generateFunction()))
+				path.mapWithType(serializerChain::generate))
 				.getPathWithParameters();
 	}
 

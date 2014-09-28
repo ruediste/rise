@@ -1,7 +1,7 @@
 package laf.core.base;
 
+import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.*;
 
 import laf.mvc.core.ActionPath;
@@ -80,10 +80,11 @@ public class MethodInvocation<T> {
 		return instanceClass;
 	}
 
-	public <R> MethodInvocation<R> map(Function2<Type, ? super T, R> func) {
+	public <R> MethodInvocation<R> map(
+			Function2<AnnotatedType, ? super T, R> func) {
 		MethodInvocation<R> invocation = new MethodInvocation<>(this);
-		Iterator<Type> pit = Arrays.asList(
-				getMethod().getGenericParameterTypes()).iterator();
+		Iterator<AnnotatedType> pit = Arrays.asList(
+				getMethod().getAnnotatedParameterTypes()).iterator();
 		Iterator<T> ait = getArguments().iterator();
 		while (pit.hasNext() && ait.hasNext()) {
 			invocation.getArguments().add(func.apply(pit.next(), ait.next()));
