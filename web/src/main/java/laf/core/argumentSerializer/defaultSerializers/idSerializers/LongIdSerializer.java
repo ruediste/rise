@@ -27,7 +27,7 @@ public class LongIdSerializer implements IdentifierSerializer {
 			return null;
 		}
 		if ("null".equals(urlPart)) {
-			return () -> null;
+			return Suppliers.ofInstance(null);
 		}
 		return Suppliers.ofInstance(Long.parseLong(urlPart));
 	}

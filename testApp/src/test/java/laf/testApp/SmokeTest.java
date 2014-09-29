@@ -10,7 +10,7 @@ public class SmokeTest extends TestBase {
 
 	@Test
 	public void should_login_successfully() throws InterruptedException {
-		WebDriver driver = driver("TestComponent");
+		WebDriver driver = driver("SmokeTest");
 		assertEquals("Smoke Passed", driver.findElement(By.cssSelector("body"))
 				.getText());
 	}

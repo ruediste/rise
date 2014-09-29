@@ -2,6 +2,7 @@
 <persistence version="2.1" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
 	<persistence-unit name="sampleApp" transaction-type="JTA">
 		<jta-data-source>testApp/dataSource</jta-data-source>
+		<validation-mode>NONE</validation-mode>
 <!--	<provider>org.hibernate.ejb.HibernatePersistence</provider> -->
 <!--	<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode> -->
 		<properties>

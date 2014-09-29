@@ -39,7 +39,9 @@ public class LafPersistenceHolder {
 	@PreDestroy
 	public void destroy() {
 		for (EntityManager em : entityManagers.values()) {
-			em.close();
+			if (em.isOpen()) {
+				em.close();
+			}
 		}
 	}
 

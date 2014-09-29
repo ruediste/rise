@@ -27,6 +27,7 @@
 				<configuration>
 					<moduleGraphFormat>svg</moduleGraphFormat>
 					<useModuleNames>true</useModuleNames>
+					<checkAllClassesInModule>true</checkAllClassesInModule>
 					<graphvizLayoutHorizontal>true</graphvizLayoutHorizontal>
 				</configuration>
 				<executions>
