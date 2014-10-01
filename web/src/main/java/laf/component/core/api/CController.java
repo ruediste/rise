@@ -10,5 +10,6 @@ import javax.inject.Qualifier;
 @Qualifier
 @Target({ ElementType.METHOD, ElementType.FIELD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
+@Inherited
 public @interface CController {
 }

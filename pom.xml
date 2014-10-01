@@ -11,6 +11,7 @@
 		<module>web</module>
 		<module>sampleApp</module>
 		<module>testApp</module>
+		<module>skeleton</module>
 	</modules>
 
 	<properties>

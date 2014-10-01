@@ -69,6 +69,11 @@ public class LafPersistenceContextManager {
 		return tokenMap.get(token).classToEntityMap.get(entityClass);
 	}
 
+	@SuppressWarnings("unchecked")
+	public EntityManagerToken createToken(EntityManagerFactory factory) {
+		return createToken(factory, new Class[] {});
+	}
+
 	public EntityManagerToken createToken(
 			EntityManagerFactory factory,
 			@SuppressWarnings("unchecked") Class<? extends Annotation>... qualifiers) {

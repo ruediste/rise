@@ -2,7 +2,8 @@ package laf.component.web;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.HashMap;
+import java.util.*;
+import java.util.Map.Entry;
 
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -10,14 +11,14 @@ import javax.inject.Inject;
 
 import laf.component.core.ActionInvocation;
 import laf.component.core.api.CController;
-import laf.core.base.ActionResult;
-import laf.core.base.MethodInvocation;
+import laf.core.base.*;
 import laf.core.http.request.HttpRequest;
 import laf.core.http.request.HttpRequestImpl;
 
 import org.slf4j.Logger;
 
 import com.google.common.base.Function;
+import com.google.common.base.Splitter;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
@@ -28,7 +29,9 @@ public class RequestMapperImpl implements RequestMapper {
 	@Inject
 	BeanManager beanManager;
 
-	private BiMap<Class<?>, String> controllerNameMap = HashBiMap.create();
+	private HashMap<String, Pair<Class<?>, Method>> directActionPath = new HashMap<>();
+	private PrefixMap<Pair<Class<?>, Method>> actionPathMap = new PrefixMap<>();
+	private HashMap<Pair<Class<?>, Method>, String> methodPrefixMap = new HashMap<>();
 
 	private HashMap<Class<?>, BiMap<Method, String>> actionMethodNameMap = new HashMap<>();
 
@@ -47,7 +50,6 @@ public class RequestMapperImpl implements RequestMapper {
 			String controllerName = nameMapper.apply(beanClass);
 			log.info("Found Controller " + beanClass.getName() + " -> "
 					+ controllerName);
-			controllerNameMap.put(beanClass, controllerName);
 
 			// build method name map
 			BiMap<Method, String> methodNameMap = HashBiMap.create();
@@ -69,6 +71,45 @@ public class RequestMapperImpl implements RequestMapper {
 				}
 
 				methodNameMap.put(m, name);
+
+				String mainPath = null;
+				for (ActionPath path : m.getAnnotationsByType(ActionPath.class)) {
+					if (m.getParameterCount() == 0) {
+						directActionPath.put(path.value(),
+								Pair.of(beanClass, m));
+					} else {
+						actionPathMap.put(path.value(), Pair.of(beanClass, m));
+					}
+					if (path.mainPath()) {
+						if (mainPath != null) {
+							throw new RuntimeException(
+									"Multiple ActionPath annotations with mainPath=true found on method "
+											+ m);
+						}
+						mainPath = path.value();
+					}
+				}
+				if (m.isAnnotationPresent(NoDefaultActionPath.class)) {
+					if (mainPath == null) {
+						throw new RuntimeException(
+								"No ActionPath marked as mainPath, but NoDefaultActionPath annotation present");
+					}
+				} else {
+					if (m.getParameterCount() == 0) {
+						directActionPath.put(controllerName + "." + name,
+								Pair.of(beanClass, m));
+					} else {
+						actionPathMap.put(controllerName + "." + name,
+								Pair.of(beanClass, m));
+					}
+
+					// there is no mainPath yet, use the default path
+					if (mainPath == null) {
+						mainPath = controllerName + "." + name;
+					}
+				}
+
+				methodPrefixMap.put(Pair.of(beanClass, m), mainPath);
 				log.info("found method " + name);
 			}
 
@@ -79,33 +120,38 @@ public class RequestMapperImpl implements RequestMapper {
 
 	@Override
 	public ActionInvocation<String> parse(HttpRequest request) {
-
-		Class<?> controllerClass = findControllerEntry(request.getPath());
-
-		if (controllerClass == null) {
+		Pair<Class<?>, Method> pair = directActionPath.get(request.getPath());
+		String prefix = null;
+		if (pair != null) {
+			prefix = request.getPath();
+		} else {
+			Entry<String, Pair<Class<?>, Method>> entry = actionPathMap
+					.getEntry(request.getPath());
+			if (entry != null) {
+				prefix = entry.getKey();
+				pair = entry.getValue();
+			}
+		}
+		if (pair == null) {
+			log.debug("Component: unable to parse servlet path " + request);
 			return null;
 		}
 
-		// remove the identifier and split the suffix into parts at the /
-		// characters
-		String[] parts = request.getPath()
-				.substring(controllerNameMap.get(controllerClass).length())
-				.split("/");
+		Class<?> controllerClass = pair.getA();
+		Method method = pair.getB();
 
-		if (!parts[0].startsWith(".")) {
-			log.debug("unable to parse servlet path " + request);
-			return null;
-		}
-
-		String actionMethodName = parts[0].substring(1);
-		Method method = actionMethodNameMap.get(controllerClass).inverse()
-				.get(actionMethodName);
 		MethodInvocation<String> invocation = new MethodInvocation<>(
 				controllerClass, method);
 
-		for (int i = 1; i < parts.length; i++) {
-			invocation.getArguments().add(parts[i]);
+		List<String> parts = Splitter.on('/').omitEmptyStrings()
+				.splitToList(request.getPath().substring(prefix.length()));
+		if (parts.size() != method.getParameterCount()) {
+			throw new RuntimeException(
+					"Argument count of method invocation does not match. Path: "
+							+ request.getPath() + "; parsed arguments: "
+							+ parts + "; method: " + method);
 		}
+		invocation.getArguments().addAll(parts);
 
 		return new ActionInvocation<>(invocation);
 	}
@@ -114,19 +160,9 @@ public class RequestMapperImpl implements RequestMapper {
 	public HttpRequest generate(ActionInvocation<String> actionInvocation) {
 		MethodInvocation<String> invocation = actionInvocation.getInvocation();
 		StringBuilder sb = new StringBuilder();
-		// add indentifier
-		sb.append(controllerNameMap.get(invocation.getInstanceClass()));
 
-		// add method
-		sb.append(".");
-		BiMap<Method, String> methodNameMap = actionMethodNameMap
-				.get(invocation.getInstanceClass());
-		if (methodNameMap == null) {
-			throw new RuntimeException("The class"
-					+ invocation.getInstanceClass().getName()
-					+ " is not registered as component controller");
-		}
-		sb.append(methodNameMap.get(invocation.getMethod()));
+		sb.append(methodPrefixMap.get(Pair.of(invocation.getInstanceClass(),
+				invocation.getMethod())));
 
 		// add arguments
 		for (String argument : invocation.getArguments()) {
@@ -134,21 +170,6 @@ public class RequestMapperImpl implements RequestMapper {
 			sb.append(argument);
 		}
 		return new HttpRequestImpl(sb.toString());
-	}
-
-	private Class<?> findControllerEntry(String servletPath) {
-		// find the first dot in the path, which separates the controller from
-		// the method
-		int idx = servletPath.indexOf('.');
-		if (idx < 0) {
-			log.debug("No dot in servlet Path, cannot determine controller");
-			return null;
-		}
-
-		// get the prefix
-		String identifier = servletPath.substring(0, idx);
-
-		return controllerNameMap.inverse().get(identifier);
 	}
 
 }
