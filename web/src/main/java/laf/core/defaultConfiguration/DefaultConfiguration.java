@@ -82,13 +82,13 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 
 	public void produce(ResourceRequestHandlerCP val,
 			ProjectStageCP projectStage) {
-		ResourceRequestHandler handler = get(ResourceRequestHandler.class);
+		StaticWebResourceRequestHandler handler = get(StaticWebResourceRequestHandler.class);
 
 		handler.initialize(
 				projectStage.get() == ProjectStage.DEVELOPMENT ? ResourceMode.DEVELOPMENT
 						: ResourceMode.PRODUCTION,
 				StreamSupport.stream(
-						instance.select(ResourceBundle.class).spliterator(),
+						instance.select(StaticWebResourceBundle.class).spliterator(),
 						false).collect(Collectors.toList()));
 
 		val.set(handler);

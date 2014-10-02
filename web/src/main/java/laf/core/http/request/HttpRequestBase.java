@@ -21,14 +21,14 @@ implements HttpRequest {
 		}
 		HttpRequest other = (HttpRequest) obj;
 
-		return Objects.equals(getPath(), other.getPath())
+		return Objects.equals(getPathInfo(), other.getPathInfo())
 				&& Objects.equals(getParameterMap(), other.getParameterMap());
 	}
 
 	@Override
 	public String getPathWithParameters() {
 		if (getParameterMap().isEmpty()) {
-			return getPath();
+			return getPathInfo();
 		}
 		ArrayList<String> parameters = new ArrayList<>();
 		for (Entry<String, String[]> entry : getParameterMap().entrySet()) {
@@ -37,7 +37,7 @@ implements HttpRequest {
 			}
 		}
 
-		return getPath() + "?" + Joiner.on("&").join(parameters);
+		return getPathInfo() + "?" + Joiner.on("&").join(parameters);
 	}
 
 }

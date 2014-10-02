@@ -7,15 +7,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class PathGroup {
-	private final ResourceBundle bundle;
+	private final StaticWebResourceBundle bundle;
 	private final List<String> paths;
 
-	public PathGroup(ResourceBundle bundle, List<String> paths) {
+	public PathGroup(StaticWebResourceBundle bundle, List<String> paths) {
 		this.bundle = bundle;
 		this.paths = paths;
 	}
 
-	public PathGroup(ResourceBundle bundle, Stream<String> paths) {
+	public PathGroup(StaticWebResourceBundle bundle, Stream<String> paths) {
 		this(bundle, paths.collect(Collectors.toList()));
 	}
 

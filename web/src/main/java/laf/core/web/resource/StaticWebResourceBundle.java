@@ -18,7 +18,7 @@ import com.google.common.io.ByteStreams;
  *
  */
 @ApplicationScoped
-public abstract class ResourceBundle {
+public abstract class StaticWebResourceBundle {
 
 	@Inject
 	protected Processors processors;
@@ -44,7 +44,9 @@ public abstract class ResourceBundle {
 					@Override
 					public byte[] getData() {
 						InputStream in = getClass().getClassLoader()
-								.getResourceAsStream(name);
+								.getResourceAsStream(
+										name.startsWith("/") ? name
+												.substring(1) : name);
 						if (in == null) {
 							throw new RuntimeException(
 									"Unable to find resource on classpath: "

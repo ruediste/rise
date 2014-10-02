@@ -19,9 +19,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 
-public class DefaultHttpRequestMapperTest {
+public class HttpRequestMapperImplTest {
 
-	private DefaultHttpRequestMapper mapper;
+	private HttpRequestMapperImpl mapper;
 	private HttpRequestImpl request;
 
 	public static class TestController {
@@ -45,7 +45,7 @@ public class DefaultHttpRequestMapperTest {
 	@SuppressWarnings("rawtypes")
 	@Before
 	public void setup() {
-		mapper = new DefaultHttpRequestMapper();
+		mapper = new HttpRequestMapperImpl();
 		mapper.log = mock(Logger.class);
 		mapper.beanManager = mock(BeanManager.class);
 		Bean beanMock = mock(Bean.class);
@@ -95,7 +95,7 @@ public class DefaultHttpRequestMapperTest {
 		assertEquals(methodName, path.getFirst().getMethod().getName());
 
 		HttpRequest request = mapper.generate(path);
-		assertEquals(expectedPath, request.getPath());
+		assertEquals(expectedPath, request.getPathInfo());
 	}
 
 }

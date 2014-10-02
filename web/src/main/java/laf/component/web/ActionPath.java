@@ -3,9 +3,9 @@ package laf.component.web;
 import java.lang.annotation.*;
 
 /**
- * Define a servlet path an action method is mapped to. The anntation can be
- * repeated to accept multipe paths. The path marked with {@link #mainPath()} is
- * used when generating a path to the method
+ * Define a path info which is mapped to this action method. The annotation can
+ * be repeated to accept multiple paths. The path marked with {@link #primary()}
+ * is used when generating a path info for the method.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD })
@@ -13,5 +13,5 @@ import java.lang.annotation.*;
 public @interface ActionPath {
 	String value();
 
-	boolean mainPath() default false;
+	boolean primary() default false;
 }

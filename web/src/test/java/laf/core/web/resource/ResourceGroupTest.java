@@ -24,13 +24,13 @@ public class ResourceGroupTest {
 	@Spy
 	TestResourceImpl resource = new TestResourceImpl("foo", "Hello");
 
-	ResourceBundle bundle;
+	StaticWebResourceBundle bundle;
 
 	private ResourceGroup group;
 
 	@Before
 	public void setup() throws UnsupportedEncodingException {
-		bundle = new ResourceBundle() {
+		bundle = new StaticWebResourceBundle() {
 			@Override
 			protected void initializeImpl() {
 			}

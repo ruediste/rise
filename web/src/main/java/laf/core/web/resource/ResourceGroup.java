@@ -19,14 +19,14 @@ import com.google.common.hash.Hashing;
  */
 public class ResourceGroup {
 	public final List<Resource> resources;
-	public final ResourceBundle bundle;
+	public final StaticWebResourceBundle bundle;
 
-	public ResourceGroup(ResourceBundle bundle, List<Resource> resources) {
+	public ResourceGroup(StaticWebResourceBundle bundle, List<Resource> resources) {
 		this.bundle = bundle;
 		this.resources = resources;
 	}
 
-	public ResourceGroup(ResourceBundle bundle, Stream<Resource> resources) {
+	public ResourceGroup(StaticWebResourceBundle bundle, Stream<Resource> resources) {
 		this(bundle, resources.collect(Collectors.toList()));
 	}
 

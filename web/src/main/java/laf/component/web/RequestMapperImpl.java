@@ -14,11 +14,12 @@ import laf.component.core.api.CController;
 import laf.core.base.*;
 import laf.core.http.request.HttpRequest;
 import laf.core.http.request.HttpRequestImpl;
+import laf.core.web.annotation.ActionPathAnnotationUtil;
+import laf.core.web.annotation.ActionPathAnnotationUtil.MethodPathInfos;
 
 import org.slf4j.Logger;
 
-import com.google.common.base.Function;
-import com.google.common.base.Splitter;
+import com.google.common.base.*;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
@@ -29,9 +30,9 @@ public class RequestMapperImpl implements RequestMapper {
 	@Inject
 	BeanManager beanManager;
 
-	private HashMap<String, Pair<Class<?>, Method>> directActionPath = new HashMap<>();
-	private PrefixMap<Pair<Class<?>, Method>> actionPathMap = new PrefixMap<>();
-	private HashMap<Pair<Class<?>, Method>, String> methodPrefixMap = new HashMap<>();
+	private HashMap<String, Pair<Class<?>, Method>> pathInfoMap = new HashMap<>();
+	private PrefixMap<Pair<Class<?>, Method>> pathInfoPrefixMap = new PrefixMap<>();
+	private HashMap<Pair<Class<?>, Method>, String> methodToPathInfoMap = new HashMap<>();
 
 	private HashMap<Class<?>, BiMap<Method, String>> actionMethodNameMap = new HashMap<>();
 
@@ -71,69 +72,51 @@ public class RequestMapperImpl implements RequestMapper {
 				}
 
 				methodNameMap.put(m, name);
+				actionMethodNameMap.put(beanClass, methodNameMap);
 
-				String mainPath = null;
-				for (ActionPath path : m.getAnnotationsByType(ActionPath.class)) {
+				// add the path infos for the method to the respective maps
+				Pair<Class<?>, Method> controllerMethodPair = Pair.of(
+						beanClass, m);
+				MethodPathInfos pathInfos = ActionPathAnnotationUtil
+						.getPathInfos(m,
+								() -> "/" + controllerName + "." + m.getName());
+				for (String path : pathInfos.pathInfos) {
 					if (m.getParameterCount() == 0) {
-						directActionPath.put(path.value(),
-								Pair.of(beanClass, m));
+						pathInfoMap.put(path, controllerMethodPair);
 					} else {
-						actionPathMap.put(path.value(), Pair.of(beanClass, m));
-					}
-					if (path.mainPath()) {
-						if (mainPath != null) {
-							throw new RuntimeException(
-									"Multiple ActionPath annotations with mainPath=true found on method "
-											+ m);
-						}
-						mainPath = path.value();
-					}
-				}
-				if (m.isAnnotationPresent(NoDefaultActionPath.class)) {
-					if (mainPath == null) {
-						throw new RuntimeException(
-								"No ActionPath marked as mainPath, but NoDefaultActionPath annotation present");
-					}
-				} else {
-					if (m.getParameterCount() == 0) {
-						directActionPath.put(controllerName + "." + name,
-								Pair.of(beanClass, m));
-					} else {
-						actionPathMap.put(controllerName + "." + name,
-								Pair.of(beanClass, m));
-					}
-
-					// there is no mainPath yet, use the default path
-					if (mainPath == null) {
-						mainPath = controllerName + "." + name;
+						pathInfoPrefixMap.put(path, controllerMethodPair);
 					}
 				}
 
-				methodPrefixMap.put(Pair.of(beanClass, m), mainPath);
+				methodToPathInfoMap.put(controllerMethodPair,
+						pathInfos.primaryPathInfo);
 				log.info("found method " + name);
 			}
 
-			actionMethodNameMap.put(beanClass, methodNameMap);
 		}
 
 	}
 
 	@Override
 	public ActionInvocation<String> parse(HttpRequest request) {
-		Pair<Class<?>, Method> pair = directActionPath.get(request.getPath());
+		String pathInfo = request.getPathInfo();
+		if (Strings.isNullOrEmpty(pathInfo)) {
+			pathInfo = "/";
+		}
+		Pair<Class<?>, Method> pair = pathInfoMap.get(pathInfo);
 		String prefix = null;
 		if (pair != null) {
-			prefix = request.getPath();
+			prefix = pathInfo;
 		} else {
-			Entry<String, Pair<Class<?>, Method>> entry = actionPathMap
-					.getEntry(request.getPath());
+			Entry<String, Pair<Class<?>, Method>> entry = pathInfoPrefixMap
+					.getEntry(pathInfo);
 			if (entry != null) {
 				prefix = entry.getKey();
 				pair = entry.getValue();
 			}
 		}
 		if (pair == null) {
-			log.debug("Component: unable to parse servlet path " + request);
+			log.debug("Component: unable to parse servlet path " + pathInfo);
 			return null;
 		}
 
@@ -144,12 +127,12 @@ public class RequestMapperImpl implements RequestMapper {
 				controllerClass, method);
 
 		List<String> parts = Splitter.on('/').omitEmptyStrings()
-				.splitToList(request.getPath().substring(prefix.length()));
+				.splitToList(pathInfo.substring(prefix.length()));
 		if (parts.size() != method.getParameterCount()) {
 			throw new RuntimeException(
 					"Argument count of method invocation does not match. Path: "
-							+ request.getPath() + "; parsed arguments: "
-							+ parts + "; method: " + method);
+							+ pathInfo + "; parsed arguments: " + parts
+							+ "; method: " + method);
 		}
 		invocation.getArguments().addAll(parts);
 
@@ -161,8 +144,8 @@ public class RequestMapperImpl implements RequestMapper {
 		MethodInvocation<String> invocation = actionInvocation.getInvocation();
 		StringBuilder sb = new StringBuilder();
 
-		sb.append(methodPrefixMap.get(Pair.of(invocation.getInstanceClass(),
-				invocation.getMethod())));
+		sb.append(methodToPathInfoMap.get(Pair.of(
+				invocation.getInstanceClass(), invocation.getMethod())));
 
 		// add arguments
 		for (String argument : invocation.getArguments()) {

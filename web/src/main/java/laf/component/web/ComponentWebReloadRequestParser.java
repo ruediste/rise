@@ -35,24 +35,29 @@ public class ComponentWebReloadRequestParser implements
 	}
 
 	@Override
-	public RequestParseResult<HttpRequest> parse(HttpRequest request) {
-		String[] parts = request.getPath().split("/");
-		if (!prefix.equals(parts[0])) {
+	public RequestParseResult parse(HttpRequest request) {
+		if (!request.getPathInfo().startsWith(prefix)) {
 			return null;
 		}
-		if (parts.length != 3) {
+		String path = request.getPathInfo().substring(prefix.length());
+		if (path.startsWith("/")) {
+			path = path.substring(1);
+		}
+
+		String[] parts = path.split("/");
+		if (parts.length != 2) {
 			throw new RuntimeException(
 					"expected <reload>/<pageNr>/<componentNr>");
 		}
 
 		final PageReloadRequest reloadRequest = new PageReloadRequest();
-		reloadRequest.pageNr = Integer.parseInt(parts[1]);
-		reloadRequest.componentNr = Integer.parseInt(parts[2]);
+		reloadRequest.pageNr = Integer.parseInt(parts[0]);
+		reloadRequest.componentNr = Integer.parseInt(parts[1]);
 
-		return new RequestParseResult<HttpRequest>() {
+		return new RequestParseResult() {
 
 			@Override
-			public void handle(HttpRequest request) {
+			public void handle() {
 				manager.enter(reloadRequest.pageNr);
 				try {
 					utilInitializers.stream().forEach(x -> x.run());

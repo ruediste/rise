@@ -13,7 +13,7 @@ public class MvcWebRequestParser implements RequestParser<HttpRequest> {
 	@Inject
 	RenderUtilImpl renderUtil;
 
-	private final class ParseResult implements RequestParseResult<HttpRequest> {
+	private final class ParseResult implements RequestParseResult {
 		private ActionPath<String> path;
 
 		public ParseResult(ActionPath<String> path) {
@@ -21,7 +21,7 @@ public class MvcWebRequestParser implements RequestParser<HttpRequest> {
 		}
 
 		@Override
-		public void handle(HttpRequest request) {
+		public void handle() {
 			handler.handle(path);
 		}
 
@@ -51,7 +51,7 @@ public class MvcWebRequestParser implements RequestParser<HttpRequest> {
 	}
 
 	@Override
-	public RequestParseResult<HttpRequest> parse(HttpRequest request) {
+	public RequestParseResult parse(HttpRequest request) {
 		ActionPath<String> path = mapper.parse(request);
 		if (path == null) {
 			return null;

@@ -18,7 +18,7 @@ public class CPageHtmlTemplate extends CWTemplateBase<CPage> {
 	@Inject
 	CWRenderUtil util;
 
-	public static class Bundle extends ResourceBundle {
+	public static class Bundle extends StaticWebResourceBundle {
 
 		private final ResourceOutput css = new ResourceOutput(this);
 
@@ -35,7 +35,7 @@ public class CPageHtmlTemplate extends CWTemplateBase<CPage> {
 					.load(servletContext());
 			ResourceGroup normal = paths("/static/css/sample-app.css").load(
 					servletContext()).merge(
-					paths("js/componentWeb.js").load(classPath()).name(
+					paths("/js/componentWeb.js").load(classPath()).name(
 							"/static{qname}.{ext}"));
 
 			// provide fonts

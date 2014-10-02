@@ -21,7 +21,7 @@ public class ResourceRenderUtil {
 			css.forEach(r -> {
 				try {
 					html.link(rel("stylesheet").type("text/css").href(
-							url.apply(r.getName().substring(1))));
+							url.apply(r.getName())));
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
@@ -33,8 +33,7 @@ public class ResourceRenderUtil {
 		return html -> {
 			js.forEach(r -> {
 				try {
-					html.script(src(url.apply(r.getName().substring(1))))
-							._script();
+					html.script(src(url.apply(r.getName())))._script();
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}

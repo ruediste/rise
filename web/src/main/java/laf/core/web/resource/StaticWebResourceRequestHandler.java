@@ -15,7 +15,8 @@ import org.slf4j.Logger;
 
 import com.google.common.io.ByteStreams;
 
-public class ResourceRequestHandler implements RequestParser<HttpRequest> {
+public class StaticWebResourceRequestHandler implements
+		RequestParser<HttpRequest> {
 
 	@Inject
 	CoreRequestInfo coreRequestInfo;
@@ -24,21 +25,23 @@ public class ResourceRequestHandler implements RequestParser<HttpRequest> {
 	Logger log;
 
 	private Map<String, Resource> resources = new HashMap<>();
-	private Map<String, ResourceBundle> resourceToBundle = new HashMap<>();
+	private Map<String, StaticWebResourceBundle> resourceToBundle = new HashMap<>();
 
 	private final Map<String, String> contentTypeMap = new HashMap<>();
 
-	public ResourceRequestHandler() {
+	public StaticWebResourceRequestHandler() {
 		contentTypeMap.put(".js", "application/javascript; ; charset=UTF-8");
 		contentTypeMap.put(".css", "text/css; ; charset=UTF-8");
 	}
 
-	public void initialize(ResourceMode mode, ResourceBundle... bundles) {
+	public void initialize(ResourceMode mode,
+			StaticWebResourceBundle... bundles) {
 		initialize(mode, Arrays.asList(bundles));
 	}
 
-	public void initialize(ResourceMode mode, List<ResourceBundle> bundles) {
-		for (ResourceBundle bundle : bundles) {
+	public void initialize(ResourceMode mode,
+			List<StaticWebResourceBundle> bundles) {
+		for (StaticWebResourceBundle bundle : bundles) {
 			bundle.initialize(mode);
 			log.info("registering resources of bundle "
 					+ bundle.getClass().getName());
@@ -72,13 +75,13 @@ public class ResourceRequestHandler implements RequestParser<HttpRequest> {
 	}
 
 	@Override
-	public RequestParseResult<HttpRequest> parse(HttpRequest request) {
-		String path = "/" + request.getPath();
-		Resource resource = resources.get(path);
+	public RequestParseResult parse(HttpRequest request) {
+		String pathInfo = request.getPathInfo();
+		Resource resource = resources.get(pathInfo);
 		if (resource == null) {
 			return null;
 		} else {
-			return new ParseResult(path, resource);
+			return new ParseResult(pathInfo, resource);
 		}
 	}
 
@@ -90,7 +93,7 @@ public class ResourceRequestHandler implements RequestParser<HttpRequest> {
 		contentTypeMap.put(extension, contentType);
 	}
 
-	public class ParseResult implements RequestParseResult<HttpRequest> {
+	public class ParseResult implements RequestParseResult {
 
 		private Resource resource;
 		private String path;
@@ -101,7 +104,7 @@ public class ResourceRequestHandler implements RequestParser<HttpRequest> {
 		}
 
 		@Override
-		public void handle(HttpRequest request) {
+		public void handle() {
 			String extension;
 			{
 				String[] parts = path.split("\\.");

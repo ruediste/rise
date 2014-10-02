@@ -7,7 +7,7 @@ public class ResourceOutput implements Consumer<Resource> {
 
 	final private List<Resource> resources = new ArrayList<>();
 
-	public ResourceOutput(ResourceBundle bundle) {
+	public ResourceOutput(StaticWebResourceBundle bundle) {
 		bundle.registerOutput(this);
 	}
 

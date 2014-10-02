@@ -11,23 +11,14 @@ public class HttpService {
 	public String url(String path) {
 		String prefix = coreRequestInfo.getServletRequest().getContextPath();
 		prefix += coreRequestInfo.getServletRequest().getServletPath();
-		return coreRequestInfo.getServletResponse().encodeURL(
-				prefix + "/" + path);
+		return coreRequestInfo.getServletResponse().encodeURL(prefix + path);
 	}
 
 	public String redirectUrl(String path) {
 		String prefix = coreRequestInfo.getServletRequest().getContextPath();
 		prefix += coreRequestInfo.getServletRequest().getServletPath();
 		return coreRequestInfo.getServletResponse().encodeRedirectURL(
-				prefix + "/" + path);
+				prefix + path);
 	}
 
-	/**
-	 * Return the URL of a resource
-	 */
-	public String resourceUrl(String resource) {
-		return coreRequestInfo.getServletResponse().encodeURL(
-				coreRequestInfo.getServletRequest().getContextPath()
-						+ "/static/" + resource);
-	}
 }

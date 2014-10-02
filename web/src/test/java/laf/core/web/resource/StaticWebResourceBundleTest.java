@@ -16,9 +16,9 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ResourceBundleTest {
+public class StaticWebResourceBundleTest {
 
-	public static class TestResourceBundle extends ResourceBundle {
+	public static class TestResourceBundle extends StaticWebResourceBundle {
 		@Inject
 		ResourceOutput js;
 

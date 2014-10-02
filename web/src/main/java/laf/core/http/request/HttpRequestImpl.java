@@ -25,7 +25,7 @@ public class HttpRequestImpl extends HttpRequestBase {
 	}
 
 	@Override
-	public String getPath() {
+	public String getPathInfo() {
 		return path;
 	}
 

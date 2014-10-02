@@ -25,7 +25,7 @@ public class ResourceGroupResolveNameTemplateTest {
 		resource = new TestResourceImpl("test.js", "Hello");
 		resourceHash = Hashing.sha256().hashBytes(resource.getData())
 				.toString();
-		group = new ResourceGroup((ResourceBundle) null, (List<Resource>) null);
+		group = new ResourceGroup((StaticWebResourceBundle) null, (List<Resource>) null);
 	}
 
 	@Test

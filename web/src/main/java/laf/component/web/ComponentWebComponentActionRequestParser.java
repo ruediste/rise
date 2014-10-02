@@ -38,12 +38,14 @@ public class ComponentWebComponentActionRequestParser implements
 	}
 
 	@Override
-	public RequestParseResult<HttpRequest> parse(HttpRequest request) {
-		String[] parts = request.getPath().split("/");
-		if (!prefix.equals(parts[0])) {
+	public RequestParseResult parse(HttpRequest request) {
+		if (!request.getPathInfo().startsWith(prefix)) {
 			return null;
 		}
-		if (parts.length != 3) {
+		String[] parts = request.getPathInfo().substring(prefix.length())
+				.split("/");
+
+		if (parts.length != 2) {
 			throw new RuntimeException(
 					"expected <reload>/<pageNr>/<componentNr>");
 		}
@@ -53,10 +55,10 @@ public class ComponentWebComponentActionRequestParser implements
 		actionRequest.pageNr = Integer.parseInt(parts[1]);
 		actionRequest.componentNr = Integer.parseInt(parts[2]);
 
-		return new RequestParseResult<HttpRequest>() {
+		return new RequestParseResult() {
 
 			@Override
-			public void handle(HttpRequest request) {
+			public void handle() {
 				utilInitializers.stream().forEach(x -> x.run());
 				pageScopeManager.enter(actionRequest.pageNr);
 				try {

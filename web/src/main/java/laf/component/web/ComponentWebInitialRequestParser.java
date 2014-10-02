@@ -14,7 +14,7 @@ public class ComponentWebInitialRequestParser implements
 	@Inject
 	RequestMappingUtil requestMappingUtil;
 
-	private final class ParseResult implements RequestParseResult<HttpRequest> {
+	private final class ParseResult implements RequestParseResult {
 		private ActionInvocation<String> path;
 
 		public ParseResult(ActionInvocation<String> path) {
@@ -22,7 +22,7 @@ public class ComponentWebInitialRequestParser implements
 		}
 
 		@Override
-		public void handle(HttpRequest request) {
+		public void handle() {
 			initializers.spliterator().forEachRemaining(x -> x.run());
 			handler.handle(path);
 		}
@@ -58,7 +58,7 @@ public class ComponentWebInitialRequestParser implements
 	}
 
 	@Override
-	public RequestParseResult<HttpRequest> parse(HttpRequest request) {
+	public RequestParseResult parse(HttpRequest request) {
 		ActionInvocation<String> path = mapper.parse(request);
 		if (path == null) {
 			return null;

@@ -1,6 +1,12 @@
 package laf.core.requestParserChain;
 
-public interface RequestParseResult<T> {
+/**
+ * Result of a {@link RequestParser}
+ */
+public interface RequestParseResult {
 
-	void handle(T request);
+	/**
+	 * Handle the parsed request
+	 */
+	void handle();
 }

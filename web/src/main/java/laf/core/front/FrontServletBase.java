@@ -11,7 +11,6 @@ import laf.core.defaultConfiguration.HttpRequestParserChainCP;
 import laf.core.defaultConfiguration.ResourceRequestHandlerCP;
 import laf.core.http.CoreRequestInfo;
 import laf.core.http.request.DelegatingHttpRequest;
-import laf.core.http.request.HttpRequest;
 import laf.core.requestParserChain.RequestParseResult;
 
 import org.slf4j.Logger;
@@ -52,19 +51,19 @@ public class FrontServletBase extends HttpServlet {
 		try {
 			DelegatingHttpRequest request = new DelegatingHttpRequest(req);
 
-			log.debug("received request " + request.getPath());
+			log.debug("received request " + request.getPathInfo());
 
 			coreRequestInfo.setRequest(request);
 			coreRequestInfo.setServletRequest(req);
 			coreRequestInfo.setServletResponse(resp);
 
-			RequestParseResult<HttpRequest> parseResult = parserChain.value()
-					.get().parse(request);
+			RequestParseResult parseResult = parserChain.value().get()
+					.parse(request);
 			if (parseResult == null) {
 				throw new ServletException("unable to parse path "
-						+ request.getPath());
+						+ request.getPathInfo());
 			}
-			parseResult.handle(request);
+			parseResult.handle();
 		} catch (Throwable t) {
 			log.error(
 					"Error while handling request to path " + req.getPathInfo(),

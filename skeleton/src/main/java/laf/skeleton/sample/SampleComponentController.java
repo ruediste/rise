@@ -5,7 +5,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import laf.component.core.binding.BindingGroup;
-import laf.component.web.ActionPath;
 import laf.core.base.ActionResult;
 import laf.core.persistence.PersistenceHelper;
 import laf.skeleton.base.ComponentControllerBase;
@@ -46,7 +45,6 @@ public class SampleComponentController extends ComponentControllerBase {
 		return entityBinding.proxy();
 	}
 
-	@ActionPath("")
 	public ActionResult index() {
 		List<SampleEntity> entities = ph.loadAll(SampleEntity.class);
 		SampleEntity entity;

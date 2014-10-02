@@ -15,7 +15,7 @@ public interface HttpRequest extends AttachedPropertyBearer {
 	 * Return the path of this request. Initialized form
 	 * {@link HttpServletRequest#getPathInfo()}
 	 */
-	String getPath();
+	String getPathInfo();
 
 	/**
 	 * @see HttpServletRequest#getParameterMap()
@@ -33,14 +33,14 @@ public interface HttpRequest extends AttachedPropertyBearer {
 	String[] getParameterValues(String name);
 
 	/**
-	 * Check for equality of the {@link #getPath()} and the
+	 * Check for equality of the {@link #getPathInfo()} and the
 	 * {@link #getParameterMap()}
 	 */
 	@Override
 	public boolean equals(Object obj);
 
 	/**
-	 * Return {@link #getPath()} with the parameters appended
+	 * Return {@link #getPathInfo()} with the parameters appended
 	 */
 	String getPathWithParameters();
 }

@@ -9,13 +9,13 @@ import javax.inject.Inject;
 import laf.component.core.basic.CPage;
 import laf.component.web.CWRenderUtil;
 import laf.component.web.CWTemplateBase;
-import laf.core.web.resource.ResourceBundle;
+import laf.core.web.resource.StaticWebResourceBundle;
 import laf.core.web.resource.ResourceOutput;
 
 import org.rendersnake.HtmlCanvas;
 
 public class CPageHtmlTemplate extends CWTemplateBase<CPage> {
-	public static class Bundle extends ResourceBundle {
+	public static class Bundle extends StaticWebResourceBundle {
 
 		private final ResourceOutput js = new ResourceOutput(this);
 
@@ -24,7 +24,7 @@ public class CPageHtmlTemplate extends CWTemplateBase<CPage> {
 
 			paths("/static/js/jquery-1.11.1.js")
 					.load(servletContext())
-					.merge(paths("js/componentWeb.js").load(classPath()).name(
+					.merge(paths("/js/componentWeb.js").load(classPath()).name(
 							"/static{qname}.{ext}")).send(js);
 		}
 

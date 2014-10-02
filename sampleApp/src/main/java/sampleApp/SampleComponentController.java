@@ -10,6 +10,7 @@ import javax.validation.Validator;
 
 import laf.component.core.api.CController;
 import laf.component.core.binding.BindingGroup;
+import laf.component.web.ActionPath;
 import laf.component.web.CWControllerUtil;
 import laf.core.base.ActionResult;
 import laf.core.persistence.PersistenceHelper;
@@ -39,6 +40,7 @@ public class SampleComponentController {
 		return userBinding.proxy();
 	}
 
+	@ActionPath("/")
 	public ActionResult index() {
 		List<User> users = ph.loadAll(User.class);
 		User user;

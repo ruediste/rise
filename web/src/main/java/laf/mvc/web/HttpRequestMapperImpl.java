@@ -3,32 +3,36 @@ package laf.mvc.web;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.Map.Entry;
 
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
-import laf.core.base.MethodInvocation;
+import laf.core.base.*;
 import laf.core.http.request.HttpRequest;
 import laf.core.http.request.HttpRequestImpl;
+import laf.core.web.annotation.ActionPathAnnotationUtil;
+import laf.core.web.annotation.ActionPathAnnotationUtil.MethodPathInfos;
 import laf.mvc.core.ActionPath;
 import laf.mvc.core.ControllerReflectionUtil;
 import laf.mvc.core.api.MController;
 
 import org.slf4j.Logger;
 
-import com.google.common.base.Function;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
+import com.google.common.base.*;
+import com.google.common.collect.*;
 
-public class DefaultHttpRequestMapper implements HttpRequestMapper {
+public class HttpRequestMapperImpl implements HttpRequestMapper {
 	@Inject
 	Logger log;
 
 	@Inject
 	BeanManager beanManager;
 
-	private BiMap<Class<?>, String> controllerNameMap = HashBiMap.create();
+	private HashMap<String, Pair<Class<?>, Method>> pathInfoMap = new HashMap<>();
+	private PrefixMap<Pair<Class<?>, Method>> pathInfoPrefixMap = new PrefixMap<>();
+	private HashMap<Pair<Class<?>, Method>, String> methodToPathInfoMap = new HashMap<>();
 
 	private HashMap<Class<?>, BiMap<Method, String>> actionMethodNameMap = new HashMap<>();
 
@@ -46,7 +50,6 @@ public class DefaultHttpRequestMapper implements HttpRequestMapper {
 			Class<?> beanClass = bean.getBeanClass();
 			String controllerName = controllerNameMapper.apply(beanClass);
 			log.debug("found controller " + beanClass + " -> " + controllerName);
-			controllerNameMap.put(beanClass, controllerName);
 
 			// build method name map
 			BiMap<Method, String> methodNameMap = HashBiMap.create();
@@ -69,6 +72,23 @@ public class DefaultHttpRequestMapper implements HttpRequestMapper {
 				}
 
 				methodNameMap.put(m, name);
+
+				// add the path infos for the method to the respective maps
+				Pair<Class<?>, Method> controllerMethodPair = Pair.of(
+						beanClass, m);
+				MethodPathInfos pathInfos = ActionPathAnnotationUtil
+						.getPathInfos(m,
+								() -> "/" + controllerName + "." + m.getName());
+				for (String path : pathInfos.pathInfos) {
+					if (m.getParameterCount() == 0) {
+						pathInfoMap.put(path, controllerMethodPair);
+					} else {
+						pathInfoPrefixMap.put(path, controllerMethodPair);
+					}
+				}
+
+				methodToPathInfoMap.put(controllerMethodPair,
+						pathInfos.primaryPathInfo);
 			}
 
 			actionMethodNameMap.put(beanClass, methodNameMap);
@@ -78,43 +98,71 @@ public class DefaultHttpRequestMapper implements HttpRequestMapper {
 
 	@Override
 	public ActionPath<String> parse(HttpRequest request) {
+		String pathInfo = request.getPathInfo();
+		if (Strings.isNullOrEmpty(pathInfo)) {
+			pathInfo = "/";
+		}
 
 		ActionPath<String> call = new ActionPath<>();
-		Class<?> controllerClass = findControllerEntry(request.getPath());
+		String prefix = null;
+		Pair<Class<?>, Method> pair = pathInfoMap.get(pathInfo);
+		if (pair != null) {
+			prefix = pathInfo;
+		} else {
+			Entry<String, Pair<Class<?>, Method>> entry = pathInfoPrefixMap
+					.getEntry(pathInfo);
+			if (entry != null) {
+				prefix = entry.getKey();
+				pair = entry.getValue();
+			}
+		}
 
-		if (controllerClass == null) {
+		if (pair == null) {
 			return null;
 		}
+
+		Class<?> controllerClass = pair.getA();
 
 		// remove the identifier and split the suffix into parts at the /
 		// characters
-		String[] parts = request.getPath()
-				.substring(controllerNameMap.get(controllerClass).length())
-				.split("/");
+		List<String> parts = Splitter.on('/').splitToList(
+				pathInfo.substring(prefix.length()));
 
-		if (!parts[0].startsWith(".")) {
-			log.debug("unable to parse servlet path " + request);
-			return null;
+		// determine action methods
+		ArrayList<Method> actionMethods = new ArrayList<>();
+		actionMethods.add(pair.getB());
+		if (!parts.isEmpty()) {
+			for (String actionName : parts.get(0).split("\\.")) {
+				if (Strings.isNullOrEmpty(actionName)) {
+					continue;
+				}
+				Method actionMethod = actionMethodNameMap.get(controllerClass)
+						.inverse().get(actionName);
+
+				if (actionMethod == null) {
+					log.debug("no ActionMethod named " + actionName + " found");
+					return null;
+				}
+				actionMethods.add(actionMethod);
+
+				if (ControllerReflectionUtil.isEmbeddedController(actionMethod
+						.getReturnType())) {
+					// update the controller class to the embedded controller
+					controllerClass = actionMethod.getReturnType();
+				}
+			}
 		}
 
-		String[] actionNames;
-		actionNames = parts[0].substring(1).split("\\.");
-
+		// collect arguments
+		controllerClass = pair.getA();
 		int i = 1;
-		for (String actionName : actionNames) {
-			Method actionMethod = actionMethodNameMap.get(controllerClass)
-					.inverse().get(actionName);
-
-			if (actionMethod == null) {
-				log.debug("no ActionMethod named " + actionName + " found");
-				return null;
-			}
+		for (Method actionMethod : actionMethods) {
 
 			MethodInvocation<String> invocation = new MethodInvocation<>(
 					controllerClass, actionMethod);
 
-			for (; i < parts.length; i++) {
-				invocation.getArguments().add(parts[i]);
+			for (; i < parts.size(); i++) {
+				invocation.getArguments().add(parts.get(i));
 			}
 			call.getElements().add(invocation);
 
@@ -152,12 +200,15 @@ public class DefaultHttpRequestMapper implements HttpRequestMapper {
 			}
 
 			MethodInvocation<String> element = it.next();
-			sb.append(getHierarchical(controllerNameMap,
-					element.getInstanceClass()));
+
+			String pathInfo = methodToPathInfoMap.get(Pair.of(
+					element.getInstanceClass(), element.getMethod()));
+			sb.append(pathInfo);
 		}
 
 		// add methods
-		for (MethodInvocation<String> element : path.getElements()) {
+		for (MethodInvocation<String> element : Iterables.skip(
+				path.getElements(), 1)) {
 			sb.append(".");
 			BiMap<Method, String> methodNameMap = getHierarchical(
 					actionMethodNameMap, element.getInstanceClass());
@@ -177,21 +228,6 @@ public class DefaultHttpRequestMapper implements HttpRequestMapper {
 			}
 		}
 		return new HttpRequestImpl(sb.toString());
-	}
-
-	private Class<?> findControllerEntry(String servletPath) {
-		// find the first dot in the path, which separates the controller from
-		// the method
-		int idx = servletPath.indexOf('.');
-		if (idx < 0) {
-			log.debug("No dot in servlet Path, cannot determine controller");
-			return null;
-		}
-
-		// get the prefix
-		String identifier = servletPath.substring(0, idx);
-
-		return controllerNameMap.inverse().get(identifier);
 	}
 
 }

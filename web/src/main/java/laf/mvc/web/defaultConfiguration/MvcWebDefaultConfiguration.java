@@ -20,8 +20,8 @@ public class MvcWebDefaultConfiguration implements ConfigurationDefiner {
 
 	public void produce(HttpRequestMapperCP val,
 			ControllerNameMappingCP nameMapping) {
-		DefaultHttpRequestMapper mapper = instance.select(
-				DefaultHttpRequestMapper.class).get();
+		HttpRequestMapperImpl mapper = instance.select(
+				HttpRequestMapperImpl.class).get();
 		mapper.initialize(nameMapping.get());
 		val.set(mapper);
 	}
