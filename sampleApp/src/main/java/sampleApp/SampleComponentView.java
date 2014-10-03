@@ -9,8 +9,7 @@ import laf.component.core.api.CView;
 import laf.component.core.basic.*;
 import laf.component.core.tree.Component;
 import laf.component.web.CWViewUtil;
-import laf.component.web.basic.CGroup;
-import laf.component.web.basic.CLink;
+import laf.component.web.components.*;
 import laf.integration.IntegrationUtil;
 
 public class SampleComponentView extends CView<SampleComponentController> {

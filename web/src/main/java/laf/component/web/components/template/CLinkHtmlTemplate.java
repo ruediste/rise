@@ -1,4 +1,4 @@
-package laf.component.web.basic.template;
+package laf.component.web.components.template;
 
 import static org.rendersnake.HtmlAttributesFactory.href;
 
@@ -8,7 +8,7 @@ import javax.inject.Inject;
 
 import laf.component.web.CWRenderUtil;
 import laf.component.web.CWTemplateBase;
-import laf.component.web.basic.CLink;
+import laf.component.web.components.CLink;
 
 import org.rendersnake.HtmlCanvas;
 

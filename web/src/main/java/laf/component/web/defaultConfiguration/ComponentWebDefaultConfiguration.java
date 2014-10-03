@@ -8,7 +8,7 @@ import javax.inject.Inject;
 
 import laf.component.core.*;
 import laf.component.web.*;
-import laf.component.web.basic.template.CLinkHtmlTemplate;
+import laf.component.web.components.template.CLinkHtmlTemplate;
 import laf.core.base.configuration.ConfigurationDefiner;
 import laf.core.base.configuration.ExtendConfiguration;
 import laf.core.defaultConfiguration.*;

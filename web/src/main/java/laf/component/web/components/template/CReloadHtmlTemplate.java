@@ -1,4 +1,4 @@
-package laf.component.web.basic.template;
+package laf.component.web.components.template;
 
 import static org.rendersnake.HtmlAttributesFactory.class_;
 
@@ -6,8 +6,8 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import laf.component.core.basic.CReload;
 import laf.component.web.*;
+import laf.component.web.components.CReload;
 
 import org.rendersnake.HtmlCanvas;
 

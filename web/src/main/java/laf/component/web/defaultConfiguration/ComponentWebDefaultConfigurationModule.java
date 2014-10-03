@@ -1,6 +1,6 @@
 package laf.component.web.defaultConfiguration;
 
-import laf.component.web.basic.template.ComponentWebBasicTemplateModule;
+import laf.component.web.components.template.ComponentWebBasicTemplateModule;
 
 import org.jabsaw.Module;
 

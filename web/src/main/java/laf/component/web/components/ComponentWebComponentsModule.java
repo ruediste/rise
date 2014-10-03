@@ -1,10 +1,10 @@
-package laf.component.web.basic;
+package laf.component.web.components;
 
 import laf.component.web.ComponentWebModule;
 
 import org.jabsaw.Module;
 
-@Module(exported = { laf.component.core.basic.BasicComponentsModule.class,
+@Module(exported = { laf.component.web.components.BasicComponentsModule.class,
 		ComponentWebModule.class })
 public class ComponentWebComponentsModule {
 

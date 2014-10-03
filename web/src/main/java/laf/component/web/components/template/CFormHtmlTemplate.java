@@ -1,9 +1,9 @@
-package laf.component.web.basic.template;
+package laf.component.web.components.template;
 
 import java.io.IOException;
 
-import laf.component.core.basic.CForm;
 import laf.component.web.CWTemplateBase;
+import laf.component.web.components.CForm;
 
 import org.rendersnake.HtmlAttributesFactory;
 import org.rendersnake.HtmlCanvas;

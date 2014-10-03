@@ -1,4 +1,4 @@
-package laf.component.core.basic;
+package laf.component.web.components;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -6,6 +6,7 @@ import java.util.Collections;
 import javax.validation.ConstraintViolation;
 
 import laf.component.core.ConstraintViolationAware;
+import laf.component.core.ValidationState;
 import laf.component.core.tree.ComponentBase;
 
 public class CFormGroup<T extends ComponentBase<T>> extends ComponentBase<T>

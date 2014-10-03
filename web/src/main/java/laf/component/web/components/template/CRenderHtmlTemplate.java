@@ -1,4 +1,4 @@
-package laf.component.web.basic.template;
+package laf.component.web.components.template;
 
 import java.io.IOException;
 
@@ -6,7 +6,7 @@ import javax.inject.Inject;
 
 import laf.component.web.CWRenderUtil;
 import laf.component.web.CWTemplateBase;
-import laf.component.web.basic.CRender;
+import laf.component.web.components.CRender;
 
 import org.rendersnake.HtmlCanvas;
 

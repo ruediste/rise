@@ -1,4 +1,4 @@
-package laf.component.core.basic;
+package laf.component.web.components;
 
 public class CButton extends MultiChildrenComponent<CButton> {
 	private Runnable handler;
@@ -7,7 +7,7 @@ public class CButton extends MultiChildrenComponent<CButton> {
 	}
 
 	public CButton(String text) {
-		children.add(new CText(text));
+		add(new CRender(html -> html.write(text)));
 	}
 
 	public CButton handler(Runnable handler) {

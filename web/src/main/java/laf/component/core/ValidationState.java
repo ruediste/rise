@@ -1,4 +1,4 @@
-package laf.component.core.basic;
+package laf.component.core;
 
 public enum ValidationState {
 

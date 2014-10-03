@@ -1,4 +1,4 @@
-package laf.component.core.basic;
+package laf.component.web.components;
 
 public class CTextFieldFormGroup extends CFormGroup<CTextFieldFormGroup> {
 

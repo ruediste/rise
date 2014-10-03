@@ -1,4 +1,4 @@
-package laf.component.web.basic.template;
+package laf.component.web.components.template;
 
 import static org.rendersnake.HtmlAttributesFactory.type;
 
@@ -6,9 +6,9 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import laf.component.core.basic.CTextFieldFormGroup;
 import laf.component.web.ApplyValuesUtil;
 import laf.component.web.CWRenderUtil;
+import laf.component.web.components.CTextFieldFormGroup;
 
 import org.rendersnake.HtmlCanvas;
 

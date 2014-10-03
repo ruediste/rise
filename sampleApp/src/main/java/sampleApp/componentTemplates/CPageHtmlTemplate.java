@@ -6,9 +6,9 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import laf.component.core.basic.CPage;
 import laf.component.web.CWRenderUtil;
 import laf.component.web.CWTemplateBase;
+import laf.component.web.components.CPage;
 import laf.core.web.resource.*;
 
 import org.rendersnake.HtmlCanvas;

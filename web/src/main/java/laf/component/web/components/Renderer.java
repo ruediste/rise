@@ -1,4 +1,4 @@
-package laf.component.web.basic;
+package laf.component.web.components;
 
 import java.io.IOException;
 

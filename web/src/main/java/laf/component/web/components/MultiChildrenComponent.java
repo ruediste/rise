@@ -1,4 +1,4 @@
-package laf.component.core.basic;
+package laf.component.web.components;
 
 import laf.component.core.tree.*;
 

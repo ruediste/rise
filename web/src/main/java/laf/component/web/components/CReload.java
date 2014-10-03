@@ -1,4 +1,4 @@
-package laf.component.core.basic;
+package laf.component.web.components;
 
 /**
  * Component representing a partial page reload context

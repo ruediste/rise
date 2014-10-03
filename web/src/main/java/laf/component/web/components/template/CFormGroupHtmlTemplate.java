@@ -1,4 +1,4 @@
-package laf.component.web.basic.template;
+package laf.component.web.components.template;
 
 import static org.rendersnake.HtmlAttributesFactory.class_;
 
@@ -7,10 +7,10 @@ import java.io.IOException;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 
-import laf.component.core.basic.CFormGroup;
-import laf.component.core.basic.ValidationState;
+import laf.component.core.ValidationState;
 import laf.component.web.CWRenderUtil;
 import laf.component.web.CWTemplateBase;
+import laf.component.web.components.CFormGroup;
 
 import org.rendersnake.HtmlCanvas;
 
