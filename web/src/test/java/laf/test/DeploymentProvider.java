@@ -22,11 +22,16 @@ public class DeploymentProvider {
 	}
 
 	public static WebArchive getPersistence() {
+		return getPersistenceNoProducer()
+		.addClasses(TestEntityManagerProducer.class);
+	}
+
+	public static WebArchive getPersistenceNoProducer() {
 		return DeploymentProvider
 				.getDefault()
 				.addAsResource("test-persistence.xml",
 						"META-INF/persistence.xml")
 						.addAsResource("test-openejb.xml", "META-INF/openejb.xml")
-						.addClasses(TestEntityManagerProducer.class, TestEntity.class);
+						.addClasses(TestEntity.class);
 	}
 }
