@@ -1,9 +1,7 @@
-package laf.component.web.basic;
+package laf.component.web.components;
 
 import java.util.function.Supplier;
 
-import laf.component.core.basic.CText;
-import laf.component.core.basic.MultiChildrenComponent;
 import laf.component.web.CWViewUtil;
 import laf.core.base.ActionResult;
 import laf.core.base.InstanceFactory;
@@ -27,13 +25,13 @@ public class CLink extends MultiChildrenComponent<CLink> {
 
 	public CLink(String text, ActionResult destination) {
 		this(destination);
-		add(new CText(text));
+		add(new CRender(html -> html.write(text)));
 	}
 
 	public CLink(String text, Supplier<String> destinationUrlSupplier) {
 		this();
 		this.destinationUrlSupplier = destinationUrlSupplier;
-		add(new CText(text));
+		add(new CRender(html -> html.write(text)));
 	}
 
 	public CLink withDestination(ActionResult destination) {

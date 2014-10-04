@@ -13,6 +13,8 @@ public class User extends SimpleIdEntity {
 	@Pattern.List({ @Pattern(regexp = "ABC", message = "Must match ABC"),
 			@Pattern(regexp = "AB.*") })
 	private String fistName;
+
+	@En("short: Last Name; long: ")
 	private String lastName;
 	private Date lastLogin;
 
