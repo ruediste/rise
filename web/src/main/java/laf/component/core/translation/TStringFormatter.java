@@ -22,6 +22,11 @@ import laf.core.base.Val;
  * <li>parameters are identified by string keys instead of numbers</li>
  * </ul>
  * </p>
+ *
+ * <p>
+ * The supported formats are not hard coded. They are defined by the registered
+ * {@link FormatHandler}s (see {@link #initialize(Map)})
+ * </p>
  */
 public class TStringFormatter {
 
@@ -48,8 +53,7 @@ public class TStringFormatter {
 		return formatTemplate(template, tString, locale);
 	}
 
-	private String formatTemplate(String template, TString tString,
-			Locale locale) {
+	public String formatTemplate(String template, TString tString, Locale locale) {
 		StringBuilder result = new StringBuilder();
 
 		OfInt it = template.codePoints().iterator();
@@ -128,10 +132,6 @@ public class TStringFormatter {
 			throw new RuntimeException("no parameter key found in "
 					+ placeholder);
 		}
-		if (builders.size() > 3) {
-			throw new RuntimeException("too may commas in " + placeholder
-					+ " tString: " + tString);
-		}
 
 		String parameterKey = builders.get(0).toString().trim();
 
@@ -153,15 +153,19 @@ public class TStringFormatter {
 			}
 
 			String style = null;
-			if (builders.size() > 2) {
-				style = formatTemplate(builders.get(2).toString(), tString,
-						locale);
+			if (builders.size() == 3) {
+				style = builders.get(2).toString();
 			}
 
-			result.append(handler.handle(locale, parameter.get(), style));
+			result.append(handler.handle(locale, parameter.get(), style, this,
+					tString));
 		}
 	}
 
+	/**
+	 * Initialize this formatter and register the provided {@link FormatHandler}
+	 * s
+	 */
 	public void initialize(Map<String, FormatHandler> handlers) {
 		this.handlers = new HashMap<>(handlers);
 	}
@@ -186,12 +190,13 @@ public class TStringFormatter {
 	public static FormatHandler createNumberHandler() {
 		return new FormatHandler() {
 			@Override
-			public String handle(Locale locale, Object p, String style) {
+			public String handle(Locale locale, Object p, String style,
+					TStringFormatter formatter, TString tString) {
 				NumberFormat format;
-				if (style == null || "".equals(style.trim())) {
+				if (style == null || "".equals(unEscape(style).trim())) {
 					format = NumberFormat.getInstance(locale);
 				} else {
-					switch (style.trim()) {
+					switch (unEscape(style).trim()) {
 					case "integer":
 						format = NumberFormat.getIntegerInstance(locale);
 						break;
@@ -202,7 +207,7 @@ public class TStringFormatter {
 						format = NumberFormat.getPercentInstance(locale);
 						break;
 					default:
-						format = new DecimalFormat(style,
+						format = new DecimalFormat(unEscape(style),
 								DecimalFormatSymbols.getInstance(locale));
 					}
 				}
@@ -211,86 +216,8 @@ public class TStringFormatter {
 		};
 	}
 
-	public static FormatHandler createDateHandler() {
-		return new FormatHandler() {
-			@Override
-			public String handle(Locale locale, Object p, String style) {
-				if (p instanceof Date) {
-					DateFormat format;
-					Integer formatStyle = parseDateFormat(style);
-					if (formatStyle != null) {
-						format = DateFormat
-								.getDateInstance(formatStyle, locale);
-					} else {
-						format = new SimpleDateFormat(style, locale);
-
-					}
-					return format.format(p);
-				}
-
-				if (p instanceof TemporalAccessor) {
-					DateTimeFormatter format;
-
-					if (style == null || "".equals(style.trim())) {
-						format = DateTimeFormatter.ISO_DATE;
-					} else {
-						FormatStyle formatStyle = parseFormatStyle(style);
-						if (formatStyle != null) {
-							format = DateTimeFormatter.ofLocalizedDate(
-									formatStyle).withLocale(locale);
-						} else {
-							format = DateTimeFormatter.ofPattern(style, locale);
-						}
-					}
-
-					return format.format((TemporalAccessor) p);
-				}
-				throw new RuntimeException("Unsupported date object: " + p);
-			}
-		};
-	}
-
-	public static FormatHandler createTimeHandler() {
-		return new FormatHandler() {
-			@Override
-			public String handle(Locale locale, Object p, String style) {
-				if (p instanceof Date) {
-					DateFormat format;
-					Integer formatStyle = parseDateFormat(style);
-					if (formatStyle != null) {
-						format = DateFormat
-								.getTimeInstance(formatStyle, locale);
-					} else {
-						format = new SimpleDateFormat(style, locale);
-
-					}
-					return format.format(p);
-				}
-				if (p instanceof TemporalAccessor) {
-					DateTimeFormatter format;
-
-					if (style == null || "".equals(style.trim())) {
-						format = DateTimeFormatter.ISO_TIME;
-					} else {
-						FormatStyle formatStyle = parseFormatStyle(style);
-						if (formatStyle != null) {
-							format = DateTimeFormatter.ofLocalizedTime(
-									formatStyle).withLocale(locale);
-						} else {
-							format = DateTimeFormatter.ofPattern(style, locale);
-						}
-					}
-
-					return format.format((TemporalAccessor) p);
-				}
-				throw new RuntimeException("Unsupported date object: " + p);
-			}
-
-		};
-	}
-
 	private static Integer parseDateFormat(String style) {
-		if (style == null || "".equals(style.trim())) {
+		if (style == null || "".equals(unEscape(style).trim())) {
 			return DateFormat.DEFAULT;
 		} else {
 			switch (style.trim()) {
@@ -311,7 +238,7 @@ public class TStringFormatter {
 
 	private static FormatStyle parseFormatStyle(String style) {
 
-		switch (style.trim()) {
+		switch (unEscape(style).trim()) {
 
 		case "short":
 			return FormatStyle.SHORT;
@@ -326,19 +253,125 @@ public class TStringFormatter {
 		}
 	}
 
+	public static FormatHandler createDateHandler() {
+		return new FormatHandler() {
+			@Override
+			public String handle(Locale locale, Object p, String style,
+					TStringFormatter formatter, TString tString) {
+				if (p instanceof Date) {
+					DateFormat format;
+					Integer formatStyle = parseDateFormat(style);
+					if (formatStyle != null) {
+						format = DateFormat
+								.getDateInstance(formatStyle, locale);
+					} else {
+						format = new SimpleDateFormat(unEscape(style), locale);
+
+					}
+					return format.format(p);
+				}
+
+				if (p instanceof TemporalAccessor) {
+					DateTimeFormatter format;
+
+					if (style == null || "".equals(unEscape(style).trim())) {
+						format = DateTimeFormatter.ISO_DATE;
+					} else {
+						FormatStyle formatStyle = parseFormatStyle(style);
+						if (formatStyle != null) {
+							format = DateTimeFormatter.ofLocalizedDate(
+									formatStyle).withLocale(locale);
+						} else {
+							format = DateTimeFormatter.ofPattern(
+									unEscape(style), locale);
+						}
+					}
+
+					return format.format((TemporalAccessor) p);
+				}
+				throw new RuntimeException("Unsupported date object: " + p);
+			}
+		};
+	}
+
+	public static FormatHandler createTimeHandler() {
+		return new FormatHandler() {
+			@Override
+			public String handle(Locale locale, Object p, String style,
+					TStringFormatter formatter, TString tString) {
+				if (p instanceof Date) {
+					DateFormat format;
+					Integer formatStyle = parseDateFormat(style);
+					if (formatStyle != null) {
+						format = DateFormat
+								.getTimeInstance(formatStyle, locale);
+					} else {
+						format = new SimpleDateFormat(unEscape(style), locale);
+
+					}
+					return format.format(p);
+				}
+				if (p instanceof TemporalAccessor) {
+					DateTimeFormatter format;
+
+					if (style == null || "".equals(unEscape(style).trim())) {
+						format = DateTimeFormatter.ISO_TIME;
+					} else {
+						FormatStyle formatStyle = parseFormatStyle(style);
+						if (formatStyle != null) {
+							format = DateTimeFormatter.ofLocalizedTime(
+									formatStyle).withLocale(locale);
+						} else {
+							format = DateTimeFormatter.ofPattern(
+									unEscape(style), locale);
+						}
+					}
+
+					return format.format((TemporalAccessor) p);
+				}
+				throw new RuntimeException("Unsupported date object: " + p);
+			}
+
+		};
+	}
+
 	public static FormatHandler createDateTimeHandler() {
 		return new FormatHandler() {
 			@Override
-			public String handle(Locale locale, Object p, String style) {
+			public String handle(Locale locale, Object p, String style,
+					TStringFormatter formatter, TString tString) {
 				String dateStyle;
 				String timeStyle;
-				{
-					String[] parts = style.split(",");
-					if (parts.length == 1) {
-						dateStyle = timeStyle = parts[0];
+				if (style == null) {
+					dateStyle = "";
+					timeStyle = "";
+				} else {
+					ArrayList<StringBuilder> builders = new ArrayList<>();
+					StringBuilder sb = new StringBuilder();
+					OfInt it = style.codePoints().iterator();
+					while (it.hasNext()) {
+						int c = it.nextInt();
+						if (c == '$') {
+							if (it.hasNext()) {
+								sb.appendCodePoint(it.nextInt());
+							}
+						} else if (c == ',') {
+							builders.add(sb);
+							sb = new StringBuilder();
+						} else {
+							sb.appendCodePoint(c);
+						}
+					}
+					builders.add(sb);
+
+					dateStyle = builders.get(0).toString();
+					if (builders.size() == 1) {
+						timeStyle = dateStyle;
+					} else if (builders.size() == 2) {
+						timeStyle = builders.get(1).toString();
 					} else {
-						dateStyle = parts[0];
-						timeStyle = parts[1];
+						throw new RuntimeException(
+								"Too many commas in date time style. Escape commas in patterns");
 					}
 				}
 
@@ -350,7 +383,7 @@ public class TStringFormatter {
 						format = DateFormat.getDateTimeInstance(
 								dateFormatStyle, timeFormatStyle, locale);
 					} else {
-						format = new SimpleDateFormat(style, locale);
+						format = new SimpleDateFormat(unEscape(style), locale);
 					}
 					return format.format(p);
 				}
@@ -368,7 +401,8 @@ public class TStringFormatter {
 									dateFormatStyle, timeFormatStyle)
 									.withLocale(locale);
 						} else {
-							format = DateTimeFormatter.ofPattern(style, locale);
+							format = DateTimeFormatter.ofPattern(
+									unEscape(style), locale);
 						}
 					}
 
@@ -383,12 +417,14 @@ public class TStringFormatter {
 	public static FormatHandler createChoiceHandler() {
 		return new FormatHandler() {
 			@Override
-			public String handle(Locale locale, Object p, String style) {
-				if (style == null) {
+			public String handle(Locale locale, Object p, String style,
+					TStringFormatter formatter, TString tString) {
+				if (style == null || "".equals(unEscape(style).trim())) {
 					throw new RuntimeException(
 							"Style missing for choice format");
 				}
-				return new ChoiceFormat(style).format(p);
+				return new ChoiceFormat(formatter.formatTemplate(style,
+						tString, locale)).format(p);
 			}
 		};
 	}

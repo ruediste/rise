@@ -1,5 +1,6 @@
 package laf.component.core.translation;
 
+import java.lang.annotation.*;
 import java.util.Locale;
 
 import com.google.common.base.CaseFormat;
@@ -25,11 +26,6 @@ import com.google.common.base.CaseFormat;
  * {@code
  * <default variant text> [; <variant id>: <variant text>]}*
  * </pre>
- *
- * The backslash \ is used as escaping character. A character immediately
- * following the backslash loses any special meaning. The backslashes themselves
- * are removed from the string. A double backslash \\ is converted to a single
- * backslash.
  * <p>
  *
  * <p>
@@ -37,6 +33,8 @@ import com.google.common.base.CaseFormat;
  * variants. The variant name is taken from the attribute name
  * </p>
  */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.ANNOTATION_TYPE)
 public @interface LanguageAnnotation {
 	/**
 	 * Locale represented by the annotated annotation

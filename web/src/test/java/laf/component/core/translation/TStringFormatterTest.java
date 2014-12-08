@@ -3,7 +3,7 @@ package laf.component.core.translation;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDate;
+import java.time.*;
 import java.util.*;
 
 import org.junit.Before;
@@ -71,22 +71,23 @@ public class TStringFormatterTest {
 
 	@Test
 	public void testParameterFormatType() {
+		TString tString = new TString("resKey", "param", 4);
 		when(resourceResolver.resolve("resKey", Locale.ENGLISH)).thenReturn(
 				"the {param, aFormat}");
-		when(formatHandler.handle(Locale.ENGLISH, 4, null)).thenReturn(
-				"formatted");
-		assertEquals("the formatted", format.format(new TString("resKey",
-				"param", 4), Locale.ENGLISH));
+		when(formatHandler.handle(Locale.ENGLISH, 4, null, format, tString))
+				.thenReturn("formatted");
+		assertEquals("the formatted", format.format(tString, Locale.ENGLISH));
 	}
 
 	@Test
 	public void testParameterFormatTypeStyle() {
+		TString tString = new TString("resKey", "param", 4);
 		when(resourceResolver.resolve("resKey", Locale.ENGLISH)).thenReturn(
 				"the {param, aFormat, aSt$yle}");
-		when(formatHandler.handle(Locale.ENGLISH, 4, " aStyle")).thenReturn(
-				"formatted");
-		assertEquals("the formatted", format.format(new TString("resKey",
-				"param", 4), Locale.ENGLISH));
+		when(
+				formatHandler.handle(Locale.ENGLISH, 4, " aSt$yle", format,
+						tString)).thenReturn("formatted");
+		assertEquals("the formatted", format.format(tString, Locale.ENGLISH));
 	}
 
 	@SuppressWarnings("deprecation")
@@ -104,6 +105,17 @@ public class TStringFormatterTest {
 				"the {param, date, short}");
 		assertEquals("the 1/1/14", format.format(new TString("resKey", "param",
 				LocalDate.of(2014, 1, 1)), Locale.ENGLISH));
+	}
+
+	@Test
+	public void testDateTimeDate() {
+		when(resourceResolver.resolve("resKey", Locale.ENGLISH)).thenReturn(
+				"the {param, dateTime}");
+		assertEquals("the 2014-01-01T10:00:00Z[UTC]",
+				format.format(
+						new TString("resKey", "param", ZonedDateTime.of(
+								LocalDateTime.of(2014, 1, 1, 10, 00),
+								ZoneId.of("UTC"))), Locale.ENGLISH));
 	}
 
 	@Test
