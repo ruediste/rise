@@ -14,7 +14,7 @@ public class User extends SimpleIdEntity {
 			@Pattern(regexp = "AB.*") })
 	private String fistName;
 
-	@En("short: Last Name; long: ")
+	@En({ "Last Name", "short", "LN" })
 	private String lastName;
 	private Date lastLogin;
 

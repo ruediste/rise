@@ -24,6 +24,10 @@ public class TString {
 		this.parameters = new HashMap<>(parameters);
 	}
 
+	/**
+	 * Construct a {@link TString} using a key and a parameter list. The
+	 * parameters are pairs of parameter names and parameter values
+	 */
 	public TString(String resourceKey, Object... parameters) {
 		this.resourceKey = resourceKey;
 		this.parameters = new HashMap<>();

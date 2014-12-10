@@ -32,6 +32,7 @@ public class TStringFormatter {
 
 	@Inject
 	ResourceResolver resourceResolver;
+
 	private Map<String, FormatHandler> handlers;
 
 	public String format(TString tString, Locale locale) {

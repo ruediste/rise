@@ -30,12 +30,13 @@ import com.google.common.base.CaseFormat;
  *
  * <p>
  * Any other attributes of {@link String} type are interpreted as translation
- * variants. The variant name is taken from the attribute name
+ * variants. The variant name is taken from the attribute name or, if present,
+ * from the {@link Variant} annotation of the attribute
  * </p>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)
-public @interface LanguageAnnotation {
+public @interface Language {
 	/**
 	 * Locale represented by the annotated annotation
 	 */

@@ -2,7 +2,6 @@ package laf.component.core.translation;
 
 import static org.junit.Assert.assertEquals;
 
-import org.apache.commons.beanutils.PropertyUtils;
 import org.junit.Test;
 
 public class TranslationKeyUtilTest {
@@ -33,8 +32,6 @@ public class TranslationKeyUtilTest {
 
 	@Test
 	public void testField() throws NoSuchFieldException, SecurityException {
-		TestClassDerived
-		PropertyUtils.getPropertyDescriptor(getClass(), null)
 		assertEquals(TestClassBase.class.getName() + ".baseField",
 				TranslationKeyUtil.getKey(TestClassBase.class,
 						TestClassBase.class.getField("baseField")));
