@@ -6,7 +6,6 @@ import static org.rendersnake.HtmlAttributesFactory.class_;
 import javax.inject.Inject;
 
 import laf.component.core.api.CView;
-import laf.component.core.basic.*;
 import laf.component.core.tree.Component;
 import laf.component.web.CWViewUtil;
 import laf.component.web.components.*;
