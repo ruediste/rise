@@ -5,6 +5,10 @@ import java.util.Date;
 import javax.persistence.Entity;
 import javax.validation.constraints.Pattern;
 
+import laf.component.core.translation.lables.*;
+
+@Labeled
+@PropertiesLabeled
 @Entity
 public class User extends SimpleIdEntity {
 
@@ -14,7 +18,7 @@ public class User extends SimpleIdEntity {
 			@Pattern(regexp = "AB.*") })
 	private String fistName;
 
-	@En({ "Last Name", "short", "LN" })
+	@Label(value = "LN", variant = "short")
 	private String lastName;
 	private Date lastLogin;
 

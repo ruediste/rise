@@ -6,14 +6,16 @@ import java.time.format.FormatStyle;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.PrimitiveIterator.OfInt;
-
-import javax.inject.Inject;
-
-import laf.core.base.Val;
+import java.util.function.Function;
 
 /**
- * Formatter for {@link TString}s which closely follows the semantics of
- * {@link MessageFormat}.
+ * Interprets patterns to generate {@link String}s, closely following the
+ * semantics of {@link MessageFormat}.
+ *
+ * <p>
+ * The interpretation of a pattern always happens in the context of a locale and
+ * a parameter map.
+ * </p>
  *
  * <p>
  * The main differences from MessageFormat are:
@@ -28,36 +30,27 @@ import laf.core.base.Val;
  * {@link FormatHandler}s (see {@link #initialize(Map)})
  * </p>
  */
-public class TStringFormatter {
+public class PatternInterpreter {
 
-	@Inject
-	ResourceResolver resourceResolver;
+	/**
+	 * Interface for formatting placeholders in patterns
+	 */
+	public interface FormatHandler {
+
+		public String handle(Locale locale, Object parameter, String style,
+				Function<String, String> formatFunc);
+	}
 
 	private Map<String, FormatHandler> handlers;
 
-	public String format(TString tString, Locale locale) {
-
-		Object templateObj = resourceResolver.resolve(tString.getResourceKey(),
-				locale);
-		if (templateObj == null) {
-			throw new RuntimeException("No resource found for key "
-					+ tString.getResourceKey());
-		}
-		if (!(templateObj instanceof String)) {
-			throw new RuntimeException(
-					"Resolved template is not a string. Locale: " + locale
-							+ " key: " + tString.getResourceKey()
-							+ " resolved resource: " + templateObj);
-		}
-		String template = (String) templateObj;
-
-		return formatTemplate(template, tString, locale);
-	}
-
-	public String formatTemplate(String template, TString tString, Locale locale) {
+	/**
+	 * Generate a {@link String} from a pattern, substituting all parameters.
+	 */
+	public String interpret(String pattern, Map<String, Object> parameters,
+			Locale locale) {
 		StringBuilder result = new StringBuilder();
 
-		OfInt it = template.codePoints().iterator();
+		OfInt it = pattern.codePoints().iterator();
 		while (it.hasNext()) {
 			int c = it.nextInt();
 			if (c == '$') {
@@ -83,11 +76,11 @@ public class TStringFormatter {
 						if (placeholderDepth == 0) {
 							throw new RuntimeException(
 									"Error while parsing template: too many closing braces. Template: "
-											+ template);
+											+ pattern);
 						}
 						if (placeholderDepth == 1) {
 							// we are closing the placeholder, resolve it
-							resolvePlaceholder(locale, result, tString,
+							resolvePlaceholder(locale, result, parameters,
 									placeholder.toString());
 							break placeholderLoop;
 						}
@@ -105,8 +98,8 @@ public class TStringFormatter {
 	}
 
 	private void resolvePlaceholder(Locale locale, StringBuilder result,
-			TString tString, String placeholder) {
-		ArrayList<StringBuilder> builders = new ArrayList<>(3);
+			Map<String, Object> parameters, String placeholder) {
+		ArrayList<StringBuilder> placeholderParts = new ArrayList<>(3);
 		StringBuilder sb = new StringBuilder();
 
 		OfInt it = placeholder.codePoints().iterator();
@@ -114,52 +107,60 @@ public class TStringFormatter {
 			int c = it.nextInt();
 			if (c == '$') {
 				// the style keeps the escaping
-				if (builders.size() > 1) {
+				if (placeholderParts.size() > 1) {
 					sb.appendCodePoint(c);
 				}
 				if (it.hasNext()) {
 					sb.appendCodePoint(it.nextInt());
 				}
-			} else if (c == ',' && builders.size() < 2) {
-				builders.add(sb);
+			} else if (c == ',' && placeholderParts.size() < 2) {
+				placeholderParts.add(sb);
 				sb = new StringBuilder();
 			} else {
 				sb.appendCodePoint(c);
 			}
 		}
-		builders.add(sb);
+		placeholderParts.add(sb);
 
-		if (builders.size() == 0) {
+		if (placeholderParts.size() == 0) {
 			throw new RuntimeException("no parameter key found in "
 					+ placeholder);
 		}
 
-		String parameterKey = builders.get(0).toString().trim();
+		String parameterKey = placeholderParts.get(0).toString().trim();
 
-		Val<Object> parameter = tString.getParameter(parameterKey);
-		if (parameter == null) {
+		// check if parameter is present
+		if (!parameters.containsKey(parameterKey)) {
 			throw new RuntimeException("Unknown parameter " + parameterKey
-					+ " in string " + tString);
+					+ " in string " + parameters);
 		}
 
-		if (builders.size() == 1) {
-			result.append(parameter.get());
+		Object parameter = parameters.get(parameterKey);
+		if (placeholderParts.size() == 1) {
+			// there was only the parameter name in the placeholder
+			// append using toString()
+			result.append(parameter);
 		} else {
-			String format = builders.get(1).toString().trim();
+			// there is the parameter name and a format name in the placeholder
+
+			// retrieve the format handler for the format name
+			String format = placeholderParts.get(1).toString().trim();
 			FormatHandler handler = handlers.get(format);
 			if (handler == null) {
 				throw new RuntimeException("Unknow format " + format
 						+ " in placeholder " + placeholder + ". TString:  "
-						+ tString);
+						+ parameters);
 			}
 
+			// retrieve the style if available (third part of the placeholder)
 			String style = null;
-			if (builders.size() == 3) {
-				style = builders.get(2).toString();
+			if (placeholderParts.size() == 3) {
+				style = placeholderParts.get(2).toString();
 			}
 
-			result.append(handler.handle(locale, parameter.get(), style, this,
-					tString));
+			// apply the format to the parameter
+			result.append(handler.handle(locale, parameter, style,
+					s -> interpret(s, parameters, locale)));
 		}
 	}
 
@@ -169,6 +170,19 @@ public class TStringFormatter {
 	 */
 	public void initialize(Map<String, FormatHandler> handlers) {
 		this.handlers = new HashMap<>(handlers);
+	}
+
+	/**
+	 * Create a map containing the default format handlers
+	 */
+	public static HashMap<String, FormatHandler> defaultHandlerMap() {
+		HashMap<String, FormatHandler> handlers = new HashMap<>();
+		handlers.put("date", PatternInterpreter.createDateHandler());
+		handlers.put("time", PatternInterpreter.createTimeHandler());
+		handlers.put("dateTime", PatternInterpreter.createDateTimeHandler());
+		handlers.put("choice", PatternInterpreter.createChoiceHandler());
+		handlers.put("number", PatternInterpreter.createNumberHandler());
+		return handlers;
 	}
 
 	public static String unEscape(String escaped) {
@@ -192,7 +206,7 @@ public class TStringFormatter {
 		return new FormatHandler() {
 			@Override
 			public String handle(Locale locale, Object p, String style,
-					TStringFormatter formatter, TString tString) {
+					Function<String, String> formatFunc) {
 				NumberFormat format;
 				if (style == null || "".equals(unEscape(style).trim())) {
 					format = NumberFormat.getInstance(locale);
@@ -258,7 +272,7 @@ public class TStringFormatter {
 		return new FormatHandler() {
 			@Override
 			public String handle(Locale locale, Object p, String style,
-					TStringFormatter formatter, TString tString) {
+					Function<String, String> formatFunc) {
 				if (p instanceof Date) {
 					DateFormat format;
 					Integer formatStyle = parseDateFormat(style);
@@ -299,7 +313,7 @@ public class TStringFormatter {
 		return new FormatHandler() {
 			@Override
 			public String handle(Locale locale, Object p, String style,
-					TStringFormatter formatter, TString tString) {
+					Function<String, String> formatFunc) {
 				if (p instanceof Date) {
 					DateFormat format;
 					Integer formatStyle = parseDateFormat(style);
@@ -340,7 +354,7 @@ public class TStringFormatter {
 		return new FormatHandler() {
 			@Override
 			public String handle(Locale locale, Object p, String style,
-					TStringFormatter formatter, TString tString) {
+					Function<String, String> formatFunc) {
 				String dateStyle;
 				String timeStyle;
 				if (style == null) {
@@ -419,13 +433,20 @@ public class TStringFormatter {
 		return new FormatHandler() {
 			@Override
 			public String handle(Locale locale, Object p, String style,
-					TStringFormatter formatter, TString tString) {
+					Function<String, String> formatFunc) {
+
+				// check for empty styles
 				if (style == null || "".equals(unEscape(style).trim())) {
 					throw new RuntimeException(
 							"Style missing for choice format");
 				}
-				return new ChoiceFormat(formatter.formatTemplate(style,
-						tString, locale)).format(p);
+
+				// Format the style. Allows for parameter substitution within
+				// the template
+				String choicePattern = formatFunc.apply(style);
+
+				// format using the ChoiceFormat
+				return new ChoiceFormat(choicePattern).format(p);
 			}
 		};
 	}

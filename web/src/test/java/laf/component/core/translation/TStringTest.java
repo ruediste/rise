@@ -7,27 +7,16 @@ import org.junit.Test;
 public class TStringTest {
 
 	@Test
-	public void createNoParameters() {
+	public void createNoFallback() {
 		TString s = new TString("foo");
 		assertEquals("foo", s.getResourceKey());
-		assertTrue(s.getParameters().isEmpty());
+		assertNull(s.getFallback());
 	}
 
 	@Test
-	public void createSingleParameter() {
-		TString s = new TString("foo", "bar", 1);
+	public void createWithFallback() {
+		TString s = new TString("foo", "bar");
 		assertEquals("foo", s.getResourceKey());
-		assertEquals(1, s.getParameters().size());
-		assertEquals(1, s.getParameters().get("bar"));
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void createParameterInvalidCount() {
-		new TString("foo", "bar");
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void createParameterInvalidType() {
-		new TString("foo", 1, 1);
+		assertEquals("bar", s.getFallback());
 	}
 }
