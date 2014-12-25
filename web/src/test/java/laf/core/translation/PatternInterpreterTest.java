@@ -1,4 +1,4 @@
-package laf.component.core.translation;
+package laf.core.translation;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.*;
@@ -8,7 +8,7 @@ import java.time.*;
 import java.util.*;
 import java.util.function.Function;
 
-import laf.component.core.translation.PatternInterpreter.FormatHandler;
+import laf.core.translation.PatternInterpreter.FormatHandler;
 
 import org.junit.Before;
 import org.junit.Test;

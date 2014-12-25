@@ -52,6 +52,10 @@ public class BeanutilPropertyGenerationUtil {
 		return info.getB();
 	}
 
+	/**
+	 * Return the name of the property accessed by a method invocation and if a
+	 * setter has been accessed.
+	 */
 	public static Pair<String, Boolean> getPropertyInfo(
 			MethodInvocation invocation) {
 		Method method = invocation.method;
@@ -96,21 +100,6 @@ public class BeanutilPropertyGenerationUtil {
 
 		}
 
-		if (method.getName().startsWith("set")) {
-			String name = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL,
-					method.getName().substring("set".length()));
-			// setFoo()
-			if (method.getParameterCount() == 1) {
-				return Pair.of(name, false);
-			}
-
-			// setFoo(1,x)
-			if (method.getParameterCount() == 2
-					&& Integer.TYPE.equals(method.getParameterTypes()[0])) {
-				return Pair.of(name + "[" + invocation.args[0] + "]", false);
-			}
-		}
-
 		if (method.getName().equals("set")) {
 			// set(String propertyName, Object value)
 			if (method.getParameterCount() == 2
@@ -126,12 +115,27 @@ public class BeanutilPropertyGenerationUtil {
 						+ invocation.args[1] + "]", false);
 			}
 
-			// get(String propertyName, String key)
+			// set(String propertyName, String key)
 			if (method.getParameterCount() == 3
 					&& String.class.equals(method.getParameterTypes()[0])
 					&& String.class.equals(method.getParameterTypes()[1])) {
 				return Pair.of((String) invocation.args[0] + "("
 						+ invocation.args[1] + ")", false);
+			}
+		}
+
+		if (method.getName().startsWith("set")) {
+			String name = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL,
+					method.getName().substring("set".length()));
+			// setFoo()
+			if (method.getParameterCount() == 1) {
+				return Pair.of(name, false);
+			}
+
+			// setFoo(1,x)
+			if (method.getParameterCount() == 2
+					&& Integer.TYPE.equals(method.getParameterTypes()[0])) {
+				return Pair.of(name + "[" + invocation.args[0] + "]", false);
 			}
 		}
 		return null;

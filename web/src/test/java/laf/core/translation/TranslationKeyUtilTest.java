@@ -1,6 +1,7 @@
-package laf.component.core.translation;
+package laf.core.translation;
 
 import static org.junit.Assert.assertEquals;
+import laf.core.translation.TranslationKeyUtil;
 
 import org.junit.Test;
 

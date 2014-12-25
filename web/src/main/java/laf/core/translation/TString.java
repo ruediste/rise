@@ -1,4 +1,4 @@
-package laf.component.core.translation;
+package laf.core.translation;
 
 import com.google.common.base.Objects;
 

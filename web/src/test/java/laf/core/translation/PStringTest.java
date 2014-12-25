@@ -1,4 +1,4 @@
-package laf.component.core.translation;
+package laf.core.translation;
 
 import static org.junit.Assert.*;
 

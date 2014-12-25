@@ -1,4 +1,4 @@
-package laf.component.core.translation;
+package laf.core.translation;
 
 import java.text.*;
 import java.time.format.DateTimeFormatter;

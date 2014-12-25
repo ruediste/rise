@@ -5,10 +5,10 @@ import java.util.Date;
 import javax.persistence.Entity;
 import javax.validation.constraints.Pattern;
 
-import laf.component.core.translation.lables.*;
+import laf.core.translation.labels.*;
 
 @Labeled
-@PropertiesLabeled
+@PropertiesLabeled(variants = { "short" })
 @Entity
 public class User extends SimpleIdEntity {
 

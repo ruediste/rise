@@ -1,4 +1,4 @@
-package laf.component.core.translation.lables;
+package laf.core.translation.labels;
 
 import java.lang.annotation.*;
 

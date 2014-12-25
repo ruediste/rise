@@ -47,7 +47,7 @@
 					<execution>
 						<id>attach-javadocs</id>
 						<goals>
-<!-- 							<goal>javadoc</goal> -->
+							<!-- <goal>javadoc</goal> -->
 						</goals>
 						<phase>package</phase>
 					</execution>
@@ -244,6 +244,11 @@
 			<groupId>org.rendersnake</groupId>
 			<artifactId>rendersnake</artifactId>
 			<version>1.8</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.ruediste1</groupId>
+			<artifactId>c3java</artifactId>
+			<version>1.0</version>
 		</dependency>
 	</dependencies>
 	<parent>
