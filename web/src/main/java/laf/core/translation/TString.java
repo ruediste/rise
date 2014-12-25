@@ -38,4 +38,23 @@ public class TString {
 		return Objects.toStringHelper(this).add("resourceKey", resourceKey)
 				.add("fallback", fallback).toString();
 	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(fallback, resourceKey);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		TString other = (TString) obj;
+		return Objects.equal(resourceKey, other.resourceKey)
+				&& Objects.equal(fallback, other.fallback);
+	}
+
 }

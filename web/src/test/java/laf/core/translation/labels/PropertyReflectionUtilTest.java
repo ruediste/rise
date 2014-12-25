@@ -73,7 +73,7 @@ public class PropertyReflectionUtilTest {
 
 	@Test
 	public void testGetPropertiesA() throws Exception {
-		Map<String, Property> props = util.getPropertyMap(ClassA.class);
+		Map<String, Property> props = util.getPropertyIntroductionMap(ClassA.class);
 		assertEquals(1, props.size());
 		assertEquals(new PropertyReflectionUtil.Property("a", ClassA.class,
 				ClassA.class.getDeclaredMethod("getA"), null, null),
@@ -82,7 +82,7 @@ public class PropertyReflectionUtilTest {
 
 	@Test
 	public void testGetPropertiesB() throws Exception {
-		Map<String, Property> props = util.getPropertyMap(InterfaceB.class);
+		Map<String, Property> props = util.getPropertyIntroductionMap(InterfaceB.class);
 		assertEquals(2, props.size());
 		assertEquals(new PropertyReflectionUtil.Property("b", InterfaceB.class,
 				InterfaceB.class.getDeclaredMethod("getB"), null, null),
@@ -94,7 +94,7 @@ public class PropertyReflectionUtilTest {
 
 	@Test
 	public void testGetPropertiesC() throws Exception {
-		Map<String, Property> props = util.getPropertyMap(ClassC.class);
+		Map<String, Property> props = util.getPropertyIntroductionMap(ClassC.class);
 		assertEquals(3, props.size());
 		assertEquals(new PropertyReflectionUtil.Property("a", ClassA.class,
 				ClassA.class.getDeclaredMethod("getA"), null, null),

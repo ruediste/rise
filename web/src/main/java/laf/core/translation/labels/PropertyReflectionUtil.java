@@ -189,11 +189,15 @@ public class PropertyReflectionUtil {
 		return result;
 	}
 
-	public Iterable<Property> getProperties(Class<?> cls) {
-		return getPropertyMap(cls).values();
+	public Property getPropertyIntroduction(Class<?> type, String name) {
+		return getPropertyIntroductionMap(type).get(name);
 	}
 
-	public Map<String, Property> getPropertyMap(Class<?> type) {
+	/**
+	 * Return the {@link Property}s of the given type. For each property, the
+	 * property declaration which introduced the property is returned.
+	 */
+	public Map<String, Property> getPropertyIntroductionMap(Class<?> type) {
 		Map<String, Property> result = new HashMap<>();
 
 		for (Class<?> cls : Lists.reverse(Lists.newArrayList(JavaC3
