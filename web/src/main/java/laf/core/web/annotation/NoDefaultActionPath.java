@@ -1,10 +1,9 @@
-package laf.component.web;
+package laf.core.web.annotation;
 
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD })
-public @interface ActionPaths {
+public @interface NoDefaultActionPath {
 
-	ActionPath[] value();
 }

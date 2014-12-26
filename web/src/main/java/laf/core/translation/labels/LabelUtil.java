@@ -8,12 +8,13 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
+
 import laf.core.translation.TString;
 import laf.core.translation.labels.PropertyReflectionUtil.Property;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
-import com.google.inject.Inject;
 
 public class LabelUtil {
 

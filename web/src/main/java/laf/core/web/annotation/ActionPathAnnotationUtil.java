@@ -5,9 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import laf.component.web.ActionPath;
-import laf.component.web.NoDefaultActionPath;
-
 public class ActionPathAnnotationUtil {
 
 	public static class MethodPathInfos {
@@ -33,7 +30,7 @@ public class ActionPathAnnotationUtil {
 		if (m.isAnnotationPresent(NoDefaultActionPath.class)) {
 			if (primaryPath == null) {
 				throw new RuntimeException(
-						"No ActionPath marked as mainPath, but NoDefaultActionPath annotation present");
+						"No ActionPath marked as primaryPath, but NoDefaultActionPath annotation present");
 			}
 		} else {
 			String defaultPathInfo = defaultPathInfoSupplier.get();
