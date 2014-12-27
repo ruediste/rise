@@ -5,7 +5,7 @@ import java.util.Date;
 import javax.persistence.Entity;
 import javax.validation.constraints.Pattern;
 
-import laf.core.translation.labels.*;
+import laf.core.translation.label.*;
 
 @Labeled
 @PropertiesLabeled(variants = { "short" })

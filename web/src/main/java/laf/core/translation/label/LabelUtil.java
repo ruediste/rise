@@ -1,4 +1,4 @@
-package laf.core.translation.labels;
+package laf.core.translation.label;
 
 import static java.util.stream.Collectors.toList;
 
@@ -10,8 +10,9 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
+import laf.core.base.StringUtil;
 import laf.core.translation.TString;
-import laf.core.translation.labels.PropertyReflectionUtil.Property;
+import laf.core.translation.label.PropertyReflectionUtil.Property;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
@@ -118,7 +119,7 @@ public class LabelUtil {
 			return labels.get(0);
 		}
 
-		return insertSpacesIntoCamelCaseString(CaseFormat.UPPER_UNDERSCORE.to(
+		return StringUtil.insertSpacesIntoCamelCaseString(CaseFormat.UPPER_UNDERSCORE.to(
 				CaseFormat.UPPER_CAMEL, member.name()));
 	}
 
@@ -205,7 +206,7 @@ public class LabelUtil {
 	protected String calculateTypeFallback(Class<?> type, String variant) {
 		List<String> annotations = extractLabels(type, variant);
 		if (annotations.isEmpty()) {
-			return insertSpacesIntoCamelCaseString(type.getSimpleName());
+			return StringUtil.insertSpacesIntoCamelCaseString(type.getSimpleName());
 		}
 
 		if (annotations.size() == 1) {
@@ -264,20 +265,7 @@ public class LabelUtil {
 	 * customize
 	 */
 	protected String calculateFallbackFromPropertyName(String name) {
-		return insertSpacesIntoCamelCaseString(CaseFormat.LOWER_CAMEL.to(
+		return StringUtil.insertSpacesIntoCamelCaseString(CaseFormat.LOWER_CAMEL.to(
 				CaseFormat.UPPER_CAMEL, name));
-	}
-
-	public static String insertSpacesIntoCamelCaseString(String str) {
-		StringBuilder sb = new StringBuilder(str.length());
-		boolean isFirst = true;
-		for (int c : str.codePoints().toArray()) {
-			if (!isFirst && Character.isUpperCase(c)) {
-				sb.append(" ");
-			}
-			isFirst = false;
-			sb.appendCodePoint(c);
-		}
-		return sb.toString();
 	}
 }

@@ -1,4 +1,4 @@
-package laf.core.translation.labels;
+package laf.core.translation.label;
 
 import java.lang.reflect.*;
 import java.util.HashMap;

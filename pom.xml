@@ -16,6 +16,7 @@
 
 	<properties>
 		<mockito.version>1.9.5 </mockito.version>
+		<asm.version>5.0.1</asm.version>
 	</properties>
 
 
@@ -47,6 +48,8 @@
 						<annotationProcessor>
 							org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</annotationProcessor>
 					</annotationProcessors>
+					<compilerArgument>-parameters</compilerArgument>
+					<testCompilerArgument>-parameters</testCompilerArgument>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -78,4 +81,34 @@
 			<optional>true</optional>
 		</dependency>
 	</dependencies>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.ow2.asm</groupId>
+				<artifactId>asm</artifactId>
+				<version>${asm.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.ow2.asm</groupId>
+				<artifactId>asm-util</artifactId>
+				<version>${asm.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>org.ow2.asm</groupId>
+				<artifactId>asm-analysis</artifactId>
+				<version>${asm.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.ow2.asm</groupId>
+				<artifactId>asm-commons</artifactId>
+				<version>${asm.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.ow2.asm</groupId>
+				<artifactId>asm-tree</artifactId>
+				<version>${asm.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>

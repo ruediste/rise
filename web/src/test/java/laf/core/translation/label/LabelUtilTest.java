@@ -1,10 +1,11 @@
-package laf.core.translation.labels;
+package laf.core.translation.label;
 
 import static org.junit.Assert.*;
 
 import java.lang.annotation.*;
 
 import laf.core.translation.TString;
+import laf.core.translation.label.*;
 
 import org.junit.Before;
 import org.junit.Test;

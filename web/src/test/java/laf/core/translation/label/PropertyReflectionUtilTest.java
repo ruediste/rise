@@ -1,10 +1,11 @@
-package laf.core.translation.labels;
+package laf.core.translation.label;
 
 import static org.junit.Assert.assertEquals;
 
 import java.util.Map;
 
-import laf.core.translation.labels.PropertyReflectionUtil.Property;
+import laf.core.translation.label.PropertyReflectionUtil;
+import laf.core.translation.label.PropertyReflectionUtil.Property;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

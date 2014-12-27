@@ -1,4 +1,4 @@
-package laf.core.translation.labels;
+package laf.core.translation.label;
 
 import laf.core.translation.TranslationModule;
 

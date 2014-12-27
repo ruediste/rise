@@ -68,4 +68,26 @@ public class PString {
 	public TString getPattern() {
 		return pattern;
 	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(pattern, parameters);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		PString other = (PString) obj;
+		return Objects.equal(pattern, other.pattern)
+				&& Objects.equal(parameters, other.parameters);
+	}
 }
