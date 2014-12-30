@@ -38,12 +38,38 @@ public class TMessageInvocationHandlerTest {
 	public static interface TestMessages {
 		PString noItemFound();
 
+		TString noItemFound1();
+
+		TString tStringWithArgs(int arg);
+
+		int wrongReturnType();
+
 		@TMessage("There are {count} users")
 		PString userCount(int count);
 	}
 
 	@Inject
 	TestMessages msgs;
+
+	@Test
+	public void testTStringResult() {
+		assertEquals(
+
+				new TString(
+						"laf.core.translation.message.TMessageInvocationHandlerTest$TestMessages.noItemFound1",
+						"No Item Found1."), msgs.noItemFound1());
+
+	}
+
+	@Test(expected = RuntimeException.class)
+	public void testWrongReturnType() {
+		msgs.wrongReturnType();
+	}
+
+	@Test(expected = RuntimeException.class)
+	public void testTStringWithArgs() {
+		msgs.tStringWithArgs(4);
+	}
 
 	@Test
 	public void testMessages() {

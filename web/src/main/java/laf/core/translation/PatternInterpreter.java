@@ -46,7 +46,7 @@ public class PatternInterpreter {
 	/**
 	 * Generate a {@link String} from a pattern, substituting all parameters.
 	 */
-	public String interpret(String pattern, Map<String, Object> parameters,
+	public String format(String pattern, Map<String, Object> parameters,
 			Locale locale) {
 		StringBuilder result = new StringBuilder();
 
@@ -160,7 +160,7 @@ public class PatternInterpreter {
 
 			// apply the format to the parameter
 			result.append(handler.handle(locale, parameter, style,
-					s -> interpret(s, parameters, locale)));
+					s -> format(s, parameters, locale)));
 		}
 	}
 
@@ -450,4 +450,5 @@ public class PatternInterpreter {
 			}
 		};
 	}
+
 }

@@ -253,18 +253,30 @@
 			<version>1.0</version>
 		</dependency>
 		<dependency>
-    <groupId>org.apache.deltaspike.modules</groupId>
-    <artifactId>deltaspike-partial-bean-module-api</artifactId>
-    <version>${deltaspike.version}</version>
-    <scope>compile</scope>
-</dependency>
+			<groupId>org.apache.deltaspike.modules</groupId>
+			<artifactId>deltaspike-partial-bean-module-api</artifactId>
+			<version>${deltaspike.version}</version>
+			<scope>compile</scope>
+		</dependency>
 
-<dependency>
-    <groupId>org.apache.deltaspike.modules</groupId>
-    <artifactId>deltaspike-partial-bean-module-impl</artifactId>
-    <version>${deltaspike.version}</version>
-    <scope>runtime</scope>
-</dependency>
+		<dependency>
+			<groupId>org.apache.deltaspike.modules</groupId>
+			<artifactId>deltaspike-partial-bean-module-impl</artifactId>
+			<version>${deltaspike.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.ibm.icu</groupId>
+			<artifactId>icu4j</artifactId>
+			<version>54.1.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.parboiled</groupId>
+			<artifactId>parboiled-java</artifactId>
+			<version>1.1.6</version>
+		</dependency>
 	</dependencies>
 	<parent>
 		<groupId>ch.laf</groupId>
