@@ -1,7 +1,8 @@
 package laf.skeleton.sample;
 
-import laf.core.base.ActionResult;
-import laf.core.web.annotation.ActionPath;
+import com.github.ruediste.laf.core.base.ActionResult;
+import com.github.ruediste.laf.core.web.annotation.ActionPath;
+
 import laf.skeleton.base.MvcControllerBase;
 
 public class SampleMvcController extends MvcControllerBase {

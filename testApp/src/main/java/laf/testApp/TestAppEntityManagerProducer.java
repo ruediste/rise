@@ -6,8 +6,8 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.persistence.*;
 
-import laf.core.persistence.PersistenceUnitToken;
-import laf.core.persistence.PersistenceUnitTokenManager;
+import com.github.ruediste.laf.core.persistence.PersistenceUnitToken;
+import com.github.ruediste.laf.core.persistence.PersistenceUnitTokenManager;
 
 public class TestAppEntityManagerProducer {
 	@Inject

@@ -2,9 +2,9 @@ package laf.skeleton.base;
 
 import javax.inject.Inject;
 
-import laf.component.core.api.CView;
-import laf.component.web.CWRenderUtil;
-import laf.integration.IntegrationUtil;
+import com.github.ruediste.laf.component.core.api.CView;
+import com.github.ruediste.laf.component.web.CWRenderUtil;
+import com.github.ruediste.laf.integration.IntegrationUtil;
 
 public abstract class ComponentViewBase<TController> extends CView<TController> {
 

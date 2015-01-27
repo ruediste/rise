@@ -2,7 +2,7 @@ package laf.testApp;
 
 import javax.servlet.annotation.WebServlet;
 
-import laf.core.front.FrontServletBase;
+import com.github.ruediste.laf.core.front.FrontServletBase;
 
 @WebServlet(value = "/*", loadOnStartup = 10)
 public class FrontServlet extends FrontServletBase {

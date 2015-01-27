@@ -2,9 +2,9 @@ package laf.testApp.smokeTest;
 
 import javax.inject.Inject;
 
-import laf.core.base.ActionResult;
-import laf.mvc.core.api.MController;
-import laf.mvc.web.MWControllerUtil;
+import com.github.ruediste.laf.core.base.ActionResult;
+import com.github.ruediste.laf.mvc.core.api.MController;
+import com.github.ruediste.laf.mvc.web.MWControllerUtil;
 
 @MController
 public class SmokeTestController {

@@ -4,10 +4,10 @@ import static org.rendersnake.HtmlAttributesFactory.id;
 
 import javax.inject.Inject;
 
-import laf.component.core.api.CView;
-import laf.component.core.tree.Component;
-import laf.component.web.components.*;
-import laf.integration.IntegrationUtil;
+import com.github.ruediste.laf.component.core.api.CView;
+import com.github.ruediste.laf.component.core.tree.Component;
+import com.github.ruediste.laf.component.web.components.*;
+import com.github.ruediste.laf.integration.IntegrationUtil;
 
 public class TestComponentView extends CView<TestComponentController> {
 

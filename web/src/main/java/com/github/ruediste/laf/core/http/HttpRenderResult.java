@@ -1,0 +1,22 @@
+package com.github.ruediste.laf.core.http;
+
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletResponse;
+
+import com.github.ruediste.laf.core.base.ActionResult;
+
+/**
+ * Contains the result of handling a http request. The result should be kept in
+ * a form which can be sent to the {@link HttpServletResponse} with minimal
+ * dependencies and the sending process should generally not fail, except if
+ * there are problems with the response itself.
+ */
+public interface HttpRenderResult extends ActionResult {
+
+	/**
+	 * Send the render result to the given response.
+	 */
+	public void sendTo(HttpServletResponse response, HttpRenderResultUtil util)
+			throws IOException;
+}

@@ -8,12 +8,13 @@ import javax.persistence.EntityManager;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
-import laf.component.core.api.CController;
-import laf.component.core.binding.BindingGroup;
-import laf.component.web.CWControllerUtil;
-import laf.core.base.ActionResult;
-import laf.core.persistence.PersistenceHelper;
-import laf.core.web.annotation.ActionPath;
+import com.github.ruediste.laf.component.core.api.CController;
+import com.github.ruediste.laf.component.core.binding.BindingGroup;
+import com.github.ruediste.laf.component.web.CWControllerUtil;
+import com.github.ruediste.laf.core.base.ActionResult;
+import com.github.ruediste.laf.core.persistence.PersistenceHelper;
+import com.github.ruediste.laf.core.web.annotation.ActionPath;
+
 import sampleApp.entities.User;
 
 @CController

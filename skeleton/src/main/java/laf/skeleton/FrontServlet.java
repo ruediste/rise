@@ -2,7 +2,7 @@ package laf.skeleton;
 
 import javax.servlet.annotation.WebServlet;
 
-import laf.core.front.FrontServletBase;
+import com.github.ruediste.laf.core.front.FrontServletBase;
 
 /**
  * Servlet processing all requests handled by the framework.

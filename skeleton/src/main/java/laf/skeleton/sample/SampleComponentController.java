@@ -4,9 +4,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import laf.component.core.binding.BindingGroup;
-import laf.core.base.ActionResult;
-import laf.core.persistence.PersistenceHelper;
+import com.github.ruediste.laf.component.core.binding.BindingGroup;
+import com.github.ruediste.laf.core.base.ActionResult;
+import com.github.ruediste.laf.core.persistence.PersistenceHelper;
+
 import laf.skeleton.base.ComponentControllerBase;
 import laf.skeleton.dom.SampleEntity;
 

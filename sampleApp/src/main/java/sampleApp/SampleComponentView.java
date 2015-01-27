@@ -1,15 +1,15 @@
 package sampleApp;
 
-import static laf.component.core.binding.transformers.Transformers.dateToString;
+import static com.github.ruediste.laf.component.core.binding.transformers.Transformers.dateToString;
 import static org.rendersnake.HtmlAttributesFactory.class_;
 
 import javax.inject.Inject;
 
-import laf.component.core.api.CView;
-import laf.component.core.tree.Component;
-import laf.component.web.CWViewUtil;
-import laf.component.web.components.*;
-import laf.integration.IntegrationUtil;
+import com.github.ruediste.laf.component.core.api.CView;
+import com.github.ruediste.laf.component.core.tree.Component;
+import com.github.ruediste.laf.component.web.CWViewUtil;
+import com.github.ruediste.laf.component.web.components.*;
+import com.github.ruediste.laf.integration.IntegrationUtil;
 
 public class SampleComponentView extends CView<SampleComponentController> {
 

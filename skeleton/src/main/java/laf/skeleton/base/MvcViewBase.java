@@ -2,9 +2,9 @@ package laf.skeleton.base;
 
 import javax.inject.Inject;
 
-import laf.integration.IntegrationUtil;
-import laf.mvc.web.MWRenderUtil;
-import laf.mvc.web.MvcWebView;
+import com.github.ruediste.laf.integration.IntegrationUtil;
+import com.github.ruediste.laf.mvc.web.MWRenderUtil;
+import com.github.ruediste.laf.mvc.web.MvcWebView;
 
 public abstract class MvcViewBase<TData> extends MvcWebView<TData> {
 	@Inject

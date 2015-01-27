@@ -2,10 +2,10 @@ package laf.testApp.smokeTest;
 
 import java.io.IOException;
 
-import laf.mvc.web.MWRenderUtil;
-import laf.mvc.web.MvcWebView;
-
 import org.rendersnake.HtmlCanvas;
+
+import com.github.ruediste.laf.mvc.web.MWRenderUtil;
+import com.github.ruediste.laf.mvc.web.MvcWebView;
 
 public class SmokeTestView extends MvcWebView<String> {
 

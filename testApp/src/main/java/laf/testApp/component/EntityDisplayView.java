@@ -4,11 +4,12 @@ import static org.rendersnake.HtmlAttributesFactory.id;
 
 import java.io.IOException;
 
-import laf.mvc.web.MWRenderUtil;
-import laf.mvc.web.MvcWebView;
 import laf.testApp.dom.TestEntity;
 
 import org.rendersnake.HtmlCanvas;
+
+import com.github.ruediste.laf.mvc.web.MWRenderUtil;
+import com.github.ruediste.laf.mvc.web.MvcWebView;
 
 public class EntityDisplayView extends MvcWebView<TestEntity> {
 

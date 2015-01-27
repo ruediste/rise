@@ -3,9 +3,9 @@ package laf.skeleton.base;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
-import laf.component.core.api.CController;
-import laf.component.web.CWControllerUtil;
-import laf.integration.IntegrationUtil;
+import com.github.ruediste.laf.component.core.api.CController;
+import com.github.ruediste.laf.component.web.CWControllerUtil;
+import com.github.ruediste.laf.integration.IntegrationUtil;
 
 @CController
 public class ComponentControllerBase {

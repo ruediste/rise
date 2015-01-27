@@ -3,9 +3,9 @@ package laf.skeleton.base;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
-import laf.integration.IntegrationUtil;
-import laf.mvc.core.api.MController;
-import laf.mvc.web.MWControllerUtil;
+import com.github.ruediste.laf.integration.IntegrationUtil;
+import com.github.ruediste.laf.mvc.core.api.MController;
+import com.github.ruediste.laf.mvc.web.MWControllerUtil;
 
 @MController
 public abstract class MvcControllerBase {

@@ -5,11 +5,12 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
-import laf.component.core.api.CController;
-import laf.component.core.binding.BindingGroup;
-import laf.component.web.CWControllerUtil;
-import laf.core.base.ActionResult;
-import laf.core.persistence.PersistenceHelper;
+import com.github.ruediste.laf.component.core.api.CController;
+import com.github.ruediste.laf.component.core.binding.BindingGroup;
+import com.github.ruediste.laf.component.web.CWControllerUtil;
+import com.github.ruediste.laf.core.base.ActionResult;
+import com.github.ruediste.laf.core.persistence.PersistenceHelper;
+
 import laf.testApp.dom.TestEntity;
 
 @CController

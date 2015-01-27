@@ -4,10 +4,11 @@ import static org.rendersnake.HtmlAttributesFactory.href;
 
 import java.io.IOException;
 
-import laf.mvc.web.MWRenderUtil;
 import laf.skeleton.base.MvcViewBase;
 
 import org.rendersnake.HtmlCanvas;
+
+import com.github.ruediste.laf.mvc.web.MWRenderUtil;
 
 public class SampleMvcView extends MvcViewBase<String> {
 

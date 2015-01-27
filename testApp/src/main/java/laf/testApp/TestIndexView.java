@@ -6,13 +6,14 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import laf.integration.IntegrationUtil;
-import laf.mvc.web.MWRenderUtil;
-import laf.mvc.web.MvcWebView;
 import laf.testApp.component.TestComponentController;
 import laf.testApp.smokeTest.SmokeTestController;
 
 import org.rendersnake.HtmlCanvas;
+
+import com.github.ruediste.laf.integration.IntegrationUtil;
+import com.github.ruediste.laf.mvc.web.MWRenderUtil;
+import com.github.ruediste.laf.mvc.web.MvcWebView;
 
 public class TestIndexView extends MvcWebView<String> {
 

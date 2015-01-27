@@ -4,10 +4,10 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import laf.component.web.defaultConfiguration.ComponentWebDefaultConfiguration;
-import laf.core.base.configuration.DiscoverConfigruationEvent;
-import laf.core.defaultConfiguration.DefaultConfiguration;
-import laf.mvc.web.defaultConfiguration.MvcWebDefaultConfiguration;
+import com.github.ruediste.laf.component.web.defaultConfiguration.ComponentWebDefaultConfiguration;
+import com.github.ruediste.laf.core.base.configuration.DiscoverConfigruationEvent;
+import com.github.ruediste.laf.core.defaultConfiguration.DefaultConfiguration;
+import com.github.ruediste.laf.mvc.web.defaultConfiguration.MvcWebDefaultConfiguration;
 
 @ApplicationScoped
 public class TestConfigurationFactory {

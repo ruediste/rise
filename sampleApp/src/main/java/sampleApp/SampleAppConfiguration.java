@@ -5,13 +5,14 @@ import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
+import com.github.ruediste.laf.component.web.HtmlTemplateFactoriesCP;
+import com.github.ruediste.laf.component.web.HtmlTemplateFactoryImpl;
+import com.github.ruediste.laf.component.web.defaultConfiguration.ComponentWebDefaultConfiguration;
+import com.github.ruediste.laf.core.base.configuration.*;
+import com.github.ruediste.laf.core.defaultConfiguration.DefaultConfiguration;
+import com.github.ruediste.laf.mvc.web.defaultConfiguration.MvcWebDefaultConfiguration;
+
 import sampleApp.componentTemplates.CPageHtmlTemplate;
-import laf.component.web.HtmlTemplateFactoriesCP;
-import laf.component.web.HtmlTemplateFactoryImpl;
-import laf.component.web.defaultConfiguration.ComponentWebDefaultConfiguration;
-import laf.core.base.configuration.*;
-import laf.core.defaultConfiguration.DefaultConfiguration;
-import laf.mvc.web.defaultConfiguration.MvcWebDefaultConfiguration;
 
 @ApplicationScoped
 public class SampleAppConfiguration implements ConfigurationDefiner {

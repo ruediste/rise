@@ -6,12 +6,12 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import laf.component.web.CWRenderUtil;
-import laf.component.web.CWTemplateBase;
-import laf.component.web.components.CPage;
-import laf.core.web.resource.*;
-
 import org.rendersnake.HtmlCanvas;
+
+import com.github.ruediste.laf.component.web.CWRenderUtil;
+import com.github.ruediste.laf.component.web.CWTemplateBase;
+import com.github.ruediste.laf.component.web.components.CPage;
+import com.github.ruediste.laf.core.web.resource.*;
 
 public class CPageHtmlTemplate extends CWTemplateBase<CPage> {
 
