@@ -6,8 +6,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
-import laf.core.persistence.*;
-import laf.core.persistence.TokenBasedDelegatingEntityManager.NoPersistenceContextException;
+import laf.core.persistence.PersistenceUnitTokenManager.NoPersistenceContextException;
 import laf.test.DeploymentProvider;
 
 import org.jabsaw.util.Modules;

@@ -20,7 +20,7 @@ public class TestAppEntityManagerProducer {
 
 	@PostConstruct
 	public void initialize() {
-		token = contextManager.createToken(factory);
+		token = contextManager.createToken("test-unit");
 	}
 
 	@Produces

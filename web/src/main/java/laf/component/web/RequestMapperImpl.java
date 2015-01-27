@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import com.google.common.base.*;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.net.UrlEscapers;
 
 public class RequestMapperImpl implements RequestMapper {
 	@Inject
@@ -150,7 +151,7 @@ public class RequestMapperImpl implements RequestMapper {
 		// add arguments
 		for (String argument : invocation.getArguments()) {
 			sb.append("/");
-			sb.append(argument);
+			sb.append(UrlEscapers.urlFragmentEscaper().escape(argument));
 		}
 		return new HttpRequestImpl(sb.toString());
 	}

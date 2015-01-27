@@ -11,6 +11,7 @@ import javax.persistence.metamodel.Type;
 import laf.core.argumentSerializer.ArgumentSerializer;
 import laf.core.persistence.*;
 
+import com.google.common.base.Strings;
 import com.google.common.base.Supplier;
 
 public class EntitySerializer implements ArgumentSerializer {
@@ -56,7 +57,8 @@ public class EntitySerializer implements ArgumentSerializer {
 		for (IdentifierSerializer s : identifierSerializers) {
 			String result = s.generate(idType, identifier);
 			if (result != null) {
-				return token.getPersistenceUnitName() + ":" + result;
+				return Strings.nullToEmpty(token.getPersistenceUnitName())
+						+ ":" + result;
 			}
 		}
 
