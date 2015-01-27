@@ -1,7 +1,6 @@
 package laf.skeleton.sample;
 
 import static org.rendersnake.HtmlAttributesFactory.*;
-import laf.component.core.basic.*;
 import laf.component.core.tree.Component;
 import laf.component.web.components.*;
 import laf.skeleton.base.ComponentViewBase;

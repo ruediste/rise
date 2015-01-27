@@ -6,8 +6,8 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.persistence.*;
 
-import laf.core.persistence.EntityManagerToken;
-import laf.core.persistence.LafPersistenceContextManager;
+import laf.core.persistence.PersistenceUnitToken;
+import laf.core.persistence.PersistenceUnitTokenManager;
 
 /**
  * Producer of the {@link EntityManager}s which are available in the
@@ -15,16 +15,16 @@ import laf.core.persistence.LafPersistenceContextManager;
  */
 public class ApplicationEntityManagerProducer {
 	@Inject
-	LafPersistenceContextManager contextManager;
+	PersistenceUnitTokenManager contextManager;
 
 	@PersistenceUnit
 	EntityManagerFactory factory;
 
-	private EntityManagerToken token;
+	private PersistenceUnitToken token;
 
 	@PostConstruct
 	public void initialize() {
-		token = contextManager.createToken(factory);
+		token = contextManager.createToken("", factory);
 	}
 
 	@Produces
