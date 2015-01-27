@@ -18,7 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
-public class LafPersistenceContextManagerTest {
+public class PersistenceUnitTokenManagerTest {
 
 	@Deployment
 	public static WebArchive getDeployment() {
@@ -37,7 +37,7 @@ public class LafPersistenceContextManagerTest {
 	TestBean bean;
 
 	@Inject
-	LafPersistenceContextManager contextManager;
+	PersistenceUnitTokenManager contextManager;
 
 	@Inject
 	LafPersistenceHolder holder;

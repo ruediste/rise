@@ -11,7 +11,7 @@ import javax.validation.ConstraintViolation;
 import laf.component.core.binding.*;
 import laf.core.base.ActionResult;
 import laf.core.http.HttpService;
-import laf.core.persistence.LafPersistenceContextManager;
+import laf.core.persistence.PersistenceUnitTokenManager;
 import laf.core.persistence.LafPersistenceHolder;
 
 import org.slf4j.Logger;
@@ -31,7 +31,7 @@ public class ControllerUtilBase {
 	UserTransaction trx;
 
 	@Inject
-	LafPersistenceContextManager manager;
+	PersistenceUnitTokenManager manager;
 
 	@Inject
 	Instance<LafPersistenceHolder> holderInstance;

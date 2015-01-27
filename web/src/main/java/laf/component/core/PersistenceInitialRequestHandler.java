@@ -5,7 +5,7 @@ import javax.transaction.*;
 
 import laf.core.base.ActionResult;
 import laf.core.base.Val;
-import laf.core.persistence.LafPersistenceContextManager;
+import laf.core.persistence.PersistenceUnitTokenManager;
 
 import org.slf4j.Logger;
 
@@ -17,7 +17,7 @@ public class PersistenceInitialRequestHandler
 	Logger log;
 
 	@Inject
-	LafPersistenceContextManager manager;
+	PersistenceUnitTokenManager manager;
 
 	@Inject
 	PageScopedPersistenceHolder holder;

@@ -6,7 +6,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import laf.component.core.pageScope.PageScopeManager;
-import laf.core.persistence.LafPersistenceContextManager;
+import laf.core.persistence.PersistenceUnitTokenManager;
 import laf.test.DeploymentProvider;
 import laf.test.TestEntity;
 
@@ -39,7 +39,7 @@ public class PersistenceInitialRequestHandlerTest {
 	PageScopedPersistenceHolder holder;
 
 	@Inject
-	LafPersistenceContextManager persitenceManager;
+	PersistenceUnitTokenManager persitenceManager;
 
 	@Test
 	public void checkPageScopedHolderIsUsed() {

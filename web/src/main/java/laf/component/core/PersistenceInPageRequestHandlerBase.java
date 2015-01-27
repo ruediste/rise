@@ -3,7 +3,7 @@ package laf.component.core;
 import javax.inject.Inject;
 
 import laf.core.base.*;
-import laf.core.persistence.LafPersistenceContextManager;
+import laf.core.persistence.PersistenceUnitTokenManager;
 
 public class PersistenceInPageRequestHandlerBase<T> extends
 		DelegatingRequestHandler<T, T> {
@@ -12,7 +12,7 @@ public class PersistenceInPageRequestHandlerBase<T> extends
 	LafLogger log;
 
 	@Inject
-	LafPersistenceContextManager manager;
+	PersistenceUnitTokenManager manager;
 
 	@Inject
 	PageScopedPersistenceHolder holder;

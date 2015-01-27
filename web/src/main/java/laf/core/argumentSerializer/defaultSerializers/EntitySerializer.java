@@ -9,7 +9,6 @@ import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Type;
 
 import laf.core.argumentSerializer.ArgumentSerializer;
-import laf.core.base.ReflectionUtil;
 import laf.core.persistence.*;
 
 import com.google.common.base.Supplier;
@@ -20,7 +19,10 @@ public class EntitySerializer implements ArgumentSerializer {
 	BeanManager beans;
 
 	@Inject
-	LafPersistenceContextManager manager;
+	PersistenceUnitTokenManager manager;
+
+	@Inject
+	LafPersistenceHolder holder;
 
 	private Iterable<IdentifierSerializer> identifierSerializers;
 
@@ -34,13 +36,13 @@ public class EntitySerializer implements ArgumentSerializer {
 			return "null";
 		}
 
-		EntityManagerToken token = manager.getToken(ReflectionUtil
-				.getQualifiers(type, beans));
+		PersistenceUnitToken token = holder.getTokenByEntity(value);
+
 		if (token == null) {
 			return null;
 		}
 
-		EntityType<?> entity = manager.getEntity(token,
+		EntityType<?> entity = manager.getEntityMetaModel(token,
 				(Class<?>) type.getType());
 		if (entity == null) {
 			return null;
@@ -54,9 +56,10 @@ public class EntitySerializer implements ArgumentSerializer {
 		for (IdentifierSerializer s : identifierSerializers) {
 			String result = s.generate(idType, identifier);
 			if (result != null) {
-				return result;
+				return token.getPersistenceUnitName() + ":" + result;
 			}
 		}
+
 		throw new RuntimeException("No entity id serializer found for type "
 				+ idType + " used by entity of type "
 				+ entity.getJavaType().getName());
@@ -69,13 +72,19 @@ public class EntitySerializer implements ArgumentSerializer {
 			return () -> null;
 		}
 
-		EntityManagerToken token = manager.getToken(ReflectionUtil
-				.getQualifiers(type, beans));
+		int idx = urlPart.indexOf(':');
+		if (idx == -1) {
+			return null;
+		}
+		String persistenceUnitName = urlPart.substring(0, idx);
+
+		PersistenceUnitToken token = manager.getToken(persistenceUnitName);
+
 		if (token == null) {
 			return null;
 		}
 
-		EntityType<?> entity = manager.getEntity(token,
+		EntityType<?> entity = manager.getEntityMetaModel(token,
 				(Class<?>) type.getType());
 		if (entity == null) {
 			return null;
@@ -84,7 +93,8 @@ public class EntitySerializer implements ArgumentSerializer {
 		Type<?> idType = entity.getIdType();
 
 		for (IdentifierSerializer s : identifierSerializers) {
-			Supplier<?> idSupplier = s.parse(idType, urlPart);
+			Supplier<?> idSupplier = s
+					.parse(idType, urlPart.substring(idx + 1));
 			if (idSupplier != null) {
 				return () -> {
 					LafPersistenceHolder currentHolder = manager

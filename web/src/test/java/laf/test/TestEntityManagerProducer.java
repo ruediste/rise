@@ -6,17 +6,17 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.persistence.*;
 
-import laf.core.persistence.EntityManagerToken;
-import laf.core.persistence.LafPersistenceContextManager;
+import laf.core.persistence.PersistenceUnitToken;
+import laf.core.persistence.PersistenceUnitTokenManager;
 
 public class TestEntityManagerProducer {
 	@Inject
-	LafPersistenceContextManager contextManager;
+	PersistenceUnitTokenManager contextManager;
 
 	@PersistenceUnit
 	EntityManagerFactory factory;
 
-	private EntityManagerToken token;
+	private PersistenceUnitToken token;
 
 	@PostConstruct
 	public void initialize() {

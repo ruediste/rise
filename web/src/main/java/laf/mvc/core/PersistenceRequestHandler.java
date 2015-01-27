@@ -6,7 +6,7 @@ import javax.transaction.*;
 
 import laf.core.base.ActionResult;
 import laf.core.base.Val;
-import laf.core.persistence.LafPersistenceContextManager;
+import laf.core.persistence.PersistenceUnitTokenManager;
 import laf.core.persistence.LafPersistenceHolder;
 
 /**
@@ -19,7 +19,7 @@ public class PersistenceRequestHandler extends
 	UserTransaction transaction;
 
 	@Inject
-	LafPersistenceContextManager contextManager;
+	PersistenceUnitTokenManager contextManager;
 
 	@Inject
 	Instance<LafPersistenceHolder> holderInstance;

@@ -11,8 +11,9 @@ import javax.persistence.EntityManager;
 import laf.core.base.LafLogger;
 
 /**
- * Represents a map of {@link EntityManagerToken}s to the corresponding
- * {@link EntityManager}s
+ * Represents a map of {@link PersistenceUnitToken}s to the corresponding
+ * {@link EntityManager}s. Used to hold currently open {@link EntityManager}
+ * instances.
  */
 @Typed(LafPersistenceHolder.class)
 public class LafPersistenceHolder {
@@ -20,11 +21,11 @@ public class LafPersistenceHolder {
 	LafLogger log;
 
 	@Inject
-	LafPersistenceContextManager manager;
+	PersistenceUnitTokenManager manager;
 
-	private Map<EntityManagerToken, EntityManager> entityManagers = new HashMap<>();
+	private Map<PersistenceUnitToken, EntityManager> entityManagers = new HashMap<>();
 
-	public EntityManager getEntityManager(EntityManagerToken token) {
+	public EntityManager getEntityManager(PersistenceUnitToken token) {
 
 		EntityManager result = entityManagers.get(token);
 		if (result == null) {
@@ -56,5 +57,11 @@ public class LafPersistenceHolder {
 			em.flush();
 		}
 
+	}
+
+	public PersistenceUnitToken getTokenByEntity(Object value) {
+		return entityManagers.entrySet().stream()
+				.filter(x -> x.getValue().contains(value)).map(x -> x.getKey())
+				.findFirst().orElse(null);
 	}
 }

@@ -7,6 +7,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 
+/**
+ * Helper class for commonly used persistence related functionality
+ */
 public class PersistenceHelper {
 
 	@Inject

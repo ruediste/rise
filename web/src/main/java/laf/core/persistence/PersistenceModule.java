@@ -7,7 +7,7 @@ import javax.persistence.PersistenceContext;
 import org.jabsaw.Module;
 
 /**
- * This module provides an alternative way of managing {@link EntityManager}s.
+ * This module is used to manage {@link EntityManager}s.
  * <p>
  * The managers are injected using the {@link Inject} annotation (instead of the
  * {@link PersistenceContext} annotation). The entity managers are produced by
@@ -16,9 +16,9 @@ import org.jabsaw.Module;
  * </p>
  *
  * <p>
- * With each thread a {@link LafPersistenceHolder} can be associated. The
- * context manages the {@link EntityManager}s used while the context is active.
- * If a context is destroyed, the containing {@link EntityManager}s are closed.
+ * With each thread a {@link LafPersistenceHolder} can be associated. The holder
+ * manages the {@link EntityManager}s used while the holder is active. If a
+ * holder is destroyed, the containing {@link EntityManager}s are closed.
  * </p>
  */
 @Module(description = "Manage EntityManagers", imported = { laf.core.base.BaseModuleImpl.class })
