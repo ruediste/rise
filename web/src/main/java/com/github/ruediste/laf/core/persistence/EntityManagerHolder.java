@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.PreDestroy;
-import javax.enterprise.inject.Typed;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
@@ -15,8 +14,7 @@ import com.github.ruediste.laf.core.base.LafLogger;
  * {@link EntityManager}s. Used to hold currently open {@link EntityManager}
  * instances.
  */
-@Typed(LafPersistenceHolder.class)
-public class LafPersistenceHolder {
+public class EntityManagerHolder {
 	@Inject
 	LafLogger log;
 

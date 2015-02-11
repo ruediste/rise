@@ -1,4 +1,4 @@
-package laf.test;
+package com.github.ruediste.laf.test;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;

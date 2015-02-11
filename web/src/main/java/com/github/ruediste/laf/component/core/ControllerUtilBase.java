@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import com.github.ruediste.laf.component.core.binding.*;
 import com.github.ruediste.laf.core.base.ActionResult;
 import com.github.ruediste.laf.core.http.HttpService;
-import com.github.ruediste.laf.core.persistence.LafPersistenceHolder;
+import com.github.ruediste.laf.core.persistence.EntityManagerHolder;
 import com.github.ruediste.laf.core.persistence.PersistenceUnitTokenManager;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
@@ -33,7 +33,7 @@ public class ControllerUtilBase {
 	PersistenceUnitTokenManager manager;
 
 	@Inject
-	Instance<LafPersistenceHolder> holderInstance;
+	Instance<EntityManagerHolder> holderInstance;
 
 	@Inject
 	Instance<PageScopedPersistenceHolder> pageScopedHolderInstance;
@@ -58,11 +58,11 @@ public class ControllerUtilBase {
 		try {
 			trx.begin();
 			if (checker != null) {
-				LafPersistenceHolder holder = holderInstance.get();
+				EntityManagerHolder holder = holderInstance.get();
 				manager.withPersistenceHolder(holder, checker);
 				holder.destroy();
 			}
-			LafPersistenceHolder pageScopeHolder = pageScopedHolderInstance
+			EntityManagerHolder pageScopeHolder = pageScopedHolderInstance
 					.get();
 			log.debug("commiting holder " + pageScopeHolder.toString());
 			pageScopeHolder.joinTransaction();

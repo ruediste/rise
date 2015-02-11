@@ -2,8 +2,6 @@ package com.github.ruediste.laf.component.core;
 
 import javax.inject.Inject;
 
-import laf.test.DeploymentProvider;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -13,6 +11,7 @@ import org.junit.runner.RunWith;
 
 import com.github.ruediste.laf.component.core.ComponentViewRepository;
 import com.github.ruediste.laf.component.core.api.CView;
+import com.github.ruediste.laf.test.DeploymentProvider;
 
 @RunWith(Arquillian.class)
 public class ComponentViewRepositoryTest {

@@ -12,6 +12,7 @@
 		<module>sampleApp</module>
 		<module>testApp</module>
 		<module>skeleton</module>
+		<module>standalone</module>
 	</modules>
 
 	<properties>

@@ -5,8 +5,6 @@ import java.io.Serializable;
 import javax.inject.Inject;
 import javax.persistence.PostRemove;
 
-import laf.test.DeploymentProvider;
-
 import org.jabsaw.util.Modules;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -16,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.github.ruediste.laf.component.core.pageScope.*;
+import com.github.ruediste.laf.test.DeploymentProvider;
 
 @RunWith(Arquillian.class)
 public class PageScopedTest {

@@ -10,14 +10,14 @@ import javax.ejb.*;
 import javax.inject.Inject;
 import javax.persistence.*;
 
-import laf.test.DeploymentProvider;
-import laf.test.TestEntity;
-
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import com.github.ruediste.laf.test.DeploymentProvider;
+import com.github.ruediste.laf.test.TestEntity;
 
 @RunWith(Arquillian.class)
 public class EjbPersistenceTest {

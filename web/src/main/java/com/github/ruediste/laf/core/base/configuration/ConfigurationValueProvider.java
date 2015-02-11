@@ -1,6 +1,5 @@
 package com.github.ruediste.laf.core.base.configuration;
 
-import com.github.ruediste.laf.core.base.Val;
 import com.google.common.reflect.TypeToken;
 
 /**
@@ -8,8 +7,8 @@ import com.google.common.reflect.TypeToken;
  * load configuration values
  */
 interface ConfigurationValueProvider {
-	<V, T extends ConfigurationParameter<V>> Val<V> provideValue(
-			Class<T> configInterfaceClass, TypeToken<V> configValueType);
+	<V, T extends ConfigurationParameter<V>> V provideValue(
+			Class<T> parameterInterfaceClass, TypeToken<V> configValueType);
 
 	void setSuccessor(ConfigurationValueProvider successor);
 }

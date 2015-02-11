@@ -5,59 +5,61 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.inject.Inject;
+import javax.inject.*;
 
 import org.slf4j.Logger;
 
-import com.github.ruediste.laf.core.base.Val;
 import com.google.common.reflect.TypeToken;
+import com.google.inject.Injector;
 
-@ApplicationScoped
+@Singleton
 public class ConfigurationFactory {
 
-	@Inject
 	Logger log;
 
 	@Inject
-	Instance<DefinerConfigurationValueProvider> definerConfigurationValueProviderInstance;
+	Provider<DefinerConfigurationValueProvider> definerConfigurationValueProviderInstance;
 
 	@Inject
-	Instance<PropertiesConfigrationValueProvider> propertiesConfigrationValueProviderInstance;
+	Provider<PropertiesConfigrationValueProvider> propertiesConfigrationValueProviderInstance;
 
 	@Inject
 	DefaultAnnotationConfigurationValueProvider defaultAnnotationConfigurationValueProvider;
-	@Inject
-	Event<DiscoverConfigruationEvent> discoverConfigurationEvent;
 
-	private ConfigurationValueProvider provider;
+	@Inject
+	Injector injector;
+
+	private ConfigurationValueProvider provider = new TerminalConfigurationValueProvider();
 
 	private Method getMethod;
 
-	private Map<Class<?>, Val<?>> cache = new ConcurrentHashMap<>();
+	private Map<Class<?>, Object> cache = new ConcurrentHashMap<>();
 
-	protected void add(ConfigurationDefiner definer) {
+	public ConfigurationFactory add(
+			Class<? extends ConfigurationDefiner> definer) {
+		return add(injector.getInstance(definer));
+	}
+
+	public ConfigurationFactory add(ConfigurationDefiner definer) {
 		DefinerConfigurationValueProvider provider = definerConfigurationValueProviderInstance
 				.get();
 		provider.setDefiner(definer);
 		add(provider);
+		return this;
 	}
 
-	protected void addPropretiesFile(String path) {
+	public ConfigurationFactory addPropretiesFile(String path) {
 		PropertiesConfigrationValueProvider provider = propertiesConfigrationValueProviderInstance
 				.get();
 		provider.loadProperties(path);
 		add(provider);
+		return this;
 	}
 
-	protected void add(ConfigurationValueProvider provider) {
+	public ConfigurationFactory add(ConfigurationValueProvider provider) {
 		provider.setSuccessor(this.provider);
 		this.provider = provider;
-
+		return this;
 	}
 
 	@PostConstruct
@@ -70,62 +72,25 @@ public class ConfigurationFactory {
 			throw new RuntimeException(e);
 		}
 
-		DiscoverConfigruationEvent e = new DiscoverConfigruationEvent() {
-			boolean locked;
-
-			private void checkLocked() {
-				if (locked) {
-					throw new RuntimeException(
-							"Event is locked. There are probably multiple observers for this event");
-				}
-			}
-
-			@Override
-			public void addPropretiesFile(String path) {
-				checkLocked();
-				ConfigurationFactory.this.addPropretiesFile(path);
-			}
-
-			@Override
-			public void add(ConfigurationValueProvider provider) {
-				checkLocked();
-				ConfigurationFactory.this.add(provider);
-
-			}
-
-			@Override
-			public void add(ConfigurationDefiner definer) {
-				checkLocked();
-				ConfigurationFactory.this.add(definer);
-
-			}
-
-			@Override
-			public void lock() {
-				locked = true;
-			}
-		};
-		discoverConfigurationEvent.fire(e);
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	private <V, T extends ConfigurationParameter<V>> Val<V> provideValue(
-			ConfigurationValueProvider provider, Class<?> configInterfaceClass,
-			TypeToken<?> configValueClass) {
+	private <V, T extends ConfigurationParameter<V>> V provideValue(
+			Class<?> parameterInterfaceClass, TypeToken<?> configValueClass) {
 
-		Val<V> result;
-		if (cache.containsKey(configInterfaceClass)) {
-			result = (Val<V>) cache.get(configInterfaceClass);
+		V result;
+		if (cache.containsKey(parameterInterfaceClass)) {
+			result = (V) cache.get(parameterInterfaceClass);
 		} else {
 			synchronized (this) {
-				if (cache.containsKey(configValueClass)) {
-					result = (Val<V>) cache.get(configInterfaceClass);
+				if (cache.containsKey(parameterInterfaceClass)) {
+					result = (V) cache.get(parameterInterfaceClass);
 				} else {
 					result = provider.provideValue(
-							(Class<T>) configInterfaceClass,
+							(Class<T>) parameterInterfaceClass,
 							(TypeToken<V>) configValueClass);
 					if (result != null) {
-						cache.put(configInterfaceClass, result);
+						cache.put(parameterInterfaceClass, result);
 					}
 				}
 			}
@@ -135,39 +100,29 @@ public class ConfigurationFactory {
 
 	public static class NoValueFoundException extends RuntimeException {
 
+		private static final long serialVersionUID = 1L;
+
 		public NoValueFoundException(Class<?> parameterInterfaceClass) {
 			super("No configuration value found for " + parameterInterfaceClass);
 		}
 
 	}
 
-	@Produces
-	public <T extends ConfigurationParameter<?>> ConfigurationValue<T> produceConfigurationValue(
-			InjectionPoint injectionPoint) {
-		// create arguments
-		TypeToken<?> parameterInterfaceType = TypeToken.of(
-				injectionPoint.getType()).resolveType(
-				ConfigurationValue.class.getTypeParameters()[0]);
-		Class<?> parameterInterfaceClass = parameterInterfaceType.getRawType();
+	public <T extends ConfigurationParameter<?>> T createParameterInstance(
+			Class<?> parameterInterfaceClass, Member targetMember) {
 
 		// create result
 		try {
-			return createValueInstance(parameterInterfaceClass);
+			return createParameterInstance(parameterInterfaceClass);
 		} catch (NoValueFoundException e) {
 			throw new RuntimeException(
 					"Error while retrieving configuration value for "
 							+ parameterInterfaceClass
 							+ ".\nRequired for member"
-							+ injectionPoint.getMember().getDeclaringClass()
-							+ "." + injectionPoint.getMember().getName());
+							+ targetMember.getDeclaringClass() + "."
+							+ targetMember.getName());
 		}
 
-	}
-
-	public <T extends ConfigurationParameter<?>> ConfigurationValue<T> createValueInstance(
-			Class<?> parameterInterfaceClass) {
-		final T parameter = createParameterInstance(parameterInterfaceClass);
-		return new ConfigurationValueImpl<>(parameter);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -189,16 +144,10 @@ public class ConfigurationFactory {
 											.getTypeParameters()[0]);
 
 							// invoke provider
-							Val<?> value = provideValue(provider,
+							Object value = provideValue(
 									parameterInterfaceClass, valueType);
 
-							// throw error if no value has been found
-							if (value == null) {
-								throw new NoValueFoundException(
-										parameterInterfaceClass);
-							}
-
-							return value.get();
+							return value;
 						}
 						throw new RuntimeException("Method " + method.getName()
 								+ " may not be called on ConfigValue instances");

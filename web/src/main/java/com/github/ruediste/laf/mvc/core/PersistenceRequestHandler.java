@@ -6,7 +6,7 @@ import javax.transaction.*;
 
 import com.github.ruediste.laf.core.base.ActionResult;
 import com.github.ruediste.laf.core.base.Val;
-import com.github.ruediste.laf.core.persistence.LafPersistenceHolder;
+import com.github.ruediste.laf.core.persistence.EntityManagerHolder;
 import com.github.ruediste.laf.core.persistence.PersistenceUnitTokenManager;
 
 /**
@@ -22,7 +22,7 @@ public class PersistenceRequestHandler extends
 	PersistenceUnitTokenManager contextManager;
 
 	@Inject
-	Instance<LafPersistenceHolder> holderInstance;
+	Instance<EntityManagerHolder> holderInstance;
 
 	@Override
 	public ActionResult handle(ActionPath<String> actionPath) {
@@ -40,7 +40,7 @@ public class PersistenceRequestHandler extends
 					// transaction.setRollbackOnly();
 				}
 
-				LafPersistenceHolder holder = holderInstance.get();
+				EntityManagerHolder holder = holderInstance.get();
 				Val<ActionResult> result = new Val<>();
 				contextManager.withPersistenceHolder(holder, () -> {
 					result.set(getDelegate().handle(actionPath));

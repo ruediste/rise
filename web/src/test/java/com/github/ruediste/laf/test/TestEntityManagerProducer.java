@@ -1,4 +1,4 @@
-package laf.test;
+package com.github.ruediste.laf.test;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -26,6 +26,6 @@ public class TestEntityManagerProducer {
 	@Produces
 	@ApplicationScoped
 	EntityManager produceManager() {
-		return contextManager.produceManager(token);
+		return contextManager.createProvider(token);
 	}
 }

@@ -1,4 +1,4 @@
-package laf.test;
+package com.github.ruediste.laf.test;
 
 import org.mockito.Mockito;
 

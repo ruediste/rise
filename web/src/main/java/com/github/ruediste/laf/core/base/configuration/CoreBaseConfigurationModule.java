@@ -1,8 +1,15 @@
 package com.github.ruediste.laf.core.base.configuration;
 
+import java.lang.reflect.Field;
+
 import org.jabsaw.Module;
 
 import com.github.ruediste.laf.core.base.BaseModuleImpl;
+import com.github.ruediste.laf.core.base.configuration.ConfigurationFactory.NoValueFoundException;
+import com.google.inject.*;
+import com.google.inject.matcher.Matchers;
+import com.google.inject.spi.TypeEncounter;
+import com.google.inject.spi.TypeListener;
 
 /**
  * Typesafe Configuration System supporting properties files.
@@ -24,11 +31,11 @@ import com.github.ruediste.laf.core.base.BaseModuleImpl;
  * </ul>
  *
  * <strong> Declaring Configuration Parameters </strong> <br/>
- *  
+ * 
  * To retrieve and set configuration values in a typesafe way, each
  * configuration value has to have a java representation. We chose to use a type
- * for that. More precise, for each configuration parameter an interface extending
- * {@link ConfigurationParameter} has to be defined:
+ * for that. More precise, for each configuration parameter an interface
+ * extending {@link ConfigurationParameter} has to be defined:
  *
  * <pre>
  * public interface UserName extends ConfigurationParameter&lt;String&gt; {
@@ -48,17 +55,18 @@ import com.github.ruediste.laf.core.base.BaseModuleImpl;
  *
  * <strong> Defining Configuration Values </strong> <br/>
  * <p>
- * When the first {@link ConfigurationValue} is accessed (typically during application startup),
- * the {@link DiscoverConfigruationEvent} is raised. The application has to observe this event and
- * register some {@link ConfigurationValueProvider}s. Providers registered later override earlier
- * providers.  
+ * When the first {@link ConfigurationValue} is accessed (typically during
+ * application startup), the {@link DiscoverConfigruationEvent} is raised. The
+ * application has to observe this event and register some
+ * {@link ConfigurationValueProvider}s. Providers registered later override
+ * earlier providers.
  * </p>
- * 
+ *
  * <p>
- * Configuration values can be defined by creating a class extending from {@link ConfigurationDefiner}.
- * The class defines values for {@link ConfigurationParameter}s by declaring methods
- * with parameter interface as argument. In the method body, the
- * configuration value must be set:
+ * Configuration values can be defined by creating a class extending from
+ * {@link ConfigurationDefiner}. The class defines values for
+ * {@link ConfigurationParameter}s by declaring methods with parameter interface
+ * as argument. In the method body, the configuration value must be set:
  * </p>
  *
  * <pre>
@@ -66,25 +74,28 @@ import com.github.ruediste.laf.core.base.BaseModuleImpl;
  *   userName.set("Frank")
  * }
  * </pre>
- * 
+ *
  * <p>
- * An instance of such a class can be registered as {@link ConfigurationValueProvider} by calling
+ * An instance of such a class can be registered as
+ * {@link ConfigurationValueProvider} by calling
  * {@link DiscoverConfigruationEvent#add(ConfigurationDefiner)}
- * </p>
- * 
- * <p>
- * To modify the value of an earlier provider, the define method can be annotate with {@link ExtendConfiguration}.
- * The existing configuration value can be accessed using {@link ConfigurationParameter#get()}
  * </p>
  *
  * <p>
- * Properties files are registered using {@link DiscoverConfigruationEvent#addPropretiesFile(String)}.
- * Each configuration parameter has one or more keys. By
- * default, the only key is the fully qualified class name of the configuration
- * parameter interface. This key can optionally prepended by further keys using the
- * {@link ConfigurationKey} annotation. When determining the configuration
- * value, the .properties file is searched for the first matching key.
- *</p>
+ * To modify the value of an earlier provider, the define method can be annotate
+ * with {@link ExtendConfiguration}. The existing configuration value can be
+ * accessed using {@link ConfigurationParameter#get()}
+ * </p>
+ *
+ * <p>
+ * Properties files are registered using
+ * {@link DiscoverConfigruationEvent#addPropretiesFile(String)}. Each
+ * configuration parameter has one or more keys. By default, the only key is the
+ * fully qualified class name of the configuration parameter interface. This key
+ * can optionally prepended by further keys using the {@link ConfigurationKey}
+ * annotation. When determining the configuration value, the .properties file is
+ * searched for the first matching key.
+ * </p>
  *
  * <p>
  * Strings and primitives are be parsed using the respective valueOf method.
@@ -101,6 +112,58 @@ import com.github.ruediste.laf.core.base.BaseModuleImpl;
  * </p>
  */
 @Module(description = "Typsafe Configuration System supporting .properties files", hideFromDependencyGraphOutput = true, imported = { BaseModuleImpl.class })
-public class CoreBaseConfigurationModule {
+public class CoreBaseConfigurationModule extends AbstractModule {
+
+	@Override
+	protected void configure() {
+		Provider<ConfigurationFactory> factoryProvider = getProvider(ConfigurationFactory.class);
+
+		// bind configuration parameters
+		bindListener(Matchers.any(), new TypeListener() {
+
+			@Override
+			public <I> void hear(TypeLiteral<I> type, TypeEncounter<I> encounter) {
+				TypeLiteral<?> t = type;
+
+				while (!Object.class.equals(t.getRawType())) {
+					for (Field field : type.getRawType().getDeclaredFields()) {
+						Class<?> fieldType = type.getFieldType(field)
+								.getRawType();
+						if (ConfigurationParameter.class
+								.isAssignableFrom(fieldType)) {
+							field.setAccessible(true);
+							encounter.register(new MembersInjector<I>() {
+
+								@Override
+								public void injectMembers(I instance) {
+									try {
+										field.set(
+												instance,
+												factoryProvider
+														.get()
+														.createParameterInstance(
+																fieldType));
+									} catch (IllegalArgumentException
+											| IllegalAccessException e) {
+										throw new RuntimeException(
+												"Error while injecting configuration parameter",
+												e);
+									} catch (NoValueFoundException e) {
+										throw new RuntimeException(
+												"Error while retrieving configuration value for "
+														+ fieldType
+														+ ".\nRequired for member"
+														+ field.getDeclaringClass()
+														+ "." + field.getName());
+									}
+								}
+							});
+						}
+					}
+					t = t.getSupertype(t.getRawType().getSuperclass());
+				}
+			}
+		});
+	}
 
 }

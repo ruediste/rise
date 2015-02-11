@@ -1,71 +1,76 @@
 package com.github.ruediste.laf.core.persistence;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.*;
 
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
+import java.sql.*;
 
-import laf.test.DeploymentProvider;
+import javax.persistence.metamodel.EntityType;
 
-import org.jabsaw.util.Modules;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.h2.jdbcx.JdbcDataSource;
+import org.junit.*;
 
-import com.github.ruediste.laf.core.persistence.*;
-import com.github.ruediste.laf.core.persistence.PersistenceUnitTokenManager.NoPersistenceContextException;
+import bitronix.tm.resource.jdbc.PoolingDataSource;
 
-@RunWith(Arquillian.class)
+import com.github.ruediste.laf.test.TestEntity;
+
 public class PersistenceUnitTokenManagerTest {
 
-	@Deployment
-	public static WebArchive getDeployment() {
-		WebArchive result = DeploymentProvider.getPersistence().addClasses(
-				Modules.getAllRequiredClasses(PersistenceModule.class));
-		System.out.println(result.toString(true));
-		return result;
+	private Connection connection;
+	private PersistenceUnitTokenManager mgr;
+
+	@Before
+	public void setup() throws SQLException {
+
+		mgr = new PersistenceUnitTokenManager();
 	}
 
-	static class TestBean {
-		@Inject
-		EntityManager manager;
+	protected void openDBConnection() throws SQLException {
+		connection = DriverManager
+				.getConnection("jdbc:h2:mem:testdb", "sa", "");
+
+		PoolingDataSource myDataSource = new PoolingDataSource();
+		myDataSource.setClassName(JdbcDataSource.class.getName());
+		myDataSource.setUniqueName("h2");
+		myDataSource.setMaxPoolSize(5);
+		myDataSource.setAllowLocalTransactions(false);
+		myDataSource.setTestQuery("SELECT 1");
+		myDataSource.getDriverProperties().setProperty("user", "sa");
+		myDataSource.getDriverProperties().setProperty("password", "");
+		myDataSource.getDriverProperties().setProperty("URL",
+				"jdbc:h2:mem:testdb");
+		myDataSource.init();
 	}
 
-	@Inject
-	TestBean bean;
-
-	@Inject
-	PersistenceUnitTokenManager contextManager;
-
-	@Inject
-	LafPersistenceHolder holder;
-
-	@Test(expected = NoPersistenceContextException.class)
-	public void errorNoPersistenceContext() {
-		bean.manager.getFlushMode();
-	}
-
-	@Test
-	public void simple() {
-		contextManager.withPersistenceHolder(holder, new Runnable() {
-
-			@Override
-			public void run() {
-				bean.manager.getFlushMode();
+	@After
+	public void after() {
+		try {
+			if (connection != null) {
+				connection.close();
 			}
-		});
+		} catch (SQLException e) {
+		}
 	}
-
-	@Inject
-	Instance<EntityManager> entityManagerInstance;
 
 	@Test
-	public void repeatedRetrieval() {
-		EntityManager em1 = entityManagerInstance.get();
-		EntityManager em2 = entityManagerInstance.get();
-		assertSame(em1, em2);
+	public void testCreateTokenString() throws Exception {
+		PersistenceUnitToken token = mgr.createToken("unitTest").build();
+		assertEquals("unitTest", token.getPersistenceUnitName());
 	}
+
+	@Test
+	public void testGetToken() throws Exception {
+		PersistenceUnitToken token = mgr.createToken("unitTest").build();
+		assertSame(token, mgr.getToken("unitTest"));
+	}
+
+	@Test
+	public void testGetEntityMetaModel() throws Exception {
+		PersistenceUnitToken token = mgr.createToken("unitTest").build();
+
+		openDBConnection();
+
+		EntityType<?> type = mgr.getEntityMetaModel(token, TestEntity.class);
+		assertEquals("TestEntity", type.getName());
+	}
+
 }

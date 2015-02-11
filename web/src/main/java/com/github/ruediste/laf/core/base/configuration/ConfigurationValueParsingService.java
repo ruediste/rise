@@ -2,10 +2,10 @@ package com.github.ruediste.laf.core.base.configuration;
 
 import java.util.*;
 
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import com.google.common.reflect.TypeToken;
+import com.google.inject.Injector;
 
 /**
  * Service for parsing configuration values from strings.
@@ -71,7 +71,7 @@ public class ConfigurationValueParsingService {
 	}
 
 	@Inject
-	Instance<Object> instance;
+	Injector injector;
 
 	private <T> T parseSingleValue(TypeToken<T> targetType, String value) {
 		Class<?> rawType = targetType.getRawType();
@@ -103,7 +103,7 @@ public class ConfigurationValueParsingService {
 
 			try {
 				Class<?> objectClass = classLoader.loadClass(value);
-				return (T) instance.select(objectClass).get();
+				return (T) injector.getInstance(objectClass);
 			} catch (ClassNotFoundException e) {
 				throw new RuntimeException("Unable to load class " + value
 						+ " as configuration value", e);

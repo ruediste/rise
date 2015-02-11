@@ -1,38 +1,28 @@
 package com.github.ruediste.laf.core.base;
 
-import java.lang.annotation.Annotation;
-
-import javax.annotation.PostConstruct;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.util.TypeLiteral;
-import javax.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.Key;
 
 /**
  * Static factory for bean instances, for situations where dependency injection
  * is not available.
  */
-@Singleton
-@Startup
 public class InstanceFactory {
+	private static ThreadLocal<Injector> injector;
 
-	private static Instance<Object> instance;
-
-	public static <T> T getInstance(Class<T> clazz, Annotation... qualifiers) {
-		return instance.select(clazz, qualifiers).get();
+	public static <T> T getInstance(Class<T> clazz) {
+		return injector.get().getInstance(clazz);
 	}
 
-	public static <T> T getInstance(TypeLiteral<T> typeLiteral,
-			Annotation... qualifiers) {
-		return instance.select(typeLiteral, qualifiers).get();
+	public static <T> T getInstance(Key<T> key) {
+		return injector.get().getInstance(key);
 	}
 
-	@Inject
-	Instance<Object> inst;
+	public static void setInjector(Injector injector) {
+		InstanceFactory.injector.set(injector);
+	}
 
-	@PostConstruct
-	public void initialize() {
-		instance = inst;
+	public static void removeInjector() {
+		InstanceFactory.injector.remove();
 	}
 }

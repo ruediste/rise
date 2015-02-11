@@ -1,13 +1,12 @@
 package com.github.ruediste.laf.component.core.tree.event;
 
-import laf.test.MockitoExt;
-
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import com.github.ruediste.laf.component.core.tree.*;
 import com.github.ruediste.laf.component.core.tree.event.*;
+import com.github.ruediste.laf.test.MockitoExt;
 import com.google.common.reflect.TypeToken;
 
 public class ComponentEventTest {

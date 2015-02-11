@@ -5,8 +5,6 @@ import static org.junit.Assert.assertNotNull;
 
 import javax.inject.Inject;
 
-import laf.test.DeploymentProvider;
-
 import org.jabsaw.util.Modules;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -16,6 +14,7 @@ import org.junit.runner.RunWith;
 
 import com.github.ruediste.laf.core.base.Val;
 import com.github.ruediste.laf.core.base.configuration.*;
+import com.github.ruediste.laf.test.DeploymentProvider;
 import com.google.common.reflect.TypeToken;
 
 @RunWith(Arquillian.class)

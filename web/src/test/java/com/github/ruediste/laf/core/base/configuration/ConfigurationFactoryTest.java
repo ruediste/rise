@@ -2,34 +2,18 @@ package com.github.ruediste.laf.core.base.configuration;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import laf.test.DeploymentProvider;
-
-import org.jabsaw.util.Modules;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import com.github.ruediste.laf.core.base.configuration.*;
 import com.github.ruediste.laf.core.base.configuration.DefinerConfigurationValueProvider.ExtendedParameterNotDefined;
+import com.github.ruediste.laf.core.guice.LoggerBindingModule;
+import com.github.ruediste.laf.core.guice.PostConstructModule;
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
 
-@RunWith(Arquillian.class)
 public class ConfigurationFactoryTest {
-
-	@Deployment
-	public static WebArchive createDeployment() {
-		WebArchive archive = DeploymentProvider
-				.getDefault()
-				.addClasses(
-						Modules.getAllRequiredClasses(CoreBaseConfigurationModule.class));
-		System.out.println(archive.toString(true));
-		return archive;
-	}
 
 	public static interface TestConfigurationParameterA extends
 			ConfigurationParameter<String> {
@@ -64,45 +48,31 @@ public class ConfigurationFactoryTest {
 			ConfigurationParameter<String> {
 	}
 
-	public static class ConfigurationRegisterer {
-		@Inject
-		TestConfigurationDefinerA definerA;
-		@Inject
-		TestConfigurationDefinerB definerB;
-
-		void observe(@Observes DiscoverConfigruationEvent e) {
-			e.add(definerB);
-			e.add(definerA);
-		}
-	}
-
-	@ApplicationScoped
 	public static class TestConfigurationDefinerA implements
 			ConfigurationDefiner {
 
-		public void produce(TestConfigurationParameterA val) {
-			val.set("FooA");
+		public TestConfigurationParameterA produce() {
+			return () -> "FooA";
 		}
 
-		public void produce(TestConfigurationParameterB val) {
-			val.set("FooA");
+		public TestConfigurationParameterB b() {
+			return () -> "FooA";
 		}
 
-		@ExtendConfiguration
-		public void produce(TestConfigurationParameterC val) {
-			val.set(val.get() + "FooA");
+		public TestConfigurationParameterC c(TestConfigurationParameterC val) {
+			return () -> val.get() + "FooA";
 		}
 
-		@ExtendConfiguration
-		public void produce(TestConfigurationParameterF val) {
+		public TestConfigurationParameterF f(TestConfigurationParameterF val) {
 			// access should fail
 			val.get();
+			return () -> null;
 		}
 
 		private int hCount;
 
-		public void produce(TestConfigurationParameterH val) {
-			val.set(String.valueOf(hCount++));
+		public TestConfigurationParameterH h() {
+			return () -> String.valueOf(hCount++);
 		}
 
 		public int gethCount() {
@@ -111,81 +81,89 @@ public class ConfigurationFactoryTest {
 
 	}
 
-	@ApplicationScoped
 	public static class TestConfigurationDefinerB implements
 			ConfigurationDefiner {
-		public void produce(TestConfigurationParameterB val) {
-			val.set("FooB");
+		public TestConfigurationParameterB b() {
+			return () -> "FooB";
 		}
 
-		public void produce(TestConfigurationParameterC val) {
-			val.set("FooB");
+		public TestConfigurationParameterC c() {
+			return () -> "FooB";
 		}
 
-		public void produce(TestConfigurationParameterD val) {
-			val.set("FooB");
+		public TestConfigurationParameterD d() {
+			return () -> "FooB";
 		}
 
-		public void produce(TestConfigurationParameterE val,
-				TestConfigurationParameterD theD) {
-			val.set("e" + theD.get());
+		public TestConfigurationParameterE e(TestConfigurationParameterD theD) {
+			return () -> "e" + theD.get();
 		}
+	}
+
+	@Inject
+	ConfigurationFactory factory;
+
+	@Before
+	public void setup() {
+		Guice.createInjector(new LoggerBindingModule(),
+				new PostConstructModule(), new CoreBaseConfigurationModule(),
+				new AbstractModule() {
+
+					@Override
+					protected void configure() {
+					}
+
+				}).injectMembers(this);
+		factory.add(TestConfigurationDefinerB.class).add(
+				TestConfigurationDefinerA.class);
 	}
 
 	@Inject
 	TestConfigurationDefinerA definerA;
 
-	@Inject
-	ConfigurationValue<TestConfigurationParameterA> configValueA;
-	@Inject
-	ConfigurationValue<TestConfigurationParameterB> configValueB;
-	@Inject
-	ConfigurationValue<TestConfigurationParameterC> configValueC;
-	@Inject
-	ConfigurationValue<TestConfigurationParameterD> configValueD;
-	@Inject
-	ConfigurationValue<TestConfigurationParameterE> configValueE;
-	@Inject
-	ConfigurationValue<TestConfigurationParameterF> configValueF;
-	@Inject
-	ConfigurationValue<TestConfigurationParameterG> configValueG;
-	@Inject
-	ConfigurationValue<TestConfigurationParameterH> configValueH;
+	TestConfigurationParameterA configValueA;
+	TestConfigurationParameterB configValueB;
+	TestConfigurationParameterC configValueC;
+	TestConfigurationParameterD configValueD;
+	TestConfigurationParameterE configValueE;
+	TestConfigurationParameterF configValueF;
+	TestConfigurationParameterG configValueG;
+	TestConfigurationParameterH configValueH;
 
 	@Test
 	public void test() {
 		// only defined in A
-		assertEquals("FooA", configValueA.value().get());
+		assertEquals("FooA", configValueA.get());
 
 		// defined in A and B
-		assertEquals("FooA", configValueB.value().get());
+		assertEquals("FooA", configValueB.get());
 
 		// defined using ExtendsConfiguration
-		assertEquals("FooBFooA", configValueC.value().get());
+		assertEquals("FooBFooA", configValueC.get());
 
 		// defined in B only
-		assertEquals("FooB", configValueD.value().get());
+		assertEquals("FooB", configValueD.get());
 
 		// defined using parameter D as input
-		assertEquals("eFooB", configValueE.value().get());
+		assertEquals("eFooB", configValueE.get());
 	}
 
 	@Test(expected = ExtendedParameterNotDefined.class)
 	public void extendsWithUndefinedBaseShouldFail() {
-		configValueF.value().get();
+		configValueF.get();
 	}
 
 	@Test
 	public void defaultWorks() {
-		assertEquals("def", configValueG.value().get());
+		assertEquals("def", configValueG.get());
 	}
 
 	@Test
 	public void cacheWorks() {
 		assertEquals(0, definerA.gethCount());
-		assertEquals("0", configValueH.value().get());
+		assertEquals("0", configValueH.get());
 		assertEquals(1, definerA.gethCount());
-		assertEquals("0", configValueH.value().get());
+		assertEquals("0", configValueH.get());
 		assertEquals(1, definerA.gethCount());
 	}
 }

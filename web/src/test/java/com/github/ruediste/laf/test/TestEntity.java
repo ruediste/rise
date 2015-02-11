@@ -1,4 +1,4 @@
-package laf.test;
+package com.github.ruediste.laf.test;
 
 import java.io.Serializable;
 import java.util.HashSet;

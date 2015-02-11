@@ -2,7 +2,6 @@ package com.github.ruediste.laf.core.argumentSerializer.defaultSerializers;
 
 import java.lang.reflect.AnnotatedType;
 
-import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.metamodel.EntityType;
@@ -16,13 +15,10 @@ import com.google.common.base.Supplier;
 public class EntitySerializer implements ArgumentSerializer {
 
 	@Inject
-	BeanManager beans;
-
-	@Inject
 	PersistenceUnitTokenManager manager;
 
 	@Inject
-	LafPersistenceHolder holder;
+	EntityManagerHolder holder;
 
 	private Iterable<IdentifierSerializer> identifierSerializers;
 
@@ -98,7 +94,7 @@ public class EntitySerializer implements ArgumentSerializer {
 					.parse(idType, urlPart.substring(idx + 1));
 			if (idSupplier != null) {
 				return () -> {
-					LafPersistenceHolder currentHolder = manager
+					EntityManagerHolder currentHolder = manager
 							.getCurrentHolder();
 					EntityManager entityManager = currentHolder
 							.getEntityManager(token);

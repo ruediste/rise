@@ -26,6 +26,6 @@ public class EntityManagerProducer {
 	@Produces
 	@ApplicationScoped
 	EntityManager produceManager() {
-		return contextManager.produceManager(token);
+		return contextManager.createProvider(token);
 	}
 }

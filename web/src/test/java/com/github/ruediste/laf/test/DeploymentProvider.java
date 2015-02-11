@@ -1,4 +1,4 @@
-package laf.test;
+package com.github.ruediste.laf.test;
 
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;

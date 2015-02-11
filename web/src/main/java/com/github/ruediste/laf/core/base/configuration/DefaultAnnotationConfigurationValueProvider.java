@@ -2,7 +2,6 @@ package com.github.ruediste.laf.core.base.configuration;
 
 import javax.inject.Inject;
 
-import com.github.ruediste.laf.core.base.Val;
 import com.google.common.reflect.TypeToken;
 
 /**
@@ -17,19 +16,15 @@ public class DefaultAnnotationConfigurationValueProvider extends
 	ConfigurationValueParsingService parsingService;
 
 	@Override
-	public <V, T extends ConfigurationParameter<V>> Val<V> provideValue(
-			Class<T> configInterfaceClass, TypeToken<V> configValueType) {
-		ConfigurationDefault annotation = configInterfaceClass
+	public <V, T extends ConfigurationParameter<V>> V provideValue(
+			Class<T> parameterInterfaceClass, TypeToken<V> configValueType) {
+		ConfigurationDefault annotation = parameterInterfaceClass
 				.getAnnotation(ConfigurationDefault.class);
 		if (annotation != null) {
-			return Val.of(parsingService.parse(configValueType,
-					annotation.value()));
-
-		} else if (getSuccessor() != null) {
-			return getSuccessor().provideValue(configInterfaceClass,
-					configValueType);
+			return parsingService.parse(configValueType, annotation.value());
 		} else {
-			return null;
+			return getSuccessor().provideValue(parameterInterfaceClass,
+					configValueType);
 		}
 	}
 

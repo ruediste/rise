@@ -16,7 +16,7 @@ import org.jabsaw.Module;
  * </p>
  *
  * <p>
- * With each thread a {@link LafPersistenceHolder} can be associated. The holder
+ * With each thread a {@link EntityManagerHolder} can be associated. The holder
  * manages the {@link EntityManager}s used while the holder is active. If a
  * holder is destroyed, the containing {@link EntityManager}s are closed.
  * </p>

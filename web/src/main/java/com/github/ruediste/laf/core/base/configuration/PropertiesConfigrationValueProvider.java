@@ -4,25 +4,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
 
-import com.github.ruediste.laf.core.base.Val;
 import com.google.common.reflect.TypeToken;
+import com.google.inject.Injector;
 
 public class PropertiesConfigrationValueProvider extends
-ConfigurationValueProviderBase {
+		ConfigurationValueProviderBase {
 
-	@Inject
 	Logger log;
 
 	@Inject
 	ConfigurationValueParsingService configurationValueParsingService;
 
 	@Inject
-	Instance<ConfigurationValueFactory<?>> factoryInstance;
+	Injector injector;
 
 	Properties properties;
 
@@ -47,26 +45,26 @@ ConfigurationValueProviderBase {
 	}
 
 	@Override
-	public <V, T extends ConfigurationParameter<V>> Val<V> provideValue(
-			Class<T> configInterfaceClass, TypeToken<V> configValueType) {
+	public <V, T extends ConfigurationParameter<V>> V provideValue(
+			Class<T> parameterInterfaceClass, TypeToken<V> configValueType) {
 
 		// try explicitely defined keys
-		ConfigurationKey key = configInterfaceClass
+		ConfigurationKey key = parameterInterfaceClass
 				.getAnnotation(ConfigurationKey.class);
 		if (key != null) {
 			for (String k : key.value()) {
 				if (properties.containsKey(k)) {
-					return Val.of(configurationValueParsingService.<V> parse(
-							configValueType, properties.getProperty(k)));
+					return configurationValueParsingService.<V> parse(
+							configValueType, properties.getProperty(k));
 				}
 			}
 		}
 
 		// try the fully qualified class name
-		String k = configInterfaceClass.getName();
+		String k = parameterInterfaceClass.getName();
 		if (properties.containsKey(k)) {
-			return Val.of(configurationValueParsingService.<V> parse(
-					configValueType, properties.getProperty(k)));
+			return configurationValueParsingService.<V> parse(configValueType,
+					properties.getProperty(k));
 		}
 
 		// try the factory
@@ -79,20 +77,15 @@ ConfigurationValueProviderBase {
 				@SuppressWarnings("unchecked")
 				Class<? extends ConfigurationValueFactory<V>> factoryClass = (Class<? extends ConfigurationValueFactory<V>>) classLoader
 						.loadClass(properties.getProperty(k));
-				return Val.of(factoryInstance.select(factoryClass).get()
-						.getValue());
+				return injector.getInstance(factoryClass).getValue();
 			} catch (ClassNotFoundException e) {
 				throw new RuntimeException(e);
 			}
 		}
 
 		// nothing found
-		if (getSuccessor() == null) {
-			return null;
-		} else {
-			return getSuccessor().provideValue(configInterfaceClass,
-					configValueType);
-		}
+		return getSuccessor().provideValue(parameterInterfaceClass,
+				configValueType);
 	}
 
 }

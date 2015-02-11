@@ -1,27 +1,12 @@
 package com.github.ruediste.laf.core.base;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedType;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.enterprise.inject.spi.BeanManager;
 
 public class ReflectionUtil {
 
 	private ReflectionUtil() {
 
-	}
-
-	public static List<Class<? extends Annotation>> getQualifiers(
-			AnnotatedType type, BeanManager beans) {
-		List<Class<? extends Annotation>> qualifiers = Arrays
-				.asList(type.getAnnotations()).stream()
-				.map(x -> x.annotationType()).filter(beans::isQualifier)
-				.collect(Collectors.toList());
-		return qualifiers;
 	}
 
 	/**

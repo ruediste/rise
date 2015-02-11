@@ -5,9 +5,6 @@ import static org.junit.Assert.assertTrue;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
-import laf.test.DeploymentProvider;
-import laf.test.TestEntity;
-
 import org.jabsaw.util.Modules;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -18,6 +15,8 @@ import org.junit.runner.RunWith;
 import com.github.ruediste.laf.component.core.*;
 import com.github.ruediste.laf.component.core.pageScope.PageScopeManager;
 import com.github.ruediste.laf.core.persistence.PersistenceUnitTokenManager;
+import com.github.ruediste.laf.test.DeploymentProvider;
+import com.github.ruediste.laf.test.TestEntity;
 
 @RunWith(Arquillian.class)
 public class PersistenceInitialRequestHandlerTest {
