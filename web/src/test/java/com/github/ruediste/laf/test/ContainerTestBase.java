@@ -49,7 +49,7 @@ public abstract class ContainerTestBase<T extends ApplicationInstance> {
 
 		servlet.setFixedApplicationInstance(applicationInstance);
 
-		startForTesting(servlet);
+		serverUrl = startForTesting(servlet);
 	}
 
 	public String startForTesting(FrontServlet frontServlet) {

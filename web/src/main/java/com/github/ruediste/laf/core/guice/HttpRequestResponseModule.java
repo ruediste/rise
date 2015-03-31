@@ -2,6 +2,7 @@ package com.github.ruediste.laf.core.guice;
 
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -10,18 +11,29 @@ import javax.servlet.http.HttpServletResponse;
 import net.sf.cglib.proxy.Dispatcher;
 import net.sf.cglib.proxy.Enhancer;
 
-import com.google.inject.*;
+import com.github.ruediste.salta.core.Binding;
+import com.github.ruediste.salta.core.CoreDependencyKey;
+import com.github.ruediste.salta.jsr330.AbstractModule;
+import com.github.ruediste.salta.jsr330.Salta;
+import com.github.ruediste.salta.standard.ScopeImpl.ScopeHandler;
 
 /**
- * {@link Guice} module binding the {@link SessionScope}, th
+ * {@link Salta} module binding the {@link SessionScope}, the
  * {@link RequestScope} and various other http request/response related objects.
  */
 public class HttpRequestResponseModule extends AbstractModule {
 
-	private static final class SessionScope implements Scope {
+	private static final class SessionScope implements ScopeHandler {
 
 		@Inject
 		Injector injector;
+
+		@Override
+		public Supplier<Object> scope(Supplier<Object> supplier,
+				Binding binding, CoreDependencyKey<?> requestedKey) {
+			// TODO Auto-generated method stub
+			return null;
+		}
 
 		@Override
 		public <T> Provider<T> scope(Key<T> key, Provider<T> unscoped) {
@@ -59,6 +71,7 @@ public class HttpRequestResponseModule extends AbstractModule {
 			};
 
 		}
+
 	}
 
 	public static class RequestScope implements Scope {

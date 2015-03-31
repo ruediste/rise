@@ -5,8 +5,8 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.function.Function;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import com.github.ruediste.laf.core.base.attachedProperties.AttachedPropertyBearer;
 import com.github.ruediste.laf.core.base.attachedProperties.AttachedPropertyBearerBase;
@@ -16,7 +16,7 @@ import com.google.common.io.ByteStreams;
 /**
  *
  */
-@ApplicationScoped
+@Singleton
 public abstract class StaticWebResourceBundle {
 
 	@Inject

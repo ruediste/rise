@@ -17,7 +17,7 @@ import com.github.ruediste.laf.core.entry.ApplicationInstance;
 import com.github.ruediste.laf.core.entry.HttpMethod;
 import com.github.ruediste.laf.test.ContainerTestBase;
 import com.github.ruediste.laf.test.InstanceTestUtil;
-import com.google.inject.Guice;
+import com.github.ruediste.salta.jsr330.Salta;
 
 public class RequestScopedTest extends
 		ContainerTestBase<RequestScopedTest.Instance> {
@@ -41,32 +41,34 @@ public class RequestScopedTest extends
 		TestRequestScoped test1;
 		@Inject
 		TestRequestScoped test2;
-		
+
 		@Inject
 		InstanceTestUtil util;
-		
+
 		@Override
 		protected void startImpl() {
-			Guice.createInjector(new HttpRequestResponseModule())
+			Salta.createInjector(new HttpRequestResponseModule())
 					.injectMembers(this);
 		}
 
 		@Override
-		public void handle(HttpServletRequest request, HttpServletResponse response,
-				HttpMethod method) throws IOException,
-				ServletException {
+		public void handle(HttpServletRequest request,
+				HttpServletResponse response, HttpMethod method)
+				throws IOException, ServletException {
 			String value = test1.getValue();
 			test1.setValue(request.getServletPath());
-			util.sendHtmlResponse(""+value+test2.getValue());
+			util.sendHtmlResponse("" + value + test2.getValue());
 		}
 	}
-	
+
 	@Test
-	public void test(){
+	public void test() {
 		WebDriver driver = createDriver();
-		driver.get(serverUrl+"foo");
-		assertEquals("null/foo", driver.findElement(By.cssSelector("body")).getText());
-		driver.get(serverUrl+"foo");
-		assertEquals("null/foo", driver.findElement(By.cssSelector("body")).getText());
+		driver.get(serverUrl + "foo");
+		assertEquals("null/foo", driver.findElement(By.cssSelector("body"))
+				.getText());
+		driver.get(serverUrl + "foo");
+		assertEquals("null/foo", driver.findElement(By.cssSelector("body"))
+				.getText());
 	}
 }

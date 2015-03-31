@@ -2,7 +2,7 @@ package com.github.ruediste.laf.test;
 
 import com.github.ruediste.laf.core.entry.ApplicationModule;
 import com.github.ruediste.laf.core.entry.FrontServlet;
-import com.google.inject.Guice;
+import com.github.ruediste.salta.jsr330.Salta;
 
 public class TestFrontServlet extends FrontServlet {
 
@@ -10,7 +10,7 @@ public class TestFrontServlet extends FrontServlet {
 
 	@Override
 	protected void initImpl() throws Exception {
-		Guice.createInjector(new ApplicationModule()).injectMembers(this);
+		Salta.createInjector(new ApplicationModule()).injectMembers(this);
 	}
 
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashSet;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
@@ -12,8 +13,6 @@ import org.slf4j.Logger;
 import com.github.ruediste.laf.core.classReload.DynamicClassLoader;
 import com.github.ruediste.laf.core.classReload.Gate;
 import com.github.ruediste.laf.core.guice.RequestData;
-import com.google.inject.Injector;
-import com.google.inject.Provider;
 
 public abstract class FrontServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -109,7 +108,9 @@ public abstract class FrontServlet extends HttpServlet {
 				RequestData.remove();
 			}
 		} else {
-			log.warn("current application instance is null");
+			log.error("current application instance is null");
+			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+					"FrontServlet: current application instance is null");
 		}
 	}
 
