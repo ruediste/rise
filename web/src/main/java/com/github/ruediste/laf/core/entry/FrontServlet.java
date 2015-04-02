@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 
 import com.github.ruediste.laf.core.classReload.DynamicClassLoader;
 import com.github.ruediste.laf.core.classReload.Gate;
-import com.github.ruediste.laf.core.guice.RequestData;
 
 public abstract class FrontServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -94,9 +93,6 @@ public abstract class FrontServlet extends HttpServlet {
 	private void handle(HttpServletRequest req, HttpServletResponse resp,
 			HttpMethod method) throws IOException, ServletException {
 		if (currentInstance != null) {
-			// set request data
-			RequestData.setCurrent(new RequestData(req, resp, method));
-
 			Thread currentThread = Thread.currentThread();
 			ClassLoader old = currentThread.getContextClassLoader();
 			try {
@@ -105,7 +101,6 @@ public abstract class FrontServlet extends HttpServlet {
 				currentInstance.instance.handle(req, resp, method);
 			} finally {
 				currentThread.setContextClassLoader(old);
-				RequestData.remove();
 			}
 		} else {
 			log.error("current application instance is null");

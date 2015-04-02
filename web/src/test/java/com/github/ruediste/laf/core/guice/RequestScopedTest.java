@@ -45,19 +45,25 @@ public class RequestScopedTest extends
 		@Inject
 		InstanceTestUtil util;
 
+		@Inject
+		HttpScopeManager scopeManager;
+
 		@Override
 		protected void startImpl() {
-			Salta.createInjector(new HttpRequestResponseModule())
-					.injectMembers(this);
+			Salta.createInjector(new HttpScopeModule()).injectMembers(this);
 		}
 
 		@Override
 		public void handle(HttpServletRequest request,
 				HttpServletResponse response, HttpMethod method)
 				throws IOException, ServletException {
+			scopeManager.enter(request, response);
+
 			String value = test1.getValue();
 			test1.setValue(request.getServletPath());
 			util.sendHtmlResponse("" + value + test2.getValue());
+
+			scopeManager.exit();
 		}
 	}
 

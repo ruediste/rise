@@ -1,11 +1,11 @@
 package com.github.ruediste.laf.core.guice;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,12 +17,10 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 import com.github.ruediste.laf.core.entry.ApplicationInstance;
 import com.github.ruediste.laf.core.entry.HttpMethod;
-import com.github.ruediste.laf.core.guice.HttpRequestResponseModule;
-import com.github.ruediste.laf.core.guice.SessionScoped;
 import com.github.ruediste.laf.test.ContainerTestBase;
 import com.github.ruediste.laf.test.InstanceTestUtil;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import com.github.ruediste.salta.jsr330.Injector;
+import com.github.ruediste.salta.jsr330.Salta;
 
 public class SessionScopedTest extends
 		ContainerTestBase<SessionScopedTest.Instance> {
@@ -34,7 +32,7 @@ public class SessionScopedTest extends
 		TestSessionScoped2 test2;
 
 		@Inject
-		TestSessionScoped selfInjected;
+		Provider<TestSessionScoped> selfInjected;
 
 		private String value;
 
@@ -47,49 +45,58 @@ public class SessionScopedTest extends
 		}
 
 		public void check() {
-			assertTrue(this == selfInjected);
+			assertTrue("Identical instances", this == selfInjected.get().self());
 			test2.check(this);
+		}
+
+		public TestSessionScoped self() {
+			return this;
 		}
 	}
 
 	@SessionScoped
 	static class TestSessionScoped2 {
 		@Inject
-		TestSessionScoped test1;
+		Provider<TestSessionScoped> test1;
 
 		public void check(TestSessionScoped value) {
-			assertTrue(test1 != value);
+			assertTrue(test1.get() != value);
 		}
 	}
 
-	 static class Instance extends ApplicationInstance {
+	static class Instance extends ApplicationInstance {
 
 		@Inject
 		TestSessionScoped test;
 
 		@Inject
 		InstanceTestUtil util;
-		
+
+		@Inject
+		HttpScopeManager scopeManager;
+
 		@Override
 		protected void startImpl() {
-			Injector injector = Guice
-					.createInjector(new HttpRequestResponseModule());
+			Injector injector = Salta.createInjector(new HttpScopeModule());
 			injector.injectMembers(this);
 		}
 
 		@Override
-		public void handle(HttpServletRequest request, HttpServletResponse response,
-				HttpMethod method) throws IOException,
-				ServletException {
+		public void handle(HttpServletRequest request,
+				HttpServletResponse response, HttpMethod method)
+				throws IOException, ServletException {
+			scopeManager.enter(request, response);
+
 			test.check();
 
 			util.sendHtmlResponse(test.getValue());
-			
+
 			test.setValue(request.getServletPath());
+
+			scopeManager.exit();
 		}
 
 	}
-
 
 	@Test
 	public void test() {
