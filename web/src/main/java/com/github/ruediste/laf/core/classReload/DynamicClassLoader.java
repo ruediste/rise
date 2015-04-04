@@ -1,15 +1,10 @@
 package com.github.ruediste.laf.core.classReload;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import java.util.PrimitiveIterator.OfInt;
-import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
@@ -80,8 +75,9 @@ public class DynamicClassLoader extends ClassLoader {
 							addEscaped(sb, cp);
 						}
 					}
-				} else
+				} else {
 					addEscaped(sb, cp);
+				}
 			}
 			exclusionPatterns.add(Pattern.compile(sb.toString()));
 		}
@@ -132,7 +128,7 @@ public class DynamicClassLoader extends ClassLoader {
 	public void initialize(Set<String> dynamicProjects, Runnable onChange) {
 		this.onChange = onChange;
 
-		this.parent = Thread.currentThread().getContextClassLoader();
+		parent = Thread.currentThread().getContextClassLoader();
 		NotifyingChangeListener changeListener = new NotifyingChangeListener();
 		watcher.initialize(changeListener);
 
@@ -167,7 +163,7 @@ public class DynamicClassLoader extends ClassLoader {
 						if (dynamicProjects.contains(source.project)) {
 							dynamicJars.add(source);
 							Path dir = path.getParent();
-							watcher.registerDirectory(dir);
+							watcher.registerDirectoryTree(dir);
 						}
 					} catch (IOException e) {
 						log.warn("error while reading project file from jar", e);
@@ -232,8 +228,9 @@ public class DynamicClassLoader extends ClassLoader {
 
 				// try loading from directories
 				for (DynamicSource dir : dynamicRootDirectories) {
-					if (dir.isExcluded(name))
+					if (dir.isExcluded(name)) {
 						continue;
+					}
 					try {
 						Path classFile = dir.path.resolve(fileName);
 						if (Files.exists(classFile)) {
@@ -249,8 +246,9 @@ public class DynamicClassLoader extends ClassLoader {
 				// try loading from jar files
 				if (result == null) {
 					for (DynamicSource jarSource : dynamicJars) {
-						if (jarSource.isExcluded(name))
+						if (jarSource.isExcluded(name)) {
 							continue;
+						}
 						JarFile jar = null;
 						try {
 							jar = new JarFile(jarSource.path.toFile());
@@ -264,12 +262,13 @@ public class DynamicClassLoader extends ClassLoader {
 						} catch (IOException e) {
 							log.warn("unable to load jar or jar entry", e);
 						} finally {
-							if (jar != null)
+							if (jar != null) {
 								try {
 									jar.close();
 								} catch (IOException e) {
 									log.warn("error wile closing", e);
 								}
+							}
 						}
 					}
 				}
@@ -284,8 +283,9 @@ public class DynamicClassLoader extends ClassLoader {
 				}
 
 				// resolve class if necessary
-				if (result != null && resolve)
+				if (result != null && resolve) {
 					resolveClass(result);
+				}
 			}
 		}
 		return result;

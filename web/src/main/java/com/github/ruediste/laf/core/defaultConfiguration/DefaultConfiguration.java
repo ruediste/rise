@@ -1,13 +1,15 @@
 package com.github.ruediste.laf.core.defaultConfiguration;
 
-import java.util.Arrays;
+import static java.util.stream.Collectors.toList;
+
+import java.util.Deque;
 import java.util.LinkedList;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import javax.enterprise.inject.Instance;
-import javax.enterprise.util.TypeLiteral;
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import com.github.ruediste.laf.core.argumentSerializer.ArgumentSerializer;
 import com.github.ruediste.laf.core.argumentSerializer.ArgumentSerializerChain;
@@ -18,8 +20,11 @@ import com.github.ruediste.laf.core.base.DefaultClassNameMapping;
 import com.github.ruediste.laf.core.base.ProjectStage;
 import com.github.ruediste.laf.core.base.configuration.ConfigurationDefiner;
 import com.github.ruediste.laf.core.http.request.HttpRequest;
+import com.github.ruediste.laf.core.requestParserChain.RequestParser;
 import com.github.ruediste.laf.core.requestParserChain.RequestParserChain;
 import com.github.ruediste.laf.core.web.resource.*;
+import com.github.ruediste.salta.jsr330.Injector;
+import com.google.common.base.Function;
 
 /**
  * Defines the default configuration of the framework.
@@ -27,70 +32,87 @@ import com.github.ruediste.laf.core.web.resource.*;
 public class DefaultConfiguration implements ConfigurationDefiner {
 
 	@Inject
-	Instance<Object> instance;
+	Injector injector;
 
 	private <T> T get(Class<T> cls) {
-		return instance.select(cls).get();
+		return injector.getInstance(cls);
 	}
 
-	public void produce(ControllerNameMappingCP val, BasePackageCP basePackage) {
+	public String basePackage = "";
+
+	public Supplier<Function<Class<?>, String>> controllerNameMapping = () -> {
 		DefaultClassNameMapping mapping = get(DefaultClassNameMapping.class);
-		mapping.initialize(basePackage.get(), "Controller");
-		val.set(mapping);
+		mapping.initialize(basePackage, "Controller");
+		return mapping;
+	};
+
+	public Deque<IdentifierSerializer> idSerializers = new LinkedList<>();
+	{
+		idSerializers.add(get(IntIdSerializer.class));
+		idSerializers.add(get(LongIdSerializer.class));
 	}
 
-	public void produce(IdSerializersCP val) {
-		LinkedList<IdentifierSerializer> serializers = new LinkedList<>();
-		serializers.add(get(IntIdSerializer.class));
-		serializers.add(get(LongIdSerializer.class));
-		val.set(serializers);
+	public Deque<Supplier<ArgumentSerializer>> argumentSerializers = new LinkedList<>();
+	{
+		argumentSerializers.add(() -> get(IntSerializer.class));
+		argumentSerializers.add(() -> get(LongSerializer.class));
+		argumentSerializers.add(() -> {
+			EntitySerializer entitySerializer = get(EntitySerializer.class);
+			entitySerializer.initialize(idSerializers);
+			return entitySerializer;
+		});
 	}
 
-	public void produce(ArgumentSerializerChainCP val,
-			IdSerializersCP idSerializers) {
+	public ArgumentSerializerChain createArgumentSerializerChain() {
 		ArgumentSerializerChain chain = get(ArgumentSerializerChain.class);
-		EntitySerializer entitySerializer = get(EntitySerializer.class);
-		entitySerializer.initialize(idSerializers.get());
-		chain.initialize(Arrays.<ArgumentSerializer> asList(
-				get(IntSerializer.class), get(LongSerializer.class),
-				entitySerializer));
-		val.set(chain);
+		chain.initialize(argumentSerializers.stream().map(Supplier::get)
+				.collect(toList()));
+		return chain;
 	}
 
-	public void produce(HttpRequestParserChainCP val,
-			ResourceRequestHandlerCP resourceRequestHandlerCV) {
-		RequestParserChain<HttpRequest> chain = instance.select(
-				new TypeLiteral<RequestParserChain<HttpRequest>>() {
-					private static final long serialVersionUID = 1L;
-				}).get();
+	public Deque<RequestParser<HttpRequest>> requestParsers = new LinkedList<>();
 
-		chain.add(resourceRequestHandlerCV.get());
-		val.set(chain);
+	@Inject
+	Provider<RequestParserChain<HttpRequest>> requestParserChainProvider;
+
+	public RequestParserChain<HttpRequest> createRequestParserChain() {
+		RequestParserChain<HttpRequest> result = requestParserChainProvider
+				.get();
+		result.add(resourceRequestHandlerCV);
+		return result;
 	}
 
-	public void produce(ProjectStageCP val) {
-		val.set(ProjectStage.TESTING);
+	public ProjectStage projectStage;
+
+	public Supplier<ResourceMode> resourceMode = () -> projectStage == ProjectStage.DEVELOPMENT ? ResourceMode.DEVELOPMENT
+			: ResourceMode.PRODUCTION;
+
+	public ResourceMode getResourceMode() {
+		return resourceMode.get();
 	}
 
-	public void produce(ResourceModeCP val, ProjectStageCP projectStage) {
-		if (projectStage.get() == ProjectStage.DEVELOPMENT) {
-			val.set(ResourceMode.DEVELOPMENT);
-		} else {
-			val.set(ResourceMode.PRODUCTION);
-		}
-	}
+	public Supplier<StaticWebResourceRequestHandler> resourceRequestHandler = () -> {
 
-	public void produce(ResourceRequestHandlerCP val,
-			ProjectStageCP projectStage) {
 		StaticWebResourceRequestHandler handler = get(StaticWebResourceRequestHandler.class);
 
 		handler.initialize(
-				projectStage.get() == ProjectStage.DEVELOPMENT ? ResourceMode.DEVELOPMENT
-						: ResourceMode.PRODUCTION,
+				getResourceMode(),
 				StreamSupport.stream(
-						instance.select(StaticWebResourceBundle.class).spliterator(),
-						false).collect(Collectors.toList()));
+						instance.select(StaticWebResourceBundle.class)
+								.spliterator(), false).collect(
+						Collectors.toList()));
+		return handler;
+	};
 
-		val.set(handler);
+	public StaticWebResourceRequestHandler createResourceRequestHandler() {
+		StaticWebResourceRequestHandler handler = get(StaticWebResourceRequestHandler.class);
+
+		handler.initialize(
+				getResourceMode(),
+				StreamSupport.stream(
+						instance.select(StaticWebResourceBundle.class)
+								.spliterator(), false).collect(
+						Collectors.toList()));
+		return handler;
 	}
 }
