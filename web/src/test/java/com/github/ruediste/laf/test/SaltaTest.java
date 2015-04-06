@@ -1,24 +1,43 @@
 package com.github.ruediste.laf.test;
 
-import org.junit.Before;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.inject.Inject;
+
+import org.junit.Before;
+
+import com.github.ruediste.laf.core.classReload.*;
+import com.github.ruediste.laf.core.entry.LoggerModule;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Salta;
-import com.github.ruediste.salta.jsr330.util.LoggerCreationRule;
 
 public class SaltaTest {
 
+	@Inject
+	private FileChangeNotifier notifier;
+
+	@Inject
+	Scanner scanner;
+
+	@Inject
+	ApplicationEventQueue queue;
+
 	@Before
-	public void beforeSaltaTest() {
+	public void beforeSaltaTest() throws Exception {
 		Salta.createInjector(new AbstractModule() {
 
 			@Override
 			protected void configure() throws Exception {
-				bindCreationRule(new LoggerCreationRule(Logger.class,
-						cls -> LoggerFactory.getLogger(cls)));
 			}
-		}).injectMembers(this);
+		}, new LoggerModule()).injectMembers(this);
+
+		Set<Path> rootDirs = new HashSet<>();
+		scanner.initialize((rootDirectory, classloader) -> rootDirs
+				.add(rootDirectory));
+		scanner.scan(Thread.currentThread().getContextClassLoader());
+
+		queue.submit(() -> notifier.start(rootDirs, 0)).get();
 	}
 }

@@ -11,7 +11,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 import com.github.ruediste.laf.core.entry.ApplicationInstance;
-import com.github.ruediste.laf.core.entry.FrontServlet;
+import com.github.ruediste.laf.core.entry.FrontServletBase;
 import com.google.common.reflect.TypeToken;
 
 public abstract class ContainerTestBase<T extends ApplicationInstance> {
@@ -52,7 +52,7 @@ public abstract class ContainerTestBase<T extends ApplicationInstance> {
 		serverUrl = startForTesting(servlet);
 	}
 
-	public String startForTesting(FrontServlet frontServlet) {
+	public String startForTesting(FrontServletBase frontServlet) {
 		try {
 			ServletHolder holder = new ServletHolder(frontServlet);
 

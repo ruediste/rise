@@ -8,9 +8,18 @@ import java.util.*;
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 
+import com.google.common.base.Joiner;
+
+/**
+ * Watches a set of directory trees for changes and raises
+ * {@link FileChangeTransaction}s which allow to stay up to date on the contents
+ * of the contained files.
+ */
+@Singleton
 public class FileChangeNotifier {
 
 	@Inject
@@ -19,14 +28,18 @@ public class FileChangeNotifier {
 	@Inject
 	DirectoryChangeWatcher watcher;
 
-	Set<Consumer<FileChangeTransaction>> listeners = new LinkedHashSet<>();
-	Map<Path, FileTime> currentPaths = new HashMap<>();
+	@Inject
+	ApplicationEventQueue queue;
+
+	private Set<Consumer<FileChangeTransaction>> listeners = new LinkedHashSet<>();
+	private Map<Path, FileTime> currentPaths = new HashMap<>();
 	private Set<Path> rootDirs = new HashSet<>();
+	private boolean isStarted;
 
 	public static class FileChangeTransaction {
-		Set<Path> removedFiles;
-		Set<Path> addedFiles;
-		Set<Path> modifiedFiles;
+		Set<Path> removedFiles = new HashSet<>();
+		Set<Path> addedFiles = new HashSet<>();
+		Set<Path> modifiedFiles = new HashSet<>();
 
 		@Override
 		public String toString() {
@@ -35,28 +48,48 @@ public class FileChangeNotifier {
 		}
 	}
 
+	/**
+	 * Add a listener. Thread safe. The listener will always be invoked in the
+	 * AET. May not be called after the notifier has been started
+	 */
 	public synchronized void addListener(
 			Consumer<FileChangeTransaction> listener) {
+		checkNotStarted();
 		listeners.add(listener);
 	}
 
+	/**
+	 * Remove a listener. Thread safe.
+	 */
 	public synchronized void removeListener(
 			Consumer<FileChangeTransaction> listener) {
 		listeners.remove(listener);
 	}
 
-	public void start(Set<Path> rootDirs, long settleDelayMs) {
-		this.rootDirs = rootDirs;
-		watcher.start(rootDirs, () -> changeOccurred(), settleDelayMs);
-		changeOccurred();
+	/**
+	 * Throw an exception if this notifier is already started
+	 */
+	public synchronized void checkNotStarted() {
+		if (isStarted) {
+			throw new IllegalStateException("Notifier is already started");
+		}
 	}
 
-	public synchronized void changeOccurred() {
+	public void start(Set<Path> rootDirs, long settleDelayMs) {
+		log.info("Starting notifier with dirs\n{}",
+				Joiner.on("\n").join(rootDirs));
+		synchronized (this) {
+			isStarted = true;
+		}
+		this.rootDirs = rootDirs;
+		watcher.start(rootDirs, paths -> changeOccurred(paths), settleDelayMs);
+		changeOccurred(Collections.emptySet());
+	}
+
+	public synchronized void changeOccurred(Set<Path> affectedPaths) {
 		HashMap<Path, FileTime> newPaths = new HashMap<>();
 		FileChangeTransaction trx = new FileChangeTransaction();
-		trx.addedFiles = new HashSet<>();
-		trx.modifiedFiles = new HashSet<>();
-		trx.removedFiles = new HashSet<>(currentPaths.keySet());
+		trx.removedFiles.addAll(currentPaths.keySet());
 
 		for (Path root : rootDirs) {
 			try {
@@ -88,7 +121,8 @@ public class FileChangeNotifier {
 						if (lastTime == null) {
 							// wasn't present last time, so it was added
 							trx.addedFiles.add(file);
-						} else if (!lastTime.equals(currentTime)) {
+						} else if (affectedPaths.contains(file)
+								|| !lastTime.equals(currentTime)) {
 							// the modification time changed, so file was
 							// modified
 							trx.modifiedFiles.add(file);
@@ -115,9 +149,21 @@ public class FileChangeNotifier {
 		}
 
 		log.debug("Triggering Trx \n{}", trx);
-		for (Consumer<FileChangeTransaction> listener : listeners) {
-			listener.accept(trx);
+
+		{
+			ArrayList<Consumer<FileChangeTransaction>> tmp;
+			synchronized (this) {
+				tmp = new ArrayList<>(listeners);
+			}
+			for (Consumer<FileChangeTransaction> listener : tmp) {
+				listener.accept(trx);
+			}
 		}
+
 		currentPaths = newPaths;
+	}
+
+	public void close() {
+		watcher.close();
 	}
 }

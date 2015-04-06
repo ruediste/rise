@@ -6,14 +6,14 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Application {
+public class StandaloneLafApplication {
 
 	private static final Logger log = LoggerFactory
-			.getLogger(Application.class);
+			.getLogger(StandaloneLafApplication.class);
 
 	private Server server;
 
-	public void start(Class<? extends FrontServlet> frontServletClass) {
+	public void start(Class<? extends FrontServletBase> frontServletClass) {
 
 		try {
 			ServletHolder holder = new ServletHolder(frontServletClass);

@@ -18,7 +18,7 @@ import com.github.ruediste.laf.core.requestParserChain.RequestParseResult;
 /**
  * Framework entry point
  */
-public class FrontServletBase extends HttpServlet {
+public class FrontServletBaseOld extends HttpServlet {
 
 	@Inject
 	Logger log;

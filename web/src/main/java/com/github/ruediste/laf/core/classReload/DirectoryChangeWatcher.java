@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
@@ -11,21 +14,43 @@ import org.slf4j.Logger;
 
 import com.google.common.base.Preconditions;
 
+/**
+ * Watcher for changes to a set of directory trees.
+ */
 public class DirectoryChangeWatcher {
 	@Inject
 	private Logger log;
+
+	@Inject
+	private ApplicationEventQueue queue;
+
 	private long settleDelayMs;
-	private TimerTask task;
+	private ScheduledFuture<?> task;
 	private volatile boolean isRunning = true;
-	private Timer timer;
-	private Runnable listener;
+	private Consumer<Set<Path>> listener;
 	private Map<Path, WatchKey> watchKeys = new HashMap<>();
 	private Set<Path> rootDirs = new HashSet<>();
 	private WatchService watchService;
 	private Thread watchThread;
 
-	public void start(Collection<? extends Path> rootDirs, Runnable listener,
-			long settleDelayMs) {
+	/**
+	 * Start watching the filesystem
+	 *
+	 * @param rootDirs
+	 *            roots of the directory trees to be watched
+	 * @param listener
+	 *            Listener which will be notified with the affected paths. Not
+	 *            all affected paths will be reported. Use the
+	 *            {@link FileChangeNotifier} to stay up to date with all changes
+	 *            to a directory. The listener is called in the application
+	 *            event thread
+	 * @param settleDelayMs
+	 *            delay in milli seconds before changes are reported.
+	 */
+	public void start(Collection<? extends Path> rootDirs,
+			Consumer<Set<Path>> listener, long settleDelayMs) {
+		queue.checkAET();
+
 		Preconditions.checkNotNull(listener, "listener");
 		Preconditions.checkArgument(settleDelayMs >= 0,
 				"settleDealy needs to be positive: %s", settleDelayMs);
@@ -33,23 +58,29 @@ public class DirectoryChangeWatcher {
 		this.settleDelayMs = settleDelayMs;
 		this.rootDirs.addAll(rootDirs);
 		try {
-
-			timer = new Timer("Watch", true);
-
 			watchService = FileSystems.getDefault().newWatchService();
+			registerTrees();
+
 			watchThread = new Thread(new WatchLoopRunnable(), "Watch");
 			watchThread.start();
 		} catch (IOException e) {
 			throw new RuntimeException("Error during initialization", e);
 		}
 
-		registerTrees();
 	}
 
-	public synchronized void close() {
+	/**
+	 * Close the watcher. No notifications will be sent after this method
+	 * returns
+	 */
+	public void close() {
+		queue.checkAET();
+
 		isRunning = false;
 		watchThread.interrupt();
-		timer.cancel();
+		if (task != null) {
+			task.cancel(false);
+		}
 		try {
 			watchThread.join();
 		} catch (InterruptedException e) {
@@ -57,7 +88,7 @@ public class DirectoryChangeWatcher {
 		}
 	}
 
-	private synchronized void unregisterStaleWatchKeys() {
+	private void unregisterStaleWatchKeys() {
 		Set<Path> stalePaths = new HashSet<Path>();
 
 		for (Path path : watchKeys.keySet()) {
@@ -75,9 +106,9 @@ public class DirectoryChangeWatcher {
 		}
 	}
 
-	private synchronized void registerDir(Path dir) {
+	private void registerDir(Path dir) {
 		if (!watchKeys.containsKey(dir)) {
-			log.info("Registering " + dir);
+			log.debug("Registering " + dir);
 
 			try {
 				WatchKey watchKey = dir.register(watchService,
@@ -87,18 +118,18 @@ public class DirectoryChangeWatcher {
 						StandardWatchEventKinds.OVERFLOW);
 				watchKeys.put(dir, watchKey);
 			} catch (IOException e) {
-				log.debug("Error while registering watch key", e);
+				log.info("Error while registering watch key", e);
 			}
 		}
 	}
 
-	private synchronized void registerTrees() {
+	private void registerTrees() {
 		for (Path root : rootDirs) {
 			registerTree(root);
 		}
 	}
 
-	private synchronized void registerTree(Path root) {
+	private void registerTree(Path root) {
 		try {
 			Files.walkFileTree(root, new FileVisitor<Path>() {
 
@@ -133,10 +164,18 @@ public class DirectoryChangeWatcher {
 		}
 	}
 
-	private synchronized void timerElapsed() {
+	Object affectedPathsLock = new Object();
+	Set<Path> affectedPaths = new HashSet<>();
+
+	private void timerElapsed() {
 		registerTrees();
 		unregisterStaleWatchKeys();
-		listener.run();
+		Set<Path> paths;
+		synchronized (affectedPathsLock) {
+			paths = affectedPaths;
+			affectedPaths = new HashSet<>();
+		}
+		listener.accept(paths);
 	}
 
 	private final class WatchLoopRunnable implements Runnable {
@@ -148,21 +187,23 @@ public class DirectoryChangeWatcher {
 				try {
 					// get next event, drop it
 					key = watchService.take();
-					key.pollEvents();
+					Path dir = (Path) key.watchable();
+					ArrayList<Path> paths = new ArrayList<>();
+					for (WatchEvent<?> event : key.pollEvents()) {
+						Path path = dir.resolve((Path) event.context());
+						paths.add(path);
+					}
+					synchronized (affectedPathsLock) {
+						affectedPaths.addAll(paths);
+					}
 					key.reset();
 
 					// reset timer task
 					if (task != null) {
-						task.cancel();
+						task.cancel(false);
 					}
-					task = new TimerTask() {
-
-						@Override
-						public void run() {
-							timerElapsed();
-						}
-					};
-					timer.schedule(task, settleDelayMs);
+					task = queue.schedule(() -> timerElapsed(), settleDelayMs,
+							TimeUnit.MILLISECONDS);
 
 				} catch (InterruptedException e) {
 					isRunning = false;

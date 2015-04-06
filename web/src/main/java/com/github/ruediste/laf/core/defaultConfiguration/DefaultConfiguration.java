@@ -5,11 +5,11 @@ import static java.util.stream.Collectors.toList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
+import javax.annotation.PostConstruct;
+import javax.inject.*;
+
+import org.objectweb.asm.ClassReader;
 
 import com.github.ruediste.laf.core.argumentSerializer.ArgumentSerializer;
 import com.github.ruediste.laf.core.argumentSerializer.ArgumentSerializerChain;
@@ -22,13 +22,15 @@ import com.github.ruediste.laf.core.base.configuration.ConfigurationDefiner;
 import com.github.ruediste.laf.core.http.request.HttpRequest;
 import com.github.ruediste.laf.core.requestParserChain.RequestParser;
 import com.github.ruediste.laf.core.requestParserChain.RequestParserChain;
-import com.github.ruediste.laf.core.web.resource.*;
+import com.github.ruediste.laf.core.web.resource.ResourceMode;
+import com.github.ruediste.laf.core.web.resource.StaticWebResourceRequestHandler;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.google.common.base.Function;
 
 /**
  * Defines the default configuration of the framework.
  */
+@Singleton
 public class DefaultConfiguration implements ConfigurationDefiner {
 
 	@Inject
@@ -47,13 +49,17 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 	};
 
 	public Deque<IdentifierSerializer> idSerializers = new LinkedList<>();
-	{
+
+	@PostConstruct
+	private void setupIdSerializers() {
 		idSerializers.add(get(IntIdSerializer.class));
 		idSerializers.add(get(LongIdSerializer.class));
 	}
 
 	public Deque<Supplier<ArgumentSerializer>> argumentSerializers = new LinkedList<>();
-	{
+
+	@PostConstruct
+	private void setupArgumentSerializers() {
 		argumentSerializers.add(() -> get(IntSerializer.class));
 		argumentSerializers.add(() -> get(LongSerializer.class));
 		argumentSerializers.add(() -> {
@@ -78,7 +84,7 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 	public RequestParserChain<HttpRequest> createRequestParserChain() {
 		RequestParserChain<HttpRequest> result = requestParserChainProvider
 				.get();
-		result.add(resourceRequestHandlerCV);
+		result.add(createResourceRequestHandler());
 		return result;
 	}
 
@@ -94,25 +100,22 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 	public Supplier<StaticWebResourceRequestHandler> resourceRequestHandler = () -> {
 
 		StaticWebResourceRequestHandler handler = get(StaticWebResourceRequestHandler.class);
-
-		handler.initialize(
-				getResourceMode(),
-				StreamSupport.stream(
-						instance.select(StaticWebResourceBundle.class)
-								.spliterator(), false).collect(
-						Collectors.toList()));
+		// TODO: collect bundles
+		handler.initialize(getResourceMode());
 		return handler;
 	};
 
 	public StaticWebResourceRequestHandler createResourceRequestHandler() {
-		StaticWebResourceRequestHandler handler = get(StaticWebResourceRequestHandler.class);
-
-		handler.initialize(
-				getResourceMode(),
-				StreamSupport.stream(
-						instance.select(StaticWebResourceBundle.class)
-								.spliterator(), false).collect(
-						Collectors.toList()));
-		return handler;
+		return resourceRequestHandler.get();
 	}
+
+	/**
+	 * Flags to be used when calling
+	 * {@link ClassReader#accept(org.objectweb.asm.ClassVisitor, int)} for class
+	 * change notification.
+	 */
+	public int classScanningFlags = ClassReader.SKIP_CODE
+			+ ClassReader.SKIP_DEBUG;
+
+	public long fileChangeSettleDelayMs = 10;
 }

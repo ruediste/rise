@@ -23,6 +23,9 @@ public class FileChangeNotifierTest extends SaltaTest {
 	@Inject
 	Provider<FileChangeNotifier> notifierProvider;
 
+	@Inject
+	ApplicationEventQueue queue;
+
 	FileChangeNotifier notifier;
 
 	private List<FileChangeTransaction> transactions;
@@ -35,8 +38,10 @@ public class FileChangeNotifierTest extends SaltaTest {
 		notifier.addListener(trx -> transactions.add(trx));
 	}
 
-	private void startNotifier() {
-		notifier.start(new HashSet<>(Arrays.asList(tempDir)), 10);
+	private void startNotifier() throws Exception {
+		queue.submit(
+				() -> notifier.start(new HashSet<>(Arrays.asList(tempDir)), 10))
+				.get();
 	}
 
 	@After
@@ -78,7 +83,8 @@ public class FileChangeNotifierTest extends SaltaTest {
 		Files.write(testTxt2, "Hello".getBytes());
 
 		// let at least one second pass, such that the mtime changes
-		Thread.sleep(1500);
+		// Thread.sleep(1500);
+		Thread.sleep(100);
 
 		transactions.clear();
 		Files.write(testTxt2, "Hello World".getBytes());

@@ -1,37 +1,50 @@
 package com.github.ruediste.laf.core.classReload;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
 import org.junit.*;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import com.github.ruediste.laf.test.SaltaTest;
 import com.github.ruediste.laf.test.TestUtil;
 
+@SuppressWarnings("unchecked")
+@RunWith(MockitoJUnitRunner.class)
 public class DirectoryChangeWatcherTest extends SaltaTest {
 
 	private Path tempDir;
 
 	@Inject
+	ApplicationEventQueue queue;
+
+	@Inject
 	private DirectoryChangeWatcher watcher;
 
-	private Runnable listener;
+	@Mock
+	private Consumer<Set<Path>> listener;
 
 	@Before
 	public void before() throws IOException {
 		tempDir = Files.createTempDirectory("test");
-		listener = mock(Runnable.class);
 
 	}
 
-	private void startWatcher() {
-		watcher.start(Arrays.asList(tempDir), listener, 10);
+	private void startWatcher() throws Exception {
+		queue.submit(() -> watcher.start(Arrays.asList(tempDir), listener, 10))
+				.get();
 	}
 
 	@After
@@ -41,11 +54,13 @@ public class DirectoryChangeWatcherTest extends SaltaTest {
 
 	@Test
 	public void testFileAdded() throws Exception {
+
 		startWatcher();
 		Path testTxt = tempDir.resolve("test.txt");
 		Files.write(testTxt, "Hello".getBytes());
 		Thread.sleep(100);
-		verify(listener).run();
+		verify(listener).accept(
+				(Set<Path>) argThat(containsInAnyOrder(testTxt)));
 	}
 
 	@Test
@@ -54,7 +69,7 @@ public class DirectoryChangeWatcherTest extends SaltaTest {
 		Path test = tempDir.resolve("test");
 		Files.createDirectory(test);
 		Thread.sleep(100);
-		verify(listener).run();
+		verify(listener).accept((Set<Path>) argThat(containsInAnyOrder(test)));
 	}
 
 	@Test
@@ -65,7 +80,7 @@ public class DirectoryChangeWatcherTest extends SaltaTest {
 		Path testTxt = test.resolve("test.txt");
 		Files.write(testTxt, "Hello".getBytes());
 		Thread.sleep(100);
-		verify(listener).run();
+		verify(listener).accept((Set<Path>) argThat(containsInAnyOrder(test)));
 	}
 
 	@Test
@@ -76,7 +91,8 @@ public class DirectoryChangeWatcherTest extends SaltaTest {
 		Path testTxt = test.resolve("test.txt");
 		Files.write(testTxt, "Hello".getBytes());
 		Thread.sleep(100);
-		verify(listener).run();
+		verify(listener).accept(
+				(Set<Path>) argThat(containsInAnyOrder(testTxt)));
 	}
 
 	@Test
@@ -88,7 +104,8 @@ public class DirectoryChangeWatcherTest extends SaltaTest {
 		startWatcher();
 		Files.delete(testTxt);
 		Thread.sleep(100);
-		verify(listener).run();
+		verify(listener).accept(
+				(Set<Path>) argThat(containsInAnyOrder(testTxt)));
 	}
 
 	@Test
@@ -100,7 +117,8 @@ public class DirectoryChangeWatcherTest extends SaltaTest {
 		startWatcher();
 		Files.write(testTxt, "Hello World".getBytes());
 		Thread.sleep(100);
-		verify(listener).run();
+		verify(listener).accept(
+				(Set<Path>) argThat(containsInAnyOrder(testTxt)));
 	}
 
 	@Test
@@ -109,13 +127,14 @@ public class DirectoryChangeWatcherTest extends SaltaTest {
 		Path test = tempDir.resolve("test");
 		Files.createDirectory(test);
 		Thread.sleep(100);
-		verify(listener).run();
+		verify(listener).accept((Set<Path>) argThat(containsInAnyOrder(test)));
 
 		reset(listener);
 		Path testTxt = test.resolve("test.txt");
 		Files.write(testTxt, "Hello".getBytes());
 		Thread.sleep(100);
-		verify(listener).run();
+		verify(listener).accept(
+				(Set<Path>) argThat(containsInAnyOrder(testTxt)));
 	}
 
 }
