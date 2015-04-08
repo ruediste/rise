@@ -58,6 +58,9 @@ public abstract class FrontServletBase extends HttpServlet {
 
 	private String applicationInstanceClassName;
 
+	@Inject
+	ApplicationInitializer applicationInitializer;
+
 	@Override
 	public final void init() throws ServletException {
 		try {
@@ -65,12 +68,8 @@ public abstract class FrontServletBase extends HttpServlet {
 		} catch (Exception e) {
 			throw new RuntimeException("Error during initialization", e);
 		}
-		{
-			Class<? extends ApplicationInstance> cls = getApplicationInstanceClass();
-			if (cls != null) {
-				applicationInstanceClassName = cls.getName();
-			}
-		}
+
+		// continue in AET
 		try {
 			queue.submit(this::initInAET).get();
 		} catch (Exception e) {
@@ -92,7 +91,16 @@ public abstract class FrontServletBase extends HttpServlet {
 	Provider<SpaceAwareClassLoader> dynamicClassLoaderProvider;
 
 	private void initInAET() {
+		// run initializer
+		applicationInitializer.initialize();
+
 		if (fixedApplicationInstance == null) {
+			// load application instance
+			{
+				Class<? extends ApplicationInstance> cls = getApplicationInstanceClass();
+				applicationInstanceClassName = cls.getName();
+			}
+
 			notifier.addListener(trx -> reloadApplicationInstance());
 		}
 		Set<Path> rootDirs = new HashSet<>();
@@ -111,7 +119,8 @@ public abstract class FrontServletBase extends HttpServlet {
 							.getContextClassLoader());
 			fixedApplicationInstance.start();
 		} else {
-			reloadApplicationInstance();
+			// application gets started through the initial file change
+			// transaction
 		}
 	}
 

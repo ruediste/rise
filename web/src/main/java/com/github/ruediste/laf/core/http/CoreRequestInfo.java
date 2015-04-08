@@ -1,10 +1,10 @@
 package com.github.ruediste.laf.core.http;
 
-import javax.enterprise.context.RequestScoped;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.github.ruediste.laf.core.guice.RequestScoped;
 import com.github.ruediste.laf.core.http.request.HttpRequest;
 
 @RequestScoped

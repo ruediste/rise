@@ -3,25 +3,23 @@ package com.github.ruediste.laf.core.guice;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
-import javax.inject.Inject;
 import javax.servlet.http.*;
 
 import net.sf.cglib.proxy.Dispatcher;
 import net.sf.cglib.proxy.Enhancer;
 
-import org.springframework.web.context.request.RequestScope;
-
 import com.github.ruediste.salta.core.Binding;
 import com.github.ruediste.salta.core.CoreDependencyKey;
-import com.github.ruediste.salta.jsr330.*;
+import com.github.ruediste.salta.jsr330.AbstractModule;
+import com.github.ruediste.salta.jsr330.Salta;
 import com.github.ruediste.salta.standard.ScopeImpl;
 import com.github.ruediste.salta.standard.ScopeImpl.ScopeHandler;
 import com.github.ruediste.salta.standard.util.SimpleProxyScopeHandler;
 import com.google.common.base.Preconditions;
 
 /**
- * {@link Salta} module binding the {@link SessionScopeHandler}, the
- * {@link RequestScope} and various other http request/response related objects.
+ * {@link Salta} module binding {@link RequestScoped} and {@link SessionScoped}
+ * as well as the {@link SessionScopeHandler}.
  */
 public class HttpScopeModule extends AbstractModule {
 
@@ -108,43 +106,16 @@ public class HttpScopeModule extends AbstractModule {
 		}
 	}
 
-	@RequestScoped
-	static class HttpScopeData {
-		private HttpServletRequest request;
-		private HttpServletResponse response;
-
-		public HttpServletRequest getRequest() {
-			return request;
-		}
-
-		public void setRequest(HttpServletRequest request) {
-			this.request = request;
-		}
-
-		public HttpServletResponse getResponse() {
-			return response;
-		}
-
-		public void setResponse(HttpServletResponse response) {
-			this.response = response;
-		}
-	}
-
 	public static class HttpScopeManagerImpl implements HttpScopeManager {
 		SessionScopeHandler sessionScopeHandler = new SessionScopeHandler();
 		SimpleProxyScopeHandler requestScopeHandler = new SimpleProxyScopeHandler(
 				"Request");
-
-		@Inject
-		HttpScopeData scopeData;
 
 		@Override
 		public void enter(HttpServletRequest request,
 				HttpServletResponse response) {
 			sessionScopeHandler.enter(() -> request.getSession());
 			requestScopeHandler.enter();
-			scopeData.setRequest(request);
-			scopeData.setResponse(response);
 		}
 
 		@Override
@@ -168,15 +139,4 @@ public class HttpScopeModule extends AbstractModule {
 				scopeManager.requestScopeHandler));
 	}
 
-	@RequestScoped
-	@Provides
-	HttpServletResponse httpServletResponse(HttpScopeData data) {
-		return data.getResponse();
-	}
-
-	@RequestScoped
-	@Provides
-	HttpServletRequest httpServletRequest(HttpScopeData data) {
-		return data.getRequest();
-	}
 }

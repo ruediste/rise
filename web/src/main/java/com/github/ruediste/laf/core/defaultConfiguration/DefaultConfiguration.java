@@ -7,7 +7,8 @@ import java.util.LinkedList;
 import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;
-import javax.inject.*;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.objectweb.asm.ClassReader;
 
@@ -20,8 +21,7 @@ import com.github.ruediste.laf.core.base.DefaultClassNameMapping;
 import com.github.ruediste.laf.core.base.ProjectStage;
 import com.github.ruediste.laf.core.base.configuration.ConfigurationDefiner;
 import com.github.ruediste.laf.core.http.request.HttpRequest;
-import com.github.ruediste.laf.core.requestParserChain.RequestParser;
-import com.github.ruediste.laf.core.requestParserChain.RequestParserChain;
+import com.github.ruediste.laf.core.requestParserChain.*;
 import com.github.ruediste.laf.core.web.resource.ResourceMode;
 import com.github.ruediste.laf.core.web.resource.StaticWebResourceRequestHandler;
 import com.github.ruediste.salta.jsr330.Injector;
@@ -76,16 +76,50 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 		return chain;
 	}
 
-	public Deque<RequestParser<HttpRequest>> requestParsers = new LinkedList<>();
+	/**
+	 * Index from path info prefixes (or whole path infos) to the corresponding
+	 * request parsers. This is the primary mean to register for handling an
+	 * url.
+	 *
+	 * <p>
+	 * For finer control, a custom {@link #requestParsers RequstParser} can be
+	 * registered
+	 */
+	public final PathInfoIndex<RequestParser> pathInfoIndex = new PathInfoIndex<>();
 
-	@Inject
-	Provider<RequestParserChain<HttpRequest>> requestParserChainProvider;
+	/**
+	 * When handling a request, the request parsers are evaluated until the
+	 * first one returns a non-null result.
+	 */
+	public final Deque<RequestParser> requestParsers = new LinkedList<>();
 
-	public RequestParserChain<HttpRequest> createRequestParserChain() {
-		RequestParserChain<HttpRequest> result = requestParserChainProvider
-				.get();
-		result.add(createResourceRequestHandler());
-		return result;
+	/**
+	 * This is the request parser using the {@link #pathInfoIndex} to parse a
+	 * request. initially added to {@link #requestParsers}
+	 */
+	public RequestParser pathInfoIndexRequestParser;
+
+	@PostConstruct
+	private void setupRequestParsers() {
+		pathInfoIndexRequestParser = request -> {
+			RequestParser parser = pathInfoIndex.getHandler(request
+					.getPathInfo());
+			if (parser != null) {
+				return parser.parse(request);
+			}
+			return null;
+		};
+		requestParsers.add(pathInfoIndexRequestParser);
+	}
+
+	public RequestParseResult parse(HttpRequest request) {
+		for (RequestParser parser : requestParsers) {
+			RequestParseResult result = parser.parse(request);
+			if (result != null) {
+				return result;
+			}
+		}
+		return null;
 	}
 
 	public ProjectStage projectStage;

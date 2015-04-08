@@ -64,7 +64,7 @@ public class SessionScopedTest extends
 		}
 	}
 
-	static class Instance extends ApplicationInstance {
+	static class Instance implements ApplicationInstance {
 
 		@Inject
 		TestSessionScoped test;
@@ -76,7 +76,7 @@ public class SessionScopedTest extends
 		HttpScopeManager scopeManager;
 
 		@Override
-		protected void startImpl() {
+		public void start() {
 			Injector injector = Salta.createInjector(new HttpScopeModule());
 			injector.injectMembers(this);
 		}
@@ -94,6 +94,12 @@ public class SessionScopedTest extends
 			test.setValue(request.getServletPath());
 
 			scopeManager.exit();
+		}
+
+		@Override
+		public void close() {
+			// TODO Auto-generated method stub
+
 		}
 
 	}

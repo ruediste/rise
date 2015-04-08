@@ -8,7 +8,7 @@ import com.github.ruediste.laf.core.requestParserChain.RequestParser;
 import com.github.ruediste.laf.mvc.core.ActionPath;
 import com.github.ruediste.laf.mvc.core.RequestHandler;
 
-public class MvcWebRequestParser implements RequestParser<HttpRequest> {
+public class MvcWebRequestParser implements RequestParser {
 
 	@Inject
 	RenderUtilImpl renderUtil;

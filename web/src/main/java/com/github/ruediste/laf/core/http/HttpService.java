@@ -1,9 +1,9 @@
 package com.github.ruediste.laf.core.http;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
-@ApplicationScoped
+@Singleton
 public class HttpService {
 	@Inject
 	CoreRequestInfo coreRequestInfo;

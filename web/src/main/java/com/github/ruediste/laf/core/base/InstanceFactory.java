@@ -1,7 +1,7 @@
 package com.github.ruediste.laf.core.base;
 
-import com.google.inject.Injector;
-import com.google.inject.Key;
+import com.github.ruediste.salta.core.CoreDependencyKey;
+import com.github.ruediste.salta.jsr330.Injector;
 
 /**
  * Static factory for bean instances, for situations where dependency injection
@@ -14,7 +14,7 @@ public class InstanceFactory {
 		return injector.get().getInstance(clazz);
 	}
 
-	public static <T> T getInstance(Key<T> key) {
+	public static <T> T getInstance(CoreDependencyKey<T> key) {
 		return injector.get().getInstance(key);
 	}
 

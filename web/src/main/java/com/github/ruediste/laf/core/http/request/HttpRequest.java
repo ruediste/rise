@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.github.ruediste.laf.core.base.attachedProperties.AttachedPropertyBearer;
 
 /**
- * A reduced representation of a {@link HttpServletRequest}
+ * A reduced view of a {@link HttpServletRequest}
  */
 public interface HttpRequest extends AttachedPropertyBearer {
 

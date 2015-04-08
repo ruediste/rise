@@ -9,8 +9,8 @@ import com.github.ruediste.laf.core.base.ActionResult;
 /**
  * Contains the result of handling a http request. The result should be kept in
  * a form which can be sent to the {@link HttpServletResponse} with minimal
- * dependencies and the sending process should generally not fail, except if
- * there are problems with the response itself.
+ * dependencies, such that sending the result does generally not fail, except if
+ * there are problems with the connection to the client.
  */
 public interface HttpRenderResult extends ActionResult {
 

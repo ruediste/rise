@@ -23,6 +23,12 @@ public class SpaceAwareClassLoader extends ClassLoader {
 	@Override
 	protected Class<?> loadClass(String name, boolean resolve)
 			throws ClassNotFoundException {
+		{
+			Class<?> result = findLoadedClass(name);
+			if (result != null) {
+				return result;
+			}
+		}
 		if (!name.startsWith("java.")) {
 			Class<?> space = cache.getClassSpace(name);
 			if (classSpace.equals(space)) {

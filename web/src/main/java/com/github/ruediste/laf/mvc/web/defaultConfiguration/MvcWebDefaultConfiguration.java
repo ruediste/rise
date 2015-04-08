@@ -1,21 +1,20 @@
 package com.github.ruediste.laf.mvc.web.defaultConfiguration;
 
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import com.github.ruediste.laf.core.base.configuration.ConfigurationDefiner;
-import com.github.ruediste.laf.core.base.configuration.ExtendConfiguration;
 import com.github.ruediste.laf.core.defaultConfiguration.*;
 import com.github.ruediste.laf.mvc.core.*;
 import com.github.ruediste.laf.mvc.web.*;
+import com.github.ruediste.salta.jsr330.Injector;
 
 public class MvcWebDefaultConfiguration implements ConfigurationDefiner {
 
 	@Inject
-	Instance<Object> instance;
+	Injector injector;
 
 	private <T> T get(Class<T> cls) {
-		return instance.select(cls).get();
+		return injector.getInstance(cls);
 	}
 
 	public void produce(HttpRequestMapperCP val,

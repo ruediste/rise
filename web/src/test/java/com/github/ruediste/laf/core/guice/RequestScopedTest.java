@@ -13,8 +13,7 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
-import com.github.ruediste.laf.core.entry.ApplicationInstance;
-import com.github.ruediste.laf.core.entry.HttpMethod;
+import com.github.ruediste.laf.core.entry.*;
 import com.github.ruediste.laf.test.ContainerTestBase;
 import com.github.ruediste.laf.test.InstanceTestUtil;
 import com.github.ruediste.salta.jsr330.Salta;
@@ -35,7 +34,7 @@ public class RequestScopedTest extends
 		}
 	}
 
-	class Instance extends ApplicationInstance {
+	class Instance implements ApplicationInstance {
 
 		@Inject
 		TestRequestScoped test1;
@@ -49,8 +48,9 @@ public class RequestScopedTest extends
 		HttpScopeManager scopeManager;
 
 		@Override
-		protected void startImpl() {
-			Salta.createInjector(new HttpScopeModule()).injectMembers(this);
+		public void start() {
+			Salta.createInjector(new HttpScopeModule(), new LoggerModule())
+					.injectMembers(this);
 		}
 
 		@Override
@@ -64,6 +64,12 @@ public class RequestScopedTest extends
 			util.sendHtmlResponse("" + value + test2.getValue());
 
 			scopeManager.exit();
+		}
+
+		@Override
+		public void close() {
+			// TODO Auto-generated method stub
+
 		}
 	}
 

@@ -1,6 +1,6 @@
 package com.github.ruediste.laf.mvc.core;
 
-import javax.enterprise.context.RequestScoped;
+import com.github.ruediste.laf.core.guice.RequestScoped;
 
 @RequestScoped
 public class MvcRequestInfo {
