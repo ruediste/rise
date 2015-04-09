@@ -11,6 +11,7 @@ import javax.servlet.http.*;
 
 import org.slf4j.Logger;
 
+import com.github.ruediste.laf.core.base.InitializerUtil;
 import com.github.ruediste.laf.core.classReload.*;
 import com.github.ruediste.laf.core.defaultConfiguration.DefaultConfiguration;
 import com.github.ruediste.salta.jsr330.Injector;
@@ -58,9 +59,6 @@ public abstract class FrontServletBase extends HttpServlet {
 
 	private String applicationInstanceClassName;
 
-	@Inject
-	ApplicationInitializer applicationInitializer;
-
 	@Override
 	public final void init() throws ServletException {
 		try {
@@ -90,24 +88,29 @@ public abstract class FrontServletBase extends HttpServlet {
 	@Named("dynamic")
 	Provider<SpaceAwareClassLoader> dynamicClassLoaderProvider;
 
+	@Inject
+	Injector injector;
+
 	private void initInAET() {
-		// run initializer
-		applicationInitializer.initialize();
+
+		// run initializers
+		InitializerUtil.runInitializers(injector);
 
 		if (fixedApplicationInstance == null) {
-			// load application instance
-			{
-				Class<? extends ApplicationInstance> cls = getApplicationInstanceClass();
-				applicationInstanceClassName = cls.getName();
-			}
-
+			// setup application reloading
+			applicationInstanceClassName = getApplicationInstanceClass()
+					.getName();
 			notifier.addListener(trx -> reloadApplicationInstance());
 		}
+
+		// scan the classpath
 		Set<Path> rootDirs = new HashSet<>();
 		scanner.initialize((rootDirectory, classloader) -> rootDirs
 				.add(rootDirectory));
 		scanner.scan(Thread.currentThread().getContextClassLoader());
 
+		// start the change notifier. This will cause an initial file change
+		// transaction
 		notifier.start(rootDirs, config.fileChangeSettleDelayMs);
 
 		if (fixedApplicationInstance != null) {

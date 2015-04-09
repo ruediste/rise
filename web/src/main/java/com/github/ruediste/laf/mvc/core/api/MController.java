@@ -15,5 +15,6 @@ import javax.inject.Qualifier;
 @Target({ ElementType.METHOD, ElementType.FIELD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
+@Deprecated
 public @interface MController {
 }

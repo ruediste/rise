@@ -2,6 +2,7 @@ package com.github.ruediste.laf.core.entry;
 
 import javax.inject.Named;
 
+import com.github.ruediste.laf.core.base.InitializerUtil;
 import com.github.ruediste.laf.core.classReload.*;
 import com.github.ruediste.laf.mvc.web.MvcWebApplicationModule;
 import com.github.ruediste.salta.jsr330.AbstractModule;
@@ -14,6 +15,8 @@ public class ApplicationModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
+		InitializerUtil.register(config(), ApplicationInitializer.class);
+		bind(ClassSpaceCache.class).asEagerSingleton();
 		install(new MvcWebApplicationModule());
 	}
 

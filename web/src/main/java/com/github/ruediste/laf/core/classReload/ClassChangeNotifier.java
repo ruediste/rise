@@ -26,31 +26,43 @@ public class ClassChangeNotifier {
 	@Inject
 	FileChangeNotifier notifier;
 
+	@Inject
+	ApplicationEventQueue queue;
+
 	private Map<Path, String> classNameMap = new HashMap<>();
 
 	public class ClassChangeTransaction {
-		Set<String> removedClasses = new HashSet<>();
-		Set<ClassNode> addedClasses = new HashSet<>();
-		Set<ClassNode> modifiedClasses = new HashSet<>();
+		public Set<String> removedClasses = new HashSet<>();
+		public Set<ClassNode> addedClasses = new HashSet<>();
+		public Set<ClassNode> modifiedClasses = new HashSet<>();
 	}
 
+	private LinkedHashSet<Consumer<ClassChangeTransaction>> preListeners = new LinkedHashSet<>();
 	private LinkedHashSet<Consumer<ClassChangeTransaction>> listeners = new LinkedHashSet<>();
+
+	/**
+	 * Add a listener which will be notified before those registered with
+	 * {@link #addListener(Consumer)}
+	 */
+	public void addPreListener(Consumer<ClassChangeTransaction> listener) {
+		queue.checkAET();
+		notifier.checkNotStarted();
+		preListeners.add(listener);
+	}
 
 	/**
 	 * Add a listener. May only be called before the underlying
 	 * {@link FileChangeNotifier} has been started.
 	 */
 	public void addListener(Consumer<ClassChangeTransaction> listener) {
-		synchronized (listeners) {
-			listeners.add(listener);
-		}
+		queue.checkAET();
 		notifier.checkNotStarted();
+		listeners.add(listener);
 	}
 
 	public void removeListener(Consumer<ClassChangeTransaction> listener) {
-		synchronized (listeners) {
-			listeners.remove(listener);
-		}
+		queue.checkAET();
+		listeners.remove(listener);
 	}
 
 	@PostConstruct
@@ -89,14 +101,13 @@ public class ClassChangeNotifier {
 			classTrx.modifiedClasses.add(readClass(file));
 		}
 
-		{
-			ArrayList<Consumer<ClassChangeTransaction>> tmp;
-			synchronized (listeners) {
-				tmp = new ArrayList<>(listeners);
-			}
-			for (Consumer<ClassChangeTransaction> listener : tmp) {
-				listener.accept(classTrx);
-			}
+		for (Consumer<ClassChangeTransaction> listener : new ArrayList<>(
+				preListeners)) {
+			listener.accept(classTrx);
+		}
+		for (Consumer<ClassChangeTransaction> listener : new ArrayList<>(
+				listeners)) {
+			listener.accept(classTrx);
 		}
 	}
 

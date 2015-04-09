@@ -1,20 +1,15 @@
 package com.github.ruediste.laf.core.entry;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.github.ruediste.laf.core.base.InitializerBase;
-import com.github.ruediste.laf.mvc.web.MvcWebApplicationInitializer;
+import com.github.ruediste.laf.core.base.Initializer;
 
 @Singleton
-public class ApplicationInitializer extends InitializerBase {
-
-	@Inject
-	MvcWebApplicationInitializer mvcWebApplicationInitializer;
+public class ApplicationInitializer implements Initializer {
 
 	@Override
-	protected void initializeImpl() {
-		mvcWebApplicationInitializer.initialize();
+	public void initialize() {
+
 	}
 
 }

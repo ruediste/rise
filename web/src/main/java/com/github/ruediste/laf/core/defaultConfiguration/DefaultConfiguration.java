@@ -77,30 +77,19 @@ public class DefaultConfiguration implements ConfigurationDefiner {
 	}
 
 	/**
-	 * Index from path info prefixes (or whole path infos) to the corresponding
-	 * request parsers. This is the primary mean to register for handling an
-	 * url.
-	 *
-	 * <p>
-	 * For finer control, a custom {@link #requestParsers RequstParser} can be
-	 * registered
-	 */
-	public final PathInfoIndex<RequestParser> pathInfoIndex = new PathInfoIndex<>();
-
-	/**
 	 * When handling a request, the request parsers are evaluated until the
 	 * first one returns a non-null result.
 	 */
 	public final Deque<RequestParser> requestParsers = new LinkedList<>();
 
 	/**
-	 * This is the request parser using the {@link #pathInfoIndex} to parse a
+	 * This is the request parser using the {@link #PathInfoIndex} to parse a
 	 * request. initially added to {@link #requestParsers}
 	 */
 	public RequestParser pathInfoIndexRequestParser;
 
 	@PostConstruct
-	private void setupRequestParsers() {
+	private void setupRequestParsers(PathInfoIndex pathInfoIndex) {
 		pathInfoIndexRequestParser = request -> {
 			RequestParser parser = pathInfoIndex.getHandler(request
 					.getPathInfo());

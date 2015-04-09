@@ -12,7 +12,7 @@ import org.objectweb.asm.tree.*;
 import com.github.ruediste.laf.core.classReload.ClassChangeNotifier.ClassChangeTransaction;
 
 /**
- * Information cache storing the
+ * Information cache storing information about the class space classes are in
  */
 @Singleton
 public class ClassSpaceCache {

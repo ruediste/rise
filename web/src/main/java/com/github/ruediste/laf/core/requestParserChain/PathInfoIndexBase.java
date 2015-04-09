@@ -10,7 +10,7 @@ import java.util.Map.Entry;
  * This map is used to locate controllers based on their registered path infos
  * or prefixes.
  */
-public class PathInfoIndex<T> {
+public class PathInfoIndexBase<T> {
 
 	private HashMap<String, T> pathInfoMap = new HashMap<>();
 
