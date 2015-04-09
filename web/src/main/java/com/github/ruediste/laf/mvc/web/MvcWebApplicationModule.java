@@ -8,6 +8,5 @@ public class MvcWebApplicationModule extends AbstractModule {
 	@Override
 	protected void configure() throws Exception {
 		InitializerUtil.register(config(), MvcWebApplicationInitializer.class);
-		bind(MvcWebControllerCache.class).asEagerSingleton();
 	}
 }

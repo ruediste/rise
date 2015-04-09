@@ -2,6 +2,7 @@ package com.github.ruediste.laf.core.entry;
 
 import javax.inject.Named;
 
+import com.github.ruediste.laf.core.CoreApplicationModule;
 import com.github.ruediste.laf.core.base.InitializerUtil;
 import com.github.ruediste.laf.core.classReload.*;
 import com.github.ruediste.laf.mvc.web.MvcWebApplicationModule;
@@ -18,6 +19,7 @@ public class ApplicationModule extends AbstractModule {
 		InitializerUtil.register(config(), ApplicationInitializer.class);
 		bind(ClassSpaceCache.class).asEagerSingleton();
 		install(new MvcWebApplicationModule());
+		install(new CoreApplicationModule());
 	}
 
 	@Named("dynamic")
