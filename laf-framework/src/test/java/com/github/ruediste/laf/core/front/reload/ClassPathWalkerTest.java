@@ -88,9 +88,8 @@ public class ClassPathWalkerTest {
 					@Override
 					public ClassPathVisitResult visitRootDirectory(
 							Path rootDirectory, ClassLoader classloader) {
-						System.out.println(rootDirectory);
 						if (rootDirectory.toString().contains(
-								"laf/framework-base")) {
+								"laf/laf-framework/")) {
 							return ClassPathVisitResult.SKIP_CONTENTS;
 						} else
 							return ClassPathVisitResult.CONTINUE;

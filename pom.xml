@@ -10,8 +10,7 @@
 	<modules>
 		<module>laf-standalone</module>
 		<module>laf-integration</module>
-		<module>laf-framework-web</module>
-		<module>laf-framework-base</module>
+		<module>laf-framework</module>
 		<module>laf-app-test</module>
 		<module>laf-app-skeleton</module>
 		<module>laf-app-sample</module>
