@@ -1,7 +1,5 @@
 package com.github.ruediste.laf.core;
 
-import static java.util.stream.Collectors.toList;
-
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.function.Supplier;
@@ -11,6 +9,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.tree.ClassNode;
 
 import com.github.ruediste.laf.core.httpRequest.HttpRequest;
 import com.github.ruediste.salta.jsr330.Injector;
@@ -30,39 +29,22 @@ public class CoreConfiguration {
 	}
 
 	public String basePackage = "";
+	public String controllerSuffix = "Controller";
 
-	public Supplier<Function<Class<?>, String>> controllerNameMapping = () -> {
+	public Supplier<Function<ClassNode, String>> controllerNameMapperSupplier = () -> {
 		DefaultClassNameMapping mapping = get(DefaultClassNameMapping.class);
-		mapping.initialize(basePackage, "Controller");
+		mapping.initialize(basePackage, controllerSuffix);
 		return mapping;
 	};
 
-	public Deque<IdentifierSerializer> idSerializers = new LinkedList<>();
+	private Function<ClassNode, String> controllerNameMapper;
 
-	@PostConstruct
-	private void setupIdSerializers() {
-		idSerializers.add(get(IntIdSerializer.class));
-		idSerializers.add(get(LongIdSerializer.class));
+	public String calculateControllerName(ClassNode node) {
+		return controllerNameMapper.apply(node);
 	}
 
-	public Deque<Supplier<ArgumentSerializer>> argumentSerializers = new LinkedList<>();
-
-	@PostConstruct
-	private void setupArgumentSerializers() {
-		argumentSerializers.add(() -> get(IntSerializer.class));
-		argumentSerializers.add(() -> get(LongSerializer.class));
-		argumentSerializers.add(() -> {
-			EntitySerializer entitySerializer = get(EntitySerializer.class);
-			entitySerializer.initialize(idSerializers);
-			return entitySerializer;
-		});
-	}
-
-	public ArgumentSerializerChain createArgumentSerializerChain() {
-		ArgumentSerializerChain chain = get(ArgumentSerializerChain.class);
-		chain.initialize(argumentSerializers.stream().map(Supplier::get)
-				.collect(toList()));
-		return chain;
+	public void initialize() {
+		controllerNameMapper = controllerNameMapperSupplier.get();
 	}
 
 	/**

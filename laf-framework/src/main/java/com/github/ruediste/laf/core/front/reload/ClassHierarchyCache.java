@@ -1,7 +1,9 @@
 package com.github.ruediste.laf.core.front.reload;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -9,6 +11,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.objectweb.asm.tree.ClassNode;
+import org.slf4j.Logger;
 
 import com.github.ruediste.laf.core.front.reload.ClassChangeNotifier.ClassChangeTransaction;
 import com.google.common.collect.HashMultimap;
@@ -24,6 +27,9 @@ public class ClassHierarchyCache {
 	@Inject
 	ClassChangeNotifier notifier;
 
+	@Inject
+	Logger log;
+
 	@PostConstruct
 	public void setup() {
 		notifier.addPreListener(this::onChange);
@@ -32,7 +38,10 @@ public class ClassHierarchyCache {
 	private Map<String, ClassNode> classMap = new HashMap<>();
 	private HashMultimap<String, ClassNode> childMap = HashMultimap.create();
 
-	private void onChange(ClassChangeTransaction trx) {
+	void onChange(ClassChangeTransaction trx) {
+		log.info("change occurred. added:" + trx.addedClasses.size()
+				+ " removed:" + trx.removedClasses.size() + " modified:"
+				+ trx.modifiedClasses.size());
 		for (String name : trx.removedClasses) {
 			ClassNode cls = classMap.remove(name);
 			if (cls != null) {
@@ -49,6 +58,7 @@ public class ClassHierarchyCache {
 		}
 		for (ClassNode cls : Iterables.concat(trx.modifiedClasses,
 				trx.addedClasses)) {
+			log.trace("Registring class {}", cls.name);
 			classMap.put(cls.name, cls);
 			if (cls.superName != null) {
 				childMap.put(cls.superName, cls);
@@ -68,7 +78,9 @@ public class ClassHierarchyCache {
 	 * @return
 	 */
 	public ClassNode getNode(String internalName) {
-		return classMap.get(internalName);
+		ClassNode result = classMap.get(internalName);
+		log.trace("node for " + internalName + " found: " + (result != null));
+		return result;
 	}
 
 	/**
@@ -80,5 +92,41 @@ public class ClassHierarchyCache {
 	 */
 	public Set<ClassNode> getChildren(String internalName) {
 		return childMap.get(internalName);
+	}
+
+	/**
+	 * Checks if a type is assignable from another
+	 */
+	public boolean isAssignableFrom(String internalNameParent,
+			String internalName) {
+		HashSet<String> seen = new HashSet<>();
+		return isAssignableFrom(internalNameParent, internalName, seen);
+	}
+
+	private boolean isAssignableFrom(String internalNameParent,
+			String internalName, HashSet<String> seen) {
+		log.trace("isAssignableFrom " + internalNameParent + " " + internalName);
+		if (Objects.equals(internalName, internalNameParent))
+			return true;
+
+		if (internalName == null)
+			return false;
+
+		if (!seen.add(internalName))
+			return false;
+
+		ClassNode node = getNode(internalName);
+		if (node == null)
+			return false;
+
+		if (isAssignableFrom(internalNameParent, node.superName, seen))
+			return true;
+
+		if (node.interfaces != null)
+			for (String iface : node.interfaces) {
+				if (isAssignableFrom(internalNameParent, iface, seen))
+					return true;
+			}
+		return false;
 	}
 }

@@ -44,7 +44,8 @@ public abstract class MvcWebActionPathBuilder {
 
 	/**
 	 * Initialize the {@link MvcWebActionPathBuilder} to create an
-	 * {@link ActionPath}. The current action path is beeing injected.
+	 * {@link ActionPath}. The current action path is retrieved from the
+	 * {@link MvcRequestInfo}.
 	 *
 	 * @see #initialize(ActionPath)
 	 */
@@ -83,7 +84,8 @@ public abstract class MvcWebActionPathBuilder {
 	 */
 	public <T> T controller(Class<T> controllerClass) {
 
-		if (MvcWebControllerReflectionUtil.isEmbeddedController(controllerClass)) {
+		if (MvcWebControllerReflectionUtil
+				.isEmbeddedController(controllerClass)) {
 			// look for the latest occurrence of the controller class
 			// in the invoked path, and use the prefix for the to be
 			// generated
@@ -140,7 +142,8 @@ public abstract class MvcWebActionPathBuilder {
 				if (!MvcWebControllerReflectionUtil.isActionMethod(thisMethod)) {
 					ArrayList<String> methods = new ArrayList<>();
 					for (Method method : controllerClass.getMethods()) {
-						if (MvcWebControllerReflectionUtil.isActionMethod(method)) {
+						if (MvcWebControllerReflectionUtil
+								.isActionMethod(method)) {
 							methods.add(method.toString());
 						}
 					}
@@ -158,8 +161,8 @@ public abstract class MvcWebActionPathBuilder {
 				path.getElements().add(invocation);
 
 				// check for embedded controllers
-				if (MvcWebControllerReflectionUtil.isEmbeddedController(thisMethod
-						.getReturnType())) {
+				if (MvcWebControllerReflectionUtil
+						.isEmbeddedController(thisMethod.getReturnType())) {
 					// find the
 					// add another element to the invocation path
 					return createActionPath(thisMethod.getReturnType(), path);

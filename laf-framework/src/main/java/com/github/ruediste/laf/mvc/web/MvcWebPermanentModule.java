@@ -2,11 +2,10 @@ package com.github.ruediste.laf.mvc.web;
 
 import com.github.ruediste.salta.jsr330.AbstractModule;
 
-public class MvcWebApplicationModule extends AbstractModule {
+public class MvcWebPermanentModule extends AbstractModule {
 
 	@Override
 	protected void configure() throws Exception {
-		// TODO Auto-generated method stub
 
 	}
 

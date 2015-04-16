@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import com.github.ruediste.laf.util.Pair;
+
 /**
  * Store path infos and path info prefixes.
  *
@@ -26,15 +28,27 @@ public class PathInfoIndexBase<T> {
 		}
 	}
 
-	public T getHandler(String pathInfo) {
-		T result = pathInfoMap.get(pathInfo);
-		if (result == null) {
+	/**
+	 * Return the prefix and the handler or null, if no handler has been found.
+	 */
+	public Pair<String, T> getHandler(String pathInfo) {
+		// check map
+		{
+			T result = pathInfoMap.get(pathInfo);
+			if (result != null)
+				return Pair.of(pathInfo, result);
+		}
+
+		// check prefix map
+		{
 			Entry<String, T> entry = prefixMap.floorEntry(pathInfo);
 			if (entry != null && pathInfo.startsWith(entry.getKey())) {
-				result = entry.getValue();
+				return Pair.of(entry.getKey(), entry.getValue());
 			}
 		}
-		return result;
+
+		// nothing found
+		return null;
 	}
 
 	public void registerPrefix(String prefix, T handler) {

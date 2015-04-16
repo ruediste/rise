@@ -9,7 +9,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
  * Event queue to process application events, such as
- * {@link ApplicationInstance} restarts etc. All events will be processed in the
+ * {@link DynamicApplication} restarts etc. All events will be processed in the
  * Applicatio Event Thread (AET)
  */
 @Singleton

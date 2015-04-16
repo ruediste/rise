@@ -25,10 +25,15 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.reflect.ClassPath;
 
 /**
  * Wald the classpath and notify a {@link ClassPathVisitor} of all root
  * directories, jar files, classes and resouces present.
+ * 
+ * <p>
+ * Based on Guava's {@link ClassPath}
+ * </p>
  */
 public class ClassPathWalker {
 	private static Logger logger = Logger.getLogger(ClassPathWalker.class

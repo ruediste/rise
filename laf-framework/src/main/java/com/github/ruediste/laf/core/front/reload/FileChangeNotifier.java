@@ -22,7 +22,6 @@ import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 
-import com.github.ruediste.laf.core.front.ApplicationEventQueue;
 import com.google.common.base.Joiner;
 
 /**
@@ -38,9 +37,6 @@ public class FileChangeNotifier {
 
 	@Inject
 	DirectoryChangeWatcher watcher;
-
-	@Inject
-	ApplicationEventQueue queue;
 
 	private Set<Consumer<FileChangeTransaction>> listeners = new LinkedHashSet<>();
 	private Map<Path, FileTime> currentPaths = new HashMap<>();
@@ -124,7 +120,6 @@ public class FileChangeNotifier {
 	 */
 	public void start(Set<Path> rootDirs, long settleDelayMs,
 			Consumer<FileChangeTransaction> trxPostProcessor) {
-		queue.checkAET();
 		log.info("Starting notifier with dirs\n{}",
 				Joiner.on("\n").join(rootDirs));
 		synchronized (this) {

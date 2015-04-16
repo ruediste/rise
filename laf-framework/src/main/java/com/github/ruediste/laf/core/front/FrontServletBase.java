@@ -1,9 +1,6 @@
 package com.github.ruediste.laf.core.front;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -16,8 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 
 import com.github.ruediste.laf.core.CoreConfiguration;
-import com.github.ruediste.laf.core.front.reload.FileChangeNotifier;
 import com.github.ruediste.laf.core.front.reload.ClassPathWalker;
+import com.github.ruediste.laf.core.front.reload.FileChangeNotifier;
 import com.github.ruediste.laf.core.front.reload.SpaceAwareClassLoader;
 import com.github.ruediste.laf.util.InitializerUtil;
 import com.github.ruediste.salta.jsr330.Injector;
@@ -30,21 +27,21 @@ public abstract class FrontServletBase extends HttpServlet {
 
 	public volatile ApplicationInstanceInfo currentInstance;
 
-	private ApplicationInstance fixedApplicationInstance;
+	private DynamicApplication fixedApplicationInstance;
 
 	/**
 	 * Set a fixed application instance. This will disable reloading
 	 */
 	public void setFixedApplicationInstance(
-			ApplicationInstance fixedApplicationInstance) {
+			DynamicApplication fixedApplicationInstance) {
 		this.fixedApplicationInstance = fixedApplicationInstance;
 	}
 
 	/**
 	 * Override for normal front servlets. Not required if a fixed
-	 * {@link ApplicationInstance} is used
+	 * {@link DynamicApplication} is used
 	 */
-	protected Class<? extends ApplicationInstance> getApplicationInstanceClass() {
+	protected Class<? extends DynamicApplication> getApplicationInstanceClass() {
 		return null;
 	}
 
@@ -95,12 +92,9 @@ public abstract class FrontServletBase extends HttpServlet {
 	Provider<SpaceAwareClassLoader> dynamicClassLoaderProvider;
 
 	@Inject
-	Injector injector;
+	Injector permanentInjector;
 
 	private void initInAET() {
-
-		// run initializers
-		InitializerUtil.runInitializers(injector);
 
 		if (fixedApplicationInstance == null) {
 			// setup application reloading
@@ -109,15 +103,8 @@ public abstract class FrontServletBase extends HttpServlet {
 			notifier.addListener(trx -> reloadApplicationInstance());
 		}
 
-		// scan the classpath
-		Set<Path> rootDirs = new HashSet<>();
-		scanner.initialize((rootDirectory, classloader) -> rootDirs
-				.add(rootDirectory));
-		scanner.scan(Thread.currentThread().getContextClassLoader());
-
-		// start the change notifier. This will cause an initial file change
-		// transaction
-		notifier.start(rootDirs, config.fileChangeSettleDelayMs);
+		// run initializers
+		InitializerUtil.runInitializers(permanentInjector);
 
 		if (fixedApplicationInstance != null) {
 			notifier.close();
@@ -138,14 +125,14 @@ public abstract class FrontServletBase extends HttpServlet {
 		SpaceAwareClassLoader cl = dynamicClassLoaderProvider.get();
 		try {
 			// create application instance
-			ApplicationInstance instance;
+			DynamicApplication instance;
 
 			Thread currentThread = Thread.currentThread();
 			ClassLoader old = currentThread.getContextClassLoader();
 			try {
 				currentThread.setContextClassLoader(cl);
 
-				instance = (ApplicationInstance) cl.loadClass(
+				instance = (DynamicApplication) cl.loadClass(
 						applicationInstanceClassName).newInstance();
 
 				currentInstance = new ApplicationInstanceInfo(instance, cl);
@@ -193,10 +180,10 @@ public abstract class FrontServletBase extends HttpServlet {
 
 	public static class ApplicationInstanceInfo {
 
-		public ApplicationInstance instance;
+		public DynamicApplication instance;
 		public ClassLoader classLoader;
 
-		public ApplicationInstanceInfo(ApplicationInstance instance,
+		public ApplicationInstanceInfo(DynamicApplication instance,
 				ClassLoader classLoader) {
 			super();
 			this.instance = instance;

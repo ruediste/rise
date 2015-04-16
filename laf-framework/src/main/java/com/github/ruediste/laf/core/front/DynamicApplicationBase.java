@@ -15,7 +15,7 @@ import com.github.ruediste.laf.core.scopes.HttpScopeManager;
 /**
  * Instance of an application. Will be reloaded when the application is changed.
  */
-public abstract class ApplicationInstanceBase implements ApplicationInstance {
+public abstract class DynamicApplicationBase implements DynamicApplication {
 
 	@Inject
 	CoreConfiguration config;

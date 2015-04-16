@@ -1,41 +1,28 @@
 package com.github.ruediste.laf.test;
 
-import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.inject.Inject;
-
 import org.junit.Before;
 
+import com.github.ruediste.laf.core.CoreApplicationInstanceModule;
+import com.github.ruediste.laf.core.CoreApplicationModule;
 import com.github.ruediste.laf.core.front.ApplicationEventQueue;
 import com.github.ruediste.laf.core.front.LoggerModule;
-import com.github.ruediste.laf.core.front.reload.FileChangeNotifier;
-import com.github.ruediste.laf.core.front.reload.ClassPathWalker;
-import com.github.ruediste.salta.jsr330.AbstractModule;
+import com.github.ruediste.laf.mvc.web.MvcWebDynamicModule;
+import com.github.ruediste.laf.mvc.web.MvcWebPermanentModule;
+import com.github.ruediste.laf.util.InitializerUtil;
+import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste.salta.jsr330.Salta;
 
 public abstract class SaltaTestBase {
 
-	@Inject
-	private FileChangeNotifier notifier;
-
-	@Inject
-	ApplicationEventQueue queue;
-
-	@Inject
-	private ClassPathWalker scanner;
+	private Injector applicationInjector;
 
 	@Before
 	public void beforeSaltaTest() throws Exception {
-		Salta.createInjector(new AbstractModule() {
-
-			@Override
-			protected void configure() throws Exception {
-			}
-		}, new LoggerModule()).injectMembers(this);
-
-		queue.submit(this::startInAET).get();
+		applicationInjector = Salta.createInjector(
+				new MvcWebPermanentModule(), new CoreApplicationModule(),
+				new LoggerModule());
+		applicationInjector.getInstance(ApplicationEventQueue.class)
+				.submit(this::startInAET).get();
 	}
 
 	protected void initialize() {
@@ -43,10 +30,12 @@ public abstract class SaltaTestBase {
 
 	private void startInAET() {
 		initialize();
-		Set<Path> rootDirs = new HashSet<>();
-		scanner.initialize((rootDirectory, classloader) -> rootDirs
-				.add(rootDirectory));
-		scanner.scan(Thread.currentThread().getContextClassLoader());
-		notifier.start(rootDirs, 10);
+		InitializerUtil.runInitializers(applicationInjector);
+
+		Injector instanceInjector = Salta.createInjector(
+				new MvcWebDynamicModule(applicationInjector),
+				new CoreApplicationInstanceModule(), new LoggerModule());
+		InitializerUtil.runInitializers(instanceInjector);
+		instanceInjector.injectMembers(this);
 	}
 }

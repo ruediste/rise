@@ -1,5 +1,7 @@
 package com.github.ruediste.laf.core.front.reload;
 
+import static java.util.stream.Collectors.joining;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -18,6 +20,7 @@ import javax.inject.Singleton;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
+import org.slf4j.Logger;
 
 import com.github.ruediste.laf.core.CoreConfiguration;
 import com.github.ruediste.laf.core.front.ApplicationEventQueue;
@@ -26,6 +29,9 @@ import com.google.common.base.Preconditions;
 
 @Singleton
 public class ClassChangeNotifier {
+
+	@Inject
+	Logger log;
 
 	@Inject
 	CoreConfiguration config;
@@ -38,7 +44,7 @@ public class ClassChangeNotifier {
 
 	private Map<Path, String> classNameMap = new HashMap<>();
 
-	public class ClassChangeTransaction {
+	public static class ClassChangeTransaction {
 		public Set<String> removedClasses = new HashSet<>();
 		public Set<ClassNode> addedClasses = new HashSet<>();
 		public Set<ClassNode> modifiedClasses = new HashSet<>();
@@ -57,7 +63,6 @@ public class ClassChangeNotifier {
 	 * {@link #addListener(Consumer)}
 	 */
 	public void addPreListener(Consumer<ClassChangeTransaction> listener) {
-		queue.checkAET();
 		notifier.checkNotStarted();
 		preListeners.add(listener);
 	}
@@ -67,13 +72,11 @@ public class ClassChangeNotifier {
 	 * {@link FileChangeNotifier} has been started.
 	 */
 	public void addListener(Consumer<ClassChangeTransaction> listener) {
-		queue.checkAET();
 		notifier.checkNotStarted();
 		listeners.add(listener);
 	}
 
 	public void removeListener(Consumer<ClassChangeTransaction> listener) {
-		queue.checkAET();
 		listeners.remove(listener);
 	}
 
@@ -122,6 +125,22 @@ public class ClassChangeNotifier {
 			classTrx.modifiedClasses.add(readClass(file));
 		}
 
+		trxPostProcessor.accept(classTrx);
+
+		if (log.isTraceEnabled()) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Publishing Class Change Transaction: \n");
+			sb.append("Added:\n");
+			sb.append(classTrx.addedClasses.stream().map(n -> n.name)
+					.collect(joining("\n", "  ", "")));
+			sb.append("Removed:\n");
+			sb.append(classTrx.removedClasses.stream().collect(
+					joining("\n", "  ", "")));
+			sb.append("Modified:\n");
+			sb.append(classTrx.modifiedClasses.stream().map(n -> n.name)
+					.collect(joining("\n", "  ", "")));
+			log.trace(sb.toString());
+		}
 		for (Consumer<ClassChangeTransaction> listener : new ArrayList<>(
 				preListeners)) {
 			listener.accept(classTrx);
