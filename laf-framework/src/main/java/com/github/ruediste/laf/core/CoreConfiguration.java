@@ -93,4 +93,9 @@ public class CoreConfiguration {
 			+ ClassReader.SKIP_DEBUG;
 
 	public long fileChangeSettleDelayMs = 10;
+
+	/**
+	 * The classloader used to load the classes in the dynamic class space
+	 */
+	public ClassLoader dynamicClassLoader;
 }
