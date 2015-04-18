@@ -1,11 +1,8 @@
 package com.github.ruediste.laf.mvc.web;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
 
@@ -20,18 +17,15 @@ import com.github.ruediste.laf.core.RequestParseResult;
 import com.github.ruediste.laf.core.front.reload.ClassHierarchyCache;
 import com.github.ruediste.laf.core.httpRequest.HttpRequest;
 import com.github.ruediste.laf.core.httpRequest.HttpRequestImpl;
-import com.github.ruediste.laf.mvc.ActionPath;
+import com.github.ruediste.laf.mvc.ActionInvocation;
 import com.github.ruediste.laf.util.AsmUtil;
 import com.github.ruediste.laf.util.AsmUtil.MethodRef;
 import com.github.ruediste.laf.util.MethodInvocation;
 import com.github.ruediste.laf.util.Pair;
-import com.github.ruediste.salta.standard.util.MethodOverrideIndex;
 import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Iterables;
-import com.google.common.reflect.TypeToken;
 
 public class MvcWebRequestMapperImpl implements MvcWebRequestMapper {
 
@@ -52,7 +46,7 @@ public class MvcWebRequestMapperImpl implements MvcWebRequestMapper {
 
 	/**
 	 * Map controller methods to their prefixes. Prefixes do not include a final
-	 * "." or "/". Used for {@link #generate(ActionPath)}.
+	 * "." or "/". Used for {@link #generate(ActionInvocation)}.
 	 */
 	private HashMap<Pair<Class<?>, Method>, String> methodToPrefixMap = new HashMap<>();
 
@@ -60,11 +54,6 @@ public class MvcWebRequestMapperImpl implements MvcWebRequestMapper {
 	 * Map between methods and their action method names, grouped by class
 	 */
 	private HashMap<String, BiMap<MethodRef, String>> actionMethodNameMap = new HashMap<>();
-
-	/**
-	 * Map between embedded controller names and their action method names.
-	 */
-	private ConcurrentHashMap<Class<?>, BiMap<Method, String>> embeddedActionMethodNameMap = new ConcurrentHashMap<>();
 
 	public void registerControllers() {
 		String internalName = Type.getInternalName(IControllerMvcWeb.class);
@@ -105,21 +94,23 @@ public class MvcWebRequestMapperImpl implements MvcWebRequestMapper {
 
 				methodNameMap.put(m, name);
 
+				MethodRef methodRef = new MethodRef(cls.name, m.name, m.desc);
 				String prefix = controllerName + "." + name;
 
 				// add the path infos for the method to the respective maps
-				if ((m.parameters == null || m.parameters.size() == 0)
-						&& !util.isEmbeddedController(Type
-								.getReturnType(m.desc))) {
+				if ((m.parameters == null || m.parameters.size() == 0)) {
 					// no parameters
-					idx.registerPathInfo(prefix,
-							(pre, req) -> result(createActionPath(cls, m)));
+					idx.registerPathInfo(
+							prefix,
+							(pre, req) -> result(createInvocation(cls,
+									methodRef)));
 				} else {
 					// there are parameters or an embedded controller is
 					// involved
 					idx.registerPrefix(
 							prefix,
-							(pre, req) -> result(parse(prefix, cls, null, null)));
+							(pre, req) -> result(parse(prefix, cls, methodRef,
+									req)));
 				}
 				Pair<Class<?>, Method> controllerMethodPair = Pair.of(
 						beanClass, m);
@@ -141,113 +132,62 @@ public class MvcWebRequestMapperImpl implements MvcWebRequestMapper {
 		actionMethodNameMap.put(beanClass, methodNameMap);
 	}
 
-	public RequestParseResult result(ActionPath<String> path) {
+	public RequestParseResult result(ActionInvocation<String> path) {
 		return null;
 	}
 
 	/**
-	 * Create an {@link ActionPath} for a single method without parameters
+	 * Parse a request. The prefix must include the method name and the first
+	 * "/". The remaining pathInfo has the form
+	 * 
+	 * <pre>
+	 * ({argument}("/"{argument})*)?
+	 * </pre>
 	 */
-	public ActionPath<String> createActionPath(ClassNode controllerClassNode,
-			MethodNode methodNode) {
-		ActionPath<String> result = new ActionPath<>();
+	public ActionInvocation<String> parse(String prefix,
+			ClassNode controllerClassNode, MethodRef methodRef,
+			HttpRequest request) throws Exception {
 		try {
-			MethodInvocation<String> i = new MethodInvocation<>(
-					AsmUtil.loadClass(
-							Type.getObjectType(controllerClassNode.name),
-							coreConfig.dynamicClassLoader), AsmUtil.loadMethod(
-							new MethodRef(controllerClassNode.name,
-									methodNode.name, methodNode.desc),
-							coreConfig.dynamicClassLoader));
-			result.getElements().add(i);
+
+			ActionInvocation<String> invocation = createInvocation(
+					controllerClassNode, methodRef);
+
+			String remaining = request.getPathInfo().substring(prefix.length(),
+					request.getPathInfo().length());
+
+			// collect arguments
+			invocation.methodInvocation.getArguments().addAll(
+					Splitter.on('/').splitToList(remaining));
+			return invocation;
 		} catch (Exception e) {
 			throw new RuntimeException("Error while loading "
-					+ controllerClassNode.name + "." + methodNode.name + "("
-					+ methodNode.desc + ")", e);
+					+ controllerClassNode.name + "." + methodRef.methodName
+					+ "(" + methodRef.desc + ")", e);
 		}
-		return result;
+
 	}
 
 	/**
-	 * Parse a request. The prefix must include the method name. The remaining
-	 * pathInfo has the form
-	 * 
-	 * <pre>
-	 * ({methodName]("."{methodName})*)?("/"{argument})*
-	 * </pre>
-	 * 
-	 * Thus, if an embedded controller is called, the prefix needs to include a
-	 * final "."
+	 * Create an {@link ActionInvocation} without parameters
 	 */
-	public ActionPath<String> parse(String prefix,
-			ClassNode controllerClassNode, MethodRef methodRef,
-			HttpRequest request) throws Exception {
+	protected ActionInvocation<String> createInvocation(
+			ClassNode controllerClassNode, MethodRef methodRef)
+			throws ClassNotFoundException, ReflectiveOperationException {
+		ActionInvocation<String> invocation = new ActionInvocation<>();
 
-		Class<?> initialControllerClass = AsmUtil.loadClass(
+		// load method
+		Class<?> controllerClass = AsmUtil.loadClass(
 				Type.getObjectType(controllerClassNode.name),
 				coreConfig.dynamicClassLoader);
 		Method method = AsmUtil.loadMethod(methodRef,
 				coreConfig.dynamicClassLoader);
-
-		String remaining = request.getPathInfo().substring(prefix.length(),
-				request.getPathInfo().length());
-
-		List<String> parts = Splitter.on('/').splitToList(remaining);
-
-		TypeToken<?> embeddedControllerType = TypeToken.of(
-				initialControllerClass).resolveType(
-				method.getGenericReturnType());
-
-		// determine action methods
-		ArrayList<MethodInvocation<String>> invocations = new ArrayList<>();
-		invocations.add(new MethodInvocation<>(initialControllerClass, method));
-		if (!parts.isEmpty()) {
-			for (String actionName : Splitter.on('.').split(parts.get(0))) {
-				if (Strings.isNullOrEmpty(actionName)) {
-					continue;
-				}
-
-				Class<?> embeddedControllerClass = embeddedControllerType
-						.getRawType();
-				method = getEmbeddedActionMethod(embeddedControllerClass,
-						actionName);
-
-				if (method == null) {
-					log.debug("no ActionMethod named " + actionName + " found");
-					return null;
-				}
-
-				invocations.add(new MethodInvocation<>(embeddedControllerClass,
-						method));
-
-				TypeToken<?> returnType = embeddedControllerType
-						.resolveType(method.getGenericReturnType());
-				if (util.isEmbeddedController(returnType)) {
-					// update the controller class to the embedded controller
-					embeddedControllerType = returnType;
-				} else {
-					embeddedControllerType = null;
-				}
-			}
-		}
-
-		ActionPath<String> call = new ActionPath<>();
-
-		// collect arguments
-		int i = 1;
-		for (MethodInvocation<String> invocation : invocations) {
-
-			for (; i < parts.size(); i++) {
-				invocation.getArguments().add(parts.get(i));
-			}
-			call.getElements().add(invocation);
-		}
-
-		return call;
+		invocation.methodInvocation = new MethodInvocation<>(controllerClass,
+				method);
+		return invocation;
 	}
 
 	@Override
-	public HttpRequest generate(ActionPath<String> path) {
+	public HttpRequest generate(ActionInvocation<String> path) {
 		StringBuilder sb = new StringBuilder();
 		// add indentifier
 		{
@@ -281,48 +221,5 @@ public class MvcWebRequestMapperImpl implements MvcWebRequestMapper {
 		}
 		return new HttpRequestImpl(sb.toString());
 
-	}
-
-	protected Method getEmbeddedActionMethod(Class<?> embeddedControllerClass,
-			String actionName) {
-		return getEmbeddedActionMethodNameMap(embeddedControllerClass)
-				.inverse().get(actionName);
-	}
-
-	protected BiMap<Method, String> getEmbeddedActionMethodNameMap(
-			Class<?> embeddedControllerClass) {
-		if (!util.isEmbeddedController(TypeToken.of(embeddedControllerClass)))
-			throw new RuntimeException(embeddedControllerClass
-					+ " is not an embedded controller class");
-		return embeddedActionMethodNameMap
-				.computeIfAbsent(embeddedControllerClass,
-						x -> {
-							BiMap<Method, String> result = HashBiMap.create();
-							MethodOverrideIndex idx = new MethodOverrideIndex(
-									embeddedControllerClass);
-							Class<?> cls = embeddedControllerClass;
-							while (cls != null) {
-								for (Method m : cls.getDeclaredMethods()) {
-									if (!util.isActionMethod(m))
-										continue;
-									if (idx.isOverridden(m))
-										continue;
-									String name = m.getName();
-									for (int i = 0; result.inverse()
-											.containsKey(name); i++) {
-										name = m.getName() + "_" + i;
-									}
-									result.put(m, name);
-								}
-								cls = cls.getSuperclass();
-							}
-							return result;
-						});
-	}
-
-	protected String getEmbeddedActionMethodName(
-			MethodInvocation<String> element) {
-		return getEmbeddedActionMethodNameMap(element.getInstanceClass()).get(
-				element.getMethod());
 	}
 }

@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import com.github.ruediste.laf.mvc.ActionPath;
+import com.github.ruediste.laf.mvc.ActionInvocation;
 import com.google.common.base.MoreObjects;
 
 /**
@@ -16,9 +16,9 @@ import com.google.common.base.MoreObjects;
  */
 public class MethodInvocation<T> {
 	/**
-	 * When comparing two {@link ActionPath}s with different argument
+	 * When comparing two {@link ActionInvocation}s with different argument
 	 * representations using
-	 * {@link ActionPath#isCallToSameActionMethod(ActionPath, ParameterValueComparator)}
+	 * {@link ActionInvocation#isCallToSameActionMethod(ActionInvocation, ParameterValueComparator)}
 	 * , providing an implementation of this interface allows to specify a
 	 * strategy to compare the arguments.
 	 */

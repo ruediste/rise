@@ -5,13 +5,13 @@ import com.github.ruediste.laf.core.scopes.RequestScoped;
 @RequestScoped
 public class MvcRequestInfo {
 
-	private ActionPath<Object> objectActionPath;
+	private ActionInvocation<Object> objectActionPath;
 
-	public ActionPath<Object> getObjectActionPath() {
+	public ActionInvocation<Object> getObjectActionPath() {
 		return objectActionPath;
 	}
 
-	public void setObjectActionPath(ActionPath<Object> objectActionPath) {
+	public void setObjectActionPath(ActionInvocation<Object> objectActionPath) {
 		this.objectActionPath = objectActionPath;
 	}
 }

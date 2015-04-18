@@ -1,9 +1,7 @@
 package com.github.ruediste.laf.mvc;
 
 import java.lang.reflect.AnnotatedType;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.function.BiFunction;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
@@ -24,38 +22,27 @@ import com.google.common.base.MoreObjects;
  * </p>
  *
  * <p>
- * Using {@link ActionPathParameter}, arbitrary strings can be attached to
- * {@link ActionPath}s.
+ * Using {@link ActionInvocationParameter}, arbitrary strings can be attached to
+ * {@link ActionInvocation}s.
  * </p>
  *
  */
-public class ActionPath<T> extends AttachedPropertyBearerBase {
+public class ActionInvocation<T> extends AttachedPropertyBearerBase {
 
-	final HashMap<ActionPathParameter, String> parameters = new HashMap<>();
-
-	private final ArrayList<MethodInvocation<T>> elements = new ArrayList<>();
+	final HashMap<ActionInvocationParameter, String> parameters = new HashMap<>();
+	public MethodInvocation<T> methodInvocation;
 
 	@Override
 	public String toString() {
-		return MoreObjects.toStringHelper(this).addValue(getElements())
+		return MoreObjects.toStringHelper(this).addValue(methodInvocation)
 				.toString();
-	}
-
-	/*
-	 * public Set<Right> getRequiredRights() { Set<Right> result = new
-	 * HashSet<>(); for (ActionInvocation element : elements) {
-	 * result.addAll(element.getRequiredRights()); } return result; }
-	 */
-
-	public ArrayList<MethodInvocation<T>> getElements() {
-		return elements;
 	}
 
 	/**
 	 * Determine if this and the other path represent calls to the same action
 	 * method. The parameters values are ignored.
 	 */
-	public boolean isCallToSameActionMethod(ActionPath<?> other) {
+	public boolean isCallToSameActionMethod(ActionInvocation<?> other) {
 		return isCallToSameActionMethod(
 				other,
 				new MethodInvocation.ParameterValueComparator<Object, Object>() {
@@ -72,48 +59,28 @@ public class ActionPath<T> extends AttachedPropertyBearerBase {
 	 * method. The Parameters are compared by the provided
 	 */
 	public <O> boolean isCallToSameActionMethod(
-			ActionPath<O> other,
+			ActionInvocation<O> other,
 			MethodInvocation.ParameterValueComparator<? super T, ? super O> comparator) {
-		if (elements.size() != other.getElements().size()) {
-			return false;
-		}
 
-		Iterator<MethodInvocation<T>> it = elements.iterator();
-		Iterator<MethodInvocation<O>> oit = other.getElements().iterator();
-
-		while (it.hasNext() && oit.hasNext()) {
-			if (!it.next().isCallToSameMethod(oit.next(), comparator)) {
-				return false;
-			}
-		}
-		return true;
+		return methodInvocation.isCallToSameMethod(other.methodInvocation,
+				comparator);
 	}
 
 	/**
-	 * Create a new {@link ActionPath} with the arguments mapped by the given
-	 * function. The associated {@link ActionPathParameter}s are copied
+	 * Create a new {@link ActionInvocation} with the arguments mapped by the
+	 * given function. The associated {@link ActionInvocationParameter}s are
+	 * copied
 	 */
-	public <P> ActionPath<P> map(final Function<? super T, P> func) {
+	public <P> ActionInvocation<P> map(final Function<? super T, P> func) {
 		return mapWithType((a, b) -> func.apply(b));
 	}
 
-	public <P> ActionPath<P> mapWithType(
+	public <P> ActionInvocation<P> mapWithType(
 			BiFunction<AnnotatedType, ? super T, P> func) {
-		ActionPath<P> result = new ActionPath<>();
+		ActionInvocation<P> result = new ActionInvocation<>();
 		result.parameters.putAll(parameters);
 
-		for (MethodInvocation<T> element : elements) {
-			MethodInvocation<P> invocation = element.map(func);
-			result.getElements().add(invocation);
-		}
+		result.methodInvocation = methodInvocation.map(func);
 		return result;
-	}
-
-	public MethodInvocation<T> getFirst() {
-		return elements.get(0);
-	}
-
-	public MethodInvocation<T> getLast() {
-		return elements.get(elements.size() - 1);
 	}
 }

@@ -1,23 +1,23 @@
 package com.github.ruediste.laf.mvc;
 
 /**
- * Represent string values attached to {@link ActionPath}s. These values are
+ * Represent string values attached to {@link ActionInvocation}s. These values are
  * transferred along with the ActionPath to the client and back again.
  */
-public class ActionPathParameter {
+public class ActionInvocationParameter {
 
 	private final String name;
 
-	public ActionPathParameter(String name) {
+	public ActionInvocationParameter(String name) {
 		this.name = name;
 
 	}
 
-	public void set(ActionPath<?> path, String value) {
+	public void set(ActionInvocation<?> path, String value) {
 		path.parameters.put(this, value);
 	}
 
-	public String get(ActionPath<?> path) {
+	public String get(ActionInvocation<?> path) {
 		return path.parameters.get(this);
 	}
 
