@@ -1,5 +1,8 @@
 package com.github.ruediste.laf.core;
 
+import static java.util.stream.Collectors.toList;
+
+import java.lang.reflect.AnnotatedType;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.function.Supplier;
@@ -11,6 +14,10 @@ import javax.inject.Singleton;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 
+import com.github.ruediste.laf.core.argumentSerializer.ArgumentSerializer;
+import com.github.ruediste.laf.core.argumentSerializer.IntSerializer;
+import com.github.ruediste.laf.core.argumentSerializer.LongSerializer;
+import com.github.ruediste.laf.core.argumentSerializer.StringSerializer;
 import com.github.ruediste.laf.core.httpRequest.HttpRequest;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.google.common.base.Function;
@@ -31,6 +38,10 @@ public class CoreConfiguration {
 	public String basePackage = "";
 	public String controllerSuffix = "Controller";
 
+	/**
+	 * Supplier create a name mapper. The name mapper is used to map a class to
+	 * it's name
+	 */
 	public Supplier<Function<ClassNode, String>> controllerNameMapperSupplier = () -> {
 		DefaultClassNameMapping mapping = get(DefaultClassNameMapping.class);
 		mapping.initialize(basePackage, controllerSuffix);
@@ -43,8 +54,13 @@ public class CoreConfiguration {
 		return controllerNameMapper.apply(node);
 	}
 
+	/**
+	 * Called after the configuration phase is completed
+	 */
 	public void initialize() {
 		controllerNameMapper = controllerNameMapperSupplier.get();
+		argumentSerializers = argumentSerializerSuppliers.stream()
+				.map(Supplier::get).collect(toList());
 	}
 
 	/**
@@ -98,4 +114,52 @@ public class CoreConfiguration {
 	 * The classloader used to load the classes in the dynamic class space
 	 */
 	public ClassLoader dynamicClassLoader;
+
+	public final LinkedList<Supplier<ArgumentSerializer>> argumentSerializerSuppliers = new LinkedList<>();
+
+	public class SerializerSupplierRefs {
+		Supplier<ArgumentSerializer> longSerializerSupplier = () -> injector
+				.getInstance(LongSerializer.class);
+		Supplier<ArgumentSerializer> intSerializerSupplier = () -> injector
+				.getInstance(IntSerializer.class);
+		Supplier<ArgumentSerializer> StringSerializerSupplier = () -> injector
+				.getInstance(StringSerializer.class);
+
+	}
+
+	public final SerializerSupplierRefs serializerSupplierRefs = new SerializerSupplierRefs();
+
+	{
+		argumentSerializerSuppliers
+				.add(serializerSupplierRefs.longSerializerSupplier);
+		argumentSerializerSuppliers
+				.add(serializerSupplierRefs.intSerializerSupplier);
+		argumentSerializerSuppliers
+				.add(serializerSupplierRefs.StringSerializerSupplier);
+	}
+
+	private java.util.List<ArgumentSerializer> argumentSerializers;
+
+	public String generateArgument(AnnotatedType type, Object value) {
+		return argumentSerializers
+				.stream()
+				.map(a -> a.generate(type, value))
+				.filter(x -> x != null)
+				.findFirst()
+				.orElseThrow(
+						() -> new RuntimeException(
+								"No argument serializer found for "
+										+ type.getType()));
+	}
+
+	public Supplier<Object> parseArgument(AnnotatedType type, String urlPart) {
+		return argumentSerializers
+				.stream()
+				.map(a -> a.parse(type, urlPart))
+				.filter(x -> x != null)
+				.findFirst()
+				.orElseThrow(
+						() -> new RuntimeException(
+								"No argument serializer found for " + type));
+	}
 }

@@ -1,12 +1,19 @@
 package com.github.ruediste.laf.mvc.web;
 
+import com.github.ruediste.laf.core.PathInfoIndex;
 import com.github.ruediste.laf.core.httpRequest.HttpRequest;
 import com.github.ruediste.laf.mvc.ActionInvocation;
 
 public interface MvcWebRequestMapper {
 
-	ActionInvocation<String> parse(HttpRequest request);
+	/**
+	 * Generate a HttpRequest for a given action invocation
+	 */
+	HttpRequest generate(ActionInvocation<String> invocation);
 
-	HttpRequest generate(ActionInvocation<String> path);
+	/**
+	 * Register the available controllers with the {@link PathInfoIndex}
+	 */
+	void registerControllers();
 
 }

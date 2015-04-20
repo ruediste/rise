@@ -12,7 +12,7 @@ import com.github.ruediste.laf.util.InitializerUtil;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Provides;
 
-public class CoreApplicationModule extends AbstractModule {
+public class CorePermanentModule extends AbstractModule {
 
 	@Override
 	protected void configure() throws Exception {

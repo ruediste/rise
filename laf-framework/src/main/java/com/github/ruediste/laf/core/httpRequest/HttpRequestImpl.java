@@ -1,27 +1,41 @@
 package com.github.ruediste.laf.core.httpRequest;
 
-import java.util.*;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 /**
  * Mutable implementation of the {@link HttpRequest} interface
  */
 public class HttpRequestImpl extends HttpRequestBase {
 
-	String path;
-	HashMap<String, String[]> parameterMap = new HashMap<>();
+	private String pathInfo;
+	private HashMap<String, String[]> parameterMap = new HashMap<>();
 
 	public HttpRequestImpl() {
 	}
 
-	public HttpRequestImpl(String path) {
-		this.path = path;
+	/**
+	 * Create a new instance. The provided pathInfo is decoded (
+	 * {@link URLDecoder#decode(String, String)})
+	 * 
+	 * @param pathInfo
+	 */
+	public HttpRequestImpl(String pathInfo) {
+		try {
+			this.pathInfo = URLDecoder.decode(pathInfo, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
 	public String getPathInfo() {
-		return path;
+		return pathInfo;
 	}
 
 	@Override
@@ -47,7 +61,7 @@ public class HttpRequestImpl extends HttpRequestBase {
 	}
 
 	public void setPath(String path) {
-		this.path = path;
+		this.pathInfo = path;
 	}
 
 	public Map<String, String[]> getModifiableParameterMap() {
@@ -56,7 +70,7 @@ public class HttpRequestImpl extends HttpRequestBase {
 
 	@Override
 	public String toString() {
-		return Objects.toStringHelper(this).add("path", path)
+		return MoreObjects.toStringHelper(this).add("path", pathInfo)
 				.add("parameters", parameterMap).toString();
 	}
 }

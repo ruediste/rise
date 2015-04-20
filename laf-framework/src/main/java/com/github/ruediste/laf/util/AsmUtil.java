@@ -90,6 +90,18 @@ public class AsmUtil {
 			}
 			return false;
 		}
+
+		public static MethodRef of(Method method) {
+			return new MethodRef(Type.getInternalName(method
+					.getDeclaringClass()), method.getName(),
+					Type.getMethodDescriptor(method));
+		}
+
+		@Override
+		public String toString() {
+			return "MethodRef[" + declaringClassInternalName + "." + methodName
+					+ "(" + desc + ")]";
+		}
 	}
 
 	public static Method loadMethod(MethodRef ref, ClassLoader loader)
@@ -167,11 +179,23 @@ public class AsmUtil {
 		return result;
 	}
 
-	public static void getString(AnnotationNode node, String attributeName) {
+	public static String getString(AnnotationNode node, String attributeName) {
 		if (node.values != null)
 			for (int i = 0; i < node.values.size() - 1; i += 2) {
 				if (Objects.equals(attributeName, node.values.get(i)))
-					result.add((AnnotationNode) node.values.get(i + 1));
+					return (String) node.values.get(i + 1);
 			}
+		throw new RuntimeException("Attribute " + attributeName
+				+ " not found on " + node.desc);
+	}
+
+	public static boolean getBoolean(AnnotationNode node, String attributeName) {
+		if (node.values != null)
+			for (int i = 0; i < node.values.size() - 1; i += 2) {
+				if (Objects.equals(attributeName, node.values.get(i)))
+					return (Boolean) node.values.get(i + 1);
+			}
+		throw new RuntimeException("Attribute " + attributeName
+				+ " not found on " + node.desc);
 	}
 }

@@ -243,14 +243,19 @@ public class ClassPathWalker {
 						|| entry.getName().equals(JarFile.MANIFEST_NAME)) {
 					continue;
 				}
-				if (entry.getName().endsWith(CLASS_FILE_NAME_EXTENSION))
+				Supplier<InputStream> inputStreamSupplier = () -> {
+					try {
+						return jarFile.getInputStream(entry);
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+				};
+				if (entry.getName().endsWith(CLASS_FILE_NAME_EXTENSION)) {
 					visitor.visitClass(getClassName(entry.getName()),
-							classloader, () -> classloader
-									.getResourceAsStream(entry.getName()));
-				else
+							classloader, inputStreamSupplier);
+				} else
 					visitor.visitResource(entry.getName(), classloader,
-							() -> classloader.getResourceAsStream(entry
-									.getName()));
+							inputStreamSupplier);
 			}
 		} finally {
 			try {

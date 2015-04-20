@@ -1,6 +1,6 @@
 package com.github.ruediste.laf.integration;
 
-import com.github.ruediste.laf.core.CoreApplicationModule;
+import com.github.ruediste.laf.core.CorePermanentModule;
 import com.github.ruediste.laf.core.front.ApplicationInitializer;
 import com.github.ruediste.laf.core.front.reload.ClassSpaceCache;
 import com.github.ruediste.laf.mvc.web.MvcWebPermanentModule;
@@ -17,7 +17,7 @@ public class ApplicationModule extends AbstractModule {
 		InitializerUtil.register(config(), ApplicationInitializer.class);
 		bind(ClassSpaceCache.class).asEagerSingleton();
 		install(new MvcWebPermanentModule());
-		install(new CoreApplicationModule());
+		install(new CorePermanentModule());
 	}
 
 }

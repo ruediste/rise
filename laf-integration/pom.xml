@@ -7,4 +7,11 @@
   </parent>
   <artifactId>laf-integration</artifactId>
   <description>integrates LAF with additional dependencies</description>
+  <dependencies>
+  	<dependency>
+  		<groupId>ch.laf</groupId>
+  		<artifactId>laf-framework</artifactId>
+  		<version>1.0-SNAPSHOT</version>
+  	</dependency>
+  </dependencies>
 </project>

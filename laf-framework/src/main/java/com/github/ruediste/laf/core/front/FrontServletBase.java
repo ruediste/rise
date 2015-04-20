@@ -13,11 +13,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 
 import com.github.ruediste.laf.core.CoreConfiguration;
-import com.github.ruediste.laf.core.front.reload.ClassPathWalker;
 import com.github.ruediste.laf.core.front.reload.FileChangeNotifier;
 import com.github.ruediste.laf.core.front.reload.SpaceAwareClassLoader;
 import com.github.ruediste.laf.util.InitializerUtil;
 import com.github.ruediste.salta.jsr330.Injector;
+import com.google.common.base.Preconditions;
 
 public abstract class FrontServletBase extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -29,20 +29,23 @@ public abstract class FrontServletBase extends HttpServlet {
 
 	private DynamicApplication fixedApplicationInstance;
 
+	private Class<? extends DynamicApplication> dynamicApplicationInstanceClass;
+
 	/**
-	 * Set a fixed application instance. This will disable reloading
+	 * Construct using a {@link DynamicApplication} class. Enables reloading
 	 */
-	public void setFixedApplicationInstance(
-			DynamicApplication fixedApplicationInstance) {
-		this.fixedApplicationInstance = fixedApplicationInstance;
+	public FrontServletBase(
+			Class<? extends DynamicApplication> dynamicApplicationInstanceClass) {
+		Preconditions.checkNotNull(dynamicApplicationInstanceClass);
+		this.dynamicApplicationInstanceClass = dynamicApplicationInstanceClass;
 	}
 
 	/**
-	 * Override for normal front servlets. Not required if a fixed
-	 * {@link DynamicApplication} is used
+	 * Construct using a fixed application instance. This will disable reloading
 	 */
-	protected Class<? extends DynamicApplication> getApplicationInstanceClass() {
-		return null;
+	public FrontServletBase(DynamicApplication fixedApplicationInstance) {
+		Preconditions.checkNotNull(fixedApplicationInstance);
+		this.fixedApplicationInstance = fixedApplicationInstance;
 	}
 
 	@Override
@@ -79,9 +82,6 @@ public abstract class FrontServletBase extends HttpServlet {
 	}
 
 	@Inject
-	ClassPathWalker scanner;
-
-	@Inject
 	FileChangeNotifier notifier;
 
 	@Inject
@@ -96,27 +96,33 @@ public abstract class FrontServletBase extends HttpServlet {
 
 	private void initInAET() {
 
-		if (fixedApplicationInstance == null) {
-			// setup application reloading
-			applicationInstanceClassName = getApplicationInstanceClass()
-					.getName();
-			notifier.addListener(trx -> reloadApplicationInstance());
-		}
+		try {
+			if (fixedApplicationInstance == null) {
+				// setup application reloading
+				applicationInstanceClassName = dynamicApplicationInstanceClass
+						.getName();
+				notifier.addListener(trx -> reloadApplicationInstance());
+			}
 
-		// run initializers
-		InitializerUtil.runInitializers(permanentInjector);
+			// run initializers
+			InitializerUtil.runInitializers(permanentInjector);
 
-		if (fixedApplicationInstance != null) {
-			notifier.close();
-			// we are started with a fixed application instance, just use it.
-			// Primarily used for Unit Testing
-			currentInstance = new ApplicationInstanceInfo(
-					fixedApplicationInstance, Thread.currentThread()
-							.getContextClassLoader());
-			fixedApplicationInstance.start();
-		} else {
-			// application gets started through the initial file change
-			// transaction
+			if (fixedApplicationInstance != null) {
+				notifier.close();
+				// we are started with a fixed application instance, just use
+				// it.
+				// Primarily used for Unit Testing
+				currentInstance = new ApplicationInstanceInfo(
+						fixedApplicationInstance, Thread.currentThread()
+								.getContextClassLoader());
+				fixedApplicationInstance.start(permanentInjector);
+			} else {
+				// application gets started through the initial file change
+				// transaction
+			}
+		} catch (Throwable t) {
+			log.error("Error during startup");
+			System.exit(1);
 		}
 	}
 
@@ -137,7 +143,7 @@ public abstract class FrontServletBase extends HttpServlet {
 
 				currentInstance = new ApplicationInstanceInfo(instance, cl);
 
-				instance.start();
+				instance.start(permanentInjector);
 
 			} finally {
 				currentThread.setContextClassLoader(old);
@@ -149,9 +155,9 @@ public abstract class FrontServletBase extends HttpServlet {
 	}
 
 	/**
-	 * Overide for custom initialization. Run before the ApplicationInstance is
-	 * created/started. Needs at least to create an {@link Injector} and inject
-	 * this instance.
+	 * Overide for custom initialization. Executed at the very beginning of the
+	 * application startup. Needs at least to create an {@link Injector} and
+	 * inject this instance.
 	 */
 	protected abstract void initImpl() throws Exception;
 

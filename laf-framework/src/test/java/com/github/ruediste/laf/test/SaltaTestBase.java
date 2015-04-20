@@ -2,11 +2,11 @@ package com.github.ruediste.laf.test;
 
 import org.junit.Before;
 
-import com.github.ruediste.laf.core.CoreApplicationInstanceModule;
-import com.github.ruediste.laf.core.CoreApplicationModule;
+import com.github.ruediste.laf.api.DynamicApplicationModule;
+import com.github.ruediste.laf.core.CoreConfiguration;
+import com.github.ruediste.laf.core.CorePermanentModule;
 import com.github.ruediste.laf.core.front.ApplicationEventQueue;
 import com.github.ruediste.laf.core.front.LoggerModule;
-import com.github.ruediste.laf.mvc.web.MvcWebDynamicModule;
 import com.github.ruediste.laf.mvc.web.MvcWebPermanentModule;
 import com.github.ruediste.laf.util.InitializerUtil;
 import com.github.ruediste.salta.jsr330.Injector;
@@ -14,14 +14,13 @@ import com.github.ruediste.salta.jsr330.Salta;
 
 public abstract class SaltaTestBase {
 
-	private Injector applicationInjector;
+	private Injector permanentInjector;
 
 	@Before
 	public void beforeSaltaTest() throws Exception {
-		applicationInjector = Salta.createInjector(
-				new MvcWebPermanentModule(), new CoreApplicationModule(),
-				new LoggerModule());
-		applicationInjector.getInstance(ApplicationEventQueue.class)
+		permanentInjector = Salta.createInjector(new MvcWebPermanentModule(),
+				new CorePermanentModule(), new LoggerModule());
+		permanentInjector.getInstance(ApplicationEventQueue.class)
 				.submit(this::startInAET).get();
 	}
 
@@ -30,11 +29,14 @@ public abstract class SaltaTestBase {
 
 	private void startInAET() {
 		initialize();
-		InitializerUtil.runInitializers(applicationInjector);
+		InitializerUtil.runInitializers(permanentInjector);
 
-		Injector instanceInjector = Salta.createInjector(
-				new MvcWebDynamicModule(applicationInjector),
-				new CoreApplicationInstanceModule(), new LoggerModule());
+		Injector instanceInjector = Salta
+				.createInjector(new DynamicApplicationModule(permanentInjector));
+
+		instanceInjector.getInstance(CoreConfiguration.class).dynamicClassLoader = Thread
+				.currentThread().getContextClassLoader();
+
 		InitializerUtil.runInitializers(instanceInjector);
 		instanceInjector.injectMembers(this);
 	}

@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import com.github.ruediste.laf.core.CoreConfiguration;
 import com.github.ruediste.laf.core.front.ApplicationEventQueue;
 import com.github.ruediste.laf.core.front.reload.FileChangeNotifier.FileChangeTransaction;
+import com.github.ruediste.laf.util.Pair;
 import com.google.common.base.Preconditions;
 
 @Singleton
@@ -109,14 +110,25 @@ public class ClassChangeNotifier {
 			}
 		}
 
-		for (Path file : trx.addedFiles) {
-			if (!file.getFileName().toString().endsWith(".class")) {
-				continue;
-			}
-			ClassNode node = readClass(file);
-			classNameMap.put(file, node.name);
-			classTrx.addedClasses.add(node);
-		}
+		trx.addedFiles
+				.stream()
+				.parallel()
+				.filter(file -> file.getFileName().toString()
+						.endsWith(".class"))
+				.map(file -> Pair.of(file, readClass(file))).sequential()
+				.forEach(pair -> {
+					classNameMap.put(pair.getA(), pair.getB().name);
+					classTrx.addedClasses.add(pair.getB());
+
+				});
+		// for (Path file : trx.addedFiles) {
+		// if (!file.getFileName().toString().endsWith(".class")) {
+		// continue;
+		// }
+		// ClassNode node = readClass(file);
+		// classNameMap.put(file, node.name);
+		// classTrx.addedClasses.add(node);
+		// }
 
 		for (Path file : trx.modifiedFiles) {
 			if (!file.getFileName().toString().endsWith(".class")) {

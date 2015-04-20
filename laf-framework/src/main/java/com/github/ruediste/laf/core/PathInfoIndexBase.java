@@ -4,6 +4,10 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import javax.inject.Inject;
+
+import org.slf4j.Logger;
+
 import com.github.ruediste.laf.util.Pair;
 
 /**
@@ -14,6 +18,9 @@ import com.github.ruediste.laf.util.Pair;
  * or prefixes.
  */
 public class PathInfoIndexBase<T> {
+
+	@Inject
+	Logger log;
 
 	private HashMap<String, T> pathInfoMap = new HashMap<>();
 
@@ -26,12 +33,20 @@ public class PathInfoIndexBase<T> {
 					"Registered duplicate path info:\n" + pathInfo + "\n"
 							+ existing + "\n" + handler);
 		}
+		log.debug("registered exact " + pathInfo);
+	}
+
+	public T getHandler(String pathInfo) {
+		Pair<String, T> pair = getPrefixAndHandler(pathInfo);
+		if (pair == null)
+			return null;
+		return pair.getB();
 	}
 
 	/**
 	 * Return the prefix and the handler or null, if no handler has been found.
 	 */
-	public Pair<String, T> getHandler(String pathInfo) {
+	public Pair<String, T> getPrefixAndHandler(String pathInfo) {
 		// check map
 		{
 			T result = pathInfoMap.get(pathInfo);
@@ -73,5 +88,6 @@ public class PathInfoIndexBase<T> {
 		}
 
 		prefixMap.put(prefix, handler);
+		log.debug("registered prefix " + prefix);
 	}
 }

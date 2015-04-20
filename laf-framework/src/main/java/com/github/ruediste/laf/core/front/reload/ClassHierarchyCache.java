@@ -10,6 +10,8 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import net.sf.cglib.asm.Type;
+
 import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 
@@ -54,8 +56,8 @@ public class ClassHierarchyCache {
 					}
 				}
 			}
-
 		}
+
 		for (ClassNode cls : Iterables.concat(trx.modifiedClasses,
 				trx.addedClasses)) {
 			log.trace("Registring class {}", cls.name);
@@ -128,5 +130,9 @@ public class ClassHierarchyCache {
 					return true;
 			}
 		return false;
+	}
+
+	public ClassNode getNode(Class<?> cls) {
+		return getNode(Type.getInternalName(cls));
 	}
 }

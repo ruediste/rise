@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiFunction;
 
 import com.github.ruediste.laf.mvc.ActionInvocation;
@@ -18,11 +19,11 @@ public class MethodInvocation<T> {
 	/**
 	 * When comparing two {@link ActionInvocation}s with different argument
 	 * representations using
-	 * {@link ActionInvocation#isCallToSameActionMethod(ActionInvocation, ParameterValueComparator)}
+	 * {@link ActionInvocation#isCallToSameActionMethod(ActionInvocation, ParameterValueEquality)}
 	 * , providing an implementation of this interface allows to specify a
 	 * strategy to compare the arguments.
 	 */
-	public interface ParameterValueComparator<A, B> {
+	public interface ParameterValueEquality<A, B> {
 		public boolean equals(A a, B b);
 	}
 
@@ -48,10 +49,18 @@ public class MethodInvocation<T> {
 		return arguments;
 	}
 
+	/**
+	 * Determine if the same method is called with the same arguments (compared
+	 * via {@link Object#equals(Object)}
+	 */
+	public boolean isCallToSameMethod(MethodInvocation<T> other) {
+		return isCallToSameMethod(other, Objects::equals);
+	}
+
 	public <O> boolean isCallToSameMethod(
 			MethodInvocation<O> other,
-			MethodInvocation.ParameterValueComparator<? super T, ? super O> comparator) {
-		if (method != other.method) {
+			MethodInvocation.ParameterValueEquality<? super T, ? super O> equality) {
+		if (!Objects.equals(method, other.method)) {
 			return false;
 		}
 		if (arguments.size() != other.getArguments().size()) {
@@ -61,7 +70,7 @@ public class MethodInvocation<T> {
 		Iterator<T> it = arguments.iterator();
 		Iterator<O> oit = other.getArguments().iterator();
 		while (it.hasNext() && oit.hasNext()) {
-			if (!comparator.equals(it.next(), oit.next())) {
+			if (!equality.equals(it.next(), oit.next())) {
 				return false;
 			}
 		}

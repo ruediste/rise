@@ -1,4 +1,4 @@
-package com.github.ruediste.laf.mvc.web;
+package com.github.ruediste.laf.mvc;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -11,9 +11,8 @@ import org.objectweb.asm.tree.MethodNode;
 
 import com.github.ruediste.laf.core.ActionResult;
 import com.github.ruediste.laf.core.front.reload.ClassHierarchyCache;
-import com.github.ruediste.laf.mvc.Updating;
 
-public class MvcWebControllerReflectionUtil {
+public class MvcControllerReflectionUtil {
 
 	@Inject
 	ClassHierarchyCache cache;

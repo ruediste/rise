@@ -12,6 +12,8 @@ public class CoreApplicationInstanceInitializer implements Initializer {
 	@Override
 	public void initialize() {
 		config.initialize();
+		config.dynamicClassLoader = Thread.currentThread()
+				.getContextClassLoader();
 	}
 
 }

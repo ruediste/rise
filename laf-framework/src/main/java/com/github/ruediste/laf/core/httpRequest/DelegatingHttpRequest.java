@@ -4,8 +4,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.google.common.base.Strings;
-
 /**
  * {@link HttpRequest} implementation delegating to a {@link HttpServletRequest}
  */
@@ -19,7 +17,10 @@ public class DelegatingHttpRequest extends HttpRequestBase {
 
 	@Override
 	public String getPathInfo() {
-		return Strings.nullToEmpty(delegate.getPathInfo());
+		String pathInfo = delegate.getPathInfo();
+		if (pathInfo == null)
+			return "/";
+		return pathInfo;
 	}
 
 	@Override

@@ -8,7 +8,7 @@ import com.github.ruediste.laf.mvc.web.MvcWebActionPathBuilder;
  * {@link MvcWebActionPathBuilder} to create {@link ActionInvocation}s, instances of
  * this class is used to represent the result.
  */
-public class PathActionResult extends ActionInvocation<Object> implements
+public class InvocationActionResult extends ActionInvocation<Object> implements
 		ActionResult {
 
 }
