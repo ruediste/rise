@@ -1,11 +1,10 @@
 package com.github.ruediste.laf.core.httpRequest;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.github.ruediste.laf.core.web.PathInfo;
 import com.google.common.base.MoreObjects;
 
 /**
@@ -13,24 +12,11 @@ import com.google.common.base.MoreObjects;
  */
 public class HttpRequestImpl extends HttpRequestBase {
 
-	private String pathInfo;
-	private HashMap<String, String[]> parameterMap = new HashMap<>();
+	private final String pathInfo;
+	private final HashMap<String, String[]> parameterMap = new HashMap<>();
 
-	public HttpRequestImpl() {
-	}
-
-	/**
-	 * Create a new instance. The provided pathInfo is decoded (
-	 * {@link URLDecoder#decode(String, String)})
-	 * 
-	 * @param pathInfo
-	 */
-	public HttpRequestImpl(String pathInfo) {
-		try {
-			this.pathInfo = URLDecoder.decode(pathInfo, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
+	public HttpRequestImpl(PathInfo pathInfo) {
+		this.pathInfo = pathInfo.getValue();
 	}
 
 	@Override
@@ -58,10 +44,6 @@ public class HttpRequestImpl extends HttpRequestBase {
 	@Override
 	public String[] getParameterValues(String name) {
 		return parameterMap.get(name);
-	}
-
-	public void setPath(String path) {
-		this.pathInfo = path;
 	}
 
 	public Map<String, String[]> getModifiableParameterMap() {

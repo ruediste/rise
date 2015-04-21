@@ -5,7 +5,7 @@ import javax.inject.Inject;
 import com.github.ruediste.laf.core.front.reload.ClassPathScanningStarter;
 import com.github.ruediste.laf.util.Initializer;
 
-public class CoreApplicationInitializer implements Initializer {
+public class CorePermanentInitializer implements Initializer {
 	@Inject
 	ClassPathScanningStarter classPathScanningStarter;
 

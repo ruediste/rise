@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.github.ruediste.laf.core.CoreConfiguration;
+import com.github.ruediste.laf.core.CoreRequestInfo;
 import com.github.ruediste.laf.core.RequestParseResult;
 import com.github.ruediste.laf.core.httpRequest.DelegatingHttpRequest;
 import com.github.ruediste.laf.core.scopes.HttpScopeManager;
@@ -27,6 +28,9 @@ public abstract class DynamicApplicationBase implements DynamicApplication {
 
 	@Inject
 	HttpScopeManager scopeManager;
+
+	@Inject
+	CoreRequestInfo info;
 
 	@Override
 	public final void start(Injector permanentInjector) {
@@ -48,6 +52,11 @@ public abstract class DynamicApplicationBase implements DynamicApplication {
 			scopeManager.enter(request, response);
 			DelegatingHttpRequest httpRequest = new DelegatingHttpRequest(
 					request);
+
+			info.setServletResponse(response);
+			info.setServletRequest(request);
+			info.setRequest(httpRequest);
+
 			RequestParseResult parseResult = config.parse(httpRequest);
 			if (parseResult == null) {
 				response.sendError(

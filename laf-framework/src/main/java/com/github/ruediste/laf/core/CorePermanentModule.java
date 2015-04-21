@@ -1,7 +1,6 @@
 package com.github.ruediste.laf.core;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 
 import com.github.ruediste.laf.core.front.reload.ClassHierarchyCache;
 import com.github.ruediste.laf.core.front.reload.ClassSpaceCache;
@@ -17,12 +16,11 @@ public class CorePermanentModule extends AbstractModule {
 	@Override
 	protected void configure() throws Exception {
 		bind(ClassHierarchyCache.class).asEagerSingleton();
-		InitializerUtil.register(config(), CoreApplicationInitializer.class);
+		InitializerUtil.register(config(), CorePermanentInitializer.class);
 	}
 
 	@Named("dynamic")
 	@Provides
-	@Singleton
 	SpaceAwareClassLoader spaceAwareClassLoaderDynamic(ClassSpaceCache cache) {
 		return new SpaceAwareClassLoader(Thread.currentThread()
 				.getContextClassLoader(), DynamicSpace.class, cache,

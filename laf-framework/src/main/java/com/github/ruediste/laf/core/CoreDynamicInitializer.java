@@ -4,7 +4,7 @@ import javax.inject.Inject;
 
 import com.github.ruediste.laf.util.Initializer;
 
-public class CoreApplicationInstanceInitializer implements Initializer {
+public class CoreDynamicInitializer implements Initializer {
 
 	@Inject
 	CoreConfiguration config;

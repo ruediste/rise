@@ -1,22 +1,24 @@
 package com.github.ruediste.laf.mvc.web;
 
+import java.util.function.Consumer;
+
 import com.github.ruediste.laf.core.RequestParseResult;
 import com.github.ruediste.laf.mvc.ActionInvocation;
 
 public class MvcWebRequestParseResult implements RequestParseResult {
 
-	private MvcWebConfiguration config;
+	private Consumer<ActionInvocation<String>> handler;
 	private final ActionInvocation<String> invocation;
 
-	public MvcWebRequestParseResult(MvcWebConfiguration config,
-			ActionInvocation<String> invocation) {
-		this.config = config;
+	public MvcWebRequestParseResult(ActionInvocation<String> invocation,
+			Consumer<ActionInvocation<String>> handler) {
 		this.invocation = invocation;
+		this.handler = handler;
 	}
 
 	@Override
 	public void handle() {
-		config.requestHandler.handle(invocation);
+		handler.accept(invocation);
 	}
 
 	public ActionInvocation<String> getInvocation() {

@@ -25,7 +25,7 @@ public abstract class FrontServletBase extends HttpServlet {
 	@Inject
 	Logger log;
 
-	public volatile ApplicationInstanceInfo currentInstance;
+	public volatile DynamicApplicationInfo currentApplicationInfo;
 
 	private DynamicApplication fixedApplicationInstance;
 
@@ -112,7 +112,7 @@ public abstract class FrontServletBase extends HttpServlet {
 				// we are started with a fixed application instance, just use
 				// it.
 				// Primarily used for Unit Testing
-				currentInstance = new ApplicationInstanceInfo(
+				currentApplicationInfo = new DynamicApplicationInfo(
 						fixedApplicationInstance, Thread.currentThread()
 								.getContextClassLoader());
 				fixedApplicationInstance.start(permanentInjector);
@@ -128,7 +128,7 @@ public abstract class FrontServletBase extends HttpServlet {
 
 	private void reloadApplicationInstance() {
 		log.info("Reloading application instance ...");
-		SpaceAwareClassLoader cl = dynamicClassLoaderProvider.get();
+		long startTime = System.currentTimeMillis();
 		try {
 			// create application instance
 			DynamicApplication instance;
@@ -136,19 +136,22 @@ public abstract class FrontServletBase extends HttpServlet {
 			Thread currentThread = Thread.currentThread();
 			ClassLoader old = currentThread.getContextClassLoader();
 			try {
-				currentThread.setContextClassLoader(cl);
+				SpaceAwareClassLoader dynamicClassloader = dynamicClassLoaderProvider.get();
+				currentThread.setContextClassLoader(dynamicClassloader);
 
-				instance = (DynamicApplication) cl.loadClass(
+				instance = (DynamicApplication) dynamicClassloader.loadClass(
 						applicationInstanceClassName).newInstance();
 
-				currentInstance = new ApplicationInstanceInfo(instance, cl);
-
 				instance.start(permanentInjector);
+
+				currentApplicationInfo = new DynamicApplicationInfo(instance,
+						dynamicClassloader);
 
 			} finally {
 				currentThread.setContextClassLoader(old);
 			}
-			log.info("Reloading complete");
+			log.info("Reloading complete. Took "
+					+ (System.currentTimeMillis() - startTime) + "ms");
 		} catch (Throwable t) {
 			log.warn("Error loading application instance", t);
 		}
@@ -167,32 +170,32 @@ public abstract class FrontServletBase extends HttpServlet {
 
 	private void handle(HttpServletRequest req, HttpServletResponse resp,
 			HttpMethod method) throws IOException, ServletException {
-		if (currentInstance != null) {
+		DynamicApplicationInfo info = currentApplicationInfo;
+		if (info != null) {
 			Thread currentThread = Thread.currentThread();
 			ClassLoader old = currentThread.getContextClassLoader();
 			try {
-				currentThread
-						.setContextClassLoader(currentInstance.classLoader);
-				currentInstance.instance.handle(req, resp, method);
+				currentThread.setContextClassLoader(info.classLoader);
+				info.application.handle(req, resp, method);
 			} finally {
 				currentThread.setContextClassLoader(old);
 			}
 		} else {
-			log.error("current application instance is null");
+			log.error("current application info is null");
 			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-					"FrontServlet: current application instance is null");
+					"FrontServlet: current application info is null");
 		}
 	}
 
-	public static class ApplicationInstanceInfo {
+	public static class DynamicApplicationInfo {
 
-		public DynamicApplication instance;
+		public DynamicApplication application;
 		public ClassLoader classLoader;
 
-		public ApplicationInstanceInfo(DynamicApplication instance,
+		public DynamicApplicationInfo(DynamicApplication application,
 				ClassLoader classLoader) {
 			super();
-			this.instance = instance;
+			this.application = application;
 			this.classLoader = classLoader;
 		}
 

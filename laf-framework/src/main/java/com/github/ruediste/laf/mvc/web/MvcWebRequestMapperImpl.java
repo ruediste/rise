@@ -15,9 +15,9 @@ import com.github.ruediste.laf.core.PathInfoIndex;
 import com.github.ruediste.laf.core.RequestParseResult;
 import com.github.ruediste.laf.core.front.reload.ClassHierarchyCache;
 import com.github.ruediste.laf.core.httpRequest.HttpRequest;
-import com.github.ruediste.laf.core.httpRequest.HttpRequestImpl;
 import com.github.ruediste.laf.core.web.ActionPathAnnotationUtil;
 import com.github.ruediste.laf.core.web.ActionPathAnnotationUtil.MethodPathInfos;
+import com.github.ruediste.laf.core.web.PathInfo;
 import com.github.ruediste.laf.mvc.ActionInvocation;
 import com.github.ruediste.laf.mvc.MvcControllerReflectionUtil;
 import com.github.ruediste.laf.util.AsmUtil;
@@ -48,6 +48,9 @@ public class MvcWebRequestMapperImpl implements MvcWebRequestMapper {
 	@Inject
 	MvcControllerReflectionUtil util;
 
+	@Inject
+	MvcWebRequestInfo requestInfo;
+
 	/**
 	 * Map controller methods to their prefixes. Prefixes do not include a final
 	 * "." or "/". Used for {@link #generate(ActionInvocation)}.
@@ -60,7 +63,7 @@ public class MvcWebRequestMapperImpl implements MvcWebRequestMapper {
 	private HashMap<String, BiMap<MethodRef, String>> actionMethodNameMap = new HashMap<>();
 
 	@Override
-	public void registerControllers() {
+	public void initialize() {
 		String internalName = Type.getInternalName(IControllerMvcWeb.class);
 		registerControllers(internalName);
 	}
@@ -129,8 +132,11 @@ public class MvcWebRequestMapperImpl implements MvcWebRequestMapper {
 		actionMethodNameMap.put(cls.name, methodNameMap);
 	}
 
-	public RequestParseResult result(ActionInvocation<String> path) {
-		return new MvcWebRequestParseResult(mvcWebConfig, path);
+	RequestParseResult result(ActionInvocation<String> path) {
+		return new MvcWebRequestParseResult(path, actionInvocation -> {
+			requestInfo.setStringActionInvocation(actionInvocation);
+			mvcWebConfig.handleRequest();
+		});
 	}
 
 	/**
@@ -173,12 +179,12 @@ public class MvcWebRequestMapperImpl implements MvcWebRequestMapper {
 
 		// load method
 		try {
-			Class<?> controllerClass;
-			controllerClass = AsmUtil.loadClass(
+			Class<?> controllerClass = AsmUtil.loadClass(
 					Type.getObjectType(controllerClassNode.name),
 					coreConfig.dynamicClassLoader);
 			Method method = AsmUtil.loadMethod(methodRef,
 					coreConfig.dynamicClassLoader);
+			invocation.controllerClass = controllerClass;
 			invocation.methodInvocation = new MethodInvocation<>(
 					controllerClass, method);
 		} catch (Exception e) {
@@ -189,7 +195,7 @@ public class MvcWebRequestMapperImpl implements MvcWebRequestMapper {
 	}
 
 	@Override
-	public HttpRequest generate(ActionInvocation<String> path) {
+	public PathInfo generate(ActionInvocation<String> path) {
 		StringBuilder sb = new StringBuilder();
 		MethodRef ref = MethodRef.of(path.methodInvocation.getMethod());
 		String prefix = methodToPrefixMap.get(Pair.of(
@@ -203,7 +209,7 @@ public class MvcWebRequestMapperImpl implements MvcWebRequestMapper {
 			sb.append("/");
 			sb.append(argument);
 		}
-		return new HttpRequestImpl(sb.toString());
+		return new PathInfo(sb.toString());
 
 	}
 }
