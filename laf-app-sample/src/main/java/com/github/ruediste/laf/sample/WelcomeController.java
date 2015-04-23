@@ -14,4 +14,8 @@ public class WelcomeController extends ControllerMvcWeb {
 	public ActionResult index() {
 		return view(WelcomeView.class, new Data());
 	}
+
+	public ActionResult other() {
+		return view(OtherView.class, "Test");
+	}
 }

@@ -26,8 +26,7 @@ public class CoreDynamicModule extends AbstractModule {
 
 	@Override
 	protected void configure() throws Exception {
-		InitializerUtil.register(config(),
-				CoreDynamicInitializer.class);
+		InitializerUtil.register(config(), CoreDynamicInitializer.class);
 		installHttpScopeModule();
 		// registerPermanentRule();
 	}

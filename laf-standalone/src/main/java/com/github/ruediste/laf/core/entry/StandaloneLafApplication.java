@@ -16,6 +16,11 @@ public class StandaloneLafApplication {
 	private Server server;
 
 	public void start(Class<? extends FrontServletBase> frontServletClass) {
+		start(frontServletClass, "/*");
+	}
+
+	public void start(Class<? extends FrontServletBase> frontServletClass,
+			String pathSpec) {
 
 		try {
 			ServletHolder holder = new ServletHolder(frontServletClass);
@@ -24,7 +29,8 @@ public class StandaloneLafApplication {
 			ServletContextHandler ctx = new ServletContextHandler(
 					ServletContextHandler.SESSIONS);
 			ctx.setContextPath("");
-			ctx.addServlet(holder, "/");
+
+			ctx.addServlet(holder, pathSpec);
 
 			server = new Server(8080);
 			server.setHandler(ctx);

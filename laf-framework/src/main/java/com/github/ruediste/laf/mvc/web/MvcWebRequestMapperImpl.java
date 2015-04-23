@@ -2,6 +2,7 @@ package com.github.ruediste.laf.mvc.web;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import javax.inject.Inject;
 
@@ -65,13 +66,15 @@ public class MvcWebRequestMapperImpl implements MvcWebRequestMapper {
 	@Override
 	public void initialize() {
 		String internalName = Type.getInternalName(IControllerMvcWeb.class);
-		registerControllers(internalName);
+		registerControllers(internalName, new HashSet<String>());
 	}
 
-	void registerControllers(String internalName) {
+	void registerControllers(String internalName, HashSet<String> seen) {
+		if (!seen.add(internalName))
+			return;
 		for (ClassNode child : cache.getChildren(internalName)) {
 			register(child);
-			registerControllers(child.name);
+			registerControllers(child.name, seen);
 		}
 	}
 

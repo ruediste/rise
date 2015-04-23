@@ -18,9 +18,9 @@ public class OtherView extends ViewMvcWeb<String> {
 
 	@Override
 	public void render(HtmlCanvas html) throws IOException {
-		html.html().head()._head().body().a(href()).content("other")._body()
-				._html();
-		html.write("TheOther");
+		html.html().head()._head().body().h1().content("TheOther")
+				.a(href(url(path(WelcomeController.class).index())))
+				.content("index")._body()._html();
 	}
 
 }

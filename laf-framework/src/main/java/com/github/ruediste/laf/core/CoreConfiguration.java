@@ -162,4 +162,5 @@ public class CoreConfiguration {
 						() -> new RuntimeException(
 								"No argument serializer found for " + type));
 	}
+
 }
