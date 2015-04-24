@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 
@@ -29,7 +28,6 @@ import com.google.common.base.Joiner;
  * {@link FileChangeTransaction}s which allow to stay up to date on the contents
  * of the contained files.
  */
-@Singleton
 public class FileChangeNotifier {
 
 	@Inject

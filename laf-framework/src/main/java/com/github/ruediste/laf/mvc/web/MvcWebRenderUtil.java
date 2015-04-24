@@ -3,10 +3,14 @@ package com.github.ruediste.laf.mvc.web;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import org.rendersnake.Renderable;
+
 import com.github.ruediste.laf.core.ActionResult;
 import com.github.ruediste.laf.core.HttpService;
 import com.github.ruediste.laf.core.scopes.RequestScoped;
 import com.github.ruediste.laf.core.web.PathInfo;
+import com.github.ruediste.laf.core.web.assetPipeline.AssetBundleOutput;
+import com.github.ruediste.laf.core.web.assetPipeline.AssetRenderUtil;
 import com.github.ruediste.laf.mvc.InvocationActionResult;
 
 @RequestScoped
@@ -21,8 +25,8 @@ public class MvcWebRenderUtil {
 	@Inject
 	ActionInvocationUtil util;
 
-	// @Inject
-	// ResourceRenderUtil resourceRenderUtil;
+	@Inject
+	AssetRenderUtil assetRenderUtil;
 
 	public <T> T path(Class<T> controller) {
 		return path().controller(controller);
@@ -40,11 +44,11 @@ public class MvcWebRenderUtil {
 		return actionPathBuilderInstance.get();
 	}
 
-	// public Renderable jsBundle(ResourceOutput output) {
-	// return resourceRenderUtil.jsBundle(this::url, output);
-	// }
-	//
-	// public Renderable cssBundle(ResourceOutput output) {
-	// return resourceRenderUtil.cssBundle(this::url, output);
-	// }
+	public Renderable jsLinks(AssetBundleOutput output) {
+		return assetRenderUtil.renderJs(this::url, output);
+	}
+
+	public Renderable cssBundle(AssetBundleOutput output) {
+		return assetRenderUtil.renderCss(this::url, output);
+	}
 }

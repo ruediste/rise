@@ -13,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.github.ruediste.laf.core.web.assetPipeline.AssetGroupTest.TestAsset;
 import com.google.common.hash.Hashing;
 
 @RunWith(MockitoJUnitRunner.class)

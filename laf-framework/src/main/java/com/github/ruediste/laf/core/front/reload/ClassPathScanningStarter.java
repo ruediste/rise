@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 import java.util.jar.JarFile;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
@@ -38,6 +39,7 @@ public class ClassPathScanningStarter {
 	ClassChangeNotifier classChangeNotifier;
 
 	@Inject
+	@Named("classPath")
 	FileChangeNotifier fileChangeNotifier;
 
 	public void start() {

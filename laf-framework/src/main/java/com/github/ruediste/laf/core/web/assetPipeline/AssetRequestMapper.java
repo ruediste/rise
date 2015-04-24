@@ -3,8 +3,9 @@ package com.github.ruediste.laf.core.web.assetPipeline;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -20,15 +21,13 @@ import com.github.ruediste.laf.core.CoreRequestInfo;
 import com.github.ruediste.laf.core.PathInfoIndex;
 import com.github.ruediste.laf.core.RequestParseResult;
 import com.github.ruediste.laf.core.front.reload.ClassHierarchyCache;
+import com.github.ruediste.laf.core.front.reload.DirectoryChangeWatcher;
+import com.github.ruediste.laf.core.web.PathInfo;
 import com.github.ruediste.laf.util.AsmUtil;
 import com.github.ruediste.laf.util.Pair;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
-import com.google.common.hash.HashCode;
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hashing;
 
 public class AssetRequestMapper {
 
@@ -42,8 +41,9 @@ public class AssetRequestMapper {
 
 		private Asset asset;
 
-		AssetRequestParseResult(Asset asset) {
+		AssetRequestParseResult initialize(Asset asset) {
 			this.asset = asset;
+			return this;
 
 		}
 
@@ -77,11 +77,27 @@ public class AssetRequestMapper {
 	@Inject
 	PathInfoIndex index;
 
+	@Inject
+	DirectoryChangeWatcher watcher;
+
+	@Inject
+	javax.inject.Provider<AssetRequestParseResult> resultProvider;
+
 	private List<AssetBundle> bundles = new ArrayList<>();
 
 	public void initialize() {
+
+		watcher.start(Collections.singleton(pipelineConfiguration
+				.getAssetFilePathPrefix()), x -> refresh(),
+				coreConfiguration.fileChangeSettleDelayMs);
+
 		String internalName = Type.getInternalName(AssetBundle.class);
 		registerBundles(internalName);
+		registerAssets(bundles);
+	}
+
+	public void refresh() {
+		bundles.forEach(x -> x.reset());
 		registerAssets(bundles);
 	}
 
@@ -90,10 +106,10 @@ public class AssetRequestMapper {
 				.create();
 
 		for (AssetBundle bundle : bundles) {
+			bundle.initialize();
 			for (AssetBundleOutput output : bundle.outputs) {
 				for (Asset asset : output.getAssets()) {
-					String pathInfo = pipelineConfiguration.assetPathInfoPrefix
-							+ asset.getName();
+					String pathInfo = getPathInfoString(asset);
 					assets.put(pathInfo, Pair.of(bundle, asset));
 
 				}
@@ -102,34 +118,44 @@ public class AssetRequestMapper {
 
 		for (Entry<String, Collection<Pair<AssetBundle, Asset>>> entry : assets
 				.asMap().entrySet()) {
-			if (entry.getValue().size() > 1) {
-				// there are multiple assets for a single path. Make sure they
-				// contain the same data
-				HashFunction goodFastHash = Hashing.goodFastHash(128);
-				HashMap<HashCode, Pair<AssetBundle, Asset>> map = new HashMap<>();
-				for (Pair<AssetBundle, Asset> pair : entry.getValue()) {
-					Pair<AssetBundle, Asset> existing = map
-							.put(goodFastHash.hashBytes(pair.getB().getData()),
-									pair);
-					if (existing != null) {
+
+			byte[] data = null;
+			Pair<AssetBundle, Asset> first = null;
+			for (Pair<AssetBundle, Asset> pair : entry.getValue()) {
+				byte[] tmp = pair.getB().getData();
+				if (data == null) {
+					data = tmp;
+					first = pair;
+				} else {
+					// there is more than one asset with the same URL. make
+					// sure it has the same data
+					if (!Arrays.equals(data, tmp)) {
 						throw new RuntimeException(
 								"Two Assets map to the same name "
 										+ entry.getKey()
 										+ " but contain different data. They are declared in the following bundles:\n"
 										+ pair.getA().getClass().getName()
-										+ "\n"
-										+ existing.getA().getClass().getName());
+										+ "\n -> " + pair.getB() + "\n"
+										+ first.getA().getClass().getName()
+										+ "\n -> " + first.getB());
 					}
 				}
 			}
 
 			// all assets mapping to this path have the same data. Just pick the
 			// first
-			index.registerPathInfo(
-					entry.getKey(),
-					x -> new AssetRequestParseResult(Iterables.getFirst(
-							entry.getValue(), null).getB()));
+			Asset asset = first.getB();
+			index.registerPathInfo(entry.getKey(), x -> resultProvider.get()
+					.initialize(asset));
 		}
+	}
+
+	public String getPathInfoString(Asset asset) {
+		return pipelineConfiguration.assetPathInfoPrefix + asset.getName();
+	}
+
+	public PathInfo getPathInfo(Asset asset) {
+		return new PathInfo(getPathInfoString(asset));
 	}
 
 	void registerBundles(String internalName) {

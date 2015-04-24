@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.objectweb.asm.ClassReader;
@@ -38,6 +39,7 @@ public class ClassChangeNotifier {
 	CoreConfiguration config;
 
 	@Inject
+	@Named("classPath")
 	FileChangeNotifier notifier;
 
 	@Inject

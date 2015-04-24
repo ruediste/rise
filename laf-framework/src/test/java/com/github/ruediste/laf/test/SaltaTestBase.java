@@ -19,7 +19,7 @@ public abstract class SaltaTestBase {
 	@Before
 	public void beforeSaltaTest() throws Exception {
 		permanentInjector = Salta.createInjector(new MvcWebPermanentModule(),
-				new CorePermanentModule(), new LoggerModule());
+				new CorePermanentModule(null), new LoggerModule());
 		permanentInjector.getInstance(ApplicationEventQueue.class)
 				.submit(this::startInAET).get();
 	}

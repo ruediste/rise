@@ -26,4 +26,12 @@ public class AssetBundleOutput implements Consumer<Asset> {
 		return assets;
 	}
 
+	public void clear() {
+		assets.clear();
+	}
+
+	public void forEach(Consumer<? super Asset> action) {
+		assets.stream().forEach(action);
+	}
+
 }

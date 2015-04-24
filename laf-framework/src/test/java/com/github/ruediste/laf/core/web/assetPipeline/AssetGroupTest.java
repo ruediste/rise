@@ -18,7 +18,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.Iterables;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -33,6 +32,11 @@ public class AssetGroupTest {
 	@Before
 	public void setup() throws UnsupportedEncodingException {
 		bundle = new AssetBundle() {
+
+			@Override
+			public void initialize() {
+
+			}
 		};
 
 		asset = spy(new TestAsset("foo", "Hello"));
@@ -43,6 +47,8 @@ public class AssetGroupTest {
 	public void testCache() {
 
 		AssetGroup cached = group.cache();
+		assertEquals("AssetGroup[testAsset(foo,Hello).cache()]",
+				cached.toString());
 
 		checkAccessCount(0);
 
@@ -52,7 +58,7 @@ public class AssetGroupTest {
 		cached.assets.forEach(this::access);
 		checkAccessCount(1);
 
-		bundle.clearCache();
+		bundle.reset();
 
 		cached.assets.forEach(this::access);
 		checkAccessCount(2);
@@ -73,6 +79,10 @@ public class AssetGroupTest {
 
 		// test with hash in the middle
 		AssetGroup name = group.name("{name}/{hash}");
+
+		assertEquals(
+				"AssetGroup[testAsset(foo,Hello).cache().name({name}/{hash}).cache()]",
+				name.toString());
 
 		checkAccessCount(0);
 		name.assets.forEach(this::access);
@@ -100,44 +110,15 @@ public class AssetGroupTest {
 		return s.getBytes("UTF-8");
 	}
 
-	static class TestAsset implements Asset {
-
-		private String name;
-		private String data;
-
-		public TestAsset(String name, String data) {
-			this.name = name;
-			this.data = data;
-		}
-
-		@Override
-		public String getName() {
-			return name;
-		}
-
-		@Override
-		public AssetType getAssetType() {
-			return DefaultAssetTypes.CSS;
-		}
-
-		@Override
-		public String getContentType() {
-			return "text/css";
-		}
-
-		@Override
-		public byte[] getData() {
-			return data.getBytes(Charsets.UTF_8);
-		}
-
-	}
-
 	@Test
 	public void testCombine() throws Exception {
 		Asset r1 = new TestAsset("foo1", "bar1");
 		Asset r2 = new TestAsset("foo2", "bar2");
 		group = new AssetGroup(bundle, Arrays.asList(r1, r2));
 		AssetGroup collect = group.combine("foo3");
+		assertEquals(
+				"AssetGroup[combine[testAsset(foo1,bar1), testAsset(foo2,bar2)]]",
+				collect.toString());
 		assertEquals(1, collect.assets.size());
 		Asset r = Iterables.getOnlyElement(collect.assets);
 		assertArrayEquals(byteArray("bar1bar2"), r.getData());
@@ -145,8 +126,12 @@ public class AssetGroupTest {
 
 	@Test
 	public void testForkJoin() throws Exception {
-		Set<String> names = group.forkJoin(x -> x.name("foo"),
-				x -> x.name("bar")).assets.stream().map(x -> x.getName())
+		AssetGroup forkJoin = group.forkJoin(x -> x.name("foo"),
+				x -> x.name("bar"));
+		assertEquals(
+				"AssetGroup[testAsset(foo,Hello).name(foo), testAsset(foo,Hello).name(bar)]",
+				forkJoin.toString());
+		Set<String> names = forkJoin.assets.stream().map(x -> x.getName())
 				.collect(toSet());
 		assertThat(names, containsInAnyOrder("foo", "bar"));
 	}

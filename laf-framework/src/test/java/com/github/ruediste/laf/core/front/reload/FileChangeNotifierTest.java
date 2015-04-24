@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.junit.After;
 import org.junit.Before;
@@ -35,6 +36,7 @@ public class FileChangeNotifierTest {
 	ApplicationEventQueue queue;
 
 	@Inject
+	@Named("classPath")
 	FileChangeNotifier notifier;
 
 	@Inject

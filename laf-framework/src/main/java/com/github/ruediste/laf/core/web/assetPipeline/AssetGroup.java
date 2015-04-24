@@ -35,6 +35,12 @@ public class AssetGroup {
 		this.assets = assets;
 	}
 
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return "AssetGroup" + assets;
+	}
+
 	public AssetGroup(AssetBundle bundle, Stream<Asset> resources) {
 		this(bundle, resources.collect(Collectors.toList()));
 	}
@@ -125,6 +131,11 @@ public class AssetGroup {
 			public String getName() {
 				return resolveNameTemplate(asset, template);
 			}
+
+			@Override
+			public String toString() {
+				return asset + ".name(" + template + ")";
+			};
 		});
 
 		// cache again to avoid calculating the name multiple time
@@ -254,6 +265,10 @@ public class AssetGroup {
 			return data.setIfAbsent(cache, delegate::getData);
 		}
 
+		@Override
+		public String toString() {
+			return delegate + ".cache()";
+		}
 	}
 
 	/**
@@ -325,6 +340,10 @@ public class AssetGroup {
 			return contentType;
 		}
 
+		@Override
+		public String toString() {
+			return "combine" + assets;
+		}
 	}
 
 }

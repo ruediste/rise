@@ -26,6 +26,7 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 
+import com.github.ruediste.laf.core.Permanent;
 import com.github.ruediste.laf.core.front.ApplicationEventQueue;
 import com.google.common.base.Preconditions;
 
@@ -44,6 +45,7 @@ public class DirectoryChangeWatcher {
 	private Logger log;
 
 	@Inject
+	@Permanent
 	private ApplicationEventQueue queue;
 
 	private long settleDelayMs;

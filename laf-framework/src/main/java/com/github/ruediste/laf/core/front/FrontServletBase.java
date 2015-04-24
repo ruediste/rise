@@ -82,6 +82,7 @@ public abstract class FrontServletBase extends HttpServlet {
 	}
 
 	@Inject
+	@Named("classPath")
 	FileChangeNotifier notifier;
 
 	@Inject
@@ -136,7 +137,8 @@ public abstract class FrontServletBase extends HttpServlet {
 			Thread currentThread = Thread.currentThread();
 			ClassLoader old = currentThread.getContextClassLoader();
 			try {
-				SpaceAwareClassLoader dynamicClassloader = dynamicClassLoaderProvider.get();
+				SpaceAwareClassLoader dynamicClassloader = dynamicClassLoaderProvider
+						.get();
 				currentThread.setContextClassLoader(dynamicClassloader);
 
 				instance = (DynamicApplication) dynamicClassloader.loadClass(

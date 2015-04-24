@@ -4,16 +4,20 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import com.github.ruediste.laf.core.scopes.HttpScopeModule;
+import com.github.ruediste.laf.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.laf.util.InitializerUtil;
 import com.github.ruediste.salta.core.CoreDependencyKey;
 import com.github.ruediste.salta.core.CreationRule;
 import com.github.ruediste.salta.core.RecipeCreationContext;
+import com.github.ruediste.salta.core.Scope;
 import com.github.ruediste.salta.core.compile.SupplierRecipe;
 import com.github.ruediste.salta.core.compile.SupplierRecipeImpl;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
-import com.github.ruediste.salta.jsr330.Provides;
 import com.github.ruediste.salta.standard.InjectionPoint;
+import com.github.ruediste.salta.standard.ScopeRule;
+import com.github.ruediste.salta.standard.config.StandardInjectorConfiguration;
+import com.google.common.reflect.TypeToken;
 
 public class CoreDynamicModule extends AbstractModule {
 
@@ -28,7 +32,21 @@ public class CoreDynamicModule extends AbstractModule {
 	protected void configure() throws Exception {
 		InitializerUtil.register(config(), CoreDynamicInitializer.class);
 		installHttpScopeModule();
-		// registerPermanentRule();
+		registerPermanentRule();
+
+		{
+			StandardInjectorConfiguration standardConfig = config().standardConfig;
+			config().standardConfig.scope.scopeRules.add(new ScopeRule() {
+
+				@Override
+				public Scope getScope(TypeToken<?> type) {
+					if (TypeToken.of(AssetBundle.class).isAssignableFrom(type)) {
+						return standardConfig.singletonScope;
+					}
+					return null;
+				}
+			});
+		}
 	}
 
 	protected void registerPermanentRule() {
@@ -54,12 +72,6 @@ public class CoreDynamicModule extends AbstractModule {
 
 	protected void installHttpScopeModule() {
 		install(new HttpScopeModule());
-	}
-
-	@Provides
-	@Permanent
-	Injector providePermanentInjector() {
-		return permanentInjector;
 	}
 
 }

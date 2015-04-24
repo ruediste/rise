@@ -1,5 +1,7 @@
 package com.github.ruediste.laf.core.entry;
 
+import java.nio.file.Paths;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -29,8 +31,9 @@ public class StandaloneLafApplication {
 			ServletContextHandler ctx = new ServletContextHandler(
 					ServletContextHandler.SESSIONS);
 			ctx.setContextPath("");
-
 			ctx.addServlet(holder, pathSpec);
+
+			ctx.setResourceBase(Paths.get("").toString());
 
 			server = new Server(8080);
 			server.setHandler(ctx);
