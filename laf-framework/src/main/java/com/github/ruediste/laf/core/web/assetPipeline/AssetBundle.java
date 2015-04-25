@@ -96,49 +96,6 @@ public abstract class AssetBundle {
 						}));
 	}
 
-	public Function<AssetPathGroup, AssetGroup> servletContext() {
-		return group -> new AssetGroup(this, group
-				.getPaths()
-				.stream()
-				.<Asset> map(
-						path -> {
-							AssetType type = pipelineConfiguration
-									.getDefaultType(getExtension(path));
-							return new Asset() {
-
-								@Override
-								public String getName() {
-									return path;
-								}
-
-								@Override
-								public byte[] getData() {
-									InputStream in = pipelineConfiguration
-											.getFileInputStream(path);
-									if (in == null) {
-										throw new RuntimeException(
-												"Unable to find resource in servlet context: "
-														+ path);
-									}
-									return toByteArray(in);
-
-								}
-
-								@Override
-								public AssetType getAssetType() {
-									return type;
-								}
-
-								@Override
-								public String getContentType() {
-									return pipelineConfiguration
-											.getDefaultContentType(type);
-								}
-
-							};
-						}));
-	}
-
 	public AssetPathGroup paths(String... paths) {
 		return new AssetPathGroup(this, Arrays.stream(paths));
 	}

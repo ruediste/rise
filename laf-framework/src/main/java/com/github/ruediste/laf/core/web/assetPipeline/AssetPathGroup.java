@@ -59,6 +59,13 @@ public class AssetPathGroup {
 	}
 
 	/**
+	 * Load the resources from the classpath
+	 */
+	public AssetGroup load() {
+		return bundle.classPath().apply(this);
+	}
+
+	/**
 	 * Load the paths in this group using the specified loader
 	 */
 	public AssetGroup load(Function<AssetPathGroup, AssetGroup> loader) {

@@ -5,7 +5,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -86,11 +85,6 @@ public class AssetRequestMapper {
 	private List<AssetBundle> bundles = new ArrayList<>();
 
 	public void initialize() {
-
-		watcher.start(Collections.singleton(pipelineConfiguration
-				.getAssetFilePathPrefix()), x -> refresh(),
-				coreConfiguration.fileChangeSettleDelayMs);
-
 		String internalName = Type.getInternalName(AssetBundle.class);
 		registerBundles(internalName);
 		registerAssets(bundles);
