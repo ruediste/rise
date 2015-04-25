@@ -21,8 +21,11 @@ public class StandaloneLafApplication {
 
 	private Server server;
 
+	/**
+	 * Start the server on port 8080
+	 */
 	public void start(Class<? extends FrontServletBase> frontServletClass) {
-		start(frontServletClass, 0);
+		start(frontServletClass, 8080);
 	}
 
 	public void start(Class<? extends FrontServletBase> frontServletClass,

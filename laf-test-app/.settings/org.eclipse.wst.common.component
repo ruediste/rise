@@ -7,9 +7,6 @@
         <dependent-module archiveName="laf-framework-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/laf-framework/laf-framework">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="jabsaw-api-1.3-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/jabsaw-api/jabsaw-api">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <dependent-module archiveName="salta-jsr330-0.2-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/salta-jsr330/salta-jsr330">
             <dependency-type>uses</dependency-type>
         </dependent-module>
