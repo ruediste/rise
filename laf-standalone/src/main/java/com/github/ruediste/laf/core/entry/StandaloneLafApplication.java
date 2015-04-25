@@ -2,7 +2,11 @@ package com.github.ruediste.laf.core.entry;
 
 import java.nio.file.Paths;
 
+import javax.servlet.Servlet;
+
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.slf4j.Logger;
@@ -18,31 +22,58 @@ public class StandaloneLafApplication {
 	private Server server;
 
 	public void start(Class<? extends FrontServletBase> frontServletClass) {
-		start(frontServletClass, "/*");
+		start(frontServletClass, 0);
 	}
 
 	public void start(Class<? extends FrontServletBase> frontServletClass,
-			String pathSpec) {
+			int port) {
 
 		try {
-			ServletHolder holder = new ServletHolder(frontServletClass);
-			holder.setInitOrder(0);
-
-			ServletContextHandler ctx = new ServletContextHandler(
-					ServletContextHandler.SESSIONS);
-			ctx.setContextPath("");
-			ctx.addServlet(holder, pathSpec);
-
-			ctx.setResourceBase(Paths.get("").toString());
-
-			server = new Server(8080);
-			server.setHandler(ctx);
-			server.start();
+			startImpl(new ServletHolder(frontServletClass), port);
 			server.join();
 		} catch (Exception e) {
 			log.error("Error starting Jetty", e);
 		}
+	}
 
+	/**
+	 * @param port
+	 *            port to start server on, 0 for random port
+	 * @param frontServlet
+	 */
+	public String startForTesting(Servlet frontServlet, int port) {
+
+		try {
+			return startImpl(
+					new ServletHolder("testFrontServlet", frontServlet), port);
+		} catch (Exception e) {
+			throw new RuntimeException("Error starting Jetty", e);
+		}
+	}
+
+	protected String startImpl(ServletHolder holder, int port) throws Exception {
+		holder.setInitOrder(0);
+
+		ServletContextHandler ctx = new ServletContextHandler(
+				ServletContextHandler.SESSIONS);
+		ctx.setContextPath("");
+		ctx.addServlet(holder, "/*");
+
+		ctx.setResourceBase(Paths.get("").toString());
+
+		server = new Server();
+		ServerConnector connector = new ServerConnector(server);
+		connector.setPort(port);
+		server.setConnectors(new Connector[] { connector });
+
+		server.setHandler(ctx);
+		server.start();
+
+		String host = connector.getHost();
+		if (host == null) {
+			host = "localhost";
+		}
+		return String.format("http://%s:%d/", host, connector.getLocalPort());
 	}
 
 	public void stop() {

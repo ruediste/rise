@@ -3,8 +3,7 @@ package com.github.ruediste.laf.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.cglib.asm.Type;
-
+import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 
 import com.google.common.base.CaseFormat;

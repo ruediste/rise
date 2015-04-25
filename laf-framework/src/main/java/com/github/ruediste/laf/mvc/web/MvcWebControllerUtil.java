@@ -6,6 +6,7 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import org.rendersnake.HtmlCanvas;
 
@@ -25,6 +26,9 @@ public class MvcWebControllerUtil {
 
 	@Inject
 	ActionInvocationUtil util;
+
+	@Inject
+	Provider<MvcWebActionPathBuilder> actionPathBuilderInstance;
 
 	public <TView extends ViewMvcWeb<TData>, TData> ActionResult view(
 			Class<TView> viewClass, TData data) {
@@ -51,4 +55,7 @@ public class MvcWebControllerUtil {
 				util.toPathInfo((InvocationActionResult) path));
 	}
 
+	public MvcWebActionPathBuilder path() {
+		return actionPathBuilderInstance.get();
+	}
 }

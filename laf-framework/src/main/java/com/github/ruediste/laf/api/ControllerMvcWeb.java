@@ -11,12 +11,12 @@ public class ControllerMvcWeb implements IControllerMvcWeb {
 	@Inject
 	MvcWebControllerUtil util;
 
-	public <TView extends ViewMvcWeb<TData>, TData> ActionResult view(
+	protected <TView extends ViewMvcWeb<TData>, TData> ActionResult view(
 			Class<TView> viewClass, TData data) {
 		return util.view(viewClass, data);
 	}
 
-	public ActionResult redirect(ActionResult path) {
+	protected ActionResult redirect(ActionResult path) {
 		return util.redirect(path);
 	}
 

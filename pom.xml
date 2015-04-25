@@ -11,9 +11,13 @@
 		<module>laf-standalone</module>
 		<module>laf-integration</module>
 		<module>laf-framework</module>
-		<module>laf-app-test</module>
-		<module>laf-app-skeleton</module>
-		<module>laf-app-sample</module>
+		<module>laf-test-app</module>
+		<module>laf-test-integration</module>
+		<module>laf-skeleton-app</module>
+		<module>laf-skeleton-integration</module>
+		<module>laf-sample-app</module>
+		<module>laf-sample-integration</module>
+		<module>laf-integrationTest</module>
 	</modules>
 
 	<properties>

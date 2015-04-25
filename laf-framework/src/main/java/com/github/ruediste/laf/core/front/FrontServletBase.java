@@ -27,7 +27,7 @@ public abstract class FrontServletBase extends HttpServlet {
 
 	public volatile DynamicApplicationInfo currentApplicationInfo;
 
-	private DynamicApplication fixedApplicationInstance;
+	private DynamicApplication fixedDynamicApplicationInstance;
 
 	private Class<? extends DynamicApplication> dynamicApplicationInstanceClass;
 
@@ -45,7 +45,7 @@ public abstract class FrontServletBase extends HttpServlet {
 	 */
 	public FrontServletBase(DynamicApplication fixedApplicationInstance) {
 		Preconditions.checkNotNull(fixedApplicationInstance);
-		this.fixedApplicationInstance = fixedApplicationInstance;
+		this.fixedDynamicApplicationInstance = fixedApplicationInstance;
 	}
 
 	@Override
@@ -98,7 +98,7 @@ public abstract class FrontServletBase extends HttpServlet {
 	private void initInAET() {
 
 		try {
-			if (fixedApplicationInstance == null) {
+			if (fixedDynamicApplicationInstance == null) {
 				// setup application reloading
 				applicationInstanceClassName = dynamicApplicationInstanceClass
 						.getName();
@@ -108,21 +108,21 @@ public abstract class FrontServletBase extends HttpServlet {
 			// run initializers
 			InitializerUtil.runInitializers(permanentInjector);
 
-			if (fixedApplicationInstance != null) {
+			if (fixedDynamicApplicationInstance != null) {
 				notifier.close();
 				// we are started with a fixed application instance, just use
 				// it.
 				// Primarily used for Unit Testing
 				currentApplicationInfo = new DynamicApplicationInfo(
-						fixedApplicationInstance, Thread.currentThread()
+						fixedDynamicApplicationInstance, Thread.currentThread()
 								.getContextClassLoader());
-				fixedApplicationInstance.start(permanentInjector);
+				fixedDynamicApplicationInstance.start(permanentInjector);
 			} else {
 				// application gets started through the initial file change
 				// transaction
 			}
 		} catch (Throwable t) {
-			log.error("Error during startup");
+			log.error("Error during startup", t);
 			System.exit(1);
 		}
 	}

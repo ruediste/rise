@@ -1,0 +1,60 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>ch.laf</groupId>
+		<artifactId>laf-parent</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>laf-test-integration</artifactId>
+	<dependencies>
+		<dependency>
+			<groupId>ch.laf</groupId>
+			<artifactId>laf-standalone</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.laf</groupId>
+			<artifactId>laf-test-app</artifactId>
+			<version>1.0-SNAPSHOT</version>
+<!-- 			<type>war</type> -->
+		</dependency>
+
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-htmlunit-driver</artifactId>
+			<version>2.45.0</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jetty-websocket</artifactId>
+					<groupId>org.eclipse.jetty</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty.websocket</groupId>
+			<artifactId>websocket-client</artifactId>
+			<version>9.2.7.v20150116</version>
+		</dependency>
+
+
+	</dependencies>
+	<description>integration project for the laf integration tests</description>
+	<packaging>war</packaging>
+	<dependencyManagement>
+		<dependencies>
+			<!-- Needed to avoid conflict with embedded jetty -->
+			<dependency>
+				<groupId>cglib</groupId>
+				<artifactId>cglib-nodep</artifactId>
+				<version>3.1</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+</project>
