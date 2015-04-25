@@ -40,5 +40,87 @@
 			<version>1.7.9</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-jpamodelgen</artifactId>
+			<version>4.3.8.Final</version>
+			<scope>provided</scope>
+			<optional>true</optional>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.codehaus.btm</groupId>
+			<artifactId>btm</artifactId>
+			<version>2.1.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.persistence</groupId>
+			<artifactId>eclipselink</artifactId>
+			<version>2.6.0-M3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.184</version>
+		</dependency>
+
+		<dependency>
+			<groupId>ro.isdc.wro4j</groupId>
+			<artifactId>wro4j-extensions</artifactId>
+			<version>1.7.6</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>asm</artifactId>
+					<groupId>org.ow2.asm</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>asm-analysis</artifactId>
+					<groupId>org.ow2.asm</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>asm-commons</artifactId>
+					<groupId>org.ow2.asm</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>asm-util</artifactId>
+					<groupId>org.ow2.asm</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>asm-tree</artifactId>
+					<groupId>org.ow2.asm</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-htmlunit-driver</artifactId>
+			<version>2.45.0</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jetty-websocket</artifactId>
+					<groupId>org.eclipse.jetty</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.jetty.websocket</groupId>
+			<artifactId>websocket-client</artifactId>
+			<version>9.2.7.v20150116</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-servlet</artifactId>
+			<version>9.2.7.v20150116</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-util</artifactId>
+			<version>9.2.7.v20150116</version>
+		</dependency>
+		
 	</dependencies>
 </project>

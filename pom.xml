@@ -8,16 +8,10 @@
 	<name>Light Application Framework Parent</name>
 	<url>http://maven.apache.org</url>
 	<modules>
-		<module>laf-standalone</module>
-		<module>laf-integration</module>
 		<module>laf-framework</module>
 		<module>laf-test-app</module>
-		<module>laf-test-integration</module>
 		<module>laf-skeleton-app</module>
-		<module>laf-skeleton-integration</module>
 		<module>laf-sample-app</module>
-		<module>laf-sample-integration</module>
-		<module>laf-integrationTest</module>
 	</modules>
 
 	<properties>
