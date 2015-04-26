@@ -39,7 +39,7 @@ public class SimpleMvcControllerTest {
 
 	}
 
-	class TestApp extends DynamicApplicationBase {
+	class TestDynamicApplication extends DynamicApplicationBase {
 
 		@Override
 		protected void startImpl(Injector permanentInjector) {
@@ -60,7 +60,7 @@ public class SimpleMvcControllerTest {
 
 	@Test
 	public void simple() {
-		TestApp app = new TestApp();
+		TestDynamicApplication app = new TestDynamicApplication();
 		FrontServlet frontServlet = new FrontServlet(app);
 		String url = new StandaloneLafApplication().startForTesting(
 				frontServlet, 0);

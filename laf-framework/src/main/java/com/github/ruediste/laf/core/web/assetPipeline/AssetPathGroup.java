@@ -66,13 +66,6 @@ public class AssetPathGroup {
 	}
 
 	/**
-	 * Load the paths in this group using the specified loader
-	 */
-	public AssetGroup load(Function<AssetPathGroup, AssetGroup> loader) {
-		return loader.apply(this);
-	}
-
-	/**
 	 * Modify all paths in this group
 	 */
 	public AssetPathGroup map(Function<String, String> mapper) {

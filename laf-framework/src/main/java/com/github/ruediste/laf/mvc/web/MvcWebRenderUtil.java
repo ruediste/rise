@@ -26,7 +26,7 @@ public class MvcWebRenderUtil {
 	@Inject
 	AssetRenderUtil assetRenderUtil;
 
-	public <T> T path(Class<T> controller) {
+	public <T extends IControllerMvcWeb> T path(Class<T> controller) {
 		return path().controller(controller);
 	}
 

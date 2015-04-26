@@ -20,7 +20,7 @@ public class WelcomeView extends ViewMvcWeb<WelcomeController.Data> {
 
 		@Override
 		public void initialize() {
-			paths("/assets/welcome.css").load(classPath()).send(out);
+			paths("/assets/welcome.css").load().send(out);
 		}
 
 	}

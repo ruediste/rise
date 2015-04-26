@@ -84,7 +84,7 @@ public class AssetPipelineConfiguration {
 	/**
 	 * Prefix when loading assets from the classpath
 	 */
-	public String classPathPrefix = "";
+	public String assetBasePath = "assets/";
 
 	public void initialize() {
 

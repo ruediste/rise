@@ -46,7 +46,23 @@ public abstract class AssetBundle {
 		return Iterables.getLast(Splitter.on('.').split(path));
 	}
 
-	public Function<AssetPathGroup, AssetGroup> classPath() {
+	/**
+	 * Map the path of an asset to the full resouce path to be used to load the
+	 * asset from the classpath. Rules see {@link #paths(String...)}
+	 */
+	String calculateFullPath(String assetPath) {
+		if (assetPath.startsWith("/"))
+			return assetPath;
+		if (assetPath.startsWith("./"))
+			return getClass().getPackage().getName().replace('.', '/')
+					+ assetPath.substring(1);
+		if (assetPath.startsWith("."))
+			return getClass().getName().replace('.', '/')
+					+ assetPath.substring(1);
+		return pipelineConfiguration.assetBasePath + assetPath;
+	}
+
+	Function<AssetPathGroup, AssetGroup> classPath() {
 
 		return group -> new AssetGroup(this, group
 				.getPaths()
@@ -55,18 +71,16 @@ public abstract class AssetBundle {
 						path -> {
 							AssetType type = pipelineConfiguration
 									.getDefaultType(getExtension(path));
+							String fullPath = calculateFullPath(path);
 							return new Asset() {
 
 								@Override
 								public String getName() {
-									return path;
+									return fullPath;
 								}
 
 								@Override
 								public byte[] getData() {
-									String fullPath = pipelineConfiguration.classPathPrefix
-											+ (path.startsWith("/") ? path
-													.substring(1) : path);
 									InputStream in = getClass()
 											.getClassLoader()
 											.getResourceAsStream(fullPath);
@@ -96,6 +110,23 @@ public abstract class AssetBundle {
 						}));
 	}
 
+	/**
+	 * Entry point for the asset pipeline EDSL. The assets are loaded using the
+	 * following rules:
+	 * 
+	 * <ul>
+	 * <li>if the path starts with a `/`, the path is absolute, based on the
+	 * root of the classpath</li>
+	 * <li>if the path starts with a `./`, the path is interpreted relative to
+	 * the package the asset bundle is located in</li>
+	 * <li>if the path startign with a `.`, the full name of the bundle class is
+	 * prepended to the path.</li>
+	 * <li>otherwise, the asset path is interpreted relative to the asset base
+	 * path configured in `AssetPipelineConfiguration#assetBasePath`. By
+	 * default, this is `/assets/`.</li>
+	 * 
+	 * </ul>
+	 */
 	public AssetPathGroup paths(String... paths) {
 		return new AssetPathGroup(this, Arrays.stream(paths));
 	}

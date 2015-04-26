@@ -10,6 +10,7 @@ import org.rendersnake.Renderable;
 import com.github.ruediste.laf.core.ActionResult;
 import com.github.ruediste.laf.core.web.PathInfo;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetBundleOutput;
+import com.github.ruediste.laf.mvc.web.IControllerMvcWeb;
 import com.github.ruediste.laf.mvc.web.MvcWebActionPathBuilder;
 import com.github.ruediste.laf.mvc.web.MvcWebRenderUtil;
 
@@ -33,7 +34,7 @@ public abstract class ViewMvcWeb<TData> {
 
 	abstract public void render(HtmlCanvas html) throws IOException;
 
-	public <T> T path(Class<T> controller) {
+	public <T extends IControllerMvcWeb> T path(Class<T> controller) {
 		return util.path(controller);
 	}
 
