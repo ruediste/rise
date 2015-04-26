@@ -1,4 +1,4 @@
-package com.github.ruediste.laf.sample;
+package com.github.ruediste.laf.sample.welcome;
 
 import com.github.ruediste.laf.api.ControllerMvcWeb;
 import com.github.ruediste.laf.core.ActionResult;

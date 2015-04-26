@@ -131,6 +131,10 @@
 					<artifactId>asm-tree</artifactId>
 					<groupId>org.ow2.asm</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>spring-web</artifactId>
+					<groupId>org.springframework</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 	</dependencies>

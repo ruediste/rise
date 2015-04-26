@@ -11,18 +11,27 @@ import com.github.ruediste.laf.core.ActionResult;
 import com.github.ruediste.laf.core.web.PathInfo;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.laf.mvc.web.IControllerMvcWeb;
-import com.github.ruediste.laf.mvc.web.MvcWebActionPathBuilder;
 import com.github.ruediste.laf.mvc.web.MvcWebRenderUtil;
+import com.google.common.reflect.TypeToken;
 
 /**
  * Base Class for views of the MVC framework
  */
-public abstract class ViewMvcWeb<TData> {
+public abstract class ViewMvcWeb<TController extends IControllerMvcWeb, TData> {
 
 	@Inject
 	private MvcWebRenderUtil util;
 
 	private TData data;
+
+	private Class<TController> controllerClass;
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	protected ViewMvcWeb() {
+		controllerClass = (Class) TypeToken.of(getClass())
+				.resolveType(ViewMvcWeb.class.getTypeParameters()[0])
+				.getRawType();
+	}
 
 	public final void initialize(TData data) {
 		this.data = data;
@@ -46,8 +55,8 @@ public abstract class ViewMvcWeb<TData> {
 		return util.url(path);
 	}
 
-	public MvcWebActionPathBuilder path() {
-		return util.path();
+	public TController path() {
+		return util.path().go(controllerClass);
 	}
 
 	public Renderable jsLinks(AssetBundleOutput output) {

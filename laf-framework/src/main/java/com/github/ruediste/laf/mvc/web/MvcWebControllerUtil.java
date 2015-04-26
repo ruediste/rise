@@ -28,9 +28,11 @@ public class MvcWebControllerUtil {
 	ActionInvocationUtil util;
 
 	@Inject
-	Provider<MvcWebActionPathBuilder> actionPathBuilderInstance;
+	Provider<MvcWebActionPathBuilder> actionPathBuilderProvider;
+	@Inject
+	Provider<ActionPathBuilderKnownController<?>> actionPathBuilderKnownController;
 
-	public <TView extends ViewMvcWeb<TData>, TData> ActionResult view(
+	public <TView extends ViewMvcWeb<?, TData>, TData> ActionResult view(
 			Class<TView> viewClass, TData data) {
 
 		TView view = injector.getInstance(viewClass);
@@ -56,6 +58,12 @@ public class MvcWebControllerUtil {
 	}
 
 	public MvcWebActionPathBuilder path() {
-		return actionPathBuilderInstance.get();
+		return actionPathBuilderProvider.get();
+	}
+
+	public <T extends IControllerMvcWeb> ActionPathBuilderKnownController<T> path(
+			Class<T> controllerClass) {
+		return actionPathBuilderKnownController.get().initialize(
+				controllerClass);
 	}
 }

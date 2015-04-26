@@ -1,4 +1,4 @@
-package com.github.ruediste.laf.mvc;
+package com.github.ruediste.laf.mvc.web;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -11,6 +11,10 @@ import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
+import com.github.ruediste.laf.mvc.ActionInvocation;
+import com.github.ruediste.laf.mvc.InvocationActionResult;
+import com.github.ruediste.laf.mvc.MvcControllerReflectionUtil;
+import com.github.ruediste.laf.mvc.MvcRequestInfo;
 import com.github.ruediste.laf.util.MethodInvocation;
 import com.google.common.base.Joiner;
 
@@ -30,7 +34,7 @@ import com.google.common.base.Joiner;
  * </pre>
  *
  */
-public class MvcActionPathBuilder {
+public class MvcWebActionPathBuilderBase<TSelf extends MvcWebActionPathBuilderBase<TSelf>> {
 
 	@Inject
 	MvcRequestInfo requestInfo;
@@ -40,24 +44,25 @@ public class MvcActionPathBuilder {
 
 	private InvocationActionResult invocation = new InvocationActionResult();
 
+	@SuppressWarnings("unchecked")
+	protected TSelf self() {
+		return (TSelf) this;
+	}
+
 	/**
 	 * Set an {@link AttachedProperty} of the {@link ActionInvocation} to be
 	 * created.
 	 */
-	public <T> MvcActionPathBuilder set(
-			AttachedProperty<ActionInvocation<?>, T> property, T value) {
+	public <T> TSelf set(AttachedProperty<ActionInvocation<?>, T> property,
+			T value) {
 		property.set(invocation, value);
-		return this;
+		return self();
 	}
 
 	/**
-	 * An instance of the supplied controllerClass is returned. If the call is
-	 * targeted at an embedded controller, the current {@link ActionContext} is
-	 * scanned for the last occurence of the supplied controller class, and the
-	 * elements of the invoked path up to this point are prepended to the
-	 * {@link ActionInvocation} .
+	 * An instance of the supplied controllerClass is returned.
 	 */
-	public <T> T controller(Class<T> controllerClass) {
+	public <T> T go(Class<T> controllerClass) {
 		return createActionPath(controllerClass, invocation);
 	}
 
@@ -110,4 +115,5 @@ public class MvcActionPathBuilder {
 			throw new RuntimeException(e);
 		}
 	}
+
 }

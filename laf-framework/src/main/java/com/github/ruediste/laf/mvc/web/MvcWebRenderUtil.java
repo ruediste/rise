@@ -27,7 +27,7 @@ public class MvcWebRenderUtil {
 	AssetRenderUtil assetRenderUtil;
 
 	public <T extends IControllerMvcWeb> T path(Class<T> controller) {
-		return path().controller(controller);
+		return path().go(controller);
 	}
 
 	public String url(ActionResult path) {

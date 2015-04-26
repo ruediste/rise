@@ -1,4 +1,4 @@
-package com.github.ruediste.laf.sample;
+package com.github.ruediste.laf.sample.front;
 
 import com.github.ruediste.laf.api.DynamicApplicationModule;
 import com.github.ruediste.laf.core.front.DynamicApplicationBase;

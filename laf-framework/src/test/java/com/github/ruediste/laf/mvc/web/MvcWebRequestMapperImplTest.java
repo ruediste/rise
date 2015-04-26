@@ -69,7 +69,7 @@ public class MvcWebRequestMapperImplTest extends SaltaTestBase {
 	}
 
 	private A ctrl() {
-		return builder.get().controller(A.class);
+		return builder.get().go(A.class);
 	}
 
 	private void check(ActionResult actionResult) {

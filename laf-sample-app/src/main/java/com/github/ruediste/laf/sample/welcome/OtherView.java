@@ -1,4 +1,4 @@
-package com.github.ruediste.laf.sample;
+package com.github.ruediste.laf.sample.welcome;
 
 import static org.rendersnake.HtmlAttributesFactory.href;
 
@@ -11,7 +11,7 @@ import org.rendersnake.HtmlCanvas;
 import com.github.ruediste.laf.api.ViewMvcWeb;
 import com.github.ruediste.laf.mvc.web.MvcWebControllerUtil;
 
-public class OtherView extends ViewMvcWeb<String> {
+public class OtherView extends ViewMvcWeb<WelcomeController, String> {
 
 	@Inject
 	MvcWebControllerUtil util;
@@ -19,8 +19,7 @@ public class OtherView extends ViewMvcWeb<String> {
 	@Override
 	public void render(HtmlCanvas html) throws IOException {
 		html.html().head()._head().body().h1().content("TheOther")
-				.a(href(url(path(WelcomeController.class).index())))
-				.content("index")._body()._html();
+				.a(href(url(path().index()))).content("index")._body()._html();
 	}
 
 }

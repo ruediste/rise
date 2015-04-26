@@ -12,7 +12,8 @@ import com.github.ruediste.laf.api.ViewMvcWeb;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetBundleOutput;
 
-public class AssetReferencingView extends ViewMvcWeb<String> {
+public class AssetReferencingView extends
+		ViewMvcWeb<AssetReferencingController, String> {
 
 	static class Bundle extends AssetBundle {
 

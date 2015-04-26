@@ -1,4 +1,4 @@
-package com.github.ruediste.laf.sample;
+package com.github.ruediste.laf.sample.welcome;
 
 import static org.rendersnake.HtmlAttributesFactory.href;
 
@@ -12,7 +12,8 @@ import com.github.ruediste.laf.api.ViewMvcWeb;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetBundleOutput;
 
-public class WelcomeView extends ViewMvcWeb<WelcomeController.Data> {
+public class WelcomeView extends
+		ViewMvcWeb<WelcomeController, WelcomeController.Data> {
 
 	static class Bundle extends AssetBundle {
 
@@ -31,8 +32,7 @@ public class WelcomeView extends ViewMvcWeb<WelcomeController.Data> {
 	@Override
 	public void render(HtmlCanvas html) throws IOException {
 		html.html().head().render(cssBundle(bundle.out))._head().body().h1()
-				.content("Hello Nina")
-				.a(href(url(path(WelcomeController.class).other())))
+				.content("Hello Nina").a(href(url(path().other())))
 				.content("other")._body()._html();
 	}
 
