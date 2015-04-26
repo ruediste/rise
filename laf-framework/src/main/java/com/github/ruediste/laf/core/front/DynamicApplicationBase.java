@@ -75,6 +75,16 @@ public abstract class DynamicApplicationBase implements DynamicApplication {
 		closeImpl();
 	}
 
+	/**
+	 * Convenience method to inject the members of an instance
+	 */
+	protected final void injectMembers(Object instance) {
+		injector.injectMembers(instance);
+	}
+
+	/**
+	 * Called when the dynamic application is shut down
+	 */
 	protected void closeImpl() {
 
 	}

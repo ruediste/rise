@@ -2,7 +2,9 @@ package com.github.ruediste.laf.core.front.reload;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.google.common.io.ByteStreams;
 
@@ -33,12 +35,13 @@ public class SpaceAwareClassLoader extends ClassLoader {
 			Class<?> space = cache.getClassSpace(name);
 			if (classSpace.equals(space)) {
 				Class<?> result;
-				try (InputStream in = getResourceAsStream(name
-						.replace('.', '/') + ".class")) {
+				String resouceName = name.replace('.', '/') + ".class";
+				try (InputStream in = getResourceAsStream(resouceName)) {
 					byte[] bb = ByteStreams.toByteArray(in);
 					result = defineClass(name, bb, 0, bb.length);
 				} catch (IOException e) {
-					throw new RuntimeException(e);
+					throw new RuntimeException("Error while loading "
+							+ resouceName, e);
 				}
 				if (resolve) {
 					resolveClass(result);

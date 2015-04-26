@@ -46,15 +46,23 @@ public abstract class AssetBundle {
 		return Iterables.getLast(Splitter.on('.').split(path));
 	}
 
+	private static String getPackageName(Class<?> cls) {
+		String classname = cls.getName();
+		int index = classname.lastIndexOf('.');
+		if (index != -1)
+			return classname.substring(0, index);
+		return "";
+	}
+
 	/**
 	 * Map the path of an asset to the full resouce path to be used to load the
 	 * asset from the classpath. Rules see {@link #paths(String...)}
 	 */
 	String calculateFullPath(String assetPath) {
 		if (assetPath.startsWith("/"))
-			return assetPath;
+			return assetPath.substring(1);
 		if (assetPath.startsWith("./"))
-			return getClass().getPackage().getName().replace('.', '/')
+			return getPackageName(getClass()).replace('.', '/')
 					+ assetPath.substring(1);
 		if (assetPath.startsWith("."))
 			return getClass().getName().replace('.', '/')
