@@ -24,7 +24,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry excluding="**" including="**/*.java" kind="src" output="target/classes" path="src">
+	<classpathentry excluding="**" kind="src" output="target/classes" path="src">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>

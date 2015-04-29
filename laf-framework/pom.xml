@@ -106,11 +106,6 @@
 
 		<!-- === MISC === -->
 		<dependency>
-			<groupId>jboss</groupId>
-			<artifactId>jnpserver</artifactId>
-			<version>4.2.2.GA</version>
-		</dependency>
-		<dependency>
 			<groupId>com.github.ruediste.salta</groupId>
 			<artifactId>salta-jsr330</artifactId>
 			<version>0.2-SNAPSHOT</version>
@@ -130,36 +125,47 @@
 			<artifactId>rendersnake</artifactId>
 			<version>1.8</version>
 		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>ro.isdc.wro4j</groupId> -->
+<!-- 			<artifactId>wro4j-extensions</artifactId> -->
+<!-- 			<version>1.7.6</version> -->
+<!-- 			<exclusions> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>asm</artifactId> -->
+<!-- 					<groupId>org.ow2.asm</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>asm-analysis</artifactId> -->
+<!-- 					<groupId>org.ow2.asm</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>asm-commons</artifactId> -->
+<!-- 					<groupId>org.ow2.asm</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>asm-util</artifactId> -->
+<!-- 					<groupId>org.ow2.asm</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>asm-tree</artifactId> -->
+<!-- 					<groupId>org.ow2.asm</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 				<exclusion> -->
+<!-- 					<artifactId>spring-web</artifactId> -->
+<!-- 					<groupId>org.springframework</groupId> -->
+<!-- 				</exclusion> -->
+<!-- 			</exclusions> -->
+<!-- 		</dependency> -->
 		<dependency>
-			<groupId>ro.isdc.wro4j</groupId>
-			<artifactId>wro4j-extensions</artifactId>
-			<version>1.7.6</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>asm</artifactId>
-					<groupId>org.ow2.asm</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>asm-analysis</artifactId>
-					<groupId>org.ow2.asm</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>asm-commons</artifactId>
-					<groupId>org.ow2.asm</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>asm-util</artifactId>
-					<groupId>org.ow2.asm</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>asm-tree</artifactId>
-					<groupId>org.ow2.asm</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>spring-web</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-			</exclusions>
+			<groupId>ch.laf</groupId>
+			<artifactId>laf-framework-integration</artifactId>
+			<version>1.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+
+		</plugins>
+	</build>
 </project>

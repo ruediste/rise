@@ -1,26 +1,21 @@
 package com.github.ruediste.laf.core.front;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jnp.interfaces.NamingContextFactory;
 import org.slf4j.Logger;
 
 import com.github.ruediste.laf.core.CoreConfiguration;
 import com.github.ruediste.laf.core.front.reload.FileChangeNotifier;
 import com.github.ruediste.laf.core.front.reload.SpaceAwareClassLoader;
+import com.github.ruediste.laf.core.persistence.DataBaseLinkRegistry;
 import com.github.ruediste.laf.util.InitializerUtil;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.google.common.base.Preconditions;
@@ -73,21 +68,6 @@ public abstract class FrontServletBase extends HttpServlet {
 
 	@Override
 	public final void init() throws ServletException {
-		System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
-				NamingContextFactory.class.getName());
-
-		InitialContext ctx;
-		try {
-			ctx = new InitialContext();
-			ctx.bind("foo", "bar");
-			assertEquals("bar", new InitialContext().lookup("foo"));
-		} catch (NamingException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		System.exit(0);
-
 		try {
 			initImpl();
 		} catch (Exception e) {
@@ -116,7 +96,11 @@ public abstract class FrontServletBase extends HttpServlet {
 	@Inject
 	Injector permanentInjector;
 
+	@Inject
+	DataBaseLinkRegistry registry;
+
 	private void initInAET() {
+		registry.initializeDataSources();
 
 		try {
 			if (fixedDynamicApplicationInstance == null) {

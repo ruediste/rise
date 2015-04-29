@@ -12,6 +12,7 @@
 		<module>laf-test-app</module>
 		<module>laf-skeleton-app</module>
 		<module>laf-sample-app</module>
+		<module>laf-framework-integration</module>
 	</modules>
 
 	<properties>
