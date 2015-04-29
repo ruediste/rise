@@ -27,6 +27,27 @@
 
 		<!-- == PERSISTENCE == -->
 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>4.1.6.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>4.1.6.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>4.1.6.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>4.1.6.RELEASE</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-jpamodelgen</artifactId>
 			<version>4.3.8.Final</version>
@@ -46,15 +67,13 @@
 			<version>2.1.4</version>
 		</dependency>
 
-		
-
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<version>1.4.184</version>
 		</dependency>
 
-		
+
 		<!-- === TESTING === -->
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
@@ -67,7 +86,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
+
 		<!-- === JETTY === -->
 		<dependency>
 			<groupId>org.eclipse.jetty.websocket</groupId>
@@ -84,8 +103,13 @@
 			<artifactId>jetty-util</artifactId>
 			<version>9.2.7.v20150116</version>
 		</dependency>
-		
+
 		<!-- === MISC === -->
+		<dependency>
+			<groupId>jboss</groupId>
+			<artifactId>jnpserver</artifactId>
+			<version>4.2.2.GA</version>
+		</dependency>
 		<dependency>
 			<groupId>com.github.ruediste.salta</groupId>
 			<artifactId>salta-jsr330</artifactId>

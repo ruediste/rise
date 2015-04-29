@@ -2,6 +2,7 @@ package com.github.ruediste.laf.integration;
 
 import java.nio.file.Paths;
 
+import javax.naming.Context;
 import javax.servlet.Servlet;
 
 import org.eclipse.jetty.server.Connector;
@@ -9,6 +10,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.jnp.interfaces.NamingContextFactory;
+import org.jnp.server.NamingBeanImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +33,17 @@ public class StandaloneLafApplication {
 
 	public void start(Class<? extends FrontServletBase> frontServletClass,
 			int port) {
+
+		try {
+			System.setProperty(Context.INITIAL_CONTEXT_FACTORY,
+					NamingContextFactory.class.getName());
+
+			// start the naming info bean
+			final NamingBeanImpl _naming = new NamingBeanImpl();
+			_naming.start();
+		} catch (Exception e) {
+			throw new RuntimeException("Error starting JNDI context", e);
+		}
 
 		try {
 			startImpl(new ServletHolder(frontServletClass), port);
