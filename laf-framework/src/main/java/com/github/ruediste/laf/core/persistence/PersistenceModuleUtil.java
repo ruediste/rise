@@ -1,7 +1,6 @@
 package com.github.ruediste.laf.core.persistence;
 
 import java.lang.annotation.Annotation;
-import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -30,10 +29,9 @@ public class PersistenceModuleUtil {
 	 *            {@link EntityManagerFactory}. Will be injected using the
 	 *            permanent injector
 	 */
-	public static void bindDataSource(
-			Binder binder,
+	public static void bindDataSource(Binder binder,
 			Class<? extends Annotation> qualifier,
-			Function<Class<? extends Annotation>, EntityManagerFactory> entityManagerFactoryProvider,
+			EntityManagerFactoryProvider entityManagerFactoryProvider,
 			DataSourceFactory dataSourceFactory) {
 		DataBaseLink link = new DataBaseLink() {
 
@@ -51,7 +49,8 @@ public class PersistenceModuleUtil {
 
 			@Override
 			public EntityManagerFactory createEntityManagerFactory() {
-				return entityManagerFactoryProvider.apply(qualifier);
+				return entityManagerFactoryProvider.createEntityManagerFactory(
+						qualifier, dataSource);
 			}
 
 			@Inject
@@ -74,7 +73,7 @@ public class PersistenceModuleUtil {
 			@PostConstruct
 			void register() {
 				// register this link
-				registry.getLinks().add(this);
+				registry.addLink(this);
 			}
 		};
 

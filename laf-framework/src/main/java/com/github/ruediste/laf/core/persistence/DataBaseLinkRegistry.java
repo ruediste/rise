@@ -1,6 +1,7 @@
 package com.github.ruediste.laf.core.persistence;
 
-import java.util.ArrayList;
+import java.lang.annotation.Annotation;
+import java.util.HashMap;
 
 import javax.inject.Singleton;
 
@@ -11,13 +12,22 @@ import javax.inject.Singleton;
 @Singleton
 public class DataBaseLinkRegistry {
 
-	final private ArrayList<DataBaseLink> links = new ArrayList<DataBaseLink>();
+	final private HashMap<Class<? extends Annotation>, DataBaseLink> links = new HashMap<>();
 
-	public ArrayList<DataBaseLink> getLinks() {
-		return links;
+	public Iterable<DataBaseLink> getLinks() {
+		return links.values();
 	}
 
 	public void initializeDataSources() {
-		links.forEach(DataBaseLink::initializeDataSource);
+		links.values().forEach(DataBaseLink::initializeDataSource);
 	}
+
+	public void addLink(DataBaseLink dataBaseLink) {
+		links.put(dataBaseLink.getQualifier(), dataBaseLink);
+	}
+
+	public DataBaseLink getLink(Class<? extends Annotation> qualifier) {
+		return links.get(qualifier);
+	}
+
 }

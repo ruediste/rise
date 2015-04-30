@@ -2,7 +2,6 @@ package com.github.ruediste.laf.core.persistence;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
-import java.util.function.Function;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
@@ -16,14 +15,8 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.slf4j.Logger;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-import com.github.ruediste.salta.jsr330.Injector;
-import com.github.ruediste.salta.standard.DependencyKey;
-
 public class EclipseLinkEntityManagerFactoryProvider implements
-		Function<Class<? extends Annotation>, EntityManagerFactory> {
-
-	@Inject
-	Injector injector;
+		EntityManagerFactoryProvider {
 
 	@Inject
 	TransactionManager txm;
@@ -32,32 +25,34 @@ public class EclipseLinkEntityManagerFactoryProvider implements
 	Logger log;
 
 	@Inject
-	TransactionProperties txp;
-
-	@Inject
 	TransactionIntegrationInfo integrationInfo;
 
+	private String persistenceUnitName;
+
+	public EclipseLinkEntityManagerFactoryProvider(String persistenceUnitName) {
+		this.persistenceUnitName = persistenceUnitName;
+	}
+
 	@Override
-	public EntityManagerFactory apply(Class<? extends Annotation> qualifier) {
-		DependencyKey<DataSource> key = DependencyKey.of(DataSource.class);
-		DataSource dataSource = injector.getInstance(qualifier == null ? key
-				: key.withAnnotations(qualifier));
+	public EntityManagerFactory createEntityManagerFactory(
+			Class<? extends Annotation> qualifier, DataSource dataSource) {
 
 		LocalContainerEntityManagerFactoryBean bean = new LocalContainerEntityManagerFactoryBean();
 		bean.setBeanClassLoader(getClass().getClassLoader());
 
-		bean.setPersistenceUnitName("sampleApp");
+		bean.setPersistenceUnitName(persistenceUnitName);
 		bean.setJtaDataSource(dataSource);
 		bean.setPersistenceProviderClass(PersistenceProvider.class);
 
 		HashMap<String, Object> props = new HashMap<>();
-		props.put(PersistenceUnitProperties.LOGGING_LEVEL,
-				SessionLog.FINE_LABEL);
+		props.put(PersistenceUnitProperties.LOGGING_LEVEL, getLogLevel());
 		props.put(PersistenceUnitProperties.WEAVING, "false");
 		props.put(PersistenceUnitProperties.TARGET_SERVER, integrationInfo
 				.getEclipseLinkExternalTransactionController().getName());
-
+		customizeProperties(props);
 		bean.setJpaPropertyMap(props);
+
+		customizeFactoryBean(bean);
 
 		try {
 			txm.begin();
@@ -77,6 +72,28 @@ public class EclipseLinkEntityManagerFactoryProvider implements
 
 		}
 		return bean.getObject();
+
+	}
+
+	/**
+	 * Hook to customize the factory bean
+	 */
+	private void customizeFactoryBean(
+			LocalContainerEntityManagerFactoryBean bean) {
+	}
+
+	/**
+	 * Hook to set the loglevel to be used
+	 */
+	protected String getLogLevel() {
+		return SessionLog.INFO_LABEL;
+	}
+
+	/**
+	 * Hook to modify the properties used to create the
+	 * {@link EntityManagerFactory}
+	 */
+	protected void customizeProperties(HashMap<String, Object> props) {
 
 	}
 }
