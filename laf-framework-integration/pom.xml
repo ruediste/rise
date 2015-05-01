@@ -9,6 +9,10 @@
 	<artifactId>laf-framework-integration</artifactId>
 	<name>laf-framework-integration</name>
 
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>ro.isdc.wro4j</groupId>
@@ -20,6 +24,7 @@
 
 	<build>
 		<plugins>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -27,52 +32,66 @@
 				<executions>
 					<execution>
 						<id>copy-dependencies</id>
-						<phase>process-resources</phase>
+						<phase>prepare-package</phase>
 						<goals>
-							<goal>copy-dependencies</goal>
+							<goal>unpack-dependencies</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${project.build.directory}/classes/com/github/ruediste/laf/integration/resources</outputDirectory>
+							<outputDirectory>${project.build.directory}/classes/com/github/ruediste/laf/integration/tmp</outputDirectory>
+							<!-- <excludeTransitive>true</excludeTransitive> -->
+							<useRepositoryLayout>true</useRepositoryLayout>
 						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.servicemix.tooling</groupId>
+				<artifactId>depends-maven-plugin</artifactId>
+				<version>1.2</version>
+				<executions>
+					<execution>
+						<phase> prepare-package </phase>
+						<goals>
+							<goal>generate-depends-file </goal>
+						</goals>
+						<configuration>
+							<outputFile>${project.build.directory}/classes/com/github/ruediste/laf/integration/dependencies.properties</outputFile>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<phase> prepare-package </phase>
+						<configuration>
+
+							<target>
+								<echo message="Appending .rsc files to all dependency files" />
+								<move
+									todir="${project.build.directory}/classes/com/github/ruediste/laf/integration/resources"
+									includeemptydirs="false">
+									<fileset
+										dir="${project.build.directory}/classes/com/github/ruediste/laf/integration/tmp">
+										<include name="**" />
+									</fileset>
+									<mapper type="glob" from="*" to="*.rsc" />
+								</move>
+							</target>
+
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-dependency-plugin
-										</artifactId>
-										<versionRange>
-											[2.10,)
-										</versionRange>
-										<goals>
-											<goal>
-												copy-dependencies
-											</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>

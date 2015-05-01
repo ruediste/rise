@@ -4,21 +4,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.TreeSet;
 
 import com.google.common.io.ByteStreams;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ResourceInfo;
 
 public class IntegrationClassLoader extends ClassLoader {
+	private static final String EXT = ".rsc";
+
+	private static final String PREFIX = "com/github/ruediste/laf/integration/resources/";
+
 	HashSet<String> notDelegated;
 
 	static {
 		registerAsParallelCapable();
 	}
 
-	HashMap<String, byte[]> byteCode = new HashMap<>();
+	HashMap<String, String> resources = new HashMap<>();
 
 	public IntegrationClassLoader(ClassLoader parent, Class<?>... notDelegated) {
 		super(parent);
@@ -28,22 +33,27 @@ public class IntegrationClassLoader extends ClassLoader {
 		}
 
 		try {
+			TreeSet<String> rootPaths = new TreeSet<>();
+			Properties deps = new Properties();
+			deps.load(getClass().getResourceAsStream("dependencies.properties"));
+			for (Entry<Object, Object> entry : deps.entrySet()) {
+				String key = (String) entry.getKey();
+				if (key.endsWith("/version")) {
+					key = key.substring(0, key.length() - "/version".length());
+					key = key.replace('.', '/');
+					key = key + "/" + entry.getValue() + "/";
+					rootPaths.add(PREFIX + key);
+				}
+			}
+
 			for (ResourceInfo resource : ClassPath.from(parent).getResources()) {
-				if (resource.getResourceName().startsWith(
-						"com/github/ruediste/laf/integration/resources")) {
-					try (ZipInputStream in = new ZipInputStream(resource.url()
-							.openStream())) {
-						ZipEntry entry = in.getNextEntry();
-						while (entry != null) {
-							if (entry.getName().endsWith(".class")) {
-								String name = entry.getName().replace('/', '.');
-								name = name.substring(0, name.length()
-										- ".class".length());
-								byte[] bytes = ByteStreams.toByteArray(in);
-								byteCode.put(name, bytes);
-							}
-							entry = in.getNextEntry();
-						}
+				String name = resource.getResourceName();
+				if (name.startsWith(PREFIX) && name.endsWith(EXT)) {
+					String root = rootPaths.floor(name);
+					if (name.startsWith(root)) {
+						String s = name.substring(root.length());
+						s = s.substring(0, s.length() - EXT.length());
+						resources.put(s, name);
 					}
 				}
 			}
@@ -75,9 +85,24 @@ public class IntegrationClassLoader extends ClassLoader {
 
 	@Override
 	protected Class<?> findClass(String name) throws ClassNotFoundException {
-		byte[] bb = byteCode.get(name);
-		if (bb != null) {
-			return defineClass(name, bb, 0, bb.length);
+		String s = name.replace('.', '/') + ".class";
+		String resource = resources.get(s);
+		if (resource != null) {
+			InputStream in = getParent().getResourceAsStream(resource);
+			if (in != null) {
+				try {
+					byte[] bb = ByteStreams.toByteArray(in);
+					return defineClass(name, bb, 0, bb.length);
+				} catch (IOException e) {
+					throw new RuntimeException("Error reading class", e);
+				} finally {
+					try {
+						in.close();
+					} catch (IOException e) {
+						throw new RuntimeException("Error closing stream", e);
+					}
+				}
+			}
 		}
 		return super.findClass(name);
 	}
