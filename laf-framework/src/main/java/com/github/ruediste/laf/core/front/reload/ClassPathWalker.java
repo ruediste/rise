@@ -12,12 +12,17 @@ import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Logger;
+
+import org.eclipse.jetty.util.ConcurrentHashSet;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Splitter;
@@ -110,22 +115,39 @@ public class ClassPathWalker {
 
 	}
 
-	ClassPathWalker() {
+	private ClassPathWalker() {
 	}
 
 	private final Set<URI> scannedUris = Sets.newHashSet();
+	private ExecutorService executor = Executors.newFixedThreadPool(10);
+	ConcurrentHashSet<Throwable> failures = new ConcurrentHashSet<>();
 
 	public static void scan(ClassLoader classloader, ClassPathVisitor visitor) {
 		ClassPathWalker walker = new ClassPathWalker();
+		walker.doScan(classloader, visitor);
+	}
+
+	private void doScan(ClassLoader classloader, ClassPathVisitor visitor) {
 		for (Map.Entry<URI, ClassLoader> entry : getClassPathEntries(
-				classloader).entrySet()) {
-			try {
-				walker.scan(entry.getKey(), entry.getValue(), visitor);
-			} catch (IOException e) {
-				throw new RuntimeException("Error while scanning "
-						+ entry.getKey());
-			}
+				classloader).entrySet())
+			executor.submit(() -> {
+				try {
+					scan(entry.getKey(), entry.getValue(), visitor);
+				} catch (IOException e) {
+					failures.add(new RuntimeException("Error while scanning "
+							+ entry.getKey(), e));
+				}
+			});
+		executor.shutdown();
+		try {
+			executor.awaitTermination(100, TimeUnit.DAYS);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
 		}
+
+		failures.forEach(t -> {
+			throw new RuntimeException("Error while scanning the classpath", t);
+		});
 	}
 
 	@VisibleForTesting
@@ -234,7 +256,13 @@ public class ClassPathWalker {
 
 		try {
 			for (URI uri : getClassPathFromManifest(file, jarFile.getManifest())) {
-				scan(uri, classloader, visitor);
+				executor.submit(() -> {
+					try {
+						scan(uri, classloader, visitor);
+					} catch (Exception e) {
+						failures.add(e);
+					}
+				});
 			}
 			Enumeration<JarEntry> entries = jarFile.entries();
 			while (entries.hasMoreElements()) {

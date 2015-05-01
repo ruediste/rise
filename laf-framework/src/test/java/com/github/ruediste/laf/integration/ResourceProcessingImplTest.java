@@ -11,14 +11,15 @@ public class ResourceProcessingImplTest {
 
 	@Before
 	public void before() {
-		processing = ResourceProcessingUtil.getProcessing();
+		processing = IntegrationClassLoader.loadAndInstantiate(
+				ResourceProcessing.class, ResourceProcessingImpl.class);
 
 	}
 
 	@Test
 	public void testMinifyCss() throws Exception {
 
-		assertEquals(".foo{color:white;}\r\n", ResourceProcessingUtil.process(
+		assertEquals(".foo{color:white;}\r\n", ResourceProcessing.process(
 				".foo {\n  color: white;\n}", processing::minifyCss));
 	}
 }

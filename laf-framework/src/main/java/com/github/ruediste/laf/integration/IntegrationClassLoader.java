@@ -1,21 +1,21 @@
 package com.github.ruediste.laf.integration;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.TreeSet;
 
+import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
-import com.google.common.reflect.ClassPath;
-import com.google.common.reflect.ClassPath.ResourceInfo;
 
 public class IntegrationClassLoader extends ClassLoader {
 	private static final String EXT = ".rsc";
-
-	private static final String PREFIX = "com/github/ruediste/laf/integration/resources/";
 
 	HashSet<String> notDelegated;
 
@@ -23,9 +23,35 @@ public class IntegrationClassLoader extends ClassLoader {
 		registerAsParallelCapable();
 	}
 
-	HashMap<String, String> resources = new HashMap<>();
+	public static <T> T loadAndInstantiate(Class<T> interfaceClass,
+			Class<? extends T> implementationClass,
+			Class<?>... notDelegatedClasses) {
 
-	public IntegrationClassLoader(ClassLoader parent, Class<?>... notDelegated) {
+		String prefix = interfaceClass.getPackage().getName().replace('.', '/');
+
+		Class<?>[] tmp = Arrays.copyOf(notDelegatedClasses,
+				notDelegatedClasses.length + 1);
+		tmp[tmp.length - 1] = implementationClass;
+
+		IntegrationClassLoader cl = new IntegrationClassLoader(Thread
+				.currentThread().getContextClassLoader(), prefix, tmp);
+
+		try {
+			return interfaceClass.cast(cl.loadClass(
+					implementationClass.getName()).newInstance());
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Map from the name a resource is available under to the name the resource
+	 * can be loaded from the parent classloader
+	 */
+	public HashMap<String, String> resources = new HashMap<>();
+
+	public IntegrationClassLoader(ClassLoader parent, String prefix,
+			Class<?>... notDelegated) {
 		super(parent);
 		this.notDelegated = new HashSet<>();
 		for (Class<?> cls : notDelegated) {
@@ -35,28 +61,41 @@ public class IntegrationClassLoader extends ClassLoader {
 		try {
 			TreeSet<String> rootPaths = new TreeSet<>();
 			Properties deps = new Properties();
-			deps.load(getClass().getResourceAsStream("dependencies.properties"));
+			{
+				String name = prefix + "/dependencies.properties";
+
+				try (InputStream in = getParent().getResourceAsStream(name)) {
+					if (in == null) {
+						throw new RuntimeException("Unable to load " + name);
+					}
+					deps.load(in);
+				}
+			}
+
 			for (Entry<Object, Object> entry : deps.entrySet()) {
 				String key = (String) entry.getKey();
 				if (key.endsWith("/version")) {
 					key = key.substring(0, key.length() - "/version".length());
 					key = key.replace('.', '/');
 					key = key + "/" + entry.getValue() + "/";
-					rootPaths.add(PREFIX + key);
+					rootPaths.add("/" + key);
 				}
 			}
 
-			for (ResourceInfo resource : ClassPath.from(parent).getResources()) {
-				String name = resource.getResourceName();
-				if (name.startsWith(PREFIX) && name.endsWith(EXT)) {
+			try (BufferedReader br = new BufferedReader(new InputStreamReader(
+					getClass().getResourceAsStream("resourceFiles.list"),
+					Charsets.UTF_8))) {
+				String name;
+				while ((name = br.readLine()) != null) {
 					String root = rootPaths.floor(name);
-					if (name.startsWith(root)) {
+					if (root != null && name.startsWith(root)) {
 						String s = name.substring(root.length());
 						s = s.substring(0, s.length() - EXT.length());
-						resources.put(s, name);
+						resources.put(s, prefix + "/resources" + name);
 					}
 				}
 			}
+
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -66,16 +105,18 @@ public class IntegrationClassLoader extends ClassLoader {
 	protected Class<?> loadClass(String name, boolean resolve)
 			throws ClassNotFoundException {
 		if (notDelegated.contains(name)) {
-			try (InputStream in = getParent().getResourceAsStream(
-					name.replace('.', '/') + ".class")) {
-				byte[] bb = ByteStreams.toByteArray(in);
-				Class<?> result = defineClass(name, bb, 0, bb.length);
-				if (resolve)
-					resolveClass(result);
-				return result;
+			synchronized (getClassLoadingLock(name)) {
+				try (InputStream in = getParent().getResourceAsStream(
+						name.replace('.', '/') + ".class")) {
+					byte[] bb = ByteStreams.toByteArray(in);
+					Class<?> result = defineClass(name, bb, 0, bb.length);
+					if (resolve)
+						resolveClass(result);
+					return result;
 
-			} catch (IOException e) {
-				throw new RuntimeException(e);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
 			}
 
 		}

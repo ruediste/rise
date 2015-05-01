@@ -3,9 +3,8 @@ package com.github.ruediste.laf.core.front.reload;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy;
 import java.util.concurrent.TimeUnit;
@@ -15,6 +14,7 @@ import java.util.jar.JarFile;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
@@ -43,8 +43,8 @@ public class ClassPathScanningStarter {
 	FileChangeNotifier fileChangeNotifier;
 
 	public void start() {
-		HashMap<String, ClassNode> classes = new HashMap<>();
-		HashSet<Path> rootDirs = new HashSet<>();
+		ConcurrentHashMap<String, ClassNode> classes = new ConcurrentHashMap<>();
+		ConcurrentHashSet<Path> rootDirs = new ConcurrentHashSet<>();
 
 		ThreadPoolExecutor executor = new ThreadPoolExecutor(0, 10, 10,
 				TimeUnit.SECONDS, new ArrayBlockingQueue<>(20),
