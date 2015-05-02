@@ -29,22 +29,20 @@ public class DbLinkTest {
 
 			@Override
 			protected void configure() throws Exception {
-				PersistenceModuleUtil
-						.bindDataSource(binder(), null,
-								new EclipseLinkEntityManagerFactoryProvider(
-										"sampleApp"),
-								new BitronixDataSourceFactory(
-										new H2DatabaseIntegrationInfo()) {
+				PersistenceModuleUtil.bindDataSource(binder(), null,
+						new EclipseLinkEntityManagerFactoryProvider(
+								"frameworkTest"),
+						new BitronixDataSourceFactory(
+								new H2DatabaseIntegrationInfo()) {
 
-									@Override
-									protected void initializeProperties(
-											Properties props) {
-										props.setProperty("URL",
-												"jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MVCC=false");
-										props.setProperty("user", "sa");
-										props.setProperty("password", "sa");
-									}
-								});
+							@Override
+							protected void initializeProperties(Properties props) {
+								props.setProperty("URL",
+										"jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MVCC=false");
+								props.setProperty("user", "sa");
+								props.setProperty("password", "sa");
+							}
+						});
 			}
 		}, new BitronixModule(), new LoggerModule());
 

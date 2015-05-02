@@ -13,6 +13,7 @@ public class TransactionProperties {
 	TransactionSynchronizationRegistry registry;
 
 	private Object isolationLevel = new Object();
+	private Object defaultIsolationLevel = new Object();
 
 	/**
 	 * Set the isolation level of the current transaction for the given data
@@ -22,13 +23,20 @@ public class TransactionProperties {
 		registry.putResource(Pair.of(isolationLevel, qualifier), level);
 	}
 
+	public void setDefaultIsolationLevel(IsolationLevel level) {
+		registry.putResource(defaultIsolationLevel, level);
+	}
+
 	/**
 	 * Get the isolation level of the current transaction
 	 * 
 	 * @return
 	 */
 	public IsolationLevel getIsolationLevel(Class<?> qualifier) {
-		return (IsolationLevel) registry.getResource(Pair.of(isolationLevel,
-				qualifier));
+		Object result = registry
+				.getResource(Pair.of(isolationLevel, qualifier));
+		if (result == null)
+			result = registry.getResource(defaultIsolationLevel);
+		return (IsolationLevel) result;
 	}
 }

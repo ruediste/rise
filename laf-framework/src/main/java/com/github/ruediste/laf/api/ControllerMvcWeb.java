@@ -39,4 +39,7 @@ public class ControllerMvcWeb<TSelf extends ControllerMvcWeb<TSelf>> implements
 		return util.path(controllerClass);
 	}
 
+	public void commit() {
+		util.commit();
+	}
 }

@@ -47,6 +47,10 @@ public class EntityManagerHolder {
 		foreachCurrentManager(EntityManager::flush);
 	}
 
+	public void closeCurrentEntityManagers() {
+		foreachCurrentManager(EntityManager::close);
+	}
+
 	public void foreachCurrentManager(Consumer<? super EntityManager> action) {
 		getCurrentManagers().forEach(action);
 	}

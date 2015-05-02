@@ -20,5 +20,4 @@ public class PermanentIntegrationModule extends AbstractModule {
 	protected void configure() {
 		install(new PermanentApplicationModule(servletConfig));
 	}
-
 }

@@ -2,7 +2,7 @@
 <persistence version="2.1"
 	xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
-	<persistence-unit name="sampleApp">
+	<persistence-unit name="frameworkTest">
 		<class>com.github.ruediste.laf.core.persistence.TestEntity</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>

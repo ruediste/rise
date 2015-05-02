@@ -9,6 +9,13 @@
 	<artifactId>laf-framework</artifactId>
 	<description>the actual web framework</description>
 	<dependencies>
+		<!-- === JavaEE APIs === -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+		
 		<!-- === MODULARIZATION === -->
 		<dependency>
 			<groupId>org.jabsaw</groupId>
@@ -110,11 +117,7 @@
 			<artifactId>salta-jsr330</artifactId>
 			<version>0.2-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>3.1.0</version>
-		</dependency>
+		
 		<dependency>
 			<groupId>com.github.ruediste</groupId>
 			<artifactId>attached-properties-4j</artifactId>
@@ -164,8 +167,14 @@
 	</dependencies>
 
 	<build>
-		<plugins>
-
-		</plugins>
+		<testResources>
+			<testResource>
+				<filtering>false</filtering>
+				<directory>src/test/java</directory>
+				<includes>
+					<include>**/*.xml</include>
+				</includes>
+			</testResource>
+		</testResources>
 	</build>
 </project>

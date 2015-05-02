@@ -7,6 +7,7 @@ import java.nio.charset.Charset;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.transaction.TransactionManager;
 
 import org.rendersnake.HtmlCanvas;
 
@@ -29,8 +30,15 @@ public class MvcWebControllerUtil {
 
 	@Inject
 	Provider<MvcWebActionPathBuilder> actionPathBuilderProvider;
+
 	@Inject
 	Provider<ActionPathBuilderKnownController<?>> actionPathBuilderKnownController;
+
+	@Inject
+	TransactionManager txm;
+
+	@Inject
+	MvcWebRequestInfo info;
 
 	public <TView extends ViewMvcWeb<?, TData>, TData> ActionResult view(
 			Class<TView> viewClass, TData data) {
@@ -65,5 +73,19 @@ public class MvcWebControllerUtil {
 			Class<T> controllerClass) {
 		return actionPathBuilderKnownController.get().initialize(
 				controllerClass);
+	}
+
+	/**
+	 * Commit the current transaction. After this method returns, the current
+	 * transaction is closed. Thus views should be created before calling this
+	 * method.
+	 */
+	public void commit() {
+		if (!info.isUpdating()) {
+			throw new RuntimeException(
+					"Cannot commit from a method not annotated with @Updating");
+		}
+
+		info.getTransactionControl().commit();
 	}
 }

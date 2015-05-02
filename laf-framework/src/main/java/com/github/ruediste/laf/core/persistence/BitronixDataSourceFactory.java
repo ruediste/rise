@@ -24,8 +24,8 @@ public abstract class BitronixDataSourceFactory implements DataSourceFactory {
 		initializeProperties(props);
 
 		PoolingDataSource btmDataSource = new PoolingDataSource();
-		btmDataSource.setUniqueName(qualifier == null ? "" : qualifier
-				.getSimpleName() + "_" + isolationLevel.name());
+		btmDataSource.setUniqueName((qualifier == null ? "" : qualifier
+				.getSimpleName()) + "_" + isolationLevel.name());
 		btmDataSource.setClassName(databaseIntegrationInfo.getDataSourceClass()
 				.getName());
 		btmDataSource.setIsolationLevel(isolationLevel.name());

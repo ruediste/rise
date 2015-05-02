@@ -19,7 +19,7 @@ public class IndexView extends PageView<TodoController, IndexData> {
 		for (TodoItem item : data().allItems) {
 			html.li()
 				.write(item.getName())
-				.a(href(url(path().delete()))).content("delete")
+				.a(href(url(path().delete(item)))).content("delete")
 			._li();
 		}
 		html._ul()

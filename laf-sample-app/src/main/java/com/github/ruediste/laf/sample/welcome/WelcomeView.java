@@ -11,6 +11,7 @@ import org.rendersnake.HtmlCanvas;
 import com.github.ruediste.laf.api.ViewMvcWeb;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetBundleOutput;
+import com.github.ruediste.laf.sample.db.TodoController;
 
 public class WelcomeView extends
 		ViewMvcWeb<WelcomeController, WelcomeController.Data> {
@@ -31,9 +32,13 @@ public class WelcomeView extends
 
 	@Override
 	public void render(HtmlCanvas html) throws IOException {
-		html.html().head().render(cssBundle(bundle.out))._head().body().h1()
-				.content("Hello Nina").a(href(url(path().other())))
-				.content("other")._body()._html();
+		//@formatter:off
+		html.html().head().render(cssBundle(bundle.out))._head()
+		.body()
+			.h1().content("Hello Nina")
+			.a(href(url(path().other()))).content("other")
+			.a(href(url(path(TodoController.class).index()))).content("Todo Items")
+		._body()._html();
 	}
 
 }

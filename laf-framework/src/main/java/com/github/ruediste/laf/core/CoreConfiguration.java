@@ -15,6 +15,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 
 import com.github.ruediste.laf.core.argumentSerializer.ArgumentSerializer;
+import com.github.ruediste.laf.core.argumentSerializer.EntityArgumentSerializer;
 import com.github.ruediste.laf.core.argumentSerializer.IntSerializer;
 import com.github.ruediste.laf.core.argumentSerializer.LongSerializer;
 import com.github.ruediste.laf.core.argumentSerializer.StringSerializer;
@@ -122,8 +123,11 @@ public class CoreConfiguration {
 				.getInstance(LongSerializer.class);
 		Supplier<ArgumentSerializer> intSerializerSupplier = () -> injector
 				.getInstance(IntSerializer.class);
-		Supplier<ArgumentSerializer> StringSerializerSupplier = () -> injector
+		Supplier<ArgumentSerializer> stringSerializerSupplier = () -> injector
 				.getInstance(StringSerializer.class);
+
+		Supplier<ArgumentSerializer> entitySerializerSupplier = () -> injector
+				.getInstance(EntityArgumentSerializer.class);
 
 	}
 
@@ -135,7 +139,9 @@ public class CoreConfiguration {
 		argumentSerializerSuppliers
 				.add(serializerSupplierRefs.intSerializerSupplier);
 		argumentSerializerSuppliers
-				.add(serializerSupplierRefs.StringSerializerSupplier);
+				.add(serializerSupplierRefs.stringSerializerSupplier);
+		argumentSerializerSuppliers
+				.add(serializerSupplierRefs.entitySerializerSupplier);
 	}
 
 	private java.util.List<ArgumentSerializer> argumentSerializers;

@@ -15,7 +15,7 @@ public class EntityManagerSet {
 	public EntityManager getOrCreateEntityManager(
 			Class<? extends Annotation> qualifier) {
 		return managers.computeIfAbsent(qualifier,
-				q -> registry.getUnit(qualifier).createEntityManager());
+				q -> registry.getUnit(qualifier).get().createEntityManager());
 	}
 
 	public Iterable<EntityManager> getManagers() {

@@ -3,6 +3,9 @@ package com.github.ruediste.laf.core.argumentSerializer;
 import java.lang.reflect.AnnotatedType;
 import java.util.function.Supplier;
 
+/**
+ * Serializers used for argument representation in URLs
+ */
 public interface ArgumentSerializer {
 
 	/**

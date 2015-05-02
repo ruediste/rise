@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import javax.annotation.PostConstruct;
 import javax.inject.Provider;
 import javax.inject.Singleton;
+import javax.servlet.http.HttpServletResponse;
 
 @Singleton
 public class MvcWebConfiguration {
@@ -40,6 +41,10 @@ public class MvcWebConfiguration {
 
 	public final LinkedList<Supplier<ChainedRequestHandler>> handlerSuppliers = new LinkedList<>();
 
+	/**
+	 * Supplier for the final request handler. Initialized with
+	 * {@link SupplierRefs#controllerInvokerSupplier}
+	 */
 	public Supplier<Runnable> finalHandlerSupplier;
 
 	public void handleRequest() {
@@ -47,9 +52,29 @@ public class MvcWebConfiguration {
 	}
 
 	public static class SupplierRefs {
+		/**
+		 * Supplier for the mapper. By default registered as
+		 * {@link MvcWebConfiguration#mapperSupplier}
+		 */
 		public Supplier<MvcWebRequestMapper> mapperSupplier;
-		public Supplier<Runnable> controllerInvokerSupplier;
+
+		/**
+		 * Handler rendering {@link MvcWebRequestInfo#getActionResult()} the the
+		 * {@link HttpServletResponse}
+		 */
 		public Supplier<ChainedRequestHandler> actionResultRendererSupplier;
+
+		/**
+		 * Handler managing transactions and persistence context.
+		 */
+		public Supplier<ChainedRequestHandler> persistenceHandlerSupplier;
+
+		/**
+		 * Instantiates the controller and invokes the action method. By default
+		 * registered as the {@link MvcWebConfiguration#finalHandlerSupplier}
+		 */
+		public Supplier<Runnable> controllerInvokerSupplier;
+
 	}
 
 	public final SupplierRefs supplierRefs = new SupplierRefs();
@@ -57,12 +82,16 @@ public class MvcWebConfiguration {
 	@PostConstruct
 	public void postConstruct(Provider<MvcWebRequestMapperImpl> mapper,
 			Provider<ControllerInvoker> invoker,
-			Provider<ActionResultRenderer> actionResultRenderer) {
+			Provider<ActionResultRenderer> actionResultRenderer,
+			Provider<MvcPersistenceHandler> persistenceHandler) {
 		supplierRefs.mapperSupplier = mapper::get;
 		this.mapperSupplier = supplierRefs.mapperSupplier;
 
 		supplierRefs.actionResultRendererSupplier = actionResultRenderer::get;
 		handlerSuppliers.add(supplierRefs.actionResultRendererSupplier);
+
+		supplierRefs.persistenceHandlerSupplier = persistenceHandler::get;
+		handlerSuppliers.add(supplierRefs.persistenceHandlerSupplier);
 
 		supplierRefs.controllerInvokerSupplier = invoker::get;
 		finalHandlerSupplier = supplierRefs.controllerInvokerSupplier;

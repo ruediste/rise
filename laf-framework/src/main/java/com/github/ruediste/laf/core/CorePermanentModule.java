@@ -10,7 +10,6 @@ import com.github.ruediste.laf.core.front.reload.DynamicSpace;
 import com.github.ruediste.laf.core.front.reload.FileChangeNotifier;
 import com.github.ruediste.laf.core.front.reload.PermanentSpace;
 import com.github.ruediste.laf.core.front.reload.SpaceAwareClassLoader;
-import com.github.ruediste.laf.core.persistence.BitronixModule;
 import com.github.ruediste.laf.util.InitializerUtil;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Provides;
@@ -28,8 +27,6 @@ public class CorePermanentModule extends AbstractModule {
 		bind(ClassHierarchyCache.class).asEagerSingleton();
 		InitializerUtil.register(config(), CorePermanentInitializer.class);
 		bind(FileChangeNotifier.class).named("classPath").in(Singleton.class);
-
-		install(new BitronixModule());
 	}
 
 	@Named("dynamic")

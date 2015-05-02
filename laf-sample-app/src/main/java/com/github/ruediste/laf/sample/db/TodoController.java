@@ -11,8 +11,9 @@ import javax.persistence.criteria.Root;
 import com.github.ruediste.laf.api.ControllerMvcWeb;
 import com.github.ruediste.laf.core.ActionResult;
 import com.github.ruediste.laf.core.CoreRequestInfo;
+import com.github.ruediste.laf.mvc.Updating;
 
-public class TodoController extends ControllerMvcWeb {
+public class TodoController extends ControllerMvcWeb<TodoController> {
 
 	static class IndexData {
 		public List<TodoItem> allItems;
@@ -35,15 +36,20 @@ public class TodoController extends ControllerMvcWeb {
 		return view(IndexView.class, data);
 	}
 
-	public ActionResult delete() {
-		return null;
+	@Updating
+	public ActionResult delete(TodoItem item) {
+		em.remove(item);
+		commit();
+		return redirect(go().index());
 	}
 
+	@Updating
 	public ActionResult add() {
 		String name = info.getRequest().getParameter("name");
 		TodoItem item = new TodoItem();
 		item.setName(name);
 		em.persist(item);
-		return redirect(null);
+		commit();
+		return redirect(go().index());
 	}
 }
