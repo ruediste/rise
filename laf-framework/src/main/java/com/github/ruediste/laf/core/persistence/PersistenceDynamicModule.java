@@ -5,6 +5,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import javax.transaction.TransactionManager;
 
+import com.github.ruediste.laf.core.persistence.em.EntityManagerCreationRule;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste.salta.jsr330.Provides;
@@ -19,6 +20,7 @@ public class PersistenceDynamicModule extends AbstractModule {
 
 	@Override
 	protected void configure() throws Exception {
+		bindCreationRule(new EntityManagerCreationRule(config().standardConfig));
 		DataBaseLinkRegistry registry = permanentInjector
 				.getInstance(DataBaseLinkRegistry.class);
 		for (DataBaseLink link : registry.getLinks()) {

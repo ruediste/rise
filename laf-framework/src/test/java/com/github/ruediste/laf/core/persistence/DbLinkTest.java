@@ -21,7 +21,7 @@ import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste.salta.jsr330.Salta;
 
-public class EclipseLinkEntityManagerFactoryProviderTest {
+public class DbLinkTest {
 
 	@Before
 	public void before() {

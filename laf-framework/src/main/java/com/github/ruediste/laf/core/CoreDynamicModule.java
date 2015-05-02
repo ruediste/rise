@@ -3,6 +3,7 @@ package com.github.ruediste.laf.core;
 import java.util.Optional;
 import java.util.function.Function;
 
+import com.github.ruediste.laf.core.persistence.PersistenceDynamicModule;
 import com.github.ruediste.laf.core.scopes.HttpScopeModule;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.laf.util.InitializerUtil;
@@ -32,21 +33,27 @@ public class CoreDynamicModule extends AbstractModule {
 	protected void configure() throws Exception {
 		InitializerUtil.register(config(), CoreDynamicInitializer.class);
 		installHttpScopeModule();
+		installPersistenceDynamicModule();
 		registerPermanentRule();
+		registerAssetBundleScopeRule();
+	}
 
-		{
-			StandardInjectorConfiguration standardConfig = config().standardConfig;
-			config().standardConfig.scope.scopeRules.add(new ScopeRule() {
+	private void installPersistenceDynamicModule() {
+		install(new PersistenceDynamicModule(permanentInjector));
+	}
 
-				@Override
-				public Scope getScope(TypeToken<?> type) {
-					if (TypeToken.of(AssetBundle.class).isAssignableFrom(type)) {
-						return standardConfig.singletonScope;
-					}
-					return null;
+	protected void registerAssetBundleScopeRule() {
+		StandardInjectorConfiguration standardConfig = config().standardConfig;
+		config().standardConfig.scope.scopeRules.add(new ScopeRule() {
+
+			@Override
+			public Scope getScope(TypeToken<?> type) {
+				if (TypeToken.of(AssetBundle.class).isAssignableFrom(type)) {
+					return standardConfig.singletonScope;
 				}
-			});
-		}
+				return null;
+			}
+		});
 	}
 
 	protected void registerPermanentRule() {

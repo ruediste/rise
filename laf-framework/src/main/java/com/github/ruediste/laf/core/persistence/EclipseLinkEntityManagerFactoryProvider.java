@@ -47,6 +47,7 @@ public class EclipseLinkEntityManagerFactoryProvider implements
 		HashMap<String, Object> props = new HashMap<>();
 		props.put(PersistenceUnitProperties.LOGGING_LEVEL, getLogLevel());
 		props.put(PersistenceUnitProperties.WEAVING, "false");
+		props.put(PersistenceUnitProperties.TRANSACTION_TYPE, "JTA");
 		props.put(PersistenceUnitProperties.TARGET_SERVER, integrationInfo
 				.getEclipseLinkExternalTransactionController().getName());
 		customizeProperties(props);
@@ -54,21 +55,26 @@ public class EclipseLinkEntityManagerFactoryProvider implements
 
 		customizeFactoryBean(bean);
 
+		boolean manageTx = false;
 		try {
-			txm.begin();
+			manageTx = txm.getTransaction() == null;
+			if (manageTx)
+				txm.begin();
 			bean.afterPropertiesSet();
-			txm.commit();
+			if (manageTx)
+				txm.commit();
 		} catch (Exception e) {
 			throw new RuntimeException(
 					"Error while creating EntityManagerFactory for "
 							+ qualifier, e);
 		} finally {
-			try {
-				if (txm.getStatus() != Status.STATUS_NO_TRANSACTION)
-					txm.rollback();
-			} catch (Exception e) {
-				log.error("Error during rollback, continuing", e);
-			}
+			if (manageTx)
+				try {
+					if (txm.getStatus() != Status.STATUS_NO_TRANSACTION)
+						txm.rollback();
+				} catch (Exception e) {
+					log.error("Error during rollback, continuing", e);
+				}
 
 		}
 		return bean.getObject();

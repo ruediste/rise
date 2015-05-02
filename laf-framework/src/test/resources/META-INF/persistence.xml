@@ -2,10 +2,9 @@
 <persistence version="2.1"
 	xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
-	<persistence-unit name="sampleApp" transaction-type="JTA">
-<!-- 		<jta-data-source>sampleApp/dataSource</jta-data-source> -->
-		<!-- <provider>org.hibernate.ejb.HibernatePersistence</provider> -->
-		<!-- <shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode> -->
+	<persistence-unit name="sampleApp">
+		<class>com.github.ruediste.laf.core.persistence.TestEntity</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
 			<property name="javax.persistence.schema-generation.database.action"
 				value="drop-and-create" />
@@ -18,13 +17,6 @@
 			<property
 				name="javax.persistence.schema-generation.create-database-schemas"
 				value="true"></property>
-			<!-- <property name="openjpa.jdbc.SynchronizeMappings" -->
-			<!-- value="buildSchema(foreignKeys=true,schemaAction='dropDB,add')" /> -->
-			<!-- <property name="hibernate.hbm2ddl.auto" value="create-drop"/> -->
-			<!-- <property name="hibernate.connection.characterEncoding" value="utf8"/> -->
-			<!-- <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5InnoDBDialect"/> -->
-			<!-- <property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/> -->
-			<!-- <property name="hibernate.show_sql" value="true"/> -->
 		</properties>
 	</persistence-unit>
 </persistence>

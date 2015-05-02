@@ -1,6 +1,7 @@
 package com.github.ruediste.laf.core.persistence.em;
 
 import java.lang.annotation.Annotation;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -16,8 +17,7 @@ public class EntityManagerHolder {
 	private final ThreadLocal<EntityManagerSet> currentSet = new ThreadLocal<>();
 
 	public EntityManager getEntityManager(Class<? extends Annotation> qualifier) {
-		return getOrCreateCurrentEntityManagerSet().getOrCreateEntityManager(
-				qualifier);
+		return getCurrentEntityManagerSet().getOrCreateEntityManager(qualifier);
 	}
 
 	public void setCurrentEntityManagerSet(EntityManagerSet set) {
@@ -32,12 +32,30 @@ public class EntityManagerHolder {
 		currentSet.remove();
 	}
 
-	public EntityManagerSet getOrCreateCurrentEntityManagerSet() {
-		EntityManagerSet result = currentSet.get();
-		if (result == null) {
-			result = setProvider.get();
-			currentSet.set(result);
-		}
-		return result;
+	/**
+	 * Set a new EntityManagerSet
+	 * 
+	 * @return the old {@link EntityManagerSet}
+	 */
+	public EntityManagerSet setNewEntityManagerSet() {
+		EntityManagerSet oldSet = currentSet.get();
+		currentSet.set(setProvider.get());
+		return oldSet;
+	}
+
+	public void flush() {
+		foreachCurrentManager(EntityManager::flush);
+	}
+
+	public void foreachCurrentManager(Consumer<? super EntityManager> action) {
+		getCurrentManagers().forEach(action);
+	}
+
+	public void joinTransaction() {
+		foreachCurrentManager(EntityManager::joinTransaction);
+	}
+
+	public Iterable<EntityManager> getCurrentManagers() {
+		return getCurrentEntityManagerSet().getManagers();
 	}
 }

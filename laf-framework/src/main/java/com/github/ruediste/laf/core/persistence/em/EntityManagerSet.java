@@ -10,11 +10,16 @@ public class EntityManagerSet {
 	@Inject
 	PersisteUnitRegistry registry;
 
-	HashMap<Class<? extends Annotation>, EntityManager> managers;
+	private HashMap<Class<? extends Annotation>, EntityManager> managers = new HashMap<>();
 
 	public EntityManager getOrCreateEntityManager(
 			Class<? extends Annotation> qualifier) {
 		return managers.computeIfAbsent(qualifier,
 				q -> registry.getUnit(qualifier).createEntityManager());
 	}
+
+	public Iterable<EntityManager> getManagers() {
+		return managers.values();
+	}
+
 }
