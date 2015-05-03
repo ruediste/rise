@@ -106,7 +106,7 @@ public class WelcomeView extends
 		    		._div()
 		    		
 		    		.div(class_("col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main"))
-						.h1(class_("page-header")).content("Hello Nina")
+						.h1(class_("page-header")).content("Hello Ninas")
 						.div(class_("row"))
 							.div(class_("col-xs-6"))
 								.a(class_("btn btn-primary").href(url(path().other()))).content("other")

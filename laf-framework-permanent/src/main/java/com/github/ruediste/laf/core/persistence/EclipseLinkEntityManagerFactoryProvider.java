@@ -36,15 +36,22 @@ public class EclipseLinkEntityManagerFactoryProvider implements
 	@Override
 	public EntityManagerFactory createEntityManagerFactory(
 			Class<? extends Annotation> qualifier, DataSource dataSource) {
+		// org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider
+		// .getEmSetupImpls().clear();
 
+		ClassLoader classLoader = Thread.currentThread()
+				.getContextClassLoader();
+		log.info("Creating EntityManagerFactory for " + qualifier + classLoader);
 		LocalContainerEntityManagerFactoryBean bean = new LocalContainerEntityManagerFactoryBean();
-		bean.setBeanClassLoader(Thread.currentThread().getContextClassLoader());
+
+		bean.setBeanClassLoader(classLoader);
 
 		bean.setPersistenceUnitName(persistenceUnitName);
 		bean.setJtaDataSource(dataSource);
 		bean.setPersistenceProviderClass(PersistenceProvider.class);
 
 		HashMap<String, Object> props = new HashMap<>();
+		props.put(PersistenceUnitProperties.CLASSLOADER, classLoader);
 		props.put(PersistenceUnitProperties.LOGGING_LEVEL, getLogLevel());
 		props.put(PersistenceUnitProperties.WEAVING, "false");
 		props.put(PersistenceUnitProperties.TRANSACTION_TYPE, "JTA");
@@ -77,7 +84,9 @@ public class EclipseLinkEntityManagerFactoryProvider implements
 				}
 
 		}
-		return bean.getObject();
+		EntityManagerFactory result = bean.getObject();
+		log.info("created " + result + " for  " + qualifier + classLoader);
+		return result;
 
 	}
 

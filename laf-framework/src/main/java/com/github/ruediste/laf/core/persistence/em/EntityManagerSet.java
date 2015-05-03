@@ -5,8 +5,14 @@ import java.util.HashMap;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+
+import org.slf4j.Logger;
 
 public class EntityManagerSet {
+	@Inject
+	Logger log;
+
 	@Inject
 	PersisteUnitRegistry registry;
 
@@ -14,8 +20,11 @@ public class EntityManagerSet {
 
 	public EntityManager getOrCreateEntityManager(
 			Class<? extends Annotation> qualifier) {
-		return managers.computeIfAbsent(qualifier,
-				q -> registry.getUnit(qualifier).get().createEntityManager());
+		return managers.computeIfAbsent(qualifier, q -> {
+			EntityManagerFactory unit = registry.getUnit(qualifier).get();
+			log.info("Creating EntityManager from " + unit);
+			return unit.createEntityManager();
+		});
 	}
 
 	public Iterable<EntityManager> getManagers() {

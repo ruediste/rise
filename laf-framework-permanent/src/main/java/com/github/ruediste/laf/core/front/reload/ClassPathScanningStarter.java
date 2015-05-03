@@ -3,6 +3,8 @@ package com.github.ruediste.laf.core.front.reload;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -14,12 +16,10 @@ import java.util.jar.JarFile;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 
-import com.github.ruediste.laf.core.CoreConfiguration;
 import com.github.ruediste.laf.core.front.reload.ClassPathWalker.ClassPathVisitResult;
 import com.github.ruediste.laf.core.front.reload.ClassPathWalker.ClassPathVisitor;
 import com.google.common.io.ByteStreams;
@@ -33,7 +33,7 @@ public class ClassPathScanningStarter {
 	Logger log;
 
 	@Inject
-	CoreConfiguration config;
+	ReloadConfiguration config;
 
 	@Inject
 	ClassChangeNotifier classChangeNotifier;
@@ -44,7 +44,8 @@ public class ClassPathScanningStarter {
 
 	public void start() {
 		ConcurrentHashMap<String, ClassNode> classes = new ConcurrentHashMap<>();
-		ConcurrentHashSet<Path> rootDirs = new ConcurrentHashSet<>();
+		Set<Path> rootDirs = Collections
+				.newSetFromMap(new ConcurrentHashMap<>());
 
 		ThreadPoolExecutor executor = new ThreadPoolExecutor(0, 10, 10,
 				TimeUnit.SECONDS, new ArrayBlockingQueue<>(20),

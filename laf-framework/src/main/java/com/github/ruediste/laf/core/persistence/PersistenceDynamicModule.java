@@ -15,6 +15,7 @@ import net.sf.cglib.proxy.Dispatcher;
 import net.sf.cglib.proxy.Enhancer;
 
 import com.github.ruediste.laf.core.persistence.em.EntityManagerHolder;
+import com.github.ruediste.laf.core.persistence.em.PersisteUnitRegistry;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste.salta.jsr330.Provides;
@@ -34,19 +35,28 @@ public class PersistenceDynamicModule extends AbstractModule {
 		DataBaseLinkRegistry registry = permanentInjector
 				.getInstance(DataBaseLinkRegistry.class);
 		for (DataBaseLink link : registry.getLinks()) {
+			Class<? extends Annotation> requiredQualifier = link.getQualifier();
 			// bind data source
-			bind(DataSource.class).annotatedWith(link.getQualifier())
+			bind(DataSource.class).annotatedWith(requiredQualifier)
 					.toProvider(() -> link.getDataSource()).in(Singleton.class);
 
-			// create EMF and bind
+			// bind EMF to registry
 			{
-				EntityManagerFactory emf = link.createEntityManagerFactory();
 				bind(EntityManagerFactory.class).annotatedWith(
-						link.getQualifier()).toProvider(() -> emf);
+						link.getQualifier()).toProvider(
+						new Provider<EntityManagerFactory>() {
+							@Inject
+							PersisteUnitRegistry registry;
+
+							@Override
+							public EntityManagerFactory get() {
+								return registry.getUnit(requiredQualifier)
+										.get();
+							}
+						});
 			}
 
-			Class<? extends Annotation> requiredQualifier = link.getQualifier();
-
+			// bind EM to proxy
 			bind(EntityManager.class).annotatedWith(requiredQualifier)
 					.toProvider(new Provider<EntityManager>() {
 						@Inject

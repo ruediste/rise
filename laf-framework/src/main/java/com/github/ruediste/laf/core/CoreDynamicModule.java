@@ -36,7 +36,6 @@ public class CoreDynamicModule extends AbstractModule {
 		installPersistenceDynamicModule();
 		registerPermanentRule();
 		registerAssetBundleScopeRule();
-
 	}
 
 	private void installPersistenceDynamicModule() {

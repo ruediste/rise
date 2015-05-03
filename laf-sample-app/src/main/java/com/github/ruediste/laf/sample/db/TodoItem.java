@@ -9,8 +9,7 @@ public class TodoItem {
 
 	@GeneratedValue
 	@Id
-	private
-	long id;
+	private long id;
 
 	private String name;
 
@@ -28,5 +27,9 @@ public class TodoItem {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public TodoItem() {
+		System.out.println("TodoItem: " + getClass().getClassLoader());
 	}
 }

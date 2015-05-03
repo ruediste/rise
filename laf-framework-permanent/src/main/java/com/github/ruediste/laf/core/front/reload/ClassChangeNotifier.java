@@ -23,7 +23,6 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 
-import com.github.ruediste.laf.core.CoreConfiguration;
 import com.github.ruediste.laf.core.front.ApplicationEventQueue;
 import com.github.ruediste.laf.core.front.reload.FileChangeNotifier.FileChangeTransaction;
 import com.github.ruediste.laf.util.Pair;
@@ -36,7 +35,7 @@ public class ClassChangeNotifier {
 	Logger log;
 
 	@Inject
-	CoreConfiguration config;
+	ReloadConfiguration config;
 
 	@Inject
 	@Named("classPath")

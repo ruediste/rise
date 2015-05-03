@@ -1,11 +1,16 @@
 package com.github.ruediste.laf.core.front;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
+import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 
 import com.github.ruediste.laf.core.CoreConfiguration;
 import com.github.ruediste.laf.core.CoreRequestInfo;
@@ -86,6 +91,13 @@ public abstract class DynamicApplicationBase implements DynamicApplication {
 	 * Called when the dynamic application is shut down
 	 */
 	protected void closeImpl() {
+		HashMap<String, EntityManagerSetupImpl> emsetupimpls = EntityManagerFactoryProvider.emSetupImpls;
+		synchronized (emsetupimpls) {
+			for (EntityManagerSetupImpl setup : new ArrayList<>(
+					emsetupimpls.values())) {
+				setup.undeploy();
+			}
+		}
 
 	}
 }

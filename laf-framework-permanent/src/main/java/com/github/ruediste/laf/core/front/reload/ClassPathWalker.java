@@ -8,10 +8,12 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -21,8 +23,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Logger;
-
-import org.eclipse.jetty.util.ConcurrentHashSet;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Splitter;
@@ -120,7 +120,8 @@ public class ClassPathWalker {
 
 	private final Set<URI> scannedUris = Sets.newHashSet();
 	private ExecutorService executor = Executors.newFixedThreadPool(10);
-	ConcurrentHashSet<Throwable> failures = new ConcurrentHashSet<>();
+	Set<Throwable> failures = Collections
+			.newSetFromMap(new ConcurrentHashMap<>());
 
 	public static void scan(ClassLoader classloader, ClassPathVisitor visitor) {
 		ClassPathWalker walker = new ClassPathWalker();

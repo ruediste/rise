@@ -11,7 +11,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 
 import com.github.ruediste.laf.core.argumentSerializer.ArgumentSerializer;
@@ -100,16 +99,6 @@ public class CoreConfiguration {
 	}
 
 	public ProjectStage projectStage;
-
-	/**
-	 * Flags to be used when calling
-	 * {@link ClassReader#accept(org.objectweb.asm.ClassVisitor, int)} for class
-	 * change notification.
-	 */
-	public int classScanningFlags = ClassReader.SKIP_CODE
-			+ ClassReader.SKIP_DEBUG;
-
-	public long fileChangeSettleDelayMs = 10;
 
 	/**
 	 * The classloader used to load the classes in the dynamic class space

@@ -58,4 +58,9 @@ public class PersisteUnitRegistry {
 								}));
 
 	}
+
+	public void closeAll() {
+		factories.values().stream()
+				.forEach(o -> o.ifPresent(emf -> emf.close()));
+	}
 }

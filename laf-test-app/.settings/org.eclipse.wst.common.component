@@ -8,16 +8,19 @@
         <dependent-module archiveName="laf-framework-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/laf-framework/laf-framework">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="salta-jsr330-0.2-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/salta-jsr330/salta-jsr330">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="salta-core-0.2-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/salta-core/salta-core">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <dependent-module archiveName="attached-properties-4j-0.0.2-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/attached-properties-4j/attached-properties-4j">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="laf-framework-integration-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/laf-framework-integration/laf-framework-integration">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="laf-framework-permanent-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/laf-framework-permanent/laf-framework-permanent">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="salta-jsr330-0.2-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/salta-jsr330/salta-jsr330">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="salta-core-0.2-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/salta-core/salta-core">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="context-root" value="laf-test-app"/>

@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 
-import com.github.ruediste.laf.core.CoreConfiguration;
 import com.github.ruediste.laf.core.front.reload.FileChangeNotifier;
 import com.github.ruediste.laf.core.front.reload.SpaceAwareClassLoader;
 import com.github.ruediste.laf.core.persistence.DataBaseLinkRegistry;
@@ -90,9 +89,6 @@ public abstract class FrontServletBase extends HttpServlet {
 	FileChangeNotifier notifier;
 
 	@Inject
-	CoreConfiguration config;
-
-	@Inject
 	@Named("dynamic")
 	Provider<SpaceAwareClassLoader> dynamicClassLoaderProvider;
 
@@ -139,6 +135,11 @@ public abstract class FrontServletBase extends HttpServlet {
 		log.info("Reloading application instance ...");
 		long startTime = System.currentTimeMillis();
 		try {
+			// close old application instance
+			if (currentApplicationInfo != null) {
+				currentApplicationInfo.application.close();
+			}
+
 			// create application instance
 			DynamicApplication instance;
 

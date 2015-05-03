@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
 
-import com.github.ruediste.laf.mvc.ActionInvocation;
 import com.google.common.base.MoreObjects;
 
 /**
@@ -17,9 +16,9 @@ import com.google.common.base.MoreObjects;
  */
 public class MethodInvocation<T> {
 	/**
-	 * When comparing two {@link ActionInvocation}s with different argument
+	 * When comparing two {@link MethodInvocation}s with different argument
 	 * representations using
-	 * {@link ActionInvocation#isCallToSameActionMethod(ActionInvocation, ParameterValueEquality)}
+	 * {@link MethodInvocation#isCallToSameMethod(MethodInvocation, ParameterValueEquality)}
 	 * , providing an implementation of this interface allows to specify a
 	 * strategy to compare the arguments.
 	 */

@@ -13,6 +13,8 @@
 		<module>laf-skeleton-app</module>
 		<module>laf-sample-app</module>
 		<module>laf-framework-integration</module>
+		<module>laf-framework-permanent</module>
+		<module>laf-framework-common</module>
 	</modules>
 
 	<properties>
