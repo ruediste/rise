@@ -3,8 +3,6 @@ package com.github.ruediste.laf.core;
 import java.util.Optional;
 import java.util.function.Function;
 
-import com.github.ruediste.laf.core.front.reload.DynamicSpace;
-import com.github.ruediste.laf.core.front.reload.SpaceCheckUtil;
 import com.github.ruediste.laf.core.persistence.PersistenceDynamicModule;
 import com.github.ruediste.laf.core.scopes.HttpScopeModule;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetBundle;
@@ -39,12 +37,6 @@ public class CoreDynamicModule extends AbstractModule {
 		registerPermanentRule();
 		registerAssetBundleScopeRule();
 
-		// addClassSpaceCheck();
-	}
-
-	protected void addClassSpaceCheck() {
-		SpaceCheckUtil.addClassSpaceCheck(DynamicSpace.class, binder(),
-				permanentInjector);
 	}
 
 	private void installPersistenceDynamicModule() {
