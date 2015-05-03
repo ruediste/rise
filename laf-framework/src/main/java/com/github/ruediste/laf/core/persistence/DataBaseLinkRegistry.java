@@ -5,11 +5,14 @@ import java.util.HashMap;
 
 import javax.inject.Singleton;
 
+import com.github.ruediste.laf.core.Permanent;
+
 /**
  * Registry holding the available {@link DataBaseLink}s. Used to register the
  * links in the dynamic injector
  */
 @Singleton
+@Permanent
 public class DataBaseLinkRegistry {
 
 	final private HashMap<Class<? extends Annotation>, DataBaseLink> links = new HashMap<>();

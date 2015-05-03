@@ -4,7 +4,7 @@ import com.github.ruediste.laf.api.ControllerMvcWeb;
 import com.github.ruediste.laf.core.ActionResult;
 import com.github.ruediste.laf.core.web.ActionPath;
 
-public class WelcomeController extends ControllerMvcWeb {
+public class WelcomeController extends ControllerMvcWeb<WelcomeController> {
 
 	static class Data {
 

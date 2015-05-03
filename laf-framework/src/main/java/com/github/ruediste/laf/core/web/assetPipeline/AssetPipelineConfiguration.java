@@ -75,7 +75,7 @@ public class AssetPipelineConfiguration {
 	/**
 	 * Prefix of the path info for assets (in the URL)
 	 */
-	public String assetPathInfoPrefix = "/assets";
+	public String assetPathInfoPrefix = "/assets/";
 
 	@Inject
 	@Permanent

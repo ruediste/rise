@@ -8,6 +8,9 @@ import java.util.Set;
 
 import com.google.common.io.ByteStreams;
 
+/**
+ * Class loader loading classes from a single class space
+ */
 public class SpaceAwareClassLoader extends ClassLoader {
 
 	private Class<?> classSpace;

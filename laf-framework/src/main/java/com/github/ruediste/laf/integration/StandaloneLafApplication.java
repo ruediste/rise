@@ -1,5 +1,6 @@
 package com.github.ruediste.laf.integration;
 
+import java.lang.reflect.Modifier;
 import java.nio.file.Paths;
 
 import javax.servlet.Servlet;
@@ -25,6 +26,10 @@ public class StandaloneLafApplication {
 	 * Start the server on port 8080
 	 */
 	public void start(Class<? extends FrontServletBase> frontServletClass) {
+		if (Modifier.isAbstract(frontServletClass.getModifiers()))
+			throw new RuntimeException(
+					"Front servlet class may not be abstact: "
+							+ frontServletClass.getName());
 		start(frontServletClass, 8080);
 	}
 

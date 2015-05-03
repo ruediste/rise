@@ -38,7 +38,7 @@ public class EclipseLinkEntityManagerFactoryProvider implements
 			Class<? extends Annotation> qualifier, DataSource dataSource) {
 
 		LocalContainerEntityManagerFactoryBean bean = new LocalContainerEntityManagerFactoryBean();
-		bean.setBeanClassLoader(getClass().getClassLoader());
+		bean.setBeanClassLoader(Thread.currentThread().getContextClassLoader());
 
 		bean.setPersistenceUnitName(persistenceUnitName);
 		bean.setJtaDataSource(dataSource);

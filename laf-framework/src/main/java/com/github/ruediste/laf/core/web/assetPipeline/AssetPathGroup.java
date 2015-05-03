@@ -1,11 +1,10 @@
 package com.github.ruediste.laf.core.web.assetPipeline;
 
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.toList;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -17,20 +16,20 @@ import java.util.stream.Stream;
  */
 public class AssetPathGroup {
 	private final AssetBundle bundle;
-	private final Set<String> paths;
+	private final List<String> paths;
 
 	public AssetPathGroup(AssetBundle bundle, String... paths) {
 		this.bundle = bundle;
-		this.paths = new HashSet<>(Arrays.asList(paths));
+		this.paths = Arrays.asList(paths);
 	}
 
 	public AssetPathGroup(AssetBundle bundle, Stream<String> paths) {
 		this.bundle = bundle;
-		this.paths = paths.collect(toSet());
+		this.paths = paths.collect(toList());
 	}
 
-	public Set<String> getPaths() {
-		return Collections.unmodifiableSet(paths);
+	public List<String> getPaths() {
+		return Collections.unmodifiableList(paths);
 	}
 
 	/**

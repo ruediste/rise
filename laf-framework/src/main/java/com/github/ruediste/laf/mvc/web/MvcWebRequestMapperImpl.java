@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import com.github.ruediste.laf.core.CoreConfiguration;
 import com.github.ruediste.laf.core.PathInfoIndex;
 import com.github.ruediste.laf.core.RequestParseResult;
+import com.github.ruediste.laf.core.RequestParser;
 import com.github.ruediste.laf.core.front.reload.ClassHierarchyCache;
 import com.github.ruediste.laf.core.httpRequest.HttpRequest;
 import com.github.ruediste.laf.core.web.ActionPathAnnotationUtil;
@@ -115,8 +116,17 @@ public class MvcWebRequestMapperImpl implements MvcWebRequestMapper {
 				if (Type.getArgumentTypes(m.desc).length == 0) {
 					// no parameters
 					for (String prefix : pathInfos.pathInfos) {
-						idx.registerPathInfo(prefix,
-								req -> result(createInvocation(cls, methodRef)));
+						idx.registerPathInfo(prefix, new RequestParser() {
+							@Override
+							public RequestParseResult parse(HttpRequest req) {
+								return result(createInvocation(cls, methodRef));
+							}
+
+							@Override
+							public String toString() {
+								return "MvcRequestParser[" + methodRef + "]";
+							};
+						});
 					}
 				} else {
 					// there are parameters

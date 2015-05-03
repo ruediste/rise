@@ -13,14 +13,12 @@ import javax.inject.Singleton;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.metamodel.ManagedType;
 
-import com.github.ruediste.laf.core.Permanent;
 import com.github.ruediste.laf.core.persistence.DataBaseLinkRegistry;
 
 @Singleton
 public class PersisteUnitRegistry {
 
 	@Inject
-	@Permanent
 	DataBaseLinkRegistry registry;
 
 	private ConcurrentHashMap<Class<? extends Annotation>, Optional<EntityManagerFactory>> factories = new ConcurrentHashMap<>();

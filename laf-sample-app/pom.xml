@@ -9,18 +9,6 @@
 	<artifactId>laf-sample-app</artifactId>
 	<description>sample application</description>
 
-	<build>
-		<resources>
-			<resource>
-				<filtering>false</filtering>
-				<directory>src/main/java</directory>
-				<includes>
-					<include>**/*.xml</include>
-				</includes>
-			</resource>
-		</resources>
-	</build>
-
 	<dependencies>
 		<dependency>
 			<groupId>ch.laf</groupId>

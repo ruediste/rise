@@ -5,14 +5,16 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import javax.inject.Singleton;
 
+import com.github.ruediste.laf.core.Permanent;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
- * Event queue to process application events, such as
- * {@link DynamicApplication} restarts etc. All events will be processed in the
- * Applicatio Event Thread (AET)
+ * Event queue to process application events, such as {@link DynamicApplication}
+ * restarts etc. All events will be processed in the Applicatio Event Thread
+ * (AET)
  */
 @Singleton
+@Permanent
 public class ApplicationEventQueue extends ScheduledThreadPoolExecutor {
 
 	private Thread queueThread;

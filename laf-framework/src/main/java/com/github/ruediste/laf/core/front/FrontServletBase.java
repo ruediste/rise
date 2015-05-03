@@ -26,6 +26,9 @@ public abstract class FrontServletBase extends HttpServlet {
 	@Inject
 	Logger log;
 
+	@Inject
+	ReloadCountHolder reloadCountHolder;
+
 	public volatile DynamicApplicationInfo currentApplicationInfo;
 
 	private DynamicApplication fixedDynamicApplicationInstance;
@@ -159,6 +162,7 @@ public abstract class FrontServletBase extends HttpServlet {
 			}
 			log.info("Reloading complete. Took "
 					+ (System.currentTimeMillis() - startTime) + "ms");
+			reloadCountHolder.increment();
 		} catch (Throwable t) {
 			log.warn("Error loading application instance", t);
 		}
