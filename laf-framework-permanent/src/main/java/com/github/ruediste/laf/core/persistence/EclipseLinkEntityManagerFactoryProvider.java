@@ -41,7 +41,7 @@ public class EclipseLinkEntityManagerFactoryProvider implements
 
 		ClassLoader classLoader = Thread.currentThread()
 				.getContextClassLoader();
-		log.info("Creating EntityManagerFactory for " + qualifier + classLoader);
+		log.info("Creating EntityManagerFactory for " + qualifier);
 		LocalContainerEntityManagerFactoryBean bean = new LocalContainerEntityManagerFactoryBean();
 
 		bean.setBeanClassLoader(classLoader);
@@ -85,7 +85,7 @@ public class EclipseLinkEntityManagerFactoryProvider implements
 
 		}
 		EntityManagerFactory result = bean.getObject();
-		log.info("created " + result + " for  " + qualifier + classLoader);
+		log.debug("created " + result + " for  " + qualifier + classLoader);
 		return result;
 
 	}

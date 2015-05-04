@@ -28,8 +28,4 @@ public class TodoItem {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public TodoItem() {
-		System.out.println("TodoItem: " + getClass().getClassLoader());
-	}
 }

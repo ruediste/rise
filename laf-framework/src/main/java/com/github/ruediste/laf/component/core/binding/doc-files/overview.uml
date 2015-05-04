@@ -1,0 +1,32 @@
+@startuml
+
+class View {
+}
+
+class Controller{
+}
+class Component{
+}
+
+class BindingGroup{
+	pullUp()
+	pushDown()
+}
+
+class Binding{
+	componentProperty: String
+	modelProperty: String
+	pullUp: Consumer<T>
+	pushDown: Consumer<T>
+}
+
+class Entity {
+}
+View -right-> Controller
+View -right-> Component
+BindingGroup .up.> "*" Component : <<weak>>
+Controller -down-> BindingGroup
+BindingGroup -down-> Entity
+Component -down-> "*" Binding: <<attached property>>
+
+@enduml

@@ -161,13 +161,9 @@ public class AssetRequestMapper {
 
 	void registerBundle(ClassNode cls) {
 		Class<?> bundleClass;
-		try {
-			bundleClass = AsmUtil.loadClass(Type.getObjectType(cls.name),
-					coreConfiguration.dynamicClassLoader);
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(
-					"Unable to load AssetBundle " + cls.name, e);
-		}
+		bundleClass = AsmUtil.loadClass(Type.getObjectType(cls.name),
+				coreConfiguration.dynamicClassLoader);
+
 		AssetBundle bundle = (AssetBundle) injector.getInstance(bundleClass);
 		bundles.add(bundle);
 	}

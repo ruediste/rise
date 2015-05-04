@@ -20,20 +20,14 @@ public class IndexView extends PageView<TodoController, IndexData> {
 
 	@Override
 	protected void renderBody(HtmlCanvas html) throws IOException {
-		log.info("" + getClass().getClassLoader());
-
-		//@formatter:off
+		// @formatter:off
 		html.h1().content("Todo Itemssss").ul();
 		for (TodoItem item : data().allItems) {
-			html.li()
-				.write(item.getName())
-				.a(href(url(path().delete(item)))).content("delete")
-			._li();
+			html.li().write(item.getName()).a(href(url(path().delete(item))))
+					.content("delete")._li();
 		}
-		html._ul()
-		.form(action(url(path().add())))
-			.input(type("text").name("name"))
-			.input(type("submit").value("add"))
-		._form();
+		html._ul().form(action(url(path().add())))
+				.input(type("text").name("name"))
+				.input(type("submit").value("add"))._form();
 	}
 }

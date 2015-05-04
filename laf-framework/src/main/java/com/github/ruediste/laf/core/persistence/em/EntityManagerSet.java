@@ -22,7 +22,7 @@ public class EntityManagerSet {
 			Class<? extends Annotation> qualifier) {
 		return managers.computeIfAbsent(qualifier, q -> {
 			EntityManagerFactory unit = registry.getUnit(qualifier).get();
-			log.info("Creating EntityManager from " + unit);
+			log.debug("Creating EntityManager from " + unit);
 			return unit.createEntityManager();
 		});
 	}

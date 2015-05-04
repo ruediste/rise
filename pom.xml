@@ -15,6 +15,7 @@
 		<module>laf-framework-integration</module>
 		<module>laf-framework-permanent</module>
 		<module>laf-framework-common</module>
+		<module>laf-framework-test</module>
 	</modules>
 
 	<properties>

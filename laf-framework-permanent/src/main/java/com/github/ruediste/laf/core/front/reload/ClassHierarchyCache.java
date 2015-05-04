@@ -1,7 +1,11 @@
 package com.github.ruediste.laf.core.front.reload;
 
+import static org.objectweb.asm.Opcodes.ASM5;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -12,9 +16,12 @@ import javax.inject.Singleton;
 
 import net.sf.cglib.asm.Type;
 
+import org.objectweb.asm.signature.SignatureReader;
+import org.objectweb.asm.signature.SignatureVisitor;
 import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 
+import com.github.ruediste.laf.core.Permanent;
 import com.github.ruediste.laf.core.front.reload.ClassChangeNotifier.ClassChangeTransaction;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
@@ -24,8 +31,47 @@ import com.google.common.collect.Iterables;
  * parsed classes.
  */
 @Singleton
-@PermanentSpace
+@Permanent
 public class ClassHierarchyCache {
+	private final class SignatureVisitorImpl extends SignatureVisitor {
+		public Map<String, String> parameterMap = new HashMap<>();
+		private List<String> parameterValuesIn;
+		int currentParameter;
+		public ArrayList<String> parameterValuesOut = new ArrayList<>();
+
+		private SignatureVisitorImpl(List<String> parameterValuesIn) {
+			super(ASM5);
+			this.parameterValuesIn = parameterValuesIn;
+		}
+
+		@Override
+		public void visitFormalTypeParameter(String name) {
+			if (currentParameter < parameterValuesIn.size())
+				parameterMap.put(name,
+						parameterValuesIn.get(currentParameter++));
+		}
+
+		@Override
+		public SignatureVisitor visitSuperclass() {
+			return new SignatureVisitor(ASM5) {
+				@Override
+				public SignatureVisitor visitTypeArgument(char wildcard) {
+					return new SignatureVisitor(ASM5) {
+						@Override
+						public void visitTypeVariable(String name) {
+							parameterValuesOut.add(parameterMap.get(name));
+						}
+
+						@Override
+						public void visitClassType(String name) {
+							parameterValuesOut.add(name);
+						}
+					};
+				}
+			};
+		}
+	}
+
 	@Inject
 	ClassChangeNotifier notifier;
 
@@ -96,6 +142,20 @@ public class ClassHierarchyCache {
 		return childMap.get(internalName);
 	}
 
+	public Set<ClassNode> getAllChildren(String internalName) {
+		HashSet<ClassNode> result = new HashSet<>();
+		getAllChildren(getNode(internalName), result);
+		return result;
+	}
+
+	private void getAllChildren(ClassNode node, HashSet<ClassNode> result) {
+		if (result.add(node)) {
+			for (ClassNode child : getChildren(node.name)) {
+				getAllChildren(child, result);
+			}
+		}
+	}
+
 	/**
 	 * Checks if a type is assignable from another
 	 */
@@ -135,4 +195,43 @@ public class ClassHierarchyCache {
 	public ClassNode getNode(Class<?> cls) {
 		return getNode(Type.getInternalName(cls));
 	}
+
+	public String resolve(String childClass, String baseClass,
+			String typeVariable) {
+		return resolve(getNode(childClass), baseClass, typeVariable);
+	}
+
+	public String resolve(ClassNode view, Class<?> clazz, String typeVariable) {
+		return resolve(view, Type.getInternalName(clazz), typeVariable);
+	}
+
+	/**
+	 * Resolve the given type variable in the base class, as it is parameterized
+	 * by the childClass
+	 */
+	public String resolve(ClassNode child, String baseClass, String typeVariable) {
+		ArrayList<String> parameterValues = new ArrayList<>();
+
+		while (true) {
+			// System.out.println(child.signature);
+			// new SignatureReader(child.signature)
+			// .accept(new PrintingSignatureVisitor(""));
+
+			SignatureVisitorImpl visitor = new SignatureVisitorImpl(
+					parameterValues);
+			if (child.signature != null) {
+				new SignatureReader(child.signature).accept(visitor);
+				parameterValues = visitor.parameterValuesOut;
+			}
+
+			if (child.name.equals(baseClass)) {
+				return visitor.parameterMap.get(typeVariable);
+			}
+			if (child.superName == null)
+				break;
+			child = getNode(child.superName);
+		}
+		return null;
+	}
+
 }
