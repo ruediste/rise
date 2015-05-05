@@ -13,9 +13,9 @@ import org.rendersnake.HtmlCanvas;
 
 import com.github.ruediste.laf.api.ViewMvcWeb;
 import com.github.ruediste.laf.core.ActionResult;
+import com.github.ruediste.laf.core.actionInvocation.InvocationActionResult;
 import com.github.ruediste.laf.core.web.ContentRenderResult;
 import com.github.ruediste.laf.core.web.RedirectRenderResult;
-import com.github.ruediste.laf.mvc.InvocationActionResult;
 import com.github.ruediste.salta.jsr330.Injector;
 
 public class MvcWebControllerUtil {
@@ -26,7 +26,7 @@ public class MvcWebControllerUtil {
 	Injector injector;
 
 	@Inject
-	ActionInvocationUtil util;
+	MvcActionInvocationUtil util;
 
 	@Inject
 	Provider<MvcWebActionPathBuilder> actionPathBuilderProvider;

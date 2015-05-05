@@ -6,13 +6,13 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.github.ruediste.laf.core.CoreConfiguration;
+import com.github.ruediste.laf.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.laf.core.httpRequest.HttpRequest;
 import com.github.ruediste.laf.core.httpRequest.HttpRequestImpl;
 import com.github.ruediste.laf.core.web.PathInfo;
-import com.github.ruediste.laf.mvc.ActionInvocation;
 
 @Singleton
-public class ActionInvocationUtil {
+public class MvcActionInvocationUtil {
 
 	@Inject
 	CoreConfiguration coreConfiguration;

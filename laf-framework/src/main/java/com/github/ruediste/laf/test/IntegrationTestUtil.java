@@ -3,8 +3,8 @@ package com.github.ruediste.laf.test;
 import javax.inject.Inject;
 
 import com.github.ruediste.laf.core.ActionResult;
-import com.github.ruediste.laf.mvc.InvocationActionResult;
-import com.github.ruediste.laf.mvc.web.ActionInvocationUtil;
+import com.github.ruediste.laf.core.actionInvocation.InvocationActionResult;
+import com.github.ruediste.laf.mvc.web.MvcActionInvocationUtil;
 import com.github.ruediste.laf.mvc.web.IControllerMvcWeb;
 import com.github.ruediste.laf.mvc.web.MvcWebRenderUtil;
 
@@ -20,7 +20,7 @@ public class IntegrationTestUtil {
 	MvcWebRenderUtil util;
 
 	@Inject
-	ActionInvocationUtil actionInvocationUtil;
+	MvcActionInvocationUtil actionInvocationUtil;
 
 	public String url(ActionResult result) {
 		return baseUrl

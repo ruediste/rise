@@ -1,4 +1,4 @@
-package com.github.ruediste.laf.mvc;
+package com.github.ruediste.laf.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -10,14 +10,14 @@ import org.junit.Test;
 import org.objectweb.asm.tree.MethodNode;
 
 import com.github.ruediste.laf.core.ActionResult;
+import com.github.ruediste.laf.core.ControllerReflectionUtil;
 import com.github.ruediste.laf.core.front.reload.ClassHierarchyCache;
-import com.github.ruediste.laf.mvc.MvcControllerReflectionUtil;
 import com.github.ruediste.laf.test.SaltaTestBase;
 
-public class MvcControllerReflectionUtilTest extends SaltaTestBase {
+public class ControllerReflectionUtilTest extends SaltaTestBase {
 
 	@Inject
-	MvcControllerReflectionUtil util;
+	ControllerReflectionUtil util;
 
 	@Inject
 	ClassHierarchyCache cache;

@@ -1,4 +1,4 @@
-package com.github.ruediste.laf.mvc;
+package com.github.ruediste.laf.core.actionInvocation;
 
 /**
  * Represent string values attached to {@link ActionInvocation}s. These values are

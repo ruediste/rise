@@ -3,7 +3,7 @@ package com.github.ruediste.laf.mvc.web;
 import java.util.function.Consumer;
 
 import com.github.ruediste.laf.core.RequestParseResult;
-import com.github.ruediste.laf.mvc.ActionInvocation;
+import com.github.ruediste.laf.core.actionInvocation.ActionInvocation;
 
 public class MvcWebRequestParseResult implements RequestParseResult {
 

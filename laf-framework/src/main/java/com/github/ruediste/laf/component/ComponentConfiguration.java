@@ -1,4 +1,4 @@
-package com.github.ruediste.laf.mvc.web;
+package com.github.ruediste.laf.component;
 
 import java.util.LinkedList;
 import java.util.function.Supplier;
@@ -9,12 +9,12 @@ import javax.inject.Singleton;
 import javax.servlet.http.HttpServletResponse;
 
 import com.github.ruediste.laf.core.ChainedRequestHandler;
-import com.github.ruediste.laf.core.CoreRequestInfo;
 import com.github.ruediste.laf.core.RequestMapper;
 import com.github.ruediste.laf.core.web.ActionResultRenderer;
+import com.github.ruediste.laf.mvc.web.MvcWebRequestInfo;
 
 @Singleton
-public class MvcWebConfiguration {
+public class ComponentConfiguration {
 
 	public Supplier<RequestMapper> mapperSupplier;
 
@@ -59,24 +59,24 @@ public class MvcWebConfiguration {
 	public static class SupplierRefs {
 		/**
 		 * Supplier for the mapper. By default registered as
-		 * {@link MvcWebConfiguration#mapperSupplier}
+		 * {@link ComponentConfiguration#mapperSupplier}
 		 */
 		public Supplier<RequestMapper> mapperSupplier;
 
 		/**
-		 * Handler rendering {@link CoreRequestInfo#getActionResult()} the the
+		 * Handler rendering {@link MvcWebRequestInfo#getActionResult()} to the
 		 * {@link HttpServletResponse}
 		 */
 		public Supplier<ChainedRequestHandler> actionResultRendererSupplier;
 
 		/**
-		 * Handler managing transactions and persistence context.
+		 * Handler creating the page, including the controller and the view
 		 */
-		public Supplier<ChainedRequestHandler> persistenceHandlerSupplier;
+		public Supplier<ChainedRequestHandler> pageCreationHandler;
 
 		/**
 		 * Instantiates the controller and invokes the action method. By default
-		 * registered as the {@link MvcWebConfiguration#finalHandlerSupplier}
+		 * registered as the {@link ComponentConfiguration#finalHandlerSupplier}
 		 */
 		public Supplier<Runnable> controllerInvokerSupplier;
 
@@ -85,20 +85,21 @@ public class MvcWebConfiguration {
 	public final SupplierRefs supplierRefs = new SupplierRefs();
 
 	@PostConstruct
-	public void postConstruct(Provider<MvcWebRequestMapperImpl> mapper,
-			Provider<MvcControllerInvoker> invoker,
+	public void postConstruct(Provider<ComponentRequestMapperImpl> mapper,
+			Provider<ComponentControllerInvoker> invoker,
 			Provider<ActionResultRenderer> actionResultRenderer,
-			Provider<MvcPersistenceHandler> persistenceHandler) {
+			Provider<PageCreationHandler> pageCreationHandler) {
 		supplierRefs.mapperSupplier = mapper::get;
 		this.mapperSupplier = supplierRefs.mapperSupplier;
 
 		supplierRefs.actionResultRendererSupplier = actionResultRenderer::get;
 		handlerSuppliers.add(supplierRefs.actionResultRendererSupplier);
 
-		supplierRefs.persistenceHandlerSupplier = persistenceHandler::get;
-		handlerSuppliers.add(supplierRefs.persistenceHandlerSupplier);
+		supplierRefs.pageCreationHandler = pageCreationHandler::get;
+		handlerSuppliers.add(supplierRefs.pageCreationHandler);
 
 		supplierRefs.controllerInvokerSupplier = invoker::get;
 		finalHandlerSupplier = supplierRefs.controllerInvokerSupplier;
 	}
+
 }

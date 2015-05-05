@@ -11,9 +11,9 @@ import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
-import com.github.ruediste.laf.mvc.ActionInvocation;
-import com.github.ruediste.laf.mvc.InvocationActionResult;
-import com.github.ruediste.laf.mvc.MvcControllerReflectionUtil;
+import com.github.ruediste.laf.core.ControllerReflectionUtil;
+import com.github.ruediste.laf.core.actionInvocation.ActionInvocation;
+import com.github.ruediste.laf.core.actionInvocation.InvocationActionResult;
 import com.github.ruediste.laf.mvc.MvcRequestInfo;
 import com.github.ruediste.laf.util.MethodInvocation;
 import com.google.common.base.Joiner;
@@ -40,7 +40,7 @@ public class MvcWebActionPathBuilderBase<TSelf extends MvcWebActionPathBuilderBa
 	MvcRequestInfo requestInfo;
 
 	@Inject
-	MvcControllerReflectionUtil util;
+	ControllerReflectionUtil util;
 
 	private InvocationActionResult invocation = new InvocationActionResult();
 

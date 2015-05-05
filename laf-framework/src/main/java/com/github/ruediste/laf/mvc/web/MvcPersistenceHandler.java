@@ -7,10 +7,11 @@ import javax.transaction.TransactionManager;
 
 import org.slf4j.Logger;
 
+import com.github.ruediste.laf.core.ChainedRequestHandler;
+import com.github.ruediste.laf.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.laf.core.persistence.TransactionProperties;
 import com.github.ruediste.laf.core.persistence.TransactionTemplate;
 import com.github.ruediste.laf.core.persistence.em.EntityManagerHolder;
-import com.github.ruediste.laf.mvc.ActionInvocation;
 import com.github.ruediste.laf.mvc.Updating;
 
 public class MvcPersistenceHandler extends ChainedRequestHandler {

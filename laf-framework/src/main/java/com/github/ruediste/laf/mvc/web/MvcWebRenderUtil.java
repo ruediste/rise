@@ -7,10 +7,10 @@ import org.rendersnake.Renderable;
 
 import com.github.ruediste.laf.core.ActionResult;
 import com.github.ruediste.laf.core.HttpService;
+import com.github.ruediste.laf.core.actionInvocation.InvocationActionResult;
 import com.github.ruediste.laf.core.web.PathInfo;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetRenderUtil;
-import com.github.ruediste.laf.mvc.InvocationActionResult;
 
 public class MvcWebRenderUtil {
 
@@ -21,7 +21,7 @@ public class MvcWebRenderUtil {
 	HttpService httpService;
 
 	@Inject
-	ActionInvocationUtil util;
+	MvcActionInvocationUtil util;
 
 	@Inject
 	AssetRenderUtil assetRenderUtil;

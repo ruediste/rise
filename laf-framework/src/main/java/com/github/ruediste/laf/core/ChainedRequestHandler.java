@@ -1,21 +1,21 @@
-package com.github.ruediste.laf.mvc.web;
+package com.github.ruediste.laf.core;
 
 import java.util.LinkedList;
 import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Provider;
-import javax.inject.Singleton;
 import javax.servlet.http.HttpServletResponse;
 
-import com.github.ruediste.laf.core.ChainedRequestHandler;
-import com.github.ruediste.laf.core.CoreRequestInfo;
-import com.github.ruediste.laf.core.RequestMapper;
 import com.github.ruediste.laf.core.web.ActionResultRenderer;
+import com.github.ruediste.laf.mvc.web.MvcControllerInvoker;
+import com.github.ruediste.laf.mvc.web.MvcPersistenceHandler;
+import com.github.ruediste.laf.mvc.web.MvcWebConfiguration;
+import com.github.ruediste.laf.mvc.web.MvcWebRequestInfo;
+import com.github.ruediste.laf.mvc.web.MvcWebRequestMapperImpl;
+import com.github.ruediste.laf.util.ChainedRunnable;
 
-@Singleton
-public class MvcWebConfiguration {
-
+public abstract class ChainedRequestHandler extends ChainedRunnable {
 	public Supplier<RequestMapper> mapperSupplier;
 
 	private RequestMapper mapper;
@@ -64,7 +64,7 @@ public class MvcWebConfiguration {
 		public Supplier<RequestMapper> mapperSupplier;
 
 		/**
-		 * Handler rendering {@link CoreRequestInfo#getActionResult()} the the
+		 * Handler rendering {@link MvcWebRequestInfo#getActionResult()} the the
 		 * {@link HttpServletResponse}
 		 */
 		public Supplier<ChainedRequestHandler> actionResultRendererSupplier;

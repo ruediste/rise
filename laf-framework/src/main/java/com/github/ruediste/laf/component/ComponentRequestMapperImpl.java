@@ -1,4 +1,4 @@
-package com.github.ruediste.laf.mvc.web;
+package com.github.ruediste.laf.component;
 
 import javax.inject.Inject;
 
@@ -7,28 +7,30 @@ import com.github.ruediste.laf.core.PathInfoIndex;
 import com.github.ruediste.laf.core.RequestMapperBase;
 import com.github.ruediste.laf.core.RequestParseResult;
 import com.github.ruediste.laf.core.actionInvocation.ActionInvocation;
+import com.github.ruediste.laf.mvc.web.MvcWebRequestParseResult;
 
 /**
  * Registers the {@link ControllerMvcWeb}s with the {@link PathInfoIndex} during
  * {@link #initialize()} and supports URL generation by providing
  * {@link #generate(ActionInvocation)}
  */
-public class MvcWebRequestMapperImpl extends RequestMapperBase {
-	@Inject
-	MvcWebRequestInfo requestInfo;
+public class ComponentRequestMapperImpl extends RequestMapperBase {
 
 	@Inject
-	MvcWebConfiguration mvcWebConfig;
+	ComponentRequestInfo requestInfo;
 
-	public MvcWebRequestMapperImpl() {
-		super(IControllerMvcWeb.class);
+	@Inject
+	ComponentConfiguration componentConfig;
+
+	public ComponentRequestMapperImpl() {
+		super(IComponentController.class);
 	}
 
 	@Override
 	protected RequestParseResult createParseResult(ActionInvocation<String> path) {
 		return new MvcWebRequestParseResult(path, actionInvocation -> {
 			requestInfo.setStringActionInvocation(actionInvocation);
-			mvcWebConfig.handleRequest();
+			componentConfig.handleRequest();
 		});
 	}
 }

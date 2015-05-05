@@ -6,12 +6,22 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.github.ruediste.laf.core.httpRequest.HttpRequest;
 import com.github.ruediste.laf.core.scopes.RequestScoped;
+import com.github.ruediste.laf.core.web.HttpRenderResult;
 
 @RequestScoped
 public class CoreRequestInfo {
 	private HttpRequest request;
 	private HttpServletRequest servletRequest;
 	private HttpServletResponse servletResponse;
+	private HttpRenderResult actionResult;
+
+	public HttpRenderResult getActionResult() {
+		return actionResult;
+	}
+
+	public void setActionResult(HttpRenderResult result) {
+		this.actionResult = result;
+	}
 
 	public HttpRequest getRequest() {
 		return request;

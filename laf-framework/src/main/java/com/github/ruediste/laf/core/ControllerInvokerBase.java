@@ -1,33 +1,42 @@
-package com.github.ruediste.laf.mvc.web;
+package com.github.ruediste.laf.core;
 
 import java.lang.reflect.InvocationTargetException;
 
 import javax.inject.Inject;
 
-import com.github.ruediste.laf.core.ActionResult;
+import com.github.ruediste.laf.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.laf.core.web.HttpRenderResult;
-import com.github.ruediste.laf.mvc.ActionInvocation;
-import com.github.ruediste.salta.jsr330.Injector;
+import com.github.ruediste.laf.mvc.web.MvcActionInvocationUtil;
+import com.github.ruediste.laf.mvc.web.MvcWebRequestInfo;
 
-public class ControllerInvoker implements Runnable {
+public abstract class ControllerInvokerBase implements Runnable {
 
 	@Inject
 	MvcWebRequestInfo info;
 
-	@Inject
-	ActionInvocationUtil util;
+	protected abstract Object getController(
+			ActionInvocation<String> stringActionInvocation);
 
 	@Inject
-	Injector injector;
+	CoreRequestInfo coreInfo;
+	@Inject
+	MvcActionInvocationUtil util;
+
+	public ControllerInvokerBase() {
+		super();
+	}
 
 	@Override
 	public void run() {
-		ActionInvocation<Object> objectInvocation = util
-				.toObjectInvocation(info.getStringActionInvocation());
+		ActionInvocation<String> stringActionInvocation = info
+				.getStringActionInvocation();
 
 		// instantiate controller
-		Object controller = injector
-				.getInstance(objectInvocation.controllerClass);
+		Object controller = getController(stringActionInvocation);
+
+		// convert String parameters to objects
+		ActionInvocation<Object> objectInvocation = util
+				.toObjectInvocation(stringActionInvocation);
 
 		// invoke controller
 		try {
@@ -36,7 +45,7 @@ public class ControllerInvoker implements Runnable {
 							controller,
 							objectInvocation.methodInvocation.getArguments()
 									.toArray());
-			info.setActionResult((HttpRenderResult) result);
+			coreInfo.setActionResult((HttpRenderResult) result);
 		} catch (IllegalAccessException | IllegalArgumentException e) {
 			throw new RuntimeException("Error calling action method "
 					+ objectInvocation.methodInvocation.getMethod(), e);

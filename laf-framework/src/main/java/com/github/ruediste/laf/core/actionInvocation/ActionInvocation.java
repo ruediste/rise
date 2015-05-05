@@ -1,4 +1,4 @@
-package com.github.ruediste.laf.mvc;
+package com.github.ruediste.laf.core.actionInvocation;
 
 import java.lang.reflect.AnnotatedType;
 import java.util.HashMap;

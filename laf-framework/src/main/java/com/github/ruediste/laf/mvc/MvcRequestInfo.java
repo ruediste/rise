@@ -1,5 +1,6 @@
 package com.github.ruediste.laf.mvc;
 
+import com.github.ruediste.laf.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.laf.core.scopes.RequestScoped;
 
 @RequestScoped

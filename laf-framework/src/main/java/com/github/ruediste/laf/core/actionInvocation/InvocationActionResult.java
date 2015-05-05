@@ -1,4 +1,4 @@
-package com.github.ruediste.laf.mvc;
+package com.github.ruediste.laf.core.actionInvocation;
 
 import com.github.ruediste.laf.core.ActionResult;
 import com.github.ruediste.laf.mvc.web.MvcWebActionPathBuilder;

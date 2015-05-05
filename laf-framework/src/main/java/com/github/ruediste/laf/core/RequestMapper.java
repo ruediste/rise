@@ -1,9 +1,9 @@
-package com.github.ruediste.laf.mvc.web;
+package com.github.ruediste.laf.core;
 
+import com.github.ruediste.laf.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.laf.core.web.PathInfo;
-import com.github.ruediste.laf.mvc.ActionInvocation;
 
-public interface MvcWebRequestMapper {
+public interface RequestMapper {
 
 	/**
 	 * Generate a HttpRequest for a given action invocation

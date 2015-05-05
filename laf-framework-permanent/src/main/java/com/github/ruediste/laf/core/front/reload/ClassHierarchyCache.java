@@ -149,8 +149,8 @@ public class ClassHierarchyCache {
 	}
 
 	private void getAllChildren(ClassNode node, HashSet<ClassNode> result) {
-		if (result.add(node)) {
-			for (ClassNode child : getChildren(node.name)) {
+		for (ClassNode child : getChildren(node.name)) {
+			if (result.add(child)) {
 				getAllChildren(child, result);
 			}
 		}
