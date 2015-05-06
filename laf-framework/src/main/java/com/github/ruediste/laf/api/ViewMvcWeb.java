@@ -8,10 +8,11 @@ import org.rendersnake.HtmlCanvas;
 import org.rendersnake.Renderable;
 
 import com.github.ruediste.laf.core.ActionResult;
+import com.github.ruediste.laf.core.actionInvocation.ActionInvocationBuilderKnownController;
 import com.github.ruediste.laf.core.web.PathInfo;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.laf.mvc.web.IControllerMvcWeb;
-import com.github.ruediste.laf.mvc.web.MvcWebRenderUtil;
+import com.github.ruediste.laf.mvc.web.MvcUtil;
 import com.google.common.reflect.TypeToken;
 
 /**
@@ -20,7 +21,7 @@ import com.google.common.reflect.TypeToken;
 public abstract class ViewMvcWeb<TController extends IControllerMvcWeb, TData> {
 
 	@Inject
-	private MvcWebRenderUtil util;
+	private MvcUtil util;
 
 	private TData data;
 
@@ -43,8 +44,21 @@ public abstract class ViewMvcWeb<TController extends IControllerMvcWeb, TData> {
 
 	abstract public void render(HtmlCanvas html) throws IOException;
 
-	public <T extends IControllerMvcWeb> T path(Class<T> controller) {
-		return util.path(controller);
+	public ActionInvocationBuilderKnownController<TController> path() {
+		return util.path(controllerClass);
+	}
+
+	public <T extends IControllerMvcWeb> ActionInvocationBuilderKnownController<T> path(
+			Class<T> controllerClass) {
+		return util.path(controllerClass);
+	}
+
+	public <T extends IControllerMvcWeb> T go(Class<T> controllerClass) {
+		return util.go(controllerClass);
+	}
+
+	public TController go() {
+		return util.go(controllerClass);
 	}
 
 	public String url(ActionResult path) {
@@ -53,10 +67,6 @@ public abstract class ViewMvcWeb<TController extends IControllerMvcWeb, TData> {
 
 	public String url(PathInfo path) {
 		return util.url(path);
-	}
-
-	public TController path() {
-		return util.path().go(controllerClass);
 	}
 
 	public Renderable jsLinks(AssetBundleOutput output) {

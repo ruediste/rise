@@ -3,16 +3,16 @@ package com.github.ruediste.laf.api;
 import javax.inject.Inject;
 
 import com.github.ruediste.laf.core.ActionResult;
-import com.github.ruediste.laf.mvc.web.ActionPathBuilderKnownController;
+import com.github.ruediste.laf.core.actionInvocation.ActionInvocationBuilderKnownController;
 import com.github.ruediste.laf.mvc.web.IControllerMvcWeb;
-import com.github.ruediste.laf.mvc.web.MvcWebControllerUtil;
+import com.github.ruediste.laf.mvc.web.MvcUtil;
 import com.google.common.reflect.TypeToken;
 
 public class ControllerMvcWeb<TSelf extends ControllerMvcWeb<TSelf>> implements
 		IControllerMvcWeb {
 
 	@Inject
-	MvcWebControllerUtil util;
+	MvcUtil util;
 	private Class<TSelf> controllerClass;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -35,7 +35,7 @@ public class ControllerMvcWeb<TSelf extends ControllerMvcWeb<TSelf>> implements
 		return util.path().go(controllerClass);
 	}
 
-	public ActionPathBuilderKnownController<TSelf> path() {
+	public ActionInvocationBuilderKnownController<TSelf> path() {
 		return util.path(controllerClass);
 	}
 

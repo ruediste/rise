@@ -6,12 +6,13 @@ import javax.inject.Inject;
 
 import org.rendersnake.HtmlCanvas;
 
+import com.github.ruediste.laf.component.ComponentUtil;
 import com.github.ruediste.laf.component.tree.Component;
 
 public class CWTemplateBase<T extends Component> implements CWTemplate<T> {
 
 	@Inject
-	CWRenderUtil util;
+	ComponentUtil util;
 
 	@Override
 	public void render(T component, HtmlCanvas html) throws IOException {
@@ -21,12 +22,12 @@ public class CWTemplateBase<T extends Component> implements CWTemplate<T> {
 	}
 
 	@Override
-	public void applyValues(T component, ApplyValuesUtil util) {
+	public void applyValues(T component) {
 
 	}
 
 	@Override
-	public void raiseEvents(T component, CWRaiseEventsUtil util) {
+	public void raiseEvents(T component) {
 
 	}
 

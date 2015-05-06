@@ -1,9 +1,10 @@
-package com.github.ruediste.laf.mvc.web;
+package com.github.ruediste.laf.core.actionInvocation;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import net.sf.cglib.proxy.Enhancer;
@@ -12,9 +13,9 @@ import net.sf.cglib.proxy.MethodProxy;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.laf.core.ControllerReflectionUtil;
-import com.github.ruediste.laf.core.actionInvocation.ActionInvocation;
-import com.github.ruediste.laf.core.actionInvocation.InvocationActionResult;
+import com.github.ruediste.laf.core.web.PathInfo;
 import com.github.ruediste.laf.mvc.MvcRequestInfo;
+import com.github.ruediste.laf.mvc.web.MvcWebConfiguration;
 import com.github.ruediste.laf.util.MethodInvocation;
 import com.google.common.base.Joiner;
 
@@ -34,7 +35,7 @@ import com.google.common.base.Joiner;
  * </pre>
  *
  */
-public class MvcWebActionPathBuilderBase<TSelf extends MvcWebActionPathBuilderBase<TSelf>> {
+public class ActionInvocationBuilderBase<TSelf extends ActionInvocationBuilderBase<TSelf>> {
 
 	@Inject
 	MvcRequestInfo requestInfo;
@@ -43,6 +44,17 @@ public class MvcWebActionPathBuilderBase<TSelf extends MvcWebActionPathBuilderBa
 	ControllerReflectionUtil util;
 
 	private InvocationActionResult invocation = new InvocationActionResult();
+
+	@PostConstruct
+	public void postConstruct(MvcWebConfiguration config) {
+		invocation.strategies = new ActionInvocationStrategies() {
+
+			@Override
+			public PathInfo generate(ActionInvocation<String> invocation) {
+				return config.mapper().generate(invocation);
+			}
+		};
+	}
 
 	@SuppressWarnings("unchecked")
 	protected TSelf self() {

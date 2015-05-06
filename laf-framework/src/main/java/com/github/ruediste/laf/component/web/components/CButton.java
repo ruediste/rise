@@ -1,5 +1,8 @@
 package com.github.ruediste.laf.component.web.components;
 
+import com.github.ruediste.laf.component.web.components.template.CButtonHtmlTemplate;
+
+@DefaultTemplate(CButtonHtmlTemplate.class)
 public class CButton extends MultiChildrenComponent<CButton> {
 	private Runnable handler;
 

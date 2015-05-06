@@ -1,7 +1,5 @@
 package com.github.ruediste.laf.component.web.components;
 
-import java.util.function.Supplier;
-
 import com.github.ruediste.laf.core.ActionResult;
 
 /**
@@ -9,16 +7,14 @@ import com.github.ruediste.laf.core.ActionResult;
  */
 public class CLink extends MultiChildrenComponent<CLink> {
 
-	private Supplier<String> destinationUrlSupplier;
-	private CWViewUtil viewUtil;
+	private ActionResult destination;
 
 	public CLink() {
-		viewUtil = InstanceFactory.getInstance(CWViewUtil.class);
 	}
 
 	public CLink(ActionResult destination) {
 		this();
-		destinationUrlSupplier = () -> viewUtil.url(destination);
+		this.destination = destination;
 	}
 
 	public CLink(String text, ActionResult destination) {
@@ -26,24 +22,12 @@ public class CLink extends MultiChildrenComponent<CLink> {
 		add(new CRender(html -> html.write(text)));
 	}
 
-	public CLink(String text, Supplier<String> destinationUrlSupplier) {
-		this();
-		this.destinationUrlSupplier = destinationUrlSupplier;
-		add(new CRender(html -> html.write(text)));
-	}
-
 	public CLink withDestination(ActionResult destination) {
-		destinationUrlSupplier = () -> viewUtil.url(destination);
+		this.destination = destination;
 		return self();
 	}
 
-	public String getDestinationUrl() {
-		return destinationUrlSupplier.get();
-	}
-
-	public CLink withDestinationUrlSupplier(
-			Supplier<String> destinationUrlSupplier) {
-		this.destinationUrlSupplier = destinationUrlSupplier;
-		return this;
+	public ActionResult getDestination() {
+		return destination;
 	}
 }

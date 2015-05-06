@@ -9,17 +9,17 @@ import javax.inject.Inject;
 import org.rendersnake.HtmlCanvas;
 
 import com.github.ruediste.laf.api.ViewMvcWeb;
-import com.github.ruediste.laf.mvc.web.MvcWebControllerUtil;
+import com.github.ruediste.laf.mvc.web.MvcUtil;
 
 public class OtherView extends ViewMvcWeb<WelcomeController, String> {
 
 	@Inject
-	MvcWebControllerUtil util;
+	MvcUtil util;
 
 	@Override
 	public void render(HtmlCanvas html) throws IOException {
 		html.html().head()._head().body().h1().content("TheOther")
-				.a(href(url(path().index()))).content("index")._body()._html();
+				.a(href(url(go().index()))).content("index")._body()._html();
 	}
 
 }

@@ -23,7 +23,7 @@ public abstract class WebTestBase {
 	}
 
 	protected <T extends IControllerMvcWeb> T path(Class<T> controllerClass) {
-		return util.path(controllerClass);
+		return util.go(controllerClass);
 	}
 
 	private AtomicBoolean started = new AtomicBoolean(false);

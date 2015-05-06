@@ -90,7 +90,7 @@ public class ComponentViewRepository {
 	/**
 	 * Create a view for the given controller
 	 */
-	public <T> CView<T> createView(T controller) {
+	public <T extends IComponentController> CView<T> createView(T controller) {
 		return createView(controller, null);
 	}
 
@@ -101,7 +101,7 @@ public class ComponentViewRepository {
 	 *            qualifier class, or null if no qualifier is set
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> CView<T> createView(T controller,
+	public <T extends IComponentController> CView<T> createView(T controller,
 			Class<? extends IViewQualifier> qualifier) {
 		Class<? extends Object> controllerClass = controller.getClass();
 		// get the list of possible views

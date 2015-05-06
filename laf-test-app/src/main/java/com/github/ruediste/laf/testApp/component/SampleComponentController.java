@@ -1,5 +1,7 @@
 package com.github.ruediste.laf.testApp.component;
 
-public class SampleComponentController {
+import com.github.ruediste.laf.component.IComponentController;
+
+public class SampleComponentController implements IComponentController {
 
 }

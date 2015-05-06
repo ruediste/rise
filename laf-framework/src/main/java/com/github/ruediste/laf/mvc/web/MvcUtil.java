@@ -3,7 +3,6 @@ package com.github.ruediste.laf.mvc.web;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -13,32 +12,67 @@ import org.rendersnake.HtmlCanvas;
 
 import com.github.ruediste.laf.api.ViewMvcWeb;
 import com.github.ruediste.laf.core.ActionResult;
+import com.github.ruediste.laf.core.CoreUtil;
+import com.github.ruediste.laf.core.HttpService;
+import com.github.ruediste.laf.core.ICoreUtil;
+import com.github.ruediste.laf.core.actionInvocation.ActionInvocationBuilder;
+import com.github.ruediste.laf.core.actionInvocation.ActionInvocationBuilderKnownController;
 import com.github.ruediste.laf.core.actionInvocation.InvocationActionResult;
 import com.github.ruediste.laf.core.web.ContentRenderResult;
+import com.github.ruediste.laf.core.web.PathInfo;
 import com.github.ruediste.laf.core.web.RedirectRenderResult;
 import com.github.ruediste.salta.jsr330.Injector;
+import com.google.common.base.Charsets;
 
-public class MvcWebControllerUtil {
+public class MvcUtil implements ICoreUtil {
 
-	private static Charset UTF8 = Charset.forName("UTF-8");
+	@Inject
+	Provider<ActionInvocationBuilder> actionPathBuilderInstance;
+
+	@Inject
+	HttpService httpService;
+
+	@Inject
+	CoreUtil coreUtil;
 
 	@Inject
 	Injector injector;
 
 	@Inject
-	MvcActionInvocationUtil util;
+	Provider<ActionInvocationBuilder> actionPathBuilderProvider;
 
 	@Inject
-	Provider<MvcWebActionPathBuilder> actionPathBuilderProvider;
-
-	@Inject
-	Provider<ActionPathBuilderKnownController<?>> actionPathBuilderKnownController;
+	Provider<ActionInvocationBuilderKnownController<?>> actionPathBuilderKnownController;
 
 	@Inject
 	TransactionManager txm;
 
 	@Inject
 	MvcWebRequestInfo info;
+
+	public <T extends IControllerMvcWeb> T go(Class<T> controllerClass) {
+		return path().go(controllerClass);
+	}
+
+	public <T extends IControllerMvcWeb> ActionInvocationBuilderKnownController<T> path(
+			Class<T> controllerClass) {
+		return actionPathBuilderKnownController.get().initialize(
+				controllerClass);
+	}
+
+	@Override
+	public String url(PathInfo path) {
+		return httpService.url(path);
+	}
+
+	public ActionInvocationBuilder path() {
+		return actionPathBuilderInstance.get();
+	}
+
+	@Override
+	public CoreUtil getCoreUtil() {
+		return coreUtil;
+	}
 
 	public <TView extends ViewMvcWeb<?, TData>, TData> ActionResult view(
 			Class<TView> viewClass, TData data) {
@@ -47,7 +81,8 @@ public class MvcWebControllerUtil {
 		view.initialize(data);
 
 		ByteArrayOutputStream stream = new ByteArrayOutputStream(1024);
-		OutputStreamWriter writer = new OutputStreamWriter(stream, UTF8);
+		OutputStreamWriter writer = new OutputStreamWriter(stream,
+				Charsets.UTF_8);
 		HtmlCanvas canvas = new HtmlCanvas(writer);
 
 		try {
@@ -62,17 +97,7 @@ public class MvcWebControllerUtil {
 
 	public ActionResult redirect(ActionResult path) {
 		return new RedirectRenderResult(
-				util.toPathInfo((InvocationActionResult) path));
-	}
-
-	public MvcWebActionPathBuilder path() {
-		return actionPathBuilderProvider.get();
-	}
-
-	public <T extends IControllerMvcWeb> ActionPathBuilderKnownController<T> path(
-			Class<T> controllerClass) {
-		return actionPathBuilderKnownController.get().initialize(
-				controllerClass);
+				coreUtil.toPathInfo((InvocationActionResult) path));
 	}
 
 	/**

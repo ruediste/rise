@@ -88,6 +88,10 @@ public class TransactionTemplate {
 
 					@Override
 					public void commit() {
+						if (!updating) {
+							throw new RuntimeException(
+									"Cannot commit non-updating transaction!");
+						}
 						try {
 							txm.commit();
 						} catch (SecurityException | IllegalStateException

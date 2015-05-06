@@ -10,8 +10,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.github.ruediste.laf.core.ActionResult;
+import com.github.ruediste.laf.core.CoreUtil;
 import com.github.ruediste.laf.core.PathInfoIndex;
 import com.github.ruediste.laf.core.RequestParser;
+import com.github.ruediste.laf.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.laf.core.actionInvocation.InvocationActionResult;
 import com.github.ruediste.laf.core.httpRequest.HttpRequest;
 import com.github.ruediste.laf.test.SaltaTestBase;
@@ -25,10 +27,10 @@ public class MvcWebRequestMapperImplTest extends SaltaTestBase {
 	PathInfoIndex idx;
 
 	@Inject
-	Provider<MvcWebActionPathBuilder> builder;
+	Provider<ActionInvocationBuilder> builder;
 
 	@Inject
-	MvcActionInvocationUtil util;
+	CoreUtil coreUtil;
 
 	static class A implements IControllerMvcWeb {
 
@@ -76,7 +78,7 @@ public class MvcWebRequestMapperImplTest extends SaltaTestBase {
 		InvocationActionResult invocation = (InvocationActionResult) actionResult;
 
 		// generate path info
-		HttpRequest req = util.toHttpRequest(invocation);
+		HttpRequest req = coreUtil.toHttpRequest(invocation);
 
 		// try to parse the generated info
 		RequestParser handler = idx.getHandler(req.getPathInfo());
@@ -85,6 +87,7 @@ public class MvcWebRequestMapperImplTest extends SaltaTestBase {
 				.parse(req);
 
 		// compare parsed result with invocation
-		assertTrue(invocation.methodInvocation.isCallToSameMethod(util.coreUtil.toObjectInvocation(result.getInvocation()).methodInvocation));
+		assertTrue(invocation.methodInvocation.isCallToSameMethod(coreUtil
+				.toObjectInvocation(result.getInvocation()).methodInvocation));
 	}
 }

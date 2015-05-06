@@ -1,5 +1,7 @@
 package com.github.ruediste.laf.mvc.web;
 
-public interface IControllerMvcWeb {
+import com.github.ruediste.laf.api.IController;
+
+public interface IControllerMvcWeb extends IController {
 
 }

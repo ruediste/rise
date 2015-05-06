@@ -6,7 +6,6 @@ import javax.inject.Inject;
 
 import com.github.ruediste.laf.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.laf.core.web.HttpRenderResult;
-import com.github.ruediste.laf.mvc.web.CoreUtil;
 import com.github.ruediste.laf.mvc.web.MvcWebRequestInfo;
 
 public abstract class ControllerInvokerBase implements Runnable {

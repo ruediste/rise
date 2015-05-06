@@ -3,10 +3,8 @@ package com.github.ruediste.laf.component;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -20,20 +18,15 @@ import com.github.ruediste.laf.component.tree.Component;
 import com.github.ruediste.laf.component.tree.ComponentTreeUtil;
 import com.github.ruediste.laf.component.web.components.template.CWTemplate;
 import com.github.ruediste.laf.core.ActionResult;
-import com.github.ruediste.laf.core.actionInvocation.ActionInvocation;
+import com.github.ruediste.laf.core.CoreRequestInfo;
+import com.github.ruediste.laf.core.CoreUtil;
+import com.github.ruediste.laf.core.ICoreUtil;
 import com.github.ruediste.laf.core.actionInvocation.InvocationActionResult;
-import com.github.ruediste.laf.core.httpRequest.HttpRequest;
-import com.github.ruediste.laf.core.httpRequest.HttpRequestImpl;
-import com.github.ruediste.laf.core.web.PathInfo;
-import com.github.ruediste.laf.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetRenderUtil;
-import com.github.ruediste.laf.mvc.web.CoreUtil;
-import com.google.common.base.CharMatcher;
 import com.google.common.base.Charsets;
-import com.google.common.base.Strings;
 
 @Singleton
-public class ComponentUtil {
+public class ComponentUtil implements ICoreUtil {
 
 	private final AttachedProperty<Component, Long> componentNr = new AttachedProperty<>();
 	private final AttachedProperty<CView<?>, Map<Long, Component>> componentIdMap = new AttachedProperty<>();
@@ -54,14 +47,8 @@ public class ComponentUtil {
 	@Inject
 	CoreUtil coreUtil;
 
-	public PathInfo toPathInfo(ActionInvocation<Object> invocation) {
-		return componentConfiguration.mapper().generate(
-				coreUtil.toStringInvocation(invocation));
-	}
-
-	public HttpRequest toHttpRequest(ActionInvocation<Object> invocation) {
-		return new HttpRequestImpl(toPathInfo(invocation));
-	}
+	@Inject
+	CoreRequestInfo coreRequestInfo;
 
 	public long pageId() {
 		return pageInfo.getPageId();
@@ -119,7 +106,8 @@ public class ComponentUtil {
 			render(rootComponent, canvas);
 			writer.close();
 		} catch (IOException e) {
-			throw new RuntimeException("Error while components view", e);
+			throw new RuntimeException("Error while rendering component view",
+					e);
 		}
 		return stream.toByteArray();
 	}
@@ -130,8 +118,22 @@ public class ComponentUtil {
 			((CWTemplate) templateIndex.getTemplate(component.getClass()))
 					.render(component, html);
 		} catch (IOException e) {
-			throw new RuntimeException("Error while components view", e);
+			throw new RuntimeException("Error while rendering component", e);
 		}
+	}
+
+	/**
+	 * Create a renderable rendering a component (including children)
+	 */
+	public Renderable component(Component component) {
+		return html -> render(component, html);
+	}
+
+	/**
+	 * Create a renderable rendering a component (including children)
+	 */
+	public Renderable components(Iterable<Component> components) {
+		return html -> components.forEach(c -> render(c, html));
 	}
 
 	/**
@@ -146,23 +148,22 @@ public class ComponentUtil {
 				+ pageId());
 	}
 
-	public Renderable jsLinks(AssetBundleOutput output) {
-		return assetRenderUtil.renderJs(coreUtil::url, output);
-	}
-
-	public Renderable cssLinks(AssetBundleOutput output) {
-		return assetRenderUtil.renderCss(coreUtil::url, output);
-	}
-
-	public String combineCssClasses(String... classes) {
-		return Arrays.asList(classes).stream()
-				.filter(x -> !Strings.isNullOrEmpty(x))
-				.map(CharMatcher.WHITESPACE::trimFrom)
-				.collect(Collectors.joining(" "));
-	}
-
 	public String url(ActionResult path) {
-		return coreUtil.url(toPathInfo((InvocationActionResult) path));
+		return coreUtil.url(coreUtil.toPathInfo((InvocationActionResult) path));
 	}
 
+	@Override
+	public CoreUtil getCoreUtil() {
+		return coreUtil;
+	}
+
+	public String getParameterValue(Component component, String key) {
+		return coreRequestInfo.getRequest()
+				.getParameter(getKey(component, key));
+	}
+
+	public boolean isParameterDefined(Component component, String key) {
+		return coreRequestInfo.getRequest().getParameterMap()
+				.containsKey(getKey(component, key));
+	}
 }

@@ -20,6 +20,7 @@ import com.github.ruediste.laf.core.web.PathInfo;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.laf.core.web.bootstrap.BootstrapBundle;
+import com.github.ruediste.laf.sample.component.SampleComponentController;
 import com.github.ruediste.laf.sample.db.TodoController;
 
 public class WelcomeView extends
@@ -109,12 +110,14 @@ public class WelcomeView extends
 						.h1(class_("page-header")).content("Hello Ninas")
 						.div(class_("row"))
 							.div(class_("col-xs-6"))
-								.a(class_("btn btn-primary").href(url(path().other()))).content("other")
+								.a(class_("btn btn-primary").href(url(go().other()))).content("other")
 							._div()
 							.div(class_("col-xs-6"))
-								.a(class_("btn btn-primary").href(url(path(TodoController.class).index()))).content("Todo Items")
+								.a(class_("btn btn-primary").href(url(go(TodoController.class).index()))).content("Todo Items")
+								.a(class_("btn btn-primary").href(
+										url(go(SampleComponentController.class).index())))
 							._div()
-						._div()
+						._div() 
 					._div()
 				._div()
 			._div()

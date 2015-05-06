@@ -9,6 +9,7 @@ import javax.validation.ConstraintViolation;
 
 import org.rendersnake.HtmlCanvas;
 
+import com.github.ruediste.laf.component.ComponentUtil;
 import com.github.ruediste.laf.component.ValidationState;
 import com.github.ruediste.laf.component.web.components.CFormGroup;
 import com.google.common.collect.Iterables;
@@ -17,7 +18,7 @@ public abstract class CFormGroupHtmlTemplate<T extends CFormGroup<T>> extends
 		CWTemplateBase<T> {
 
 	@Inject
-	CWRenderUtil util;
+	ComponentUtil util;
 
 	@Override
 	final public void render(T component, HtmlCanvas html) throws IOException {
@@ -32,7 +33,8 @@ public abstract class CFormGroupHtmlTemplate<T extends CFormGroup<T>> extends
 
 		// @formatter:off
 		html.div(class_(cls))
-				.label(class_("control-label").for_(util.getComponentId()))
+				.label(class_("control-label").for_(
+						util.getComponentId(component)))
 				.content(component.getLabel());
 		innerRender(component, html);
 		if (!component.getConstraintViolations().isEmpty()) {

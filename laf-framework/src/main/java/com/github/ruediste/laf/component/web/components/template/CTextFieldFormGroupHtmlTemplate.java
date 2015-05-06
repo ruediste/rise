@@ -8,26 +8,26 @@ import javax.inject.Inject;
 
 import org.rendersnake.HtmlCanvas;
 
-import com.github.ruediste.laf.component.web.ApplyValuesUtil;
-import com.github.ruediste.laf.component.web.CWRenderUtil;
+import com.github.ruediste.laf.component.ComponentUtil;
 import com.github.ruediste.laf.component.web.components.CTextFieldFormGroup;
 
 public class CTextFieldFormGroupHtmlTemplate extends
 		CFormGroupHtmlTemplate<CTextFieldFormGroup> {
 	@Inject
-	CWRenderUtil util;
+	ComponentUtil util;
 
 	@Override
-	public void applyValues(CTextFieldFormGroup component, ApplyValuesUtil util) {
-		component.setText(util.getValue("value"));
+	public void applyValues(CTextFieldFormGroup component) {
+		component.setText(util.getParameterValue(component, "value"));
 	}
 
 	@Override
 	public void innerRender(CTextFieldFormGroup component, HtmlCanvas html)
 			throws IOException {
 		html.input(type("text")
-				.class_(util.combineClasses("form-control", component.tag()))
-				.value(component.getText()).name(util.getKey("value"))
-				.id(util.getComponentId()));
+				.class_(util.combineCssClasses("form-control", component.tag()))
+				.value(component.getText())
+				.name(util.getKey(component, "value"))
+				.id(util.getComponentId(component)));
 	}
 }

@@ -1,5 +1,7 @@
 package com.github.ruediste.laf.component;
 
-public interface IComponentController {
+import com.github.ruediste.laf.api.IController;
+
+public interface IComponentController extends IController {
 
 }

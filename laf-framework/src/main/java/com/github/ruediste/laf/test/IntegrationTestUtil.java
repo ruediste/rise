@@ -3,10 +3,10 @@ package com.github.ruediste.laf.test;
 import javax.inject.Inject;
 
 import com.github.ruediste.laf.core.ActionResult;
+import com.github.ruediste.laf.core.CoreUtil;
 import com.github.ruediste.laf.core.actionInvocation.InvocationActionResult;
-import com.github.ruediste.laf.mvc.web.MvcActionInvocationUtil;
 import com.github.ruediste.laf.mvc.web.IControllerMvcWeb;
-import com.github.ruediste.laf.mvc.web.MvcWebRenderUtil;
+import com.github.ruediste.laf.mvc.web.MvcUtil;
 
 public class IntegrationTestUtil {
 
@@ -17,18 +17,18 @@ public class IntegrationTestUtil {
 	}
 
 	@Inject
-	MvcWebRenderUtil util;
+	MvcUtil util;
 
 	@Inject
-	MvcActionInvocationUtil actionInvocationUtil;
+	CoreUtil coreUtil;
 
 	public String url(ActionResult result) {
 		return baseUrl
-				+ actionInvocationUtil.toPathInfo(
-						(InvocationActionResult) result).getValue();
+				+ coreUtil.toPathInfo((InvocationActionResult) result)
+						.getValue();
 	}
 
-	public <T extends IControllerMvcWeb> T path(Class<T> controllerClass) {
-		return util.path(controllerClass);
+	public <T extends IControllerMvcWeb> T go(Class<T> controllerClass) {
+		return util.path(controllerClass).go();
 	}
 }

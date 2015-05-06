@@ -8,25 +8,26 @@ import javax.inject.Inject;
 
 import org.rendersnake.HtmlCanvas;
 
-import com.github.ruediste.laf.component.web.*;
+import com.github.ruediste.laf.component.ComponentUtil;
 import com.github.ruediste.laf.component.web.components.CButton;
 
 public class CButtonHtmlTemplate extends CWTemplateBase<CButton> {
 	@Inject
-	CWRenderUtil util;
+	ComponentUtil util;
 
 	@Override
 	public void render(CButton component, HtmlCanvas html) throws IOException {
-		html.button(class_(util.combineClasses("c_button", component.tag()))
+		html.button(class_(util.combineCssClasses("c_button", component.tag()))
 				.add("data-c-component-nr",
-						String.valueOf(util.getComponentNr())));
+						String.valueOf(util.getComponentNr(component))));
 		super.render(component, html);
 		html._button();
 	}
 
 	@Override
-	public void raiseEvents(CButton component, CWRaiseEventsUtil util) {
-		if (util.isDefined("clicked") && component.getHandler() != null) {
+	public void raiseEvents(CButton component) {
+		if (util.isParameterDefined(component, "clicked")
+				&& component.getHandler() != null) {
 			component.getHandler().run();
 		}
 	}

@@ -1,12 +1,14 @@
 package com.github.ruediste.laf.api;
 
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
+import com.github.ruediste.laf.component.IComponentController;
 import com.github.ruediste.laf.component.tree.Component;
 
 /**
  * Base class for view displaying {@link Component}s
  */
-public abstract class CView<TController> extends AttachedPropertyBearerBase {
+public abstract class CView<TController extends IComponentController> extends
+		AttachedPropertyBearerBase {
 
 	protected TController controller;
 	private Component rootComponent;

@@ -77,8 +77,9 @@ public class ComponentConfiguration {
 		 */
 		public Supplier<ChainedRequestHandler> pageCreationHandler;
 
-		public Supplier<ChainedRequestHandler> viewRenderer;
 		public Supplier<ChainedRequestHandler> initialPagePersistenceHandler;
+
+		public Supplier<ChainedRequestHandler> viewRenderer;
 
 		/**
 		 * Instantiates the controller and invokes the action method. By default
@@ -108,11 +109,11 @@ public class ComponentConfiguration {
 		supplierRefs.pageCreationHandler = pageCreationHandler::get;
 		handlerSuppliers.add(supplierRefs.pageCreationHandler);
 
-		supplierRefs.viewRenderer = viewRenderer::get;
-		handlerSuppliers.add(supplierRefs.viewRenderer);
-
 		supplierRefs.initialPagePersistenceHandler = initialPagePersistenceHandler::get;
 		handlerSuppliers.add(supplierRefs.initialPagePersistenceHandler);
+
+		supplierRefs.viewRenderer = viewRenderer::get;
+		handlerSuppliers.add(supplierRefs.viewRenderer);
 
 		supplierRefs.controllerInvokerSupplier = invoker::get;
 		finalHandlerSupplier = supplierRefs.controllerInvokerSupplier;

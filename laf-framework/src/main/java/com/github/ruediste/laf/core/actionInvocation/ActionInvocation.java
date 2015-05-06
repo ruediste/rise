@@ -29,8 +29,13 @@ import com.google.common.base.MoreObjects;
  */
 public class ActionInvocation<T> extends AttachedPropertyBearerBase {
 
+	/**
+	 * Parameters which will be sent to the client and back again
+	 */
 	final HashMap<ActionInvocationParameter, String> parameters = new HashMap<>();
 	public MethodInvocation<T> methodInvocation;
+
+	public ActionInvocationStrategies strategies;
 
 	@Override
 	public String toString() {
@@ -78,8 +83,9 @@ public class ActionInvocation<T> extends AttachedPropertyBearerBase {
 			BiFunction<AnnotatedType, ? super T, P> func) {
 		ActionInvocation<P> result = new ActionInvocation<>();
 		result.parameters.putAll(parameters);
-
+		result.getAttachedPropertyMap().putAll(this);
 		result.methodInvocation = methodInvocation.map(func);
+		result.strategies = strategies;
 		return result;
 	}
 }

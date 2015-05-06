@@ -20,7 +20,7 @@ public class MvcWebConfiguration {
 
 	private RequestMapper mapper;
 
-	RequestMapper mapper() {
+	public RequestMapper mapper() {
 		return mapper;
 	}
 
