@@ -8,6 +8,7 @@ import javax.transaction.TransactionManager;
 import org.slf4j.Logger;
 
 import com.github.ruediste.laf.core.ChainedRequestHandler;
+import com.github.ruediste.laf.core.CoreRequestInfo;
 import com.github.ruediste.laf.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.laf.core.persistence.TransactionProperties;
 import com.github.ruediste.laf.core.persistence.TransactionTemplate;
@@ -29,6 +30,9 @@ public class MvcPersistenceHandler extends ChainedRequestHandler {
 	MvcWebRequestInfo info;
 
 	@Inject
+	CoreRequestInfo coreRequestInfo;
+
+	@Inject
 	TransactionProperties transactionProperties;
 
 	@Inject
@@ -37,7 +41,8 @@ public class MvcPersistenceHandler extends ChainedRequestHandler {
 	@Override
 	public void run(Runnable next) {
 		// determine transaction isolation
-		ActionInvocation<String> invocation = info.getStringActionInvocation();
+		ActionInvocation<String> invocation = coreRequestInfo
+				.getStringActionInvocation();
 		Method method = invocation.methodInvocation.getMethod();
 		boolean updating = method.isAnnotationPresent(Updating.class);
 		log.debug("updating = {} for method {}", updating, method);

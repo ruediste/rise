@@ -44,6 +44,9 @@ public class ComponentViewRepository {
 		public String viewClassInternalName;
 	}
 
+	public ComponentViewRepository() {
+	}
+
 	@PostConstruct
 	public void initialize() {
 		// iterate over all views
@@ -75,12 +78,11 @@ public class ComponentViewRepository {
 					Pair.of(controllerClass, qualifier), entry);
 
 			if (existing != null) {
-				throw new RuntimeException(
-						"Two views found for controller " + controllerClass
-								+ " and qualifier " + qualifier == null ? "null"
-								: qualifier + ": "
-										+ entry.viewClassInternalName + ", "
-										+ existing.viewClassInternalName);
+				throw new RuntimeException("Two views found for controller "
+						+ controllerClass + " and qualifier "
+						+ (qualifier == null ? "null" : qualifier) + ": "
+						+ entry.viewClassInternalName + ", "
+						+ existing.viewClassInternalName);
 			}
 			log.info("found view " + view.name + " with qualifier " + qualifier
 					+ " for controller " + controllerClass);

@@ -1,14 +1,17 @@
 package com.github.ruediste.laf.mvc.web;
 
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletResponse;
 
 import com.github.ruediste.laf.core.ChainedRequestHandler;
+import com.github.ruediste.laf.core.CoreConfiguration;
 import com.github.ruediste.laf.core.CoreRequestInfo;
 import com.github.ruediste.laf.core.RequestMapper;
 import com.github.ruediste.laf.core.web.ActionResultRenderer;
@@ -26,9 +29,22 @@ public class MvcWebConfiguration {
 
 	private ChainedRequestHandler handler;
 
+	@Inject
+	private CoreConfiguration coreConfiguration;
+
 	public void initialize() {
 		mapper = mapperSupplier.get();
 		mapper.initialize();
+
+		coreConfiguration.actionInvocationToPathInfoMappingFunctions
+				.add(invocation -> {
+					if (IControllerMvcWeb.class
+							.isAssignableFrom(invocation.methodInvocation
+									.getInstanceClass()))
+						return Optional.of(mapper.generate(invocation));
+					else
+						return Optional.empty();
+				});
 
 		ChainedRequestHandler last = null;
 		for (Supplier<ChainedRequestHandler> supplier : handlerSuppliers) {

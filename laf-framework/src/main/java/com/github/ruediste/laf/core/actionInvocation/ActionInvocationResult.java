@@ -7,7 +7,7 @@ import com.github.ruediste.laf.core.ActionResult;
  * {@link ActionInvocationBuilder} to create {@link ActionInvocation}s, instances of
  * this class is used to represent the result.
  */
-public class InvocationActionResult extends ActionInvocation<Object> implements
+public class ActionInvocationResult extends ActionInvocation<Object> implements
 		ActionResult {
 
 }

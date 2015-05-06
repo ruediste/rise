@@ -4,7 +4,7 @@ import javax.inject.Inject;
 
 import com.github.ruediste.laf.core.ActionResult;
 import com.github.ruediste.laf.core.CoreUtil;
-import com.github.ruediste.laf.core.actionInvocation.InvocationActionResult;
+import com.github.ruediste.laf.core.actionInvocation.ActionInvocationResult;
 import com.github.ruediste.laf.mvc.web.IControllerMvcWeb;
 import com.github.ruediste.laf.mvc.web.MvcUtil;
 
@@ -24,7 +24,7 @@ public class IntegrationTestUtil {
 
 	public String url(ActionResult result) {
 		return baseUrl
-				+ coreUtil.toPathInfo((InvocationActionResult) result)
+				+ coreUtil.toPathInfo((ActionInvocationResult) result)
 						.getValue();
 	}
 

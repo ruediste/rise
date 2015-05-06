@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import net.sf.cglib.proxy.Enhancer;
@@ -13,9 +12,6 @@ import net.sf.cglib.proxy.MethodProxy;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.laf.core.ControllerReflectionUtil;
-import com.github.ruediste.laf.core.web.PathInfo;
-import com.github.ruediste.laf.mvc.MvcRequestInfo;
-import com.github.ruediste.laf.mvc.web.MvcWebConfiguration;
 import com.github.ruediste.laf.util.MethodInvocation;
 import com.google.common.base.Joiner;
 
@@ -38,23 +34,9 @@ import com.google.common.base.Joiner;
 public class ActionInvocationBuilderBase<TSelf extends ActionInvocationBuilderBase<TSelf>> {
 
 	@Inject
-	MvcRequestInfo requestInfo;
-
-	@Inject
 	ControllerReflectionUtil util;
 
-	private InvocationActionResult invocation = new InvocationActionResult();
-
-	@PostConstruct
-	public void postConstruct(MvcWebConfiguration config) {
-		invocation.strategies = new ActionInvocationStrategies() {
-
-			@Override
-			public PathInfo generate(ActionInvocation<String> invocation) {
-				return config.mapper().generate(invocation);
-			}
-		};
-	}
+	private ActionInvocationResult invocation = new ActionInvocationResult();
 
 	@SuppressWarnings("unchecked")
 	protected TSelf self() {
@@ -75,7 +57,7 @@ public class ActionInvocationBuilderBase<TSelf extends ActionInvocationBuilderBa
 	 * An instance of the supplied controllerClass is returned.
 	 */
 	public <T> T go(Class<T> controllerClass) {
-		return createActionPath(controllerClass, invocation);
+		return createActionPath(controllerClass);
 	}
 
 	/**
@@ -84,7 +66,7 @@ public class ActionInvocationBuilderBase<TSelf extends ActionInvocationBuilderBa
 	 * is appended to the path.
 	 */
 	protected @SuppressWarnings("unchecked") <T> T createActionPath(
-			final Class<T> controllerClass, final InvocationActionResult path) {
+			final Class<T> controllerClass) {
 		Enhancer enhancer = new Enhancer();
 		enhancer.setSuperclass(controllerClass);
 
@@ -115,8 +97,8 @@ public class ActionInvocationBuilderBase<TSelf extends ActionInvocationBuilderBa
 				MethodInvocation<Object> methodInvocation = new MethodInvocation<>(
 						controllerClass, thisMethod);
 				methodInvocation.getArguments().addAll(Arrays.asList(args));
-				path.methodInvocation = methodInvocation;
-				return path;
+				invocation.methodInvocation = methodInvocation;
+				return invocation;
 			}
 		});
 

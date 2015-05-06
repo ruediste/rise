@@ -17,11 +17,9 @@ import com.github.ruediste.laf.api.CView;
 import com.github.ruediste.laf.component.tree.Component;
 import com.github.ruediste.laf.component.tree.ComponentTreeUtil;
 import com.github.ruediste.laf.component.web.components.template.CWTemplate;
-import com.github.ruediste.laf.core.ActionResult;
 import com.github.ruediste.laf.core.CoreRequestInfo;
 import com.github.ruediste.laf.core.CoreUtil;
 import com.github.ruediste.laf.core.ICoreUtil;
-import com.github.ruediste.laf.core.actionInvocation.InvocationActionResult;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetRenderUtil;
 import com.google.common.base.Charsets;
 
@@ -146,10 +144,6 @@ public class ComponentUtil implements ICoreUtil {
 	public String getReloadUrl() {
 		return coreUtil.url(componentConfiguration.getReloadPath() + "/"
 				+ pageId());
-	}
-
-	public String url(ActionResult path) {
-		return coreUtil.url(coreUtil.toPathInfo((InvocationActionResult) path));
 	}
 
 	@Override

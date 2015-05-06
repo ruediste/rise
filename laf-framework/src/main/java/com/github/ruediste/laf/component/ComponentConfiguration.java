@@ -1,16 +1,19 @@
 package com.github.ruediste.laf.component;
 
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletResponse;
 
 import com.github.ruediste.laf.api.CView;
 import com.github.ruediste.laf.core.ChainedRequestHandler;
+import com.github.ruediste.laf.core.CoreConfiguration;
 import com.github.ruediste.laf.core.RequestMapper;
 import com.github.ruediste.laf.core.web.ActionResultRenderer;
 import com.github.ruediste.laf.mvc.web.MvcWebRequestInfo;
@@ -28,10 +31,22 @@ public class ComponentConfiguration {
 
 	private ChainedRequestHandler handler;
 
+	@Inject
+	private CoreConfiguration coreConfiguration;
+
 	public void initialize() {
 		mapper = mapperSupplier.get();
 		mapper.initialize();
 		viewFactory = viewFactorySupplier.get();
+		coreConfiguration.actionInvocationToPathInfoMappingFunctions
+				.add(invocation -> {
+					if (IComponentController.class
+							.isAssignableFrom(invocation.methodInvocation
+									.getInstanceClass()))
+						return Optional.of(mapper.generate(invocation));
+					else
+						return Optional.empty();
+				});
 
 		ChainedRequestHandler last = null;
 		for (Supplier<ChainedRequestHandler> supplier : handlerSuppliers) {

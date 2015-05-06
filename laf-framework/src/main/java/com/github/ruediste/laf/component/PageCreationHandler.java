@@ -4,6 +4,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.github.ruediste.laf.core.ChainedRequestHandler;
+import com.github.ruediste.laf.core.CoreRequestInfo;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste.salta.standard.util.SimpleProxyScopeHandler;
 
@@ -20,7 +21,7 @@ public class PageCreationHandler extends ChainedRequestHandler {
 	ComponentSessionInfo sessionInfo;
 
 	@Inject
-	ComponentRequestInfo coreRequestInfo;
+	CoreRequestInfo coreRequestInfo;
 
 	@Inject
 	Injector injector;

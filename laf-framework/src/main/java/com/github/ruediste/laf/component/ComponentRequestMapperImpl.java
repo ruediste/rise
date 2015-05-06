@@ -3,6 +3,7 @@ package com.github.ruediste.laf.component;
 import javax.inject.Inject;
 
 import com.github.ruediste.laf.api.ControllerMvcWeb;
+import com.github.ruediste.laf.core.CoreRequestInfo;
 import com.github.ruediste.laf.core.PathInfoIndex;
 import com.github.ruediste.laf.core.RequestMapperBase;
 import com.github.ruediste.laf.core.RequestParseResult;
@@ -17,7 +18,7 @@ import com.github.ruediste.laf.mvc.web.MvcWebRequestParseResult;
 public class ComponentRequestMapperImpl extends RequestMapperBase {
 
 	@Inject
-	ComponentRequestInfo requestInfo;
+	CoreRequestInfo requestInfo;
 
 	@Inject
 	ComponentConfiguration componentConfig;

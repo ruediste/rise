@@ -2,12 +2,12 @@ package com.github.ruediste.laf.core;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 
 import com.google.common.base.CaseFormat;
-import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;

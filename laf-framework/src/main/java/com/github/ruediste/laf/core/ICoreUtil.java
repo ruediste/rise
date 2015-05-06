@@ -4,7 +4,10 @@ import java.util.function.Supplier;
 
 import org.rendersnake.Renderable;
 
+import com.github.ruediste.laf.api.IController;
 import com.github.ruediste.laf.core.actionInvocation.ActionInvocation;
+import com.github.ruediste.laf.core.actionInvocation.ActionInvocationBuilder;
+import com.github.ruediste.laf.core.actionInvocation.ActionInvocationBuilderKnownController;
 import com.github.ruediste.laf.core.httpRequest.HttpRequest;
 import com.github.ruediste.laf.core.web.PathInfo;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetBundleOutput;
@@ -60,4 +63,16 @@ public interface ICoreUtil {
 		return getCoreUtil().combineCssClasses(classes);
 	}
 
+	default <T extends IController> T go(Class<T> controllerClass) {
+		return getCoreUtil().go(controllerClass);
+	}
+
+	default <T extends IController> ActionInvocationBuilderKnownController<T> path(
+			Class<T> controllerClass) {
+		return getCoreUtil().path(controllerClass);
+	}
+
+	default ActionInvocationBuilder path() {
+		return getCoreUtil().path();
+	}
 }

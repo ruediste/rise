@@ -1,5 +1,6 @@
 package com.github.ruediste.laf.api;
 
+import com.github.ruediste.laf.component.ComponentDynamicModule;
 import com.github.ruediste.laf.core.CoreDynamicModule;
 import com.github.ruediste.laf.core.front.LoggerModule;
 import com.github.ruediste.laf.mvc.web.MvcWebDynamicModule;
@@ -18,9 +19,14 @@ public class DynamicApplicationModule extends AbstractModule {
 	@Override
 	protected void configure() throws Exception {
 		installMvcWebModule();
+		installComponentModule();
 		installCoreModule();
 		installLoggerModule();
 
+	}
+
+	protected void installComponentModule() {
+		install(new ComponentDynamicModule(permanentInjector));
 	}
 
 	protected void installMvcWebModule() {

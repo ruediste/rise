@@ -3,8 +3,12 @@ package com.github.ruediste.laf.core;
 import static java.util.stream.Collectors.toList;
 
 import java.lang.reflect.AnnotatedType;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;
@@ -13,14 +17,15 @@ import javax.inject.Singleton;
 
 import org.objectweb.asm.tree.ClassNode;
 
+import com.github.ruediste.laf.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.laf.core.argumentSerializer.ArgumentSerializer;
 import com.github.ruediste.laf.core.argumentSerializer.EntityArgumentSerializer;
 import com.github.ruediste.laf.core.argumentSerializer.IntSerializer;
 import com.github.ruediste.laf.core.argumentSerializer.LongSerializer;
 import com.github.ruediste.laf.core.argumentSerializer.StringSerializer;
 import com.github.ruediste.laf.core.httpRequest.HttpRequest;
+import com.github.ruediste.laf.core.web.PathInfo;
 import com.github.ruediste.salta.jsr330.Injector;
-import com.google.common.base.Function;
 
 /**
  * Defines the default configuration of the framework.
@@ -158,4 +163,15 @@ public class CoreConfiguration {
 								"No argument serializer found for " + type));
 	}
 
+	public List<Function<ActionInvocation<String>, Optional<PathInfo>>> actionInvocationToPathInfoMappingFunctions = new ArrayList<>();
+
+	public PathInfo toPathInfo(ActionInvocation<String> invocation) {
+		for (Function<ActionInvocation<String>, Optional<PathInfo>> f : actionInvocationToPathInfoMappingFunctions) {
+			Optional<PathInfo> result = f.apply(invocation);
+			if (result.isPresent())
+				return result.get();
+		}
+		throw new RuntimeException("No PathInfo generation function found for "
+				+ invocation);
+	}
 }

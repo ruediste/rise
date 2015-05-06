@@ -48,12 +48,12 @@ public abstract class ViewMvcWeb<TController extends IControllerMvcWeb, TData> {
 		return util.path(controllerClass);
 	}
 
-	public <T extends IControllerMvcWeb> ActionInvocationBuilderKnownController<T> path(
+	public <T extends IController> ActionInvocationBuilderKnownController<T> path(
 			Class<T> controllerClass) {
 		return util.path(controllerClass);
 	}
 
-	public <T extends IControllerMvcWeb> T go(Class<T> controllerClass) {
+	public <T extends IController> T go(Class<T> controllerClass) {
 		return util.go(controllerClass);
 	}
 

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -90,19 +91,21 @@ public class ClassHierarchyCache {
 		log.info("change occurred. added:" + trx.addedClasses.size()
 				+ " removed:" + trx.removedClasses.size() + " modified:"
 				+ trx.modifiedClasses.size());
-		for (String name : trx.removedClasses) {
-			ClassNode cls = classMap.remove(name);
-			if (cls != null) {
-				if (cls.superName != null) {
-					childMap.remove(cls.superName, cls);
-				}
-				if (cls.interfaces != null) {
-					for (String iface : cls.interfaces) {
-						childMap.remove(iface, cls);
+		Stream.concat(trx.removedClasses.stream(),
+				trx.modifiedClasses.stream().map(n -> n.name)).forEach(
+				name -> {
+					ClassNode cls = classMap.remove(name);
+					if (cls != null) {
+						if (cls.superName != null) {
+							childMap.remove(cls.superName, cls);
+						}
+						if (cls.interfaces != null) {
+							for (String iface : cls.interfaces) {
+								childMap.remove(iface, cls);
+							}
+						}
 					}
-				}
-			}
-		}
+				});
 
 		for (ClassNode cls : Iterables.concat(trx.modifiedClasses,
 				trx.addedClasses)) {

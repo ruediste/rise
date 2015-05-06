@@ -14,7 +14,7 @@ import com.github.ruediste.laf.core.CoreUtil;
 import com.github.ruediste.laf.core.PathInfoIndex;
 import com.github.ruediste.laf.core.RequestParser;
 import com.github.ruediste.laf.core.actionInvocation.ActionInvocationBuilder;
-import com.github.ruediste.laf.core.actionInvocation.InvocationActionResult;
+import com.github.ruediste.laf.core.actionInvocation.ActionInvocationResult;
 import com.github.ruediste.laf.core.httpRequest.HttpRequest;
 import com.github.ruediste.laf.test.SaltaTestBase;
 
@@ -75,7 +75,7 @@ public class MvcWebRequestMapperImplTest extends SaltaTestBase {
 	}
 
 	private void check(ActionResult actionResult) {
-		InvocationActionResult invocation = (InvocationActionResult) actionResult;
+		ActionInvocationResult invocation = (ActionInvocationResult) actionResult;
 
 		// generate path info
 		HttpRequest req = coreUtil.toHttpRequest(invocation);

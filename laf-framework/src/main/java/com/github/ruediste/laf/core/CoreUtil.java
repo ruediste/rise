@@ -5,11 +5,15 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import org.rendersnake.Renderable;
 
+import com.github.ruediste.laf.api.IController;
 import com.github.ruediste.laf.core.actionInvocation.ActionInvocation;
-import com.github.ruediste.laf.core.actionInvocation.InvocationActionResult;
+import com.github.ruediste.laf.core.actionInvocation.ActionInvocationBuilder;
+import com.github.ruediste.laf.core.actionInvocation.ActionInvocationBuilderKnownController;
+import com.github.ruediste.laf.core.actionInvocation.ActionInvocationResult;
 import com.github.ruediste.laf.core.httpRequest.HttpRequest;
 import com.github.ruediste.laf.core.httpRequest.HttpRequestImpl;
 import com.github.ruediste.laf.core.web.PathInfo;
@@ -29,9 +33,15 @@ public class CoreUtil implements ICoreUtil {
 	@Inject
 	AssetRenderUtil assetRenderUtil;
 
+	@Inject
+	Provider<ActionInvocationBuilder> actionPathBuilderProvider;
+
+	@Inject
+	Provider<ActionInvocationBuilderKnownController<?>> actionPathBuilderKnownController;
+
 	@Override
 	public PathInfo toPathInfo(ActionInvocation<Object> invocation) {
-		return invocation.strategies.generate(toStringInvocation(invocation));
+		return coreConfiguration.toPathInfo(toStringInvocation(invocation));
 	}
 
 	@Override
@@ -68,8 +78,9 @@ public class CoreUtil implements ICoreUtil {
 		return httpService.url(path);
 	}
 
+	@Override
 	public String url(ActionResult path) {
-		return url(toPathInfo((InvocationActionResult) path));
+		return url(toPathInfo((ActionInvocationResult) path));
 	}
 
 	@Override
@@ -98,5 +109,22 @@ public class CoreUtil implements ICoreUtil {
 	@Override
 	public Renderable cssLinks(AssetBundleOutput output) {
 		return assetRenderUtil.renderCss(this::url, output);
+	}
+
+	@Override
+	public <T extends IController> T go(Class<T> controllerClass) {
+		return path().go(controllerClass);
+	}
+
+	@Override
+	public <T extends IController> ActionInvocationBuilderKnownController<T> path(
+			Class<T> controllerClass) {
+		return actionPathBuilderKnownController.get().initialize(
+				controllerClass);
+	}
+
+	@Override
+	public ActionInvocationBuilder path() {
+		return actionPathBuilderProvider.get();
 	}
 }

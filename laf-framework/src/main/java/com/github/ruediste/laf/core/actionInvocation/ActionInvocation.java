@@ -35,8 +35,6 @@ public class ActionInvocation<T> extends AttachedPropertyBearerBase {
 	final HashMap<ActionInvocationParameter, String> parameters = new HashMap<>();
 	public MethodInvocation<T> methodInvocation;
 
-	public ActionInvocationStrategies strategies;
-
 	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this).addValue(methodInvocation)
@@ -85,7 +83,6 @@ public class ActionInvocation<T> extends AttachedPropertyBearerBase {
 		result.parameters.putAll(parameters);
 		result.getAttachedPropertyMap().putAll(this);
 		result.methodInvocation = methodInvocation.map(func);
-		result.strategies = strategies;
 		return result;
 	}
 }
