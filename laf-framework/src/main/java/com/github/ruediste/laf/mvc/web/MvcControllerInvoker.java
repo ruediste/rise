@@ -14,7 +14,8 @@ public class MvcControllerInvoker extends ControllerInvokerBase {
 	protected Object getController(
 			ActionInvocation<String> stringActionInvocation) {
 		Object controller = injector
-				.getInstance(stringActionInvocation.controllerClass);
+				.getInstance(stringActionInvocation.methodInvocation
+						.getInstanceClass());
 		return controller;
 	}
 

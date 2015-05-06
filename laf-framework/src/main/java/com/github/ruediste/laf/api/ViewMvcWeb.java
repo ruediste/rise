@@ -64,7 +64,7 @@ public abstract class ViewMvcWeb<TController extends IControllerMvcWeb, TData> {
 	}
 
 	public Renderable cssBundle(AssetBundleOutput output) {
-		return util.cssBundle(output);
+		return util.cssLinks(output);
 	}
 
 }

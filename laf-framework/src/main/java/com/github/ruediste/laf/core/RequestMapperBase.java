@@ -189,7 +189,6 @@ public abstract class RequestMapperBase implements RequestMapper {
 					coreConfig.dynamicClassLoader);
 			Method method = AsmUtil.loadMethod(methodRef,
 					coreConfig.dynamicClassLoader);
-			invocation.controllerClass = controllerClass;
 			invocation.methodInvocation = new MethodInvocation<>(
 					controllerClass, method);
 		} catch (Exception e) {
@@ -204,7 +203,8 @@ public abstract class RequestMapperBase implements RequestMapper {
 		StringBuilder sb = new StringBuilder();
 		MethodRef ref = MethodRef.of(path.methodInvocation.getMethod());
 		String prefix = methodToPrefixMap.get(Pair.of(
-				Type.getInternalName(path.controllerClass), ref));
+				Type.getInternalName(path.methodInvocation.getInstanceClass()),
+				ref));
 		if (prefix == null)
 			throw new RuntimeException("Unable to find prefix for " + ref);
 		sb.append(prefix);

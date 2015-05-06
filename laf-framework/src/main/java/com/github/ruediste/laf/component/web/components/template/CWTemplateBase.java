@@ -16,7 +16,7 @@ public class CWTemplateBase<T extends Component> implements CWTemplate<T> {
 	@Override
 	public void render(T component, HtmlCanvas html) throws IOException {
 		for (Component child : component.getChildren()) {
-			util.render(html, child);
+			util.render(child, html);
 		}
 	}
 

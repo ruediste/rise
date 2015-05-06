@@ -85,7 +85,6 @@ public class MvcWebRequestMapperImplTest extends SaltaTestBase {
 				.parse(req);
 
 		// compare parsed result with invocation
-		assertTrue(invocation.methodInvocation.isCallToSameMethod(util
-				.toObjectInvocation(result.getInvocation()).methodInvocation));
+		assertTrue(invocation.methodInvocation.isCallToSameMethod(util.coreUtil.toObjectInvocation(result.getInvocation()).methodInvocation));
 	}
 }

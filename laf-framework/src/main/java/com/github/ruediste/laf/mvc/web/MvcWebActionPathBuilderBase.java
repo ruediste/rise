@@ -104,7 +104,6 @@ public class MvcWebActionPathBuilderBase<TSelf extends MvcWebActionPathBuilderBa
 						controllerClass, thisMethod);
 				methodInvocation.getArguments().addAll(Arrays.asList(args));
 				path.methodInvocation = methodInvocation;
-				path.controllerClass = controllerClass;
 				return path;
 			}
 		});

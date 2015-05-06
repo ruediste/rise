@@ -95,7 +95,10 @@ public class ComponentViewRepository {
 	}
 
 	/**
-	 * Create a view for the given controller and qualifier
+	 * Create a view for the given controller and qualifier.
+	 * 
+	 * @param qualifier
+	 *            qualifier class, or null if no qualifier is set
 	 */
 	@SuppressWarnings("unchecked")
 	public <T> CView<T> createView(T controller,

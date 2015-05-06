@@ -15,4 +15,5 @@ public class MvcRequestInfo {
 	public void setObjectActionPath(ActionInvocation<Object> objectActionPath) {
 		this.objectActionPath = objectActionPath;
 	}
+
 }

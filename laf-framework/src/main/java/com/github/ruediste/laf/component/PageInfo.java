@@ -3,6 +3,7 @@ package com.github.ruediste.laf.component;
 import java.util.Map;
 
 import com.github.ruediste.laf.api.CView;
+import com.github.ruediste.laf.core.persistence.em.EntityManagerSet;
 import com.github.ruediste.salta.core.Binding;
 
 @PageScoped
@@ -17,6 +18,8 @@ public class PageInfo {
 	private final Object lock = new Object();
 
 	private long pageId;
+
+	private EntityManagerSet entityManagerSet;
 
 	public IComponentController getController() {
 		return controller;
@@ -61,4 +64,17 @@ public class PageInfo {
 	public void setPageId(long pageId) {
 		this.pageId = pageId;
 	}
+
+	public PageInfo self() {
+		return this;
+	}
+
+	public EntityManagerSet getEntityManagerSet() {
+		return entityManagerSet;
+	}
+
+	public void setEntityManagerSet(EntityManagerSet entityManagerSet) {
+		this.entityManagerSet = entityManagerSet;
+	}
+
 }

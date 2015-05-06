@@ -31,7 +31,6 @@ public class ActionInvocation<T> extends AttachedPropertyBearerBase {
 
 	final HashMap<ActionInvocationParameter, String> parameters = new HashMap<>();
 	public MethodInvocation<T> methodInvocation;
-	public Class<?> controllerClass;
 
 	@Override
 	public String toString() {
@@ -44,8 +43,7 @@ public class ActionInvocation<T> extends AttachedPropertyBearerBase {
 	 * method. The parameters values are ignored.
 	 */
 	public boolean isCallToSameActionMethod(ActionInvocation<?> other) {
-		return isCallToSameActionMethod(
-				other,
+		return isCallToSameActionMethod(other,
 				new MethodInvocation.ParameterValueEquality<Object, Object>() {
 
 					@Override
@@ -82,7 +80,6 @@ public class ActionInvocation<T> extends AttachedPropertyBearerBase {
 		result.parameters.putAll(parameters);
 
 		result.methodInvocation = methodInvocation.map(func);
-		result.controllerClass = controllerClass;
 		return result;
 	}
 }

@@ -1,7 +1,5 @@
 package com.github.ruediste.laf.mvc.web;
 
-import java.util.function.Supplier;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -20,33 +18,15 @@ public class MvcActionInvocationUtil {
 	@Inject
 	MvcWebConfiguration mvcWebConfiguration;
 
+	@Inject
+	CoreUtil coreUtil;
+
 	public PathInfo toPathInfo(ActionInvocation<Object> invocation) {
 		return mvcWebConfiguration.mapper().generate(
-				toStringInvocation(invocation));
+				coreUtil.toStringInvocation(invocation));
 	}
 
 	public HttpRequest toHttpRequest(ActionInvocation<Object> invocation) {
 		return new HttpRequestImpl(toPathInfo(invocation));
-	}
-
-	public ActionInvocation<String> toStringInvocation(
-			ActionInvocation<Object> invocation) {
-
-		try {
-			return invocation.mapWithType(coreConfiguration::generateArgument);
-		} catch (Throwable t) {
-			throw new RuntimeException("Error while generating arguments of "
-					+ invocation, t);
-		}
-	}
-
-	public ActionInvocation<Object> toObjectInvocation(
-			ActionInvocation<String> stringInvocation) {
-		return toSupplierInvocation(stringInvocation).map(Supplier::get);
-	}
-
-	public ActionInvocation<Supplier<Object>> toSupplierInvocation(
-			ActionInvocation<String> stringInvocation) {
-		return stringInvocation.mapWithType(coreConfiguration::parseArgument);
 	}
 }

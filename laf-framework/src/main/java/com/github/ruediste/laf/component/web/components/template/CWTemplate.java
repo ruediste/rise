@@ -20,7 +20,7 @@ public interface CWTemplate<T extends Component> {
 
 	void render(T component, HtmlCanvas html) throws IOException;
 
-	void applyValues(T component, ApplyValuesUtil util);
+	void applyValues(T componentl);
 
-	void raiseEvents(T component, CWRaiseEventsUtil util);
+	void raiseEvents(T component);
 }

@@ -6,7 +6,7 @@ import javax.inject.Inject;
 
 import com.github.ruediste.laf.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.laf.core.web.HttpRenderResult;
-import com.github.ruediste.laf.mvc.web.MvcActionInvocationUtil;
+import com.github.ruediste.laf.mvc.web.CoreUtil;
 import com.github.ruediste.laf.mvc.web.MvcWebRequestInfo;
 
 public abstract class ControllerInvokerBase implements Runnable {
@@ -19,8 +19,9 @@ public abstract class ControllerInvokerBase implements Runnable {
 
 	@Inject
 	CoreRequestInfo coreInfo;
+
 	@Inject
-	MvcActionInvocationUtil util;
+	CoreUtil coreUtil;
 
 	public ControllerInvokerBase() {
 		super();
@@ -35,7 +36,7 @@ public abstract class ControllerInvokerBase implements Runnable {
 		Object controller = getController(stringActionInvocation);
 
 		// convert String parameters to objects
-		ActionInvocation<Object> objectInvocation = util
+		ActionInvocation<Object> objectInvocation = coreUtil
 				.toObjectInvocation(stringActionInvocation);
 
 		// invoke controller

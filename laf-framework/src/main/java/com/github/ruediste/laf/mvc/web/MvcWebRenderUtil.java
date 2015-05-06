@@ -46,7 +46,7 @@ public class MvcWebRenderUtil {
 		return assetRenderUtil.renderJs(this::url, output);
 	}
 
-	public Renderable cssBundle(AssetBundleOutput output) {
+	public Renderable cssLinks(AssetBundleOutput output) {
 		return assetRenderUtil.renderCss(this::url, output);
 	}
 }

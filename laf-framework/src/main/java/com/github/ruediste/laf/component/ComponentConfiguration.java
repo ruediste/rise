@@ -1,6 +1,7 @@
 package com.github.ruediste.laf.component;
 
 import java.util.LinkedList;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;
@@ -8,6 +9,7 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletResponse;
 
+import com.github.ruediste.laf.api.CView;
 import com.github.ruediste.laf.core.ChainedRequestHandler;
 import com.github.ruediste.laf.core.RequestMapper;
 import com.github.ruediste.laf.core.web.ActionResultRenderer;
@@ -29,6 +31,7 @@ public class ComponentConfiguration {
 	public void initialize() {
 		mapper = mapperSupplier.get();
 		mapper.initialize();
+		viewFactory = viewFactorySupplier.get();
 
 		ChainedRequestHandler last = null;
 		for (Supplier<ChainedRequestHandler> supplier : handlerSuppliers) {
@@ -74,6 +77,9 @@ public class ComponentConfiguration {
 		 */
 		public Supplier<ChainedRequestHandler> pageCreationHandler;
 
+		public Supplier<ChainedRequestHandler> viewRenderer;
+		public Supplier<ChainedRequestHandler> initialPagePersistenceHandler;
+
 		/**
 		 * Instantiates the controller and invokes the action method. By default
 		 * registered as the {@link ComponentConfiguration#finalHandlerSupplier}
@@ -85,10 +91,14 @@ public class ComponentConfiguration {
 	public final SupplierRefs supplierRefs = new SupplierRefs();
 
 	@PostConstruct
-	public void postConstruct(Provider<ComponentRequestMapperImpl> mapper,
+	public void postConstruct(
+			Provider<ComponentRequestMapperImpl> mapper,
 			Provider<ComponentControllerInvoker> invoker,
 			Provider<ActionResultRenderer> actionResultRenderer,
-			Provider<PageCreationHandler> pageCreationHandler) {
+			Provider<PageCreationHandler> pageCreationHandler,
+			Provider<ComponentViewRepository> componentViewRepository,
+			Provider<InitialPagePersistenceHandler> initialPagePersistenceHandler,
+			Provider<ViewRenderer> viewRenderer) {
 		supplierRefs.mapperSupplier = mapper::get;
 		this.mapperSupplier = supplierRefs.mapperSupplier;
 
@@ -98,8 +108,33 @@ public class ComponentConfiguration {
 		supplierRefs.pageCreationHandler = pageCreationHandler::get;
 		handlerSuppliers.add(supplierRefs.pageCreationHandler);
 
+		supplierRefs.viewRenderer = viewRenderer::get;
+		handlerSuppliers.add(supplierRefs.viewRenderer);
+
+		supplierRefs.initialPagePersistenceHandler = initialPagePersistenceHandler::get;
+		handlerSuppliers.add(supplierRefs.initialPagePersistenceHandler);
+
 		supplierRefs.controllerInvokerSupplier = invoker::get;
 		finalHandlerSupplier = supplierRefs.controllerInvokerSupplier;
+
+		viewFactorySupplier = () -> componentViewRepository.get()::createView;
 	}
 
+	public Supplier<BiFunction<IComponentController, Class<? extends IViewQualifier>, CView<?>>> viewFactorySupplier;
+	public BiFunction<IComponentController, Class<? extends IViewQualifier>, CView<?>> viewFactory;
+
+	public CView<?> createView(IComponentController controller) {
+		return createView(controller, null);
+	}
+
+	public CView<?> createView(IComponentController controller,
+			Class<? extends IViewQualifier> qualifier) {
+		return viewFactory.apply(controller, qualifier);
+	}
+
+	private String reloadPath = "/~component/reload";
+
+	public String getReloadPath() {
+		return reloadPath;
+	}
 }
