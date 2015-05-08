@@ -1,7 +1,10 @@
 package com.github.ruediste.laf.core.web.assetPipeline;
 
+import static java.util.stream.Collectors.joining;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -18,6 +21,7 @@ import java.util.stream.Stream;
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
 import com.github.ruediste.laf.util.Pair;
+import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -28,21 +32,20 @@ import com.google.common.hash.Hashing;
  */
 public class AssetGroup {
 	public final List<Asset> assets;
-	public final AssetBundle bundle;
+	public final AssetBundleBase bundle;
 
-	public AssetGroup(AssetBundle bundle, List<Asset> assets) {
+	public AssetGroup(AssetBundleBase bundle, List<Asset> assets) {
 		this.bundle = bundle;
 		this.assets = assets;
 	}
 
-	@Override
-	public String toString() {
-		// TODO Auto-generated method stub
-		return "AssetGroup" + assets;
+	public AssetGroup(AssetBundleBase bundle, Stream<Asset> resources) {
+		this(bundle, resources.collect(Collectors.toList()));
 	}
 
-	public AssetGroup(AssetBundle bundle, Stream<Asset> resources) {
-		this(bundle, resources.collect(Collectors.toList()));
+	@Override
+	public String toString() {
+		return "AssetGroup" + assets;
 	}
 
 	public AssetGroup map(Function<Asset, Asset> processor) {
@@ -63,6 +66,10 @@ public class AssetGroup {
 		return this;
 	}
 
+	/**
+	 * If the current {@link AssetMode} matches the given asset mode, let all
+	 * assets pass. Otherwise returns an empty group
+	 */
 	public AssetGroup filter(AssetMode mode) {
 		if (bundle.getAssetMode() == mode) {
 			return this;
@@ -72,10 +79,33 @@ public class AssetGroup {
 
 	}
 
+	/**
+	 * Return the single asset of this group. Raises an error if not exactly one
+	 * asset is in the group
+	 */
+	public Asset single() {
+		if (assets.size() == 0)
+			throw new RuntimeException("Asset group is emtpy");
+		if (assets.size() > 1)
+			throw new RuntimeException(
+					"Asset group contains more than a single asset: "
+							+ assets.stream().map(Asset::getName)
+									.collect(joining(", ")));
+		return assets.get(0);
+	}
+
+	/**
+	 * In {@link AssetMode#PRODUCTION Production Mode}, let all assets pass.
+	 * Otherwise returns an empty group
+	 */
 	public AssetGroup prod() {
 		return filter(AssetMode.PRODUCTION);
 	}
 
+	/**
+	 * In {@link AssetMode#DEVELOPMENT Development Mode}, let all assets pass.
+	 * Otherwise returns an empty group
+	 */
 	public AssetGroup dev() {
 		return filter(AssetMode.DEVELOPMENT);
 	}
@@ -238,7 +268,7 @@ public class AssetGroup {
 
 		private AttachedPropertyBearer cache;
 
-		public CachingAsset(Asset delegate, AssetBundle bundle) {
+		public CachingAsset(Asset delegate, AssetBundleBase bundle) {
 			Preconditions.checkNotNull(delegate);
 			Preconditions.checkNotNull(bundle);
 			this.delegate = delegate;
@@ -344,6 +374,34 @@ public class AssetGroup {
 		public String toString() {
 			return "combine" + assets;
 		}
+	}
+
+	public void forEach(Consumer<? super Asset> action) {
+		assets.stream().forEach(action);
+	}
+
+	public AssetGroup replace(String target, String replacement) {
+		return replace(target, replacement, Charsets.UTF_8);
+	}
+
+	public AssetGroup replace(String target, String replacement, Charset charset) {
+		return mapData(s -> s.replace(target, replacement), charset);
+	}
+
+	public AssetGroup mapData(Function<String, String> func) {
+		return mapData(func, Charsets.UTF_8);
+	}
+
+	public AssetGroup mapData(Function<String, String> func, Charset charset) {
+		return map(asset -> {
+			return new DelegatingAsset(asset) {
+				@Override
+				public byte[] getData() {
+					return func.apply(new String(asset.getData(), charset))
+							.getBytes(charset);
+				}
+			};
+		}).cache();
 	}
 
 }

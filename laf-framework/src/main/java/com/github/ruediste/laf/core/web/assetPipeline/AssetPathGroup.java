@@ -15,15 +15,15 @@ import java.util.stream.Stream;
  * loaded from (class path, file system ...)
  */
 public class AssetPathGroup {
-	private final AssetBundle bundle;
+	private final AssetBundleBase bundle;
 	private final List<String> paths;
 
-	public AssetPathGroup(AssetBundle bundle, String... paths) {
+	public AssetPathGroup(AssetBundleBase bundle, String... paths) {
 		this.bundle = bundle;
 		this.paths = Arrays.asList(paths);
 	}
 
-	public AssetPathGroup(AssetBundle bundle, Stream<String> paths) {
+	public AssetPathGroup(AssetBundleBase bundle, Stream<String> paths) {
 		this.bundle = bundle;
 		this.paths = paths.collect(toList());
 	}

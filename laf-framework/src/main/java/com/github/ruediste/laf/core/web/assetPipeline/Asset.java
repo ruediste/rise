@@ -24,4 +24,5 @@ public interface Asset {
 	 * The contents of this asset
 	 */
 	byte[] getData();
+
 }

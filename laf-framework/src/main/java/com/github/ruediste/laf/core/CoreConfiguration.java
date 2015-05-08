@@ -174,4 +174,6 @@ public class CoreConfiguration {
 		throw new RuntimeException("No PathInfo generation function found for "
 				+ invocation);
 	}
+
+	public PathInfo reloadQueryPathInfo = new PathInfo("/~reloadQuery");
 }

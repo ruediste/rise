@@ -3,6 +3,10 @@ package com.github.ruediste.laf.core.actionInvocation;
 import com.github.ruediste.laf.api.IController;
 import com.google.common.base.Preconditions;
 
+/**
+ * Builder for {@link ActionInvocation}s with a known controller type. This
+ * allows to provide the {@link #go()} method.
+ */
 public class ActionInvocationBuilderKnownController<TController extends IController>
 		extends
 		ActionInvocationBuilderBase<ActionInvocationBuilderKnownController<TController>> {

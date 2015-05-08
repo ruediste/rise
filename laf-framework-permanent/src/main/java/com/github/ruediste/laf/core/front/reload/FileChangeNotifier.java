@@ -118,7 +118,7 @@ public class FileChangeNotifier {
 	 */
 	public void start(Set<Path> rootDirs, long settleDelayMs,
 			Consumer<FileChangeTransaction> trxPostProcessor) {
-		log.info("Starting notifier with dirs\n{}",
+		log.debug("Starting notifier with dirs\n{}",
 				Joiner.on("\n").join(rootDirs));
 		synchronized (this) {
 			isStarted = true;

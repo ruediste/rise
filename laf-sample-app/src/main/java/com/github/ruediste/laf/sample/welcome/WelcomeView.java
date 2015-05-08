@@ -12,14 +12,16 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
+import org.rendersnake.HtmlAttributesFactory;
 import org.rendersnake.HtmlCanvas;
 
 import com.github.ruediste.laf.api.ViewMvcWeb;
+import com.github.ruediste.laf.core.CoreConfiguration;
 import com.github.ruediste.laf.core.front.ReloadCountHolder;
-import com.github.ruediste.laf.core.web.PathInfo;
+import com.github.ruediste.laf.core.web.CoreAssetBundle;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetBundleOutput;
-import com.github.ruediste.laf.core.web.bootstrap.BootstrapBundle;
+import com.github.ruediste.laf.sample.BootstrapBundle;
 import com.github.ruediste.laf.sample.component.SampleComponentController;
 import com.github.ruediste.laf.sample.db.TodoController;
 
@@ -28,11 +30,15 @@ public class WelcomeView extends
 
 	static class Bundle extends AssetBundle {
 
+		@Inject
+		CoreAssetBundle core;
+
 		AssetBundleOutput out = new AssetBundleOutput(this);
 
 		@Override
 		public void initialize() {
-			paths("/assets/welcome.css", "/assets/welcome.js").load().send(out);
+			paths("/assets/welcome.css", "/assets/welcome.js").load()
+					.join(core.out).send(out);
 		}
 
 	}
@@ -46,6 +52,9 @@ public class WelcomeView extends
 	@Inject
 	ReloadCountHolder holder;
 
+	@Inject
+	CoreConfiguration coreConfig;
+
 	@Override
 	public void render(HtmlCanvas html) throws IOException {
 		//@formatter:off
@@ -57,7 +66,7 @@ public class WelcomeView extends
 			.render(cssBundle(bootstrapBundle.out))
 			.render(cssBundle(bundle.out))
 		._head()
-		.body()
+		.body(HtmlAttributesFactory.data(CoreAssetBundle.bodyAttributeRestartQueryUrl,url(coreConfig.reloadQueryPathInfo)).data(CoreAssetBundle.bodyAttributeRestartNr,Long.toString(holder.get())))
 		    .nav(class_("navbar navbar-inverse navbar-fixed-top"))
 		        .div(class_("container-fluid"))
 		            .div(class_("navbar-header"))
@@ -115,7 +124,7 @@ public class WelcomeView extends
 							.div(class_("col-xs-6"))
 								.a(class_("btn btn-primary").href(url(go(TodoController.class).index()))).content("Todo Items")
 								.a(class_("btn btn-primary").href(
-										url(go(SampleComponentController.class).index()))).content("Component Sample")
+										url(go(SampleComponentController.class).index()))).span(class_("glyphicon glyphicon-search"))._span().content("Component Sample")
 							._div()
 						._div() 
 					._div()
@@ -124,7 +133,7 @@ public class WelcomeView extends
 			.render(jsLinks(bootstrapBundle.out))
 			.render(jsLinks(bundle.out))
 			.write("\n")
-			.script(type("text/javascript")).content("initReload(\""+url(new PathInfo("/~reloadQuery"))+"\","+holder.get()+");",false)
+//			.script(type("text/javascript")).content("initReload(\""+url(new PathInfo("/~reloadQuery"))+"\","+holder.get()+");",false)
 		._body()._html();
 	}
 }

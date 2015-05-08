@@ -29,6 +29,8 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 public class AssetRequestMapper {
+	@Inject
+	Logger log;
 
 	private final static class AssetRequestParseResult implements
 			RequestParseResult {
@@ -141,6 +143,8 @@ public class AssetRequestMapper {
 			Asset asset = first.getB();
 			index.registerPathInfo(entry.getKey(), x -> resultProvider.get()
 					.initialize(asset));
+			log.debug("Registered {}.{}", first.getA().getClass()
+					.getSimpleName(), entry.getKey());
 		}
 	}
 

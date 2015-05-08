@@ -40,33 +40,35 @@ public class CoreDynamicInitializer implements Initializer {
 		pipelineConfig.initialize();
 		assetRequestMapper.initialize();
 
-		index.registerPathInfo("/~reloadQuery", new RequestParser() {
-
-			@Override
-			public RequestParseResult parse(HttpRequest request) {
-
-				return new RequestParseResult() {
+		index.registerPathInfo(config.reloadQueryPathInfo.getValue(),
+				new RequestParser() {
 
 					@Override
-					public void handle() {
-						boolean doReload = holder.waitForReload(Long
-								.parseLong(request.getParameter("nr")));
-						HttpServletResponse response = info
-								.getServletResponse();
+					public RequestParseResult parse(HttpRequest request) {
 
-						response.setContentType("text/plain;charset=utf-8");
-						PrintWriter out;
-						try {
-							out = response.getWriter();
-							out.write(doReload ? "true" : "false");
-							out.close();
-						} catch (IOException e) {
-							throw new RuntimeException("Error sending response");
-						}
+						return new RequestParseResult() {
+
+							@Override
+							public void handle() {
+								boolean doReload = holder.waitForReload(Long
+										.parseLong(request.getParameter("nr")));
+								HttpServletResponse response = info
+										.getServletResponse();
+
+								response.setContentType("text/plain;charset=utf-8");
+								PrintWriter out;
+								try {
+									out = response.getWriter();
+									out.write(doReload ? "true" : "false");
+									out.close();
+								} catch (IOException e) {
+									throw new RuntimeException(
+											"Error sending response");
+								}
+							}
+						};
 					}
-				};
-			}
-		});
+				});
 	}
 
 }
