@@ -1,21 +1,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>ch.laf</groupId>
-	<artifactId>laf-parent</artifactId>
+	<groupId>com.github.ruediste.rise</groupId>
+	<artifactId>rise-parent</artifactId>
 	<packaging>pom</packaging>
 	<version>1.0-SNAPSHOT</version>
-	<name>Light Application Framework Parent</name>
+	<name>Rise Framework Parent</name>
 	<url>http://maven.apache.org</url>
 	<modules>
-		<module>laf-framework</module>
-		<module>laf-test-app</module>
-		<module>laf-skeleton-app</module>
-		<module>laf-sample-app</module>
-		<module>laf-framework-integration</module>
-		<module>laf-framework-permanent</module>
-		<module>laf-framework-common</module>
-		<module>laf-framework-test</module>
+		<module>framework</module>
+		<module>test-app</module>
+		<module>skeleton-app</module>
+		<module>sample-app</module>
+		<module>framework-integration</module>
+		<module>framework-permanent</module>
+		<module>framework-test</module>
 	</modules>
 
 	<properties>
@@ -103,11 +102,17 @@
 			<version>1.3</version>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.1.3</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
+			<artifactId>slf4j-api</artifactId>
 			<version>1.7.9</version>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>

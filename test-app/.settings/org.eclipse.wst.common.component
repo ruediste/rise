@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="laf-test-app">
+        <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
+        <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/resources"/>
+        <dependent-module archiveName="framework-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/framework/framework">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="attached-properties-4j-0.0.2-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/attached-properties-4j/attached-properties-4j">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="framework-integration-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/framework-integration/framework-integration">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="framework-permanent-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/framework-permanent/framework-permanent">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="salta-jsr330-0.2-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/salta-jsr330/salta-jsr330">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="salta-core-0.2-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/salta-core/salta-core">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="java-output-path" value="/laf-test-app/target/classes"/>
+        <property name="context-root" value="test-app"/>
+    </wb-module>
+</project-modules>

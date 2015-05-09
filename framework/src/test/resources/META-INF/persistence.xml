@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1"
+	xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+	<persistence-unit name="frameworkTest">
+		<class>com.github.ruediste.rise.core.persistence.TestEntity</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<properties>
+			<property name="javax.persistence.schema-generation.database.action"
+				value="drop-and-create" />
+			<property name="javax.persistence.schema-generation.scripts.action"
+				value="none" />
+			<property name="javax.persistence.schema-generation.create-source"
+				value="metadata" />
+			<property name="javax.persistence.schema-generation.drop-source"
+				value="metadata" />
+			<property
+				name="javax.persistence.schema-generation.create-database-schemas"
+				value="true"></property>
+		</properties>
+	</persistence-unit>
+</persistence>
+	
