@@ -8,7 +8,6 @@ import com.github.ruediste.rise.testApp.app.TestDynamicApplication;
 import com.github.ruediste.salta.jsr330.Injector;
 
 public class WebTest extends WebTestBase {
-
 	@Override
 	protected final Servlet createServlet(Object testCase) {
 		TestDynamicApplication app = new TestDynamicApplication() {
@@ -24,4 +23,5 @@ public class WebTest extends WebTestBase {
 
 		return frontServlet;
 	}
+
 }

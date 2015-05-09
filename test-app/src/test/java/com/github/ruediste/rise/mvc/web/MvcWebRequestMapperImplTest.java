@@ -16,9 +16,9 @@ import com.github.ruediste.rise.core.RequestParser;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
-import com.github.ruediste.rise.test.SaltaTestBase;
+import com.github.ruediste.rise.testApp.WebTest;
 
-public class MvcWebRequestMapperImplTest extends SaltaTestBase {
+public class MvcWebRequestMapperImplTest extends WebTest {
 
 	@Inject
 	MvcWebConfiguration config;

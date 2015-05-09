@@ -9,12 +9,10 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.objectweb.asm.tree.MethodNode;
 
-import com.github.ruediste.rise.core.ActionResult;
-import com.github.ruediste.rise.core.ControllerReflectionUtil;
 import com.github.ruediste.rise.core.front.reload.ClassHierarchyCache;
-import com.github.ruediste.rise.test.SaltaTestBase;
+import com.github.ruediste.rise.testApp.WebTest;
 
-public class ControllerReflectionUtilTest extends SaltaTestBase {
+public class ControllerReflectionUtilTest extends WebTest {
 
 	@Inject
 	ControllerReflectionUtil util;

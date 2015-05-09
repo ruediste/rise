@@ -1,3 +1,5 @@
 */src/main/java/**/doc-files/*.png
 target/
 /web/btm?.tlog
+/btm?.tlog
+dependency-reduced-pom.xml

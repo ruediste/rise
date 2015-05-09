@@ -3,11 +3,13 @@ package com.github.ruediste.rise.core.front.reload;
 import static org.objectweb.asm.Opcodes.ASM5;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -128,9 +130,21 @@ public class ClassHierarchyCache {
 	 * @param internalName
 	 * @return
 	 */
+	public Optional<ClassNode> tryGetNode(String internalName) {
+		return Optional.ofNullable(classMap.get(internalName));
+	}
+
+	/**
+	 * Return the parsed class node for the given internal name
+	 *
+	 * @param internalName
+	 * @return
+	 */
 	public ClassNode getNode(String internalName) {
 		ClassNode result = classMap.get(internalName);
-		log.trace("node for " + internalName + " found: " + (result != null));
+		if (result == null)
+			throw new RuntimeException("Class " + internalName
+					+ " not in index");
 		return result;
 	}
 
@@ -142,7 +156,10 @@ public class ClassHierarchyCache {
 	 * @return
 	 */
 	public Set<ClassNode> getChildren(String internalName) {
-		return childMap.get(internalName);
+		Set<ClassNode> result = childMap.get(internalName);
+		if (result == null)
+			return Collections.emptySet();
+		return result;
 	}
 
 	public Set<ClassNode> getAllChildren(String internalName) {
@@ -180,9 +197,13 @@ public class ClassHierarchyCache {
 		if (!seen.add(internalName))
 			return false;
 
-		ClassNode node = getNode(internalName);
-		if (node == null)
-			return false;
+		ClassNode node;
+		{
+			Optional<ClassNode> tmp = tryGetNode(internalName);
+			if (!tmp.isPresent())
+				return false;
+			node = tmp.get();
+		}
 
 		if (isAssignableFrom(internalNameParent, node.superName, seen))
 			return true;
