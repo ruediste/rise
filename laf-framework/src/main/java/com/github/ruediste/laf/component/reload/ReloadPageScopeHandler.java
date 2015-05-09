@@ -1,0 +1,35 @@
+package com.github.ruediste.laf.component.reload;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import com.github.ruediste.laf.component.ComponentSessionInfo;
+import com.github.ruediste.laf.component.PageHandle;
+import com.github.ruediste.laf.core.ChainedRequestHandler;
+import com.github.ruediste.salta.standard.util.SimpleProxyScopeHandler;
+
+public class ReloadPageScopeHandler extends ChainedRequestHandler {
+	@Inject
+	@Named("pageScoped")
+	SimpleProxyScopeHandler pageScopeHandler;
+
+	@Inject
+	ComponentSessionInfo sessionInfo;
+
+	@Inject
+	PageReloadRequest request;
+
+	@Override
+	public void run(Runnable next) {
+		PageHandle pageHandle = sessionInfo.getPageHandle(request.getPageNr());
+		synchronized (pageHandle.lock) {
+			pageScopeHandler.enter(pageHandle.instances);
+			try {
+				next.run();
+			} finally {
+				pageScopeHandler.exit();
+			}
+		}
+	}
+
+}

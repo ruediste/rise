@@ -126,10 +126,11 @@ public class AssetGroup {
 	/**
 	 * Add the assets of the other group to this group
 	 */
-	public AssetGroup join(AssetGroup other) {
+	public AssetGroup join(AssetGroup... others) {
 		ArrayList<Asset> list = new ArrayList<>();
 		list.addAll(assets);
-		list.addAll(other.assets);
+		for (AssetGroup other : others)
+			list.addAll(other.assets);
 		return new AssetGroup(bundle, list);
 	}
 
@@ -385,7 +386,17 @@ public class AssetGroup {
 	}
 
 	public AssetGroup replace(String target, String replacement, Charset charset) {
-		return mapData(s -> s.replace(target, replacement), charset);
+		return mapData(new Function<String, String>() {
+			@Override
+			public String apply(String s) {
+				return s.replace(target, replacement);
+			}
+
+			@Override
+			public String toString() {
+				return "replace(" + target + "," + replacement + ")";
+			}
+		}, charset);
 	}
 
 	public AssetGroup mapData(Function<String, String> func) {
@@ -399,6 +410,11 @@ public class AssetGroup {
 				public byte[] getData() {
 					return func.apply(new String(asset.getData(), charset))
 							.getBytes(charset);
+				}
+
+				@Override
+				public String toString() {
+					return asset + "mapData(" + func + "," + charset + ")";
 				}
 			};
 		}).cache();

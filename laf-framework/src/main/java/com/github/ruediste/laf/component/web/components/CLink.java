@@ -1,10 +1,12 @@
 package com.github.ruediste.laf.component.web.components;
 
+import com.github.ruediste.laf.component.web.components.template.CLinkHtmlTemplate;
 import com.github.ruediste.laf.core.ActionResult;
 
 /**
  * A link to another page.
  */
+@DefaultTemplate(CLinkHtmlTemplate.class)
 public class CLink extends MultiChildrenComponent<CLink> {
 
 	private ActionResult destination;

@@ -10,6 +10,7 @@ import org.rendersnake.HtmlCanvas;
 
 import com.github.ruediste.laf.component.ComponentUtil;
 import com.github.ruediste.laf.component.web.components.CButton;
+import com.github.ruediste.laf.core.web.CoreAssetBundle;
 
 public class CButtonHtmlTemplate extends CWTemplateBase<CButton> {
 	@Inject
@@ -17,9 +18,10 @@ public class CButtonHtmlTemplate extends CWTemplateBase<CButton> {
 
 	@Override
 	public void render(CButton component, HtmlCanvas html) throws IOException {
-		html.button(class_(util.combineCssClasses("c_button", component.tag()))
-				.add("data-c-component-nr",
-						String.valueOf(util.getComponentNr(component))));
+		html.button(class_(
+				util.combineCssClasses("rise_button", component.tag())).data(
+				CoreAssetBundle.componentAttributeNr,
+				String.valueOf(util.getComponentNr(component))));
 		super.render(component, html);
 		html._button();
 	}

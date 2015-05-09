@@ -31,6 +31,8 @@ public class SpaceAwareClassLoader extends ClassLoader {
 		{
 			Class<?> result = findLoadedClass(name);
 			if (result != null) {
+				if (resolve)
+					resolveClass(result);
 				return result;
 			}
 		}

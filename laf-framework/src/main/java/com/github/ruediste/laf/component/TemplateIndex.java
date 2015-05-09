@@ -28,6 +28,11 @@ public class TemplateIndex {
 
 	private ConcurrentHashMap<Class<?>, CWTemplate<?>> templates = new ConcurrentHashMap<>();
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public <T extends Component> CWTemplate<T> getTemplate(T component) {
+		return getTemplate((Class) component.getClass());
+	}
+
 	@SuppressWarnings("unchecked")
 	public <T extends Component> CWTemplate<T> getTemplate(Class<T> component) {
 		return (CWTemplate<T>) templates

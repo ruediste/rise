@@ -43,9 +43,10 @@ public class ClassHierarchyCacheTest {
 		cache.onChange(trx);
 	}
 
-	private ClassNode readClass(Class<?> cls) throws IOException {
-		InputStream in = getClass().getClassLoader().getResourceAsStream(
-				cls.getName().replace('.', '/') + ".class");
+	public static ClassNode readClass(Class<?> cls) throws IOException {
+		InputStream in = ClassHierarchyCache.class
+				.getClassLoader()
+				.getResourceAsStream(cls.getName().replace('.', '/') + ".class");
 		ClassNode result = new ClassNode();
 		new ClassReader(in).accept(result, 0);
 		in.close();

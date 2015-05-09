@@ -21,7 +21,7 @@ import com.github.ruediste.laf.core.front.ReloadCountHolder;
 import com.github.ruediste.laf.core.web.CoreAssetBundle;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetBundleOutput;
-import com.github.ruediste.laf.sample.BootstrapBundle;
+import com.github.ruediste.laf.sample.SampleBundle;
 import com.github.ruediste.laf.sample.component.SampleComponentController;
 import com.github.ruediste.laf.sample.db.TodoController;
 
@@ -30,15 +30,11 @@ public class WelcomeView extends
 
 	static class Bundle extends AssetBundle {
 
-		@Inject
-		CoreAssetBundle core;
-
 		AssetBundleOutput out = new AssetBundleOutput(this);
 
 		@Override
 		public void initialize() {
-			paths("/assets/welcome.css", "/assets/welcome.js").load()
-					.join(core.out).send(out);
+			paths("/assets/welcome.css", "/assets/welcome.js").load().send(out);
 		}
 
 	}
@@ -47,7 +43,7 @@ public class WelcomeView extends
 	Bundle bundle;
 
 	@Inject
-	BootstrapBundle bootstrapBundle;
+	SampleBundle sampleBundle;
 
 	@Inject
 	ReloadCountHolder holder;
@@ -63,10 +59,10 @@ public class WelcomeView extends
 			.meta(charset("UTF-8"))
 			.meta(http_equiv("X-UA-Compatible").content("IE=edge"))
 			.meta(name("viewport").content("width=device-width, initial-scale=1"))
-			.render(cssBundle(bootstrapBundle.out))
+			.render(cssBundle(sampleBundle.out))
 			.render(cssBundle(bundle.out))
 		._head()
-		.body(HtmlAttributesFactory.data(CoreAssetBundle.bodyAttributeRestartQueryUrl,url(coreConfig.reloadQueryPathInfo)).data(CoreAssetBundle.bodyAttributeRestartNr,Long.toString(holder.get())))
+		.body(HtmlAttributesFactory.data(CoreAssetBundle.bodyAttributeRestartQueryUrl,url(coreConfig.restartQueryPathInfo)).data(CoreAssetBundle.bodyAttributeRestartNr,Long.toString(holder.get())))
 		    .nav(class_("navbar navbar-inverse navbar-fixed-top"))
 		        .div(class_("container-fluid"))
 		            .div(class_("navbar-header"))
@@ -130,10 +126,9 @@ public class WelcomeView extends
 					._div()
 				._div()
 			._div()
-			.render(jsLinks(bootstrapBundle.out))
+			.render(jsLinks(sampleBundle.out))
 			.render(jsLinks(bundle.out))
 			.write("\n")
-//			.script(type("text/javascript")).content("initReload(\""+url(new PathInfo("/~reloadQuery"))+"\","+holder.get()+");",false)
 		._body()._html();
 	}
 }

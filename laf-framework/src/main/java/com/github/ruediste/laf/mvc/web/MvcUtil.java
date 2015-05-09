@@ -12,6 +12,7 @@ import org.rendersnake.HtmlCanvas;
 
 import com.github.ruediste.laf.api.ViewMvcWeb;
 import com.github.ruediste.laf.core.ActionResult;
+import com.github.ruediste.laf.core.CoreConfiguration;
 import com.github.ruediste.laf.core.CoreUtil;
 import com.github.ruediste.laf.core.HttpService;
 import com.github.ruediste.laf.core.ICoreUtil;
@@ -42,6 +43,9 @@ public class MvcUtil implements ICoreUtil {
 	@Inject
 	MvcWebRequestInfo info;
 
+	@Inject
+	CoreConfiguration coreConfiguration;
+
 	@Override
 	public CoreUtil getCoreUtil() {
 		return coreUtil;
@@ -65,7 +69,8 @@ public class MvcUtil implements ICoreUtil {
 			throw new RuntimeException("Error while rendering view", e);
 
 		}
-		return new ContentRenderResult(stream.toByteArray());
+		return new ContentRenderResult(stream.toByteArray(),
+				coreConfiguration.htmlContentType);
 	}
 
 	public ActionResult redirect(ActionResult path) {

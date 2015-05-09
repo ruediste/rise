@@ -2,7 +2,9 @@ package com.github.ruediste.laf.integration;
 
 import java.lang.reflect.Modifier;
 import java.nio.file.Paths;
+import java.util.EnumSet;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.Servlet;
 
 import org.eclipse.jetty.server.Connector;
@@ -10,6 +12,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.servlets.GzipFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +71,8 @@ public class StandaloneLafApplication {
 		ctx.addServlet(holder, "/*");
 
 		ctx.setResourceBase(Paths.get("").toString());
+		ctx.addFilter(GzipFilter.class, "/*",
+				EnumSet.of(DispatcherType.REQUEST));
 
 		server = new Server();
 		ServerConnector connector = new ServerConnector(server);

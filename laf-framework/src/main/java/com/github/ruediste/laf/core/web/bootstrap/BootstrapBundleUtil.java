@@ -3,11 +3,14 @@ package com.github.ruediste.laf.core.web.bootstrap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
+import com.github.ruediste.laf.core.front.reload.DynamicSpace;
 import com.github.ruediste.laf.core.web.assetPipeline.Asset;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetBundleNonRegistered;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetGroup;
 
+@DynamicSpace
 public class BootstrapBundleUtil extends AssetBundleNonRegistered {
 
 	public static class BootstrapAssetGroups {
@@ -21,10 +24,12 @@ public class BootstrapBundleUtil extends AssetBundleNonRegistered {
 		public AssetGroup theme;
 	}
 
+	/**
+	 * Load the necessary assets to use bootstrap, including jquery
+	 */
 	public BootstrapAssetGroups loadAssets() {
 		return loadAssets((group, ext) -> group.forkJoin(
-				g -> g.prod().name("{name}.{hash}.{ext}"),
-				g -> g.dev().name("/fonts/{name}.{ext}")));
+				g -> g.prod().name("{name}.{hash}.{ext}"), g -> g.dev()));
 	}
 
 	/**
@@ -45,7 +50,7 @@ public class BootstrapBundleUtil extends AssetBundleNonRegistered {
 		AssetGroup css = replaceFonts(fonts, fontCustomizer,
 				paths("./css/bootstrap.css").insertMinInProd().load(), "eot",
 				"svg", "ttf", "woff", "woff2");
-		result.out = css.join(js);
+		result.out = css.join(js, paths("./css/bootstrap.css.map").load());
 		result.fonts = new AssetGroup(this, fonts);
 		result.theme = paths("./css/bootstrap-theme.css").insertMinInProd()
 				.load();
@@ -56,17 +61,28 @@ public class BootstrapBundleUtil extends AssetBundleNonRegistered {
 	private AssetGroup replaceFonts(List<Asset> fonts,
 			BiFunction<AssetGroup, String, AssetGroup> fontCustomizer,
 			AssetGroup css, String... fontExts) {
-		return css.mapData(content -> {
-			String result = content;
-			for (String ext : fontExts) {
-				AssetGroup font = loadFont(fontCustomizer, "eot").fork(
-						g -> g.forEach(fonts::add));
-				result = result.replace(
-						"../fonts/glyphicons-halflings-regular." + ext,
-						url(font.single()));
+		AssetGroup group = css.mapData(new Function<String, String>() {
+			@Override
+			public String apply(String content) {
+				String result = content;
+				for (String ext : fontExts) {
+					result = result.replace(
+							"../fonts/glyphicons-halflings-regular." + ext,
+							url(loadFont(fontCustomizer, ext).fork(
+									g -> g.forEach(fonts::add)).single()));
+				}
+				return result;
 			}
-			return result;
-		});
+
+			@Override
+			public String toString() {
+				return "replaceFonts()";
+			}
+		}).cache();
+		// eagerly load the data, such that the fonts get loaded and added to
+		// the fonts list
+		group.assets.forEach(a -> a.getData());
+		return group;
 	}
 
 	private AssetGroup loadFont(

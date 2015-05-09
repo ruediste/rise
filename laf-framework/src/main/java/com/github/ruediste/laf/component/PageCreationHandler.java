@@ -36,22 +36,21 @@ public class PageCreationHandler extends ChainedRequestHandler {
 	public void run(Runnable next) {
 		pageScopeHandler.enter();
 		try {
-			PageInfo pi = pageInfo.self();
-			synchronized (pi.getLock()) {
-				pi.setValueMap(pageScopeHandler.getValueMap());
-				pi.setPageId(sessionInfo.takePageId());
+			PageHandle handle = sessionInfo.createPageHandle();
+			handle.instances = pageScopeHandler.getValueMap();
+			synchronized (handle.lock) {
+				PageInfo pi = pageInfo.self();
+				pi.setPageId(handle.id);
 
 				Object controller = injector.getInstance(coreRequestInfo
 						.getStringActionInvocation().methodInvocation
 						.getInstanceClass());
 				pi.setController((IComponentController) controller);
 
-				pi.setView(config.createView(pi.getController()));
 				next.run();
 			}
 		} finally {
 			pageScopeHandler.exit();
 		}
 	}
-
 }

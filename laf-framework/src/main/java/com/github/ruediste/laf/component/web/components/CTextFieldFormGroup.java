@@ -1,5 +1,8 @@
 package com.github.ruediste.laf.component.web.components;
 
+import com.github.ruediste.laf.component.web.components.template.CTextFieldFormGroupHtmlTemplate;
+
+@DefaultTemplate(CTextFieldFormGroupHtmlTemplate.class)
 public class CTextFieldFormGroup extends CFormGroup<CTextFieldFormGroup> {
 
 	private String text;

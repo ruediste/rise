@@ -23,6 +23,9 @@ public class ComponentRequestMapperImpl extends RequestMapperBase {
 	@Inject
 	ComponentConfiguration componentConfig;
 
+	@Inject
+	ComponentRequestInfo componentRequestInfo;
+
 	public ComponentRequestMapperImpl() {
 		super(IComponentController.class);
 	}
@@ -30,8 +33,9 @@ public class ComponentRequestMapperImpl extends RequestMapperBase {
 	@Override
 	protected RequestParseResult createParseResult(ActionInvocation<String> path) {
 		return new MvcWebRequestParseResult(path, actionInvocation -> {
+			componentRequestInfo.setComponentRequest(true);
 			requestInfo.setStringActionInvocation(actionInvocation);
-			componentConfig.handleRequest();
+			componentConfig.handleInitialRequest();
 		});
 	}
 }

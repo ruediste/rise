@@ -133,6 +133,11 @@ public abstract class AssetBundleBase {
 									return pipelineConfiguration
 											.getDefaultContentType(type);
 								}
+
+								@Override
+								public String toString() {
+									return "classpath(" + fullPath + ")";
+								}
 							};
 						}));
 	}

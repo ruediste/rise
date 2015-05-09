@@ -175,5 +175,7 @@ public class CoreConfiguration {
 				+ invocation);
 	}
 
-	public PathInfo reloadQueryPathInfo = new PathInfo("/~reloadQuery");
+	public PathInfo restartQueryPathInfo = new PathInfo("/~riseRestartQuery");
+
+	public String htmlContentType = "text/html;charset=utf-8";
 }

@@ -12,11 +12,16 @@ import javax.inject.Singleton;
 import javax.servlet.http.HttpServletResponse;
 
 import com.github.ruediste.laf.api.CView;
+import com.github.ruediste.laf.component.reload.ReloadHandler;
+import com.github.ruediste.laf.component.reload.ReloadPagePersistenceHandler;
+import com.github.ruediste.laf.component.reload.ReloadPageScopeHandler;
+import com.github.ruediste.laf.component.reload.ReloadRequestParser;
 import com.github.ruediste.laf.core.ChainedRequestHandler;
 import com.github.ruediste.laf.core.CoreConfiguration;
+import com.github.ruediste.laf.core.CoreRequestInfo;
 import com.github.ruediste.laf.core.RequestMapper;
+import com.github.ruediste.laf.core.RequestParser;
 import com.github.ruediste.laf.core.web.ActionResultRenderer;
-import com.github.ruediste.laf.mvc.web.MvcWebRequestInfo;
 
 @Singleton
 public class ComponentConfiguration {
@@ -25,11 +30,9 @@ public class ComponentConfiguration {
 
 	private RequestMapper mapper;
 
-	RequestMapper mapper() {
+	public RequestMapper mapper() {
 		return mapper;
 	}
-
-	private ChainedRequestHandler handler;
 
 	@Inject
 	private CoreConfiguration coreConfiguration;
@@ -48,33 +51,37 @@ public class ComponentConfiguration {
 						return Optional.empty();
 				});
 
-		ChainedRequestHandler last = null;
-		for (Supplier<ChainedRequestHandler> supplier : handlerSuppliers) {
-			ChainedRequestHandler handler = supplier.get();
-			if (this.handler == null)
-				this.handler = handler;
-			if (last != null)
-				last.setNext(handler);
-			last = handler;
-		}
-		if (last != null) {
-			last.setNext(finalHandlerSupplier.get());
-		}
+		this.initialHandler = chainHandlers(initialHandlerSuppliers,
+				finalInitialHandlerSupplier);
+		this.reloadHandler = chainHandlers(reloadHandlerSuppliers,
+				finalReloadHandlerSupplier);
+		reloadParser = reloadParserSupplier.get();
 	}
 
-	public final LinkedList<Supplier<ChainedRequestHandler>> handlerSuppliers = new LinkedList<>();
+	private ChainedRequestHandler reloadHandler;
+	private ChainedRequestHandler initialHandler;
+	/**
+	 * list of suppliers used for {@link #handleInitialRequest()}
+	 */
+	public final LinkedList<Supplier<ChainedRequestHandler>> initialHandlerSuppliers = new LinkedList<>();
+	public final LinkedList<Supplier<ChainedRequestHandler>> reloadHandlerSuppliers = new LinkedList<>();
 
 	/**
-	 * Supplier for the final request handler. Initialized with
-	 * {@link SupplierRefs#controllerInvokerSupplier}
+	 * Supplier for the final request handler. Initialized to
+	 * {@link InitialChainSupplierRefs#controllerInvokerSupplier}
 	 */
-	public Supplier<Runnable> finalHandlerSupplier;
+	public Supplier<Runnable> finalInitialHandlerSupplier;
+	public Supplier<Runnable> finalReloadHandlerSupplier;
 
-	public void handleRequest() {
-		handler.run();
+	public void handleInitialRequest() {
+		initialHandler.run();
 	}
 
-	public static class SupplierRefs {
+	public void handleReloadRequest() {
+		reloadHandler.run();
+	}
+
+	public static class InitialChainSupplierRefs {
 		/**
 		 * Supplier for the mapper. By default registered as
 		 * {@link ComponentConfiguration#mapperSupplier}
@@ -82,7 +89,7 @@ public class ComponentConfiguration {
 		public Supplier<RequestMapper> mapperSupplier;
 
 		/**
-		 * Handler rendering {@link MvcWebRequestInfo#getActionResult()} to the
+		 * Handler rendering {@link CoreRequestInfo#getActionResult()} to the
 		 * {@link HttpServletResponse}
 		 */
 		public Supplier<ChainedRequestHandler> actionResultRendererSupplier;
@@ -98,42 +105,83 @@ public class ComponentConfiguration {
 
 		/**
 		 * Instantiates the controller and invokes the action method. By default
-		 * registered as the {@link ComponentConfiguration#finalHandlerSupplier}
+		 * registered as the
+		 * {@link ComponentConfiguration#finalInitialHandlerSupplier}
 		 */
 		public Supplier<Runnable> controllerInvokerSupplier;
 
 	}
 
-	public final SupplierRefs supplierRefs = new SupplierRefs();
+	public final InitialChainSupplierRefs initialChain = new InitialChainSupplierRefs();
 
 	@PostConstruct
-	public void postConstruct(
+	public void constructInitialChain(
 			Provider<ComponentRequestMapperImpl> mapper,
 			Provider<ComponentControllerInvoker> invoker,
 			Provider<ActionResultRenderer> actionResultRenderer,
 			Provider<PageCreationHandler> pageCreationHandler,
-			Provider<ComponentViewRepository> componentViewRepository,
 			Provider<InitialPagePersistenceHandler> initialPagePersistenceHandler,
 			Provider<ViewRenderer> viewRenderer) {
-		supplierRefs.mapperSupplier = mapper::get;
-		this.mapperSupplier = supplierRefs.mapperSupplier;
+		initialChain.mapperSupplier = mapper::get;
+		this.mapperSupplier = initialChain.mapperSupplier;
 
-		supplierRefs.actionResultRendererSupplier = actionResultRenderer::get;
-		handlerSuppliers.add(supplierRefs.actionResultRendererSupplier);
+		initialChain.actionResultRendererSupplier = actionResultRenderer::get;
+		initialHandlerSuppliers.add(initialChain.actionResultRendererSupplier);
 
-		supplierRefs.pageCreationHandler = pageCreationHandler::get;
-		handlerSuppliers.add(supplierRefs.pageCreationHandler);
+		initialChain.pageCreationHandler = pageCreationHandler::get;
+		initialHandlerSuppliers.add(initialChain.pageCreationHandler);
 
-		supplierRefs.initialPagePersistenceHandler = initialPagePersistenceHandler::get;
-		handlerSuppliers.add(supplierRefs.initialPagePersistenceHandler);
+		initialChain.initialPagePersistenceHandler = initialPagePersistenceHandler::get;
+		initialHandlerSuppliers.add(initialChain.initialPagePersistenceHandler);
 
-		supplierRefs.viewRenderer = viewRenderer::get;
-		handlerSuppliers.add(supplierRefs.viewRenderer);
+		initialChain.viewRenderer = viewRenderer::get;
+		initialHandlerSuppliers.add(initialChain.viewRenderer);
 
-		supplierRefs.controllerInvokerSupplier = invoker::get;
-		finalHandlerSupplier = supplierRefs.controllerInvokerSupplier;
+		initialChain.controllerInvokerSupplier = invoker::get;
+		finalInitialHandlerSupplier = initialChain.controllerInvokerSupplier;
+	}
 
+	@PostConstruct
+	public void postConstruct(
+			Provider<ComponentViewRepository> componentViewRepository) {
 		viewFactorySupplier = () -> componentViewRepository.get()::createView;
+	}
+
+	public static class ReloadChainSupplierRefs {
+		/**
+		 * Handler rendering {@link CoreRequestInfo#getActionResult()} to the
+		 * {@link HttpServletResponse}
+		 */
+		public Supplier<ChainedRequestHandler> actionResultRendererSupplier;
+
+		public Supplier<ChainedRequestHandler> pageScopeHandler;
+		public Supplier<ChainedRequestHandler> persistenceHandler;
+
+		public Supplier<Runnable> reloadHandler;
+	}
+
+	ReloadChainSupplierRefs reloadChain = new ReloadChainSupplierRefs();
+
+	@PostConstruct
+	public void constructReloadChain(
+			Provider<ActionResultRenderer> actionResultRenderer,
+			Provider<ReloadPageScopeHandler> scopeHandler,
+			Provider<ReloadPagePersistenceHandler> persistenceHandler,
+			Provider<ReloadHandler> reloadHandler,
+			Provider<ReloadRequestParser> reloadParser) {
+		reloadChain.actionResultRendererSupplier = actionResultRenderer::get;
+		reloadHandlerSuppliers.add(reloadChain.actionResultRendererSupplier);
+
+		reloadChain.pageScopeHandler = scopeHandler::get;
+		reloadHandlerSuppliers.add(reloadChain.pageScopeHandler);
+
+		reloadChain.persistenceHandler = persistenceHandler::get;
+		reloadHandlerSuppliers.add(reloadChain.persistenceHandler);
+
+		reloadChain.reloadHandler = reloadHandler::get;
+		finalReloadHandlerSupplier = reloadChain.reloadHandler;
+
+		reloadParserSupplier = reloadParser::get;
 	}
 
 	public Supplier<BiFunction<IComponentController, Class<? extends IViewQualifier>, CView<?>>> viewFactorySupplier;
@@ -153,4 +201,37 @@ public class ComponentConfiguration {
 	public String getReloadPath() {
 		return reloadPath;
 	}
+
+	private String ajaxPath = "/~component/ajax";
+
+	public String getAjaxPath() {
+		return ajaxPath;
+	}
+
+	private ChainedRequestHandler chainHandlers(
+			LinkedList<Supplier<ChainedRequestHandler>> suppliers,
+			Supplier<Runnable> finalSupplier) {
+		ChainedRequestHandler result = null;
+		ChainedRequestHandler last = null;
+		for (Supplier<ChainedRequestHandler> supplier : suppliers) {
+			ChainedRequestHandler handler = supplier.get();
+			if (result == null)
+				result = handler;
+			if (last != null)
+				last.setNext(handler);
+			last = handler;
+		}
+		if (last != null) {
+			last.setNext(finalSupplier.get());
+		}
+		return result;
+	}
+
+	public Supplier<RequestParser> reloadParserSupplier;
+	private RequestParser reloadParser;
+
+	public RequestParser getReloadParser() {
+		return reloadParser;
+	}
+
 }

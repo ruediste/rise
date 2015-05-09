@@ -1,18 +1,28 @@
 package com.github.ruediste.laf.core.web;
 
+import com.github.ruediste.laf.core.front.reload.DynamicSpace;
 import com.github.ruediste.laf.core.web.assetPipeline.AssetBundleNonRegistered;
-import com.github.ruediste.laf.core.web.assetPipeline.AssetBundleOutput;
+import com.github.ruediste.laf.core.web.assetPipeline.AssetGroup;
 
+@DynamicSpace
 public class CoreAssetBundle extends AssetBundleNonRegistered {
 
 	public static final String bodyAttributeRestartQueryUrl = "rise-restart-query-url";
 	public static final String bodyAttributeRestartNr = "rise-restart-nr";
+	public static final String bodyAttributeReloadUrl = "rise-reload-url";
+	public static final String bodyAttributeAjaxUrl = "rise-ajax-url";
+	public static final String bodyAttributePageNr = "rise-page-nr";
 
-	public AssetBundleOutput out = new AssetBundleOutput(this);
+	public static final String componentAttributeNr = "rise-component-nr";
+
+	/**
+	 * Contains the necessary assets to use Rise.
+	 */
+	public AssetGroup out;
 
 	@Override
 	public void initialize() {
-		paths("./core.js").load().send(out);
+		out = paths("./core.js").load();
 	}
 
 }

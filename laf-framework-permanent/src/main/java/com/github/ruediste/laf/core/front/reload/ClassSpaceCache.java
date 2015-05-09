@@ -14,6 +14,7 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.InnerClassNode;
 
 import com.github.ruediste.laf.core.front.reload.ClassChangeNotifier.ClassChangeTransaction;
+import com.google.common.base.Objects;
 
 /**
  * Information cache storing information about the class space classes are in
@@ -30,7 +31,7 @@ public class ClassSpaceCache {
 
 	Map<String, Class<?>> classMap = new HashMap<>();
 
-	private void onChange(ClassChangeTransaction trx) {
+	void onChange(ClassChangeTransaction trx) {
 		for (String name : trx.removedClasses) {
 			classMap.remove(name);
 			outerClassNames.remove(name);
@@ -49,13 +50,19 @@ public class ClassSpaceCache {
 	private Map<String, String> outerClassNames = new HashMap<>();
 
 	void updateMap(ClassNode cls) {
+		// System.out.println(cls.name + "->" + cls.outerClass);
 		if (cls.outerClass != null) {
 			outerClassNames.put(cls.name, cls.outerClass);
 		}
 		if (cls.innerClasses != null) {
 			for (Object obj : cls.innerClasses) {
 				InnerClassNode node = (InnerClassNode) obj;
-				outerClassNames.put(node.name, node.outerName);
+				if (node.outerName != null) {
+					outerClassNames.put(node.name, node.outerName);
+				} else {
+					if (!Objects.equal(cls.name, node.name))
+						outerClassNames.put(node.name, cls.name);
+				}
 			}
 		}
 		if (cls.visibleAnnotations == null) {
