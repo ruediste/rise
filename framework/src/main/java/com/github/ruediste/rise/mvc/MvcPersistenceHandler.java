@@ -1,4 +1,4 @@
-package com.github.ruediste.rise.mvc.web;
+package com.github.ruediste.rise.mvc;
 
 import java.lang.reflect.Method;
 
@@ -13,7 +13,6 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.rise.core.persistence.TransactionProperties;
 import com.github.ruediste.rise.core.persistence.TransactionTemplate;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
-import com.github.ruediste.rise.mvc.Updating;
 
 public class MvcPersistenceHandler extends ChainedRequestHandler {
 
@@ -27,7 +26,7 @@ public class MvcPersistenceHandler extends ChainedRequestHandler {
 	EntityManagerHolder holder;
 
 	@Inject
-	MvcWebRequestInfo info;
+	MvcRequestInfo info;
 
 	@Inject
 	CoreRequestInfo coreRequestInfo;

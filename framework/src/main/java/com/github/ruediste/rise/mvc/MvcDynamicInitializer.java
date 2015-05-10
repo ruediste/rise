@@ -1,13 +1,13 @@
-package com.github.ruediste.rise.mvc.web;
+package com.github.ruediste.rise.mvc;
 
 import javax.inject.Inject;
 
 import com.github.ruediste.rise.util.Initializer;
 
-public class MvcWebDynamicInitializer implements Initializer {
+public class MvcDynamicInitializer implements Initializer {
 
 	@Inject
-	MvcWebConfiguration config;
+	MvcConfiguration config;
 
 	@Override
 	public void initialize() {

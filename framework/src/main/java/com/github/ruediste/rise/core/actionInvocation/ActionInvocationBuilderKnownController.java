@@ -1,6 +1,6 @@
 package com.github.ruediste.rise.core.actionInvocation;
 
-import com.github.ruediste.rise.api.IController;
+import com.github.ruediste.rise.core.IController;
 import com.google.common.base.Preconditions;
 
 /**

@@ -7,7 +7,7 @@ import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CorePermanentModule;
 import com.github.ruediste.rise.core.front.ApplicationEventQueue;
 import com.github.ruediste.rise.core.front.LoggerModule;
-import com.github.ruediste.rise.mvc.web.MvcWebPermanentModule;
+import com.github.ruediste.rise.mvc.MvcPermanentModule;
 import com.github.ruediste.rise.util.InitializerUtil;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste.salta.jsr330.Salta;
@@ -18,7 +18,7 @@ public abstract class SaltaTestBase {
 
 	@Before
 	public void beforeSaltaTest() throws Exception {
-		permanentInjector = Salta.createInjector(new MvcWebPermanentModule(),
+		permanentInjector = Salta.createInjector(new MvcPermanentModule(),
 				new CorePermanentModule(null), new LoggerModule());
 		permanentInjector.getInstance(ApplicationEventQueue.class)
 				.submit(this::startInAET).get();

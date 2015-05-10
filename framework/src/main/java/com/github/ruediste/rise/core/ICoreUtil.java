@@ -4,7 +4,6 @@ import java.util.function.Supplier;
 
 import org.rendersnake.Renderable;
 
-import com.github.ruediste.rise.api.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;

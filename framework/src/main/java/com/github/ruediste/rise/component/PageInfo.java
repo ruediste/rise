@@ -1,32 +1,32 @@
 package com.github.ruediste.rise.component;
 
-import com.github.ruediste.rise.api.CView;
+import com.github.ruediste.rise.api.ViewComponent;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerSet;
 
 @PageScoped
 public class PageInfo {
 
-	private IComponentController controller;
+	private IControllerComponent controller;
 
-	private CView<?> view;
+	private ViewComponent<?> view;
 
 	private long pageId;
 
 	private EntityManagerSet entityManagerSet;
 
-	public IComponentController getController() {
+	public IControllerComponent getController() {
 		return controller;
 	}
 
-	public void setController(IComponentController controller) {
+	public void setController(IControllerComponent controller) {
 		this.controller = controller;
 	}
 
-	public CView<?> getView() {
+	public ViewComponent<?> getView() {
 		return view;
 	}
 
-	public void setView(CView<?> view) {
+	public void setView(ViewComponent<?> view) {
 		this.view = view;
 	}
 

@@ -8,11 +8,11 @@ import javax.inject.Provider;
 import javax.servlet.http.HttpServletResponse;
 
 import com.github.ruediste.rise.core.web.ActionResultRenderer;
-import com.github.ruediste.rise.mvc.web.MvcControllerInvoker;
-import com.github.ruediste.rise.mvc.web.MvcPersistenceHandler;
-import com.github.ruediste.rise.mvc.web.MvcWebConfiguration;
-import com.github.ruediste.rise.mvc.web.MvcWebRequestInfo;
-import com.github.ruediste.rise.mvc.web.MvcWebRequestMapperImpl;
+import com.github.ruediste.rise.mvc.MvcControllerInvoker;
+import com.github.ruediste.rise.mvc.MvcPersistenceHandler;
+import com.github.ruediste.rise.mvc.MvcConfiguration;
+import com.github.ruediste.rise.mvc.MvcRequestInfo;
+import com.github.ruediste.rise.mvc.MvcRequestMapperImpl;
 import com.github.ruediste.rise.util.ChainedRunnable;
 
 public abstract class ChainedRequestHandler extends ChainedRunnable {
@@ -59,12 +59,12 @@ public abstract class ChainedRequestHandler extends ChainedRunnable {
 	public static class SupplierRefs {
 		/**
 		 * Supplier for the mapper. By default registered as
-		 * {@link MvcWebConfiguration#mapperSupplier}
+		 * {@link MvcConfiguration#mapperSupplier}
 		 */
 		public Supplier<RequestMapper> mapperSupplier;
 
 		/**
-		 * Handler rendering {@link MvcWebRequestInfo#getActionResult()} the the
+		 * Handler rendering {@link MvcRequestInfo#getActionResult()} the the
 		 * {@link HttpServletResponse}
 		 */
 		public Supplier<ChainedRequestHandler> actionResultRendererSupplier;
@@ -76,7 +76,7 @@ public abstract class ChainedRequestHandler extends ChainedRunnable {
 
 		/**
 		 * Instantiates the controller and invokes the action method. By default
-		 * registered as the {@link MvcWebConfiguration#finalHandlerSupplier}
+		 * registered as the {@link MvcConfiguration#finalHandlerSupplier}
 		 */
 		public Supplier<Runnable> controllerInvokerSupplier;
 
@@ -85,7 +85,7 @@ public abstract class ChainedRequestHandler extends ChainedRunnable {
 	public final SupplierRefs supplierRefs = new SupplierRefs();
 
 	@PostConstruct
-	public void postConstruct(Provider<MvcWebRequestMapperImpl> mapper,
+	public void postConstruct(Provider<MvcRequestMapperImpl> mapper,
 			Provider<MvcControllerInvoker> invoker,
 			Provider<ActionResultRenderer> actionResultRenderer,
 			Provider<MvcPersistenceHandler> persistenceHandler) {

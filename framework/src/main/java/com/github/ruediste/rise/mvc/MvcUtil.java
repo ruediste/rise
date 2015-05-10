@@ -1,4 +1,4 @@
-package com.github.ruediste.rise.mvc.web;
+package com.github.ruediste.rise.mvc;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import javax.transaction.TransactionManager;
 
 import org.rendersnake.HtmlCanvas;
 
-import com.github.ruediste.rise.api.ViewMvcWeb;
+import com.github.ruediste.rise.api.ViewMvc;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreUtil;
@@ -41,7 +41,7 @@ public class MvcUtil implements ICoreUtil {
 	TransactionManager txm;
 
 	@Inject
-	MvcWebRequestInfo info;
+	MvcRequestInfo info;
 
 	@Inject
 	CoreConfiguration coreConfiguration;
@@ -51,7 +51,7 @@ public class MvcUtil implements ICoreUtil {
 		return coreUtil;
 	}
 
-	public <TView extends ViewMvcWeb<?, TData>, TData> ActionResult view(
+	public <TView extends ViewMvc<?, TData>, TData> ActionResult view(
 			Class<TView> viewClass, TData data) {
 
 		TView view = injector.getInstance(viewClass);

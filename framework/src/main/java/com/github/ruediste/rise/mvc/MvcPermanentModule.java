@@ -1,8 +1,8 @@
-package com.github.ruediste.rise.mvc.web;
+package com.github.ruediste.rise.mvc;
 
 import com.github.ruediste.salta.jsr330.AbstractModule;
 
-public class MvcWebPermanentModule extends AbstractModule {
+public class MvcPermanentModule extends AbstractModule {
 
 	@Override
 	protected void configure() throws Exception {

@@ -8,12 +8,12 @@ import javax.inject.Inject;
 
 import org.rendersnake.HtmlCanvas;
 
-import com.github.ruediste.rise.api.ViewMvcWeb;
+import com.github.ruediste.rise.api.ViewMvc;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 
 public class AssetReferencingView extends
-		ViewMvcWeb<AssetReferencingController, String> {
+		ViewMvc<AssetReferencingController, String> {
 
 	static class Bundle extends AssetBundle {
 

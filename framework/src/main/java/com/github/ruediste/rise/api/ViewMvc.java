@@ -8,17 +8,18 @@ import org.rendersnake.HtmlCanvas;
 import org.rendersnake.Renderable;
 
 import com.github.ruediste.rise.core.ActionResult;
+import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
-import com.github.ruediste.rise.mvc.web.IControllerMvcWeb;
-import com.github.ruediste.rise.mvc.web.MvcUtil;
+import com.github.ruediste.rise.mvc.IControllerMvc;
+import com.github.ruediste.rise.mvc.MvcUtil;
 import com.google.common.reflect.TypeToken;
 
 /**
  * Base Class for views of the MVC framework
  */
-public abstract class ViewMvcWeb<TController extends IControllerMvcWeb, TData> {
+public abstract class ViewMvc<TController extends IControllerMvc, TData> {
 
 	@Inject
 	private MvcUtil util;
@@ -28,9 +29,9 @@ public abstract class ViewMvcWeb<TController extends IControllerMvcWeb, TData> {
 	private Class<TController> controllerClass;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected ViewMvcWeb() {
+	protected ViewMvc() {
 		controllerClass = (Class) TypeToken.of(getClass())
-				.resolveType(ViewMvcWeb.class.getTypeParameters()[0])
+				.resolveType(ViewMvc.class.getTypeParameters()[0])
 				.getRawType();
 	}
 

@@ -1,4 +1,4 @@
-package com.github.ruediste.rise.mvc.web;
+package com.github.ruediste.rise.mvc;
 
 import java.util.LinkedList;
 import java.util.Optional;
@@ -17,7 +17,7 @@ import com.github.ruediste.rise.core.RequestMapper;
 import com.github.ruediste.rise.core.web.ActionResultRenderer;
 
 @Singleton
-public class MvcWebConfiguration {
+public class MvcConfiguration {
 
 	public Supplier<RequestMapper> mapperSupplier;
 
@@ -38,7 +38,7 @@ public class MvcWebConfiguration {
 
 		coreConfiguration.actionInvocationToPathInfoMappingFunctions
 				.add(invocation -> {
-					if (IControllerMvcWeb.class
+					if (IControllerMvc.class
 							.isAssignableFrom(invocation.methodInvocation
 									.getInstanceClass()))
 						return Optional.of(mapper.generate(invocation));
@@ -75,7 +75,7 @@ public class MvcWebConfiguration {
 	public static class SupplierRefs {
 		/**
 		 * Supplier for the mapper. By default registered as
-		 * {@link MvcWebConfiguration#mapperSupplier}
+		 * {@link MvcConfiguration#mapperSupplier}
 		 */
 		public Supplier<RequestMapper> mapperSupplier;
 
@@ -92,7 +92,7 @@ public class MvcWebConfiguration {
 
 		/**
 		 * Instantiates the controller and invokes the action method. By default
-		 * registered as the {@link MvcWebConfiguration#finalHandlerSupplier}
+		 * registered as the {@link MvcConfiguration#finalHandlerSupplier}
 		 */
 		public Supplier<Runnable> controllerInvokerSupplier;
 
@@ -101,7 +101,7 @@ public class MvcWebConfiguration {
 	public final SupplierRefs supplierRefs = new SupplierRefs();
 
 	@PostConstruct
-	public void postConstruct(Provider<MvcWebRequestMapperImpl> mapper,
+	public void postConstruct(Provider<MvcRequestMapperImpl> mapper,
 			Provider<MvcControllerInvoker> invoker,
 			Provider<ActionResultRenderer> actionResultRenderer,
 			Provider<MvcPersistenceHandler> persistenceHandler) {

@@ -11,7 +11,7 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletResponse;
 
-import com.github.ruediste.rise.api.CView;
+import com.github.ruediste.rise.api.ViewComponent;
 import com.github.ruediste.rise.component.reload.ReloadHandler;
 import com.github.ruediste.rise.component.reload.ReloadPagePersistenceHandler;
 import com.github.ruediste.rise.component.reload.ReloadPageScopeHandler;
@@ -43,7 +43,7 @@ public class ComponentConfiguration {
 		viewFactory = viewFactorySupplier.get();
 		coreConfiguration.actionInvocationToPathInfoMappingFunctions
 				.add(invocation -> {
-					if (IComponentController.class
+					if (IControllerComponent.class
 							.isAssignableFrom(invocation.methodInvocation
 									.getInstanceClass()))
 						return Optional.of(mapper.generate(invocation));
@@ -184,14 +184,14 @@ public class ComponentConfiguration {
 		reloadParserSupplier = reloadParser::get;
 	}
 
-	public Supplier<BiFunction<IComponentController, Class<? extends IViewQualifier>, CView<?>>> viewFactorySupplier;
-	public BiFunction<IComponentController, Class<? extends IViewQualifier>, CView<?>> viewFactory;
+	public Supplier<BiFunction<IControllerComponent, Class<? extends IViewQualifier>, ViewComponent<?>>> viewFactorySupplier;
+	public BiFunction<IControllerComponent, Class<? extends IViewQualifier>, ViewComponent<?>> viewFactory;
 
-	public CView<?> createView(IComponentController controller) {
+	public ViewComponent<?> createView(IControllerComponent controller) {
 		return createView(controller, null);
 	}
 
-	public CView<?> createView(IComponentController controller,
+	public ViewComponent<?> createView(IControllerComponent controller,
 			Class<? extends IViewQualifier> qualifier) {
 		return viewFactory.apply(controller, qualifier);
 	}

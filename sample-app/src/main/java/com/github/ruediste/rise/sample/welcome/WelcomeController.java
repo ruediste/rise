@@ -4,11 +4,11 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 
-import com.github.ruediste.rise.api.ControllerMvcWeb;
+import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.web.ActionPath;
 
-public class WelcomeController extends ControllerMvcWeb<WelcomeController> {
+public class WelcomeController extends ControllerMvc<WelcomeController> {
 
 	@Inject
 	Logger log;

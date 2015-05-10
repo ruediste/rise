@@ -3,7 +3,7 @@ package com.github.ruediste.rise.api;
 import com.github.ruediste.rise.component.ComponentDynamicModule;
 import com.github.ruediste.rise.core.CoreDynamicModule;
 import com.github.ruediste.rise.core.front.LoggerModule;
-import com.github.ruediste.rise.mvc.web.MvcWebDynamicModule;
+import com.github.ruediste.rise.mvc.MvcDynamicModule;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
 
@@ -30,7 +30,7 @@ public class DynamicApplicationModule extends AbstractModule {
 	}
 
 	protected void installMvcWebModule() {
-		install(new MvcWebDynamicModule(permanentInjector));
+		install(new MvcDynamicModule(permanentInjector));
 	}
 
 	protected void installCoreModule() {

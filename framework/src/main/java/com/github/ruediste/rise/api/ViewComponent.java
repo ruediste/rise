@@ -1,13 +1,13 @@
 package com.github.ruediste.rise.api;
 
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
-import com.github.ruediste.rise.component.IComponentController;
+import com.github.ruediste.rise.component.IControllerComponent;
 import com.github.ruediste.rise.component.tree.Component;
 
 /**
  * Base class for view displaying {@link Component}s
  */
-public abstract class CView<TController extends IComponentController> extends
+public abstract class ViewComponent<TController extends IControllerComponent> extends
 		AttachedPropertyBearerBase {
 
 	protected TController controller;

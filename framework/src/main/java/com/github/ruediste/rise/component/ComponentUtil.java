@@ -13,7 +13,7 @@ import org.rendersnake.HtmlCanvas;
 import org.rendersnake.Renderable;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
-import com.github.ruediste.rise.api.CView;
+import com.github.ruediste.rise.api.ViewComponent;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ComponentTreeUtil;
 import com.github.ruediste.rise.component.web.components.template.CWTemplate;
@@ -27,8 +27,8 @@ import com.google.common.base.Charsets;
 public class ComponentUtil implements ICoreUtil {
 
 	private final AttachedProperty<Component, Long> componentNr = new AttachedProperty<>();
-	private final AttachedProperty<CView<?>, Map<Long, Component>> componentIdMap = new AttachedProperty<>();
-	private final AttachedProperty<CView<?>, Long> maxComponentNr = new AttachedProperty<>();
+	private final AttachedProperty<ViewComponent<?>, Map<Long, Component>> componentIdMap = new AttachedProperty<>();
+	private final AttachedProperty<ViewComponent<?>, Long> maxComponentNr = new AttachedProperty<>();
 
 	@Inject
 	PageInfo pageInfo;
@@ -60,7 +60,7 @@ public class ComponentUtil implements ICoreUtil {
 		return componentNr.get(component);
 	}
 
-	public Component getComponent(CView<?> view, long componentId) {
+	public Component getComponent(ViewComponent<?> view, long componentId) {
 		return componentIdMap.get(view).get(componentId);
 	}
 
@@ -68,7 +68,7 @@ public class ComponentUtil implements ICoreUtil {
 	 * Set the component number of all children of the root component which do
 	 * not have a number yet
 	 */
-	public byte[] renderComponents(CView<?> view, Component rootComponent) {
+	public byte[] renderComponents(ViewComponent<?> view, Component rootComponent) {
 		{
 			// set the component IDs
 			Map<Long, Component> map;

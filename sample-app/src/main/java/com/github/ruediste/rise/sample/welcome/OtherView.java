@@ -8,10 +8,10 @@ import javax.inject.Inject;
 
 import org.rendersnake.HtmlCanvas;
 
-import com.github.ruediste.rise.api.ViewMvcWeb;
-import com.github.ruediste.rise.mvc.web.MvcUtil;
+import com.github.ruediste.rise.api.ViewMvc;
+import com.github.ruediste.rise.mvc.MvcUtil;
 
-public class OtherView extends ViewMvcWeb<WelcomeController, String> {
+public class OtherView extends ViewMvc<WelcomeController, String> {
 
 	@Inject
 	MvcUtil util;

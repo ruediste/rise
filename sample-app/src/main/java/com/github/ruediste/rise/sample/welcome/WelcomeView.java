@@ -15,7 +15,7 @@ import javax.inject.Inject;
 import org.rendersnake.HtmlAttributesFactory;
 import org.rendersnake.HtmlCanvas;
 
-import com.github.ruediste.rise.api.ViewMvcWeb;
+import com.github.ruediste.rise.api.ViewMvc;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.front.ReloadCountHolder;
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
@@ -26,7 +26,7 @@ import com.github.ruediste.rise.sample.component.SampleComponentController;
 import com.github.ruediste.rise.sample.db.TodoController;
 
 public class WelcomeView extends
-		ViewMvcWeb<WelcomeController, WelcomeController.Data> {
+		ViewMvc<WelcomeController, WelcomeController.Data> {
 
 	static class Bundle extends AssetBundle {
 

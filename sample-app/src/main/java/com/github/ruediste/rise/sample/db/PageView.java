@@ -6,13 +6,13 @@ import javax.inject.Inject;
 
 import org.rendersnake.HtmlCanvas;
 
-import com.github.ruediste.rise.api.ViewMvcWeb;
+import com.github.ruediste.rise.api.ViewMvc;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
-import com.github.ruediste.rise.mvc.web.IControllerMvcWeb;
+import com.github.ruediste.rise.mvc.IControllerMvc;
 
-public abstract class PageView<TController extends IControllerMvcWeb, TData>
-		extends ViewMvcWeb<TController, TData> {
+public abstract class PageView<TController extends IControllerMvc, TData>
+		extends ViewMvc<TController, TData> {
 
 	private static class Bundle extends AssetBundle {
 

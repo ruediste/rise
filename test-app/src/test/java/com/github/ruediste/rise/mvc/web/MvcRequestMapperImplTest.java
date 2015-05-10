@@ -9,6 +9,7 @@ import javax.inject.Provider;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.PathInfoIndex;
@@ -16,12 +17,14 @@ import com.github.ruediste.rise.core.RequestParser;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
+import com.github.ruediste.rise.mvc.MvcConfiguration;
+import com.github.ruediste.rise.mvc.MvcRequestParseResult;
 import com.github.ruediste.rise.testApp.WebTest;
 
-public class MvcWebRequestMapperImplTest extends WebTest {
+public class MvcRequestMapperImplTest extends WebTest {
 
 	@Inject
-	MvcWebConfiguration config;
+	MvcConfiguration config;
 
 	@Inject
 	PathInfoIndex idx;
@@ -32,7 +35,7 @@ public class MvcWebRequestMapperImplTest extends WebTest {
 	@Inject
 	CoreUtil coreUtil;
 
-	static class A implements IControllerMvcWeb {
+	static class A extends ControllerMvc<A> {
 
 		public ActionResult noArgs() {
 			return null;
@@ -83,7 +86,7 @@ public class MvcWebRequestMapperImplTest extends WebTest {
 		// try to parse the generated info
 		RequestParser handler = idx.getHandler(req.getPathInfo());
 		assertNotNull("No Handler found for " + req, handler);
-		MvcWebRequestParseResult result = (MvcWebRequestParseResult) handler
+		MvcRequestParseResult result = (MvcRequestParseResult) handler
 				.parse(req);
 
 		// compare parsed result with invocation

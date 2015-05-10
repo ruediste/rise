@@ -6,7 +6,7 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 
-import com.github.ruediste.rise.api.CView;
+import com.github.ruediste.rise.api.ViewComponent;
 import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.component.ComponentSessionInfo;
 import com.github.ruediste.rise.component.ComponentUtil;
@@ -49,7 +49,7 @@ public class ReloadHandler implements Runnable {
 
 		log.debug("reloading page " + page.getPageId());
 
-		CView<?> view = page.getView();
+		ViewComponent<?> view = page.getView();
 
 		Component reloadComponent = util.getComponent(view,
 				request.getComponentNr());

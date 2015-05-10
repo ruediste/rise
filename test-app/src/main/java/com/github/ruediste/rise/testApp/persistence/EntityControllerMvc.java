@@ -9,15 +9,15 @@ import javax.persistence.EntityManager;
 
 import org.rendersnake.HtmlCanvas;
 
-import com.github.ruediste.rise.api.ControllerMvcWeb;
-import com.github.ruediste.rise.api.ViewMvcWeb;
+import com.github.ruediste.rise.api.ControllerMvc;
+import com.github.ruediste.rise.api.ViewMvc;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.mvc.Updating;
 
-public class EntityControllerMvc extends ControllerMvcWeb<EntityControllerMvc> {
+public class EntityControllerMvc extends ControllerMvc<EntityControllerMvc> {
 
 	static class ListView extends
-			ViewMvcWeb<EntityControllerMvc, List<TestEntity>> {
+			ViewMvc<EntityControllerMvc, List<TestEntity>> {
 
 		@Override
 		public void render(HtmlCanvas html) throws IOException {

@@ -10,7 +10,7 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.slf4j.Logger;
 
-import com.github.ruediste.rise.api.ControllerMvcWeb;
+import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.rise.core.front.reload.ClassHierarchyCache;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
@@ -26,7 +26,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
 /**
- * Registers the {@link ControllerMvcWeb}s with the {@link PathInfoIndex} during
+ * Registers the {@link ControllerMvc}s with the {@link PathInfoIndex} during
  * {@link #initialize()} and supports URL generation by providing
  * {@link #generate(ActionInvocation)}
  */

@@ -5,8 +5,8 @@ import javax.inject.Inject;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
-import com.github.ruediste.rise.mvc.web.IControllerMvcWeb;
-import com.github.ruediste.rise.mvc.web.MvcUtil;
+import com.github.ruediste.rise.mvc.IControllerMvc;
+import com.github.ruediste.rise.mvc.MvcUtil;
 
 public class IntegrationTestUtil {
 
@@ -28,7 +28,7 @@ public class IntegrationTestUtil {
 						.getValue();
 	}
 
-	public <T extends IControllerMvcWeb> T go(Class<T> controllerClass) {
+	public <T extends IControllerMvc> T go(Class<T> controllerClass) {
 		return util.path(controllerClass).go();
 	}
 }

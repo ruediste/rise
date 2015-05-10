@@ -2,11 +2,11 @@ package com.github.ruediste.rise.sample.component;
 
 import javax.inject.Inject;
 
-import com.github.ruediste.rise.component.IComponentController;
+import com.github.ruediste.rise.api.ControllerComponent;
 import com.github.ruediste.rise.component.core.binding.BindingGroup;
 import com.github.ruediste.rise.core.ActionResult;
 
-public class SampleComponentController implements IComponentController {
+public class SampleComponentController extends ControllerComponent {
 
 	int counter;
 

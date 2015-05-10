@@ -16,8 +16,8 @@ import com.github.ruediste.rise.core.persistence.TransactionControl;
 import com.github.ruediste.rise.core.persistence.TransactionProperties;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerSet;
-import com.github.ruediste.rise.mvc.web.MvcWebRequestInfo;
-import com.github.ruediste.rise.mvc.web.TransactionException;
+import com.github.ruediste.rise.mvc.MvcRequestInfo;
+import com.github.ruediste.rise.mvc.TransactionException;
 
 public class TransactionTemplate {
 
@@ -31,7 +31,7 @@ public class TransactionTemplate {
 	EntityManagerHolder holder;
 
 	@Inject
-	MvcWebRequestInfo info;
+	MvcRequestInfo info;
 
 	@Inject
 	TransactionProperties transactionProperties;

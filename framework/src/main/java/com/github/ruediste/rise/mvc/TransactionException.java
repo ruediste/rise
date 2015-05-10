@@ -1,4 +1,4 @@
-package com.github.ruediste.rise.mvc.web;
+package com.github.ruediste.rise.mvc;
 
 /**
  * Wrapper exception used for exceptions related to transactions

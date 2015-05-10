@@ -45,7 +45,7 @@ public class PageCreationHandler extends ChainedRequestHandler {
 				Object controller = injector.getInstance(coreRequestInfo
 						.getStringActionInvocation().methodInvocation
 						.getInstanceClass());
-				pi.setController((IComponentController) controller);
+				pi.setController((IControllerComponent) controller);
 
 				next.run();
 			}

@@ -8,12 +8,12 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
-import com.github.ruediste.rise.api.ControllerMvcWeb;
+import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.mvc.Updating;
 
-public class TodoController extends ControllerMvcWeb<TodoController> {
+public class TodoController extends ControllerMvc<TodoController> {
 
 	static class IndexData {
 		public List<TodoItem> allItems;

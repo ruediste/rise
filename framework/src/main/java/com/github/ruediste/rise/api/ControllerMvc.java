@@ -4,25 +4,25 @@ import javax.inject.Inject;
 
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
-import com.github.ruediste.rise.mvc.web.IControllerMvcWeb;
-import com.github.ruediste.rise.mvc.web.MvcUtil;
+import com.github.ruediste.rise.mvc.IControllerMvc;
+import com.github.ruediste.rise.mvc.MvcUtil;
 import com.google.common.reflect.TypeToken;
 
-public class ControllerMvcWeb<TSelf extends ControllerMvcWeb<TSelf>> implements
-		IControllerMvcWeb {
+public class ControllerMvc<TSelf extends ControllerMvc<TSelf>> implements
+		IControllerMvc {
 
 	@Inject
 	MvcUtil util;
 	private Class<TSelf> controllerClass;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public ControllerMvcWeb() {
+	public ControllerMvc() {
 		controllerClass = (Class) TypeToken.of(getClass())
-				.resolveType(ControllerMvcWeb.class.getTypeParameters()[0])
+				.resolveType(ControllerMvc.class.getTypeParameters()[0])
 				.getRawType();
 	}
 
-	protected <TView extends ViewMvcWeb<?, TData>, TData> ActionResult view(
+	protected <TView extends ViewMvc<?, TData>, TData> ActionResult view(
 			Class<TView> viewClass, TData data) {
 		return util.view(viewClass, data);
 	}

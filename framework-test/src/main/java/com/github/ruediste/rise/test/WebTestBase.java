@@ -11,7 +11,7 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.integration.StandaloneLafApplication;
-import com.github.ruediste.rise.mvc.web.IControllerMvcWeb;
+import com.github.ruediste.rise.mvc.IControllerMvc;
 
 public abstract class WebTestBase {
 
@@ -22,7 +22,7 @@ public abstract class WebTestBase {
 		return util.url(result);
 	}
 
-	protected <T extends IControllerMvcWeb> T path(Class<T> controllerClass) {
+	protected <T extends IControllerMvc> T path(Class<T> controllerClass) {
 		return util.go(controllerClass);
 	}
 
