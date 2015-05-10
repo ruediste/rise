@@ -1,6 +1,6 @@
 package com.github.ruediste.rise.component;
 
-import com.github.ruediste.rise.component.core.binding.BindingGroupCreationRule;
+import com.github.ruediste.rise.component.binding.BindingGroupCreationRule;
 import com.github.ruediste.rise.util.InitializerUtil;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;

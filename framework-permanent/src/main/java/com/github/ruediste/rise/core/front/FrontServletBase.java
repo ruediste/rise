@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 
 import com.github.ruediste.rise.core.front.reload.FileChangeNotifier;
-import com.github.ruediste.rise.core.front.reload.SpaceAwareClassLoader;
+import com.github.ruediste.rise.core.front.reload.ReloadableClassLoader;
 import com.github.ruediste.rise.core.persistence.DataBaseLinkRegistry;
 import com.github.ruediste.rise.util.InitializerUtil;
 import com.github.ruediste.salta.jsr330.Injector;
@@ -90,7 +90,7 @@ public abstract class FrontServletBase extends HttpServlet {
 
 	@Inject
 	@Named("dynamic")
-	Provider<SpaceAwareClassLoader> dynamicClassLoaderProvider;
+	Provider<ReloadableClassLoader> dynamicClassLoaderProvider;
 
 	@Inject
 	Injector permanentInjector;
@@ -146,7 +146,7 @@ public abstract class FrontServletBase extends HttpServlet {
 			Thread currentThread = Thread.currentThread();
 			ClassLoader old = currentThread.getContextClassLoader();
 			try {
-				SpaceAwareClassLoader dynamicClassloader = dynamicClassLoaderProvider
+				ReloadableClassLoader dynamicClassloader = dynamicClassLoaderProvider
 						.get();
 				currentThread.setContextClassLoader(dynamicClassloader);
 

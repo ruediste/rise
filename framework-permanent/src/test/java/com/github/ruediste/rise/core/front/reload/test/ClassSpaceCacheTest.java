@@ -1,6 +1,6 @@
 package com.github.ruediste.rise.core.front.reload.test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
@@ -15,18 +15,18 @@ import org.slf4j.Logger;
 import com.github.ruediste.rise.core.front.reload.ClassChangeNotifier;
 import com.github.ruediste.rise.core.front.reload.ClassChangeNotifier.ClassChangeTransaction;
 import com.github.ruediste.rise.core.front.reload.ClassHierarchyCacheTest;
-import com.github.ruediste.rise.core.front.reload.ClassSpaceCache;
 import com.github.ruediste.rise.core.front.reload.ClassSpaceCacheTestHelper;
-import com.github.ruediste.rise.core.front.reload.DynamicSpace;
+import com.github.ruediste.rise.core.front.reload.Reloadable;
+import com.github.ruediste.rise.core.front.reload.ReloadebleClassesIndex;
 
 @RunWith(MockitoJUnitRunner.class)
-@DynamicSpace
+@Reloadable
 public class ClassSpaceCacheTest {
 	@Mock
 	Logger log;
 
 	@InjectMocks
-	ClassSpaceCache cache;
+	ReloadebleClassesIndex cache;
 
 	private Object tst;
 
@@ -47,12 +47,11 @@ public class ClassSpaceCacheTest {
 
 	@Test
 	public void testInnerClass() {
-		assertEquals(DynamicSpace.class, cache.getClassSpace(A.class.getName()));
+		assertTrue(cache.isReloadable(A.class.getName()));
 	}
 
 	@Test
 	public void testAnonymousClass() {
-		assertEquals(DynamicSpace.class,
-				cache.getClassSpace(tst.getClass().getName()));
+		assertTrue(cache.isReloadable(tst.getClass().getName()));
 	}
 }

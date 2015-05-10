@@ -5,11 +5,9 @@ import javax.inject.Singleton;
 import javax.servlet.ServletConfig;
 
 import com.github.ruediste.rise.core.front.reload.ClassHierarchyCache;
-import com.github.ruediste.rise.core.front.reload.ClassSpaceCache;
-import com.github.ruediste.rise.core.front.reload.DynamicSpace;
+import com.github.ruediste.rise.core.front.reload.ReloadebleClassesIndex;
 import com.github.ruediste.rise.core.front.reload.FileChangeNotifier;
-import com.github.ruediste.rise.core.front.reload.PermanentSpace;
-import com.github.ruediste.rise.core.front.reload.SpaceAwareClassLoader;
+import com.github.ruediste.rise.core.front.reload.ReloadableClassLoader;
 import com.github.ruediste.rise.util.InitializerUtil;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Provides;
@@ -31,10 +29,9 @@ public class CorePermanentModule extends AbstractModule {
 
 	@Named("dynamic")
 	@Provides
-	SpaceAwareClassLoader spaceAwareClassLoaderDynamic(ClassSpaceCache cache) {
-		return new SpaceAwareClassLoader(Thread.currentThread()
-				.getContextClassLoader(), DynamicSpace.class, cache,
-				PermanentSpace.class);
+	ReloadableClassLoader spaceAwareClassLoaderDynamic(ReloadebleClassesIndex cache) {
+		return new ReloadableClassLoader(Thread.currentThread()
+				.getContextClassLoader(), cache);
 	}
 
 	@Provides

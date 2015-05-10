@@ -1,3 +1,3 @@
-@com.github.ruediste.rise.core.front.reload.PermanentSpace
+@com.github.ruediste.rise.core.front.reload.Permanent
 package com.github.ruediste.rise.core.front.reload.test;
 

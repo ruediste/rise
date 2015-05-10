@@ -6,8 +6,8 @@ import java.util.function.Supplier;
 
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
-import com.github.ruediste.rise.component.core.binding.Binding;
-import com.github.ruediste.rise.component.core.binding.BindingUtil;
+import com.github.ruediste.rise.component.binding.Binding;
+import com.github.ruediste.rise.component.binding.BindingUtil;
 import com.google.common.collect.Iterables;
 
 /**

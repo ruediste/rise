@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import com.github.ruediste.rise.core.front.reload.DynamicSpace;
+import com.github.ruediste.rise.core.front.reload.Reloadable;
 import com.github.ruediste.rise.core.web.assetPipeline.Asset;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleNonRegistered;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetGroup;
 
-@DynamicSpace
+@Reloadable
 public class BootstrapBundleUtil extends AssetBundleNonRegistered {
 
 	public static class BootstrapAssetGroups {

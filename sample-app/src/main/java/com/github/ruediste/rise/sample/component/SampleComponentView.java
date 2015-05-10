@@ -1,11 +1,11 @@
 package com.github.ruediste.rise.sample.component;
 
 import com.github.ruediste.rise.api.ViewComponent;
+import com.github.ruediste.rise.component.components.CButton;
+import com.github.ruediste.rise.component.components.CPage;
+import com.github.ruediste.rise.component.components.CRender;
+import com.github.ruediste.rise.component.components.CTextFieldFormGroup;
 import com.github.ruediste.rise.component.tree.Component;
-import com.github.ruediste.rise.component.web.components.CButton;
-import com.github.ruediste.rise.component.web.components.CPage;
-import com.github.ruediste.rise.component.web.components.CRender;
-import com.github.ruediste.rise.component.web.components.CTextFieldFormGroup;
 
 public class SampleComponentView extends ViewComponent<SampleComponentController> {
 

@@ -1,10 +1,10 @@
 package com.github.ruediste.rise.core.web;
 
-import com.github.ruediste.rise.core.front.reload.DynamicSpace;
+import com.github.ruediste.rise.core.front.reload.Reloadable;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleNonRegistered;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetGroup;
 
-@DynamicSpace
+@Reloadable
 public class CoreAssetBundle extends AssetBundleNonRegistered {
 
 	public static final String bodyAttributeRestartQueryUrl = "rise-restart-query-url";

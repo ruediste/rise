@@ -7,8 +7,8 @@ import javax.inject.Inject;
 import org.rendersnake.HtmlCanvas;
 
 import com.github.ruediste.rise.component.ComponentUtil;
-import com.github.ruediste.rise.component.web.components.CPage;
-import com.github.ruediste.rise.component.web.components.template.CWTemplateBase;
+import com.github.ruediste.rise.component.components.CPage;
+import com.github.ruediste.rise.component.components.template.CWTemplateBase;
 import com.github.ruediste.rise.sample.SampleBundle;
 import com.github.ruediste.rise.sample.welcome.PageRenderable;
 

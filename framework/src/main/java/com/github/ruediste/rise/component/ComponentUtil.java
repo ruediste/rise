@@ -14,9 +14,9 @@ import org.rendersnake.Renderable;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.rise.api.ViewComponent;
+import com.github.ruediste.rise.component.components.template.CWTemplate;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ComponentTreeUtil;
-import com.github.ruediste.rise.component.web.components.template.CWTemplate;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.ICoreUtil;

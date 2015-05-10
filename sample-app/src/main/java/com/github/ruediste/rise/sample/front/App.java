@@ -4,7 +4,7 @@ import javax.inject.Inject;
 
 import com.github.ruediste.rise.api.DynamicApplicationModule;
 import com.github.ruediste.rise.component.TemplateIndex;
-import com.github.ruediste.rise.component.web.components.CPage;
+import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.front.DynamicApplicationBase;
 import com.github.ruediste.rise.sample.component.CPageHtmlTemplate;

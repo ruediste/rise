@@ -2,6 +2,8 @@ package com.github.ruediste.rise.core.front.reload;
 
 import org.objectweb.asm.ClassReader;
 
+import com.github.ruediste.rise.core.front.reload.FileChangeNotifier.FileChangeTransaction;
+
 public class ReloadConfiguration {
 	/**
 	 * Flags to be used when calling
@@ -11,5 +13,10 @@ public class ReloadConfiguration {
 	public int classScanningFlags = ClassReader.SKIP_CODE
 			+ ClassReader.SKIP_DEBUG;
 
+	/**
+	 * Delay in ms to wait after a file change is detected until the
+	 * corresponding event is raised. Allows multiple changes to be sent in one
+	 * {@link FileChangeTransaction}.
+	 */
 	public long fileChangeSettleDelayMs = 10;
 }
