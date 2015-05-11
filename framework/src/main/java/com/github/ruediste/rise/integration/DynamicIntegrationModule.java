@@ -1,6 +1,6 @@
 package com.github.ruediste.rise.integration;
 
-import com.github.ruediste.rise.api.DynamicApplicationModule;
+import com.github.ruediste.rise.api.RestartableApplicationModule;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
 
@@ -14,7 +14,7 @@ public class DynamicIntegrationModule extends AbstractModule {
 
 	@Override
 	protected void configure() throws Exception {
-		install(new DynamicApplicationModule(permanentInjector));
+		install(new RestartableApplicationModule(permanentInjector));
 	}
 
 }

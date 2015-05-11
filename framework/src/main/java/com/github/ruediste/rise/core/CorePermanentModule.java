@@ -4,10 +4,10 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.servlet.ServletConfig;
 
-import com.github.ruediste.rise.core.front.reload.ClassHierarchyCache;
-import com.github.ruediste.rise.core.front.reload.ReloadebleClassesIndex;
-import com.github.ruediste.rise.core.front.reload.FileChangeNotifier;
-import com.github.ruediste.rise.core.front.reload.ReloadableClassLoader;
+import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyCache;
+import com.github.ruediste.rise.nonReloadable.front.reload.FileChangeNotifier;
+import com.github.ruediste.rise.nonReloadable.front.reload.ReloadableClassLoader;
+import com.github.ruediste.rise.nonReloadable.front.reload.ReloadebleClassesIndex;
 import com.github.ruediste.rise.util.InitializerUtil;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Provides;

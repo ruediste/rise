@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.objectweb.asm.tree.MethodNode;
 
-import com.github.ruediste.rise.core.front.reload.ClassHierarchyCache;
+import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyCache;
 import com.github.ruediste.rise.testApp.WebTest;
 
 public class ControllerReflectionUtilTest extends WebTest {

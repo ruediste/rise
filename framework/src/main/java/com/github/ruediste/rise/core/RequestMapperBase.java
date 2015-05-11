@@ -12,11 +12,11 @@ import org.slf4j.Logger;
 
 import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
-import com.github.ruediste.rise.core.front.reload.ClassHierarchyCache;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.web.ActionPathAnnotationUtil;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.core.web.ActionPathAnnotationUtil.MethodPathInfos;
+import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyCache;
 import com.github.ruediste.rise.util.AsmUtil;
 import com.github.ruediste.rise.util.MethodInvocation;
 import com.github.ruediste.rise.util.Pair;

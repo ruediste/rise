@@ -18,6 +18,9 @@ import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.web.ContentRenderResult;
 
+/**
+ * Handler applying values, raising events and rendering the reloaded component
+ */
 public class ReloadHandler implements Runnable {
 	@Inject
 	Logger log;
@@ -61,7 +64,7 @@ public class ReloadHandler implements Runnable {
 			templateIndex.getTemplate(c).applyValues(c);
 		}
 
-		// process events
+		// raise events
 		for (Component c : components) {
 			templateIndex.getTemplate(c).raiseEvents(c);
 		}

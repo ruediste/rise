@@ -2,25 +2,25 @@ package com.github.ruediste.rise.testApp.app;
 
 import java.util.Properties;
 
-import com.github.ruediste.rise.core.front.FrontServletBase;
-import com.github.ruediste.rise.core.persistence.BitronixDataSourceFactory;
-import com.github.ruediste.rise.core.persistence.BitronixModule;
-import com.github.ruediste.rise.core.persistence.EclipseLinkEntityManagerFactoryProvider;
-import com.github.ruediste.rise.core.persistence.H2DatabaseIntegrationInfo;
-import com.github.ruediste.rise.core.persistence.PersistenceModuleUtil;
 import com.github.ruediste.rise.integration.PermanentIntegrationModule;
+import com.github.ruediste.rise.nonReloadable.front.FrontServletBase;
+import com.github.ruediste.rise.nonReloadable.persistence.BitronixDataSourceFactory;
+import com.github.ruediste.rise.nonReloadable.persistence.BitronixModule;
+import com.github.ruediste.rise.nonReloadable.persistence.EclipseLinkEntityManagerFactoryProvider;
+import com.github.ruediste.rise.nonReloadable.persistence.H2DatabaseIntegrationInfo;
+import com.github.ruediste.rise.nonReloadable.persistence.PersistenceModuleUtil;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Salta;
 
 public class TestAppFrontServlet extends FrontServletBase {
 	private static final long serialVersionUID = 1L;
 
-	public TestAppFrontServlet(TestDynamicApplication fixedApplicationInstance) {
+	public TestAppFrontServlet(TestRestartableApplication fixedApplicationInstance) {
 		super(fixedApplicationInstance);
 	}
 
 	public TestAppFrontServlet() {
-		super(TestDynamicApplication.class);
+		super(TestRestartableApplication.class);
 	}
 
 	@Override

@@ -14,9 +14,15 @@ import javax.transaction.TransactionManager;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.github.ruediste.rise.core.CoreDynamicModule;
-import com.github.ruediste.rise.core.front.LoggerModule;
+import com.github.ruediste.rise.core.CoreRestartableModule;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
+import com.github.ruediste.rise.nonReloadable.front.LoggerModule;
+import com.github.ruediste.rise.nonReloadable.persistence.BitronixDataSourceFactory;
+import com.github.ruediste.rise.nonReloadable.persistence.BitronixModule;
+import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
+import com.github.ruediste.rise.nonReloadable.persistence.EclipseLinkEntityManagerFactoryProvider;
+import com.github.ruediste.rise.nonReloadable.persistence.H2DatabaseIntegrationInfo;
+import com.github.ruediste.rise.nonReloadable.persistence.PersistenceModuleUtil;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste.salta.jsr330.Salta;
@@ -51,7 +57,7 @@ public class EntityManagerTest {
 
 		permanentInjector.getInstance(DataBaseLinkRegistry.class)
 				.initializeDataSources();
-		Salta.createInjector(new CoreDynamicModule(permanentInjector),
+		Salta.createInjector(new CoreRestartableModule(permanentInjector),
 				new LoggerModule()).injectMembers(this);
 	}
 

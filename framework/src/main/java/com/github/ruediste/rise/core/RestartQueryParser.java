@@ -6,13 +6,13 @@ import java.io.PrintWriter;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
-import com.github.ruediste.rise.core.front.ReloadCountHolder;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
+import com.github.ruediste.rise.nonReloadable.front.RestartCountHolder;
 
 public final class RestartQueryParser implements RequestParser {
 
 	@Inject
-	ReloadCountHolder holder;
+	RestartCountHolder holder;
 
 	@Inject
 	CoreRequestInfo info;
@@ -24,7 +24,7 @@ public final class RestartQueryParser implements RequestParser {
 
 			@Override
 			public void handle() {
-				boolean doReload = holder.waitForReload(Long.parseLong(request
+				boolean doReload = holder.waitForRestart(Long.parseLong(request
 						.getParameter("nr")));
 				HttpServletResponse response = info.getServletResponse();
 

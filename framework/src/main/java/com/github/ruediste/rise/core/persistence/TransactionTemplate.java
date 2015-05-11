@@ -11,13 +11,13 @@ import javax.transaction.TransactionManager;
 
 import org.slf4j.Logger;
 
-import com.github.ruediste.rise.core.persistence.IsolationLevel;
-import com.github.ruediste.rise.core.persistence.TransactionControl;
-import com.github.ruediste.rise.core.persistence.TransactionProperties;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerSet;
 import com.github.ruediste.rise.mvc.MvcRequestInfo;
 import com.github.ruediste.rise.mvc.TransactionException;
+import com.github.ruediste.rise.nonReloadable.persistence.IsolationLevel;
+import com.github.ruediste.rise.nonReloadable.persistence.TransactionControl;
+import com.github.ruediste.rise.nonReloadable.persistence.TransactionProperties;
 
 public class TransactionTemplate {
 

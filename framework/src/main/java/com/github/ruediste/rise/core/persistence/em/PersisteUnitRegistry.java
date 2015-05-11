@@ -13,7 +13,7 @@ import javax.inject.Singleton;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.metamodel.ManagedType;
 
-import com.github.ruediste.rise.core.persistence.DataBaseLinkRegistry;
+import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
 
 @Singleton
 public class PersisteUnitRegistry {

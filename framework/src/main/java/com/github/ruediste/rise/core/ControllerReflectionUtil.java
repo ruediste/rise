@@ -9,8 +9,8 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.MethodNode;
 
-import com.github.ruediste.rise.core.front.reload.ClassHierarchyCache;
 import com.github.ruediste.rise.mvc.Updating;
+import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyCache;
 
 public class ControllerReflectionUtil {
 

@@ -6,6 +6,7 @@ import javax.inject.Singleton;
 import javax.servlet.ServletConfig;
 
 import com.github.ruediste.rise.core.web.PathInfo;
+import com.github.ruediste.rise.nonReloadable.Permanent;
 
 /**
  * Service providing convenience methods to work with HTTP requests and

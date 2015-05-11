@@ -1,3 +1,3 @@
-# Light Application Framework
+# Rise Application Framework
 
-See the [Wiki](https://github.com/ruediste/laf/wiki) for documentation
+See the [Wiki](https://github.com/ruediste/rise/wiki) for documentation.

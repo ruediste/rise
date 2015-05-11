@@ -1,7 +1,7 @@
 package com.github.ruediste.rise.mvc;
 
-import com.github.ruediste.rise.core.persistence.TransactionControl;
 import com.github.ruediste.rise.core.scopes.RequestScoped;
+import com.github.ruediste.rise.nonReloadable.persistence.TransactionControl;
 
 @RequestScoped
 public class MvcRequestInfo {

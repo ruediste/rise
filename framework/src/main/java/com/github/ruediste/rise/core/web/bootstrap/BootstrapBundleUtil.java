@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import com.github.ruediste.rise.core.front.reload.Reloadable;
 import com.github.ruediste.rise.core.web.assetPipeline.Asset;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleNonRegistered;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetGroup;
+import com.github.ruediste.rise.nonReloadable.front.reload.Reloadable;
 
 @Reloadable
 public class BootstrapBundleUtil extends AssetBundleNonRegistered {

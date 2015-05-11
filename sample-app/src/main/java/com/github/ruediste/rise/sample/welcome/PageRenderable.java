@@ -17,13 +17,13 @@ import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.component.PageInfo;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreUtil;
-import com.github.ruediste.rise.core.front.ReloadCountHolder;
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
+import com.github.ruediste.rise.nonReloadable.front.RestartCountHolder;
 
 public abstract class PageRenderable<T> {
 
 	@Inject
-	ReloadCountHolder holder;
+	RestartCountHolder holder;
 
 	@Inject
 	CoreConfiguration coreConfig;

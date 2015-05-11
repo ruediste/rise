@@ -4,13 +4,13 @@ import javax.servlet.Servlet;
 
 import com.github.ruediste.rise.test.WebTestBase;
 import com.github.ruediste.rise.testApp.app.TestAppFrontServlet;
-import com.github.ruediste.rise.testApp.app.TestDynamicApplication;
+import com.github.ruediste.rise.testApp.app.TestRestartableApplication;
 import com.github.ruediste.salta.jsr330.Injector;
 
 public class WebTest extends WebTestBase {
 	@Override
 	protected final Servlet createServlet(Object testCase) {
-		TestDynamicApplication app = new TestDynamicApplication() {
+		TestRestartableApplication app = new TestRestartableApplication() {
 
 			@Override
 			protected void startImpl(Injector permanentInjector) {

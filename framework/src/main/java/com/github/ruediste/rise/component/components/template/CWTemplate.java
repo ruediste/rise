@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.rendersnake.HtmlCanvas;
 
 import com.github.ruediste.rise.component.tree.Component;
-import com.github.ruediste.rise.core.front.reload.Permanent;
 
 /**
  * Renders a {@link Component} to HTML and processes updates from the view.
@@ -17,7 +16,6 @@ import com.github.ruediste.rise.core.front.reload.Permanent;
  * between components. The interface was designed to allow this.
  * </p>
  */
-@Permanent
 public interface CWTemplate<T extends Component> {
 
 	void render(T component, HtmlCanvas html) throws IOException;

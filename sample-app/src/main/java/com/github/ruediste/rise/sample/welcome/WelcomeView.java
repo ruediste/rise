@@ -17,10 +17,10 @@ import org.rendersnake.HtmlCanvas;
 
 import com.github.ruediste.rise.api.ViewMvc;
 import com.github.ruediste.rise.core.CoreConfiguration;
-import com.github.ruediste.rise.core.front.ReloadCountHolder;
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
+import com.github.ruediste.rise.nonReloadable.front.RestartCountHolder;
 import com.github.ruediste.rise.sample.SampleBundle;
 import com.github.ruediste.rise.sample.component.SampleComponentController;
 import com.github.ruediste.rise.sample.db.TodoController;
@@ -46,7 +46,7 @@ public class WelcomeView extends
 	SampleBundle sampleBundle;
 
 	@Inject
-	ReloadCountHolder holder;
+	RestartCountHolder holder;
 
 	@Inject
 	CoreConfiguration coreConfig;
@@ -112,7 +112,7 @@ public class WelcomeView extends
 		    		._div()
 		    		
 		    		.div(class_("col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main"))
-						.h1(class_("page-header")).content("Reload funktioniert")
+						.h1(class_("page-header")).content("Reload funktioniert immer noch")
 						.div(class_("row"))
 							.div(class_("col-xs-6"))
 								.a(class_("btn btn-primary").href(url(go().other()))).content("other")

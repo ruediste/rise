@@ -10,9 +10,9 @@ import org.slf4j.Logger;
 import com.github.ruediste.rise.core.ChainedRequestHandler;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
-import com.github.ruediste.rise.core.persistence.TransactionProperties;
 import com.github.ruediste.rise.core.persistence.TransactionTemplate;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
+import com.github.ruediste.rise.nonReloadable.persistence.TransactionProperties;
 
 public class MvcPersistenceHandler extends ChainedRequestHandler {
 

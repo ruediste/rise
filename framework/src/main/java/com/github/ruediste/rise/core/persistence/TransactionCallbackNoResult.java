@@ -1,7 +1,7 @@
 package com.github.ruediste.rise.core.persistence;
 
-import com.github.ruediste.rise.core.persistence.TransactionControl;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerSet;
+import com.github.ruediste.rise.nonReloadable.persistence.TransactionControl;
 
 /**
  * Callback for transactional code. Typically used as argument to {@link

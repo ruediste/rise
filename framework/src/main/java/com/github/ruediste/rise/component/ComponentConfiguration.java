@@ -12,6 +12,11 @@ import javax.inject.Singleton;
 import javax.servlet.http.HttpServletResponse;
 
 import com.github.ruediste.rise.api.ViewComponent;
+import com.github.ruediste.rise.component.initial.ComponentControllerInvoker;
+import com.github.ruediste.rise.component.initial.ComponentRequestMapperImpl;
+import com.github.ruediste.rise.component.initial.InitialPagePersistenceHandler;
+import com.github.ruediste.rise.component.initial.PageCreationHandler;
+import com.github.ruediste.rise.component.initial.ViewRenderer;
 import com.github.ruediste.rise.component.reload.ReloadHandler;
 import com.github.ruediste.rise.component.reload.ReloadPagePersistenceHandler;
 import com.github.ruediste.rise.component.reload.ReloadPageScopeHandler;

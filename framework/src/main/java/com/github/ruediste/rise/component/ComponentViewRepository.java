@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 
 import com.github.ruediste.rise.api.ViewComponent;
 import com.github.ruediste.rise.core.CoreConfiguration;
-import com.github.ruediste.rise.core.front.reload.ClassHierarchyCache;
+import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyCache;
 import com.github.ruediste.rise.util.AsmUtil;
 import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste.salta.jsr330.Injector;

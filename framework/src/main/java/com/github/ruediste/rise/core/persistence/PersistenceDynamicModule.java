@@ -16,6 +16,9 @@ import net.sf.cglib.proxy.Enhancer;
 
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 import com.github.ruediste.rise.core.persistence.em.PersisteUnitRegistry;
+import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLink;
+import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
+import com.github.ruediste.rise.nonReloadable.persistence.TransactionProperties;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste.salta.jsr330.Provides;

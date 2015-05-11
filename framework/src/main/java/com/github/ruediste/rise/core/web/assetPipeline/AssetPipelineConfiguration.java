@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.ServletConfig;
 
-import com.github.ruediste.rise.core.Permanent;
+import com.github.ruediste.rise.nonReloadable.Permanent;
 import com.github.ruediste.salta.standard.Stage;
 
 @Singleton
