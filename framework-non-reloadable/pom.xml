@@ -6,8 +6,7 @@
 		<artifactId>rise-parent</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>framework-permanent</artifactId>
-	<name>rise-framework-permanent</name>
+	<artifactId>framework-non-reloadable</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>com.github.ruediste.rise</groupId>

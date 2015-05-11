@@ -14,13 +14,13 @@
         <dependent-module archiveName="framework-integration-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/framework-integration/framework-integration">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="framework-permanent-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/framework-permanent/framework-permanent">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <dependent-module archiveName="salta-jsr330-0.2-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/salta-jsr330/salta-jsr330">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="salta-core-0.2-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/salta-core/salta-core">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module deploy-path="/WEB-INF/lib" handle="module:/resource/framework-non-reloadable/framework-non-reloadable">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="java-output-path" value="/laf-test-app/target/classes"/>
