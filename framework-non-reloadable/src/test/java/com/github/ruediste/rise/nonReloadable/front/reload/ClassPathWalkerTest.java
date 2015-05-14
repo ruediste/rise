@@ -14,7 +14,6 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.github.ruediste.rise.nonReloadable.front.reload.ClassPathWalker;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassPathWalker.ClassPathVisitResult;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassPathWalker.SimpleClassPathVisitor;
 
@@ -92,7 +91,7 @@ public class ClassPathWalkerTest {
 					public ClassPathVisitResult visitRootDirectory(
 							Path rootDirectory, ClassLoader classloader) {
 						if (rootDirectory.toString().contains(
-								"rise/framework-permanent/")) {
+								"rise/framework-non-reloadable/")) {
 							return ClassPathVisitResult.SKIP_CONTENTS;
 						} else
 							return ClassPathVisitResult.CONTINUE;
