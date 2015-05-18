@@ -1,9 +1,11 @@
 package com.github.ruediste.rise.core.web;
 
-import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleNonRegistered;
+import javax.annotation.PostConstruct;
+
+import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetGroup;
 
-public class CoreAssetBundle extends AssetBundleNonRegistered {
+public class CoreAssetBundle extends AssetBundle {
 
 	public static final String bodyAttributeRestartQueryUrl = "rise-restart-query-url";
 	public static final String bodyAttributeRestartNr = "rise-restart-nr";
@@ -18,7 +20,7 @@ public class CoreAssetBundle extends AssetBundleNonRegistered {
 	 */
 	public AssetGroup out;
 
-	@Override
+	@PostConstruct
 	public void initialize() {
 		out = paths("./core.js").load();
 	}

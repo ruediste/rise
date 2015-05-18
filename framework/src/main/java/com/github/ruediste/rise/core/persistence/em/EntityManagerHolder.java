@@ -17,11 +17,18 @@ public class EntityManagerHolder {
 	private final ThreadLocal<EntityManagerSet> currentSet = new ThreadLocal<>();
 
 	public EntityManager getEntityManager(Class<? extends Annotation> qualifier) {
-		return getCurrentEntityManagerSet().getOrCreateEntityManager(qualifier);
+		EntityManagerSet set = getCurrentEntityManagerSet();
+		if (set == null) {
+			throw new RuntimeException("No EntityManagerSet is currently set");
+		}
+		return set.getOrCreateEntityManager(qualifier);
 	}
 
 	public void setCurrentEntityManagerSet(EntityManagerSet set) {
-		currentSet.set(set);
+		if (set == null)
+			currentSet.remove();
+		else
+			currentSet.set(set);
 	}
 
 	public EntityManagerSet getCurrentEntityManagerSet() {
@@ -39,8 +46,12 @@ public class EntityManagerHolder {
 	 */
 	public EntityManagerSet setNewEntityManagerSet() {
 		EntityManagerSet oldSet = currentSet.get();
-		currentSet.set(setProvider.get());
+		currentSet.set(createEntityManagerSet());
 		return oldSet;
+	}
+
+	public EntityManagerSet createEntityManagerSet() {
+		return setProvider.get();
 	}
 
 	public void flush() {

@@ -18,11 +18,6 @@ public abstract class PageView<TController extends IControllerMvc, TData>
 
 		AssetBundleOutput out = new AssetBundleOutput(this);
 
-		@Override
-		public void initialize() {
-
-		}
-
 	}
 
 	@Inject

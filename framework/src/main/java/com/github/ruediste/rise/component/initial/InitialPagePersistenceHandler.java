@@ -7,6 +7,7 @@ import com.github.ruediste.rise.component.PageInfo;
 import com.github.ruediste.rise.core.ChainedRequestHandler;
 import com.github.ruediste.rise.core.persistence.TransactionTemplate;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
+import com.github.ruediste.rise.nonReloadable.persistence.IsolationLevel;
 
 public class InitialPagePersistenceHandler extends ChainedRequestHandler {
 
@@ -24,9 +25,21 @@ public class InitialPagePersistenceHandler extends ChainedRequestHandler {
 
 	@Override
 	public void run(Runnable next) {
-		template.builder().execute(trx -> {
-			pageInfo.setEntityManagerSet(holder.getCurrentEntityManagerSet());
-			next.run();
-		});
+		template.builder()
+				.updating()
+				.isolation(IsolationLevel.REPEATABLE_READ)
+				.noNewEntityManagerSet()
+				.execute(
+						trx -> {
+							holder.setNewEntityManagerSet();
+							pageInfo.setEntityManagerSet(holder
+									.getCurrentEntityManagerSet());
+							try {
+								next.run();
+								trx.commit();
+							} finally {
+								holder.removeCurrentSet();
+							}
+						});
 	}
 }

@@ -6,7 +6,7 @@ import com.github.ruediste.rise.integration.PermanentIntegrationModule;
 import com.github.ruediste.rise.nonReloadable.front.FrontServletBase;
 import com.github.ruediste.rise.nonReloadable.persistence.BitronixDataSourceFactory;
 import com.github.ruediste.rise.nonReloadable.persistence.BitronixModule;
-import com.github.ruediste.rise.nonReloadable.persistence.EclipseLinkEntityManagerFactoryProvider;
+import com.github.ruediste.rise.nonReloadable.persistence.EclipseLinkPersistenceUnitManager;
 import com.github.ruediste.rise.nonReloadable.persistence.H2DatabaseIntegrationInfo;
 import com.github.ruediste.rise.nonReloadable.persistence.PersistenceModuleUtil;
 import com.github.ruediste.salta.jsr330.AbstractModule;
@@ -27,7 +27,7 @@ public class FrontServlet extends FrontServletBase {
 					@Override
 					protected void configure() throws Exception {
 						PersistenceModuleUtil.bindDataSource(binder(), null,
-								new EclipseLinkEntityManagerFactoryProvider(
+								new EclipseLinkPersistenceUnitManager(
 										"sampleApp"),
 								new BitronixDataSourceFactory(
 										new H2DatabaseIntegrationInfo()) {

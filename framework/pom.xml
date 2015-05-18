@@ -11,7 +11,6 @@
 	<description>the actual web framework</description>
 	<dependencies>
 
-
 		<!-- === MODULARIZATION === -->
 		<dependency>
 			<groupId>org.jabsaw</groupId>

@@ -1,4 +1,4 @@
-package com.github.ruediste.rise.sample.welcome;
+package com.github.ruediste.rise.integration;
 
 import static org.rendersnake.HtmlAttributesFactory.charset;
 import static org.rendersnake.HtmlAttributesFactory.http_equiv;
@@ -20,7 +20,7 @@ import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
 import com.github.ruediste.rise.nonReloadable.front.RestartCountHolder;
 
-public abstract class PageRenderable<T> {
+public abstract class PageRenderer<T> {
 
 	@Inject
 	RestartCountHolder holder;

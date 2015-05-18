@@ -33,4 +33,8 @@ public class DataBaseLinkRegistry {
 		return links.get(qualifier);
 	}
 
+	public void close() {
+		links.values().forEach(DataBaseLink::close);
+	}
+
 }

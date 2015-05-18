@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.nonReloadable.front;
 
 import java.io.IOException;
+import java.net.URL;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -10,7 +11,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.ruediste.rise.nonReloadable.front.reload.FileChangeNotifier;
 import com.github.ruediste.rise.nonReloadable.front.reload.ReloadableClassLoader;
@@ -138,6 +141,46 @@ public abstract class FrontServletBase extends HttpServlet {
 			// close old application instance
 			if (currentApplicationInfo != null) {
 				currentApplicationInfo.application.close();
+
+				// reload configuration for logback, if available
+				{
+					ILoggerFactory iLoggerFactory = LoggerFactory
+							.getILoggerFactory();
+					if (iLoggerFactory.getClass().getName()
+							.equals("ch.qos.logback.classic.LoggerContext")) {
+
+						// original code:
+						// LoggerContext
+						// loggerContext=(LoggerContext)LoggerFactory.getILoggerFactory()
+						// ContextInitializer ci = new
+						// ContextInitializer(loggerContext);
+						// URL url = ci.findURLOfDefaultConfigurationFile(true);
+						// loggerContext.reset();
+						// ci.configureByResource(url);
+						try {
+							Class<?> cContextInitializer = Class
+									.forName("ch.qos.logback.classic.util.ContextInitializer");
+							Class<?> cLoggerContext = Class
+									.forName("ch.qos.logback.classic.LoggerContext");
+							Object loggerContext = iLoggerFactory;
+
+							Object ci = cContextInitializer.getConstructor(
+									cLoggerContext).newInstance(loggerContext);
+							Object url1 = cContextInitializer.getMethod(
+									"findURLOfDefaultConfigurationFile",
+									boolean.class).invoke(ci, true);
+							cLoggerContext.getMethod("reset").invoke(
+									loggerContext);
+							cContextInitializer.getMethod(
+									"configureByResource", URL.class).invoke(
+									ci, url1);
+						} catch (Throwable t) {
+							log.error(
+									"Error updating logback configuration, continuing...",
+									t);
+						}
+					}
+				}
 			}
 
 			// create application instance
@@ -150,13 +193,13 @@ public abstract class FrontServletBase extends HttpServlet {
 						.get();
 				currentThread.setContextClassLoader(dynamicClassloader);
 
-				instance = (RestartableApplication) dynamicClassloader.loadClass(
-						applicationInstanceClassName).newInstance();
+				instance = (RestartableApplication) dynamicClassloader
+						.loadClass(applicationInstanceClassName).newInstance();
 
 				instance.start(permanentInjector);
 
-				currentApplicationInfo = new RestartableApplicationInfo(instance,
-						dynamicClassloader);
+				currentApplicationInfo = new RestartableApplicationInfo(
+						instance, dynamicClassloader);
 
 			} finally {
 				currentThread.setContextClassLoader(old);

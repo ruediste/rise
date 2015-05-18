@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.component;
 
 import com.github.ruediste.rise.component.binding.BindingGroupCreationRule;
+import com.github.ruediste.rise.component.components.CController;
 import com.github.ruediste.rise.util.InitializerUtil;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
@@ -28,6 +29,6 @@ public class ComponentRestartableModule extends AbstractModule {
 				scopeHandler);
 
 		InitializerUtil.register(config(), ComponentDynamicInitializer.class);
-
+		requestStaticInjection(CController.class);
 	}
 }

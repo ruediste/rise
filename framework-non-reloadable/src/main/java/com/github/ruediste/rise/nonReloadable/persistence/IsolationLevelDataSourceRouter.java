@@ -5,6 +5,9 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
+import javax.transaction.Status;
+import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
 
 import org.slf4j.Logger;
 
@@ -22,6 +25,9 @@ public class IsolationLevelDataSourceRouter extends DelegatingDataSource {
 	@Inject
 	TransactionProperties transactionProperties;
 
+	@Inject
+	TransactionManager txm;
+
 	private IsolationLevel defaultLevel = IsolationLevel.SERIALIZABLE;
 
 	private Class<?> qualifier;
@@ -29,15 +35,31 @@ public class IsolationLevelDataSourceRouter extends DelegatingDataSource {
 
 	@Override
 	protected DataSource getDelegate() {
-		IsolationLevel level = transactionProperties
-				.getIsolationLevel(qualifier);
-		DataSource result = dataSources.get(level);
-		if (result == null) {
-			result = dataSources.get(defaultLevel);
-		}
-		if (result == null) {
-			throw new RuntimeException("No DataSource registered for level "
-					+ level + "or default level " + defaultLevel);
+		DataSource result;
+		try {
+			if (txm.getStatus() != Status.STATUS_NO_TRANSACTION) {
+				IsolationLevel level = transactionProperties
+						.getIsolationLevel(qualifier);
+				result = dataSources.get(level);
+				if (result == null) {
+					result = dataSources.get(defaultLevel);
+				}
+				if (result == null) {
+					throw new RuntimeException(
+							"No DataSource registered for level " + level
+									+ "or default level " + defaultLevel);
+				}
+			} else {
+				result = dataSources.get(defaultLevel);
+				if (result == null) {
+					throw new RuntimeException(
+							"No DataSource registered for default level "
+									+ defaultLevel);
+				}
+			}
+		} catch (SystemException e) {
+			throw new RuntimeException(
+					"Error while getting transaction status", e);
 		}
 		return result;
 	}

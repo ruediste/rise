@@ -1,6 +1,8 @@
 package com.github.ruediste.rise.nonReloadable.persistence;
 
+import java.io.Closeable;
 import java.util.Properties;
+import java.util.function.Consumer;
 
 import javax.sql.DataSource;
 
@@ -19,7 +21,7 @@ public abstract class BitronixDataSourceFactory implements DataSourceFactory {
 
 	@Override
 	public DataSource createDataSource(IsolationLevel isolationLevel,
-			Class<?> qualifier) {
+			Class<?> qualifier, Consumer<Closeable> closeableRegistrar) {
 		Properties props = new Properties();
 		initializeProperties(props);
 
@@ -32,8 +34,11 @@ public abstract class BitronixDataSourceFactory implements DataSourceFactory {
 		btmDataSource.setDriverProperties(props);
 		btmDataSource.setShareTransactionConnections(true);
 		btmDataSource.setMaxPoolSize(10);
+		btmDataSource.setAllowLocalTransactions(true);
+		btmDataSource.setMinPoolSize(1);
 		customizeDataSource(btmDataSource);
 
+		closeableRegistrar.accept(btmDataSource::close);
 		return btmDataSource;
 	}
 

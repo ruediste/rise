@@ -4,15 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
-import com.github.ruediste.rise.core.web.assetPipeline.AssetPipelineConfiguration;
-
 public class AssetBundleTest {
 
 	private final class Bundle extends AssetBundle {
-		@Override
-		public void initialize() {
-		}
 	}
 
 	@Test

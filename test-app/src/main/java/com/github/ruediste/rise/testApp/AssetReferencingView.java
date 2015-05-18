@@ -4,6 +4,7 @@ import static org.rendersnake.HtmlAttributesFactory.id;
 
 import java.io.IOException;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.rendersnake.HtmlCanvas;
@@ -19,7 +20,7 @@ public class AssetReferencingView extends
 
 		AssetBundleOutput out = new AssetBundleOutput(this);
 
-		@Override
+		@PostConstruct
 		public void initialize() {
 			paths("./assetReferencing.css", ".-test.css",
 					"/assetReferencing/test.css", "assetReferencing.css")

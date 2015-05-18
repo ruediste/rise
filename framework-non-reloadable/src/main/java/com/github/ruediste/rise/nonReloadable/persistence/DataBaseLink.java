@@ -37,4 +37,6 @@ public interface DataBaseLink {
 	 * {@link #getDataSource()} will return null.
 	 */
 	void initializeDataSource();
+
+	void close();
 }

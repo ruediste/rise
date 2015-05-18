@@ -11,7 +11,7 @@ import java.util.function.Consumer;
  */
 public class AssetBundleOutput extends AssetGroup implements Consumer<Asset> {
 
-	public AssetBundleOutput(AssetBundleBase bundle) {
+	public AssetBundleOutput(AssetBundle bundle) {
 		super(bundle, new ArrayList<>());
 		bundle.registerOutput(this);
 	}

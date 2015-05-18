@@ -8,9 +8,11 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.transaction.TransactionManager;
 
 import org.rendersnake.HtmlCanvas;
 import org.rendersnake.Renderable;
+import org.slf4j.Logger;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.rise.api.ViewComponent;
@@ -20,11 +22,19 @@ import com.github.ruediste.rise.component.tree.ComponentTreeUtil;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.ICoreUtil;
+import com.github.ruediste.rise.core.persistence.TransactionCallbackNoResult;
+import com.github.ruediste.rise.core.persistence.TransactionTemplate;
+import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
+import com.github.ruediste.rise.core.persistence.em.EntityManagerSet;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetRenderUtil;
+import com.github.ruediste.rise.nonReloadable.persistence.TransactionControl;
 import com.google.common.base.Charsets;
 
 @Singleton
 public class ComponentUtil implements ICoreUtil {
+
+	@Inject
+	Logger log;
 
 	private final AttachedProperty<Component, Long> componentNr = new AttachedProperty<>();
 	private final AttachedProperty<ViewComponent<?>, Map<Long, Component>> componentIdMap = new AttachedProperty<>();
@@ -34,7 +44,7 @@ public class ComponentUtil implements ICoreUtil {
 	PageInfo pageInfo;
 
 	@Inject
-	TemplateIndex templateIndex;
+	ComponentTemplateIndex componentTemplateIndex;
 
 	@Inject
 	AssetRenderUtil assetRenderUtil;
@@ -68,7 +78,8 @@ public class ComponentUtil implements ICoreUtil {
 	 * Set the component number of all children of the root component which do
 	 * not have a number yet
 	 */
-	public byte[] renderComponents(ViewComponent<?> view, Component rootComponent) {
+	public byte[] renderComponents(ViewComponent<?> view,
+			Component rootComponent) {
 		{
 			// set the component IDs
 			Map<Long, Component> map;
@@ -113,7 +124,7 @@ public class ComponentUtil implements ICoreUtil {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void render(Component component, HtmlCanvas html) {
 		try {
-			((CWTemplate) templateIndex.getTemplate(component.getClass()))
+			((CWTemplate) componentTemplateIndex.getTemplate(component.getClass()))
 					.render(component, html);
 		} catch (IOException e) {
 			throw new RuntimeException("Error while rendering component", e);
@@ -159,5 +170,56 @@ public class ComponentUtil implements ICoreUtil {
 	public boolean isParameterDefined(Component component, String key) {
 		return coreRequestInfo.getRequest().getParameterMap()
 				.containsKey(getKey(component, key));
+	}
+
+	public void commit() {
+		checkAndCommit(null, null);
+	}
+
+	public void commit(Runnable inTransaction) {
+		checkAndCommit(null, inTransaction);
+	}
+
+	public void checkAndCommit(Runnable checker) {
+		checkAndCommit(checker, null);
+	}
+
+	@Inject
+	TransactionManager txm;
+
+	@Inject
+	EntityManagerHolder holder;
+
+	@Inject
+	TransactionTemplate template;
+
+	public void checkAndCommit(Runnable checker, Runnable inTransaction) {
+		template.builder().updating().noNewEntityManagerSet()
+				.execute(new TransactionCallbackNoResult() {
+
+					@Override
+					public void doInTransaction(TransactionControl trx) {
+
+						// run checker with separate EMs
+						if (checker != null) {
+							EntityManagerSet old = holder
+									.getCurrentEntityManagerSet();
+							try {
+								checker.run();
+							} finally {
+								holder.closeCurrentEntityManagers();
+								holder.setCurrentEntityManagerSet(old);
+							}
+						}
+
+						holder.joinTransaction();
+
+						if (inTransaction != null) {
+							inTransaction.run();
+						}
+						holder.flush();
+						trx.commit();
+					}
+				});
 	}
 }

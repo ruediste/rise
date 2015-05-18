@@ -1,16 +1,11 @@
 package com.github.ruediste.rise.core.front;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
-import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
@@ -20,6 +15,7 @@ import com.github.ruediste.rise.core.scopes.HttpScopeManager;
 import com.github.ruediste.rise.nonReloadable.front.HttpMethod;
 import com.github.ruediste.rise.nonReloadable.front.RestartableApplication;
 import com.github.ruediste.rise.nonReloadable.front.reload.Reloadable;
+import com.github.ruediste.rise.nonReloadable.persistence.EclipseLinkPersistenceUnitManager;
 import com.github.ruediste.rise.util.InitializerUtil;
 import com.github.ruediste.salta.jsr330.Injector;
 
@@ -27,7 +23,8 @@ import com.github.ruediste.salta.jsr330.Injector;
  * Instance of an application. Will be reloaded when the application is changed.
  */
 @Reloadable
-public abstract class RestartableApplicationBase implements RestartableApplication {
+public abstract class RestartableApplicationBase implements
+		RestartableApplication {
 
 	@Inject
 	CoreConfiguration config;
@@ -95,13 +92,6 @@ public abstract class RestartableApplicationBase implements RestartableApplicati
 	 * Called when the dynamic application is shut down
 	 */
 	protected void closeImpl() {
-		HashMap<String, EntityManagerSetupImpl> emsetupimpls = EntityManagerFactoryProvider.emSetupImpls;
-		synchronized (emsetupimpls) {
-			for (EntityManagerSetupImpl setup : new ArrayList<>(
-					emsetupimpls.values())) {
-				setup.undeploy();
-			}
-		}
-
+		EclipseLinkPersistenceUnitManager.undeployEcliseLink();
 	}
 }

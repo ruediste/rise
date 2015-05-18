@@ -24,7 +24,7 @@ public class PathInfoIndexBase<T> {
 
 	private HashMap<String, T> pathInfoMap = new HashMap<>();
 
-	TreeMap<String, T> prefixMap = new TreeMap<>();
+	private TreeMap<String, T> prefixMap = new TreeMap<>();
 
 	public void registerPathInfo(String pathInfo, T handler) {
 		T existing = pathInfoMap.put(pathInfo, handler);
@@ -41,6 +41,14 @@ public class PathInfoIndexBase<T> {
 		if (pair == null)
 			return null;
 		return pair.getB();
+	}
+
+	public Iterable<String> getRegisteredPathInfos() {
+		return pathInfoMap.keySet();
+	}
+
+	public Iterable<String> getRegisteredPrefixes() {
+		return prefixMap.keySet();
 	}
 
 	/**

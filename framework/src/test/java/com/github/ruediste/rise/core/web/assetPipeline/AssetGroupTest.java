@@ -18,9 +18,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.github.ruediste.rise.core.web.assetPipeline.Asset;
-import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
-import com.github.ruediste.rise.core.web.assetPipeline.AssetGroup;
 import com.google.common.collect.Iterables;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -36,10 +33,6 @@ public class AssetGroupTest {
 	public void setup() throws UnsupportedEncodingException {
 		bundle = new AssetBundle() {
 
-			@Override
-			public void initialize() {
-
-			}
 		};
 
 		asset = spy(new TestAsset("foo", "Hello"));

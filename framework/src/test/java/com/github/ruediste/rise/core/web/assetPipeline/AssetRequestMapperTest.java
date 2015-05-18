@@ -7,6 +7,8 @@ import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
 
+import javax.annotation.PostConstruct;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,7 +48,7 @@ public class AssetRequestMapperTest {
 
 		}
 
-		@Override
+		@PostConstruct
 		public void initialize() {
 			Arrays.stream(assets).forEach(out);
 		}

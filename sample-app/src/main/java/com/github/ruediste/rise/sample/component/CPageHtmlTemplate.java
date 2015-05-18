@@ -8,13 +8,13 @@ import org.rendersnake.HtmlCanvas;
 
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.components.CPage;
-import com.github.ruediste.rise.component.components.template.CWTemplateBase;
+import com.github.ruediste.rise.component.components.template.ComponentTemplateBase;
+import com.github.ruediste.rise.integration.PageRenderer;
 import com.github.ruediste.rise.sample.SampleBundle;
-import com.github.ruediste.rise.sample.welcome.PageRenderable;
 
-public class CPageHtmlTemplate extends CWTemplateBase<CPage> {
+public class CPageHtmlTemplate extends ComponentTemplateBase<CPage> {
 
-	static class Page extends PageRenderable<CPage> {
+	static class Page extends PageRenderer<CPage> {
 		@Inject
 		ComponentUtil util;
 

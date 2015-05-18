@@ -35,6 +35,10 @@ public class ControllerMvc<TSelf extends ControllerMvc<TSelf>> implements
 		return util.path().go(controllerClass);
 	}
 
+	public <T> T go(Class<T> clazz) {
+		return util.path().go(clazz);
+	}
+
 	public ActionInvocationBuilderKnownController<TSelf> path() {
 		return util.path(controllerClass);
 	}

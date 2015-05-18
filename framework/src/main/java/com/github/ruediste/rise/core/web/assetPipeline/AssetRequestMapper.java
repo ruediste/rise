@@ -102,7 +102,6 @@ public class AssetRequestMapper {
 				.create();
 
 		for (AssetBundle bundle : bundles) {
-			bundle.initialize();
 			for (AssetBundleOutput output : bundle.outputs) {
 				for (Asset asset : output.getAssets()) {
 					String pathInfo = getPathInfoString(asset);

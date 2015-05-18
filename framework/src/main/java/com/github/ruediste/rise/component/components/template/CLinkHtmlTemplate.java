@@ -11,7 +11,7 @@ import org.rendersnake.HtmlCanvas;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.components.CLink;
 
-public class CLinkHtmlTemplate extends CWTemplateBase<CLink> {
+public class CLinkHtmlTemplate extends ComponentTemplateBase<CLink> {
 	@Inject
 	ComponentUtil util;
 

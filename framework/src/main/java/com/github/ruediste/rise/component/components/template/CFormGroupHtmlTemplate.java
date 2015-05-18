@@ -15,7 +15,7 @@ import com.github.ruediste.rise.component.components.CFormGroup;
 import com.google.common.collect.Iterables;
 
 public abstract class CFormGroupHtmlTemplate<T extends CFormGroup<T>> extends
-		CWTemplateBase<T> {
+		ComponentTemplateBase<T> {
 
 	@Inject
 	ComponentUtil util;

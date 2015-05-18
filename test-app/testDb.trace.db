@@ -1,0 +1,27 @@
+05-16 19:53:32 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "TESTENTITY" not found; SQL statement:
+DROP TABLE TESTENTITY [42102-184]
+05-16 19:53:32 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "TESTENTITY" not found; SQL statement:
+DROP TABLE TESTENTITY [42102-184]
+05-16 19:53:32 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "TESTENTITY" not found; SQL statement:
+DROP TABLE TESTENTITY [42102-184]
+05-16 19:53:32 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "TESTENTITY" not found; SQL statement:
+DROP TABLE TESTENTITY [42102-184]
+05-16 19:53:32 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "TESTENTITY" not found; SQL statement:
+DROP TABLE TESTENTITY [42102-184]
+05-16 19:53:32 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "SEQUENCE" not found; SQL statement:
+SELECT SEQ_NAME FROM SEQUENCE WHERE SEQ_NAME <> SEQ_NAME [42102-184]
+05-16 19:53:32 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "SEQUENCE" not found; SQL statement:
+DELETE FROM SEQUENCE WHERE SEQ_NAME = 'SEQ_GEN' [42102-184]
+05-16 19:53:32 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "TESTENTITY" not found; SQL statement:
+SELECT ID FROM TESTENTITY WHERE ID <> ID [42102-184]
+05-16 19:53:32 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Table "SEQUENCE" not found; SQL statement:
+SELECT SEQ_NAME FROM SEQUENCE WHERE SEQ_NAME <> SEQ_NAME [42102-184]

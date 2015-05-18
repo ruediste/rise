@@ -84,15 +84,15 @@ public class ComponentViewRepository {
 						+ entry.viewClassInternalName + ", "
 						+ existing.viewClassInternalName);
 			}
-			log.info("found view " + view.name + " with qualifier " + qualifier
-					+ " for controller " + controllerClass);
+			log.debug("found view " + view.name + " with qualifier "
+					+ qualifier + " for controller " + controllerClass);
 		}
 	}
 
 	/**
 	 * Create a view for the given controller
 	 */
-	public <T extends IControllerComponent> ViewComponent<T> createView(T controller) {
+	public <T> ViewComponent<T> createView(T controller) {
 		return createView(controller, null);
 	}
 
@@ -103,24 +103,35 @@ public class ComponentViewRepository {
 	 *            qualifier class, or null if no qualifier is set
 	 */
 	@SuppressWarnings("unchecked")
-	public <T extends IControllerComponent> ViewComponent<T> createView(T controller,
+	public <T> ViewComponent<T> createView(T controller,
 			Class<? extends IViewQualifier> qualifier) {
-		Class<? extends Object> controllerClass = controller.getClass();
-		// get the list of possible views
-		ViewEntry entry = viewMap.get(Pair.create(Type
-				.getInternalName(controllerClass), qualifier == null ? null
-				: Type.getInternalName(qualifier)));
+		// get view, trying super classes
+		ViewEntry entry = null;
+		{
+			Class<? extends Object> controllerClass = controller.getClass();
+			String qualifierName = qualifier == null ? null : Type
+					.getInternalName(qualifier);
+			while (controllerClass != null && entry == null) {
+				entry = viewMap.get(Pair.create(
+						Type.getInternalName(controllerClass), qualifierName));
+				if (entry == null)
+					controllerClass = controllerClass.getSuperclass();
+			}
+		}
+
 		if (entry == null) {
 			throw new RuntimeException("There is no view for controller class "
-					+ controllerClass.getName() + " and qualifier "
+					+ controller.getClass().getName() + " and qualifier "
 					+ (qualifier == null ? "null" : qualifier.getName()));
+
 		}
 
 		// create view instance
 		Class<?> viewClass = AsmUtil.loadClass(
 				Type.getObjectType(entry.viewClassInternalName),
 				config.dynamicClassLoader);
-		ViewComponent<T> result = (ViewComponent<T>) injector.getInstance(viewClass);
+		ViewComponent<T> result = (ViewComponent<T>) injector
+				.getInstance(viewClass);
 		result.initialize(controller);
 		return result;
 	}

@@ -108,8 +108,12 @@ public class BindingUtil {
 
 			binding.setPullUp(model -> {
 				try {
-					Object value = PropertyUtils.getProperty(model,
-							binding.getModelProperty());
+					Object value;
+					if (model == null)
+						value = null;
+					else
+						value = PropertyUtils.getProperty(model,
+								binding.getModelProperty());
 					if (info.transformer != null) {
 						if (isModelRead && !info.transformInv) {
 							value = ((BindingTransformer) info.transformer)

@@ -14,7 +14,13 @@ import javax.transaction.TransactionSynchronizationRegistry;
 import net.sf.cglib.proxy.Dispatcher;
 import net.sf.cglib.proxy.Enhancer;
 
+import com.github.ruediste.attachedProperties4J.AttachedProperty;
+import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
+import com.github.ruediste.rise.core.aop.AopUtil;
+import com.github.ruediste.rise.core.aop.AroundAdvice;
+import com.github.ruediste.rise.core.aop.InterceptedInvocation;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
+import com.github.ruediste.rise.core.persistence.em.EntityManagerSet;
 import com.github.ruediste.rise.core.persistence.em.PersisteUnitRegistry;
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLink;
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
@@ -23,11 +29,13 @@ import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste.salta.jsr330.Provides;
 
-public class PersistenceDynamicModule extends AbstractModule {
+public class PersistenceRestartableModule extends AbstractModule {
+	private static AttachedProperty<AttachedPropertyBearer, EntityManagerSet> ownEntityManagerSetProperty = new AttachedProperty<>(
+			"ownEntityManagerSet");
 
 	private Injector permanentInjector;
 
-	public PersistenceDynamicModule(Injector permanentInjector) {
+	public PersistenceRestartableModule(Injector permanentInjector) {
 		this.permanentInjector = permanentInjector;
 	}
 
@@ -85,6 +93,37 @@ public class PersistenceDynamicModule extends AbstractModule {
 						}
 					}).in(Singleton.class);
 		}
+
+		registerOwnEntityManagersAdvice();
+
+	}
+
+	protected void registerOwnEntityManagersAdvice() {
+		AroundAdvice advice = new AroundAdvice() {
+			@Inject
+			EntityManagerHolder holder;
+
+			@Override
+			public Object intercept(InterceptedInvocation invocation)
+					throws Throwable {
+				EntityManagerSet set = ownEntityManagerSetProperty.setIfAbsent(
+						invocation.getPropertyBearer(),
+						() -> holder.createEntityManagerSet());
+				EntityManagerSet old = holder.getCurrentEntityManagerSet();
+				holder.setCurrentEntityManagerSet(set);
+				try {
+					return invocation.proceed();
+				} finally {
+					holder.setCurrentEntityManagerSet(old);
+				}
+			}
+		};
+
+		requestInjection(advice);
+		// register OwnEntityManagers advice
+		AopUtil.registerSubclass(config().standardConfig, t -> t.getRawType()
+				.isAnnotationPresent(OwnEntityManagers.class), (t, m) -> !m
+				.isAnnotationPresent(SkipOfOwnEntityManagers.class), advice);
 	}
 
 	@Provides

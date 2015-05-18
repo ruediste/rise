@@ -5,13 +5,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.github.ruediste.rise.component.TemplateIndex;
+import com.github.ruediste.rise.component.ComponentTemplateIndex;
 import com.github.ruediste.rise.component.components.template.CWTemplate;
 import com.github.ruediste.rise.component.tree.Component;
 
 /**
  * Defines the default template for a {@link Component}. Used by the
- * {@link TemplateIndex}
+ * {@link ComponentTemplateIndex}
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

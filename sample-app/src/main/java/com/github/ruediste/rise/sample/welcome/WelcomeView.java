@@ -10,6 +10,7 @@ import static org.rendersnake.HtmlAttributesFactory.type;
 
 import java.io.IOException;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.rendersnake.HtmlAttributesFactory;
@@ -32,7 +33,7 @@ public class WelcomeView extends
 
 		AssetBundleOutput out = new AssetBundleOutput(this);
 
-		@Override
+		@PostConstruct
 		public void initialize() {
 			paths("/assets/welcome.css", "/assets/welcome.js").load().send(out);
 		}

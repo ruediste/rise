@@ -54,7 +54,7 @@ var rise = (function() {
 						event.preventDefault();
 						event.stopPropagation();
 						$.ajax({
-							type : "POST",
+							method : "POST",
 							url : $("body").data("rise-reload-url") + "?page="+$("body").data("rise-page-nr")+"&nr="
 									+ receiver.data("rise-component-nr"),
 							data : data,

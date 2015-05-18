@@ -7,7 +7,7 @@ import org.rendersnake.HtmlCanvas;
 
 import com.github.ruediste.rise.component.components.CForm;
 
-public class CFormHtmlTemplate extends CWTemplateBase<CForm> {
+public class CFormHtmlTemplate extends ComponentTemplateBase<CForm> {
 
 	@Override
 	public void render(CForm component, HtmlCanvas html) throws IOException {

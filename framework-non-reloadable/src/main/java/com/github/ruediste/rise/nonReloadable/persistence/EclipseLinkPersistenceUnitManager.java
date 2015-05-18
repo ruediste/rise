@@ -15,8 +15,11 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.slf4j.Logger;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
-public class EclipseLinkEntityManagerFactoryProvider implements
-		EntityManagerFactoryProvider {
+/**
+ * Manages a persistence unit using EclipseLink
+ */
+public class EclipseLinkPersistenceUnitManager implements
+		PersistenceUnitManager {
 
 	@Inject
 	TransactionManager txm;
@@ -29,20 +32,51 @@ public class EclipseLinkEntityManagerFactoryProvider implements
 
 	private String persistenceUnitName;
 
-	public EclipseLinkEntityManagerFactoryProvider(String persistenceUnitName) {
+	private LocalContainerEntityManagerFactoryBean bean;
+
+	private boolean initialized;
+
+	public EclipseLinkPersistenceUnitManager(String persistenceUnitName) {
 		this.persistenceUnitName = persistenceUnitName;
 	}
 
 	@Override
-	public EntityManagerFactory createEntityManagerFactory(
-			Class<? extends Annotation> qualifier, DataSource dataSource) {
-		// org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider
-		// .getEmSetupImpls().clear();
+	synchronized public void generateSchema() {
+		checkInitialized();
+		HashMap<String, Object> props = new HashMap<>();
+		customizeSchemaGenerationProperties(props);
+		bean.getPersistenceProvider().generateSchema(
+				bean.getPersistenceUnitInfo(), props);
+	}
+
+	@Override
+	synchronized public EntityManagerFactory getEntityManagerFactory() {
+		checkInitialized();
+		return bean.getObject();
+	}
+
+	private void checkInitialized() {
+		synchronized (this) {
+			if (!initialized)
+				throw new RuntimeException("manager not initialized");
+		}
+	}
+
+	/**
+	 * initialize this provider if not yet initialized
+	 */
+	@Override
+	synchronized public void initialize(Class<? extends Annotation> qualifier,
+			DataSource dataSource) {
+		// initialize once only
+		if (initialized)
+			throw new RuntimeException("manager already initialized");
+		initialized = true;
 
 		ClassLoader classLoader = Thread.currentThread()
 				.getContextClassLoader();
 		log.info("Creating EntityManagerFactory for " + qualifier);
-		LocalContainerEntityManagerFactoryBean bean = new LocalContainerEntityManagerFactoryBean();
+		bean = new LocalContainerEntityManagerFactoryBean();
 
 		bean.setBeanClassLoader(classLoader);
 
@@ -68,6 +102,7 @@ public class EclipseLinkEntityManagerFactoryProvider implements
 			if (manageTx)
 				txm.begin();
 			bean.afterPropertiesSet();
+
 			if (manageTx)
 				txm.commit();
 		} catch (Exception e) {
@@ -84,16 +119,13 @@ public class EclipseLinkEntityManagerFactoryProvider implements
 				}
 
 		}
-		EntityManagerFactory result = bean.getObject();
-		log.debug("created " + result + " for  " + qualifier + classLoader);
-		return result;
-
+		log.debug("initialized provider for " + qualifier);
 	}
 
 	/**
 	 * Hook to customize the factory bean
 	 */
-	private void customizeFactoryBean(
+	protected void customizeFactoryBean(
 			LocalContainerEntityManagerFactoryBean bean) {
 	}
 
@@ -111,4 +143,21 @@ public class EclipseLinkEntityManagerFactoryProvider implements
 	protected void customizeProperties(HashMap<String, Object> props) {
 
 	}
+
+	/**
+	 * Hook to modify the properties used to generate the database schema
+	 */
+	protected void customizeSchemaGenerationProperties(
+			HashMap<String, Object> props) {
+
+	}
+
+	@Override
+	synchronized public void close() {
+		checkInitialized();
+		initialized = false;
+		org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider
+				.getEntityManagerSetupImpl(persistenceUnitName).undeploy();
+	}
+
 }

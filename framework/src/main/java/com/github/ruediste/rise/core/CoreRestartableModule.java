@@ -3,7 +3,7 @@ package com.github.ruediste.rise.core;
 import java.util.Optional;
 import java.util.function.Function;
 
-import com.github.ruediste.rise.core.persistence.PersistenceDynamicModule;
+import com.github.ruediste.rise.core.persistence.PersistenceRestartableModule;
 import com.github.ruediste.rise.core.scopes.HttpScopeModule;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.nonReloadable.Permanent;
@@ -38,10 +38,11 @@ public class CoreRestartableModule extends AbstractModule {
 		installPersistenceDynamicModule();
 		registerPermanentRule();
 		registerAssetBundleScopeRule();
+
 	}
 
 	private void installPersistenceDynamicModule() {
-		install(new PersistenceDynamicModule(permanentInjector));
+		install(new PersistenceRestartableModule(permanentInjector));
 	}
 
 	protected void registerAssetBundleScopeRule() {

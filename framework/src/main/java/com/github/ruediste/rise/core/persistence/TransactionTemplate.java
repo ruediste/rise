@@ -39,8 +39,10 @@ public class TransactionTemplate {
 	public class TransactionBuilder {
 		private boolean useNewEntityManagerSet = true;
 		private boolean updating = false;
+		private IsolationLevel level = null;
+		private IsolationLevel level2;
 
-		public TransactionBuilder reuseEntityManagerSet() {
+		public TransactionBuilder noNewEntityManagerSet() {
 			useNewEntityManagerSet = false;
 			return this;
 		}
@@ -52,6 +54,11 @@ public class TransactionTemplate {
 
 		public TransactionBuilder updating(boolean value) {
 			updating = value;
+			return this;
+		}
+
+		public TransactionBuilder isolation(IsolationLevel level) {
+			this.level = level;
 			return this;
 		}
 
@@ -76,9 +83,12 @@ public class TransactionTemplate {
 			try {
 				txm.begin();
 
-				transactionProperties
-						.setDefaultIsolationLevel(updating ? IsolationLevel.SERIALIZABLE
-								: IsolationLevel.REPEATABLE_READ);
+				if (level != null)
+					transactionProperties.setDefaultIsolationLevel(level);
+				else
+					transactionProperties
+							.setDefaultIsolationLevel(updating ? IsolationLevel.SERIALIZABLE
+									: IsolationLevel.REPEATABLE_READ);
 
 				if (useNewEntityManagerSet) {
 					action.beforeEntityManagerSetCreated();
@@ -110,7 +120,7 @@ public class TransactionTemplate {
 			} catch (NotSupportedException | SystemException e) {
 				throw new TransactionException("Transaction error occured", e);
 			} finally {
-				if (useNewEntityManagerSet && entityManagerSetWasSet) {
+				if (entityManagerSetWasSet) {
 					holder.closeCurrentEntityManagers();
 					holder.removeCurrentSet();
 				}

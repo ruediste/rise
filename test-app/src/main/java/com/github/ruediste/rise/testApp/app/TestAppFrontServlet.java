@@ -6,7 +6,7 @@ import com.github.ruediste.rise.integration.PermanentIntegrationModule;
 import com.github.ruediste.rise.nonReloadable.front.FrontServletBase;
 import com.github.ruediste.rise.nonReloadable.persistence.BitronixDataSourceFactory;
 import com.github.ruediste.rise.nonReloadable.persistence.BitronixModule;
-import com.github.ruediste.rise.nonReloadable.persistence.EclipseLinkEntityManagerFactoryProvider;
+import com.github.ruediste.rise.nonReloadable.persistence.EclipseLinkPersistenceUnitManager;
 import com.github.ruediste.rise.nonReloadable.persistence.H2DatabaseIntegrationInfo;
 import com.github.ruediste.rise.nonReloadable.persistence.PersistenceModuleUtil;
 import com.github.ruediste.salta.jsr330.AbstractModule;
@@ -15,7 +15,8 @@ import com.github.ruediste.salta.jsr330.Salta;
 public class TestAppFrontServlet extends FrontServletBase {
 	private static final long serialVersionUID = 1L;
 
-	public TestAppFrontServlet(TestRestartableApplication fixedApplicationInstance) {
+	public TestAppFrontServlet(
+			TestRestartableApplication fixedApplicationInstance) {
 		super(fixedApplicationInstance);
 	}
 
@@ -31,7 +32,7 @@ public class TestAppFrontServlet extends FrontServletBase {
 					@Override
 					protected void configure() throws Exception {
 						PersistenceModuleUtil.bindDataSource(binder(), null,
-								new EclipseLinkEntityManagerFactoryProvider(
+								new EclipseLinkPersistenceUnitManager(
 										"testApp"),
 								new BitronixDataSourceFactory(
 										new H2DatabaseIntegrationInfo()) {
@@ -40,7 +41,7 @@ public class TestAppFrontServlet extends FrontServletBase {
 									protected void initializeProperties(
 											Properties props) {
 										props.setProperty("URL",
-												"jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MVCC=false");
+												"jdbc:h2:file:./testDb;DB_CLOSE_DELAY=-1;MVCC=false");
 										props.setProperty("user", "sa");
 										props.setProperty("password", "sa");
 									}

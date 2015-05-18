@@ -9,10 +9,11 @@ import org.rendersnake.HtmlCanvas;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.tree.Component;
 
-public class CWTemplateBase<T extends Component> implements CWTemplate<T> {
+public class ComponentTemplateBase<T extends Component> implements
+		CWTemplate<T> {
 
 	@Inject
-	ComponentUtil util;
+	protected ComponentUtil util;
 
 	@Override
 	public void render(T component, HtmlCanvas html) throws IOException {

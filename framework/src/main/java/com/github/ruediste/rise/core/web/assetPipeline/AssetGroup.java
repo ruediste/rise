@@ -32,14 +32,14 @@ import com.google.common.hash.Hashing;
  */
 public class AssetGroup {
 	public final List<Asset> assets;
-	public final AssetBundleBase bundle;
+	public final AssetBundle bundle;
 
-	public AssetGroup(AssetBundleBase bundle, List<Asset> assets) {
+	public AssetGroup(AssetBundle bundle, List<Asset> assets) {
 		this.bundle = bundle;
 		this.assets = assets;
 	}
 
-	public AssetGroup(AssetBundleBase bundle, Stream<Asset> resources) {
+	public AssetGroup(AssetBundle bundle, Stream<Asset> resources) {
 		this(bundle, resources.collect(Collectors.toList()));
 	}
 
@@ -269,7 +269,7 @@ public class AssetGroup {
 
 		private AttachedPropertyBearer cache;
 
-		public CachingAsset(Asset delegate, AssetBundleBase bundle) {
+		public CachingAsset(Asset delegate, AssetBundle bundle) {
 			Preconditions.checkNotNull(delegate);
 			Preconditions.checkNotNull(bundle);
 			this.delegate = delegate;

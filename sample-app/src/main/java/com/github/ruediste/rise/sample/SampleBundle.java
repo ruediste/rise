@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.sample;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
@@ -18,7 +19,7 @@ public class SampleBundle extends AssetBundle {
 	@Inject
 	CoreAssetBundle core;
 
-	@Override
+	@PostConstruct
 	public void initialize() {
 		BootstrapAssetGroups bootstrapAssets = bootstrapUtil.loadAssets();
 		bootstrapAssets.out.send(out);

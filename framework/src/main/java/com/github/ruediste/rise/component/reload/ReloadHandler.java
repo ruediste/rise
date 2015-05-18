@@ -11,7 +11,7 @@ import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.component.ComponentSessionInfo;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.PageInfo;
-import com.github.ruediste.rise.component.TemplateIndex;
+import com.github.ruediste.rise.component.ComponentTemplateIndex;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ComponentTreeUtil;
 import com.github.ruediste.rise.core.CoreConfiguration;
@@ -35,7 +35,7 @@ public class ReloadHandler implements Runnable {
 	PageReloadRequest request;
 
 	@Inject
-	TemplateIndex templateIndex;
+	ComponentTemplateIndex componentTemplateIndex;
 
 	@Inject
 	CoreRequestInfo coreRequestInfo;
@@ -61,12 +61,12 @@ public class ReloadHandler implements Runnable {
 		List<Component> components = ComponentTreeUtil.subTree(reloadComponent);
 
 		for (Component c : components) {
-			templateIndex.getTemplate(c).applyValues(c);
+			componentTemplateIndex.getTemplate(c).applyValues(c);
 		}
 
 		// raise events
 		for (Component c : components) {
-			templateIndex.getTemplate(c).raiseEvents(c);
+			componentTemplateIndex.getTemplate(c).raiseEvents(c);
 		}
 
 		// check if a destination has been defined

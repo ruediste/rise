@@ -18,7 +18,7 @@ import com.github.ruediste.salta.jsr330.Injector;
  * annotation.
  */
 @Singleton
-public class TemplateIndex {
+public class ComponentTemplateIndex {
 
 	@Inject
 	Logger log;

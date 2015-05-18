@@ -12,6 +12,10 @@ import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Provides;
 
 public class BitronixModule extends AbstractModule {
+	public BitronixModule() {
+
+	}
+
 	@Override
 	protected void configure() throws Exception {
 

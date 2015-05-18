@@ -12,7 +12,7 @@ import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.components.CReload;
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
 
-public class CReloadHtmlTemplate extends CWTemplateBase<CReload> {
+public class CReloadHtmlTemplate extends ComponentTemplateBase<CReload> {
 	@Inject
 	ComponentUtil util;
 

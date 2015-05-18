@@ -30,10 +30,6 @@ public class AssetGroupResolveNameTemplateTest {
 	@InjectMocks
 	AssetBundle bundle = new AssetBundle() {
 
-		@Override
-		public void initialize() {
-
-		}
 	};
 
 	@Before

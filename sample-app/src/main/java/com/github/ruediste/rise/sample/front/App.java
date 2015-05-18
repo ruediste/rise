@@ -3,7 +3,7 @@ package com.github.ruediste.rise.sample.front;
 import javax.inject.Inject;
 
 import com.github.ruediste.rise.api.RestartableApplicationModule;
-import com.github.ruediste.rise.component.TemplateIndex;
+import com.github.ruediste.rise.component.ComponentTemplateIndex;
 import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.front.RestartableApplicationBase;
@@ -17,14 +17,14 @@ public class App extends RestartableApplicationBase {
 	CoreConfiguration config;
 
 	@Inject
-	TemplateIndex templateIndex;
+	ComponentTemplateIndex componentTemplateIndex;
 
 	@Override
 	protected void startImpl(Injector permanentInjector) {
 		Salta.createInjector(new RestartableApplicationModule(permanentInjector))
 				.injectMembers(this);
 		config.basePackage = "com.github.ruediste.laf.sample";
-		templateIndex.registerTemplate(CPage.class, CPageHtmlTemplate.class);
+		componentTemplateIndex.registerTemplate(CPage.class, CPageHtmlTemplate.class);
 	}
 
 }
