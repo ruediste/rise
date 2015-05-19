@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.ServletConfig;
 
-import com.github.ruediste.rise.nonReloadable.Permanent;
+import com.github.ruediste.rise.nonReloadable.NonRestartable;
 import com.github.ruediste.salta.standard.Stage;
 
 @Singleton
@@ -78,7 +78,7 @@ public class AssetPipelineConfiguration {
 	public String assetPathInfoPrefix = "/assets/";
 
 	@Inject
-	@Permanent
+	@NonRestartable
 	ServletConfig servletConfig;
 
 	/**

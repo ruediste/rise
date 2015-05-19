@@ -24,7 +24,7 @@ import org.objectweb.asm.signature.SignatureVisitor;
 import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 
-import com.github.ruediste.rise.nonReloadable.Permanent;
+import com.github.ruediste.rise.nonReloadable.NonRestartable;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassChangeNotifier.ClassChangeTransaction;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
@@ -34,7 +34,7 @@ import com.google.common.collect.Iterables;
  * parsed classes.
  */
 @Singleton
-@Permanent
+@NonRestartable
 public class ClassHierarchyCache {
 	private final class SignatureVisitorImpl extends SignatureVisitor {
 		public Map<String, String> parameterMap = new HashMap<>();

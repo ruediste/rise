@@ -5,7 +5,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import javax.inject.Singleton;
 
-import com.github.ruediste.rise.nonReloadable.Permanent;
+import com.github.ruediste.rise.nonReloadable.NonRestartable;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
@@ -14,7 +14,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  * (AET)
  */
 @Singleton
-@Permanent
+@NonRestartable
 public class ApplicationEventQueue extends ScheduledThreadPoolExecutor {
 
 	private Thread queueThread;

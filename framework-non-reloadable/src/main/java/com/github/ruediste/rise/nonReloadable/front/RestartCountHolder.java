@@ -1,12 +1,17 @@
 package com.github.ruediste.rise.nonReloadable.front;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.github.ruediste.rise.nonReloadable.Permanent;
+import com.github.ruediste.rise.nonReloadable.CoreConfigurationNonRestartable;
+import com.github.ruediste.rise.nonReloadable.NonRestartable;
 
-@Permanent
+@NonRestartable
 @Singleton
 public class RestartCountHolder {
+
+	@Inject
+	CoreConfigurationNonRestartable config;
 
 	long restartNr = 0;
 	private Object lock = new Object();
@@ -33,7 +38,7 @@ public class RestartCountHolder {
 			if (expectedNr != restartNr)
 				return true;
 			try {
-				lock.wait(5000);
+				lock.wait(config.restartQueryTimeout);
 			} catch (InterruptedException e) {
 				// swallow
 			}

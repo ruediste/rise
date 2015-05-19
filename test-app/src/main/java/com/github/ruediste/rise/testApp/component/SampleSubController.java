@@ -5,6 +5,8 @@ import static org.rendersnake.HtmlAttributesFactory.class_;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
+import org.slf4j.Logger;
+
 import com.github.ruediste.rise.api.ViewComponent;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.binding.BindingGroup;
@@ -44,6 +46,9 @@ public class SampleSubController {
 	EntityManager em;
 	@Inject
 	ComponentUtil util;
+
+	@Inject
+	Logger log;
 
 	@Inject
 	private BindingGroup<TestEntity> entity;

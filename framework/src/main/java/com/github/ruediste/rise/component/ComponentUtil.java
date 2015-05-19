@@ -124,8 +124,8 @@ public class ComponentUtil implements ICoreUtil {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void render(Component component, HtmlCanvas html) {
 		try {
-			((CWTemplate) componentTemplateIndex.getTemplate(component.getClass()))
-					.render(component, html);
+			((CWTemplate) componentTemplateIndex.getTemplate(component
+					.getClass())).render(component, html);
 		} catch (IOException e) {
 			throw new RuntimeException("Error while rendering component", e);
 		}
@@ -217,7 +217,7 @@ public class ComponentUtil implements ICoreUtil {
 						if (inTransaction != null) {
 							inTransaction.run();
 						}
-						holder.flush();
+						// holder.flush();
 						trx.commit();
 					}
 				});

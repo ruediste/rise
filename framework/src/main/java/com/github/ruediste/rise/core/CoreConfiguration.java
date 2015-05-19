@@ -178,4 +178,9 @@ public class CoreConfiguration {
 	public PathInfo restartQueryPathInfo = new PathInfo("/~riseRestartQuery");
 
 	public String htmlContentType = "text/html;charset=utf-8";
+
+	/**
+	 * when executed, fills the db with the fixture data
+	 */
+	public Optional<Runnable> dbFixture = Optional.empty();
 }

@@ -5,24 +5,20 @@ import java.util.HashMap;
 
 import javax.inject.Singleton;
 
-import com.github.ruediste.rise.nonReloadable.Permanent;
+import com.github.ruediste.rise.nonReloadable.NonRestartable;
 
 /**
  * Registry holding the available {@link DataBaseLink}s. Used to register the
  * links in the dynamic injector
  */
 @Singleton
-@Permanent
+@NonRestartable
 public class DataBaseLinkRegistry {
 
 	final private HashMap<Class<? extends Annotation>, DataBaseLink> links = new HashMap<>();
 
 	public Iterable<DataBaseLink> getLinks() {
 		return links.values();
-	}
-
-	public void initializeDataSources() {
-		links.values().forEach(DataBaseLink::initializeDataSource);
 	}
 
 	public void addLink(DataBaseLink dataBaseLink) {
@@ -37,4 +33,17 @@ public class DataBaseLinkRegistry {
 		links.values().forEach(DataBaseLink::close);
 	}
 
+	public void runSchemaMigrations() {
+		links.values().forEach(DataBaseLink::runSchemaMigration);
+	}
+
+	public void dropAndCreateSchemas() {
+		links.values().forEach(
+				link -> link.getPersistenceUnitManager().dropAndCreateSchema());
+	}
+
+	public void closePersistenceUnitManagers() {
+		links.values()
+				.forEach(link -> link.getPersistenceUnitManager().close());
+	}
 }

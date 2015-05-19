@@ -28,20 +28,12 @@ public class PersistenceTestHelper {
 
 	public void before() {
 
-		EclipseLinkPersistenceUnitManager.undeployEcliseLink();
-		// ResourceRegistrar.getResourcesUniqueNames().forEach(name -> {
-		//
-		// XAResourceProducer res = mock(XAResourceProducer.class);
-		// when(res.getUniqueName()).thenReturn(name);
-		// ResourceRegistrar.unregister(res);
-		// });
 		Injector permanentInjector = Salta.createInjector(new AbstractModule() {
 
 			@Override
 			protected void configure() throws Exception {
 				PersistenceModuleUtil.bindDataSource(binder(), null,
-						new EclipseLinkPersistenceUnitManager(
-								"frameworkTest"),
+						new EclipseLinkPersistenceUnitManager("frameworkTest"),
 						new BitronixDataSourceFactory(
 								new H2DatabaseIntegrationInfo()) {
 
@@ -64,7 +56,6 @@ public class PersistenceTestHelper {
 
 		dbLinkRegistry = permanentInjector
 				.getInstance(DataBaseLinkRegistry.class);
-		dbLinkRegistry.initializeDataSources();
 		Salta.createInjector(new CoreRestartableModule(permanentInjector),
 				new LoggerModule()).injectMembers(testCase);
 	}

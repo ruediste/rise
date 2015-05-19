@@ -32,7 +32,8 @@ public class PersisteUnitRegistry {
 		return factories.computeIfAbsent(
 				qualifier == null ? NullQualifier.class : qualifier,
 				q -> Optional.ofNullable(registry.getLink(qualifier)).map(
-						link -> link.createEntityManagerFactory()));
+						link -> link.getPersistenceUnitManager()
+								.getEntityManagerFactory()));
 
 	}
 

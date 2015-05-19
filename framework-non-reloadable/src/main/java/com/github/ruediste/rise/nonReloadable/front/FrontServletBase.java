@@ -15,6 +15,7 @@ import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.ruediste.rise.nonReloadable.CoreConfigurationNonRestartable;
 import com.github.ruediste.rise.nonReloadable.front.reload.FileChangeNotifier;
 import com.github.ruediste.rise.nonReloadable.front.reload.ReloadableClassLoader;
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
@@ -96,25 +97,31 @@ public abstract class FrontServletBase extends HttpServlet {
 	Provider<ReloadableClassLoader> dynamicClassLoaderProvider;
 
 	@Inject
-	Injector permanentInjector;
+	Injector nonRestartableInjector;
 
 	@Inject
-	DataBaseLinkRegistry registry;
+	DataBaseLinkRegistry dataBaseLinkRegistry;
+
+	@Inject
+	CoreConfigurationNonRestartable configurationNonRestartable;
 
 	private void initInAET() {
-		registry.initializeDataSources();
+		// setup application reloading
+		if (fixedDynamicApplicationInstance == null) {
+			applicationInstanceClassName = dynamicApplicationInstanceClass
+					.getName();
+			notifier.addListener(trx -> reloadApplicationInstance());
+		}
+
+		// run initializers
+		InitializerUtil.runInitializers(nonRestartableInjector);
+
+		// run schema migration
+		if (configurationNonRestartable.isRunSchemaMigration()) {
+			dataBaseLinkRegistry.runSchemaMigrations();
+		}
 
 		try {
-			if (fixedDynamicApplicationInstance == null) {
-				// setup application reloading
-				applicationInstanceClassName = dynamicApplicationInstanceClass
-						.getName();
-				notifier.addListener(trx -> reloadApplicationInstance());
-			}
-
-			// run initializers
-			InitializerUtil.runInitializers(permanentInjector);
-
 			if (fixedDynamicApplicationInstance != null) {
 				notifier.close();
 				// we are started with a fixed application instance, just use
@@ -123,7 +130,7 @@ public abstract class FrontServletBase extends HttpServlet {
 				currentApplicationInfo = new RestartableApplicationInfo(
 						fixedDynamicApplicationInstance, Thread.currentThread()
 								.getContextClassLoader());
-				fixedDynamicApplicationInstance.start(permanentInjector);
+				fixedDynamicApplicationInstance.start(nonRestartableInjector);
 			} else {
 				// application gets started through the initial file change
 				// transaction
@@ -142,45 +149,10 @@ public abstract class FrontServletBase extends HttpServlet {
 			if (currentApplicationInfo != null) {
 				currentApplicationInfo.application.close();
 
+				dataBaseLinkRegistry.closePersistenceUnitManagers();
+
 				// reload configuration for logback, if available
-				{
-					ILoggerFactory iLoggerFactory = LoggerFactory
-							.getILoggerFactory();
-					if (iLoggerFactory.getClass().getName()
-							.equals("ch.qos.logback.classic.LoggerContext")) {
-
-						// original code:
-						// LoggerContext
-						// loggerContext=(LoggerContext)LoggerFactory.getILoggerFactory()
-						// ContextInitializer ci = new
-						// ContextInitializer(loggerContext);
-						// URL url = ci.findURLOfDefaultConfigurationFile(true);
-						// loggerContext.reset();
-						// ci.configureByResource(url);
-						try {
-							Class<?> cContextInitializer = Class
-									.forName("ch.qos.logback.classic.util.ContextInitializer");
-							Class<?> cLoggerContext = Class
-									.forName("ch.qos.logback.classic.LoggerContext");
-							Object loggerContext = iLoggerFactory;
-
-							Object ci = cContextInitializer.getConstructor(
-									cLoggerContext).newInstance(loggerContext);
-							Object url1 = cContextInitializer.getMethod(
-									"findURLOfDefaultConfigurationFile",
-									boolean.class).invoke(ci, true);
-							cLoggerContext.getMethod("reset").invoke(
-									loggerContext);
-							cContextInitializer.getMethod(
-									"configureByResource", URL.class).invoke(
-									ci, url1);
-						} catch (Throwable t) {
-							log.error(
-									"Error updating logback configuration, continuing...",
-									t);
-						}
-					}
-				}
+				reloadLogback();
 			}
 
 			// create application instance
@@ -196,7 +168,7 @@ public abstract class FrontServletBase extends HttpServlet {
 				instance = (RestartableApplication) dynamicClassloader
 						.loadClass(applicationInstanceClassName).newInstance();
 
-				instance.start(permanentInjector);
+				instance.start(nonRestartableInjector);
 
 				currentApplicationInfo = new RestartableApplicationInfo(
 						instance, dynamicClassloader);
@@ -209,6 +181,42 @@ public abstract class FrontServletBase extends HttpServlet {
 			restartCountHolder.increment();
 		} catch (Throwable t) {
 			log.warn("Error loading application instance", t);
+		}
+	}
+
+	protected void reloadLogback() {
+		ILoggerFactory iLoggerFactory = LoggerFactory.getILoggerFactory();
+		if (iLoggerFactory.getClass().getName()
+				.equals("ch.qos.logback.classic.LoggerContext")) {
+
+			// original code:
+			// LoggerContext
+			// loggerContext=(LoggerContext)LoggerFactory.getILoggerFactory()
+			// ContextInitializer ci = new
+			// ContextInitializer(loggerContext);
+			// URL url = ci.findURLOfDefaultConfigurationFile(true);
+			// loggerContext.reset();
+			// ci.configureByResource(url);
+			try {
+				Class<?> cContextInitializer = Class
+						.forName("ch.qos.logback.classic.util.ContextInitializer");
+				Class<?> cLoggerContext = Class
+						.forName("ch.qos.logback.classic.LoggerContext");
+				Object loggerContext = iLoggerFactory;
+
+				Object ci = cContextInitializer.getConstructor(cLoggerContext)
+						.newInstance(loggerContext);
+				Object url1 = cContextInitializer.getMethod(
+						"findURLOfDefaultConfigurationFile", boolean.class)
+						.invoke(ci, true);
+				cLoggerContext.getMethod("reset").invoke(loggerContext);
+				cContextInitializer.getMethod("configureByResource", URL.class)
+						.invoke(ci, url1);
+			} catch (Throwable t) {
+				log.error(
+						"Error updating logback configuration, continuing...",
+						t);
+			}
 		}
 	}
 

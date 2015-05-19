@@ -23,6 +23,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 
+import com.github.ruediste.rise.nonReloadable.CoreConfigurationNonRestartable;
 import com.github.ruediste.rise.nonReloadable.front.ApplicationEventQueue;
 import com.github.ruediste.rise.nonReloadable.front.reload.FileChangeNotifier.FileChangeTransaction;
 import com.github.ruediste.rise.util.Pair;
@@ -35,7 +36,7 @@ public class ClassChangeNotifier {
 	Logger log;
 
 	@Inject
-	ReloadConfiguration config;
+	CoreConfigurationNonRestartable config;
 
 	@Inject
 	@Named("classPath")

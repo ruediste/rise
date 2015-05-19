@@ -31,9 +31,10 @@ public class TestAppFrontServlet extends FrontServletBase {
 
 					@Override
 					protected void configure() throws Exception {
-						PersistenceModuleUtil.bindDataSource(binder(), null,
-								new EclipseLinkPersistenceUnitManager(
-										"testApp"),
+						PersistenceModuleUtil.bindDataSource(
+								binder(),
+								null,
+								new EclipseLinkPersistenceUnitManager("testApp"),
 								new BitronixDataSourceFactory(
 										new H2DatabaseIntegrationInfo()) {
 
@@ -41,7 +42,7 @@ public class TestAppFrontServlet extends FrontServletBase {
 									protected void initializeProperties(
 											Properties props) {
 										props.setProperty("URL",
-												"jdbc:h2:file:./testDb;DB_CLOSE_DELAY=-1;MVCC=false");
+												"jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MVCC=false");
 										props.setProperty("user", "sa");
 										props.setProperty("password", "sa");
 									}

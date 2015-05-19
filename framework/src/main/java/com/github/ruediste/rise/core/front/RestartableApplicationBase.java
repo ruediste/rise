@@ -15,7 +15,6 @@ import com.github.ruediste.rise.core.scopes.HttpScopeManager;
 import com.github.ruediste.rise.nonReloadable.front.HttpMethod;
 import com.github.ruediste.rise.nonReloadable.front.RestartableApplication;
 import com.github.ruediste.rise.nonReloadable.front.reload.Reloadable;
-import com.github.ruediste.rise.nonReloadable.persistence.EclipseLinkPersistenceUnitManager;
 import com.github.ruediste.rise.util.InitializerUtil;
 import com.github.ruediste.salta.jsr330.Injector;
 
@@ -92,6 +91,5 @@ public abstract class RestartableApplicationBase implements
 	 * Called when the dynamic application is shut down
 	 */
 	protected void closeImpl() {
-		EclipseLinkPersistenceUnitManager.undeployEcliseLink();
 	}
 }

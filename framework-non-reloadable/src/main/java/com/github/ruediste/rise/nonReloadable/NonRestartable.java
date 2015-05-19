@@ -10,14 +10,14 @@ import com.github.ruediste.rise.nonReloadable.front.reload.NonReloadable;
 
 /**
  * When present on an injection point, or a type beeing injected indicates that
- * a dependency should be satisfied from the permanent injector when beeing
- * injected using the dynamic injector
+ * a dependency should be satisfied from the non-restartable injector when
+ * beeing injected using the restartable injector
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD,
 		ElementType.TYPE })
 @NonReloadable
-public @interface Permanent {
+public @interface NonRestartable {
 
 }

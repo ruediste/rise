@@ -34,7 +34,6 @@ public class CController extends AttachedPropertyBearerBase implements
 
 	public CController setController(Object controller) {
 		ViewComponent<Object> view = repo.createView(controller);
-		view.initialize(controller);
 		rootComponent = view.getRootComponent();
 		return this;
 	}

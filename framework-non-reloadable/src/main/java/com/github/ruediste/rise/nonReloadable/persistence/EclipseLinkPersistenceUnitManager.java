@@ -5,11 +5,11 @@ import java.util.HashMap;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
 import javax.transaction.Status;
 import javax.transaction.TransactionManager;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.logging.SessionLog;
 import org.slf4j.Logger;
@@ -34,16 +34,23 @@ public class EclipseLinkPersistenceUnitManager implements
 
 	private LocalContainerEntityManagerFactoryBean bean;
 
-	private boolean initialized;
+	private volatile boolean isOpen;
+
+	private Class<? extends Annotation> qualifier;
+
+	private DataSourceManager dataSourceManager;
 
 	public EclipseLinkPersistenceUnitManager(String persistenceUnitName) {
 		this.persistenceUnitName = persistenceUnitName;
 	}
 
 	@Override
-	synchronized public void generateSchema() {
-		checkInitialized();
-		HashMap<String, Object> props = new HashMap<>();
+	synchronized public void dropAndCreateSchema() {
+		checkOpen();
+		HashMap<String, Object> props = createProperties();
+		props.put(
+				PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION,
+				PersistenceUnitProperties.SCHEMA_GENERATION_DROP_AND_CREATE_ACTION);
 		customizeSchemaGenerationProperties(props);
 		bean.getPersistenceProvider().generateSchema(
 				bean.getPersistenceUnitInfo(), props);
@@ -51,27 +58,18 @@ public class EclipseLinkPersistenceUnitManager implements
 
 	@Override
 	synchronized public EntityManagerFactory getEntityManagerFactory() {
-		checkInitialized();
+		checkOpen();
 		return bean.getObject();
 	}
 
-	private void checkInitialized() {
-		synchronized (this) {
-			if (!initialized)
-				throw new RuntimeException("manager not initialized");
-		}
-	}
-
 	/**
-	 * initialize this provider if not yet initialized
+	 * open this manager if it is currently closed
 	 */
-	@Override
-	synchronized public void initialize(Class<? extends Annotation> qualifier,
-			DataSource dataSource) {
+	synchronized private void checkOpen() {
 		// initialize once only
-		if (initialized)
-			throw new RuntimeException("manager already initialized");
-		initialized = true;
+		if (isOpen)
+			return;
+		isOpen = true;
 
 		ClassLoader classLoader = Thread.currentThread()
 				.getContextClassLoader();
@@ -81,18 +79,10 @@ public class EclipseLinkPersistenceUnitManager implements
 		bean.setBeanClassLoader(classLoader);
 
 		bean.setPersistenceUnitName(persistenceUnitName);
-		bean.setJtaDataSource(dataSource);
+		bean.setJtaDataSource(dataSourceManager.getDataSource());
 		bean.setPersistenceProviderClass(PersistenceProvider.class);
 
-		HashMap<String, Object> props = new HashMap<>();
-		props.put(PersistenceUnitProperties.CLASSLOADER, classLoader);
-		props.put(PersistenceUnitProperties.LOGGING_LEVEL, getLogLevel());
-		props.put(PersistenceUnitProperties.WEAVING, "false");
-		props.put(PersistenceUnitProperties.TRANSACTION_TYPE, "JTA");
-		props.put(PersistenceUnitProperties.TARGET_SERVER, integrationInfo
-				.getEclipseLinkExternalTransactionController().getName());
-		customizeProperties(props);
-		bean.setJpaPropertyMap(props);
+		bean.setJpaPropertyMap(createProperties());
 
 		customizeFactoryBean(bean);
 
@@ -120,6 +110,24 @@ public class EclipseLinkPersistenceUnitManager implements
 
 		}
 		log.debug("initialized provider for " + qualifier);
+	}
+
+	protected HashMap<String, Object> createProperties() {
+		HashMap<String, Object> props = new HashMap<>();
+		props.put(PersistenceUnitProperties.CLASSLOADER, Thread.currentThread()
+				.getContextClassLoader());
+		props.put(PersistenceUnitProperties.LOGGING_LEVEL, getLogLevel());
+		props.put(PersistenceUnitProperties.WEAVING, "false");
+		props.put(PersistenceUnitProperties.TRANSACTION_TYPE, "JTA");
+		props.put(PersistenceUnitProperties.TARGET_SERVER, integrationInfo
+				.getEclipseLinkExternalTransactionController().getName());
+		props.put(PersistenceUnitProperties.SESSION_NAME, sessionName());
+		customizeProperties(props);
+		return props;
+	}
+
+	protected String sessionName() {
+		return qualifier == null ? "--" : qualifier.getName();
 	}
 
 	/**
@@ -154,10 +162,21 @@ public class EclipseLinkPersistenceUnitManager implements
 
 	@Override
 	synchronized public void close() {
-		checkInitialized();
-		initialized = false;
-		org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider
-				.getEntityManagerSetupImpl(persistenceUnitName).undeploy();
+		if (isOpen) {
+			isOpen = false;
+			EntityManagerSetupImpl entityManagerSetupImpl = org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider
+					.getEntityManagerSetupImpl(sessionName());
+			entityManagerSetupImpl.undeploy();
+			bean = null;
+		}
+	}
+
+	@Override
+	public void initialize(Class<? extends Annotation> qualifier,
+			DataSourceManager dataSourceManager) {
+		this.qualifier = qualifier;
+		this.dataSourceManager = dataSourceManager;
+
 	}
 
 }

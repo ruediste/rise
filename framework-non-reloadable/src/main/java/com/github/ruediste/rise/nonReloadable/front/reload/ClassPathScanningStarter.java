@@ -20,6 +20,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 
+import com.github.ruediste.rise.nonReloadable.CoreConfigurationNonRestartable;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassPathWalker.ClassPathVisitResult;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassPathWalker.ClassPathVisitor;
 import com.google.common.io.ByteStreams;
@@ -33,7 +34,7 @@ public class ClassPathScanningStarter {
 	Logger log;
 
 	@Inject
-	ReloadConfiguration config;
+	CoreConfigurationNonRestartable config;
 
 	@Inject
 	ClassChangeNotifier classChangeNotifier;

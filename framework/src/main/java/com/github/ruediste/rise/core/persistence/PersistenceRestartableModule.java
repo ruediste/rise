@@ -48,8 +48,11 @@ public class PersistenceRestartableModule extends AbstractModule {
 		for (DataBaseLink link : registry.getLinks()) {
 			Class<? extends Annotation> requiredQualifier = link.getQualifier();
 			// bind data source
-			bind(DataSource.class).annotatedWith(requiredQualifier)
-					.toProvider(() -> link.getDataSource()).in(Singleton.class);
+			bind(DataSource.class)
+					.annotatedWith(requiredQualifier)
+					.toProvider(
+							() -> link.getDataSourceManager().getDataSource())
+					.in(Singleton.class);
 
 			// bind EMF to registry
 			{

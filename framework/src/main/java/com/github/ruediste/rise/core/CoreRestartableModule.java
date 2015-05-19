@@ -6,7 +6,7 @@ import java.util.function.Function;
 import com.github.ruediste.rise.core.persistence.PersistenceRestartableModule;
 import com.github.ruediste.rise.core.scopes.HttpScopeModule;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
-import com.github.ruediste.rise.nonReloadable.Permanent;
+import com.github.ruediste.rise.nonReloadable.NonRestartable;
 import com.github.ruediste.rise.util.InitializerUtil;
 import com.github.ruediste.salta.core.CoreDependencyKey;
 import com.github.ruediste.salta.core.CoreInjector;
@@ -68,11 +68,11 @@ public class CoreRestartableModule extends AbstractModule {
 							CoreDependencyKey<?> key, CoreInjector injector) {
 						boolean applies = false;
 						if (key.getRawType().isAnnotationPresent(
-								Permanent.class))
+								NonRestartable.class))
 							applies = true;
 						else if (key instanceof InjectionPoint<?>) {
 							if (key.getAnnotatedElement().isAnnotationPresent(
-									Permanent.class)) {
+									NonRestartable.class)) {
 								applies = true;
 							}
 						}
