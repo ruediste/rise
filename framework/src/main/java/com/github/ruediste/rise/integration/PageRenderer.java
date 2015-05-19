@@ -1,6 +1,8 @@
 package com.github.ruediste.rise.integration;
 
 import static org.rendersnake.HtmlAttributesFactory.charset;
+import static org.rendersnake.HtmlAttributesFactory.class_;
+import static org.rendersnake.HtmlAttributesFactory.href;
 import static org.rendersnake.HtmlAttributesFactory.http_equiv;
 import static org.rendersnake.HtmlAttributesFactory.name;
 
@@ -63,7 +65,8 @@ public abstract class PageRenderer<T> {
 			renderHead(html,data);
 			renderCssLinks(html,data);
 		html._head()
-		.body(addBodyAttributes(bodyAttributes,data));
+		.body(addBodyAttributes(bodyAttributes,data))
+		.div(class_("rise-ribbon rise-ribbon-red")).a(href("#")).content("Development")._div();
 			renderBody(html,data);
 			renderJsLinks(html,data);
 		html._body()._html();

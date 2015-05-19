@@ -37,7 +37,7 @@ public class AssetReferencingView extends
 		// @formatter:off
 		html.html()
 			.head()
-				.render(cssBundle(bundle.out))
+				.render(cssLinks(bundle.out))
 			._head()
 			.body()
 				.div(id("data")).content(data())

@@ -1,0 +1,57 @@
+.rise-ribbon {
+/* 	overflow: hidden; */
+/* 	white-space: nowrap; */
+	width: 500px;
+
+	/* top left corner */
+	position: absolute;
+	left: -210px;
+	top: 15px;
+	/* 45 deg ccw rotation */
+	-webkit-transform: rotate(-45deg);
+	-moz-transform: rotate(-45deg);
+	-ms-transform: rotate(-45deg);
+	-o-transform: rotate(-45deg);
+	transform: rotate(-45deg);
+	/* shadow */
+	-webkit-box-shadow: 0 0 10px #888;
+	-moz-box-shadow: 0 0 10px #888;
+	box-shadow: 0 0 10px #888;
+	z-index: 1500;
+}
+
+.rise-ribbon a {
+	border: 1px solid #faa;
+	display: block;
+	font: bold 81.25% 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	margin: 1px 0;
+	padding: 10px 210px;
+	text-align: center;
+	text-decoration: none;
+	/* shadow */
+	text-shadow: 0 0 5px #444;
+}
+
+.rise-ribbon-red {
+	background-color: #a00;
+}
+
+.rise-ribbon-red a {
+	color: #fff;
+}
+
+.rise-ribbon-green {
+	background-color: #0a0;
+}
+
+.rise-ribbon-green a {
+	color: #fff;
+}
+
+.rise-ribbon-blue {
+	background-color: #00a;
+}
+
+.rise-ribbon-blue a {
+	color: #fff;
+}

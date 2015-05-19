@@ -74,7 +74,7 @@ public abstract class ViewMvc<TController extends IControllerMvc, TData> {
 		return util.jsLinks(output);
 	}
 
-	public Renderable cssBundle(AssetBundleOutput output) {
+	public Renderable cssLinks(AssetBundleOutput output) {
 		return util.cssLinks(output);
 	}
 

@@ -22,7 +22,7 @@ public class CoreAssetBundle extends AssetBundle {
 
 	@PostConstruct
 	public void initialize() {
-		out = paths("./core.js").load();
+		out = paths("./core.js", "./core.css").load();
 	}
 
 }

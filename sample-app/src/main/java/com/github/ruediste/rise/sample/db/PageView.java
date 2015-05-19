@@ -28,7 +28,7 @@ public abstract class PageView<TController extends IControllerMvc, TData>
 		//@formatter:off
 		html.html()
 			.head()
-				.render(cssBundle(bundle.out))
+				.render(cssLinks(bundle.out))
 				.render(jsLinks(bundle.out))
 			._head()
 			.body();
