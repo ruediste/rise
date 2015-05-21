@@ -8,13 +8,13 @@ import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.testApp.persistence.TestEntity;
 
-public class SampleComponentController extends ControllerComponent {
+public class TestComponentController extends ControllerComponent {
 
 	@Inject
-	SampleSubController subControllerA;
+	TestSubController subControllerA;
 
 	@Inject
-	SampleSubController subControllerB;
+	TestSubController subControllerB;
 
 	@Inject
 	EntityManager em;

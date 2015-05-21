@@ -17,12 +17,12 @@ public class CReloadHtmlTemplate extends ComponentTemplateBase<CReload> {
 	ComponentUtil util;
 
 	@Override
-	public void render(CReload component, HtmlCanvas html) throws IOException {
+	public void doRender(CReload component, HtmlCanvas html) throws IOException {
 		html.form(class_("rise_reload").data(
 				CoreAssetBundle.componentAttributeNr,
 				String.valueOf(util.getComponentNr(component))).data(
 				"lwf-reload-count", String.valueOf(component.getReloadCount())));
-		super.render(component, html);
+		super.doRender(component, html);
 		html._form();
 	}
 

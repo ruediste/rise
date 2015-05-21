@@ -10,12 +10,12 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.MethodNode;
 
 import com.github.ruediste.rise.mvc.Updating;
-import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyCache;
+import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndex;
 
 public class ControllerReflectionUtil {
 
 	@Inject
-	ClassHierarchyCache cache;
+	ClassHierarchyIndex cache;
 
 	public boolean isActionMethod(Method method) {
 		return Modifier.isPublic(method.getModifiers())

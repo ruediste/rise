@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.objectweb.asm.tree.MethodNode;
 
-import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyCache;
+import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndex;
 import com.github.ruediste.rise.testApp.WebTest;
 
 public class ControllerReflectionUtilTest extends WebTest {
@@ -18,7 +18,7 @@ public class ControllerReflectionUtilTest extends WebTest {
 	ControllerReflectionUtil util;
 
 	@Inject
-	ClassHierarchyCache cache;
+	ClassHierarchyIndex cache;
 
 	private class A {
 		public ActionResult m1() {

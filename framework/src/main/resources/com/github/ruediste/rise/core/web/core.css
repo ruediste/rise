@@ -5,7 +5,7 @@
 
 	/* top left corner */
 	position: absolute;
-	left: -210px;
+	left: -220px;
 	top: 15px;
 	/* 45 deg ccw rotation */
 	-webkit-transform: rotate(-45deg);
@@ -23,9 +23,9 @@
 .rise-ribbon a {
 	border: 1px solid #faa;
 	display: block;
-	font: bold 81.25% 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font: bold 10px 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	margin: 1px 0;
-	padding: 10px 210px;
+	padding: 5px 220px;
 	text-align: center;
 	text-decoration: none;
 	/* shadow */
@@ -55,3 +55,16 @@
 .rise-ribbon-blue a {
 	color: #fff;
 }
+
+#page-rise-ribbon {
+	min-height: 100%;
+}
+#page-rise-ribbon body {
+	min-height: 100%;
+}
+
+#page-rise-ribbon .btn span.glyphicon {
+	display: block;
+}
+
+

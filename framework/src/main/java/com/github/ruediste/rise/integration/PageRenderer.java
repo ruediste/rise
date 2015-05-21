@@ -7,22 +7,27 @@ import static org.rendersnake.HtmlAttributesFactory.http_equiv;
 import static org.rendersnake.HtmlAttributesFactory.name;
 
 import java.io.IOException;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
 import org.rendersnake.HtmlAttributes;
 import org.rendersnake.HtmlAttributesFactory;
 import org.rendersnake.HtmlCanvas;
+import org.rendersnake.Renderable;
+import org.rendersnake.internal.CharactersWriteable;
 
 import com.github.ruediste.rise.component.ComponentConfiguration;
 import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.component.PageInfo;
+import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
+import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
 import com.github.ruediste.rise.nonReloadable.front.RestartCountHolder;
 
-public abstract class PageRenderer<T> {
+public class PageRenderer {
 
 	@Inject
 	RestartCountHolder holder;
@@ -37,12 +42,16 @@ public abstract class PageRenderer<T> {
 	CoreUtil util;
 
 	@Inject
+	CoreRequestInfo coreRequestInfo;
+
+	@Inject
 	ComponentRequestInfo componentRequestInfo;
 
 	@Inject
 	PageInfo pageInfo;
 
-	public void renderOn(HtmlCanvas html, T data) throws IOException {
+	public void renderOn(HtmlCanvas html, PageRendererParameters parameters)
+			throws IOException {
 
 		HtmlAttributes bodyAttributes = HtmlAttributesFactory.data(
 				CoreAssetBundle.bodyAttributeRestartQueryUrl,
@@ -59,55 +68,68 @@ public abstract class PageRenderer<T> {
 							util.url(componentConfig.getAjaxPath()));
 		}
 		//@formatter:off
-		html.write("<!DOCTYPE html>",false).html()
+		html.write("<!DOCTYPE html>",false).html(parameters.htmlAttributes())
 			.head();
-			renderDefaultMetaTags(html,data);
-			renderHead(html,data);
-			renderCssLinks(html,data);
+		parameters.renderDefaultMetaTags(html);
+			parameters.renderHead(html);
+			parameters.renderCssLinks(html);
 		html._head()
-		.body(addBodyAttributes(bodyAttributes,data))
-		.div(class_("rise-ribbon rise-ribbon-red")).a(href("#")).content("Development")._div();
-			renderBody(html,data);
-			renderJsLinks(html,data);
+		.body(parameters.addBodyAttributes(bodyAttributes));
+			parameters.renderBody(html);
+			parameters.renderJsLinks(html);
 		html._body()._html();
+		//@formatter:on
 	}
 
-	private void renderDefaultMetaTags(HtmlCanvas html, T data)
-			throws IOException {
-		html.meta(charset("UTF-8"))
-				.meta(http_equiv("X-UA-Compatible").content("IE=edge"))
-				.meta(name("viewport").content(
-						"width=device-width, initial-scale=1"));
+	public abstract static class PageRendererParameters {
+		protected void renderDefaultMetaTags(HtmlCanvas html)
+				throws IOException {
+			html.meta(charset("UTF-8"))
+					.meta(http_equiv("X-UA-Compatible").content("IE=edge"))
+					.meta(name("viewport").content(
+							"width=device-width, initial-scale=1"));
+		}
+
+		protected CharactersWriteable htmlAttributes() {
+			return new HtmlAttributes();
+		}
+
+		/**
+		 * Hook to add additional attributes to the body tag
+		 */
+		protected HtmlAttributes addBodyAttributes(HtmlAttributes attrs) {
+			return attrs;
+		}
+
+		/**
+		 * Render the CSS links of the resource bundle
+		 */
+		protected abstract void renderCssLinks(HtmlCanvas html)
+				throws IOException;
+
+		/**
+		 * Render the JS links of the resource bundle
+		 */
+		protected abstract void renderJsLinks(HtmlCanvas html)
+				throws IOException;
+
+		/**
+		 * Render content of the head tag
+		 */
+		protected abstract void renderHead(HtmlCanvas html) throws IOException;
+
+		/**
+		 * Render content of the body tag
+		 */
+		protected abstract void renderBody(HtmlCanvas html) throws IOException;
 	}
 
-	/**
-	 * Hook to add additional attributes to the body tag
-	 */
-	protected HtmlAttributes addBodyAttributes(HtmlAttributes attrs, T data) {
-		return attrs;
+	public Renderable stageRibbon(Function<String, ActionResult> urlPoducer) {
+		return html -> {
+			html.div(class_("rise-ribbon rise-ribbon-red"))
+					.a(href(util.url(urlPoducer.apply(coreRequestInfo
+							.getRequest().getPathInfo()))))
+					.content("Development")._div();
+		};
 	}
-
-	/**
-	 * Render the CSS links of the resource bundle
-	 */
-	protected abstract void renderCssLinks(HtmlCanvas html, T data)
-			throws IOException;
-
-	/**
-	 * Render the JS links of the resource bundle
-	 */
-	protected abstract void renderJsLinks(HtmlCanvas html, T data)
-			throws IOException;
-
-	/**
-	 * Render content of the head tag
-	 */
-	protected abstract void renderHead(HtmlCanvas html, T data)
-			throws IOException;
-
-	/**
-	 * Render content of the body tag
-	 */
-	protected abstract void renderBody(HtmlCanvas html, T data)
-			throws IOException;
 }

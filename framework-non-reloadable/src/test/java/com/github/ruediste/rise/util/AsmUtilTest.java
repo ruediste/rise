@@ -1,13 +1,12 @@
 package com.github.ruediste.rise.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import java.util.List;
 
 import org.junit.Test;
 import org.objectweb.asm.Type;
-
-import com.github.ruediste.rise.util.AsmUtil;
 
 public class AsmUtilTest {
 
@@ -50,5 +49,19 @@ public class AsmUtilTest {
 		assertEquals(A.class.getDeclaredMethod("m", paramTypes),
 				AsmUtil.loadMethod(Type.getInternalName(A.class), "m", desc,
 						classLoader));
+	}
+
+	void i(Integer a) {
+	}
+
+	@Test
+	public void testGetOverrideDesc() throws Exception {
+		assertEquals(AsmUtil.getOverrideDesc("foo", "()I"),
+				AsmUtil.getOverrideDesc("foo", "()J"));
+		assertNotEquals(AsmUtil.getOverrideDesc("foo", "()I"),
+				AsmUtil.getOverrideDesc("bar", "()I"));
+		assertNotEquals(
+				AsmUtil.getOverrideDesc("foo", "(Ljava/lang/Integer;)V"),
+				AsmUtil.getOverrideDesc("foo", "(Ljava/lang/Boolean;)V"));
 	}
 }

@@ -10,9 +10,9 @@ import com.github.ruediste.rise.component.components.CForm;
 public class CFormHtmlTemplate extends ComponentTemplateBase<CForm> {
 
 	@Override
-	public void render(CForm component, HtmlCanvas html) throws IOException {
+	public void doRender(CForm component, HtmlCanvas html) throws IOException {
 		html.form(HtmlAttributesFactory.add("role", "form", true));
-		super.render(component, html);
+		super.doRender(component, html);
 		html._form();
 	}
 }

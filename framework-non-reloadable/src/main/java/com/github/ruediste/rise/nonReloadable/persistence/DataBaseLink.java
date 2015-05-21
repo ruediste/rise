@@ -6,6 +6,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
 
+import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 
 import com.github.ruediste.rise.nonReloadable.persistence.PersistenceModuleUtil.DataSourceFactory;
@@ -77,6 +78,12 @@ public class DataBaseLink {
 
 		// Not Yet implemented. Run Flyway scripts
 		log.warn("schema migration not yet implemented");
+
+		Flyway flyway = new Flyway();
+		flyway.setDataSource(dataSourceManager.getDataSource());
+		flyway.setLocations("db/migration/" + qualifier == null ? "default"
+				: qualifier.getSimpleName());
+		flyway.migrate();
 
 		log.info("DB schema migration complete");
 	}

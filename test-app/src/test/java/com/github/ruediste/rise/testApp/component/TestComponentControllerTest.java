@@ -16,7 +16,7 @@ import com.github.ruediste.rise.nonReloadable.persistence.TransactionControl;
 import com.github.ruediste.rise.testApp.WebTest;
 import com.github.ruediste.rise.testApp.persistence.TestEntity;
 
-public class SampleComponentControllerTest extends WebTest {
+public class TestComponentControllerTest extends WebTest {
 
 	@Inject
 	TransactionTemplate t;
@@ -46,13 +46,13 @@ public class SampleComponentControllerTest extends WebTest {
 
 		// check
 		driver.navigate().to(
-				url(util.go(SampleComponentController.class).initialize(
+				url(util.go(TestComponentController.class).initialize(
 						entity.getId())));
 		compare(driver, "foo", "foo", "foo");
 
 		// modify entity in ctrl A
-		driver.findElement(By.cssSelector("#a input.value")).clear();
-		driver.findElement(By.cssSelector("#a input.value")).sendKeys("bar");
+		driver.findElement(By.cssSelector("#a input")).clear();
+		driver.findElement(By.cssSelector("#a input")).sendKeys("bar");
 		driver.findElement(By.cssSelector("#a button.save")).click();
 
 		// check

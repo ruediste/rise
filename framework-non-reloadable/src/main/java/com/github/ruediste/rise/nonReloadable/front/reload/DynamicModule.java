@@ -16,7 +16,7 @@ public abstract class DynamicModule extends AbstractModule {
 		this.permanentInjector = permanentInjector;
 	}
 
-	protected void bindToPermanentInjector(Class<ClassHierarchyCache> clazz) {
+	protected void bindToPermanentInjector(Class<ClassHierarchyIndex> clazz) {
 		bind(clazz).toProvider(() -> permanentInjector.getInstance(clazz));
 	}
 

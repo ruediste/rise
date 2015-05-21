@@ -1,5 +1,7 @@
 package com.github.ruediste.rise.util;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Repeatable;
 import java.lang.reflect.Array;
@@ -9,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
@@ -266,5 +269,32 @@ public class AsmUtil {
 			}
 		throw new RuntimeException("Attribute " + attributeName
 				+ " not found on " + node.desc);
+	}
+
+	public static ClassNode readClass(Class<?> cls) {
+		try (InputStream in = cls.getClassLoader().getResourceAsStream(
+				cls.getName().replace('.', '/') + ".class")) {
+			ClassNode result = new ClassNode();
+			new ClassReader(in).accept(result, 0);
+			return result;
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Get a descriptor suitable for override checks of a method. Works for
+	 * public methods, visiblity is not taken into account
+	 */
+	public static String getOverrideDesc(String methodName,
+			String methodDescriptor) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(methodName);
+		sb.append("(");
+		for (Type t : Type.getArgumentTypes(methodDescriptor)) {
+			sb.append(t.getDescriptor());
+		}
+		sb.append(")");
+		return sb.toString();
 	}
 }

@@ -67,10 +67,10 @@ var rise = (function() {
 					});
 
 			// submit buttons trigger a view reload
-			$(document).on("submit", function(event) {
-				$(this).trigger("rise_viewReload");
-				return false;
-			});
+//			$(document).on("submit", function(event) {
+//				$(this).trigger("rise_viewReload");
+//				return false;
+//			});
 
 			// clicks on rise_buttons trigger a view reload
 			$(document).on(

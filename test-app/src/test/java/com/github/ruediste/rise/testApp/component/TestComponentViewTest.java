@@ -9,18 +9,18 @@ import org.junit.Test;
 import com.github.ruediste.rise.component.ComponentViewRepository;
 import com.github.ruediste.rise.testApp.WebTest;
 
-public class SampleComponentViewTest extends WebTest {
+public class TestComponentViewTest extends WebTest {
 
 	@Inject
 	ComponentViewRepository repo;
 
 	@Test
 	public void viewForSampleControllerFound() {
-		assertEquals(SampleComponentView.class,
-				repo.createView(new SampleComponentController()).getClass());
+		assertEquals(TestComponentView.class,
+				repo.createView(new TestComponentController()).getClass());
 		assertEquals(
-				SampleComponentViewAlternative.class,
-				repo.createView(new SampleComponentController(),
-						SampleViewQualifier.class).getClass());
+				TestComponentViewAlternative.class,
+				repo.createView(new TestComponentController(),
+						TestViewQualifier.class).getClass());
 	}
 }

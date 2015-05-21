@@ -7,36 +7,51 @@ import javax.inject.Inject;
 import org.rendersnake.HtmlCanvas;
 
 import com.github.ruediste.rise.api.ViewMvc;
-import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
-import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
+import com.github.ruediste.rise.integration.PageRenderer;
+import com.github.ruediste.rise.integration.PageRenderer.PageRendererParameters;
 import com.github.ruediste.rise.mvc.IControllerMvc;
+import com.github.ruediste.rise.sample.SampleBundle;
+import com.github.ruediste.rise.sample.welcome.StageRibbonController;
 
 public abstract class PageView<TController extends IControllerMvc, TData>
 		extends ViewMvc<TController, TData> {
 
-	private static class Bundle extends AssetBundle {
-
-		AssetBundleOutput out = new AssetBundleOutput(this);
-
-	}
+	@Inject
+	SampleBundle bundle;
 
 	@Inject
-	Bundle bundle;
+	PageRenderer pageRenderer;
 
 	@Override
 	public void render(HtmlCanvas html) throws IOException {
-		//@formatter:off
-		html.html()
-			.head()
-				.render(cssLinks(bundle.out))
-				.render(jsLinks(bundle.out))
-			._head()
-			.body();
-				renderBody(html);
-			html._body()
-		._html();
+		pageRenderer.renderOn(html, new PageRendererParameters() {
+
+			@Override
+			protected void renderJsLinks(HtmlCanvas html) throws IOException {
+				html.render(jsLinks(bundle.out));
+
+			}
+
+			@Override
+			protected void renderHead(HtmlCanvas html) throws IOException {
+
+			}
+
+			@Override
+			protected void renderCssLinks(HtmlCanvas html) throws IOException {
+				html.render(cssLinks(bundle.out));
+
+			}
+
+			@Override
+			protected void renderBody(HtmlCanvas html) throws IOException {
+				html.render(pageRenderer.stageRibbon(x -> go(
+						StageRibbonController.class).index(x)));
+				PageView.this.renderBody(html);
+			}
+		});
 	}
 
-	protected abstract void renderBody(HtmlCanvas html) throws IOException ;
+	protected abstract void renderBody(HtmlCanvas html) throws IOException;
 
 }

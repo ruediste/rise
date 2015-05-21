@@ -1,12 +1,19 @@
 package com.github.ruediste.rise.nonReloadable;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.objectweb.asm.ClassReader;
 
+import com.github.ruediste.rise.nonReloadable.front.DefaultStartupErrorHandler;
+import com.github.ruediste.rise.nonReloadable.front.StartupErrorHandler;
 import com.github.ruediste.rise.nonReloadable.front.reload.FileChangeNotifier.FileChangeTransaction;
 import com.github.ruediste.salta.standard.Stage;
 
@@ -49,6 +56,24 @@ public class CoreConfigurationNonRestartable {
 
 	public boolean isDbDropAndCreateEnabled() {
 		return dbDropAndCreateEnabled.orElse(stage == Stage.DEVELOPMENT);
+	}
+
+	private StartupErrorHandler startupEventHandler;
+
+	public void handleError(Throwable t, HttpServletRequest request,
+			HttpServletResponse response) {
+		startupEventHandler.handle(t, request, response);
+	}
+
+	public Supplier<StartupErrorHandler> startupEventHandlerSupplier;
+
+	@PostConstruct
+	void postConstruct(Provider<DefaultStartupErrorHandler> errorHandler) {
+		startupEventHandlerSupplier = () -> errorHandler.get();
+	}
+
+	public void initialize() {
+		startupEventHandler = startupEventHandlerSupplier.get();
 	}
 
 	public long restartQueryTimeout = 30000;

@@ -12,6 +12,8 @@ public interface Asset {
 
 	/**
 	 * Get the type of this asset
+	 * 
+	 * @see DefaultAssetTypes
 	 */
 	AssetType getAssetType();
 

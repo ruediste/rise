@@ -33,7 +33,7 @@ public class TodoController extends ControllerMvc<TodoController> {
 		List<TodoItem> allItems = em.createQuery(query).getResultList();
 		IndexData data = new IndexData();
 		data.allItems = allItems;
-		return view(IndexView.class, data);
+		return view(TodoView.class, data);
 	}
 
 	@Updating

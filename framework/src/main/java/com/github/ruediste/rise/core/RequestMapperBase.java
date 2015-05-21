@@ -2,6 +2,7 @@ package com.github.ruediste.rise.core;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import javax.inject.Inject;
 
@@ -16,7 +17,7 @@ import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.web.ActionPathAnnotationUtil;
 import com.github.ruediste.rise.core.web.ActionPathAnnotationUtil.MethodPathInfos;
 import com.github.ruediste.rise.core.web.PathInfo;
-import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyCache;
+import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndex;
 import com.github.ruediste.rise.util.AsmUtil;
 import com.github.ruediste.rise.util.AsmUtil.MethodRef;
 import com.github.ruediste.rise.util.MethodInvocation;
@@ -39,7 +40,7 @@ public abstract class RequestMapperBase implements RequestMapper {
 	CoreConfiguration coreConfig;
 
 	@Inject
-	ClassHierarchyCache cache;
+	ClassHierarchyIndex cache;
 
 	@Inject
 	PathInfoIndex idx;
@@ -51,12 +52,12 @@ public abstract class RequestMapperBase implements RequestMapper {
 	 * Map controller methods to their prefixes. Prefixes do not include a final
 	 * "." or "/". Used for {@link #generate(ActionInvocation)}.
 	 */
-	private HashMap<Pair<String, MethodRef>, String> methodToPrefixMap = new HashMap<>();
+	final HashMap<Pair<String, MethodRef>, String> methodToPrefixMap = new HashMap<>();
 
 	/**
 	 * Map between methods and their action method names, grouped by class
 	 */
-	private HashMap<String, BiMap<MethodRef, String>> actionMethodNameMap = new HashMap<>();
+	final HashMap<String, BiMap<MethodRef, String>> actionMethodNameMap = new HashMap<>();
 
 	private Class<?> controllerInterface;
 
@@ -76,69 +77,89 @@ public abstract class RequestMapperBase implements RequestMapper {
 		String controllerName = coreConfig.calculateControllerName(cls);
 		log.debug("found controller " + cls.name + " -> " + controllerName);
 
+		HashSet<String> subclassMethods = new HashSet<>();
+
 		// build method name map
 		BiMap<MethodRef, String> methodNameMap = HashBiMap.create();
-		if (cls.methods != null)
-			for (MethodNode m : cls.methods) {
-				if (!util.isActionMethod(m)) {
-					continue;
-				}
-				String name = m.name;
-				log.debug("found action method " + name);
-
-				// find unique name
-				if (methodNameMap.inverse().containsKey(name)) {
-					int i = 1;
-					String tmp;
-					do {
-						tmp = name + "_" + i;
-						i += 1;
-					} while (methodNameMap.inverse().containsKey(tmp));
-					name = tmp;
-				}
-
-				MethodRef methodRef = new MethodRef(cls.name, m.name, m.desc);
-				methodNameMap.put(methodRef, name);
-
-				// determine the path infos to register under
-				MethodPathInfos pathInfos = ActionPathAnnotationUtil
-						.getPathInfos(m, () -> "/" + controllerName + "."
-								+ m.name);
-
-				// add the path infos for the method to the respective maps
-				if (Type.getArgumentTypes(m.desc).length == 0) {
-					// no parameters
-					for (String prefix : pathInfos.pathInfos) {
-						idx.registerPathInfo(prefix, new RequestParser() {
-							@Override
-							public RequestParseResult parse(HttpRequest req) {
-								return createParseResult(createInvocation(cls,
-										methodRef));
-							}
-
-							@Override
-							public String toString() {
-								return "MvcRequestParser[" + methodRef + "]";
-							};
-						});
-					}
-				} else {
-					// there are parameters
-					for (String prefix : pathInfos.pathInfos) {
-						String s = prefix + "/";
-
-						idx.registerPrefix(
-								s,
-								req -> createParseResult(parse(s, cls,
-										methodRef, req)));
-					}
-				}
-
-				methodToPrefixMap.put(Pair.of(cls.name, methodRef),
-						pathInfos.primaryPathInfo);
-			}
-
 		actionMethodNameMap.put(cls.name, methodNameMap);
+
+		ClassNode instanceCls = cls;
+		// TODO: testing
+		while (cls != null) {
+			ClassNode clsFinal = cls;
+			HashSet<String> addedMethods = new HashSet<>();
+
+			if (cls.methods != null)
+				for (MethodNode m : cls.methods) {
+					if (!util.isActionMethod(m)) {
+						continue;
+					}
+					String name = m.name;
+
+					String overrideDesc = AsmUtil.getOverrideDesc(m.name,
+							m.desc);
+					if (subclassMethods.contains(overrideDesc))
+						continue;
+					addedMethods.add(overrideDesc);
+					log.debug("found action method " + name);
+
+					// find unique name
+					if (methodNameMap.inverse().containsKey(name)) {
+						int i = 1;
+						String tmp;
+						do {
+							tmp = name + "_" + i;
+							i += 1;
+						} while (methodNameMap.inverse().containsKey(tmp));
+						name = tmp;
+					}
+
+					MethodRef methodRef = new MethodRef(cls.name, m.name,
+							m.desc);
+					methodNameMap.put(methodRef, name);
+
+					// determine the path infos to register under
+					MethodPathInfos pathInfos = ActionPathAnnotationUtil
+							.getPathInfos(m, () -> "/" + controllerName + "."
+									+ m.name);
+
+					// add the path infos for the method to the respective maps
+					if (Type.getArgumentTypes(m.desc).length == 0) {
+						// no parameters
+						for (String prefix : pathInfos.pathInfos) {
+							idx.registerPathInfo(prefix, new RequestParser() {
+								@Override
+								public RequestParseResult parse(HttpRequest req) {
+									return createParseResult(createInvocation(
+											instanceCls, methodRef));
+								}
+
+								@Override
+								public String toString() {
+									return "MvcRequestParser[" + methodRef
+											+ "]";
+								};
+							});
+						}
+					} else {
+						// there are parameters
+						for (String prefix : pathInfos.pathInfos) {
+							String s = prefix + "/";
+
+							idx.registerPrefix(
+									s,
+									req -> createParseResult(parse(s,
+											instanceCls, methodRef, req)));
+						}
+					}
+
+					methodToPrefixMap.put(Pair.of(instanceCls.name, methodRef),
+							pathInfos.primaryPathInfo);
+				}
+			subclassMethods.addAll(addedMethods);
+			cls = cache.tryGetNode(cls.superName).orElse(null);
+		}
+
 	}
 
 	protected abstract RequestParseResult createParseResult(
@@ -206,7 +227,9 @@ public abstract class RequestMapperBase implements RequestMapper {
 				Type.getInternalName(path.methodInvocation.getInstanceClass()),
 				ref));
 		if (prefix == null)
-			throw new RuntimeException("Unable to find prefix for " + ref);
+			throw new RuntimeException("Unable to find prefix for\n" + ref
+					+ "\nfor instance class "
+					+ path.methodInvocation.getInstanceClass().getName());
 		sb.append(prefix);
 
 		// add arguments

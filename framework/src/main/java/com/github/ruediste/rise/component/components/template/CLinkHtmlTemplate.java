@@ -16,9 +16,9 @@ public class CLinkHtmlTemplate extends ComponentTemplateBase<CLink> {
 	ComponentUtil util;
 
 	@Override
-	public void render(CLink component, HtmlCanvas html) throws IOException {
+	public void doRender(CLink component, HtmlCanvas html) throws IOException {
 		html.a(href(util.url(component.getDestination())));
-		super.render(component, html);
+		super.doRender(component, html);
 		html._a();
 	}
 }

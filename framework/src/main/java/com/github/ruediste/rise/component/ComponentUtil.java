@@ -125,7 +125,7 @@ public class ComponentUtil implements ICoreUtil {
 	public void render(Component component, HtmlCanvas html) {
 		try {
 			((CWTemplate) componentTemplateIndex.getTemplate(component
-					.getClass())).render(component, html);
+					.getClass())).doRender(component, html);
 		} catch (IOException e) {
 			throw new RuntimeException("Error while rendering component", e);
 		}

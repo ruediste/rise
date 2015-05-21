@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,45 +13,33 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 
-import com.github.ruediste.rise.nonReloadable.front.reload.ClassChangeNotifier;
-import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyCache;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassChangeNotifier.ClassChangeTransaction;
+import com.github.ruediste.rise.util.AsmUtil;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ClassHierarchyCacheTest {
+public class ClassHierarchyIndexTest {
 
 	@Mock
 	Logger log;
 
 	@InjectMocks
-	ClassHierarchyCache cache;
+	ClassHierarchyIndex cache;
 
 	@Before
 	public void before() throws IOException {
 		ClassChangeTransaction trx = new ClassChangeNotifier.ClassChangeTransaction();
-		trx.addedClasses.add(readClass(IA.class));
-		trx.addedClasses.add(readClass(A.class));
-		trx.addedClasses.add(readClass(IB.class));
-		trx.addedClasses.add(readClass(B.class));
-		trx.addedClasses.add(readClass(Base.class));
-		trx.addedClasses.add(readClass(Derived1.class));
-		trx.addedClasses.add(readClass(Derived2.class));
+		trx.addedClasses.add(AsmUtil.readClass(IA.class));
+		trx.addedClasses.add(AsmUtil.readClass(A.class));
+		trx.addedClasses.add(AsmUtil.readClass(IB.class));
+		trx.addedClasses.add(AsmUtil.readClass(B.class));
+		trx.addedClasses.add(AsmUtil.readClass(Base.class));
+		trx.addedClasses.add(AsmUtil.readClass(Derived1.class));
+		trx.addedClasses.add(AsmUtil.readClass(Derived2.class));
 		cache.onChange(trx);
-	}
-
-	public static ClassNode readClass(Class<?> cls) throws IOException {
-		InputStream in = ClassHierarchyCache.class
-				.getClassLoader()
-				.getResourceAsStream(cls.getName().replace('.', '/') + ".class");
-		ClassNode result = new ClassNode();
-		new ClassReader(in).accept(result, 0);
-		in.close();
-		return result;
 	}
 
 	private interface IA {

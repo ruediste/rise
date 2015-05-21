@@ -2,7 +2,7 @@ package com.github.ruediste.rise.testApp.component;
 
 import com.github.ruediste.rise.api.ViewComponent;
 
-public abstract class SampleComponentViewBase extends
-		ViewComponent<SampleComponentController> {
+public abstract class TestComponentViewBase extends
+		ViewComponent<TestComponentController> {
 
 }

@@ -21,7 +21,7 @@ public abstract class CFormGroupHtmlTemplate<T extends CFormGroup<T>> extends
 	ComponentUtil util;
 
 	@Override
-	final public void render(T component, HtmlCanvas html) throws IOException {
+	final public void doRender(T component, HtmlCanvas html) throws IOException {
 		String cls = "form-group";
 		if (component.getValidationState() == ValidationState.SUCCESS) {
 			cls += " has-success";

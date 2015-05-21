@@ -7,7 +7,7 @@ import javax.servlet.Servlet;
 
 import org.junit.Before;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.integration.StandaloneLafApplication;
@@ -46,7 +46,8 @@ public abstract class WebTestBase {
 	protected abstract Servlet createServlet(Object testCase);
 
 	protected WebDriver newDriver() {
-		HtmlUnitDriver driver = new HtmlUnitDriver(true);
+		// HtmlUnitDriver driver = new HtmlUnitDriver(true);
+		FirefoxDriver driver = new FirefoxDriver();
 		return driver;
 	}
 

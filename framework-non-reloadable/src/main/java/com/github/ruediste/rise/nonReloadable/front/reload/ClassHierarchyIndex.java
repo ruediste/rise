@@ -30,12 +30,11 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
 
 /**
- * An information cache containing the whole class hierarchy as well as the
- * parsed classes.
+ * An index containing the whole class hierarchy as well as the parsed classes.
  */
 @Singleton
 @NonRestartable
-public class ClassHierarchyCache {
+public class ClassHierarchyIndex {
 	private final class SignatureVisitorImpl extends SignatureVisitor {
 		public Map<String, String> parameterMap = new HashMap<>();
 		private List<String> parameterValuesIn;

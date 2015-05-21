@@ -20,7 +20,7 @@ import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.PathInfoIndex;
 import com.github.ruediste.rise.core.RequestParseResult;
 import com.github.ruediste.rise.core.web.PathInfo;
-import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyCache;
+import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndex;
 import com.github.ruediste.rise.nonReloadable.front.reload.DirectoryChangeWatcher;
 import com.github.ruediste.rise.util.AsmUtil;
 import com.github.ruediste.rise.util.Pair;
@@ -64,7 +64,7 @@ public class AssetRequestMapper {
 	}
 
 	@Inject
-	ClassHierarchyCache cache;
+	ClassHierarchyIndex cache;
 
 	@Inject
 	CoreConfiguration coreConfiguration;

@@ -7,7 +7,6 @@ import com.github.ruediste.rise.core.web.CoreAssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.bootstrap.BootstrapBundleUtil;
-import com.github.ruediste.rise.core.web.bootstrap.BootstrapBundleUtil.BootstrapAssetGroups;
 
 public class SampleBundle extends AssetBundle {
 
@@ -21,9 +20,8 @@ public class SampleBundle extends AssetBundle {
 
 	@PostConstruct
 	public void initialize() {
-		BootstrapAssetGroups bootstrapAssets = bootstrapUtil.loadAssets();
-		bootstrapAssets.out.send(out);
-		bootstrapAssets.fonts.send(out);
+		bootstrapUtil.loadAssets().sentAllTo(out);
 		core.out.send(out);
+		paths("/assets/welcome.css", "/assets/welcome.js").load().send(out);
 	}
 }

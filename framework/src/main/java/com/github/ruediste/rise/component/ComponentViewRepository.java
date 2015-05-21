@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 
 import com.github.ruediste.rise.api.ViewComponent;
 import com.github.ruediste.rise.core.CoreConfiguration;
-import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyCache;
+import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndex;
 import com.github.ruediste.rise.util.AsmUtil;
 import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste.salta.jsr330.Injector;
@@ -36,7 +36,7 @@ public class ComponentViewRepository {
 	CoreConfiguration config;
 
 	@Inject
-	ClassHierarchyCache index;
+	ClassHierarchyIndex index;
 
 	Map<Pair<String, String>, ViewEntry> viewMap = new HashMap<>();
 

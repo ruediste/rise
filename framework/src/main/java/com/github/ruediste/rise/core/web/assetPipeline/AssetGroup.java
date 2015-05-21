@@ -227,9 +227,16 @@ public class AssetGroup {
 		return sb.toString().replace("\\{", "{").replace("\\\\", "\\");
 	}
 
-	public AssetGroup filter(Predicate<String> predicate) {
-		return new AssetGroup(bundle, assets.stream().filter(
-				r -> predicate.test(r.getName())));
+	public AssetGroup filterName(Predicate<String> predicate) {
+		Predicate<? super Asset> tmp = r -> predicate.test(r.getName());
+		return filter(tmp);
+	}
+
+	/**
+	 * keep only the assets that match the given predicate
+	 */
+	public AssetGroup filter(Predicate<? super Asset> predicate) {
+		return new AssetGroup(bundle, assets.stream().filter(predicate));
 	}
 
 	/**
@@ -238,8 +245,8 @@ public class AssetGroup {
 	 * @param extension
 	 *            extension to filter for, without leading period. Example: "js"
 	 */
-	public AssetGroup filter(String extension) {
-		return filter(name -> name.endsWith("." + extension));
+	public AssetGroup filterExtension(String extension) {
+		return filterName(name -> name.endsWith("." + extension));
 	}
 
 	/**

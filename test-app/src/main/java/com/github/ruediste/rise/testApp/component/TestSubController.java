@@ -20,9 +20,9 @@ import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 import com.github.ruediste.rise.testApp.persistence.TestEntity;
 
 @OwnEntityManagers
-public class SampleSubController {
+public class TestSubController {
 
-	public static class View extends ViewComponent<SampleSubController> {
+	public static class View extends ViewComponent<TestSubController> {
 
 		@Override
 		protected Component createComponents() {

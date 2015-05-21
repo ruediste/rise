@@ -26,13 +26,16 @@ public abstract class ViewMvc<TController extends IControllerMvc, TData> {
 
 	private TData data;
 
-	private Class<TController> controllerClass;
+	private Class<? extends TController> controllerClass;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected ViewMvc() {
 		controllerClass = (Class) TypeToken.of(getClass())
-				.resolveType(ViewMvc.class.getTypeParameters()[0])
-				.getRawType();
+				.resolveType(ViewMvc.class.getTypeParameters()[0]).getRawType();
+	}
+
+	public void setControllerClass(Class<? extends TController> controllerClass) {
+		this.controllerClass = controllerClass;
 	}
 
 	public final void initialize(TData data) {
@@ -45,7 +48,7 @@ public abstract class ViewMvc<TController extends IControllerMvc, TData> {
 
 	abstract public void render(HtmlCanvas html) throws IOException;
 
-	public ActionInvocationBuilderKnownController<TController> path() {
+	public ActionInvocationBuilderKnownController<? extends TController> path() {
 		return util.path(controllerClass);
 	}
 

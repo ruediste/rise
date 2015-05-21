@@ -8,8 +8,8 @@ import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.mvc.Updating;
 import com.github.ruediste.rise.testApp.persistence.TestEntity;
 
-public class SampleComponentHelperController extends
-		ControllerMvc<SampleComponentHelperController> {
+public class TestComponentHelperController extends
+		ControllerMvc<TestComponentHelperController> {
 
 	@Inject
 	EntityManager em;
@@ -22,7 +22,7 @@ public class SampleComponentHelperController extends
 		em.persist(e);
 		commit();
 
-		return redirect(go(SampleComponentController.class).initialize(
+		return redirect(go(TestComponentController.class).initialize(
 				e.getId()));
 	}
 }

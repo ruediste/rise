@@ -9,7 +9,7 @@ import com.github.ruediste.rise.component.components.CRender;
 import com.github.ruediste.rise.component.components.CTag;
 import com.github.ruediste.rise.component.tree.Component;
 
-public class SampleComponentView extends SampleComponentViewBase {
+public class TestComponentView extends TestComponentViewBase {
 
 	@Override
 	protected Component createComponents() {

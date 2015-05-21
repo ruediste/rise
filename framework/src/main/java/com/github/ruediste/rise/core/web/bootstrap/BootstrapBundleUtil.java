@@ -3,6 +3,7 @@ package com.github.ruediste.rise.core.web.bootstrap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.github.ruediste.rise.core.web.assetPipeline.Asset;
@@ -22,6 +23,12 @@ public class BootstrapBundleUtil extends AssetBundle {
 		 */
 		public AssetGroup fonts;
 		public AssetGroup theme;
+
+		public void sentAllTo(Consumer<Asset> out) {
+			this.out.send(out);
+			this.fonts.send(out);
+			this.theme.send(out);
+		}
 	}
 
 	/**

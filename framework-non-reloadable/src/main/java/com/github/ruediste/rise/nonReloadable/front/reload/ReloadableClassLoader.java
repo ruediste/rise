@@ -1,6 +1,5 @@
 package com.github.ruediste.rise.nonReloadable.front.reload;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import com.google.common.io.ByteStreams;
@@ -37,7 +36,7 @@ public class ReloadableClassLoader extends ClassLoader {
 				try (InputStream in = getResourceAsStream(resouceName)) {
 					byte[] bb = ByteStreams.toByteArray(in);
 					result = defineClass(name, bb, 0, bb.length);
-				} catch (IOException e) {
+				} catch (Exception e) {
 					throw new RuntimeException("Error while loading "
 							+ resouceName, e);
 				}

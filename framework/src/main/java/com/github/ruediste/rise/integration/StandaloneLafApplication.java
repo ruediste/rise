@@ -86,7 +86,7 @@ public class StandaloneLafApplication {
 		if (host == null) {
 			host = "localhost";
 		}
-		return String.format("http://%s:%d/", host, connector.getLocalPort());
+		return String.format("http://%s:%d", host, connector.getLocalPort());
 	}
 
 	public void stop() {
