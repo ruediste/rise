@@ -47,7 +47,7 @@ public abstract class RestartableApplicationBase implements
 	 * Start the application. Needs to at least create an {@link Injector} and
 	 * inject this instance
 	 */
-	protected abstract void startImpl(Injector permanentInjector);
+	protected abstract void startImpl(Injector nonRestartableInjector);
 
 	@Override
 	public final void handle(HttpServletRequest request,
@@ -62,6 +62,7 @@ public abstract class RestartableApplicationBase implements
 			info.setServletRequest(request);
 			info.setRequest(httpRequest);
 
+			try{
 			RequestParseResult parseResult = config.parse(httpRequest);
 			if (parseResult == null) {
 				response.sendError(
@@ -70,6 +71,9 @@ public abstract class RestartableApplicationBase implements
 								+ httpRequest.getPathInfo());
 			} else
 				parseResult.handle();
+			} catch (Throwable t){
+				config.get
+			}
 		} finally {
 			scopeManager.exit();
 		}

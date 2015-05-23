@@ -21,10 +21,14 @@ public class App extends RestartableApplicationBase {
 
 	@Override
 	protected void startImpl(Injector permanentInjector) {
-		Salta.createInjector(new RestartableApplicationModule(permanentInjector))
+		if (true)
+			throw new RuntimeException("boom");
+		Salta.createInjector(
+				new RestartableApplicationModule(permanentInjector))
 				.injectMembers(this);
 		config.basePackage = "com.github.ruediste.laf.sample";
-		componentTemplateIndex.registerTemplate(CPage.class, CPageHtmlTemplate.class);
+		componentTemplateIndex.registerTemplate(CPage.class,
+				CPageHtmlTemplate.class);
 	}
 
 }

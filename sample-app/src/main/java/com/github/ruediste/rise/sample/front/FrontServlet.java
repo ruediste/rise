@@ -46,5 +46,4 @@ public class FrontServlet extends FrontServletBase {
 				new PermanentIntegrationModule(getServletConfig()))
 				.injectMembers(this);
 	}
-
 }

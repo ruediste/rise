@@ -33,14 +33,14 @@ public class TestRestartableApplication extends RestartableApplicationBase {
 	}
 
 	@Override
-	protected void startImpl(Injector permanentInjector) {
+	protected void startImpl(Injector nonRestartableInjector) {
 		Salta.createInjector(new AbstractModule() {
 
 			@Override
 			protected void configure() throws Exception {
 				InitializerUtil.register(config(), Initializer.class);
 			}
-		}, new DynamicIntegrationModule(permanentInjector)).injectMembers(this);
+		}, new DynamicIntegrationModule(nonRestartableInjector)).injectMembers(this);
 		index.registerTemplate(CPage.class, CPageTemplate.class);
 	}
 

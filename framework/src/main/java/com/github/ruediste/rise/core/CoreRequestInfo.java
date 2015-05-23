@@ -18,6 +18,8 @@ public class CoreRequestInfo {
 
 	private ActionInvocation<String> stringActionInvocation;
 
+	private Throwable requestError;
+
 	public ActionInvocation<String> getStringActionInvocation() {
 		return stringActionInvocation;
 	}
@@ -61,6 +63,18 @@ public class CoreRequestInfo {
 
 	public ServletContext getServletContext() {
 		return servletRequest.getServletContext();
+	}
+
+	/**
+	 * Returns the error beeing handled during the evaluation of
+	 * {@link RequestErrorHandler#handle()}.
+	 */
+	public Throwable getRequestError() {
+		return requestError;
+	}
+
+	public void setRequestError(Throwable requestError) {
+		this.requestError = requestError;
 	}
 
 }

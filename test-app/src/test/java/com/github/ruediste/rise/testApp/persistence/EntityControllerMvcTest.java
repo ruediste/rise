@@ -40,8 +40,8 @@ public class EntityControllerMvcTest extends WebTest {
 			trx.commit();
 		});
 
-		WebDriver driver = newDriver();
-		driver.navigate().to(url(path(EntityControllerMvc.class).index()));
+		WebDriver driver = createDriver();
+		driver.navigate().to(url(go(EntityControllerMvc.class).index()));
 
 		Set<String> items = driver.findElements(By.cssSelector("li")).stream()
 				.map(e -> e.getText()).collect(toSet());
@@ -65,9 +65,9 @@ public class EntityControllerMvcTest extends WebTest {
 		});
 
 		// delete
-		WebDriver driver = newDriver();
+		WebDriver driver = createDriver();
 		driver.navigate().to(
-				url(path(EntityControllerMvc.class).delete(entity)));
+				url(go(EntityControllerMvc.class).delete(entity)));
 
 		// check entity has been deleted
 		template.builder().execute(trx -> {

@@ -6,10 +6,13 @@ import javax.inject.Inject;
 import javax.servlet.Servlet;
 
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestRule;
+import org.junit.runners.model.Statement;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
 
 import com.github.ruediste.rise.core.ActionResult;
+import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.integration.StandaloneLafApplication;
 import com.github.ruediste.rise.mvc.IControllerMvc;
 
@@ -18,15 +21,26 @@ public abstract class WebTestBase {
 	@Inject
 	IntegrationTestUtil util;
 
+	protected WebDriver driver;
+
 	protected String url(ActionResult result) {
 		return util.url(result);
 	}
 
-	protected <T extends IControllerMvc> T path(Class<T> controllerClass) {
+	protected String url(PathInfo pathInfo) {
+		return util.url(pathInfo);
+	}
+
+	protected <T extends IControllerMvc> T go(Class<T> controllerClass) {
 		return util.go(controllerClass);
 	}
 
 	private AtomicBoolean started = new AtomicBoolean(false);
+	private String baseUrl;
+
+	protected String getBaseUrl() {
+		return baseUrl;
+	}
 
 	@Before
 	public void beforeWebTestBase() {
@@ -35,9 +49,30 @@ public abstract class WebTestBase {
 
 		Servlet frontServlet = createServlet(this);
 
-		String baseUrl = new StandaloneLafApplication().startForTesting(
-				frontServlet, 0);
-		util.initialize(baseUrl);
+		baseUrl = new StandaloneLafApplication().startForTesting(frontServlet,
+				0);
+
+		// util can be null if initialization failed
+		if (util != null)
+			util.initialize(baseUrl);
+
+		driver = createDriver();
+	}
+
+	@Rule
+	public final TestRule closeDriverOnSuccess() {
+		return (base, description) -> new Statement() {
+
+			@Override
+			public void evaluate() throws Throwable {
+				base.evaluate();
+				try {
+					driver.close();
+				} catch (Throwable t) {
+					// swallow
+				}
+			}
+		};
 	}
 
 	/**
@@ -45,10 +80,6 @@ public abstract class WebTestBase {
 	 */
 	protected abstract Servlet createServlet(Object testCase);
 
-	protected WebDriver newDriver() {
-		// HtmlUnitDriver driver = new HtmlUnitDriver(true);
-		FirefoxDriver driver = new FirefoxDriver();
-		return driver;
-	}
+	protected abstract WebDriver createDriver();
 
 }

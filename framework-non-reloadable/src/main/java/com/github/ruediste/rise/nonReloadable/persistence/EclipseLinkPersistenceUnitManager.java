@@ -2,6 +2,8 @@ package com.github.ruediste.rise.nonReloadable.persistence;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
@@ -46,14 +48,18 @@ public class EclipseLinkPersistenceUnitManager implements
 
 	@Override
 	synchronized public void dropAndCreateSchema() {
-		checkOpen();
-		HashMap<String, Object> props = createProperties();
-		props.put(
-				PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION,
-				PersistenceUnitProperties.SCHEMA_GENERATION_DROP_AND_CREATE_ACTION);
-		customizeSchemaGenerationProperties(props);
+		// we got to close the link and reopen it again with schema generation
+		// enabled
+		close();
+		HashMap<String, Object> properties = checkOpen(props -> {
+			props.put(
+					PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION,
+					PersistenceUnitProperties.SCHEMA_GENERATION_DROP_AND_CREATE_ACTION);
+			customizeSchemaGenerationProperties(props);
+		});
 		bean.getPersistenceProvider().generateSchema(
-				bean.getPersistenceUnitInfo(), props);
+				bean.getPersistenceUnitInfo(), properties);
+		close();
 	}
 
 	@Override
@@ -62,13 +68,21 @@ public class EclipseLinkPersistenceUnitManager implements
 		return bean.getObject();
 	}
 
+	private void checkOpen() {
+		checkOpen(x -> {
+		});
+	}
+
 	/**
 	 * open this manager if it is currently closed
+	 * 
+	 * @return
 	 */
-	synchronized private void checkOpen() {
+	synchronized private HashMap<String, Object> checkOpen(
+			Consumer<Map<String, Object>> propertiesCustomizer) {
 		// initialize once only
 		if (isOpen)
-			return;
+			return null;
 		isOpen = true;
 
 		ClassLoader classLoader = Thread.currentThread()
@@ -82,7 +96,8 @@ public class EclipseLinkPersistenceUnitManager implements
 		bean.setJtaDataSource(dataSourceManager.getDataSource());
 		bean.setPersistenceProviderClass(PersistenceProvider.class);
 
-		bean.setJpaPropertyMap(createProperties());
+		HashMap<String, Object> properties = createProperties(propertiesCustomizer);
+		bean.setJpaPropertyMap(properties);
 
 		customizeFactoryBean(bean);
 
@@ -110,9 +125,11 @@ public class EclipseLinkPersistenceUnitManager implements
 
 		}
 		log.debug("initialized provider for " + qualifier);
+		return properties;
 	}
 
-	protected HashMap<String, Object> createProperties() {
+	protected HashMap<String, Object> createProperties(
+			Consumer<Map<String, Object>> propertiesCustomizer) {
 		HashMap<String, Object> props = new HashMap<>();
 		props.put(PersistenceUnitProperties.CLASSLOADER, Thread.currentThread()
 				.getContextClassLoader());
@@ -123,6 +140,7 @@ public class EclipseLinkPersistenceUnitManager implements
 				.getEclipseLinkExternalTransactionController().getName());
 		props.put(PersistenceUnitProperties.SESSION_NAME, sessionName());
 		customizeProperties(props);
+		propertiesCustomizer.accept(props);
 		return props;
 	}
 
@@ -155,8 +173,7 @@ public class EclipseLinkPersistenceUnitManager implements
 	/**
 	 * Hook to modify the properties used to generate the database schema
 	 */
-	protected void customizeSchemaGenerationProperties(
-			HashMap<String, Object> props) {
+	protected void customizeSchemaGenerationProperties(Map<String, Object> props) {
 
 	}
 

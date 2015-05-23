@@ -3,6 +3,7 @@ package com.github.ruediste.rise.nonReloadable.front;
 import static org.rendersnake.HtmlAttributesFactory.method;
 import static org.rendersnake.HtmlAttributesFactory.type;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -12,20 +13,38 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.rendersnake.HtmlCanvas;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
 import com.github.ruediste.salta.standard.Stage;
 
 public class DefaultStartupErrorHandler implements StartupErrorHandler {
 
-	@Inject
-	Logger log;
+	private static final Logger log = LoggerFactory
+			.getLogger(DefaultStartupErrorHandler.class);
 
 	@Inject
-	Stage stage;
+	private DataBaseLinkRegistry registry;
+
+	protected Stage stage;
+
+	private String dropAndCreatePathInfo;
+
+	public DefaultStartupErrorHandler() {
+		this("/~dropAndCreateDb");
+	}
+
+	public DefaultStartupErrorHandler(String dropAndCreatePathInfo) {
+		this.dropAndCreatePathInfo = dropAndCreatePathInfo;
+	}
 
 	@Override
 	public void handle(Throwable t, HttpServletRequest request,
 			HttpServletResponse response) {
+		if (stage == Stage.DEVELOPMENT
+				&& dropAndCreatePathInfo.equals(request.getPathInfo())) {
+			dropAndCreateDb(request, response);
+		}
 		try {
 			response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
 			response.setContentType("text/html; charset=UTF-8");
@@ -42,7 +61,7 @@ public class DefaultStartupErrorHandler implements StartupErrorHandler {
 					.p()
 						.write("The server was unable to start. Contact the system administrator")
 					._p();
-					if (stage!=Stage.PRODUCTION){
+					if (stage!=null && stage!=Stage.PRODUCTION){
 						StringWriter stackTrace = new StringWriter();
 						PrintWriter printWriter = new PrintWriter(stackTrace);
 						t.printStackTrace(printWriter);
@@ -53,7 +72,7 @@ public class DefaultStartupErrorHandler implements StartupErrorHandler {
 						._pre();
 					}
 					if (stage==Stage.DEVELOPMENT){
-						html.form(method("POST").action(""))
+						html.form(method("POST").action(dropAndCreatePathInfo))
 							.input(type("submit").value("Drop-and-Create Database"))
 						._form();
 					}
@@ -67,4 +86,29 @@ public class DefaultStartupErrorHandler implements StartupErrorHandler {
 			log.error("Error in Error Handler ", e);
 		}
 	}
+
+	protected void dropAndCreateDb(HttpServletRequest request,
+			HttpServletResponse response) {
+		if (registry == null) {
+			log.error("Cannot drop-and-create the database since the NonRestartable Application could not be started");
+		}
+		log.info("Dropping and Creating DB schemas ...");
+		registry.dropAndCreateSchemas();
+		redirectToReferer(request, response);
+	}
+
+	protected void redirectToReferer(HttpServletRequest request,
+			HttpServletResponse response) {
+		try {
+			response.sendRedirect(request.getHeader("Referer"));
+		} catch (IOException e) {
+			log.error("Error while sending redirect", e);
+		}
+	}
+
+	@Override
+	public void setStage(Stage stage) {
+		this.stage = stage;
+	}
+
 }

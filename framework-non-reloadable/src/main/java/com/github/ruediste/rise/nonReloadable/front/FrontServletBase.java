@@ -3,6 +3,7 @@ package com.github.ruediste.rise.nonReloadable.front;
 import java.io.IOException;
 import java.net.URL;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -21,22 +22,51 @@ import com.github.ruediste.rise.nonReloadable.front.reload.ReloadableClassLoader
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
 import com.github.ruediste.rise.util.InitializerUtil;
 import com.github.ruediste.salta.jsr330.Injector;
+import com.github.ruediste.salta.standard.Stage;
 import com.google.common.base.Preconditions;
 
 public abstract class FrontServletBase extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * available without injection
+	 */
+	private static Logger log = LoggerFactory.getLogger(FrontServletBase.class);
+
 	@Inject
-	Logger log;
+	@Named("classPath")
+	FileChangeNotifier notifier;
+
+	@Inject
+	@Named("dynamic")
+	Provider<ReloadableClassLoader> dynamicClassLoaderProvider;
+
+	@Inject
+	Injector nonRestartableInjector;
+
+	@Inject
+	DataBaseLinkRegistry dataBaseLinkRegistry;
+
+	@Inject
+	CoreConfigurationNonRestartable configurationNonRestartable;
 
 	@Inject
 	RestartCountHolder restartCountHolder;
+
+	@Inject
+	ApplicationEventQueue queue;
 
 	public volatile RestartableApplicationInfo currentApplicationInfo;
 
 	private RestartableApplication fixedDynamicApplicationInstance;
 
 	private Class<? extends RestartableApplication> dynamicApplicationInstanceClass;
+
+	private String applicationInstanceClassName;
+
+	private StartupErrorHandler startupErrorHandler;
+
+	private volatile Throwable startupError;
 
 	/**
 	 * Construct using a {@link RestartableApplication} class. Enables reloading
@@ -67,43 +97,27 @@ public abstract class FrontServletBase extends HttpServlet {
 		handle(req, resp, HttpMethod.POST);
 	}
 
-	@Inject
-	ApplicationEventQueue queue;
-
-	private String applicationInstanceClassName;
+	/**
+	 * Hook to change the {@link StartupErrorHandler}
+	 */
+	protected StartupErrorHandler createStartupErrorHandler() {
+		return new DefaultStartupErrorHandler();
+	}
 
 	@Override
 	public final void init() throws ServletException {
 		try {
-			initImpl();
-		} catch (Exception e) {
-			throw new RuntimeException("Error during initialization", e);
-		}
+			startupErrorHandler = createStartupErrorHandler();
 
-		// continue in AET
-		try {
+			initImpl();
+
+			// continue in AET
 			queue.submit(this::initInAET).get();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		} catch (Throwable t) {
+			log.error("Error during non-restartable startup", t);
+			startupError = t;
 		}
 	}
-
-	@Inject
-	@Named("classPath")
-	FileChangeNotifier notifier;
-
-	@Inject
-	@Named("dynamic")
-	Provider<ReloadableClassLoader> dynamicClassLoaderProvider;
-
-	@Inject
-	Injector nonRestartableInjector;
-
-	@Inject
-	DataBaseLinkRegistry dataBaseLinkRegistry;
-
-	@Inject
-	CoreConfigurationNonRestartable configurationNonRestartable;
 
 	private void initInAET() {
 		// setup application reloading
@@ -116,28 +130,18 @@ public abstract class FrontServletBase extends HttpServlet {
 		// run initializers
 		InitializerUtil.runInitializers(nonRestartableInjector);
 
-		// run schema migration
-		if (configurationNonRestartable.isRunSchemaMigration()) {
-			dataBaseLinkRegistry.runSchemaMigrations();
-		}
-
-		try {
-			if (fixedDynamicApplicationInstance != null) {
-				notifier.close();
-				// we are started with a fixed application instance, just use
-				// it.
-				// Primarily used for Unit Testing
-				currentApplicationInfo = new RestartableApplicationInfo(
-						fixedDynamicApplicationInstance, Thread.currentThread()
-								.getContextClassLoader());
-				fixedDynamicApplicationInstance.start(nonRestartableInjector);
-			} else {
-				// application gets started through the initial file change
-				// transaction
-			}
-		} catch (Throwable t) {
-			log.error("Error during startup", t);
-			System.exit(1);
+		if (fixedDynamicApplicationInstance != null) {
+			notifier.close();
+			// we are started with a fixed application instance, just use
+			// it.
+			// Primarily used for Unit Testing
+			currentApplicationInfo = new RestartableApplicationInfo(
+					fixedDynamicApplicationInstance, Thread.currentThread()
+							.getContextClassLoader());
+			fixedDynamicApplicationInstance.start(nonRestartableInjector);
+		} else {
+			// application gets started through the initial file change
+			// transaction
 		}
 	}
 
@@ -181,6 +185,7 @@ public abstract class FrontServletBase extends HttpServlet {
 			restartCountHolder.increment();
 		} catch (Throwable t) {
 			log.warn("Error loading application instance", t);
+			startupError = t;
 		}
 	}
 
@@ -233,6 +238,11 @@ public abstract class FrontServletBase extends HttpServlet {
 
 	private void handle(HttpServletRequest req, HttpServletResponse resp,
 			HttpMethod method) throws IOException, ServletException {
+		if (startupError != null) {
+			startupErrorHandler.handle(startupError, req, resp);
+			return;
+		}
+
 		RestartableApplicationInfo info = currentApplicationInfo;
 		if (info != null) {
 			Thread currentThread = Thread.currentThread();
@@ -264,4 +274,17 @@ public abstract class FrontServletBase extends HttpServlet {
 
 	}
 
+	/**
+	 * Set the current {@link Stage}. Can be invoked from subclass before
+	 * initializing Salta. Will be called again during injection.
+	 */
+	@PostConstruct
+	protected void setStage(Stage stage) {
+		startupErrorHandler.setStage(stage);
+	}
+
+	@PostConstruct
+	private void postConstruct(Injector injector) {
+		injector.injectMembers(startupErrorHandler);
+	}
 }

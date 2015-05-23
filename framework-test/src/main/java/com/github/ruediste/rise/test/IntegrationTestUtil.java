@@ -5,6 +5,7 @@ import javax.inject.Inject;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
+import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.mvc.IControllerMvc;
 import com.github.ruediste.rise.mvc.MvcUtil;
 
@@ -23,9 +24,11 @@ public class IntegrationTestUtil {
 	CoreUtil coreUtil;
 
 	public String url(ActionResult result) {
-		return baseUrl
-				+ coreUtil.toPathInfo((ActionInvocationResult) result)
-						.getValue();
+		return url(coreUtil.toPathInfo((ActionInvocationResult) result));
+	}
+
+	public String url(PathInfo pathInfo) {
+		return baseUrl + pathInfo.getValue();
 	}
 
 	public <T extends IControllerMvc> T go(Class<T> controllerClass) {

@@ -3,8 +3,10 @@ package com.github.ruediste.rise.nonReloadable.persistence;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.github.ruediste.rise.nonReloadable.CoreConfigurationNonRestartable;
 import com.github.ruediste.rise.nonReloadable.NonRestartable;
 
 /**
@@ -14,6 +16,9 @@ import com.github.ruediste.rise.nonReloadable.NonRestartable;
 @Singleton
 @NonRestartable
 public class DataBaseLinkRegistry {
+
+	@Inject
+	CoreConfigurationNonRestartable configurationNonRestartable;
 
 	final private HashMap<Class<? extends Annotation>, DataBaseLink> links = new HashMap<>();
 
@@ -33,8 +38,14 @@ public class DataBaseLinkRegistry {
 		links.values().forEach(DataBaseLink::close);
 	}
 
+	/**
+	 * Run the schema migration if enabled by configuration. Otherwise does not
+	 * perform any action
+	 */
 	public void runSchemaMigrations() {
-		links.values().forEach(DataBaseLink::runSchemaMigration);
+		if (configurationNonRestartable.isRunSchemaMigration()) {
+			links.values().forEach(DataBaseLink::runSchemaMigration);
+		}
 	}
 
 	public void dropAndCreateSchemas() {

@@ -2,6 +2,9 @@ package com.github.ruediste.rise.testApp;
 
 import javax.servlet.Servlet;
 
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+
 import com.github.ruediste.rise.test.WebTestBase;
 import com.github.ruediste.rise.testApp.app.TestAppFrontServlet;
 import com.github.ruediste.rise.testApp.app.TestRestartableApplication;
@@ -22,6 +25,13 @@ public class WebTest extends WebTestBase {
 		Servlet frontServlet = new TestAppFrontServlet(app);
 
 		return frontServlet;
+	}
+
+	@Override
+	protected WebDriver createDriver() {
+		// HtmlUnitDriver driver = new HtmlUnitDriver(true);
+		FirefoxDriver driver = new FirefoxDriver();
+		return driver;
 	}
 
 }

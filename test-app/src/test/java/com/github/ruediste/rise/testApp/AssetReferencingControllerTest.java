@@ -15,9 +15,9 @@ public class AssetReferencingControllerTest extends WebTest {
 
 	@Before
 	public void before() {
-		driver = newDriver();
+		driver = createDriver();
 		driver.navigate().to(
-				url(path(AssetReferencingController.class).index()));
+				url(go(AssetReferencingController.class).index()));
 	}
 
 	@Test

@@ -50,6 +50,10 @@ public interface ICoreUtil {
 		return getCoreUtil().toPathInfo(invocation);
 	}
 
+	default PathInfo toPathInfo(ActionResult invocation) {
+		return getCoreUtil().toPathInfo(invocation);
+	}
+
 	default Renderable cssLinks(AssetBundleOutput output) {
 		return getCoreUtil().cssLinks(output);
 	}

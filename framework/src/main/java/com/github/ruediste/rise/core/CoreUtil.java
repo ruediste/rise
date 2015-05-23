@@ -44,6 +44,11 @@ public class CoreUtil implements ICoreUtil {
 	}
 
 	@Override
+	public PathInfo toPathInfo(ActionResult invocation) {
+		return toPathInfo((ActionInvocation<Object>) ((ActionInvocationResult) invocation));
+	}
+
+	@Override
 	public ActionInvocation<Object> toObjectInvocation(
 			ActionInvocation<String> stringInvocation) {
 		return toSupplierInvocation(stringInvocation).map(Supplier::get);
@@ -79,7 +84,7 @@ public class CoreUtil implements ICoreUtil {
 
 	@Override
 	public String url(ActionResult path) {
-		return url(toPathInfo((ActionInvocationResult) path));
+		return url(toPathInfo(path));
 	}
 
 	@Override
