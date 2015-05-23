@@ -183,4 +183,18 @@ public class CoreConfiguration {
 	 * when executed, fills the db with the fixture data
 	 */
 	public Optional<Runnable> dbFixture = Optional.empty();
+
+	/**
+	 * Handler for request errors. If null, a plain 500 error code will be
+	 * returned
+	 */
+	public RequestErrorHandler requestErrorHandler;
+
+	public void handleRequestError(Throwable t) {
+		if (requestErrorHandler == null)
+			throw new RuntimeException(
+					"No error handler defined. Initialize CoreConfiguration.requestErrorHandler",
+					t);
+		requestErrorHandler.handle();
+	}
 }

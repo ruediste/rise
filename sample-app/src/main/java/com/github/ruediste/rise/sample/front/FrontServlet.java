@@ -14,7 +14,7 @@ import com.github.ruediste.salta.jsr330.Salta;
 
 public class FrontServlet extends FrontServletBase {
 	public FrontServlet() {
-		super(App.class);
+		super(SampleApp.class);
 	}
 
 	private static final long serialVersionUID = 1L;

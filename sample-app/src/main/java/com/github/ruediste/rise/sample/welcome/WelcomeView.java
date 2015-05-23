@@ -93,6 +93,7 @@ public class WelcomeView extends
 						._div()
 						.div(class_("col-xs-6"))
 							.a(class_("btn btn-primary").href(url(go(TodoController.class).index()))).content("Todo Items")
+							.a(class_("btn btn-primary").href(url(go().error()))).content("Page with error")
 							.a(class_("btn btn-primary").href(
 									url(go(SampleComponentController.class).index()))).span(class_("glyphicon glyphicon-search"))._span().content("Component Sample")
 						._div()

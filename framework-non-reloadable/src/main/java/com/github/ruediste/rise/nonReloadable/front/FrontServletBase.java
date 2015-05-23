@@ -183,6 +183,7 @@ public abstract class FrontServletBase extends HttpServlet {
 			log.info("Reloading complete. Took "
 					+ (System.currentTimeMillis() - startTime) + "ms");
 			restartCountHolder.increment();
+			startupError = null;
 		} catch (Throwable t) {
 			log.warn("Error loading application instance", t);
 			startupError = t;

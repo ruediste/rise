@@ -46,7 +46,7 @@ public class DefaultStartupErrorHandler implements StartupErrorHandler {
 			dropAndCreateDb(request, response);
 		}
 		try {
-			response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.setContentType("text/html; charset=UTF-8");
 			try (PrintWriter writer = response.getWriter()) {
 				HtmlCanvas html = new HtmlCanvas(writer);

@@ -18,16 +18,19 @@ public class DefaultRequestErrorHandler implements RequestErrorHandler {
 	@Inject
 	CoreUtil util;
 
-	private PathInfo errorHandlerPath;
+	private Function<CoreUtil, ActionResult> errorHandlerPathGenerator;
 
 	public DefaultRequestErrorHandler initialize(
 			Function<CoreUtil, ActionResult> errorHandlerPathGenerator) {
-		util.toPathInfo(errorHandlerPathGenerator.apply(util));
+		this.errorHandlerPathGenerator = errorHandlerPathGenerator;
+
 		return this;
 	}
 
 	@Override
 	public void handle() {
+		PathInfo errorHandlerPath = util.toPathInfo(errorHandlerPathGenerator
+				.apply(util));
 		DelegatingHttpRequest errorHandlerRequest = new DelegatingHttpRequest(
 				info.getServletRequest()) {
 			@Override

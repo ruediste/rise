@@ -17,7 +17,6 @@ import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.HttpService;
 import com.github.ruediste.rise.core.ICoreUtil;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
-import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
 import com.github.ruediste.rise.core.web.ContentRenderResult;
 import com.github.ruediste.rise.core.web.RedirectRenderResult;
 import com.github.ruediste.salta.jsr330.Injector;
@@ -74,8 +73,7 @@ public class MvcUtil implements ICoreUtil {
 	}
 
 	public ActionResult redirect(ActionResult path) {
-		return new RedirectRenderResult(
-				coreUtil.toPathInfo((ActionInvocationResult) path));
+		return new RedirectRenderResult(coreUtil.toPathInfo(path));
 	}
 
 	/**

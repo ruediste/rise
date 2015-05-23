@@ -25,4 +25,8 @@ public class WelcomeController extends ControllerMvc<WelcomeController> {
 	public ActionResult other() {
 		return view(OtherView.class, "Test");
 	}
+
+	public ActionResult error() {
+		throw new RuntimeException("BOOM");
+	}
 }
