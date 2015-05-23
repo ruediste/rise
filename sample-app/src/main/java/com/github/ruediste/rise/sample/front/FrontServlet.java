@@ -3,6 +3,7 @@ package com.github.ruediste.rise.sample.front;
 import java.util.Properties;
 
 import com.github.ruediste.rise.integration.PermanentIntegrationModule;
+import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.front.FrontServletBase;
 import com.github.ruediste.rise.nonReloadable.persistence.BitronixDataSourceFactory;
 import com.github.ruediste.rise.nonReloadable.persistence.BitronixModule;
@@ -10,6 +11,7 @@ import com.github.ruediste.rise.nonReloadable.persistence.EclipseLinkPersistence
 import com.github.ruediste.rise.nonReloadable.persistence.H2DatabaseIntegrationInfo;
 import com.github.ruediste.rise.nonReloadable.persistence.PersistenceModuleUtil;
 import com.github.ruediste.salta.jsr330.AbstractModule;
+import com.github.ruediste.salta.jsr330.Provides;
 import com.github.ruediste.salta.jsr330.Salta;
 
 public class FrontServlet extends FrontServletBase {
@@ -21,6 +23,7 @@ public class FrontServlet extends FrontServletBase {
 
 	@Override
 	protected void initImpl() throws Exception {
+		setStage(ApplicationStage.DEVELOPMENT);
 		Salta.createInjector(
 				new AbstractModule() {
 
@@ -41,6 +44,11 @@ public class FrontServlet extends FrontServletBase {
 										props.setProperty("password", "sa");
 									}
 								});
+					}
+
+					@Provides
+					ApplicationStage stage() {
+						return getStage();
 					}
 				}, new BitronixModule(),
 				new PermanentIntegrationModule(getServletConfig()))

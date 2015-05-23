@@ -3,7 +3,7 @@ package com.github.ruediste.rise.nonReloadable.front;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.github.ruediste.salta.standard.Stage;
+import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 
 /**
  * Handler for errors occurring during startup of the application. Instances may
@@ -11,7 +11,7 @@ import com.github.ruediste.salta.standard.Stage;
  */
 public interface StartupErrorHandler {
 
-	void setStage(Stage stage);
+	void setStage(ApplicationStage stage);
 
 	/**
 	 * Render the error response. To trigger the error handling of the

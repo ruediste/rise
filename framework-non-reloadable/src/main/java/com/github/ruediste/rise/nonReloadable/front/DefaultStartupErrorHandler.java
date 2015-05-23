@@ -15,8 +15,8 @@ import org.rendersnake.HtmlCanvas;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
-import com.github.ruediste.salta.standard.Stage;
 
 public class DefaultStartupErrorHandler implements StartupErrorHandler {
 
@@ -26,7 +26,7 @@ public class DefaultStartupErrorHandler implements StartupErrorHandler {
 	@Inject
 	private DataBaseLinkRegistry registry;
 
-	protected Stage stage;
+	protected ApplicationStage stage;
 
 	private String dropAndCreatePathInfo;
 
@@ -41,7 +41,7 @@ public class DefaultStartupErrorHandler implements StartupErrorHandler {
 	@Override
 	public void handle(Throwable t, HttpServletRequest request,
 			HttpServletResponse response) {
-		if (stage == Stage.DEVELOPMENT
+		if (stage == ApplicationStage.DEVELOPMENT
 				&& dropAndCreatePathInfo.equals(request.getPathInfo())) {
 			dropAndCreateDb(request, response);
 		}
@@ -61,7 +61,7 @@ public class DefaultStartupErrorHandler implements StartupErrorHandler {
 					.p()
 						.write("The server was unable to start. Contact the system administrator")
 					._p();
-					if (stage!=null && stage!=Stage.PRODUCTION){
+					if (stage!=null && stage!=ApplicationStage.PRODUCTION){
 						StringWriter stackTrace = new StringWriter();
 						PrintWriter printWriter = new PrintWriter(stackTrace);
 						t.printStackTrace(printWriter);
@@ -71,7 +71,7 @@ public class DefaultStartupErrorHandler implements StartupErrorHandler {
 							.write(stackTrace.toString())
 						._pre();
 					}
-					if (stage==Stage.DEVELOPMENT){
+					if (stage==ApplicationStage.DEVELOPMENT){
 						html.form(method("POST").action(dropAndCreatePathInfo))
 							.input(type("submit").value("Drop-and-Create Database"))
 						._form();
@@ -107,7 +107,7 @@ public class DefaultStartupErrorHandler implements StartupErrorHandler {
 	}
 
 	@Override
-	public void setStage(Stage stage) {
+	public void setStage(ApplicationStage stage) {
 		this.stage = stage;
 	}
 

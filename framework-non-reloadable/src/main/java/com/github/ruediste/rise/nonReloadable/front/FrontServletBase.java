@@ -16,6 +16,7 @@ import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.CoreConfigurationNonRestartable;
 import com.github.ruediste.rise.nonReloadable.front.reload.FileChangeNotifier;
 import com.github.ruediste.rise.nonReloadable.front.reload.ReloadableClassLoader;
@@ -67,6 +68,8 @@ public abstract class FrontServletBase extends HttpServlet {
 	private StartupErrorHandler startupErrorHandler;
 
 	private volatile Throwable startupError;
+
+	private ApplicationStage stage;
 
 	/**
 	 * Construct using a {@link RestartableApplication} class. Enables reloading
@@ -280,8 +283,13 @@ public abstract class FrontServletBase extends HttpServlet {
 	 * initializing Salta. Will be called again during injection.
 	 */
 	@PostConstruct
-	protected void setStage(Stage stage) {
+	protected void setStage(ApplicationStage stage) {
+		this.stage = stage;
 		startupErrorHandler.setStage(stage);
+	}
+
+	public ApplicationStage getStage() {
+		return stage;
 	}
 
 	@PostConstruct
