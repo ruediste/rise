@@ -31,19 +31,30 @@ public class ReloadableClassLoader extends ClassLoader {
         }
         if (!name.startsWith("java.")) {
             if (index.isReloadable(name)) {
-                Class<?> result;
-                String resouceName = name.replace('.', '/') + ".class";
-                try (InputStream in = getResourceAsStream(resouceName)) {
-                    byte[] bb = ByteStreams.toByteArray(in);
-                    result = defineClass(name, bb, 0, bb.length);
-                } catch (Exception e) {
-                    throw new RuntimeException("Error while loading "
-                            + resouceName, e);
+                synchronized (getClassLoadingLock(name)) {
+                    Class<?> result = findLoadedClass(name);
+                    if (result == null) {
+                        String resouceName = name.replace('.', '/') + ".class";
+                        try (InputStream in = getResourceAsStream(resouceName)) {
+                            if (in == null)
+                                throw new ClassNotFoundException(
+                                        "Unable to locate resource "
+                                                + resouceName
+                                                + " for loading class " + name);
+                            byte[] bb = ByteStreams.toByteArray(in);
+                            result = defineClass(name, bb, 0, bb.length);
+                        } catch (ClassNotFoundException e) {
+                            throw e;
+                        } catch (Exception e) {
+                            throw new RuntimeException("Error while loading "
+                                    + resouceName, e);
+                        }
+                    }
+                    if (resolve) {
+                        resolveClass(result);
+                    }
+                    return result;
                 }
-                if (resolve) {
-                    resolveClass(result);
-                }
-                return result;
             }
 
         }

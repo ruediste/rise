@@ -43,4 +43,7 @@ public class HttpService {
                 prefix + path.getValue());
     }
 
+    public String refererUrl() {
+        return coreRequestInfo.getServletRequest().getHeader("Referer");
+    }
 }

@@ -242,6 +242,8 @@ public abstract class FrontServletBase extends HttpServlet {
 
     private void handle(HttpServletRequest req, HttpServletResponse resp,
             HttpMethod method) throws IOException, ServletException {
+        log.debug("Handling request to {} method: {}", req.getRequestURL(),
+                method);
         if (startupError != null) {
             startupErrorHandler.handle(startupError, req, resp);
             return;

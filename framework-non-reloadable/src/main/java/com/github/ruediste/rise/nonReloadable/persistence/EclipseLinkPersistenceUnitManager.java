@@ -51,14 +51,12 @@ public class EclipseLinkPersistenceUnitManager implements
         // we got to close the link and reopen it again with schema generation
         // enabled
         close();
-        HashMap<String, Object> properties = checkOpen(props -> {
+        checkOpen(props -> {
             props.put(
                     PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION,
                     PersistenceUnitProperties.SCHEMA_GENERATION_DROP_AND_CREATE_ACTION);
             customizeSchemaGenerationProperties(props);
         });
-        bean.getPersistenceProvider().generateSchema(
-                bean.getPersistenceUnitInfo(), properties);
         close();
     }
 

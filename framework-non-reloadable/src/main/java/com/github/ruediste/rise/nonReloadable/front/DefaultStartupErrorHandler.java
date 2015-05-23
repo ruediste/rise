@@ -5,7 +5,6 @@ import static org.rendersnake.HtmlAttributesFactory.type;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
+import com.google.common.base.Throwables;
 
 public class DefaultStartupErrorHandler implements StartupErrorHandler {
 
@@ -62,13 +62,9 @@ public class DefaultStartupErrorHandler implements StartupErrorHandler {
 						.write("The server was unable to start. Contact the system administrator")
 					._p();
 					if (stage!=null && stage!=ApplicationStage.PRODUCTION){
-						StringWriter stackTrace = new StringWriter();
-						PrintWriter printWriter = new PrintWriter(stackTrace);
-						t.printStackTrace(printWriter);
-						printWriter.flush();
 						html.p().content("Exception:")
 						.pre()
-							.write(stackTrace.toString())
+							.write(Throwables.getStackTraceAsString(t))
 						._pre();
 					}
 					if (stage==ApplicationStage.DEVELOPMENT){

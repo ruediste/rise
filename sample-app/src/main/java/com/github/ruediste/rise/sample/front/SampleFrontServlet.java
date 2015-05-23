@@ -14,8 +14,8 @@ import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Provides;
 import com.github.ruediste.salta.jsr330.Salta;
 
-public class FrontServlet extends FrontServletBase {
-    public FrontServlet() {
+public class SampleFrontServlet extends FrontServletBase {
+    public SampleFrontServlet() {
         super(SampleApp.class);
     }
 
@@ -23,7 +23,8 @@ public class FrontServlet extends FrontServletBase {
 
     @Override
     protected void initImpl() throws Exception {
-        setStage(ApplicationStage.DEVELOPMENT);
+        // set stage in the super class
+        setStage(ApplicationStage.PRODUCTION);
         Salta.createInjector(
                 new AbstractModule() {
 
@@ -48,6 +49,7 @@ public class FrontServlet extends FrontServletBase {
 
                     @Provides
                     ApplicationStage stage() {
+                        // get the stage from the super class
                         return getStage();
                     }
                 }, new BitronixModule(),
