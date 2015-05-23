@@ -12,24 +12,25 @@ import com.github.ruediste.rise.util.InitializerUtil;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Provides;
 
-public class CorePermanentModule extends AbstractModule {
+public class CoreNonRestartableModule extends AbstractModule {
 
 	private ServletConfig servletConfig;
 
-	public CorePermanentModule(ServletConfig servletConfig) {
+	public CoreNonRestartableModule(ServletConfig servletConfig) {
 		this.servletConfig = servletConfig;
 	}
 
 	@Override
 	protected void configure() throws Exception {
 		bind(ClassHierarchyIndex.class).asEagerSingleton();
-		InitializerUtil.register(config(), CorePermanentInitializer.class);
+		InitializerUtil.register(config(), CoreNonRestartableInitializer.class);
 		bind(FileChangeNotifier.class).named("classPath").in(Singleton.class);
 	}
 
 	@Named("dynamic")
 	@Provides
-	ReloadableClassLoader spaceAwareClassLoaderDynamic(ReloadebleClassesIndex cache) {
+	ReloadableClassLoader spaceAwareClassLoaderDynamic(
+			ReloadebleClassesIndex cache) {
 		return new ReloadableClassLoader(Thread.currentThread()
 				.getContextClassLoader(), cache);
 	}

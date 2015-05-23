@@ -23,8 +23,7 @@ public class ComponentTemplateBase<T extends Component> implements
 	protected ComponentUtil util;
 
 	@Override
-	public void doRender(T component, HtmlCanvas html)
-			throws IOException {
+	public void doRender(T component, HtmlCanvas html) throws IOException {
 		for (Component child : component.getChildren()) {
 			render(child, html);
 		}

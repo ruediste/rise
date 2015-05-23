@@ -66,8 +66,7 @@ public class EntityControllerMvcTest extends WebTest {
 
 		// delete
 		WebDriver driver = createDriver();
-		driver.navigate().to(
-				url(go(EntityControllerMvc.class).delete(entity)));
+		driver.navigate().to(url(go(EntityControllerMvc.class).delete(entity)));
 
 		// check entity has been deleted
 		template.builder().execute(trx -> {

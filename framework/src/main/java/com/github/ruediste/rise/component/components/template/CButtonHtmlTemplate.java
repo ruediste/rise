@@ -19,9 +19,9 @@ public class CButtonHtmlTemplate extends ComponentTemplateBase<CButton> {
 	@Override
 	public void doRender(CButton component, HtmlCanvas html) throws IOException {
 		html.button(class_(
-				util.combineCssClasses("rise_button", component.class_())).data(
-				CoreAssetBundle.componentAttributeNr,
-				String.valueOf(util.getComponentNr(component))));
+				util.combineCssClasses("rise_button", component.class_()))
+				.data(CoreAssetBundle.componentAttributeNr,
+						String.valueOf(util.getComponentNr(component))));
 		super.doRender(component, html);
 		html._button();
 	}

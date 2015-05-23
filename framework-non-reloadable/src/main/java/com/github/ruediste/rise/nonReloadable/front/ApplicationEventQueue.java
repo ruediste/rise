@@ -9,9 +9,9 @@ import com.github.ruediste.rise.nonReloadable.NonRestartable;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
- * Event queue to process application events, such as {@link RestartableApplication}
- * restarts etc. All events will be processed in the Applicatio Event Thread
- * (AET)
+ * Event queue to process application events, such as
+ * {@link RestartableApplication} restarts etc. All events will be processed in
+ * the Applicatio Event Thread (AET)
  */
 @Singleton
 @NonRestartable

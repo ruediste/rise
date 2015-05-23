@@ -1,8 +1,8 @@
 package com.github.ruediste.rise.core.actionInvocation;
 
 /**
- * Represent string values attached to {@link ActionInvocation}s. These values are
- * transferred along with the ActionPath to the client and back again.
+ * Represent string values attached to {@link ActionInvocation}s. These values
+ * are transferred along with the ActionPath to the client and back again.
  */
 public class ActionInvocationParameter {
 

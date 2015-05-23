@@ -4,7 +4,7 @@ import org.junit.Before;
 
 import com.github.ruediste.rise.api.RestartableApplicationModule;
 import com.github.ruediste.rise.core.CoreConfiguration;
-import com.github.ruediste.rise.core.CorePermanentModule;
+import com.github.ruediste.rise.core.CoreNonRestartableModule;
 import com.github.ruediste.rise.mvc.MvcPermanentModule;
 import com.github.ruediste.rise.nonReloadable.front.ApplicationEventQueue;
 import com.github.ruediste.rise.nonReloadable.front.LoggerModule;
@@ -19,7 +19,7 @@ public abstract class SaltaTestBase {
 	@Before
 	public void beforeSaltaTest() throws Exception {
 		permanentInjector = Salta.createInjector(new MvcPermanentModule(),
-				new CorePermanentModule(null), new LoggerModule());
+				new CoreNonRestartableModule(null), new LoggerModule());
 		permanentInjector.getInstance(ApplicationEventQueue.class)
 				.submit(this::startInAET).get();
 	}
@@ -32,7 +32,8 @@ public abstract class SaltaTestBase {
 		InitializerUtil.runInitializers(permanentInjector);
 
 		Injector instanceInjector = Salta
-				.createInjector(new RestartableApplicationModule(permanentInjector));
+				.createInjector(new RestartableApplicationModule(
+						permanentInjector));
 
 		instanceInjector.getInstance(CoreConfiguration.class).dynamicClassLoader = Thread
 				.currentThread().getContextClassLoader();

@@ -26,6 +26,7 @@ import com.github.ruediste.rise.core.argumentSerializer.StringSerializer;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.salta.jsr330.Injector;
+import com.google.common.reflect.Reflection;
 
 /**
  * Defines the default configuration of the framework.
@@ -41,6 +42,14 @@ public class CoreConfiguration {
 	}
 
 	public String basePackage = "";
+
+	/**
+	 * set {@link #basePackage} to the package of the given class
+	 */
+	public void setBasePackage(Class<?> clazz) {
+		basePackage = Reflection.getPackageName(clazz);
+	}
+
 	public String controllerSuffix = "Controller";
 
 	/**

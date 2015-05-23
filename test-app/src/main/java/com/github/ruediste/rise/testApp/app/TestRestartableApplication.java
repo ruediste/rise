@@ -40,7 +40,8 @@ public class TestRestartableApplication extends RestartableApplicationBase {
 			protected void configure() throws Exception {
 				InitializerUtil.register(config(), Initializer.class);
 			}
-		}, new DynamicIntegrationModule(nonRestartableInjector)).injectMembers(this);
+		}, new DynamicIntegrationModule(nonRestartableInjector)).injectMembers(
+				this);
 		index.registerTemplate(CPage.class, CPageTemplate.class);
 	}
 

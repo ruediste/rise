@@ -7,7 +7,8 @@ import com.github.ruediste.rise.component.components.CRender;
 import com.github.ruediste.rise.component.components.CTextFieldFormGroup;
 import com.github.ruediste.rise.component.tree.Component;
 
-public class SampleComponentView extends ViewComponent<SampleComponentController> {
+public class SampleComponentView extends
+		ViewComponent<SampleComponentController> {
 
 	@Override
 	protected Component createComponents() {

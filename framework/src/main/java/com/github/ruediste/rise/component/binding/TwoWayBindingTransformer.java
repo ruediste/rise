@@ -1,6 +1,5 @@
 package com.github.ruediste.rise.component.binding;
 
-
 /**
  * Two-way transformation between two representations of a value
  */
@@ -12,7 +11,8 @@ public abstract class TwoWayBindingTransformer<TSource, TTarget> extends
 	 */
 	public final TSource transformInv(TTarget target) {
 
-		BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager.getCurrentLog();
+		BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager
+				.getCurrentLog();
 		if (info == null) {
 			return transformInvImpl(target);
 		} else {

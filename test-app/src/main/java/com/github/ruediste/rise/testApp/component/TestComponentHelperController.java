@@ -22,7 +22,6 @@ public class TestComponentHelperController extends
 		em.persist(e);
 		commit();
 
-		return redirect(go(TestComponentController.class).initialize(
-				e.getId()));
+		return redirect(go(TestComponentController.class).initialize(e.getId()));
 	}
 }

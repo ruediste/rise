@@ -8,6 +8,7 @@ import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.DefaultRequestErrorHandler;
 import com.github.ruediste.rise.core.front.RestartableApplicationBase;
+import com.github.ruediste.rise.sample.SamplePackage;
 import com.github.ruediste.rise.sample.component.CPageHtmlTemplate;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste.salta.jsr330.Salta;
@@ -28,10 +29,13 @@ public class SampleApp extends RestartableApplicationBase {
 		Salta.createInjector(
 				new RestartableApplicationModule(permanentInjector))
 				.injectMembers(this);
+
 		errorHandler.initialize(util -> util.go(ReqestErrorController.class)
 				.index());
 		config.requestErrorHandler = errorHandler;
-		config.basePackage = "com.github.ruediste.laf.sample";
+
+		config.setBasePackage(SamplePackage.class);
+
 		componentTemplateIndex.registerTemplate(CPage.class,
 				CPageHtmlTemplate.class);
 	}

@@ -9,7 +9,7 @@ public enum HttpMethod {
 	/**
 	 * Return the value based on {@link HttpServletRequest#getMethod()}
 	 */
-	public static HttpMethod get(String method){
+	public static HttpMethod get(String method) {
 		return valueOf(method);
 	}
 }

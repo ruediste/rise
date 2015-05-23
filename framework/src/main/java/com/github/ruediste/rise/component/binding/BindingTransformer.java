@@ -1,6 +1,5 @@
 package com.github.ruediste.rise.component.binding;
 
-
 /**
  * Transform a value from one representation to another
  */
@@ -10,7 +9,8 @@ public abstract class BindingTransformer<TSource, TTarget> {
 	 * Transform the view value to the model value
 	 */
 	public final TTarget transform(TSource source) {
-		BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager.getCurrentLog();
+		BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager
+				.getCurrentLog();
 		if (info == null) {
 			return transformImpl(source);
 		} else {
