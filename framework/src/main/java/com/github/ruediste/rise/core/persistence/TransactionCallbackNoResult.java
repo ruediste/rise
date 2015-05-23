@@ -9,12 +9,12 @@ import com.github.ruediste.rise.nonReloadable.persistence.TransactionControl;
  */
 public interface TransactionCallbackNoResult {
 
-	void doInTransaction(TransactionControl trx);
+    void doInTransaction(TransactionControl trx);
 
-	/**
-	 * Called before the {@link EntityManagerSet} is created. Can be used to
-	 * initialize transaction properties
-	 */
-	default void beforeEntityManagerSetCreated() {
-	}
+    /**
+     * Called before the {@link EntityManagerSet} is created. Can be used to
+     * initialize transaction properties
+     */
+    default void beforeEntityManagerSetCreated() {
+    }
 }

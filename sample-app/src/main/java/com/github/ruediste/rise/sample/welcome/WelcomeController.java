@@ -10,23 +10,23 @@ import com.github.ruediste.rise.core.web.ActionPath;
 
 public class WelcomeController extends ControllerMvc<WelcomeController> {
 
-	@Inject
-	Logger log;
+    @Inject
+    Logger log;
 
-	static class Data {
+    static class Data {
 
-	}
+    }
 
-	@ActionPath(value = "/", primary = true)
-	public ActionResult index() {
-		return view(WelcomeView.class, new Data());
-	}
+    @ActionPath(value = "/", primary = true)
+    public ActionResult index() {
+        return view(WelcomeView.class, new Data());
+    }
 
-	public ActionResult other() {
-		return view(OtherView.class, "Test");
-	}
+    public ActionResult other() {
+        return view(OtherView.class, "Test");
+    }
 
-	public ActionResult error() {
-		throw new RuntimeException("BOOM");
-	}
+    public ActionResult error() {
+        throw new RuntimeException("BOOM");
+    }
 }

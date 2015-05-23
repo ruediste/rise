@@ -15,35 +15,35 @@ import com.github.ruediste.salta.jsr330.Injector;
  * Tests an early startup error
  */
 public class StartupErrorEarlyTest extends StartupErrorTest {
-	@Override
-	protected final Servlet createServlet(Object testCase) {
-		TestRestartableApplication app = new TestRestartableApplication() {
+    @Override
+    protected final Servlet createServlet(Object testCase) {
+        TestRestartableApplication app = new TestRestartableApplication() {
 
-			@Override
-			protected void startImpl(Injector permanentInjector) {
-			}
-		};
+            @Override
+            protected void startImpl(Injector permanentInjector) {
+            }
+        };
 
-		Servlet frontServlet = new TestAppFrontServlet(app) {
-			private static final long serialVersionUID = 1L;
+        Servlet frontServlet = new TestAppFrontServlet(app) {
+            private static final long serialVersionUID = 1L;
 
-			@Override
-			protected void initImpl() throws Exception {
-				throw new RuntimeException("My Error");
-			}
-		};
+            @Override
+            protected void initImpl() throws Exception {
+                throw new RuntimeException("My Error");
+            }
+        };
 
-		return frontServlet;
-	}
+        return frontServlet;
+    }
 
-	@Test
-	public void test() {
-		driver.navigate().to(getBaseUrl());
-		assertTrue(driver.getTitle().contains("Startup Error"));
-		assertFalse(driver.getPageSource().contains("My Error"));
+    @Test
+    public void test() {
+        driver.navigate().to(getBaseUrl());
+        assertTrue(driver.getTitle().contains("Startup Error"));
+        assertFalse(driver.getPageSource().contains("My Error"));
 
-		// make sure drop-and-create database is absent
-		assertFalse(driver.getPageSource().contains("reate"));
-	}
+        // make sure drop-and-create database is absent
+        assertFalse(driver.getPageSource().contains("reate"));
+    }
 
 }

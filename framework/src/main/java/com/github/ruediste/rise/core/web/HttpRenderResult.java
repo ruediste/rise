@@ -14,9 +14,9 @@ import com.github.ruediste.rise.core.ActionResult;
  */
 public interface HttpRenderResult extends ActionResult {
 
-	/**
-	 * Send the render result to the given response.
-	 */
-	public void sendTo(HttpServletResponse response, HttpRenderResultUtil util)
-			throws IOException;
+    /**
+     * Send the render result to the given response.
+     */
+    public void sendTo(HttpServletResponse response, HttpRenderResultUtil util)
+            throws IOException;
 }

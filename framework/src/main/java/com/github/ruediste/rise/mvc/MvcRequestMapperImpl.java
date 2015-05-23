@@ -15,21 +15,21 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
  * {@link #generate(ActionInvocation)}
  */
 public class MvcRequestMapperImpl extends RequestMapperBase {
-	@Inject
-	CoreRequestInfo requestInfo;
+    @Inject
+    CoreRequestInfo requestInfo;
 
-	@Inject
-	MvcConfiguration mvcWebConfig;
+    @Inject
+    MvcConfiguration mvcWebConfig;
 
-	public MvcRequestMapperImpl() {
-		super(IControllerMvc.class);
-	}
+    public MvcRequestMapperImpl() {
+        super(IControllerMvc.class);
+    }
 
-	@Override
-	protected RequestParseResult createParseResult(ActionInvocation<String> path) {
-		return new MvcRequestParseResult(path, actionInvocation -> {
-			requestInfo.setStringActionInvocation(actionInvocation);
-			mvcWebConfig.handleRequest();
-		});
-	}
+    @Override
+    protected RequestParseResult createParseResult(ActionInvocation<String> path) {
+        return new MvcRequestParseResult(path, actionInvocation -> {
+            requestInfo.setStringActionInvocation(actionInvocation);
+            mvcWebConfig.handleRequest();
+        });
+    }
 }

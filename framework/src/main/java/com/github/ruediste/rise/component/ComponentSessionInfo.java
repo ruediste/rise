@@ -8,22 +8,22 @@ import com.github.ruediste.rise.core.scopes.SessionScoped;
 @SessionScoped
 public class ComponentSessionInfo {
 
-	private AtomicLong nextPageId = new AtomicLong();
+    private AtomicLong nextPageId = new AtomicLong();
 
-	ConcurrentHashMap<Long, PageHandle> pageHandles = new ConcurrentHashMap<>();
+    ConcurrentHashMap<Long, PageHandle> pageHandles = new ConcurrentHashMap<>();
 
-	public PageHandle createPageHandle() {
-		PageHandle handle = new PageHandle();
-		handle.id = nextPageId.getAndIncrement();
-		pageHandles.put(handle.id, handle);
-		return handle;
-	}
+    public PageHandle createPageHandle() {
+        PageHandle handle = new PageHandle();
+        handle.id = nextPageId.getAndIncrement();
+        pageHandles.put(handle.id, handle);
+        return handle;
+    }
 
-	public PageHandle getPageHandle(long id) {
-		return pageHandles.get(id);
-	}
+    public PageHandle getPageHandle(long id) {
+        return pageHandles.get(id);
+    }
 
-	public void removePageHandle(long id) {
-		pageHandles.remove(id);
-	}
+    public void removePageHandle(long id) {
+        pageHandles.remove(id);
+    }
 }

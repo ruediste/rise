@@ -17,18 +17,18 @@ import com.github.ruediste.rise.sample.welcome.WelcomeController;
 
 public class ReqestErrorController extends ControllerMvc<ReqestErrorController> {
 
-	@Inject
-	CoreRequestInfo info;
+    @Inject
+    CoreRequestInfo info;
 
-	private static class Data {
+    private static class Data {
 
-	}
+    }
 
-	private static class View extends PageView<ReqestErrorController, Data> {
+    private static class View extends PageView<ReqestErrorController, Data> {
 
-		@Override
-		protected void renderBody(HtmlCanvas html) throws IOException {
-			// @formatter:off
+        @Override
+        protected void renderBody(HtmlCanvas html) throws IOException {
+            // @formatter:off
 			html
 			.nav(class_("navbar navbar-inverse navbar-fixed-top"))._nav()
 			.div(class_("container"))
@@ -68,11 +68,11 @@ public class ReqestErrorController extends ControllerMvc<ReqestErrorController> 
 				._div()
 			._div();
 			// @formatter:on
-		}
-	}
+        }
+    }
 
-	public ActionResult index() {
-		Data data = new Data();
-		return view(View.class, data);
-	}
+    public ActionResult index() {
+        Data data = new Data();
+        return view(View.class, data);
+    }
 }

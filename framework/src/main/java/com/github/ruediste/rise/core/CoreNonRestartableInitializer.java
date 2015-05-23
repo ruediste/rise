@@ -6,13 +6,13 @@ import com.github.ruediste.rise.nonReloadable.front.reload.ClassPathScanningStar
 import com.github.ruediste.rise.util.Initializer;
 
 public class CoreNonRestartableInitializer implements Initializer {
-	@Inject
-	ClassPathScanningStarter classPathScanningStarter;
+    @Inject
+    ClassPathScanningStarter classPathScanningStarter;
 
-	@Override
-	public void initialize() {
-		// start the file change/ class change notifier
-		classPathScanningStarter.start();
-	}
+    @Override
+    public void initialize() {
+        // start the file change/ class change notifier
+        classPathScanningStarter.start();
+    }
 
 }

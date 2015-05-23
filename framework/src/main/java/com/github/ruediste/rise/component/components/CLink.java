@@ -9,27 +9,27 @@ import com.github.ruediste.rise.core.ActionResult;
 @DefaultTemplate(CLinkHtmlTemplate.class)
 public class CLink extends MultiChildrenComponent<CLink> {
 
-	private ActionResult destination;
+    private ActionResult destination;
 
-	public CLink() {
-	}
+    public CLink() {
+    }
 
-	public CLink(ActionResult destination) {
-		this();
-		this.destination = destination;
-	}
+    public CLink(ActionResult destination) {
+        this();
+        this.destination = destination;
+    }
 
-	public CLink(String text, ActionResult destination) {
-		this(destination);
-		add(new CRender(html -> html.write(text)));
-	}
+    public CLink(String text, ActionResult destination) {
+        this(destination);
+        add(new CRender(html -> html.write(text)));
+    }
 
-	public CLink withDestination(ActionResult destination) {
-		this.destination = destination;
-		return self();
-	}
+    public CLink withDestination(ActionResult destination) {
+        this.destination = destination;
+        return self();
+    }
 
-	public ActionResult getDestination() {
-		return destination;
-	}
+    public ActionResult getDestination() {
+        return destination;
+    }
 }

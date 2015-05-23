@@ -10,27 +10,27 @@ import com.github.ruediste.rise.mvc.MvcUtil;
 
 public class IntegrationTestUtil {
 
-	private String baseUrl;
+    private String baseUrl;
 
-	public void initialize(String baseUrl) {
-		this.baseUrl = baseUrl;
-	}
+    public void initialize(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
 
-	@Inject
-	MvcUtil util;
+    @Inject
+    MvcUtil util;
 
-	@Inject
-	CoreUtil coreUtil;
+    @Inject
+    CoreUtil coreUtil;
 
-	public String url(ActionResult result) {
-		return url(coreUtil.toPathInfo(result));
-	}
+    public String url(ActionResult result) {
+        return url(coreUtil.toPathInfo(result));
+    }
 
-	public String url(PathInfo pathInfo) {
-		return baseUrl + pathInfo.getValue();
-	}
+    public String url(PathInfo pathInfo) {
+        return baseUrl + pathInfo.getValue();
+    }
 
-	public <T extends IControllerMvc> T go(Class<T> controllerClass) {
-		return util.path(controllerClass).go();
-	}
+    public <T extends IControllerMvc> T go(Class<T> controllerClass) {
+        return util.path(controllerClass).go();
+    }
 }

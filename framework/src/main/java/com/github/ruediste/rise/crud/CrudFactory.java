@@ -9,22 +9,22 @@ import javax.persistence.criteria.Root;
 
 public class CrudFactory {
 
-	public interface Filter<T> {
-		void applyFilter(Root<T> root, CriteriaBuilder cb);
-	}
+    public interface Filter<T> {
+        void applyFilter(Root<T> root, CriteriaBuilder cb);
+    }
 
-	public static class BrowserSettings<T> {
-		List<Consumer<T>> operations = new ArrayList<>();
-		List<Filter<T>> fixedFilters = new ArrayList<>();
-		CrudModel model;
-	}
+    public static class BrowserSettings<T> {
+        List<Consumer<T>> operations = new ArrayList<>();
+        List<Filter<T>> fixedFilters = new ArrayList<>();
+        CrudModel model;
+    }
 
-	/**
-	 * A browser controller displays all instances of a certain type and allows
-	 * the user to search/filter the list. For each instance, certain operations
-	 * can be performed.
-	 */
-	public <T> void createBrowserController(BrowserSettings<T> settings) {
+    /**
+     * A browser controller displays all instances of a certain type and allows
+     * the user to search/filter the list. For each instance, certain operations
+     * can be performed.
+     */
+    public <T> void createBrowserController(BrowserSettings<T> settings) {
 
-	}
+    }
 }

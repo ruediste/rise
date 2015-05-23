@@ -11,27 +11,27 @@ import com.github.ruediste.rise.testApp.app.TestRestartableApplication;
 import com.github.ruediste.salta.jsr330.Injector;
 
 public class WebTest extends WebTestBase {
-	@Override
-	protected final Servlet createServlet(Object testCase) {
-		TestRestartableApplication app = new TestRestartableApplication() {
+    @Override
+    protected final Servlet createServlet(Object testCase) {
+        TestRestartableApplication app = new TestRestartableApplication() {
 
-			@Override
-			protected void startImpl(Injector permanentInjector) {
-				super.startImpl(permanentInjector);
-				injectMembers(testCase);
-			}
-		};
+            @Override
+            protected void startImpl(Injector permanentInjector) {
+                super.startImpl(permanentInjector);
+                injectMembers(testCase);
+            }
+        };
 
-		Servlet frontServlet = new TestAppFrontServlet(app);
+        Servlet frontServlet = new TestAppFrontServlet(app);
 
-		return frontServlet;
-	}
+        return frontServlet;
+    }
 
-	@Override
-	protected WebDriver createDriver() {
-		// HtmlUnitDriver driver = new HtmlUnitDriver(true);
-		FirefoxDriver driver = new FirefoxDriver();
-		return driver;
-	}
+    @Override
+    protected WebDriver createDriver() {
+        // HtmlUnitDriver driver = new HtmlUnitDriver(true);
+        FirefoxDriver driver = new FirefoxDriver();
+        return driver;
+    }
 
 }

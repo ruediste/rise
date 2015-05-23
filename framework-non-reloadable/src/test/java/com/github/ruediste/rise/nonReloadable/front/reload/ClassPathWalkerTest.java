@@ -19,92 +19,92 @@ import com.github.ruediste.rise.nonReloadable.front.reload.ClassPathWalker.Simpl
 
 public class ClassPathWalkerTest {
 
-	boolean found;
+    boolean found;
 
-	@Before
-	public void before() {
-		found = false;
-	}
+    @Before
+    public void before() {
+        found = false;
+    }
 
-	@Test
-	public void jarClassFound() {
-		ClassPathWalker.scan(ClassPathWalkerTest.class.getClassLoader(),
-				new SimpleClassPathVisitor() {
-					@Override
-					public void visitClass(String className,
-							ClassLoader classLoader,
-							Supplier<InputStream> inputStreamSupplier) {
-						if (Inject.class.getName().equals(className))
-							found = true;
-					}
-				});
-		assertTrue(found);
-	}
+    @Test
+    public void jarClassFound() {
+        ClassPathWalker.scan(ClassPathWalkerTest.class.getClassLoader(),
+                new SimpleClassPathVisitor() {
+                    @Override
+                    public void visitClass(String className,
+                            ClassLoader classLoader,
+                            Supplier<InputStream> inputStreamSupplier) {
+                        if (Inject.class.getName().equals(className))
+                            found = true;
+                    }
+                });
+        assertTrue(found);
+    }
 
-	@Test
-	public void skipJar() throws IOException {
-		ClassPathWalker.scan(getClass().getClassLoader(),
-				new SimpleClassPathVisitor() {
+    @Test
+    public void skipJar() throws IOException {
+        ClassPathWalker.scan(getClass().getClassLoader(),
+                new SimpleClassPathVisitor() {
 
-					@Override
-					public ClassPathVisitResult visitJarFile(Path path,
-							JarFile jarFile, ClassLoader classloader) {
-						if (path.getFileName().toString()
-								.startsWith("javax.inject")) {
-							return ClassPathVisitResult.SKIP_CONTENTS;
-						} else
-							return ClassPathVisitResult.CONTINUE;
-					}
+                    @Override
+                    public ClassPathVisitResult visitJarFile(Path path,
+                            JarFile jarFile, ClassLoader classloader) {
+                        if (path.getFileName().toString()
+                                .startsWith("javax.inject")) {
+                            return ClassPathVisitResult.SKIP_CONTENTS;
+                        } else
+                            return ClassPathVisitResult.CONTINUE;
+                    }
 
-					@Override
-					public void visitClass(String className,
-							ClassLoader classLoader,
-							Supplier<InputStream> inputStreamSupplier) {
-						if (Inject.class.getName().equals(className))
-							found = true;
-					}
-				});
-		assertFalse(found);
-	}
+                    @Override
+                    public void visitClass(String className,
+                            ClassLoader classLoader,
+                            Supplier<InputStream> inputStreamSupplier) {
+                        if (Inject.class.getName().equals(className))
+                            found = true;
+                    }
+                });
+        assertFalse(found);
+    }
 
-	@Test
-	public void dirClassFound() {
-		ClassPathWalker.scan(ClassPathWalkerTest.class.getClassLoader(),
-				new SimpleClassPathVisitor() {
-					@Override
-					public void visitClass(String className,
-							ClassLoader classLoader,
-							Supplier<InputStream> inputStreamSupplier) {
-						if (ClassPathWalker.class.getName().equals(className))
-							found = true;
-					}
-				});
-		assertTrue(found);
-	}
+    @Test
+    public void dirClassFound() {
+        ClassPathWalker.scan(ClassPathWalkerTest.class.getClassLoader(),
+                new SimpleClassPathVisitor() {
+                    @Override
+                    public void visitClass(String className,
+                            ClassLoader classLoader,
+                            Supplier<InputStream> inputStreamSupplier) {
+                        if (ClassPathWalker.class.getName().equals(className))
+                            found = true;
+                    }
+                });
+        assertTrue(found);
+    }
 
-	@Test
-	public void skipDir() {
-		ClassPathWalker.scan(ClassPathWalkerTest.class.getClassLoader(),
-				new SimpleClassPathVisitor() {
+    @Test
+    public void skipDir() {
+        ClassPathWalker.scan(ClassPathWalkerTest.class.getClassLoader(),
+                new SimpleClassPathVisitor() {
 
-					@Override
-					public ClassPathVisitResult visitRootDirectory(
-							Path rootDirectory, ClassLoader classloader) {
-						if (rootDirectory.toString().contains(
-								"rise/framework-non-reloadable/")) {
-							return ClassPathVisitResult.SKIP_CONTENTS;
-						} else
-							return ClassPathVisitResult.CONTINUE;
-					}
+                    @Override
+                    public ClassPathVisitResult visitRootDirectory(
+                            Path rootDirectory, ClassLoader classloader) {
+                        if (rootDirectory.toString().contains(
+                                "rise/framework-non-reloadable/")) {
+                            return ClassPathVisitResult.SKIP_CONTENTS;
+                        } else
+                            return ClassPathVisitResult.CONTINUE;
+                    }
 
-					@Override
-					public void visitClass(String className,
-							ClassLoader classLoader,
-							Supplier<InputStream> inputStreamSupplier) {
-						if (ClassPathWalker.class.getName().equals(className))
-							found = true;
-					}
-				});
-		assertFalse(found);
-	}
+                    @Override
+                    public void visitClass(String className,
+                            ClassLoader classLoader,
+                            Supplier<InputStream> inputStreamSupplier) {
+                        if (ClassPathWalker.class.getName().equals(className))
+                            found = true;
+                    }
+                });
+        assertFalse(found);
+    }
 }

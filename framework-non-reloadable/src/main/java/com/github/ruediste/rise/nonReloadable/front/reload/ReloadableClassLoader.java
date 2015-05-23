@@ -10,48 +10,48 @@ import com.google.common.io.ByteStreams;
  */
 public class ReloadableClassLoader extends ClassLoader {
 
-	private ReloadebleClassesIndex index;
+    private ReloadebleClassesIndex index;
 
-	public ReloadableClassLoader(ClassLoader parent,
-			ReloadebleClassesIndex index) {
-		super(parent);
-		this.index = index;
-	}
+    public ReloadableClassLoader(ClassLoader parent,
+            ReloadebleClassesIndex index) {
+        super(parent);
+        this.index = index;
+    }
 
-	@Override
-	protected Class<?> loadClass(String name, boolean resolve)
-			throws ClassNotFoundException {
-		{
-			Class<?> result = findLoadedClass(name);
-			if (result != null) {
-				if (resolve)
-					resolveClass(result);
-				return result;
-			}
-		}
-		if (!name.startsWith("java.")) {
-			if (index.isReloadable(name)) {
-				Class<?> result;
-				String resouceName = name.replace('.', '/') + ".class";
-				try (InputStream in = getResourceAsStream(resouceName)) {
-					byte[] bb = ByteStreams.toByteArray(in);
-					result = defineClass(name, bb, 0, bb.length);
-				} catch (Exception e) {
-					throw new RuntimeException("Error while loading "
-							+ resouceName, e);
-				}
-				if (resolve) {
-					resolveClass(result);
-				}
-				return result;
-			}
+    @Override
+    protected Class<?> loadClass(String name, boolean resolve)
+            throws ClassNotFoundException {
+        {
+            Class<?> result = findLoadedClass(name);
+            if (result != null) {
+                if (resolve)
+                    resolveClass(result);
+                return result;
+            }
+        }
+        if (!name.startsWith("java.")) {
+            if (index.isReloadable(name)) {
+                Class<?> result;
+                String resouceName = name.replace('.', '/') + ".class";
+                try (InputStream in = getResourceAsStream(resouceName)) {
+                    byte[] bb = ByteStreams.toByteArray(in);
+                    result = defineClass(name, bb, 0, bb.length);
+                } catch (Exception e) {
+                    throw new RuntimeException("Error while loading "
+                            + resouceName, e);
+                }
+                if (resolve) {
+                    resolveClass(result);
+                }
+                return result;
+            }
 
-		}
+        }
 
-		Class<?> result = getParent().loadClass(name);
-		if (resolve) {
-			resolveClass(result);
-		}
-		return result;
-	}
+        Class<?> result = getParent().loadClass(name);
+        if (resolve) {
+            resolveClass(result);
+        }
+        return result;
+    }
 }

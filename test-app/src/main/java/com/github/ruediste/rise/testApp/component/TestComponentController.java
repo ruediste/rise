@@ -10,28 +10,28 @@ import com.github.ruediste.rise.testApp.persistence.TestEntity;
 
 public class TestComponentController extends ControllerComponent {
 
-	@Inject
-	TestSubController subControllerA;
+    @Inject
+    TestSubController subControllerA;
 
-	@Inject
-	TestSubController subControllerB;
+    @Inject
+    TestSubController subControllerB;
 
-	@Inject
-	EntityManager em;
+    @Inject
+    EntityManager em;
 
-	@Inject
-	ComponentUtil util;
+    @Inject
+    ComponentUtil util;
 
-	TestEntity entity;
+    TestEntity entity;
 
-	public ActionResult initialize(long id) {
-		entity = em.find(TestEntity.class, id);
-		subControllerA.initialize(id);
-		subControllerB.initialize(id);
-		return null;
-	}
+    public ActionResult initialize(long id) {
+        entity = em.find(TestEntity.class, id);
+        subControllerA.initialize(id);
+        subControllerB.initialize(id);
+        return null;
+    }
 
-	public void refresh() {
-		em.refresh(entity);
-	}
+    public void refresh() {
+        em.refresh(entity);
+    }
 }

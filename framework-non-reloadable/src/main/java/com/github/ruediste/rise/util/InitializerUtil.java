@@ -33,33 +33,33 @@ import com.google.common.collect.Lists;
  */
 public class InitializerUtil {
 
-	private static AttachedProperty<AttachedPropertyBearer, Set<Class<? extends Initializer>>> initializers = new AttachedProperty<>(
-			"initializers");
+    private static AttachedProperty<AttachedPropertyBearer, Set<Class<? extends Initializer>>> initializers = new AttachedProperty<>(
+            "initializers");
 
-	/**
-	 * Register an initializer for later execution
-	 */
-	public static void register(JSR330InjectorConfiguration config,
-			Class<? extends Initializer> initializer) {
-		Set<Class<? extends Initializer>> set = initializers.setIfAbsent(
-				config, () -> new LinkedHashSet<>());
-		set.remove(initializer);
-		set.add(initializer);
-	}
+    /**
+     * Register an initializer for later execution
+     */
+    public static void register(JSR330InjectorConfiguration config,
+            Class<? extends Initializer> initializer) {
+        Set<Class<? extends Initializer>> set = initializers.setIfAbsent(
+                config, () -> new LinkedHashSet<>());
+        set.remove(initializer);
+        set.add(initializer);
+    }
 
-	/**
-	 * Run the registered initializers
-	 */
-	public static void runInitializers(Injector injector) {
-		StandardInjectorConfiguration config = injector.getDelegate()
-				.getConfig();
-		Set<Class<? extends Initializer>> set = initializers.get(config);
-		if (set == null) {
-			return;
-		}
-		for (Class<? extends Initializer> cls : Lists.reverse(new ArrayList<>(
-				set))) {
-			injector.getInstance(cls).initialize();
-		}
-	}
+    /**
+     * Run the registered initializers
+     */
+    public static void runInitializers(Injector injector) {
+        StandardInjectorConfiguration config = injector.getDelegate()
+                .getConfig();
+        Set<Class<? extends Initializer>> set = initializers.get(config);
+        if (set == null) {
+            return;
+        }
+        for (Class<? extends Initializer> cls : Lists.reverse(new ArrayList<>(
+                set))) {
+            injector.getInstance(cls).initialize();
+        }
+    }
 }

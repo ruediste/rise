@@ -18,24 +18,25 @@ import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.integration.PageRenderer.PageRendererParameters;
 
 public abstract class StageRibbonControllerBase<TSelf extends StageRibbonControllerBase<TSelf>>
-		extends ControllerMvc<TSelf> {
+        extends ControllerMvc<TSelf> {
 
-	private static class Data {
-		Class<? extends StageRibbonControllerBase<?>> controllerClass;
-		public String originPathInfo;
-		public AssetBundleOutput assets;
-	}
+    private static class Data {
+        Class<? extends StageRibbonControllerBase<?>> controllerClass;
+        public String originPathInfo;
+        public AssetBundleOutput assets;
+    }
 
-	private static class View extends
-			ViewMvc<StageRibbonControllerBase<?>, Data> {
+    private static class View extends
+            ViewMvc<StageRibbonControllerBase<?>, Data> {
 
-		@Inject
-		PageRenderer renderer;
+        @Inject
+        PageRenderer renderer;
 
-		@Override
-		public void render(HtmlCanvas html) throws IOException {
-			setControllerClass(data().controllerClass);
-			renderer.renderOn(html, new PageRendererParameters() {
+        @Override
+        public void render(HtmlCanvas html) throws IOException {
+            setControllerClass(data().controllerClass);
+            renderer.renderOn(html, new PageRendererParameters() {
+
 
 
 
@@ -84,24 +85,24 @@ public abstract class StageRibbonControllerBase<TSelf extends StageRibbonControl
 						._div()	
 					._div();
 					// @formatter:on
-				}
+                }
 
-				@Override
-				protected CharactersWriteable htmlAttributes() {
-					return id("page-rise-ribbon");
-				}
-			});
-		}
-	}
+                @Override
+                protected CharactersWriteable htmlAttributes() {
+                    return id("page-rise-ribbon");
+                }
+            });
+        }
+    }
 
-	@SuppressWarnings("unchecked")
-	public ActionResult index(String originPathInfo) {
-		Data data = new Data();
-		data.controllerClass = (Class<? extends StageRibbonControllerBase<?>>) getClass();
-		data.originPathInfo = originPathInfo;
-		data.assets = getAssets();
-		return view(View.class, data);
-	}
+    @SuppressWarnings("unchecked")
+    public ActionResult index(String originPathInfo) {
+        Data data = new Data();
+        data.controllerClass = (Class<? extends StageRibbonControllerBase<?>>) getClass();
+        data.originPathInfo = originPathInfo;
+        data.assets = getAssets();
+        return view(View.class, data);
+    }
 
-	protected abstract AssetBundleOutput getAssets();
+    protected abstract AssetBundleOutput getAssets();
 }

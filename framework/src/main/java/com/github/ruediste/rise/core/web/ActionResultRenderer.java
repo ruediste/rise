@@ -9,20 +9,20 @@ import com.github.ruediste.rise.core.CoreRequestInfo;
 
 public class ActionResultRenderer extends ChainedRequestHandler {
 
-	@Inject
-	CoreRequestInfo coreInfo;
+    @Inject
+    CoreRequestInfo coreInfo;
 
-	@Inject
-	HttpRenderResultUtil util;
+    @Inject
+    HttpRenderResultUtil util;
 
-	@Override
-	public void run(Runnable next) {
-		next.run();
-		try {
-			coreInfo.getActionResult().sendTo(coreInfo.getServletResponse(),
-					util);
-		} catch (IOException e) {
-			throw new RuntimeException("Error while sending result", e);
-		}
-	}
+    @Override
+    public void run(Runnable next) {
+        next.run();
+        try {
+            coreInfo.getActionResult().sendTo(coreInfo.getServletResponse(),
+                    util);
+        } catch (IOException e) {
+            throw new RuntimeException("Error while sending result", e);
+        }
+    }
 }

@@ -9,32 +9,32 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class DelegatingHttpRequest extends HttpRequestBase {
 
-	private HttpServletRequest delegate;
+    private HttpServletRequest delegate;
 
-	public DelegatingHttpRequest(HttpServletRequest delegate) {
-		this.delegate = delegate;
-	}
+    public DelegatingHttpRequest(HttpServletRequest delegate) {
+        this.delegate = delegate;
+    }
 
-	@Override
-	public String getPathInfo() {
-		String pathInfo = delegate.getPathInfo();
-		if (pathInfo == null)
-			return "/";
-		return pathInfo;
-	}
+    @Override
+    public String getPathInfo() {
+        String pathInfo = delegate.getPathInfo();
+        if (pathInfo == null)
+            return "/";
+        return pathInfo;
+    }
 
-	@Override
-	public Map<String, String[]> getParameterMap() {
-		return delegate.getParameterMap();
-	}
+    @Override
+    public Map<String, String[]> getParameterMap() {
+        return delegate.getParameterMap();
+    }
 
-	@Override
-	public String getParameter(String name) {
-		return delegate.getParameter(name);
-	}
+    @Override
+    public String getParameter(String name) {
+        return delegate.getParameter(name);
+    }
 
-	@Override
-	public String[] getParameterValues(String name) {
-		return delegate.getParameterValues(name);
-	}
+    @Override
+    public String[] getParameterValues(String name) {
+        return delegate.getParameterValues(name);
+    }
 }

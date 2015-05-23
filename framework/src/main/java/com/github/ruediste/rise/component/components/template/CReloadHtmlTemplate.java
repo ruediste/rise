@@ -13,21 +13,21 @@ import com.github.ruediste.rise.component.components.CReload;
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
 
 public class CReloadHtmlTemplate extends ComponentTemplateBase<CReload> {
-	@Inject
-	ComponentUtil util;
+    @Inject
+    ComponentUtil util;
 
-	@Override
-	public void doRender(CReload component, HtmlCanvas html) throws IOException {
-		html.form(class_("rise_reload").data(
-				CoreAssetBundle.componentAttributeNr,
-				String.valueOf(util.getComponentNr(component))).data(
-				"lwf-reload-count", String.valueOf(component.getReloadCount())));
-		super.doRender(component, html);
-		html._form();
-	}
+    @Override
+    public void doRender(CReload component, HtmlCanvas html) throws IOException {
+        html.form(class_("rise_reload").data(
+                CoreAssetBundle.componentAttributeNr,
+                String.valueOf(util.getComponentNr(component))).data(
+                "lwf-reload-count", String.valueOf(component.getReloadCount())));
+        super.doRender(component, html);
+        html._form();
+    }
 
-	@Override
-	public void applyValues(CReload component) {
-		component.setReloadCount(component.getReloadCount() + 1);
-	}
+    @Override
+    public void applyValues(CReload component) {
+        component.setReloadCount(component.getReloadCount() + 1);
+    }
 }

@@ -98,137 +98,137 @@ import com.google.common.reflect.TypeToken;
  */
 public class BindingGroup<T> implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final Class<?> tClass;
+    private final Class<?> tClass;
 
-	private final AttachedProperty<AttachedPropertyBearer, Set<Binding<T>>> bindings = new AttachedProperty<>();
+    private final AttachedProperty<AttachedPropertyBearer, Set<Binding<T>>> bindings = new AttachedProperty<>();
 
-	WeakHashMap<AttachedPropertyBearer, Object> components = new WeakHashMap<>();
+    WeakHashMap<AttachedPropertyBearer, Object> components = new WeakHashMap<>();
 
-	T data;
+    T data;
 
-	public BindingGroup(Class<T> cls) {
-		tClass = cls;
-	}
+    public BindingGroup(Class<T> cls) {
+        tClass = cls;
+    }
 
-	public BindingGroup(TypeToken<T> token) {
-		tClass = token.getRawType();
-	}
+    public BindingGroup(TypeToken<T> token) {
+        tClass = token.getRawType();
+    }
 
-	public Stream<Binding<T>> getBindings() {
-		return components.keySet().stream()
-				.flatMap(c -> bindings.get(c).stream());
-	}
+    public Stream<Binding<T>> getBindings() {
+        return components.keySet().stream()
+                .flatMap(c -> bindings.get(c).stream());
+    }
 
-	public void pullUp() {
-		getBindings().filter(b -> b.getPullUp() != null).forEach(
-				b -> b.getPullUp().accept(data));
-	}
+    public void pullUp() {
+        getBindings().filter(b -> b.getPullUp() != null).forEach(
+                b -> b.getPullUp().accept(data));
+    }
 
-	public void pushDown() {
-		getBindings().filter(b -> b.getPushDown() != null).forEach(
-				b -> b.getPushDown().accept(data));
-	}
+    public void pushDown() {
+        getBindings().filter(b -> b.getPushDown() != null).forEach(
+                b -> b.getPushDown().accept(data));
+    }
 
-	public T get() {
-		return data;
-	}
+    public T get() {
+        return data;
+    }
 
-	public void set(T data) {
-		this.data = data;
-	}
+    public void set(T data) {
+        this.data = data;
+    }
 
-	/**
-	 * While evaluating a binding expression, return a recording proxy.
-	 * Otherwise return {@link #data}.
-	 */
-	public T proxy() {
-		BindingExpressionExecutionLog log = BindingExpressionExecutionLogManager
-				.getCurrentLog();
-		if (log == null) {
-			return data;
-		}
-		log.involvedBindingGroup = this;
-		return createModelProxy(tClass);
-	}
+    /**
+     * While evaluating a binding expression, return a recording proxy.
+     * Otherwise return {@link #data}.
+     */
+    public T proxy() {
+        BindingExpressionExecutionLog log = BindingExpressionExecutionLogManager
+                .getCurrentLog();
+        if (log == null) {
+            return data;
+        }
+        log.involvedBindingGroup = this;
+        return createModelProxy(tClass);
+    }
 
-	@SuppressWarnings("unchecked")
-	private <TModel> TModel createModelProxy(Class<?> modelClass) {
-		Enhancer e = new Enhancer();
-		e.setSuperclass(modelClass);
-		e.setCallback(new MethodInterceptor() {
+    @SuppressWarnings("unchecked")
+    private <TModel> TModel createModelProxy(Class<?> modelClass) {
+        Enhancer e = new Enhancer();
+        e.setSuperclass(modelClass);
+        e.setCallback(new MethodInterceptor() {
 
-			@Override
-			public Object intercept(Object obj, Method method, Object[] args,
-					MethodProxy proxy) throws Throwable {
-				BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager
-						.getCurrentLog();
-				info.modelPath.add(new MethodInvocation(method, args));
+            @Override
+            public Object intercept(Object obj, Method method, Object[] args,
+                    MethodProxy proxy) throws Throwable {
+                BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager
+                        .getCurrentLog();
+                info.modelPath.add(new MethodInvocation(method, args));
 
-				Class<?> returnType = method.getReturnType();
-				if (isTerminal(returnType)) {
-					return Defaults.defaultValue(returnType);
-				}
-				return createModelProxy(returnType);
-			}
+                Class<?> returnType = method.getReturnType();
+                if (isTerminal(returnType)) {
+                    return Defaults.defaultValue(returnType);
+                }
+                return createModelProxy(returnType);
+            }
 
-		});
+        });
 
-		return (TModel) e.create();
-	}
+        return (TModel) e.create();
+    }
 
-	private boolean isTerminal(Class<?> clazz) {
-		return clazz.isPrimitive() || String.class.equals(clazz)
-				|| Date.class.equals(clazz);
-	}
+    private boolean isTerminal(Class<?> clazz) {
+        return clazz.isPrimitive() || String.class.equals(clazz)
+                || Date.class.equals(clazz);
+    }
 
-	/**
-	 * Create a dummy usable for use with beanutils
-	 *
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	T createDummyProxy() {
-		return (T) createDummyProxy(tClass);
-	}
+    /**
+     * Create a dummy usable for use with beanutils
+     *
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    T createDummyProxy() {
+        return (T) createDummyProxy(tClass);
+    }
 
-	private Object createDummyProxy(Class<?> cls) {
-		Enhancer e = new Enhancer();
-		e.setSuperclass(cls);
-		e.setCallback(new MethodInterceptor() {
+    private Object createDummyProxy(Class<?> cls) {
+        Enhancer e = new Enhancer();
+        e.setSuperclass(cls);
+        e.setCallback(new MethodInterceptor() {
 
-			@Override
-			public Object intercept(Object obj, Method method, Object[] args,
-					MethodProxy proxy) throws Throwable {
-				if (isTerminal(method.getReturnType())) {
-					return Defaults.defaultValue(method.getReturnType());
-				}
-				return createDummyProxy(method.getReturnType());
-			}
-		});
+            @Override
+            public Object intercept(Object obj, Method method, Object[] args,
+                    MethodProxy proxy) throws Throwable {
+                if (isTerminal(method.getReturnType())) {
+                    return Defaults.defaultValue(method.getReturnType());
+                }
+                return createDummyProxy(method.getReturnType());
+            }
+        });
 
-		return e.create();
-	}
+        return e.create();
+    }
 
-	@SuppressWarnings({ "unchecked" })
-	void addBindingUntyped(Binding<?> binding) {
-		addBinding((Binding<T>) binding);
-	}
+    @SuppressWarnings({ "unchecked" })
+    void addBindingUntyped(Binding<?> binding) {
+        addBinding((Binding<T>) binding);
+    }
 
-	void addBinding(Binding<T> binding) {
-		AttachedPropertyBearer component = binding.getComponent();
-		Set<Binding<T>> set = bindings.get(component);
-		if (set == null) {
-			set = new HashSet<>();
-			bindings.set(component, set);
-			components.put(component, null);
-		}
+    void addBinding(Binding<T> binding) {
+        AttachedPropertyBearer component = binding.getComponent();
+        Set<Binding<T>> set = bindings.get(component);
+        if (set == null) {
+            set = new HashSet<>();
+            bindings.set(component, set);
+            components.put(component, null);
+        }
 
-		set.add(binding);
+        set.add(binding);
 
-		if (binding.getPullUp() != null) {
-			binding.getPullUp().accept(data);
-		}
-	}
+        if (binding.getPullUp() != null) {
+            binding.getPullUp().accept(data);
+        }
+    }
 }

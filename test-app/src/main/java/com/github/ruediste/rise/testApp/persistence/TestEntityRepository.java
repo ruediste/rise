@@ -10,14 +10,14 @@ import javax.persistence.criteria.Root;
 
 public class TestEntityRepository {
 
-	@Inject
-	EntityManager em;
+    @Inject
+    EntityManager em;
 
-	public List<TestEntity> getAll() {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<TestEntity> query = cb.createQuery(TestEntity.class);
-		Root<TestEntity> root = query.from(TestEntity.class);
-		query.select(root);
-		return em.createQuery(query).getResultList();
-	}
+    public List<TestEntity> getAll() {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<TestEntity> query = cb.createQuery(TestEntity.class);
+        Root<TestEntity> root = query.from(TestEntity.class);
+        query.select(root);
+        return em.createQuery(query).getResultList();
+    }
 }

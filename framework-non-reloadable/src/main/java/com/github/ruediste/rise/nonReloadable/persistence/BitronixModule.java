@@ -12,37 +12,37 @@ import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Provides;
 
 public class BitronixModule extends AbstractModule {
-	public BitronixModule() {
+    public BitronixModule() {
 
-	}
+    }
 
-	@Override
-	protected void configure() throws Exception {
+    @Override
+    protected void configure() throws Exception {
 
-	}
+    }
 
-	@Provides
-	@Singleton
-	TransactionManager transactionManager() {
-		return TransactionManagerServices.getTransactionManager();
-	}
+    @Provides
+    @Singleton
+    TransactionManager transactionManager() {
+        return TransactionManagerServices.getTransactionManager();
+    }
 
-	@Provides
-	@Singleton
-	TransactionSynchronizationRegistry transactionSynchronizationRegistry() {
-		return TransactionManagerServices
-				.getTransactionSynchronizationRegistry();
-	}
+    @Provides
+    @Singleton
+    TransactionSynchronizationRegistry transactionSynchronizationRegistry() {
+        return TransactionManagerServices
+                .getTransactionSynchronizationRegistry();
+    }
 
-	@Provides
-	@Singleton
-	TransactionIntegrationInfo transactionIntegrationInfo() {
-		return new TransactionIntegrationInfo() {
+    @Provides
+    @Singleton
+    TransactionIntegrationInfo transactionIntegrationInfo() {
+        return new TransactionIntegrationInfo() {
 
-			@Override
-			public Class<? extends ExternalTransactionController> getEclipseLinkExternalTransactionController() {
-				return BitronixTransactionController.class;
-			}
-		};
-	}
+            @Override
+            public Class<? extends ExternalTransactionController> getEclipseLinkExternalTransactionController() {
+                return BitronixTransactionController.class;
+            }
+        };
+    }
 }

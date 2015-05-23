@@ -5,8 +5,8 @@ import com.github.ruediste.rise.nonReloadable.front.reload.ClassChangeNotifier.C
 
 public class ReloadableClassesIndexTestHelper {
 
-	public static void callOnChange(ReloadebleClassesIndex cache,
-			ClassChangeTransaction trx) {
-		cache.onChange(trx);
-	}
+    public static void callOnChange(ReloadebleClassesIndex cache,
+            ClassChangeTransaction trx) {
+        cache.onChange(trx);
+    }
 }

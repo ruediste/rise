@@ -10,15 +10,15 @@ import com.github.ruediste.salta.jsr330.AbstractModule;
  */
 public class PermanentIntegrationModule extends AbstractModule {
 
-	private ServletConfig servletConfig;
+    private ServletConfig servletConfig;
 
-	public PermanentIntegrationModule(ServletConfig servletConfig) {
-		this.servletConfig = servletConfig;
-	}
+    public PermanentIntegrationModule(ServletConfig servletConfig) {
+        this.servletConfig = servletConfig;
+    }
 
-	@Override
-	protected void configure() {
-		install(new PermanentApplicationModule(servletConfig));
-	}
+    @Override
+    protected void configure() {
+        install(new PermanentApplicationModule(servletConfig));
+    }
 
 }

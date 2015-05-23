@@ -19,53 +19,53 @@ import com.github.ruediste.rise.integration.PageRenderer.PageRendererParameters;
 
 public class CPageTemplate extends ComponentTemplateBase<CPage> {
 
-	private static class Bundle extends AssetBundle {
-		@Inject
-		CoreAssetBundle coreBundle;
+    private static class Bundle extends AssetBundle {
+        @Inject
+        CoreAssetBundle coreBundle;
 
-		@Inject
-		BootstrapBundleUtil bootstrapBundleUtil;
+        @Inject
+        BootstrapBundleUtil bootstrapBundleUtil;
 
-		AssetBundleOutput out = new AssetBundleOutput(this);
+        AssetBundleOutput out = new AssetBundleOutput(this);
 
-		@PostConstruct
-		public void initialize() {
-			bootstrapBundleUtil.loadAssets().sentAllTo(out);
-			coreBundle.out.send(out);
-		}
+        @PostConstruct
+        public void initialize() {
+            bootstrapBundleUtil.loadAssets().sentAllTo(out);
+            coreBundle.out.send(out);
+        }
 
-	}
+    }
 
-	@Inject
-	Bundle bundle;
-	@Inject
-	PageRenderer renderer;
+    @Inject
+    Bundle bundle;
+    @Inject
+    PageRenderer renderer;
 
-	@Override
-	public void doRender(CPage component, HtmlCanvas html) throws IOException {
-		renderer.renderOn(html, new PageRendererParameters() {
+    @Override
+    public void doRender(CPage component, HtmlCanvas html) throws IOException {
+        renderer.renderOn(html, new PageRendererParameters() {
 
-			@Override
-			protected void renderJsLinks(HtmlCanvas html) throws IOException {
-				html.render(util.jsLinks(bundle.out));
+            @Override
+            protected void renderJsLinks(HtmlCanvas html) throws IOException {
+                html.render(util.jsLinks(bundle.out));
 
-			}
+            }
 
-			@Override
-			protected void renderHead(HtmlCanvas html) throws IOException {
+            @Override
+            protected void renderHead(HtmlCanvas html) throws IOException {
 
-			}
+            }
 
-			@Override
-			protected void renderCssLinks(HtmlCanvas html) throws IOException {
-				html.render(util.cssLinks(bundle.out));
-			}
+            @Override
+            protected void renderCssLinks(HtmlCanvas html) throws IOException {
+                html.render(util.cssLinks(bundle.out));
+            }
 
-			@Override
-			protected void renderBody(HtmlCanvas html) throws IOException {
-				for (Component child : component.getChildren())
-					util.render(child, html);
-			}
-		});
-	}
+            @Override
+            protected void renderBody(HtmlCanvas html) throws IOException {
+                for (Component child : component.getChildren())
+                    util.render(child, html);
+            }
+        });
+    }
 }

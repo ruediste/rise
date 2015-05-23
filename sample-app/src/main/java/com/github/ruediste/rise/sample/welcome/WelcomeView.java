@@ -20,23 +20,23 @@ import com.github.ruediste.rise.sample.db.PageView;
 import com.github.ruediste.rise.sample.db.TodoController;
 
 public class WelcomeView extends
-		PageView<WelcomeController, WelcomeController.Data> {
+        PageView<WelcomeController, WelcomeController.Data> {
 
-	@Inject
-	RestartCountHolder holder;
+    @Inject
+    RestartCountHolder holder;
 
-	@Inject
-	CoreConfiguration coreConfig;
+    @Inject
+    CoreConfiguration coreConfig;
 
-	@Inject
-	SampleBundle sampleBundle;
+    @Inject
+    SampleBundle sampleBundle;
 
-	@Inject
-	PageRenderer renderer;
+    @Inject
+    PageRenderer renderer;
 
-	@Override
-	protected void renderBody(HtmlCanvas html) throws IOException {
-		//@formatter:off
+    @Override
+    protected void renderBody(HtmlCanvas html) throws IOException {
+        //@formatter:off
 		html.nav(class_("navbar navbar-inverse navbar-fixed-top"))
 	        .div(class_("container-fluid"))
 		        .div(class_("navbar-header"))

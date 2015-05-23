@@ -6,32 +6,32 @@ import com.github.ruediste.rise.nonReloadable.persistence.TransactionControl;
 @RequestScoped
 public class MvcRequestInfo {
 
-	private boolean updating;
+    private boolean updating;
 
-	private TransactionControl transactionControl;
+    private TransactionControl transactionControl;
 
-	public MvcRequestInfo self() {
-		return this;
-	}
+    public MvcRequestInfo self() {
+        return this;
+    }
 
-	public void setIsUpdating(boolean updating) {
-		this.setUpdating(updating);
-	}
+    public void setIsUpdating(boolean updating) {
+        this.setUpdating(updating);
+    }
 
-	public boolean isUpdating() {
-		return updating;
-	}
+    public boolean isUpdating() {
+        return updating;
+    }
 
-	public void setUpdating(boolean updating) {
-		this.updating = updating;
-	}
+    public void setUpdating(boolean updating) {
+        this.updating = updating;
+    }
 
-	public void setTransactionControl(TransactionControl transactionControl) {
-		this.transactionControl = transactionControl;
+    public void setTransactionControl(TransactionControl transactionControl) {
+        this.transactionControl = transactionControl;
 
-	}
+    }
 
-	public TransactionControl getTransactionControl() {
-		return transactionControl;
-	}
+    public TransactionControl getTransactionControl() {
+        return transactionControl;
+    }
 }

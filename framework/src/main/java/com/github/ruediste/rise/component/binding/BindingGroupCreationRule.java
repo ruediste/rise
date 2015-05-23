@@ -5,17 +5,17 @@ import com.github.ruediste.salta.core.CreationRuleImpl;
 
 public class BindingGroupCreationRule extends CreationRuleImpl {
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public BindingGroupCreationRule() {
-		super(CoreDependencyKey.rawTypeMatcher(BindingGroup.class),
-				key -> () -> {
-					Class<?> dataType = key
-							.getType()
-							.resolveType(
-									BindingGroup.class.getTypeParameters()[0])
-							.getRawType();
-					return new BindingGroup(dataType);
-				});
-	}
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public BindingGroupCreationRule() {
+        super(CoreDependencyKey.rawTypeMatcher(BindingGroup.class),
+                key -> () -> {
+                    Class<?> dataType = key
+                            .getType()
+                            .resolveType(
+                                    BindingGroup.class.getTypeParameters()[0])
+                            .getRawType();
+                    return new BindingGroup(dataType);
+                });
+    }
 
 }

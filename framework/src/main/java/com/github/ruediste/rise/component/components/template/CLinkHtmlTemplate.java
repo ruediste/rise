@@ -12,13 +12,13 @@ import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.components.CLink;
 
 public class CLinkHtmlTemplate extends ComponentTemplateBase<CLink> {
-	@Inject
-	ComponentUtil util;
+    @Inject
+    ComponentUtil util;
 
-	@Override
-	public void doRender(CLink component, HtmlCanvas html) throws IOException {
-		html.a(href(util.url(component.getDestination())));
-		super.doRender(component, html);
-		html._a();
-	}
+    @Override
+    public void doRender(CLink component, HtmlCanvas html) throws IOException {
+        html.a(href(util.url(component.getDestination())));
+        super.doRender(component, html);
+        html._a();
+    }
 }

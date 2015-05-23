@@ -10,25 +10,25 @@ import com.github.ruediste.salta.standard.util.SimpleProxyScopeHandler;
 
 public class ComponentRestartableModule extends AbstractModule {
 
-	@SuppressWarnings("unused")
-	private Injector permanentInjector;
+    @SuppressWarnings("unused")
+    private Injector permanentInjector;
 
-	public ComponentRestartableModule(Injector permanentInjector) {
-		this.permanentInjector = permanentInjector;
+    public ComponentRestartableModule(Injector permanentInjector) {
+        this.permanentInjector = permanentInjector;
 
-	}
+    }
 
-	@Override
-	protected void configure() throws Exception {
-		bindCreationRule(new BindingGroupCreationRule());
+    @Override
+    protected void configure() throws Exception {
+        bindCreationRule(new BindingGroupCreationRule());
 
-		SimpleProxyScopeHandler scopeHandler = new SimpleProxyScopeHandler(
-				"PageScoped");
-		bindScope(PageScoped.class, new ScopeImpl(scopeHandler));
-		bind(SimpleProxyScopeHandler.class).named("pageScoped").toInstance(
-				scopeHandler);
+        SimpleProxyScopeHandler scopeHandler = new SimpleProxyScopeHandler(
+                "PageScoped");
+        bindScope(PageScoped.class, new ScopeImpl(scopeHandler));
+        bind(SimpleProxyScopeHandler.class).named("pageScoped").toInstance(
+                scopeHandler);
 
-		InitializerUtil.register(config(), ComponentDynamicInitializer.class);
-		requestStaticInjection(CController.class);
-	}
+        InitializerUtil.register(config(), ComponentDynamicInitializer.class);
+        requestStaticInjection(CController.class);
+    }
 }

@@ -20,25 +20,25 @@ import com.github.ruediste.rise.mvc.MvcRequestParseResult;
  */
 public class ComponentRequestMapperImpl extends RequestMapperBase {
 
-	@Inject
-	CoreRequestInfo requestInfo;
+    @Inject
+    CoreRequestInfo requestInfo;
 
-	@Inject
-	ComponentConfiguration componentConfig;
+    @Inject
+    ComponentConfiguration componentConfig;
 
-	@Inject
-	ComponentRequestInfo componentRequestInfo;
+    @Inject
+    ComponentRequestInfo componentRequestInfo;
 
-	public ComponentRequestMapperImpl() {
-		super(IControllerComponent.class);
-	}
+    public ComponentRequestMapperImpl() {
+        super(IControllerComponent.class);
+    }
 
-	@Override
-	protected RequestParseResult createParseResult(ActionInvocation<String> path) {
-		return new MvcRequestParseResult(path, actionInvocation -> {
-			componentRequestInfo.setComponentRequest(true);
-			requestInfo.setStringActionInvocation(actionInvocation);
-			componentConfig.handleInitialRequest();
-		});
-	}
+    @Override
+    protected RequestParseResult createParseResult(ActionInvocation<String> path) {
+        return new MvcRequestParseResult(path, actionInvocation -> {
+            componentRequestInfo.setComponentRequest(true);
+            requestInfo.setStringActionInvocation(actionInvocation);
+            componentConfig.handleInitialRequest();
+        });
+    }
 }

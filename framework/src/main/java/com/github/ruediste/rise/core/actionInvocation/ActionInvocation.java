@@ -29,60 +29,60 @@ import com.google.common.base.MoreObjects;
  */
 public class ActionInvocation<T> extends AttachedPropertyBearerBase {
 
-	/**
-	 * Parameters which will be sent to the client and back again
-	 */
-	final HashMap<ActionInvocationParameter, String> parameters = new HashMap<>();
-	public MethodInvocation<T> methodInvocation;
+    /**
+     * Parameters which will be sent to the client and back again
+     */
+    final HashMap<ActionInvocationParameter, String> parameters = new HashMap<>();
+    public MethodInvocation<T> methodInvocation;
 
-	@Override
-	public String toString() {
-		return MoreObjects.toStringHelper(this).addValue(methodInvocation)
-				.toString();
-	}
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this).addValue(methodInvocation)
+                .toString();
+    }
 
-	/**
-	 * Determine if this and the other path represent calls to the same action
-	 * method. The parameters values are ignored.
-	 */
-	public boolean isCallToSameActionMethod(ActionInvocation<?> other) {
-		return isCallToSameActionMethod(other,
-				new MethodInvocation.ParameterValueEquality<Object, Object>() {
+    /**
+     * Determine if this and the other path represent calls to the same action
+     * method. The parameters values are ignored.
+     */
+    public boolean isCallToSameActionMethod(ActionInvocation<?> other) {
+        return isCallToSameActionMethod(other,
+                new MethodInvocation.ParameterValueEquality<Object, Object>() {
 
-					@Override
-					public boolean equals(Object a, Object b) {
-						return true;
-					}
-				});
-	}
+                    @Override
+                    public boolean equals(Object a, Object b) {
+                        return true;
+                    }
+                });
+    }
 
-	/**
-	 * Determine if this and the other path represent calls to the same action
-	 * method. The Parameters are compared by the provided
-	 */
-	public <O> boolean isCallToSameActionMethod(
-			ActionInvocation<O> other,
-			MethodInvocation.ParameterValueEquality<? super T, ? super O> comparator) {
+    /**
+     * Determine if this and the other path represent calls to the same action
+     * method. The Parameters are compared by the provided
+     */
+    public <O> boolean isCallToSameActionMethod(
+            ActionInvocation<O> other,
+            MethodInvocation.ParameterValueEquality<? super T, ? super O> comparator) {
 
-		return methodInvocation.isCallToSameMethod(other.methodInvocation,
-				comparator);
-	}
+        return methodInvocation.isCallToSameMethod(other.methodInvocation,
+                comparator);
+    }
 
-	/**
-	 * Create a new {@link ActionInvocation} with the arguments mapped by the
-	 * given function. The associated {@link ActionInvocationParameter}s are
-	 * copied
-	 */
-	public <P> ActionInvocation<P> map(final Function<? super T, P> func) {
-		return mapWithType((a, b) -> func.apply(b));
-	}
+    /**
+     * Create a new {@link ActionInvocation} with the arguments mapped by the
+     * given function. The associated {@link ActionInvocationParameter}s are
+     * copied
+     */
+    public <P> ActionInvocation<P> map(final Function<? super T, P> func) {
+        return mapWithType((a, b) -> func.apply(b));
+    }
 
-	public <P> ActionInvocation<P> mapWithType(
-			BiFunction<AnnotatedType, ? super T, P> func) {
-		ActionInvocation<P> result = new ActionInvocation<>();
-		result.parameters.putAll(parameters);
-		result.getAttachedPropertyMap().putAll(this);
-		result.methodInvocation = methodInvocation.map(func);
-		return result;
-	}
+    public <P> ActionInvocation<P> mapWithType(
+            BiFunction<AnnotatedType, ? super T, P> func) {
+        ActionInvocation<P> result = new ActionInvocation<>();
+        result.parameters.putAll(parameters);
+        result.getAttachedPropertyMap().putAll(this);
+        result.methodInvocation = methodInvocation.map(func);
+        return result;
+    }
 }

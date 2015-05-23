@@ -18,48 +18,48 @@ import org.junit.Test;
 
 public class DbLinkTest {
 
-	PersistenceTestHelper helper = new PersistenceTestHelper(this);
+    PersistenceTestHelper helper = new PersistenceTestHelper(this);
 
-	@Before
-	public void before() {
-		helper.before();
-	}
+    @Before
+    public void before() {
+        helper.before();
+    }
 
-	@After
-	public void after() {
-		helper.after();
-	}
+    @After
+    public void after() {
+        helper.after();
+    }
 
-	@Inject
-	TransactionManager txm;
+    @Inject
+    TransactionManager txm;
 
-	@Inject
-	EntityManagerFactory emf;
+    @Inject
+    EntityManagerFactory emf;
 
-	@Test
-	public void test() throws Exception {
-		{
-			txm.begin();
-			EntityManager em = emf.createEntityManager();
-			TestEntity entity = new TestEntity();
-			entity.setValue("Hello");
-			em.persist(entity);
-			em.flush();
-			txm.commit();
-		}
-		{
-			txm.begin();
-			EntityManager em = emf.createEntityManager();
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<TestEntity> q = cb.createQuery(TestEntity.class);
-			Root<TestEntity> root = q.from(TestEntity.class);
-			q.select(root);
-			List<TestEntity> resultList = em.createQuery(q).getResultList();
-			assertEquals("available TestEntities", 1, resultList.size());
-			assertEquals("Hello", resultList.get(0).getValue());
-			txm.commit();
-		}
+    @Test
+    public void test() throws Exception {
+        {
+            txm.begin();
+            EntityManager em = emf.createEntityManager();
+            TestEntity entity = new TestEntity();
+            entity.setValue("Hello");
+            em.persist(entity);
+            em.flush();
+            txm.commit();
+        }
+        {
+            txm.begin();
+            EntityManager em = emf.createEntityManager();
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<TestEntity> q = cb.createQuery(TestEntity.class);
+            Root<TestEntity> root = q.from(TestEntity.class);
+            q.select(root);
+            List<TestEntity> resultList = em.createQuery(q).getResultList();
+            assertEquals("available TestEntities", 1, resultList.size());
+            assertEquals("Hello", resultList.get(0).getValue());
+            txm.commit();
+        }
 
-	}
+    }
 
 }

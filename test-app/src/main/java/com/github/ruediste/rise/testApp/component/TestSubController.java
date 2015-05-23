@@ -22,58 +22,58 @@ import com.github.ruediste.rise.testApp.persistence.TestEntity;
 @OwnEntityManagers
 public class TestSubController {
 
-	public static class View extends ViewComponent<TestSubController> {
+    public static class View extends ViewComponent<TestSubController> {
 
-		@Override
-		protected Component createComponents() {
-			return new CGroup()
+        @Override
+        protected Component createComponents() {
+            return new CGroup()
 
-					.add(new CRender(html -> html.span(class_("value"))
-							.content(controller.entity().getValue())))
+                    .add(new CRender(html -> html.span(class_("value"))
+                            .content(controller.entity().getValue())))
 
-					.add(new CButton("refresh").class_("refresh").handler(
-							controller::refresh))
+                    .add(new CButton("refresh").class_("refresh").handler(
+                            controller::refresh))
 
-					.add(new CButton("save").class_("save").handler(
-							controller::save))
+                    .add(new CButton("save").class_("save").handler(
+                            controller::save))
 
-					.add(new CTextFieldFormGroup().bind(g -> g
-							.setText(controller.entity().getValue())));
-		}
-	}
+                    .add(new CTextFieldFormGroup().bind(g -> g
+                            .setText(controller.entity().getValue())));
+        }
+    }
 
-	@Inject
-	EntityManager em;
-	@Inject
-	ComponentUtil util;
+    @Inject
+    EntityManager em;
+    @Inject
+    ComponentUtil util;
 
-	@Inject
-	Logger log;
+    @Inject
+    Logger log;
 
-	@Inject
-	private BindingGroup<TestEntity> entity;
+    @Inject
+    private BindingGroup<TestEntity> entity;
 
-	public TestEntity entity() {
-		return entity.proxy();
-	}
+    public TestEntity entity() {
+        return entity.proxy();
+    }
 
-	@Inject
-	EntityManagerHolder holder;
+    @Inject
+    EntityManagerHolder holder;
 
-	public void initialize(long id) {
-		TestEntity e = em.find(TestEntity.class, id);
-		if (e == null)
-			throw new RuntimeException("TestEntity " + id + " not found");
-		entity.set(e);
-	}
+    public void initialize(long id) {
+        TestEntity e = em.find(TestEntity.class, id);
+        if (e == null)
+            throw new RuntimeException("TestEntity " + id + " not found");
+        entity.set(e);
+    }
 
-	public void refresh() {
-		em.refresh(entity.get());
-		entity.pullUp();
-	}
+    public void refresh() {
+        em.refresh(entity.get());
+        entity.pullUp();
+    }
 
-	public void save() {
-		entity.pushDown();
-		util.commit();
-	}
+    public void save() {
+        entity.pushDown();
+        util.commit();
+    }
 }

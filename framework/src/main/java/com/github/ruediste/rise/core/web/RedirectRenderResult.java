@@ -6,15 +6,15 @@ import javax.servlet.http.HttpServletResponse;
 
 public class RedirectRenderResult implements HttpRenderResult {
 
-	private PathInfo path;
+    private PathInfo path;
 
-	public RedirectRenderResult(PathInfo path) {
-		this.path = path;
-	}
+    public RedirectRenderResult(PathInfo path) {
+        this.path = path;
+    }
 
-	@Override
-	public void sendTo(HttpServletResponse response, HttpRenderResultUtil util)
-			throws IOException {
-		response.sendRedirect(util.httpService.redirectUrl(path));
-	}
+    @Override
+    public void sendTo(HttpServletResponse response, HttpRenderResultUtil util)
+            throws IOException {
+        response.sendRedirect(util.httpService.redirectUrl(path));
+    }
 }

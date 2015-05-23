@@ -14,27 +14,27 @@ import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 
 public class AssetReferencingView extends
-		ViewMvc<AssetReferencingController, String> {
+        ViewMvc<AssetReferencingController, String> {
 
-	static class Bundle extends AssetBundle {
+    static class Bundle extends AssetBundle {
 
-		AssetBundleOutput out = new AssetBundleOutput(this);
+        AssetBundleOutput out = new AssetBundleOutput(this);
 
-		@PostConstruct
-		public void initialize() {
-			paths("./assetReferencing.css", ".-test.css",
-					"/assetReferencing/test.css", "assetReferencing.css")
-					.load().send(out);
-		}
+        @PostConstruct
+        public void initialize() {
+            paths("./assetReferencing.css", ".-test.css",
+                    "/assetReferencing/test.css", "assetReferencing.css")
+                    .load().send(out);
+        }
 
-	}
+    }
 
-	@Inject
-	Bundle bundle;
+    @Inject
+    Bundle bundle;
 
-	@Override
-	public void render(HtmlCanvas html) throws IOException {
-		// @formatter:off
+    @Override
+    public void render(HtmlCanvas html) throws IOException {
+        // @formatter:off
 		html.html()
 			.head()
 				.render(cssLinks(bundle.out))

@@ -21,131 +21,131 @@ import com.github.ruediste.rise.nonReloadable.persistence.TransactionProperties;
 
 public class TransactionTemplate {
 
-	@Inject
-	Logger log;
+    @Inject
+    Logger log;
 
-	@Inject
-	TransactionManager txm;
+    @Inject
+    TransactionManager txm;
 
-	@Inject
-	EntityManagerHolder holder;
+    @Inject
+    EntityManagerHolder holder;
 
-	@Inject
-	MvcRequestInfo info;
+    @Inject
+    MvcRequestInfo info;
 
-	@Inject
-	TransactionProperties transactionProperties;
+    @Inject
+    TransactionProperties transactionProperties;
 
-	public class TransactionBuilder {
-		private boolean useNewEntityManagerSet = true;
-		private boolean updating = false;
-		private IsolationLevel level = null;
-		private IsolationLevel level2;
+    public class TransactionBuilder {
+        private boolean useNewEntityManagerSet = true;
+        private boolean updating = false;
+        private IsolationLevel level = null;
+        private IsolationLevel level2;
 
-		public TransactionBuilder noNewEntityManagerSet() {
-			useNewEntityManagerSet = false;
-			return this;
-		}
+        public TransactionBuilder noNewEntityManagerSet() {
+            useNewEntityManagerSet = false;
+            return this;
+        }
 
-		public TransactionBuilder updating() {
-			updating = true;
-			return this;
-		}
+        public TransactionBuilder updating() {
+            updating = true;
+            return this;
+        }
 
-		public TransactionBuilder updating(boolean value) {
-			updating = value;
-			return this;
-		}
+        public TransactionBuilder updating(boolean value) {
+            updating = value;
+            return this;
+        }
 
-		public TransactionBuilder isolation(IsolationLevel level) {
-			this.level = level;
-			return this;
-		}
+        public TransactionBuilder isolation(IsolationLevel level) {
+            this.level = level;
+            return this;
+        }
 
-		public void execute(TransactionCallbackNoResult action) {
-			execute(new TransactionCallback<Object>() {
+        public void execute(TransactionCallbackNoResult action) {
+            execute(new TransactionCallback<Object>() {
 
-				@Override
-				public void beforeEntityManagerSetCreated() {
-					action.beforeEntityManagerSetCreated();
-				}
+                @Override
+                public void beforeEntityManagerSetCreated() {
+                    action.beforeEntityManagerSetCreated();
+                }
 
-				@Override
-				public Object doInTransaction(TransactionControl trx) {
-					action.doInTransaction(trx);
-					return null;
-				}
-			});
-		}
+                @Override
+                public Object doInTransaction(TransactionControl trx) {
+                    action.doInTransaction(trx);
+                    return null;
+                }
+            });
+        }
 
-		public <T> T execute(TransactionCallback<T> action) {
-			boolean entityManagerSetWasSet = false;
-			try {
-				txm.begin();
+        public <T> T execute(TransactionCallback<T> action) {
+            boolean entityManagerSetWasSet = false;
+            try {
+                txm.begin();
 
-				if (level != null)
-					transactionProperties.setDefaultIsolationLevel(level);
-				else
-					transactionProperties
-							.setDefaultIsolationLevel(updating ? IsolationLevel.SERIALIZABLE
-									: IsolationLevel.REPEATABLE_READ);
+                if (level != null)
+                    transactionProperties.setDefaultIsolationLevel(level);
+                else
+                    transactionProperties
+                            .setDefaultIsolationLevel(updating ? IsolationLevel.SERIALIZABLE
+                                    : IsolationLevel.REPEATABLE_READ);
 
-				if (useNewEntityManagerSet) {
-					action.beforeEntityManagerSetCreated();
+                if (useNewEntityManagerSet) {
+                    action.beforeEntityManagerSetCreated();
 
-					holder.setNewEntityManagerSet();
-					entityManagerSetWasSet = true;
-				}
+                    holder.setNewEntityManagerSet();
+                    entityManagerSetWasSet = true;
+                }
 
-				T result = action.doInTransaction(new TransactionControl() {
+                T result = action.doInTransaction(new TransactionControl() {
 
-					@Override
-					public void commit() {
-						if (!updating) {
-							throw new RuntimeException(
-									"Cannot commit non-updating transaction!");
-						}
-						try {
-							txm.commit();
-						} catch (SecurityException | IllegalStateException
-								| RollbackException | HeuristicMixedException
-								| HeuristicRollbackException | SystemException e) {
-							throw new TransactionException(
-									"Error during commit", e);
-						}
-					}
-				});
+                    @Override
+                    public void commit() {
+                        if (!updating) {
+                            throw new RuntimeException(
+                                    "Cannot commit non-updating transaction!");
+                        }
+                        try {
+                            txm.commit();
+                        } catch (SecurityException | IllegalStateException
+                                | RollbackException | HeuristicMixedException
+                                | HeuristicRollbackException | SystemException e) {
+                            throw new TransactionException(
+                                    "Error during commit", e);
+                        }
+                    }
+                });
 
-				return result;
-			} catch (NotSupportedException | SystemException e) {
-				throw new TransactionException("Transaction error occured", e);
-			} finally {
-				if (entityManagerSetWasSet) {
-					holder.closeCurrentEntityManagers();
-					holder.removeCurrentSet();
-				}
+                return result;
+            } catch (NotSupportedException | SystemException e) {
+                throw new TransactionException("Transaction error occured", e);
+            } finally {
+                if (entityManagerSetWasSet) {
+                    holder.closeCurrentEntityManagers();
+                    holder.removeCurrentSet();
+                }
 
-				Integer status = null;
-				try {
-					status = txm.getStatus();
-					if (status != Status.STATUS_NO_TRANSACTION)
-						txm.rollback();
-				} catch (IllegalStateException | SecurityException
-						| SystemException e) {
-					log.error("Error during transaction rollback. Status was "
-							+ status, e);
-				}
+                Integer status = null;
+                try {
+                    status = txm.getStatus();
+                    if (status != Status.STATUS_NO_TRANSACTION)
+                        txm.rollback();
+                } catch (IllegalStateException | SecurityException
+                        | SystemException e) {
+                    log.error("Error during transaction rollback. Status was "
+                            + status, e);
+                }
 
-			}
-		}
-	}
+            }
+        }
+    }
 
-	/**
-	 * Create a new {@link TransactionBuilder} with default settings (
-	 * non-updating, using a fresh {@link EntityManagerSet})
-	 */
-	public TransactionBuilder builder() {
-		return new TransactionBuilder();
-	}
+    /**
+     * Create a new {@link TransactionBuilder} with default settings (
+     * non-updating, using a fresh {@link EntityManagerSet})
+     */
+    public TransactionBuilder builder() {
+        return new TransactionBuilder();
+    }
 
 }

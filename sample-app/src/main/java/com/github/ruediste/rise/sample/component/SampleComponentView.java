@@ -8,15 +8,15 @@ import com.github.ruediste.rise.component.components.CTextFieldFormGroup;
 import com.github.ruediste.rise.component.tree.Component;
 
 public class SampleComponentView extends
-		ViewComponent<SampleComponentController> {
+        ViewComponent<SampleComponentController> {
 
-	@Override
-	protected Component createComponents() {
-		return new CPage()
-				.add(new CRender(html -> html.write("Wird schon gut sein ..."
-						+ controller.counter)))
-				.add(new CButton("ClickMe").handler(() -> controller.inc()))
-				.add(new CTextFieldFormGroup().bind(field -> field
-						.setText(controller.getData().getText())));
-	}
+    @Override
+    protected Component createComponents() {
+        return new CPage()
+                .add(new CRender(html -> html.write("Wird schon gut sein ..."
+                        + controller.counter)))
+                .add(new CButton("ClickMe").handler(() -> controller.inc()))
+                .add(new CTextFieldFormGroup().bind(field -> field
+                        .setText(controller.getData().getText())));
+    }
 }

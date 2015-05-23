@@ -14,33 +14,33 @@ import com.github.ruediste.rise.nonReloadable.NonRestartable;
  */
 @Singleton
 public class HttpService {
-	@Inject
-	CoreRequestInfo coreRequestInfo;
+    @Inject
+    CoreRequestInfo coreRequestInfo;
 
-	String contextPath;
+    String contextPath;
 
-	@PostConstruct
-	public void postConstruct(@NonRestartable ServletConfig servletConfig) {
-		contextPath = servletConfig.getServletContext().getContextPath();
-	}
+    @PostConstruct
+    public void postConstruct(@NonRestartable ServletConfig servletConfig) {
+        contextPath = servletConfig.getServletContext().getContextPath();
+    }
 
-	public String urlStatic(PathInfo path) {
-		String prefix = contextPath;
-		return prefix + path.getValue();
-	}
+    public String urlStatic(PathInfo path) {
+        String prefix = contextPath;
+        return prefix + path.getValue();
+    }
 
-	public String url(PathInfo path) {
-		String prefix = contextPath;
-		prefix += coreRequestInfo.getServletRequest().getServletPath();
-		return coreRequestInfo.getServletResponse().encodeURL(
-				prefix + path.getValue());
-	}
+    public String url(PathInfo path) {
+        String prefix = contextPath;
+        prefix += coreRequestInfo.getServletRequest().getServletPath();
+        return coreRequestInfo.getServletResponse().encodeURL(
+                prefix + path.getValue());
+    }
 
-	public String redirectUrl(PathInfo path) {
-		String prefix = coreRequestInfo.getServletRequest().getContextPath();
-		prefix += coreRequestInfo.getServletRequest().getServletPath();
-		return coreRequestInfo.getServletResponse().encodeRedirectURL(
-				prefix + path.getValue());
-	}
+    public String redirectUrl(PathInfo path) {
+        String prefix = coreRequestInfo.getServletRequest().getContextPath();
+        prefix += coreRequestInfo.getServletRequest().getServletPath();
+        return coreRequestInfo.getServletResponse().encodeRedirectURL(
+                prefix + path.getValue());
+    }
 
 }

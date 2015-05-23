@@ -8,30 +8,30 @@ import com.github.ruediste.rise.util.Initializer;
 
 public class CoreDynamicInitializer implements Initializer {
 
-	@Inject
-	CoreConfiguration config;
+    @Inject
+    CoreConfiguration config;
 
-	@Inject
-	AssetPipelineConfiguration pipelineConfig;
+    @Inject
+    AssetPipelineConfiguration pipelineConfig;
 
-	@Inject
-	AssetRequestMapper assetRequestMapper;
+    @Inject
+    AssetRequestMapper assetRequestMapper;
 
-	@Inject
-	PathInfoIndex index;
+    @Inject
+    PathInfoIndex index;
 
-	@Inject
-	RestartQueryParser restartQueryParser;
+    @Inject
+    RestartQueryParser restartQueryParser;
 
-	@Override
-	public void initialize() {
-		config.dynamicClassLoader = Thread.currentThread()
-				.getContextClassLoader();
-		config.initialize();
-		pipelineConfig.initialize();
-		assetRequestMapper.initialize();
+    @Override
+    public void initialize() {
+        config.dynamicClassLoader = Thread.currentThread()
+                .getContextClassLoader();
+        config.initialize();
+        pipelineConfig.initialize();
+        assetRequestMapper.initialize();
 
-		index.registerPathInfo(config.restartQueryPathInfo.getValue(),
-				restartQueryParser);
-	}
+        index.registerPathInfo(config.restartQueryPathInfo.getValue(),
+                restartQueryParser);
+    }
 }

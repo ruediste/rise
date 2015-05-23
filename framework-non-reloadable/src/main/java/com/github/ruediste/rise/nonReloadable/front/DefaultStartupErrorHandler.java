@@ -20,37 +20,37 @@ import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
 
 public class DefaultStartupErrorHandler implements StartupErrorHandler {
 
-	private static final Logger log = LoggerFactory
-			.getLogger(DefaultStartupErrorHandler.class);
+    private static final Logger log = LoggerFactory
+            .getLogger(DefaultStartupErrorHandler.class);
 
-	@Inject
-	private DataBaseLinkRegistry registry;
+    @Inject
+    private DataBaseLinkRegistry registry;
 
-	protected ApplicationStage stage;
+    protected ApplicationStage stage;
 
-	private String dropAndCreatePathInfo;
+    private String dropAndCreatePathInfo;
 
-	public DefaultStartupErrorHandler() {
-		this("/~dropAndCreateDb");
-	}
+    public DefaultStartupErrorHandler() {
+        this("/~dropAndCreateDb");
+    }
 
-	public DefaultStartupErrorHandler(String dropAndCreatePathInfo) {
-		this.dropAndCreatePathInfo = dropAndCreatePathInfo;
-	}
+    public DefaultStartupErrorHandler(String dropAndCreatePathInfo) {
+        this.dropAndCreatePathInfo = dropAndCreatePathInfo;
+    }
 
-	@Override
-	public void handle(Throwable t, HttpServletRequest request,
-			HttpServletResponse response) {
-		if (stage == ApplicationStage.DEVELOPMENT
-				&& dropAndCreatePathInfo.equals(request.getPathInfo())) {
-			dropAndCreateDb(request, response);
-		}
-		try {
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			response.setContentType("text/html; charset=UTF-8");
-			try (PrintWriter writer = response.getWriter()) {
-				HtmlCanvas html = new HtmlCanvas(writer);
-				// @formatter:off
+    @Override
+    public void handle(Throwable t, HttpServletRequest request,
+            HttpServletResponse response) {
+        if (stage == ApplicationStage.DEVELOPMENT
+                && dropAndCreatePathInfo.equals(request.getPathInfo())) {
+            dropAndCreateDb(request, response);
+        }
+        try {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setContentType("text/html; charset=UTF-8");
+            try (PrintWriter writer = response.getWriter()) {
+                HtmlCanvas html = new HtmlCanvas(writer);
+                // @formatter:off
 			html.write("<!DOCTYPE html>",false)
 			.html()
 				.head()
@@ -80,35 +80,35 @@ public class DefaultStartupErrorHandler implements StartupErrorHandler {
 			._html();
 			// @formatter:on
 
-			}
-		} catch (Throwable e) {
-			log.error("Error while handling Error ", t);
-			log.error("Error in Error Handler ", e);
-		}
-	}
+            }
+        } catch (Throwable e) {
+            log.error("Error while handling Error ", t);
+            log.error("Error in Error Handler ", e);
+        }
+    }
 
-	protected void dropAndCreateDb(HttpServletRequest request,
-			HttpServletResponse response) {
-		if (registry == null) {
-			log.error("Cannot drop-and-create the database since the NonRestartable Application could not be started");
-		}
-		log.info("Dropping and Creating DB schemas ...");
-		registry.dropAndCreateSchemas();
-		redirectToReferer(request, response);
-	}
+    protected void dropAndCreateDb(HttpServletRequest request,
+            HttpServletResponse response) {
+        if (registry == null) {
+            log.error("Cannot drop-and-create the database since the NonRestartable Application could not be started");
+        }
+        log.info("Dropping and Creating DB schemas ...");
+        registry.dropAndCreateSchemas();
+        redirectToReferer(request, response);
+    }
 
-	protected void redirectToReferer(HttpServletRequest request,
-			HttpServletResponse response) {
-		try {
-			response.sendRedirect(request.getHeader("Referer"));
-		} catch (IOException e) {
-			log.error("Error while sending redirect", e);
-		}
-	}
+    protected void redirectToReferer(HttpServletRequest request,
+            HttpServletResponse response) {
+        try {
+            response.sendRedirect(request.getHeader("Referer"));
+        } catch (IOException e) {
+            log.error("Error while sending redirect", e);
+        }
+    }
 
-	@Override
-	public void setStage(ApplicationStage stage) {
-		this.stage = stage;
-	}
+    @Override
+    public void setStage(ApplicationStage stage) {
+        this.stage = stage;
+    }
 
 }

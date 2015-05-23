@@ -17,50 +17,50 @@ import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste.salta.jsr330.Salta;
 
 public class PersistenceTestHelper {
-	private static int dbCount = 0;
-	private Object testCase;
-	private DataBaseLinkRegistry dbLinkRegistry;
+    private static int dbCount = 0;
+    private Object testCase;
+    private DataBaseLinkRegistry dbLinkRegistry;
 
-	PersistenceTestHelper(Object testCase) {
-		this.testCase = testCase;
+    PersistenceTestHelper(Object testCase) {
+        this.testCase = testCase;
 
-	}
+    }
 
-	public void before() {
+    public void before() {
 
-		Injector permanentInjector = Salta.createInjector(new AbstractModule() {
+        Injector permanentInjector = Salta.createInjector(new AbstractModule() {
 
-			@Override
-			protected void configure() throws Exception {
-				PersistenceModuleUtil.bindDataSource(binder(), null,
-						new EclipseLinkPersistenceUnitManager("frameworkTest"),
-						new BitronixDataSourceFactory(
-								new H2DatabaseIntegrationInfo()) {
+            @Override
+            protected void configure() throws Exception {
+                PersistenceModuleUtil.bindDataSource(binder(), null,
+                        new EclipseLinkPersistenceUnitManager("frameworkTest"),
+                        new BitronixDataSourceFactory(
+                                new H2DatabaseIntegrationInfo()) {
 
-							@Override
-							protected void initializeProperties(Properties props) {
-								props.setProperty("URL", "jdbc:h2:mem:test"
-										+ (dbCount++) + ";MVCC=false");
-								props.setProperty("user", "sa");
-								props.setProperty("password", "sa");
-							}
+                            @Override
+                            protected void initializeProperties(Properties props) {
+                                props.setProperty("URL", "jdbc:h2:mem:test"
+                                        + (dbCount++) + ";MVCC=false");
+                                props.setProperty("user", "sa");
+                                props.setProperty("password", "sa");
+                            }
 
-							@Override
-							protected void customizeDataSource(
-									PoolingDataSource btmDataSource) {
-								btmDataSource.setMinPoolSize(1);
-							}
-						});
-			}
-		}, new BitronixModule(), new LoggerModule());
+                            @Override
+                            protected void customizeDataSource(
+                                    PoolingDataSource btmDataSource) {
+                                btmDataSource.setMinPoolSize(1);
+                            }
+                        });
+            }
+        }, new BitronixModule(), new LoggerModule());
 
-		dbLinkRegistry = permanentInjector
-				.getInstance(DataBaseLinkRegistry.class);
-		Salta.createInjector(new CoreRestartableModule(permanentInjector),
-				new LoggerModule()).injectMembers(testCase);
-	}
+        dbLinkRegistry = permanentInjector
+                .getInstance(DataBaseLinkRegistry.class);
+        Salta.createInjector(new CoreRestartableModule(permanentInjector),
+                new LoggerModule()).injectMembers(testCase);
+    }
 
-	public void after() {
-		dbLinkRegistry.close();
-	}
+    public void after() {
+        dbLinkRegistry.close();
+    }
 }

@@ -9,36 +9,36 @@ import com.github.ruediste.rise.core.web.PathInfo;
 
 public class DefaultRequestErrorHandler implements RequestErrorHandler {
 
-	@Inject
-	CoreConfiguration config;
+    @Inject
+    CoreConfiguration config;
 
-	@Inject
-	CoreRequestInfo info;
+    @Inject
+    CoreRequestInfo info;
 
-	@Inject
-	CoreUtil util;
+    @Inject
+    CoreUtil util;
 
-	private Function<CoreUtil, ActionResult> errorHandlerPathGenerator;
+    private Function<CoreUtil, ActionResult> errorHandlerPathGenerator;
 
-	public DefaultRequestErrorHandler initialize(
-			Function<CoreUtil, ActionResult> errorHandlerPathGenerator) {
-		this.errorHandlerPathGenerator = errorHandlerPathGenerator;
+    public DefaultRequestErrorHandler initialize(
+            Function<CoreUtil, ActionResult> errorHandlerPathGenerator) {
+        this.errorHandlerPathGenerator = errorHandlerPathGenerator;
 
-		return this;
-	}
+        return this;
+    }
 
-	@Override
-	public void handle() {
-		PathInfo errorHandlerPath = util.toPathInfo(errorHandlerPathGenerator
-				.apply(util));
-		DelegatingHttpRequest errorHandlerRequest = new DelegatingHttpRequest(
-				info.getServletRequest()) {
-			@Override
-			public String getPathInfo() {
-				return errorHandlerPath.getValue();
-			};
-		};
-		info.setRequest(errorHandlerRequest);
-		config.parse(errorHandlerRequest).handle();
-	}
+    @Override
+    public void handle() {
+        PathInfo errorHandlerPath = util.toPathInfo(errorHandlerPathGenerator
+                .apply(util));
+        DelegatingHttpRequest errorHandlerRequest = new DelegatingHttpRequest(
+                info.getServletRequest()) {
+            @Override
+            public String getPathInfo() {
+                return errorHandlerPath.getValue();
+            };
+        };
+        info.setRequest(errorHandlerRequest);
+        config.parse(errorHandlerRequest).handle();
+    }
 }

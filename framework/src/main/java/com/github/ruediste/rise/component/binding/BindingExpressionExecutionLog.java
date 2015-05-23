@@ -6,9 +6,9 @@ import java.util.List;
 import com.github.ruediste.rise.component.binding.BindingExpressionExecutionLogManager.MethodInvocation;
 
 class BindingExpressionExecutionLog {
-	BindingGroup<?> involvedBindingGroup;
-	List<MethodInvocation> modelPath = new ArrayList<>();
-	List<MethodInvocation> componentPath = new ArrayList<>();
-	BindingTransformer<?, ?> transformer;
-	boolean transformInv;
+    BindingGroup<?> involvedBindingGroup;
+    List<MethodInvocation> modelPath = new ArrayList<>();
+    List<MethodInvocation> componentPath = new ArrayList<>();
+    BindingTransformer<?, ?> transformer;
+    boolean transformInv;
 }

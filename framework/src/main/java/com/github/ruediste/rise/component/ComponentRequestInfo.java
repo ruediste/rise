@@ -6,23 +6,23 @@ import com.github.ruediste.rise.core.web.HttpRenderResult;
 @RequestScoped
 public class ComponentRequestInfo {
 
-	private HttpRenderResult closePageResult;
+    private HttpRenderResult closePageResult;
 
-	public HttpRenderResult getClosePageResult() {
-		return closePageResult;
-	}
+    public HttpRenderResult getClosePageResult() {
+        return closePageResult;
+    }
 
-	public void setClosePageResult(HttpRenderResult closePageResult) {
-		this.closePageResult = closePageResult;
-	}
+    public void setClosePageResult(HttpRenderResult closePageResult) {
+        this.closePageResult = closePageResult;
+    }
 
-	public boolean isComponentRequest() {
-		return isComponentRequest;
-	}
+    public boolean isComponentRequest() {
+        return isComponentRequest;
+    }
 
-	public void setComponentRequest(boolean isComponentRequest) {
-		this.isComponentRequest = isComponentRequest;
-	}
+    public void setComponentRequest(boolean isComponentRequest) {
+        this.isComponentRequest = isComponentRequest;
+    }
 
-	private boolean isComponentRequest;
+    private boolean isComponentRequest;
 }

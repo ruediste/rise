@@ -6,15 +6,15 @@ import com.github.ruediste.salta.jsr330.Injector;
 
 public class DynamicIntegrationModule extends AbstractModule {
 
-	private Injector permanentInjector;
+    private Injector permanentInjector;
 
-	public DynamicIntegrationModule(Injector permanentInjector) {
-		this.permanentInjector = permanentInjector;
-	}
+    public DynamicIntegrationModule(Injector permanentInjector) {
+        this.permanentInjector = permanentInjector;
+    }
 
-	@Override
-	protected void configure() throws Exception {
-		install(new RestartableApplicationModule(permanentInjector));
-	}
+    @Override
+    protected void configure() throws Exception {
+        install(new RestartableApplicationModule(permanentInjector));
+    }
 
 }

@@ -13,24 +13,24 @@ import com.github.ruediste.rise.component.components.CButton;
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
 
 public class CButtonHtmlTemplate extends ComponentTemplateBase<CButton> {
-	@Inject
-	ComponentUtil util;
+    @Inject
+    ComponentUtil util;
 
-	@Override
-	public void doRender(CButton component, HtmlCanvas html) throws IOException {
-		html.button(class_(
-				util.combineCssClasses("rise_button", component.class_()))
-				.data(CoreAssetBundle.componentAttributeNr,
-						String.valueOf(util.getComponentNr(component))));
-		super.doRender(component, html);
-		html._button();
-	}
+    @Override
+    public void doRender(CButton component, HtmlCanvas html) throws IOException {
+        html.button(class_(
+                util.combineCssClasses("rise_button", component.class_()))
+                .data(CoreAssetBundle.componentAttributeNr,
+                        String.valueOf(util.getComponentNr(component))));
+        super.doRender(component, html);
+        html._button();
+    }
 
-	@Override
-	public void raiseEvents(CButton component) {
-		if (util.isParameterDefined(component, "clicked")
-				&& component.getHandler() != null) {
-			component.getHandler().run();
-		}
-	}
+    @Override
+    public void raiseEvents(CButton component) {
+        if (util.isParameterDefined(component, "clicked")
+                && component.getHandler() != null) {
+            component.getHandler().run();
+        }
+    }
 }

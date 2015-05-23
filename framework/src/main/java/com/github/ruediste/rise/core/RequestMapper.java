@@ -5,14 +5,14 @@ import com.github.ruediste.rise.core.web.PathInfo;
 
 public interface RequestMapper {
 
-	/**
-	 * Generate a HttpRequest for a given action invocation
-	 */
-	PathInfo generate(ActionInvocation<String> invocation);
+    /**
+     * Generate a HttpRequest for a given action invocation
+     */
+    PathInfo generate(ActionInvocation<String> invocation);
 
-	/**
-	 * Prepare this mapper for use
-	 */
-	void initialize();
+    /**
+     * Prepare this mapper for use
+     */
+    void initialize();
 
 }

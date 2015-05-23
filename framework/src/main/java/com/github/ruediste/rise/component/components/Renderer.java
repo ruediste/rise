@@ -6,5 +6,5 @@ import org.rendersnake.HtmlCanvas;
 
 public interface Renderer {
 
-	void accept(HtmlCanvas html) throws IOException;
+    void accept(HtmlCanvas html) throws IOException;
 }

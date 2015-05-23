@@ -11,22 +11,22 @@ import com.github.ruediste.rise.component.tree.Component;
 
 public class TestComponentView extends TestComponentViewBase {
 
-	@Override
-	protected Component createComponents() {
-		return new CPage()
+    @Override
+    protected Component createComponents() {
+        return new CPage()
 
-				.add(new CTag(html -> html.div(id("a"))).add(new CController(
-						controller.subControllerA)))
+                .add(new CTag(html -> html.div(id("a"))).add(new CController(
+                        controller.subControllerA)))
 
-				.add(new CTag(html -> html.div(id("b"))).add(new CController(
-						controller.subControllerB)))
+                .add(new CTag(html -> html.div(id("b"))).add(new CController(
+                        controller.subControllerB)))
 
-				.add(new CTag(html -> html.div(id("main"))).add(
-						new CRender(html -> html.span(id("mainValue")).content(
-								controller.entity.getValue()))).add(
+                .add(new CTag(html -> html.div(id("main"))).add(
+                        new CRender(html -> html.span(id("mainValue")).content(
+                                controller.entity.getValue()))).add(
 
-						new CButton("refresh").class_("refresh").handler(
-								controller::refresh)));
-	}
+                        new CButton("refresh").class_("refresh").handler(
+                                controller::refresh)));
+    }
 
 }

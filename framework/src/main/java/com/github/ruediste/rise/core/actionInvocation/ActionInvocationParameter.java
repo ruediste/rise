@@ -6,22 +6,22 @@ package com.github.ruediste.rise.core.actionInvocation;
  */
 public class ActionInvocationParameter {
 
-	private final String name;
+    private final String name;
 
-	public ActionInvocationParameter(String name) {
-		this.name = name;
+    public ActionInvocationParameter(String name) {
+        this.name = name;
 
-	}
+    }
 
-	public void set(ActionInvocation<?> path, String value) {
-		path.parameters.put(this, value);
-	}
+    public void set(ActionInvocation<?> path, String value) {
+        path.parameters.put(this, value);
+    }
 
-	public String get(ActionInvocation<?> path) {
-		return path.parameters.get(this);
-	}
+    public String get(ActionInvocation<?> path) {
+        return path.parameters.get(this);
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 }

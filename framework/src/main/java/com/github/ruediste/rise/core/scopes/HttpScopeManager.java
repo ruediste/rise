@@ -9,16 +9,16 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface HttpScopeManager {
 
-	/**
-	 * Enter the scopes
-	 */
-	public abstract void enter(HttpServletRequest request,
-			HttpServletResponse response);
+    /**
+     * Enter the scopes
+     */
+    public abstract void enter(HttpServletRequest request,
+            HttpServletResponse response);
 
-	/**
-	 * Leave the scope. Always call from a finally block, to make sure scopes
-	 * are correctly cleaned up
-	 */
-	public abstract void exit();
+    /**
+     * Leave the scope. Always call from a finally block, to make sure scopes
+     * are correctly cleaned up
+     */
+    public abstract void exit();
 
 }

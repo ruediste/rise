@@ -6,7 +6,7 @@ import javax.validation.ConstraintViolation;
 
 public interface ConstraintViolationAware {
 
-	void clearConstraintViolations();
+    void clearConstraintViolations();
 
-	void setConstraintViolations(Collection<ConstraintViolation<?>> collection);
+    void setConstraintViolations(Collection<ConstraintViolation<?>> collection);
 }

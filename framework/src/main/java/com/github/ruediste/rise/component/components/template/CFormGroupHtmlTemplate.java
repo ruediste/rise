@@ -15,23 +15,23 @@ import com.github.ruediste.rise.component.components.CFormGroup;
 import com.google.common.collect.Iterables;
 
 public abstract class CFormGroupHtmlTemplate<T extends CFormGroup<T>> extends
-		ComponentTemplateBase<T> {
+        ComponentTemplateBase<T> {
 
-	@Inject
-	ComponentUtil util;
+    @Inject
+    ComponentUtil util;
 
-	@Override
-	final public void doRender(T component, HtmlCanvas html) throws IOException {
-		String cls = "form-group";
-		if (component.getValidationState() == ValidationState.SUCCESS) {
-			cls += " has-success";
-		}
+    @Override
+    final public void doRender(T component, HtmlCanvas html) throws IOException {
+        String cls = "form-group";
+        if (component.getValidationState() == ValidationState.SUCCESS) {
+            cls += " has-success";
+        }
 
-		if (component.getValidationState() == ValidationState.ERROR) {
-			cls += " has-error";
-		}
+        if (component.getValidationState() == ValidationState.ERROR) {
+            cls += " has-error";
+        }
 
-		// @formatter:off
+        // @formatter:off
 		html.div(class_(cls))
 				.label(class_("control-label").for_(
 						util.getComponentId(component)))

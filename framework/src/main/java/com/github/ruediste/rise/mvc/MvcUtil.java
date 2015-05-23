@@ -24,69 +24,69 @@ import com.google.common.base.Charsets;
 
 public class MvcUtil implements ICoreUtil {
 
-	@Inject
-	Provider<ActionInvocationBuilder> actionPathBuilderInstance;
+    @Inject
+    Provider<ActionInvocationBuilder> actionPathBuilderInstance;
 
-	@Inject
-	HttpService httpService;
+    @Inject
+    HttpService httpService;
 
-	@Inject
-	CoreUtil coreUtil;
+    @Inject
+    CoreUtil coreUtil;
 
-	@Inject
-	Injector injector;
+    @Inject
+    Injector injector;
 
-	@Inject
-	TransactionManager txm;
+    @Inject
+    TransactionManager txm;
 
-	@Inject
-	MvcRequestInfo info;
+    @Inject
+    MvcRequestInfo info;
 
-	@Inject
-	CoreConfiguration coreConfiguration;
+    @Inject
+    CoreConfiguration coreConfiguration;
 
-	@Override
-	public CoreUtil getCoreUtil() {
-		return coreUtil;
-	}
+    @Override
+    public CoreUtil getCoreUtil() {
+        return coreUtil;
+    }
 
-	public <TView extends ViewMvc<?, TData>, TData> ActionResult view(
-			Class<TView> viewClass, TData data) {
+    public <TView extends ViewMvc<?, TData>, TData> ActionResult view(
+            Class<TView> viewClass, TData data) {
 
-		TView view = injector.getInstance(viewClass);
-		view.initialize(data);
+        TView view = injector.getInstance(viewClass);
+        view.initialize(data);
 
-		ByteArrayOutputStream stream = new ByteArrayOutputStream(1024);
-		OutputStreamWriter writer = new OutputStreamWriter(stream,
-				Charsets.UTF_8);
-		HtmlCanvas canvas = new HtmlCanvas(writer);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream(1024);
+        OutputStreamWriter writer = new OutputStreamWriter(stream,
+                Charsets.UTF_8);
+        HtmlCanvas canvas = new HtmlCanvas(writer);
 
-		try {
-			view.render(canvas);
-			writer.flush();
-		} catch (IOException e) {
-			throw new RuntimeException("Error while rendering view", e);
+        try {
+            view.render(canvas);
+            writer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException("Error while rendering view", e);
 
-		}
-		return new ContentRenderResult(stream.toByteArray(),
-				coreConfiguration.htmlContentType);
-	}
+        }
+        return new ContentRenderResult(stream.toByteArray(),
+                coreConfiguration.htmlContentType);
+    }
 
-	public ActionResult redirect(ActionResult path) {
-		return new RedirectRenderResult(coreUtil.toPathInfo(path));
-	}
+    public ActionResult redirect(ActionResult path) {
+        return new RedirectRenderResult(coreUtil.toPathInfo(path));
+    }
 
-	/**
-	 * Commit the current transaction. After this method returns, the current
-	 * transaction is closed. Thus views should be created before calling this
-	 * method.
-	 */
-	public void commit() {
-		if (!info.isUpdating()) {
-			throw new RuntimeException(
-					"Cannot commit from a method not annotated with @Updating");
-		}
+    /**
+     * Commit the current transaction. After this method returns, the current
+     * transaction is closed. Thus views should be created before calling this
+     * method.
+     */
+    public void commit() {
+        if (!info.isUpdating()) {
+            throw new RuntimeException(
+                    "Cannot commit from a method not annotated with @Updating");
+        }
 
-		info.getTransactionControl().commit();
-	}
+        info.getTransactionControl().commit();
+    }
 }

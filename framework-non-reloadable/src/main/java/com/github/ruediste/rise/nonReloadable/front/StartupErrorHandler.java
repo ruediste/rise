@@ -11,13 +11,13 @@ import com.github.ruediste.rise.nonReloadable.ApplicationStage;
  */
 public interface StartupErrorHandler {
 
-	void setStage(ApplicationStage stage);
+    void setStage(ApplicationStage stage);
 
-	/**
-	 * Render the error response. To trigger the error handling of the
-	 * container, just throw an exception.
-	 */
-	void handle(Throwable startupError, HttpServletRequest request,
-			HttpServletResponse response);
+    /**
+     * Render the error response. To trigger the error handling of the
+     * container, just throw an exception.
+     */
+    void handle(Throwable startupError, HttpServletRequest request,
+            HttpServletResponse response);
 
 }

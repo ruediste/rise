@@ -4,9 +4,9 @@ import com.github.ruediste.salta.jsr330.AbstractModule;
 
 public class MvcPermanentModule extends AbstractModule {
 
-	@Override
-	protected void configure() throws Exception {
+    @Override
+    protected void configure() throws Exception {
 
-	}
+    }
 
 }

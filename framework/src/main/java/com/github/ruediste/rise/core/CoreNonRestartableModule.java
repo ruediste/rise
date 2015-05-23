@@ -14,30 +14,30 @@ import com.github.ruediste.salta.jsr330.Provides;
 
 public class CoreNonRestartableModule extends AbstractModule {
 
-	private ServletConfig servletConfig;
+    private ServletConfig servletConfig;
 
-	public CoreNonRestartableModule(ServletConfig servletConfig) {
-		this.servletConfig = servletConfig;
-	}
+    public CoreNonRestartableModule(ServletConfig servletConfig) {
+        this.servletConfig = servletConfig;
+    }
 
-	@Override
-	protected void configure() throws Exception {
-		bind(ClassHierarchyIndex.class).asEagerSingleton();
-		InitializerUtil.register(config(), CoreNonRestartableInitializer.class);
-		bind(FileChangeNotifier.class).named("classPath").in(Singleton.class);
-	}
+    @Override
+    protected void configure() throws Exception {
+        bind(ClassHierarchyIndex.class).asEagerSingleton();
+        InitializerUtil.register(config(), CoreNonRestartableInitializer.class);
+        bind(FileChangeNotifier.class).named("classPath").in(Singleton.class);
+    }
 
-	@Named("dynamic")
-	@Provides
-	ReloadableClassLoader spaceAwareClassLoaderDynamic(
-			ReloadebleClassesIndex cache) {
-		return new ReloadableClassLoader(Thread.currentThread()
-				.getContextClassLoader(), cache);
-	}
+    @Named("dynamic")
+    @Provides
+    ReloadableClassLoader spaceAwareClassLoaderDynamic(
+            ReloadebleClassesIndex cache) {
+        return new ReloadableClassLoader(Thread.currentThread()
+                .getContextClassLoader(), cache);
+    }
 
-	@Provides
-	ServletConfig servletConfig() {
-		return servletConfig;
-	}
+    @Provides
+    ServletConfig servletConfig() {
+        return servletConfig;
+    }
 
 }

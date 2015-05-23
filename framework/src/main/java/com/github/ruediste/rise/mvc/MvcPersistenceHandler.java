@@ -16,41 +16,41 @@ import com.github.ruediste.rise.nonReloadable.persistence.TransactionProperties;
 
 public class MvcPersistenceHandler extends ChainedRequestHandler {
 
-	@Inject
-	Logger log;
+    @Inject
+    Logger log;
 
-	@Inject
-	TransactionManager txm;
+    @Inject
+    TransactionManager txm;
 
-	@Inject
-	EntityManagerHolder holder;
+    @Inject
+    EntityManagerHolder holder;
 
-	@Inject
-	MvcRequestInfo info;
+    @Inject
+    MvcRequestInfo info;
 
-	@Inject
-	CoreRequestInfo coreRequestInfo;
+    @Inject
+    CoreRequestInfo coreRequestInfo;
 
-	@Inject
-	TransactionProperties transactionProperties;
+    @Inject
+    TransactionProperties transactionProperties;
 
-	@Inject
-	TransactionTemplate template;
+    @Inject
+    TransactionTemplate template;
 
-	@Override
-	public void run(Runnable next) {
-		// determine transaction isolation
-		ActionInvocation<String> invocation = coreRequestInfo
-				.getStringActionInvocation();
-		Method method = invocation.methodInvocation.getMethod();
-		boolean updating = method.isAnnotationPresent(Updating.class);
-		log.debug("updating = {} for method {}", updating, method);
-		info.setIsUpdating(updating);
+    @Override
+    public void run(Runnable next) {
+        // determine transaction isolation
+        ActionInvocation<String> invocation = coreRequestInfo
+                .getStringActionInvocation();
+        Method method = invocation.methodInvocation.getMethod();
+        boolean updating = method.isAnnotationPresent(Updating.class);
+        log.debug("updating = {} for method {}", updating, method);
+        info.setIsUpdating(updating);
 
-		template.builder().updating(updating).execute(trx -> {
-			info.setTransactionControl(trx);
-			next.run();
-		});
-	}
+        template.builder().updating(updating).execute(trx -> {
+            info.setTransactionControl(trx);
+            next.run();
+        });
+    }
 
 }

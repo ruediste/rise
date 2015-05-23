@@ -22,77 +22,77 @@ import com.google.common.collect.Iterables;
  *            type of this component
  */
 public class ComponentBase<TSelf extends AttachedPropertyBearer> extends
-		AttachedPropertyBearerBase implements Component {
+        AttachedPropertyBearerBase implements Component {
 
-	private Component parent;
-	ArrayList<ChildRelation<?>> childRelations = new ArrayList<>();
-	private String class_;
+    private Component parent;
+    ArrayList<ChildRelation<?>> childRelations = new ArrayList<>();
+    private String class_;
 
-	@SuppressWarnings("unchecked")
-	protected TSelf self() {
-		return (TSelf) this;
-	}
+    @SuppressWarnings("unchecked")
+    protected TSelf self() {
+        return (TSelf) this;
+    }
 
-	@Override
-	public Iterable<Component> getChildren() {
-		return Iterables.concat(childRelations);
-	}
+    @Override
+    public Iterable<Component> getChildren() {
+        return Iterables.concat(childRelations);
+    }
 
-	@Override
-	public Component getParent() {
-		return parent;
-	}
+    @Override
+    public Component getParent() {
+        return parent;
+    }
 
-	@Override
-	public void parentChanged(Component newParent) {
-		parent = newParent;
-	}
+    @Override
+    public void parentChanged(Component newParent) {
+        parent = newParent;
+    }
 
-	@Override
-	public void childRemoved(Component child) {
-		for (ChildRelation<?> relation : childRelations) {
-			relation.childRemoved(child);
-		}
-	}
+    @Override
+    public void childRemoved(Component child) {
+        for (ChildRelation<?> relation : childRelations) {
+            relation.childRemoved(child);
+        }
+    }
 
-	public void addChildRelation(ChildRelation<?> childRelation) {
-		childRelations.add(childRelation);
-	}
+    public void addChildRelation(ChildRelation<?> childRelation) {
+        childRelations.add(childRelation);
+    }
 
-	@Override
-	public void initialize() {
+    @Override
+    public void initialize() {
 
-	}
+    }
 
-	public TSelf bind(Consumer<TSelf> property) {
-		BindingUtil.bind(self(), property);
-		return self();
-	}
+    public TSelf bind(Consumer<TSelf> property) {
+        BindingUtil.bind(self(), property);
+        return self();
+    }
 
-	public TSelf bindOneWay(Consumer<TSelf> property) {
-		BindingUtil.bindOneWay(self(), property);
-		return self();
-	}
+    public TSelf bindOneWay(Consumer<TSelf> property) {
+        BindingUtil.bindOneWay(self(), property);
+        return self();
+    }
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public TSelf bind(Supplier<?> bindingAccessor, Consumer<TSelf> pullUp,
-			Consumer<TSelf> pushDown) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public TSelf bind(Supplier<?> bindingAccessor, Consumer<TSelf> pullUp,
+            Consumer<TSelf> pushDown) {
 
-		Binding<?> binding = new Binding<>();
-		binding.setComponent(this);
-		binding.setPullUp(d -> pullUp.accept(self()));
-		binding.setPushDown(d -> pushDown.accept(self()));
+        Binding<?> binding = new Binding<>();
+        binding.setComponent(this);
+        binding.setPullUp(d -> pullUp.accept(self()));
+        binding.setPushDown(d -> pushDown.accept(self()));
 
-		BindingUtil.bind(bindingAccessor, (Binding) binding);
-		return self();
-	}
+        BindingUtil.bind(bindingAccessor, (Binding) binding);
+        return self();
+    }
 
-	public TSelf class_(String class_) {
-		this.class_ = class_;
-		return self();
-	}
+    public TSelf class_(String class_) {
+        this.class_ = class_;
+        return self();
+    }
 
-	public String class_() {
-		return class_;
-	}
+    public String class_() {
+        return class_;
+    }
 }

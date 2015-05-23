@@ -5,5 +5,5 @@ package com.github.ruediste.rise.nonReloadable.persistence;
  */
 public interface TransactionControl {
 
-	void commit();
+    void commit();
 }

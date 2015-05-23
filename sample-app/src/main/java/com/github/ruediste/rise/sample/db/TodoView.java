@@ -14,13 +14,13 @@ import com.github.ruediste.rise.sample.db.TodoController.IndexData;
 
 public class TodoView extends PageView<TodoController, IndexData> {
 
-	@Inject
-	Logger log;
+    @Inject
+    Logger log;
 
-	@Override
-	protected void renderBody(HtmlCanvas html) throws IOException {
+    @Override
+    protected void renderBody(HtmlCanvas html) throws IOException {
 
-		// @formatter:off
+        // @formatter:off
 		html
 			.div(class_("container"))
 				.div(class_("row"))

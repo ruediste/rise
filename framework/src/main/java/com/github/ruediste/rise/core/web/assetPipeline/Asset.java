@@ -5,26 +5,26 @@ package com.github.ruediste.rise.core.web.assetPipeline;
  */
 public interface Asset {
 
-	/**
-	 * Get the name of this asset
-	 */
-	String getName();
+    /**
+     * Get the name of this asset
+     */
+    String getName();
 
-	/**
-	 * Get the type of this asset
-	 * 
-	 * @see DefaultAssetTypes
-	 */
-	AssetType getAssetType();
+    /**
+     * Get the type of this asset
+     * 
+     * @see DefaultAssetTypes
+     */
+    AssetType getAssetType();
 
-	/**
-	 * Get the content type of this asset.
-	 */
-	String getContentType();
+    /**
+     * Get the content type of this asset.
+     */
+    String getContentType();
 
-	/**
-	 * The contents of this asset
-	 */
-	byte[] getData();
+    /**
+     * The contents of this asset
+     */
+    byte[] getData();
 
 }

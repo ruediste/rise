@@ -7,5 +7,5 @@ package com.github.ruediste.rise.core.aop;
  */
 public interface AroundAdvice {
 
-	Object intercept(InterceptedInvocation invocation) throws Throwable;
+    Object intercept(InterceptedInvocation invocation) throws Throwable;
 }

@@ -10,14 +10,14 @@ import com.github.ruediste.salta.jsr330.Injector;
  */
 public abstract class DynamicModule extends AbstractModule {
 
-	protected final Injector permanentInjector;
+    protected final Injector permanentInjector;
 
-	public DynamicModule(Injector permanentInjector) {
-		this.permanentInjector = permanentInjector;
-	}
+    public DynamicModule(Injector permanentInjector) {
+        this.permanentInjector = permanentInjector;
+    }
 
-	protected void bindToPermanentInjector(Class<ClassHierarchyIndex> clazz) {
-		bind(clazz).toProvider(() -> permanentInjector.getInstance(clazz));
-	}
+    protected void bindToPermanentInjector(Class<ClassHierarchyIndex> clazz) {
+        bind(clazz).toProvider(() -> permanentInjector.getInstance(clazz));
+    }
 
 }

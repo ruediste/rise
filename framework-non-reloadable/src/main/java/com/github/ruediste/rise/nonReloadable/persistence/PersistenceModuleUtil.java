@@ -14,32 +14,32 @@ import com.github.ruediste.salta.jsr330.binder.Binder;
  */
 public class PersistenceModuleUtil {
 
-	/**
-	 * Factory for {@link DataSource} with a given {@link IsolationLevel}
-	 */
-	public interface DataSourceFactory {
-		DataSource createDataSource(IsolationLevel isolationLevel,
-				Class<?> qualifier, Consumer<Closeable> closeableRegistrar);
-	}
+    /**
+     * Factory for {@link DataSource} with a given {@link IsolationLevel}
+     */
+    public interface DataSourceFactory {
+        DataSource createDataSource(IsolationLevel isolationLevel,
+                Class<?> qualifier, Consumer<Closeable> closeableRegistrar);
+    }
 
-	/**
-	 * @param persistenceUnitManager
-	 *            Manages a persistence unit. Will be injected using the
-	 *            permanent injector
-	 * @param dataSourceFactory
-	 *            factory for data sources with different isolation levels. Will
-	 *            be injected using the permanent injector
-	 */
-	public static void bindDataSource(Binder binder,
-			Class<? extends Annotation> qualifier,
-			PersistenceUnitManager persistenceUnitManager,
-			DataSourceFactory dataSourceFactory) {
-		DataBaseLink link = new DataBaseLink(qualifier, dataSourceFactory,
-				persistenceUnitManager);
+    /**
+     * @param persistenceUnitManager
+     *            Manages a persistence unit. Will be injected using the
+     *            permanent injector
+     * @param dataSourceFactory
+     *            factory for data sources with different isolation levels. Will
+     *            be injected using the permanent injector
+     */
+    public static void bindDataSource(Binder binder,
+            Class<? extends Annotation> qualifier,
+            PersistenceUnitManager persistenceUnitManager,
+            DataSourceFactory dataSourceFactory) {
+        DataBaseLink link = new DataBaseLink(qualifier, dataSourceFactory,
+                persistenceUnitManager);
 
-		binder.requestInjection(link);
+        binder.requestInjection(link);
 
-		binder.bind(DataSource.class).annotatedWith(qualifier)
-				.toProvider(() -> link.getDataSourceManager().getDataSource());
-	}
+        binder.bind(DataSource.class).annotatedWith(qualifier)
+                .toProvider(() -> link.getDataSourceManager().getDataSource());
+    }
 }

@@ -10,5 +10,5 @@ import com.github.ruediste.rise.core.httpRequest.HttpRequest;
  */
 public interface RequestParser {
 
-	RequestParseResult parse(HttpRequest request);
+    RequestParseResult parse(HttpRequest request);
 }

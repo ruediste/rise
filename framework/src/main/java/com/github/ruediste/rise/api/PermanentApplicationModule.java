@@ -8,25 +8,25 @@ import com.github.ruediste.salta.jsr330.AbstractModule;
 
 public class PermanentApplicationModule extends AbstractModule {
 
-	protected ServletConfig servletConfig;
+    protected ServletConfig servletConfig;
 
-	public PermanentApplicationModule(ServletConfig servletConfig) {
-		this.servletConfig = servletConfig;
-	}
+    public PermanentApplicationModule(ServletConfig servletConfig) {
+        this.servletConfig = servletConfig;
+    }
 
-	@Override
-	protected void configure() throws Exception {
+    @Override
+    protected void configure() throws Exception {
 
-		installCoreModule();
-		installLoggerModule();
-	}
+        installCoreModule();
+        installLoggerModule();
+    }
 
-	protected void installCoreModule() {
-		install(new CoreNonRestartableModule(servletConfig));
-	}
+    protected void installCoreModule() {
+        install(new CoreNonRestartableModule(servletConfig));
+    }
 
-	protected void installLoggerModule() {
-		install(new LoggerModule());
-	}
+    protected void installLoggerModule() {
+        install(new LoggerModule());
+    }
 
 }

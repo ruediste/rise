@@ -8,6 +8,6 @@ import com.github.ruediste.rise.core.ActionResult;
  * instances of this class is used to represent the result.
  */
 public class ActionInvocationResult extends ActionInvocation<Object> implements
-		ActionResult {
+        ActionResult {
 
 }

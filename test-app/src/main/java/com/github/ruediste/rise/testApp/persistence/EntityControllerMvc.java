@@ -16,33 +16,33 @@ import com.github.ruediste.rise.mvc.Updating;
 
 public class EntityControllerMvc extends ControllerMvc<EntityControllerMvc> {
 
-	static class ListView extends
-			ViewMvc<EntityControllerMvc, List<TestEntity>> {
+    static class ListView extends
+            ViewMvc<EntityControllerMvc, List<TestEntity>> {
 
-		@Override
-		public void render(HtmlCanvas html) throws IOException {
-			html.html().body().ul().render(x -> {
-				for (TestEntity item : data())
-					x.li().content(Objects.toString(item.getId()));
-			})._ul()._body()._html();
-		}
+        @Override
+        public void render(HtmlCanvas html) throws IOException {
+            html.html().body().ul().render(x -> {
+                for (TestEntity item : data())
+                    x.li().content(Objects.toString(item.getId()));
+            })._ul()._body()._html();
+        }
 
-	}
+    }
 
-	@Inject
-	TestEntityRepository repo;
+    @Inject
+    TestEntityRepository repo;
 
-	@Inject
-	EntityManager em;
+    @Inject
+    EntityManager em;
 
-	public ActionResult index() {
-		return view(ListView.class, repo.getAll());
-	}
+    public ActionResult index() {
+        return view(ListView.class, repo.getAll());
+    }
 
-	@Updating
-	public ActionResult delete(TestEntity entity) {
-		em.remove(entity);
-		commit();
-		return redirect(go().index());
-	}
+    @Updating
+    public ActionResult delete(TestEntity entity) {
+        em.remove(entity);
+        commit();
+        return redirect(go().index());
+    }
 }

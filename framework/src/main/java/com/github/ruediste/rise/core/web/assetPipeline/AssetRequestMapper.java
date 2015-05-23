@@ -29,145 +29,145 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 public class AssetRequestMapper {
-	@Inject
-	Logger log;
+    @Inject
+    Logger log;
 
-	private final static class AssetRequestParseResult implements
-			RequestParseResult {
-		@Inject
-		CoreRequestInfo info;
+    private final static class AssetRequestParseResult implements
+            RequestParseResult {
+        @Inject
+        CoreRequestInfo info;
 
-		@Inject
-		Logger log;
+        @Inject
+        Logger log;
 
-		private Asset asset;
+        private Asset asset;
 
-		AssetRequestParseResult initialize(Asset asset) {
-			this.asset = asset;
-			return this;
+        AssetRequestParseResult initialize(Asset asset) {
+            this.asset = asset;
+            return this;
 
-		}
+        }
 
-		@Override
-		public void handle() {
-			HttpServletResponse response = info.getServletResponse();
-			response.setStatus(HttpServletResponse.SC_OK);
-			response.setContentType(asset.getContentType());
-			byte[] data = asset.getData();
-			response.setContentLength(data.length);
-			try (OutputStream out = response.getOutputStream()) {
-				out.write(data, 0, data.length);
-			} catch (IOException e) {
-				log.warn("Error while sending asset response", e);
-			}
-		}
-	}
+        @Override
+        public void handle() {
+            HttpServletResponse response = info.getServletResponse();
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setContentType(asset.getContentType());
+            byte[] data = asset.getData();
+            response.setContentLength(data.length);
+            try (OutputStream out = response.getOutputStream()) {
+                out.write(data, 0, data.length);
+            } catch (IOException e) {
+                log.warn("Error while sending asset response", e);
+            }
+        }
+    }
 
-	@Inject
-	ClassHierarchyIndex cache;
+    @Inject
+    ClassHierarchyIndex cache;
 
-	@Inject
-	CoreConfiguration coreConfiguration;
+    @Inject
+    CoreConfiguration coreConfiguration;
 
-	@Inject
-	AssetPipelineConfiguration pipelineConfiguration;
+    @Inject
+    AssetPipelineConfiguration pipelineConfiguration;
 
-	@Inject
-	Injector injector;
+    @Inject
+    Injector injector;
 
-	@Inject
-	PathInfoIndex index;
+    @Inject
+    PathInfoIndex index;
 
-	@Inject
-	DirectoryChangeWatcher watcher;
+    @Inject
+    DirectoryChangeWatcher watcher;
 
-	@Inject
-	javax.inject.Provider<AssetRequestParseResult> resultProvider;
+    @Inject
+    javax.inject.Provider<AssetRequestParseResult> resultProvider;
 
-	private List<AssetBundle> bundles = new ArrayList<>();
+    private List<AssetBundle> bundles = new ArrayList<>();
 
-	public void initialize() {
-		String internalName = Type.getInternalName(AssetBundle.class);
-		registerBundles(internalName);
-		registerAssets(bundles);
-	}
+    public void initialize() {
+        String internalName = Type.getInternalName(AssetBundle.class);
+        registerBundles(internalName);
+        registerAssets(bundles);
+    }
 
-	public void refresh() {
-		bundles.forEach(x -> x.reset());
-		registerAssets(bundles);
-	}
+    public void refresh() {
+        bundles.forEach(x -> x.reset());
+        registerAssets(bundles);
+    }
 
-	void registerAssets(List<AssetBundle> bundles) {
-		Multimap<String, Pair<AssetBundle, Asset>> assets = ArrayListMultimap
-				.create();
+    void registerAssets(List<AssetBundle> bundles) {
+        Multimap<String, Pair<AssetBundle, Asset>> assets = ArrayListMultimap
+                .create();
 
-		for (AssetBundle bundle : bundles) {
-			for (AssetBundleOutput output : bundle.outputs) {
-				for (Asset asset : output.getAssets()) {
-					String pathInfo = getPathInfoString(asset);
-					assets.put(pathInfo, Pair.of(bundle, asset));
+        for (AssetBundle bundle : bundles) {
+            for (AssetBundleOutput output : bundle.outputs) {
+                for (Asset asset : output.getAssets()) {
+                    String pathInfo = getPathInfoString(asset);
+                    assets.put(pathInfo, Pair.of(bundle, asset));
 
-				}
-			}
-		}
+                }
+            }
+        }
 
-		for (Entry<String, Collection<Pair<AssetBundle, Asset>>> entry : assets
-				.asMap().entrySet()) {
+        for (Entry<String, Collection<Pair<AssetBundle, Asset>>> entry : assets
+                .asMap().entrySet()) {
 
-			byte[] data = null;
-			Pair<AssetBundle, Asset> first = null;
-			for (Pair<AssetBundle, Asset> pair : entry.getValue()) {
-				byte[] tmp = pair.getB().getData();
-				if (data == null) {
-					data = tmp;
-					first = pair;
-				} else {
-					// there is more than one asset with the same URL. make
-					// sure it has the same data
-					if (!Arrays.equals(data, tmp)) {
-						throw new RuntimeException(
-								"Two Assets map to the same name "
-										+ entry.getKey()
-										+ " but contain different data. They are declared in the following bundles:\n"
-										+ pair.getA().getClass().getName()
-										+ "\n -> " + pair.getB() + "\n"
-										+ first.getA().getClass().getName()
-										+ "\n -> " + first.getB());
-					}
-				}
-			}
+            byte[] data = null;
+            Pair<AssetBundle, Asset> first = null;
+            for (Pair<AssetBundle, Asset> pair : entry.getValue()) {
+                byte[] tmp = pair.getB().getData();
+                if (data == null) {
+                    data = tmp;
+                    first = pair;
+                } else {
+                    // there is more than one asset with the same URL. make
+                    // sure it has the same data
+                    if (!Arrays.equals(data, tmp)) {
+                        throw new RuntimeException(
+                                "Two Assets map to the same name "
+                                        + entry.getKey()
+                                        + " but contain different data. They are declared in the following bundles:\n"
+                                        + pair.getA().getClass().getName()
+                                        + "\n -> " + pair.getB() + "\n"
+                                        + first.getA().getClass().getName()
+                                        + "\n -> " + first.getB());
+                    }
+                }
+            }
 
-			// all assets mapping to this path have the same data. Just pick the
-			// first
-			Asset asset = first.getB();
-			index.registerPathInfo(entry.getKey(), x -> resultProvider.get()
-					.initialize(asset));
-			log.debug("Registered {}.{}", first.getA().getClass()
-					.getSimpleName(), entry.getKey());
-		}
-	}
+            // all assets mapping to this path have the same data. Just pick the
+            // first
+            Asset asset = first.getB();
+            index.registerPathInfo(entry.getKey(), x -> resultProvider.get()
+                    .initialize(asset));
+            log.debug("Registered {}.{}", first.getA().getClass()
+                    .getSimpleName(), entry.getKey());
+        }
+    }
 
-	public String getPathInfoString(Asset asset) {
-		return pipelineConfiguration.assetPathInfoPrefix + asset.getName();
-	}
+    public String getPathInfoString(Asset asset) {
+        return pipelineConfiguration.assetPathInfoPrefix + asset.getName();
+    }
 
-	public PathInfo getPathInfo(Asset asset) {
-		return new PathInfo(getPathInfoString(asset));
-	}
+    public PathInfo getPathInfo(Asset asset) {
+        return new PathInfo(getPathInfoString(asset));
+    }
 
-	void registerBundles(String internalName) {
-		for (ClassNode child : cache.getChildren(internalName)) {
-			registerBundle(child);
-			registerBundles(child.name);
-		}
-	}
+    void registerBundles(String internalName) {
+        for (ClassNode child : cache.getChildren(internalName)) {
+            registerBundle(child);
+            registerBundles(child.name);
+        }
+    }
 
-	void registerBundle(ClassNode cls) {
-		Class<?> bundleClass;
-		bundleClass = AsmUtil.loadClass(Type.getObjectType(cls.name),
-				coreConfiguration.dynamicClassLoader);
+    void registerBundle(ClassNode cls) {
+        Class<?> bundleClass;
+        bundleClass = AsmUtil.loadClass(Type.getObjectType(cls.name),
+                coreConfiguration.dynamicClassLoader);
 
-		AssetBundle bundle = (AssetBundle) injector.getInstance(bundleClass);
-		bundles.add(bundle);
-	}
+        AssetBundle bundle = (AssetBundle) injector.getInstance(bundleClass);
+        bundles.add(bundle);
+    }
 }

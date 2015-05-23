@@ -12,29 +12,29 @@ import com.github.ruediste.rise.core.web.ContentRenderResult;
 
 public class ViewRenderer extends ChainedRequestHandler {
 
-	@Inject
-	PageInfo pageInfo;
+    @Inject
+    PageInfo pageInfo;
 
-	@Inject
-	CoreRequestInfo coreRequestInfo;
+    @Inject
+    CoreRequestInfo coreRequestInfo;
 
-	@Inject
-	ComponentUtil util;
+    @Inject
+    ComponentUtil util;
 
-	@Inject
-	CoreConfiguration coreConfiguration;
+    @Inject
+    CoreConfiguration coreConfiguration;
 
-	@Inject
-	ComponentConfiguration config;
+    @Inject
+    ComponentConfiguration config;
 
-	@Override
-	public void run(Runnable next) {
-		next.run();
-		PageInfo pi = pageInfo;
-		pi.setView(config.createView(pi.getController()));
-		coreRequestInfo
-				.setActionResult(new ContentRenderResult(util.renderComponents(
-						pi.getView(), pi.getView().getRootComponent()),
-						coreConfiguration.htmlContentType));
-	}
+    @Override
+    public void run(Runnable next) {
+        next.run();
+        PageInfo pi = pageInfo;
+        pi.setView(config.createView(pi.getController()));
+        coreRequestInfo
+                .setActionResult(new ContentRenderResult(util.renderComponents(
+                        pi.getView(), pi.getView().getRootComponent()),
+                        coreConfiguration.htmlContentType));
+    }
 }

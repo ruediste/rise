@@ -11,16 +11,16 @@ import com.github.ruediste.rise.testApp.WebTest;
 
 public class TestComponentViewTest extends WebTest {
 
-	@Inject
-	ComponentViewRepository repo;
+    @Inject
+    ComponentViewRepository repo;
 
-	@Test
-	public void viewForSampleControllerFound() {
-		assertEquals(TestComponentView.class,
-				repo.createView(new TestComponentController()).getClass());
-		assertEquals(
-				TestComponentViewAlternative.class,
-				repo.createView(new TestComponentController(),
-						TestViewQualifier.class).getClass());
-	}
+    @Test
+    public void viewForSampleControllerFound() {
+        assertEquals(TestComponentView.class,
+                repo.createView(new TestComponentController()).getClass());
+        assertEquals(
+                TestComponentViewAlternative.class,
+                repo.createView(new TestComponentController(),
+                        TestViewQualifier.class).getClass());
+    }
 }

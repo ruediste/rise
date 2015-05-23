@@ -23,112 +23,112 @@ import com.google.common.base.Strings;
 
 public class CoreUtil implements ICoreUtil {
 
-	@Inject
-	CoreConfiguration coreConfiguration;
+    @Inject
+    CoreConfiguration coreConfiguration;
 
-	@Inject
-	HttpService httpService;
+    @Inject
+    HttpService httpService;
 
-	@Inject
-	AssetRenderUtil assetRenderUtil;
+    @Inject
+    AssetRenderUtil assetRenderUtil;
 
-	@Inject
-	Provider<ActionInvocationBuilder> actionPathBuilderProvider;
+    @Inject
+    Provider<ActionInvocationBuilder> actionPathBuilderProvider;
 
-	@Inject
-	Provider<ActionInvocationBuilderKnownController<?>> actionPathBuilderKnownController;
+    @Inject
+    Provider<ActionInvocationBuilderKnownController<?>> actionPathBuilderKnownController;
 
-	@Override
-	public PathInfo toPathInfo(ActionInvocation<Object> invocation) {
-		return coreConfiguration.toPathInfo(toStringInvocation(invocation));
-	}
+    @Override
+    public PathInfo toPathInfo(ActionInvocation<Object> invocation) {
+        return coreConfiguration.toPathInfo(toStringInvocation(invocation));
+    }
 
-	@Override
-	public PathInfo toPathInfo(ActionResult invocation) {
-		return toPathInfo((ActionInvocation<Object>) ((ActionInvocationResult) invocation));
-	}
+    @Override
+    public PathInfo toPathInfo(ActionResult invocation) {
+        return toPathInfo((ActionInvocation<Object>) ((ActionInvocationResult) invocation));
+    }
 
-	@Override
-	public ActionInvocation<Object> toObjectInvocation(
-			ActionInvocation<String> stringInvocation) {
-		return toSupplierInvocation(stringInvocation).map(Supplier::get);
-	}
+    @Override
+    public ActionInvocation<Object> toObjectInvocation(
+            ActionInvocation<String> stringInvocation) {
+        return toSupplierInvocation(stringInvocation).map(Supplier::get);
+    }
 
-	@Override
-	public ActionInvocation<Supplier<Object>> toSupplierInvocation(
-			ActionInvocation<String> stringInvocation) {
-		return stringInvocation.mapWithType(coreConfiguration::parseArgument);
-	}
+    @Override
+    public ActionInvocation<Supplier<Object>> toSupplierInvocation(
+            ActionInvocation<String> stringInvocation) {
+        return stringInvocation.mapWithType(coreConfiguration::parseArgument);
+    }
 
-	@Override
-	public ActionInvocation<String> toStringInvocation(
-			ActionInvocation<Object> invocation) {
+    @Override
+    public ActionInvocation<String> toStringInvocation(
+            ActionInvocation<Object> invocation) {
 
-		try {
-			return invocation.mapWithType(coreConfiguration::generateArgument);
-		} catch (Throwable t) {
-			throw new RuntimeException("Error while generating arguments of "
-					+ invocation, t);
-		}
-	}
+        try {
+            return invocation.mapWithType(coreConfiguration::generateArgument);
+        } catch (Throwable t) {
+            throw new RuntimeException("Error while generating arguments of "
+                    + invocation, t);
+        }
+    }
 
-	@Override
-	public String url(String pathInfo) {
-		return url(new PathInfo(pathInfo));
-	}
+    @Override
+    public String url(String pathInfo) {
+        return url(new PathInfo(pathInfo));
+    }
 
-	@Override
-	public String url(PathInfo path) {
-		return httpService.url(path);
-	}
+    @Override
+    public String url(PathInfo path) {
+        return httpService.url(path);
+    }
 
-	@Override
-	public String url(ActionResult path) {
-		return url(toPathInfo(path));
-	}
+    @Override
+    public String url(ActionResult path) {
+        return url(toPathInfo(path));
+    }
 
-	@Override
-	public HttpRequest toHttpRequest(ActionInvocation<Object> invocation) {
-		return new HttpRequestImpl(toPathInfo(invocation));
-	}
+    @Override
+    public HttpRequest toHttpRequest(ActionInvocation<Object> invocation) {
+        return new HttpRequestImpl(toPathInfo(invocation));
+    }
 
-	@Override
-	public CoreUtil getCoreUtil() {
-		return this;
-	}
+    @Override
+    public CoreUtil getCoreUtil() {
+        return this;
+    }
 
-	@Override
-	public String combineCssClasses(String... classes) {
-		return Arrays.asList(classes).stream()
-				.filter(x -> !Strings.isNullOrEmpty(x))
-				.map(CharMatcher.WHITESPACE::trimFrom)
-				.collect(Collectors.joining(" "));
-	}
+    @Override
+    public String combineCssClasses(String... classes) {
+        return Arrays.asList(classes).stream()
+                .filter(x -> !Strings.isNullOrEmpty(x))
+                .map(CharMatcher.WHITESPACE::trimFrom)
+                .collect(Collectors.joining(" "));
+    }
 
-	@Override
-	public Renderable jsLinks(AssetBundleOutput output) {
-		return assetRenderUtil.renderJs(this::url, output);
-	}
+    @Override
+    public Renderable jsLinks(AssetBundleOutput output) {
+        return assetRenderUtil.renderJs(this::url, output);
+    }
 
-	@Override
-	public Renderable cssLinks(AssetBundleOutput output) {
-		return assetRenderUtil.renderCss(this::url, output);
-	}
+    @Override
+    public Renderable cssLinks(AssetBundleOutput output) {
+        return assetRenderUtil.renderCss(this::url, output);
+    }
 
-	@Override
-	public <T extends IController> T go(Class<T> controllerClass) {
-		return path().go(controllerClass);
-	}
+    @Override
+    public <T extends IController> T go(Class<T> controllerClass) {
+        return path().go(controllerClass);
+    }
 
-	@Override
-	public <T extends IController> ActionInvocationBuilderKnownController<T> path(
-			Class<T> controllerClass) {
-		return actionPathBuilderKnownController.get().initialize(
-				controllerClass);
-	}
+    @Override
+    public <T extends IController> ActionInvocationBuilderKnownController<T> path(
+            Class<T> controllerClass) {
+        return actionPathBuilderKnownController.get().initialize(
+                controllerClass);
+    }
 
-	@Override
-	public ActionInvocationBuilder path() {
-		return actionPathBuilderProvider.get();
-	}
+    @Override
+    public ActionInvocationBuilder path() {
+        return actionPathBuilderProvider.get();
+    }
 }

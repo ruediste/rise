@@ -8,12 +8,12 @@ import ro.isdc.wro.model.resource.processor.impl.css.CssMinProcessor;
 
 public class ResourceProcessingImpl implements ResourceProcessing {
 
-	@Override
-	public void minifyCss(Reader reader, Writer writer) {
-		try {
-			new CssMinProcessor().process(reader, writer);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    @Override
+    public void minifyCss(Reader reader, Writer writer) {
+        try {
+            new CssMinProcessor().process(reader, writer);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

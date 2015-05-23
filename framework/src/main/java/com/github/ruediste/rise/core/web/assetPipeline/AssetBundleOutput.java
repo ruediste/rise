@@ -11,26 +11,26 @@ import java.util.function.Consumer;
  */
 public class AssetBundleOutput extends AssetGroup implements Consumer<Asset> {
 
-	public AssetBundleOutput(AssetBundle bundle) {
-		super(bundle, new ArrayList<>());
-		bundle.registerOutput(this);
-	}
+    public AssetBundleOutput(AssetBundle bundle) {
+        super(bundle, new ArrayList<>());
+        bundle.registerOutput(this);
+    }
 
-	@Override
-	public void accept(Asset t) {
-		assets.add(t);
-	}
+    @Override
+    public void accept(Asset t) {
+        assets.add(t);
+    }
 
-	public void accept(AssetGroup group) {
-		group.assets.forEach(this);
-	}
+    public void accept(AssetGroup group) {
+        group.assets.forEach(this);
+    }
 
-	public List<Asset> getAssets() {
-		return assets;
-	}
+    public List<Asset> getAssets() {
+        return assets;
+    }
 
-	public void clear() {
-		assets.clear();
-	}
+    public void clear() {
+        assets.clear();
+    }
 
 }

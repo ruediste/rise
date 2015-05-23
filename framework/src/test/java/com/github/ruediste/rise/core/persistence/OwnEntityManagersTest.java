@@ -14,70 +14,70 @@ import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 
 public class OwnEntityManagersTest {
 
-	PersistenceTestHelper helper = new PersistenceTestHelper(this);
+    PersistenceTestHelper helper = new PersistenceTestHelper(this);
 
-	@Before
-	public void before() {
-		helper.before();
-		holder.setNewEntityManagerSet();
-	}
+    @Before
+    public void before() {
+        helper.before();
+        holder.setNewEntityManagerSet();
+    }
 
-	@After
-	public void after() {
-		holder.closeCurrentEntityManagers();
-		holder.removeCurrentSet();
-		helper.after();
-	}
+    @After
+    public void after() {
+        holder.closeCurrentEntityManagers();
+        holder.removeCurrentSet();
+        helper.after();
+    }
 
-	@Inject
-	TransactionManager txm;
+    @Inject
+    TransactionManager txm;
 
-	@Inject
-	EntityManager em;
+    @Inject
+    EntityManager em;
 
-	@OwnEntityManagers
-	static class A {
+    @OwnEntityManagers
+    static class A {
 
-		@Inject
-		EntityManager em;
+        @Inject
+        EntityManager em;
 
-		public void persist(TestEntity e) {
-			em.persist(e);
-		}
+        public void persist(TestEntity e) {
+            em.persist(e);
+        }
 
-		public String readValue(long id) {
-			return em.find(TestEntity.class, id).getValue();
-		}
+        public String readValue(long id) {
+            return em.find(TestEntity.class, id).getValue();
+        }
 
-		@SkipOfOwnEntityManagers
-		public String readValueSkip(long id) {
-			return em.find(TestEntity.class, id).getValue();
-		}
+        @SkipOfOwnEntityManagers
+        public String readValueSkip(long id) {
+            return em.find(TestEntity.class, id).getValue();
+        }
 
-	}
+    }
 
-	@Inject
-	A a;
+    @Inject
+    A a;
 
-	@Inject
-	EntityManagerHolder holder;
+    @Inject
+    EntityManagerHolder holder;
 
-	@Test
-	public void testOwnEntityManagers() throws Throwable {
-		txm.begin();
+    @Test
+    public void testOwnEntityManagers() throws Throwable {
+        txm.begin();
 
-		TestEntity e = new TestEntity();
-		e.setValue("foo");
-		em.persist(e);
+        TestEntity e = new TestEntity();
+        e.setValue("foo");
+        em.persist(e);
 
-		TestEntity e1 = new TestEntity();
-		e1.setValue("bar");
-		e1.setId(e.getId());
-		a.persist(e1);
+        TestEntity e1 = new TestEntity();
+        e1.setValue("bar");
+        e1.setId(e.getId());
+        a.persist(e1);
 
-		assertEquals("foo", a.readValueSkip(e.getId()));
-		assertEquals("bar", a.readValue(e.getId()));
-		txm.rollback();
-	}
+        assertEquals("foo", a.readValueSkip(e.getId()));
+        assertEquals("bar", a.readValue(e.getId()));
+        txm.rollback();
+    }
 
 }

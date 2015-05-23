@@ -16,47 +16,47 @@ import com.github.ruediste.salta.standard.util.SimpleProxyScopeHandler;
 
 public class PageCreationHandler extends ChainedRequestHandler {
 
-	@Inject
-	@Named("pageScoped")
-	SimpleProxyScopeHandler pageScopeHandler;
+    @Inject
+    @Named("pageScoped")
+    SimpleProxyScopeHandler pageScopeHandler;
 
-	@Inject
-	PageInfo pageInfo;
+    @Inject
+    PageInfo pageInfo;
 
-	@Inject
-	ComponentSessionInfo sessionInfo;
+    @Inject
+    ComponentSessionInfo sessionInfo;
 
-	@Inject
-	CoreRequestInfo coreRequestInfo;
+    @Inject
+    CoreRequestInfo coreRequestInfo;
 
-	@Inject
-	Injector injector;
+    @Inject
+    Injector injector;
 
-	@Inject
-	ComponentViewRepository repository;
+    @Inject
+    ComponentViewRepository repository;
 
-	@Inject
-	ComponentConfiguration config;
+    @Inject
+    ComponentConfiguration config;
 
-	@Override
-	public void run(Runnable next) {
-		pageScopeHandler.enter();
-		try {
-			PageHandle handle = sessionInfo.createPageHandle();
-			handle.instances = pageScopeHandler.getValueMap();
-			synchronized (handle.lock) {
-				PageInfo pi = pageInfo.self();
-				pi.setPageId(handle.id);
+    @Override
+    public void run(Runnable next) {
+        pageScopeHandler.enter();
+        try {
+            PageHandle handle = sessionInfo.createPageHandle();
+            handle.instances = pageScopeHandler.getValueMap();
+            synchronized (handle.lock) {
+                PageInfo pi = pageInfo.self();
+                pi.setPageId(handle.id);
 
-				Object controller = injector.getInstance(coreRequestInfo
-						.getStringActionInvocation().methodInvocation
-						.getInstanceClass());
-				pi.setController((IControllerComponent) controller);
+                Object controller = injector.getInstance(coreRequestInfo
+                        .getStringActionInvocation().methodInvocation
+                        .getInstanceClass());
+                pi.setController((IControllerComponent) controller);
 
-				next.run();
-			}
-		} finally {
-			pageScopeHandler.exit();
-		}
-	}
+                next.run();
+            }
+        } finally {
+            pageScopeHandler.exit();
+        }
+    }
 }

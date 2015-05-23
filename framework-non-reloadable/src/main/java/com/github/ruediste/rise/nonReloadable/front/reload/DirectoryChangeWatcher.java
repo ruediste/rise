@@ -40,197 +40,197 @@ import com.google.common.base.Preconditions;
  * </p>
  */
 public class DirectoryChangeWatcher {
-	@Inject
-	private Logger log;
+    @Inject
+    private Logger log;
 
-	@Inject
-	private ApplicationEventQueue queue;
+    @Inject
+    private ApplicationEventQueue queue;
 
-	private long settleDelayMs;
-	private ScheduledFuture<?> task;
-	private volatile boolean isRunning = true;
-	private Consumer<Set<Path>> listener;
-	private Map<Path, WatchKey> watchKeys = new HashMap<>();
-	private Set<Path> rootDirs = new HashSet<>();
-	private WatchService watchService;
-	private Thread watchThread;
+    private long settleDelayMs;
+    private ScheduledFuture<?> task;
+    private volatile boolean isRunning = true;
+    private Consumer<Set<Path>> listener;
+    private Map<Path, WatchKey> watchKeys = new HashMap<>();
+    private Set<Path> rootDirs = new HashSet<>();
+    private WatchService watchService;
+    private Thread watchThread;
 
-	/**
-	 * Start watching the filesystem
-	 *
-	 * @param rootDirs
-	 *            roots of the directory trees to be watched
-	 * @param listener
-	 *            Listener which will be notified with the affected paths. Not
-	 *            all affected paths will be reported. Use the
-	 *            {@link FileChangeNotifier} to stay up to date with all changes
-	 *            to a directory. The listener is called in the application
-	 *            event thread
-	 * @param settleDelayMs
-	 *            delay in milli seconds before changes are reported.
-	 */
-	public void start(Collection<? extends Path> rootDirs,
-			Consumer<Set<Path>> listener, long settleDelayMs) {
-		queue.checkAET();
+    /**
+     * Start watching the filesystem
+     *
+     * @param rootDirs
+     *            roots of the directory trees to be watched
+     * @param listener
+     *            Listener which will be notified with the affected paths. Not
+     *            all affected paths will be reported. Use the
+     *            {@link FileChangeNotifier} to stay up to date with all changes
+     *            to a directory. The listener is called in the application
+     *            event thread
+     * @param settleDelayMs
+     *            delay in milli seconds before changes are reported.
+     */
+    public void start(Collection<? extends Path> rootDirs,
+            Consumer<Set<Path>> listener, long settleDelayMs) {
+        queue.checkAET();
 
-		Preconditions.checkNotNull(listener, "listener");
-		Preconditions.checkArgument(settleDelayMs >= 0,
-				"settleDealy needs to be positive: %s", settleDelayMs);
-		this.listener = listener;
-		this.settleDelayMs = settleDelayMs;
-		this.rootDirs.addAll(rootDirs);
-		try {
-			watchService = FileSystems.getDefault().newWatchService();
-			registerTrees();
+        Preconditions.checkNotNull(listener, "listener");
+        Preconditions.checkArgument(settleDelayMs >= 0,
+                "settleDealy needs to be positive: %s", settleDelayMs);
+        this.listener = listener;
+        this.settleDelayMs = settleDelayMs;
+        this.rootDirs.addAll(rootDirs);
+        try {
+            watchService = FileSystems.getDefault().newWatchService();
+            registerTrees();
 
-			watchThread = new Thread(new WatchLoopRunnable(), "Watch");
-			watchThread.start();
-		} catch (IOException e) {
-			throw new RuntimeException("Error during initialization", e);
-		}
+            watchThread = new Thread(new WatchLoopRunnable(), "Watch");
+            watchThread.start();
+        } catch (IOException e) {
+            throw new RuntimeException("Error during initialization", e);
+        }
 
-	}
+    }
 
-	/**
-	 * Close the watcher. No notifications will be sent after this method
-	 * returns
-	 */
-	public void close() {
-		queue.checkAET();
+    /**
+     * Close the watcher. No notifications will be sent after this method
+     * returns
+     */
+    public void close() {
+        queue.checkAET();
 
-		isRunning = false;
-		watchThread.interrupt();
-		if (task != null) {
-			task.cancel(false);
-		}
-		try {
-			watchThread.join();
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-	}
+        isRunning = false;
+        watchThread.interrupt();
+        if (task != null) {
+            task.cancel(false);
+        }
+        try {
+            watchThread.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	private void unregisterStaleWatchKeys() {
-		Set<Path> stalePaths = new HashSet<Path>();
+    private void unregisterStaleWatchKeys() {
+        Set<Path> stalePaths = new HashSet<Path>();
 
-		for (Path path : watchKeys.keySet()) {
-			if (!Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
-				stalePaths.add(path);
-			}
-		}
+        for (Path path : watchKeys.keySet()) {
+            if (!Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
+                stalePaths.add(path);
+            }
+        }
 
-		if (stalePaths.size() > 0) {
-			for (Path stalePath : stalePaths) {
-				WatchKey watchKey = watchKeys.get(stalePath);
-				watchKey.cancel();
-				watchKeys.remove(watchKey);
-			}
-		}
-	}
+        if (stalePaths.size() > 0) {
+            for (Path stalePath : stalePaths) {
+                WatchKey watchKey = watchKeys.get(stalePath);
+                watchKey.cancel();
+                watchKeys.remove(watchKey);
+            }
+        }
+    }
 
-	private void registerDir(Path dir) {
-		if (!watchKeys.containsKey(dir)) {
-			log.debug("Registering " + dir);
+    private void registerDir(Path dir) {
+        if (!watchKeys.containsKey(dir)) {
+            log.debug("Registering " + dir);
 
-			try {
-				WatchKey watchKey = dir.register(watchService,
-						StandardWatchEventKinds.ENTRY_CREATE,
-						StandardWatchEventKinds.ENTRY_DELETE,
-						StandardWatchEventKinds.ENTRY_MODIFY,
-						StandardWatchEventKinds.OVERFLOW);
-				watchKeys.put(dir, watchKey);
-			} catch (IOException e) {
-				log.info("Error while registering watch key", e);
-			}
-		}
-	}
+            try {
+                WatchKey watchKey = dir.register(watchService,
+                        StandardWatchEventKinds.ENTRY_CREATE,
+                        StandardWatchEventKinds.ENTRY_DELETE,
+                        StandardWatchEventKinds.ENTRY_MODIFY,
+                        StandardWatchEventKinds.OVERFLOW);
+                watchKeys.put(dir, watchKey);
+            } catch (IOException e) {
+                log.info("Error while registering watch key", e);
+            }
+        }
+    }
 
-	private void registerTrees() {
-		for (Path root : rootDirs) {
-			registerTree(root);
-		}
-	}
+    private void registerTrees() {
+        for (Path root : rootDirs) {
+            registerTree(root);
+        }
+    }
 
-	private void registerTree(Path root) {
-		try {
-			Files.walkFileTree(root, new FileVisitor<Path>() {
+    private void registerTree(Path root) {
+        try {
+            Files.walkFileTree(root, new FileVisitor<Path>() {
 
-				@Override
-				public FileVisitResult preVisitDirectory(Path dir,
-						BasicFileAttributes attrs) throws IOException {
-					registerDir(dir);
-					return FileVisitResult.CONTINUE;
-				}
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir,
+                        BasicFileAttributes attrs) throws IOException {
+                    registerDir(dir);
+                    return FileVisitResult.CONTINUE;
+                }
 
-				@Override
-				public FileVisitResult visitFile(Path file,
-						BasicFileAttributes attrs) throws IOException {
-					return FileVisitResult.CONTINUE;
-				}
+                @Override
+                public FileVisitResult visitFile(Path file,
+                        BasicFileAttributes attrs) throws IOException {
+                    return FileVisitResult.CONTINUE;
+                }
 
-				@Override
-				public FileVisitResult visitFileFailed(Path file,
-						IOException exc) throws IOException {
-					return FileVisitResult.CONTINUE;
-				}
+                @Override
+                public FileVisitResult visitFileFailed(Path file,
+                        IOException exc) throws IOException {
+                    return FileVisitResult.CONTINUE;
+                }
 
-				@Override
-				public FileVisitResult postVisitDirectory(Path dir,
-						IOException exc) throws IOException {
-					return FileVisitResult.CONTINUE;
-				}
-			});
-		} catch (IOException e) {
-			throw new RuntimeException(
-					"error while registering directory tree " + root, e);
-		}
-	}
+                @Override
+                public FileVisitResult postVisitDirectory(Path dir,
+                        IOException exc) throws IOException {
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(
+                    "error while registering directory tree " + root, e);
+        }
+    }
 
-	Object affectedPathsLock = new Object();
-	Set<Path> affectedPaths = new HashSet<>();
+    Object affectedPathsLock = new Object();
+    Set<Path> affectedPaths = new HashSet<>();
 
-	private void timerElapsed() {
-		registerTrees();
-		unregisterStaleWatchKeys();
-		Set<Path> paths;
-		synchronized (affectedPathsLock) {
-			paths = affectedPaths;
-			affectedPaths = new HashSet<>();
-		}
-		listener.accept(paths);
-	}
+    private void timerElapsed() {
+        registerTrees();
+        unregisterStaleWatchKeys();
+        Set<Path> paths;
+        synchronized (affectedPathsLock) {
+            paths = affectedPaths;
+            affectedPaths = new HashSet<>();
+        }
+        listener.accept(paths);
+    }
 
-	private final class WatchLoopRunnable implements Runnable {
+    private final class WatchLoopRunnable implements Runnable {
 
-		@Override
-		public void run() {
-			while (isRunning) {
-				WatchKey key;
-				try {
-					// get next event, drop it
-					key = watchService.take();
-					Path dir = (Path) key.watchable();
-					ArrayList<Path> paths = new ArrayList<>();
-					for (WatchEvent<?> event : key.pollEvents()) {
-						Path path = dir.resolve((Path) event.context());
-						paths.add(path);
-					}
-					synchronized (affectedPathsLock) {
-						affectedPaths.addAll(paths);
-					}
-					key.reset();
+        @Override
+        public void run() {
+            while (isRunning) {
+                WatchKey key;
+                try {
+                    // get next event, drop it
+                    key = watchService.take();
+                    Path dir = (Path) key.watchable();
+                    ArrayList<Path> paths = new ArrayList<>();
+                    for (WatchEvent<?> event : key.pollEvents()) {
+                        Path path = dir.resolve((Path) event.context());
+                        paths.add(path);
+                    }
+                    synchronized (affectedPathsLock) {
+                        affectedPaths.addAll(paths);
+                    }
+                    key.reset();
 
-					// reset timer task
-					if (task != null) {
-						task.cancel(false);
-					}
-					task = queue.schedule(() -> timerElapsed(), settleDelayMs,
-							TimeUnit.MILLISECONDS);
+                    // reset timer task
+                    if (task != null) {
+                        task.cancel(false);
+                    }
+                    task = queue.schedule(() -> timerElapsed(), settleDelayMs,
+                            TimeUnit.MILLISECONDS);
 
-				} catch (InterruptedException e) {
-					isRunning = false;
-				}
-			}
-		}
-	}
+                } catch (InterruptedException e) {
+                    isRunning = false;
+                }
+            }
+        }
+    }
 }

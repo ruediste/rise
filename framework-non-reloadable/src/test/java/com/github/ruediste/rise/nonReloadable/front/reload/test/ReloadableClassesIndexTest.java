@@ -23,36 +23,36 @@ import com.github.ruediste.rise.util.AsmUtil;
 @RunWith(MockitoJUnitRunner.class)
 @Reloadable
 public class ReloadableClassesIndexTest {
-	@Mock
-	Logger log;
+    @Mock
+    Logger log;
 
-	@InjectMocks
-	ReloadebleClassesIndex cache;
+    @InjectMocks
+    ReloadebleClassesIndex cache;
 
-	private Object tst;
+    private Object tst;
 
-	private class A {
-	}
+    private class A {
+    }
 
-	@Before
-	public void before() throws IOException {
-		tst = new Object() {
-		};
-		ClassChangeTransaction trx = new ClassChangeNotifier.ClassChangeTransaction();
-		trx.addedClasses.add(AsmUtil
-				.readClass(ReloadableClassesIndexTest.class));
-		trx.addedClasses.add(AsmUtil.readClass(A.class));
-		trx.addedClasses.add(AsmUtil.readClass(tst.getClass()));
-		ReloadableClassesIndexTestHelper.callOnChange(cache, trx);
-	}
+    @Before
+    public void before() throws IOException {
+        tst = new Object() {
+        };
+        ClassChangeTransaction trx = new ClassChangeNotifier.ClassChangeTransaction();
+        trx.addedClasses.add(AsmUtil
+                .readClass(ReloadableClassesIndexTest.class));
+        trx.addedClasses.add(AsmUtil.readClass(A.class));
+        trx.addedClasses.add(AsmUtil.readClass(tst.getClass()));
+        ReloadableClassesIndexTestHelper.callOnChange(cache, trx);
+    }
 
-	@Test
-	public void testInnerClass() {
-		assertTrue(cache.isReloadable(A.class.getName()));
-	}
+    @Test
+    public void testInnerClass() {
+        assertTrue(cache.isReloadable(A.class.getName()));
+    }
 
-	@Test
-	public void testAnonymousClass() {
-		assertTrue(cache.isReloadable(tst.getClass().getName()));
-	}
+    @Test
+    public void testAnonymousClass() {
+        assertTrue(cache.isReloadable(tst.getClass().getName()));
+    }
 }

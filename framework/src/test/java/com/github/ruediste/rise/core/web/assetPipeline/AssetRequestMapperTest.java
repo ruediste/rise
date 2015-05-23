@@ -22,56 +22,56 @@ import com.github.ruediste.rise.core.PathInfoIndex;
 @RunWith(MockitoJUnitRunner.class)
 public class AssetRequestMapperTest {
 
-	@Mock
-	PathInfoIndex index;
+    @Mock
+    PathInfoIndex index;
 
-	@Mock
-	Logger log;
+    @Mock
+    Logger log;
 
-	@InjectMocks
-	AssetRequestMapper mapper;
+    @InjectMocks
+    AssetRequestMapper mapper;
 
-	AssetPipelineConfiguration pipelineConfig;
+    AssetPipelineConfiguration pipelineConfig;
 
-	@Before
-	public void setup() {
-		pipelineConfig = new AssetPipelineConfiguration();
-		mapper.pipelineConfiguration = pipelineConfig;
-	}
+    @Before
+    public void setup() {
+        pipelineConfig = new AssetPipelineConfiguration();
+        mapper.pipelineConfiguration = pipelineConfig;
+    }
 
-	private static class A extends AssetBundle {
-		AssetBundleOutput out = new AssetBundleOutput(this);
-		private Asset[] assets;
+    private static class A extends AssetBundle {
+        AssetBundleOutput out = new AssetBundleOutput(this);
+        private Asset[] assets;
 
-		A(Asset... assets) {
-			this.assets = assets;
+        A(Asset... assets) {
+            this.assets = assets;
 
-		}
+        }
 
-		@PostConstruct
-		public void initialize() {
-			Arrays.stream(assets).forEach(out);
-		}
-	}
+        @PostConstruct
+        public void initialize() {
+            Arrays.stream(assets).forEach(out);
+        }
+    }
 
-	@Test
-	public void testRegisterAssets() throws Exception {
-		mapper.registerAssets(Arrays.asList(new A(new TestAsset("foo", "bar"))));
-		verify(index).registerPathInfo(eq("/assets/foo"), any());
-	}
+    @Test
+    public void testRegisterAssets() throws Exception {
+        mapper.registerAssets(Arrays.asList(new A(new TestAsset("foo", "bar"))));
+        verify(index).registerPathInfo(eq("/assets/foo"), any());
+    }
 
-	@Test
-	public void testRegisterAssetsTwoSame() throws Exception {
-		mapper.registerAssets(Arrays.asList(new A(new TestAsset("/foo", "bar"),
-				new TestAsset("foo", "bar"))));
-		verify(index).registerPathInfo(eq("/assets/foo"), any());
-	}
+    @Test
+    public void testRegisterAssetsTwoSame() throws Exception {
+        mapper.registerAssets(Arrays.asList(new A(new TestAsset("/foo", "bar"),
+                new TestAsset("foo", "bar"))));
+        verify(index).registerPathInfo(eq("/assets/foo"), any());
+    }
 
-	@Test(expected = RuntimeException.class)
-	public void testRegisterAssetsTwoDifferent() throws Exception {
-		mapper.registerAssets(Arrays.asList(new A(new TestAsset("/foo", "bar"),
-				new TestAsset("/foo", "barr"))));
-		fail();
-	}
+    @Test(expected = RuntimeException.class)
+    public void testRegisterAssetsTwoDifferent() throws Exception {
+        mapper.registerAssets(Arrays.asList(new A(new TestAsset("/foo", "bar"),
+                new TestAsset("/foo", "barr"))));
+        fail();
+    }
 
 }

@@ -30,88 +30,88 @@ import com.github.ruediste.salta.jsr330.Salta;
 
 public class FileChangeNotifierTest {
 
-	private Path tempDir;
+    private Path tempDir;
 
-	@Inject
-	ApplicationEventQueue queue;
+    @Inject
+    ApplicationEventQueue queue;
 
-	@Inject
-	@Named("classPath")
-	FileChangeNotifier notifier;
+    @Inject
+    @Named("classPath")
+    FileChangeNotifier notifier;
 
-	@Inject
-	DirectoryChangeWatcher watcher;
+    @Inject
+    DirectoryChangeWatcher watcher;
 
-	private List<FileChangeTransaction> transactions;
+    private List<FileChangeTransaction> transactions;
 
-	@Before
-	public void before() throws Exception {
-		Salta.createInjector(new AbstractModule() {
+    @Before
+    public void before() throws Exception {
+        Salta.createInjector(new AbstractModule() {
 
-			@Override
-			protected void configure() throws Exception {
-				bind(FileChangeNotifier.class).named("classPath").in(
-						Singleton.class);
-			}
+            @Override
+            protected void configure() throws Exception {
+                bind(FileChangeNotifier.class).named("classPath").in(
+                        Singleton.class);
+            }
 
-		}, new LoggerModule()).injectMembers(this);
+        }, new LoggerModule()).injectMembers(this);
 
-		transactions = new ArrayList<>();
-		notifier.addListener(trx -> transactions.add(trx));
-		tempDir = Files.createTempDirectory("test");
-	}
+        transactions = new ArrayList<>();
+        notifier.addListener(trx -> transactions.add(trx));
+        tempDir = Files.createTempDirectory("test");
+    }
 
-	private void startNotifier() throws Exception {
-		queue.submit(
-				() -> notifier.start(new HashSet<>(Arrays.asList(tempDir)), 10))
-				.get();
-	}
+    private void startNotifier() throws Exception {
+        queue.submit(
+                () -> notifier.start(new HashSet<>(Arrays.asList(tempDir)), 10))
+                .get();
+    }
 
-	@After
-	public void after() throws Exception {
-		TestUtil.deleteDirTree(tempDir);
-	}
+    @After
+    public void after() throws Exception {
+        TestUtil.deleteDirTree(tempDir);
+    }
 
-	@Test
-	public void testFileAdded() throws Exception {
-		startNotifier();
-		Path testTxt = tempDir.resolve("test.txt");
-		Files.write(testTxt, "Hello".getBytes());
-		Thread.sleep(100);
-		assertThat(transactions, hasSize(2));
-		assertThat(transactions.get(0).addedFiles, hasSize(0));
-		assertThat(transactions.get(1).addedFiles, contains(testTxt));
-	}
+    @Test
+    public void testFileAdded() throws Exception {
+        startNotifier();
+        Path testTxt = tempDir.resolve("test.txt");
+        Files.write(testTxt, "Hello".getBytes());
+        Thread.sleep(100);
+        assertThat(transactions, hasSize(2));
+        assertThat(transactions.get(0).addedFiles, hasSize(0));
+        assertThat(transactions.get(1).addedFiles, contains(testTxt));
+    }
 
-	@Test
-	public void testFileAddedAndRemoved() throws Exception {
-		startNotifier();
-		Path testTxt = tempDir.resolve("test.txt");
-		Files.write(testTxt, "Hello".getBytes());
-		Thread.sleep(100);
-		transactions.clear();
-		Files.delete(testTxt);
-		Thread.sleep(100);
-		assertThat(transactions, hasSize(1));
-		assertThat(transactions.get(0).removedFiles, contains(testTxt));
-	}
+    @Test
+    public void testFileAddedAndRemoved() throws Exception {
+        startNotifier();
+        Path testTxt = tempDir.resolve("test.txt");
+        Files.write(testTxt, "Hello".getBytes());
+        Thread.sleep(100);
+        transactions.clear();
+        Files.delete(testTxt);
+        Thread.sleep(100);
+        assertThat(transactions, hasSize(1));
+        assertThat(transactions.get(0).removedFiles, contains(testTxt));
+    }
 
-	@Test
-	public void testFileModified() throws Exception {
-		startNotifier();
-		Path testTxt1 = tempDir.resolve("test1.txt");
-		Files.write(testTxt1, "Hello".getBytes());
-		Path testTxt2 = tempDir.resolve("test2.txt");
-		Files.write(testTxt2, "Hello".getBytes());
+    @Test
+    public void testFileModified() throws Exception {
+        startNotifier();
+        Path testTxt1 = tempDir.resolve("test1.txt");
+        Files.write(testTxt1, "Hello".getBytes());
+        Path testTxt2 = tempDir.resolve("test2.txt");
+        Files.write(testTxt2, "Hello".getBytes());
 
-		// let at least one second pass, such that the mtime changes
-		// Thread.sleep(1500);
-		Thread.sleep(100);
+        // let at least one second pass, such that the mtime changes
+        // Thread.sleep(1500);
+        Thread.sleep(100);
 
-		transactions.clear();
-		Files.write(testTxt2, "Hello World".getBytes());
-		Thread.sleep(100);
-		assertThat(transactions, hasSize(1));
-		assertThat(transactions.get(0).modifiedFiles, contains(testTxt2));
-	}
+        transactions.clear();
+        Files.write(testTxt2, "Hello World".getBytes());
+        Thread.sleep(100);
+        assertThat(transactions, hasSize(1));
+        assertThat(transactions.get(0).modifiedFiles, contains(testTxt2));
+    }
 }

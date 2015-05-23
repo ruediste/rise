@@ -7,8 +7,8 @@ package com.github.ruediste.rise.util;
  */
 public interface Initializer {
 
-	/**
-	 * Perform the initializations
-	 */
-	void initialize();
+    /**
+     * Perform the initializations
+     */
+    void initialize();
 }

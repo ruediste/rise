@@ -10,19 +10,19 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class CrudModelReaderTest {
 
-	@InjectMocks
-	CrudModelReader reader;
+    @InjectMocks
+    CrudModelReader reader;
 
-	private class A {
-	}
+    private class A {
+    }
 
-	@Test
-	public void testModelFound() {
-		assertNotNull(reader.getCrudModel(A.class));
-	}
+    @Test
+    public void testModelFound() {
+        assertNotNull(reader.getCrudModel(A.class));
+    }
 
-	@Test
-	public void propertyFound() {
-		assertNotNull(reader.getCrudModel(A.class));
-	}
+    @Test
+    public void propertyFound() {
+        assertNotNull(reader.getCrudModel(A.class));
+    }
 }

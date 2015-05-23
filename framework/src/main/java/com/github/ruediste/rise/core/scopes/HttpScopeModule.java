@@ -23,120 +23,120 @@ import com.google.common.base.Preconditions;
  */
 public class HttpScopeModule extends AbstractModule {
 
-	public static final String SESSION_SCOPE_DATA_KEY = "LAF_SESSION_SCOPE_DATA";
+    public static final String SESSION_SCOPE_DATA_KEY = "LAF_SESSION_SCOPE_DATA";
 
-	static final class SessionScopeHandler implements ScopeHandler {
+    static final class SessionScopeHandler implements ScopeHandler {
 
-		private static Object sessionLock = new Object();
+        private static Object sessionLock = new Object();
 
-		private static class State {
-			Supplier<HttpSession> sessionSupplier;
-			ConcurrentHashMap<Binding, Object> sessionDataMap;
+        private static class State {
+            Supplier<HttpSession> sessionSupplier;
+            ConcurrentHashMap<Binding, Object> sessionDataMap;
 
-			@SuppressWarnings("unchecked")
-			ConcurrentHashMap<Binding, Object> getSessionDataMap() {
-				if (sessionDataMap == null) {
-					HttpSession session = sessionSupplier.get();
-					Object result = session
-							.getAttribute(SESSION_SCOPE_DATA_KEY);
-					if (result == null) {
-						synchronized (sessionLock) {
-							result = session
-									.getAttribute(SESSION_SCOPE_DATA_KEY);
-							if (result == null) {
-								result = new ConcurrentHashMap<>();
-								session.setAttribute(SESSION_SCOPE_DATA_KEY,
-										result);
-							}
-						}
-					}
-					sessionDataMap = (ConcurrentHashMap<Binding, Object>) result;
-				}
-				return sessionDataMap;
-			}
-		}
+            @SuppressWarnings("unchecked")
+            ConcurrentHashMap<Binding, Object> getSessionDataMap() {
+                if (sessionDataMap == null) {
+                    HttpSession session = sessionSupplier.get();
+                    Object result = session
+                            .getAttribute(SESSION_SCOPE_DATA_KEY);
+                    if (result == null) {
+                        synchronized (sessionLock) {
+                            result = session
+                                    .getAttribute(SESSION_SCOPE_DATA_KEY);
+                            if (result == null) {
+                                result = new ConcurrentHashMap<>();
+                                session.setAttribute(SESSION_SCOPE_DATA_KEY,
+                                        result);
+                            }
+                        }
+                    }
+                    sessionDataMap = (ConcurrentHashMap<Binding, Object>) result;
+                }
+                return sessionDataMap;
+            }
+        }
 
-		ThreadLocal<State> currentState = new ThreadLocal<>();
+        ThreadLocal<State> currentState = new ThreadLocal<>();
 
-		public void enter(Supplier<HttpSession> sessionSupplier) {
-			Preconditions.checkState(currentState.get() == null,
-					"Already enterd a session scope");
-			State state = new State();
-			state.sessionSupplier = sessionSupplier;
-			currentState.set(state);
-		}
+        public void enter(Supplier<HttpSession> sessionSupplier) {
+            Preconditions.checkState(currentState.get() == null,
+                    "Already enterd a session scope");
+            State state = new State();
+            state.sessionSupplier = sessionSupplier;
+            currentState.set(state);
+        }
 
-		public void exit() {
-			Preconditions.checkState(currentState.get() != null,
-					"no active session scope");
-			currentState.remove();
-		}
+        public void exit() {
+            Preconditions.checkState(currentState.get() != null,
+                    "no active session scope");
+            currentState.remove();
+        }
 
-		@Override
-		public Supplier<Object> scope(Supplier<Object> supplier,
-				Binding binding, CoreDependencyKey<?> requestedKey) {
-			// create the proxy right away, such that it can be reused
-			// afterwards
-			Object proxy = Enhancer.create(requestedKey.getRawType(),
-					new Dispatcher() {
+        @Override
+        public Supplier<Object> scope(Supplier<Object> supplier,
+                Binding binding, CoreDependencyKey<?> requestedKey) {
+            // create the proxy right away, such that it can be reused
+            // afterwards
+            Object proxy = Enhancer.create(requestedKey.getRawType(),
+                    new Dispatcher() {
 
-						@Override
-						public Object loadObject() throws Exception {
-							State state = currentState.get();
-							Preconditions
-									.checkState(state != null,
-											"Access to session scoped proxy without active session scope");
-							return state.getSessionDataMap().computeIfAbsent(
-									binding, b -> supplier.get());
-						}
-					});
+                        @Override
+                        public Object loadObject() throws Exception {
+                            State state = currentState.get();
+                            Preconditions
+                                    .checkState(state != null,
+                                            "Access to session scoped proxy without active session scope");
+                            return state.getSessionDataMap().computeIfAbsent(
+                                    binding, b -> supplier.get());
+                        }
+                    });
 
-			return new Supplier<Object>() {
+            return new Supplier<Object>() {
 
-				@Override
-				public Object get() {
-					return proxy;
-				}
+                @Override
+                public Object get() {
+                    return proxy;
+                }
 
-				@Override
-				public String toString() {
-					return "SessionScopeProxy[" + requestedKey + "]";
-				}
-			};
-		}
-	}
+                @Override
+                public String toString() {
+                    return "SessionScopeProxy[" + requestedKey + "]";
+                }
+            };
+        }
+    }
 
-	public static class HttpScopeManagerImpl implements HttpScopeManager {
-		SessionScopeHandler sessionScopeHandler = new SessionScopeHandler();
-		SimpleProxyScopeHandler requestScopeHandler = new SimpleProxyScopeHandler(
-				"Request");
+    public static class HttpScopeManagerImpl implements HttpScopeManager {
+        SessionScopeHandler sessionScopeHandler = new SessionScopeHandler();
+        SimpleProxyScopeHandler requestScopeHandler = new SimpleProxyScopeHandler(
+                "Request");
 
-		@Override
-		public void enter(HttpServletRequest request,
-				HttpServletResponse response) {
-			sessionScopeHandler.enter(() -> request.getSession());
-			requestScopeHandler.enter();
-		}
+        @Override
+        public void enter(HttpServletRequest request,
+                HttpServletResponse response) {
+            sessionScopeHandler.enter(() -> request.getSession());
+            requestScopeHandler.enter();
+        }
 
-		@Override
-		public void exit() {
-			requestScopeHandler.exit();
-			sessionScopeHandler.exit();
-		}
-	}
+        @Override
+        public void exit() {
+            requestScopeHandler.exit();
+            sessionScopeHandler.exit();
+        }
+    }
 
-	@Override
-	protected void configure() {
+    @Override
+    protected void configure() {
 
-		HttpScopeManagerImpl scopeManager = new HttpScopeManagerImpl();
+        HttpScopeManagerImpl scopeManager = new HttpScopeManagerImpl();
 
-		bind(HttpScopeManager.class).toInstance(scopeManager);
+        bind(HttpScopeManager.class).toInstance(scopeManager);
 
-		// bind scopes
-		bindScope(SessionScoped.class, new ScopeImpl(
-				scopeManager.sessionScopeHandler));
-		bindScope(RequestScoped.class, new ScopeImpl(
-				scopeManager.requestScopeHandler));
-	}
+        // bind scopes
+        bindScope(SessionScoped.class, new ScopeImpl(
+                scopeManager.sessionScopeHandler));
+        bindScope(RequestScoped.class, new ScopeImpl(
+                scopeManager.requestScopeHandler));
+    }
 
 }

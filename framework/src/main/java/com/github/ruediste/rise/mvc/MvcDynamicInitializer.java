@@ -6,12 +6,12 @@ import com.github.ruediste.rise.util.Initializer;
 
 public class MvcDynamicInitializer implements Initializer {
 
-	@Inject
-	MvcConfiguration config;
+    @Inject
+    MvcConfiguration config;
 
-	@Override
-	public void initialize() {
-		config.initialize();
-	}
+    @Override
+    public void initialize() {
+        config.initialize();
+    }
 
 }

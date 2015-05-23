@@ -22,63 +22,63 @@ import com.github.ruediste.rise.core.web.ContentRenderResult;
  * Handler applying values, raising events and rendering the reloaded component
  */
 public class ReloadHandler implements Runnable {
-	@Inject
-	Logger log;
+    @Inject
+    Logger log;
 
-	@Inject
-	PageInfo page;
+    @Inject
+    PageInfo page;
 
-	@Inject
-	ComponentUtil util;
+    @Inject
+    ComponentUtil util;
 
-	@Inject
-	PageReloadRequest request;
+    @Inject
+    PageReloadRequest request;
 
-	@Inject
-	ComponentTemplateIndex componentTemplateIndex;
+    @Inject
+    ComponentTemplateIndex componentTemplateIndex;
 
-	@Inject
-	CoreRequestInfo coreRequestInfo;
-	@Inject
-	ComponentRequestInfo componentRequestInfo;
+    @Inject
+    CoreRequestInfo coreRequestInfo;
+    @Inject
+    ComponentRequestInfo componentRequestInfo;
 
-	@Inject
-	ComponentSessionInfo componentSessionInfo;
-	@Inject
-	CoreConfiguration coreConfiguration;
+    @Inject
+    ComponentSessionInfo componentSessionInfo;
+    @Inject
+    CoreConfiguration coreConfiguration;
 
-	@Override
-	public void run() {
+    @Override
+    public void run() {
 
-		log.debug("reloading page " + page.getPageId());
+        log.debug("reloading page " + page.getPageId());
 
-		ViewComponent<?> view = page.getView();
+        ViewComponent<?> view = page.getView();
 
-		Component reloadComponent = util.getComponent(view,
-				request.getComponentNr());
+        Component reloadComponent = util.getComponent(view,
+                request.getComponentNr());
 
-		// apply request values
-		List<Component> components = ComponentTreeUtil.subTree(reloadComponent);
+        // apply request values
+        List<Component> components = ComponentTreeUtil.subTree(reloadComponent);
 
-		for (Component c : components) {
-			componentTemplateIndex.getTemplate(c).applyValues(c);
-		}
+        for (Component c : components) {
+            componentTemplateIndex.getTemplate(c).applyValues(c);
+        }
 
-		// raise events
-		for (Component c : components) {
-			componentTemplateIndex.getTemplate(c).raiseEvents(c);
-		}
+        // raise events
+        for (Component c : components) {
+            componentTemplateIndex.getTemplate(c).raiseEvents(c);
+        }
 
-		// check if a destination has been defined
-		if (componentRequestInfo.getClosePageResult() != null) {
-			componentSessionInfo.removePageHandle(page.getPageId());
-			coreRequestInfo.setActionResult(componentRequestInfo
-					.getClosePageResult());
-		} else {
-			// render result
-			coreRequestInfo.setActionResult(new ContentRenderResult(util
-					.renderComponents(view, reloadComponent),
-					coreConfiguration.htmlContentType));
-		}
-	}
+        // check if a destination has been defined
+        if (componentRequestInfo.getClosePageResult() != null) {
+            componentSessionInfo.removePageHandle(page.getPageId());
+            coreRequestInfo.setActionResult(componentRequestInfo
+                    .getClosePageResult());
+        } else {
+            // render result
+            coreRequestInfo.setActionResult(new ContentRenderResult(util
+                    .renderComponents(view, reloadComponent),
+                    coreConfiguration.htmlContentType));
+        }
+    }
 }

@@ -7,15 +7,15 @@ import com.github.ruediste.rise.util.Initializer;
 
 public class ComponentDynamicInitializer implements Initializer {
 
-	@Inject
-	ComponentConfiguration config;
+    @Inject
+    ComponentConfiguration config;
 
-	@Inject
-	PathInfoIndex index;
+    @Inject
+    PathInfoIndex index;
 
-	@Override
-	public void initialize() {
-		config.initialize();
-		index.registerPathInfo(config.getReloadPath(), config.getReloadParser());
-	}
+    @Override
+    public void initialize() {
+        config.initialize();
+        index.registerPathInfo(config.getReloadPath(), config.getReloadParser());
+    }
 }

@@ -10,49 +10,49 @@ import com.github.ruediste.rise.component.ValidationState;
 import com.github.ruediste.rise.component.tree.ComponentBase;
 
 public class CFormGroup<T extends ComponentBase<T>> extends ComponentBase<T>
-		implements ConstraintViolationAware {
+        implements ConstraintViolationAware {
 
-	private boolean isValidated;
-	private Collection<ConstraintViolation<?>> constraintViolations = Collections
-			.emptyList();
-	private String label;
+    private boolean isValidated;
+    private Collection<ConstraintViolation<?>> constraintViolations = Collections
+            .emptyList();
+    private String label;
 
-	@Override
-	public void clearConstraintViolations() {
-		isValidated = false;
-	}
+    @Override
+    public void clearConstraintViolations() {
+        isValidated = false;
+    }
 
-	@Override
-	public void setConstraintViolations(
-			Collection<ConstraintViolation<?>> constraintViolations) {
-		this.constraintViolations = constraintViolations;
-		isValidated = true;
-	}
+    @Override
+    public void setConstraintViolations(
+            Collection<ConstraintViolation<?>> constraintViolations) {
+        this.constraintViolations = constraintViolations;
+        isValidated = true;
+    }
 
-	public boolean isValidated() {
-		return isValidated;
-	}
+    public boolean isValidated() {
+        return isValidated;
+    }
 
-	public Collection<ConstraintViolation<?>> getConstraintViolations() {
-		return constraintViolations;
-	}
+    public Collection<ConstraintViolation<?>> getConstraintViolations() {
+        return constraintViolations;
+    }
 
-	public String getLabel() {
-		return label;
-	}
+    public String getLabel() {
+        return label;
+    }
 
-	public T setLabel(String label) {
-		this.label = label;
-		return self();
-	}
+    public T setLabel(String label) {
+        this.label = label;
+        return self();
+    }
 
-	public ValidationState getValidationState() {
-		if (!isValidated) {
-			return ValidationState.NOT_VALIDATED;
-		}
-		if (constraintViolations.isEmpty()) {
-			return ValidationState.SUCCESS;
-		}
-		return ValidationState.ERROR;
-	}
+    public ValidationState getValidationState() {
+        if (!isValidated) {
+            return ValidationState.NOT_VALIDATED;
+        }
+        if (constraintViolations.isEmpty()) {
+            return ValidationState.SUCCESS;
+        }
+        return ValidationState.ERROR;
+    }
 }

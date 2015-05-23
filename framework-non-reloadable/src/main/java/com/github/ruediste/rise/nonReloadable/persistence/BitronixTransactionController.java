@@ -11,8 +11,8 @@ import bitronix.tm.TransactionManagerServices;
  * {@link ExternalTransactionController} for EclipseLink, forwarding to Bitronix
  */
 public class BitronixTransactionController extends JTATransactionController {
-	@Override
-	protected TransactionManager acquireTransactionManager() throws Exception {
-		return TransactionManagerServices.getTransactionManager();
-	}
+    @Override
+    protected TransactionManager acquireTransactionManager() throws Exception {
+        return TransactionManagerServices.getTransactionManager();
+    }
 }

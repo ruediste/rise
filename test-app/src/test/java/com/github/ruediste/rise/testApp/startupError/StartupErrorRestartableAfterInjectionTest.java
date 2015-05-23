@@ -13,32 +13,32 @@ import com.github.ruediste.rise.testApp.app.TestRestartableApplication;
 import com.github.ruediste.salta.jsr330.Injector;
 
 public class StartupErrorRestartableAfterInjectionTest extends StartupErrorTest {
-	@Override
-	protected final Servlet createServlet(Object testCase) {
-		TestRestartableApplication app = new TestRestartableApplication() {
+    @Override
+    protected final Servlet createServlet(Object testCase) {
+        TestRestartableApplication app = new TestRestartableApplication() {
 
-			@Override
-			protected void startImpl(Injector nonRestartableInjector) {
-				super.startImpl(nonRestartableInjector);
-				throw new RuntimeException("My Error");
-			}
-		};
+            @Override
+            protected void startImpl(Injector nonRestartableInjector) {
+                super.startImpl(nonRestartableInjector);
+                throw new RuntimeException("My Error");
+            }
+        };
 
-		Servlet frontServlet = new TestAppFrontServlet(app) {
-			private static final long serialVersionUID = 1L;
-		};
+        Servlet frontServlet = new TestAppFrontServlet(app) {
+            private static final long serialVersionUID = 1L;
+        };
 
-		return frontServlet;
-	}
+        return frontServlet;
+    }
 
-	@Test
-	public void test() {
-		driver.navigate().to(getBaseUrl());
-		assertTrue(driver.getTitle().contains("Startup Error"));
-		assertTrue(driver.getPageSource().contains("My Error"));
+    @Test
+    public void test() {
+        driver.navigate().to(getBaseUrl());
+        assertTrue(driver.getTitle().contains("Startup Error"));
+        assertTrue(driver.getPageSource().contains("My Error"));
 
-		// make sure drop-and-create database is present
-		assertNotNull(driver.findElement(By.cssSelector("input")));
-	}
+        // make sure drop-and-create database is present
+        assertNotNull(driver.findElement(By.cssSelector("input")));
+    }
 
 }

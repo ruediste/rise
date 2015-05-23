@@ -5,8 +5,8 @@ package com.github.ruediste.rise.core;
  */
 public interface RequestParseResult {
 
-	/**
-	 * Handle the parsed request
-	 */
-	void handle();
+    /**
+     * Handle the parsed request
+     */
+    void handle();
 }

@@ -10,36 +10,36 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKno
 
 public class ControllerComponent implements IControllerComponent {
 
-	@Inject
-	ComponentUtil util;
+    @Inject
+    ComponentUtil util;
 
-	public <T extends IController> T go(Class<T> controllerClass) {
-		return util.go(controllerClass);
-	}
+    public <T extends IController> T go(Class<T> controllerClass) {
+        return util.go(controllerClass);
+    }
 
-	public <T extends IController> ActionInvocationBuilderKnownController<T> path(
-			Class<T> controllerClass) {
-		return util.path(controllerClass);
-	}
+    public <T extends IController> ActionInvocationBuilderKnownController<T> path(
+            Class<T> controllerClass) {
+        return util.path(controllerClass);
+    }
 
-	public ActionInvocationBuilder path() {
-		return util.path();
-	}
+    public ActionInvocationBuilder path() {
+        return util.path();
+    }
 
-	public void commit() {
-		util.commit();
-	}
+    public void commit() {
+        util.commit();
+    }
 
-	public void commit(Runnable inTransaction) {
-		util.commit(inTransaction);
-	}
+    public void commit(Runnable inTransaction) {
+        util.commit(inTransaction);
+    }
 
-	public void checkAndCommit(Runnable checker) {
-		util.checkAndCommit(checker);
-	}
+    public void checkAndCommit(Runnable checker) {
+        util.checkAndCommit(checker);
+    }
 
-	public void checkAndCommit(Runnable checker, Runnable inTransaction) {
-		util.checkAndCommit(checker, inTransaction);
-	}
+    public void checkAndCommit(Runnable checker, Runnable inTransaction) {
+        util.checkAndCommit(checker, inTransaction);
+    }
 
 }

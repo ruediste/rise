@@ -8,35 +8,35 @@ import com.github.ruediste.rise.core.ActionResult;
 
 public class SampleComponentController extends ControllerComponent {
 
-	int counter;
+    int counter;
 
-	@Inject
-	BindingGroup<Data> data;
+    @Inject
+    BindingGroup<Data> data;
 
-	public static class Data {
-		private String text;
+    public static class Data {
+        private String text;
 
-		public String getText() {
-			return text;
-		}
+        public String getText() {
+            return text;
+        }
 
-		public void setText(String text) {
-			this.text = text;
-		}
-	}
+        public void setText(String text) {
+            this.text = text;
+        }
+    }
 
-	public Data getData() {
-		return data.proxy();
-	}
+    public Data getData() {
+        return data.proxy();
+    }
 
-	void inc() {
-		counter++;
-		data.pushDown();
-		System.out.println(data.get().getText());
-	}
+    void inc() {
+        counter++;
+        data.pushDown();
+        System.out.println(data.get().getText());
+    }
 
-	public ActionResult index() {
-		data.set(new Data());
-		return null;
-	}
+    public ActionResult index() {
+        data.set(new Data());
+        return null;
+    }
 }

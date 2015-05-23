@@ -24,67 +24,67 @@ import com.github.ruediste.salta.jsr330.Injector;
  */
 public class DataBaseLink {
 
-	@Inject
-	DataBaseLinkRegistry registry;
+    @Inject
+    DataBaseLinkRegistry registry;
 
-	@Inject
-	Logger log;
+    @Inject
+    Logger log;
 
-	private final PersistenceUnitManager persistenceUnitManager;
-	private final DataSourceManager dataSourceManager;
+    private final PersistenceUnitManager persistenceUnitManager;
+    private final DataSourceManager dataSourceManager;
 
-	private final Class<? extends Annotation> qualifier;
+    private final Class<? extends Annotation> qualifier;
 
-	public DataBaseLink(Class<? extends Annotation> qualifier,
-			DataSourceFactory dataSourceFactory,
-			PersistenceUnitManager persistenceUnitManager) {
-		super();
-		this.qualifier = qualifier;
-		this.persistenceUnitManager = persistenceUnitManager;
-		this.dataSourceManager = new DataSourceManager(qualifier,
-				dataSourceFactory);
-		persistenceUnitManager.initialize(qualifier, dataSourceManager);
+    public DataBaseLink(Class<? extends Annotation> qualifier,
+            DataSourceFactory dataSourceFactory,
+            PersistenceUnitManager persistenceUnitManager) {
+        super();
+        this.qualifier = qualifier;
+        this.persistenceUnitManager = persistenceUnitManager;
+        this.dataSourceManager = new DataSourceManager(qualifier,
+                dataSourceFactory);
+        persistenceUnitManager.initialize(qualifier, dataSourceManager);
 
-	}
+    }
 
-	@PostConstruct
-	void setup(Injector injector) {
-		// register this link
-		registry.addLink(this);
+    @PostConstruct
+    void setup(Injector injector) {
+        // register this link
+        registry.addLink(this);
 
-		injector.injectMembers(dataSourceManager);
-		injector.injectMembers(persistenceUnitManager);
-	}
+        injector.injectMembers(dataSourceManager);
+        injector.injectMembers(persistenceUnitManager);
+    }
 
-	public DataSourceManager getDataSourceManager() {
-		return dataSourceManager;
-	}
+    public DataSourceManager getDataSourceManager() {
+        return dataSourceManager;
+    }
 
-	public PersistenceUnitManager getPersistenceUnitManager() {
-		return persistenceUnitManager;
-	}
+    public PersistenceUnitManager getPersistenceUnitManager() {
+        return persistenceUnitManager;
+    }
 
-	public Class<? extends Annotation> getQualifier() {
-		return qualifier;
-	}
+    public Class<? extends Annotation> getQualifier() {
+        return qualifier;
+    }
 
-	public void close() {
-		getPersistenceUnitManager().close();
-		getDataSourceManager().close();
-	}
+    public void close() {
+        getPersistenceUnitManager().close();
+        getDataSourceManager().close();
+    }
 
-	public void runSchemaMigration() {
-		log.info("Running DB schema migration ...");
+    public void runSchemaMigration() {
+        log.info("Running DB schema migration ...");
 
-		// Not Yet implemented. Run Flyway scripts
-		log.warn("schema migration not yet implemented");
+        // Not Yet implemented. Run Flyway scripts
+        log.warn("schema migration not yet implemented");
 
-		Flyway flyway = new Flyway();
-		flyway.setDataSource(dataSourceManager.getDataSource());
-		flyway.setLocations("db/migration/" + qualifier == null ? "default"
-				: qualifier.getSimpleName());
-		flyway.migrate();
+        Flyway flyway = new Flyway();
+        flyway.setDataSource(dataSourceManager.getDataSource());
+        flyway.setLocations("db/migration/" + qualifier == null ? "default"
+                : qualifier.getSimpleName());
+        flyway.migrate();
 
-		log.info("DB schema migration complete");
-	}
+        log.info("DB schema migration complete");
+    }
 }

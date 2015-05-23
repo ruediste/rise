@@ -11,35 +11,35 @@ import com.github.ruediste.rise.nonReloadable.persistence.IsolationLevel;
 
 public class InitialPagePersistenceHandler extends ChainedRequestHandler {
 
-	@Inject
-	PageInfo pageInfo;
+    @Inject
+    PageInfo pageInfo;
 
-	@Inject
-	EntityManagerHolder holder;
+    @Inject
+    EntityManagerHolder holder;
 
-	@Inject
-	TransactionManager txm;
+    @Inject
+    TransactionManager txm;
 
-	@Inject
-	TransactionTemplate template;
+    @Inject
+    TransactionTemplate template;
 
-	@Override
-	public void run(Runnable next) {
-		template.builder()
-				.updating()
-				.isolation(IsolationLevel.REPEATABLE_READ)
-				.noNewEntityManagerSet()
-				.execute(
-						trx -> {
-							holder.setNewEntityManagerSet();
-							pageInfo.setEntityManagerSet(holder
-									.getCurrentEntityManagerSet());
-							try {
-								next.run();
-								trx.commit();
-							} finally {
-								holder.removeCurrentSet();
-							}
-						});
-	}
+    @Override
+    public void run(Runnable next) {
+        template.builder()
+                .updating()
+                .isolation(IsolationLevel.REPEATABLE_READ)
+                .noNewEntityManagerSet()
+                .execute(
+                        trx -> {
+                            holder.setNewEntityManagerSet();
+                            pageInfo.setEntityManagerSet(holder
+                                    .getCurrentEntityManagerSet());
+                            try {
+                                next.run();
+                                trx.commit();
+                            } finally {
+                                holder.removeCurrentSet();
+                            }
+                        });
+    }
 }

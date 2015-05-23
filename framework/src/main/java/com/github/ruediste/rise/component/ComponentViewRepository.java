@@ -26,113 +26,113 @@ import com.github.ruediste.salta.jsr330.Injector;
 @Singleton
 public class ComponentViewRepository {
 
-	@Inject
-	Logger log;
+    @Inject
+    Logger log;
 
-	@Inject
-	Injector injector;
+    @Inject
+    Injector injector;
 
-	@Inject
-	CoreConfiguration config;
+    @Inject
+    CoreConfiguration config;
 
-	@Inject
-	ClassHierarchyIndex index;
+    @Inject
+    ClassHierarchyIndex index;
 
-	Map<Pair<String, String>, ViewEntry> viewMap = new HashMap<>();
+    Map<Pair<String, String>, ViewEntry> viewMap = new HashMap<>();
 
-	private static class ViewEntry {
-		public String viewClassInternalName;
-	}
+    private static class ViewEntry {
+        public String viewClassInternalName;
+    }
 
-	public ComponentViewRepository() {
-	}
+    public ComponentViewRepository() {
+    }
 
-	@PostConstruct
-	public void initialize() {
-		// iterate over all views
-		for (ClassNode view : index.getAllChildren(Type
-				.getInternalName(ViewComponent.class))) {
-			// check if it is a concrete class
-			if ((view.access & Opcodes.ACC_ABSTRACT) != 0) {
-				continue;
-			}
+    @PostConstruct
+    public void initialize() {
+        // iterate over all views
+        for (ClassNode view : index.getAllChildren(Type
+                .getInternalName(ViewComponent.class))) {
+            // check if it is a concrete class
+            if ((view.access & Opcodes.ACC_ABSTRACT) != 0) {
+                continue;
+            }
 
-			// find the controller class of the view
-			String controllerClass = index.resolve(view, ViewComponent.class,
-					"TController");
+            // find the controller class of the view
+            String controllerClass = index.resolve(view, ViewComponent.class,
+                    "TController");
 
-			// create an entry for the view
-			ViewEntry entry = new ViewEntry();
-			entry.viewClassInternalName = view.name;
+            // create an entry for the view
+            ViewEntry entry = new ViewEntry();
+            entry.viewClassInternalName = view.name;
 
-			AnnotationNode viewQualifierAnnotation = AsmUtil
-					.getAnnotationByType(view.visibleAnnotations,
-							ViewQualifier.class);
-			String qualifier = null;
-			if (viewQualifierAnnotation != null) {
-				qualifier = AsmUtil.getType(viewQualifierAnnotation, "value")
-						.getInternalName();
-			}
+            AnnotationNode viewQualifierAnnotation = AsmUtil
+                    .getAnnotationByType(view.visibleAnnotations,
+                            ViewQualifier.class);
+            String qualifier = null;
+            if (viewQualifierAnnotation != null) {
+                qualifier = AsmUtil.getType(viewQualifierAnnotation, "value")
+                        .getInternalName();
+            }
 
-			ViewEntry existing = viewMap.put(
-					Pair.of(controllerClass, qualifier), entry);
+            ViewEntry existing = viewMap.put(
+                    Pair.of(controllerClass, qualifier), entry);
 
-			if (existing != null) {
-				throw new RuntimeException("Two views found for controller "
-						+ controllerClass + " and qualifier "
-						+ (qualifier == null ? "null" : qualifier) + ": "
-						+ entry.viewClassInternalName + ", "
-						+ existing.viewClassInternalName);
-			}
-			log.debug("found view " + view.name + " with qualifier "
-					+ qualifier + " for controller " + controllerClass);
-		}
-	}
+            if (existing != null) {
+                throw new RuntimeException("Two views found for controller "
+                        + controllerClass + " and qualifier "
+                        + (qualifier == null ? "null" : qualifier) + ": "
+                        + entry.viewClassInternalName + ", "
+                        + existing.viewClassInternalName);
+            }
+            log.debug("found view " + view.name + " with qualifier "
+                    + qualifier + " for controller " + controllerClass);
+        }
+    }
 
-	/**
-	 * Create a view for the given controller
-	 */
-	public <T> ViewComponent<T> createView(T controller) {
-		return createView(controller, null);
-	}
+    /**
+     * Create a view for the given controller
+     */
+    public <T> ViewComponent<T> createView(T controller) {
+        return createView(controller, null);
+    }
 
-	/**
-	 * Create a view for the given controller and qualifier.
-	 * 
-	 * @param qualifier
-	 *            qualifier class, or null if no qualifier is set
-	 */
-	@SuppressWarnings("unchecked")
-	public <T> ViewComponent<T> createView(T controller,
-			Class<? extends IViewQualifier> qualifier) {
-		// get view, trying super classes
-		ViewEntry entry = null;
-		{
-			Class<? extends Object> controllerClass = controller.getClass();
-			String qualifierName = qualifier == null ? null : Type
-					.getInternalName(qualifier);
-			while (controllerClass != null && entry == null) {
-				entry = viewMap.get(Pair.create(
-						Type.getInternalName(controllerClass), qualifierName));
-				if (entry == null)
-					controllerClass = controllerClass.getSuperclass();
-			}
-		}
+    /**
+     * Create a view for the given controller and qualifier.
+     * 
+     * @param qualifier
+     *            qualifier class, or null if no qualifier is set
+     */
+    @SuppressWarnings("unchecked")
+    public <T> ViewComponent<T> createView(T controller,
+            Class<? extends IViewQualifier> qualifier) {
+        // get view, trying super classes
+        ViewEntry entry = null;
+        {
+            Class<? extends Object> controllerClass = controller.getClass();
+            String qualifierName = qualifier == null ? null : Type
+                    .getInternalName(qualifier);
+            while (controllerClass != null && entry == null) {
+                entry = viewMap.get(Pair.create(
+                        Type.getInternalName(controllerClass), qualifierName));
+                if (entry == null)
+                    controllerClass = controllerClass.getSuperclass();
+            }
+        }
 
-		if (entry == null) {
-			throw new RuntimeException("There is no view for controller class "
-					+ controller.getClass().getName() + " and qualifier "
-					+ (qualifier == null ? "null" : qualifier.getName()));
+        if (entry == null) {
+            throw new RuntimeException("There is no view for controller class "
+                    + controller.getClass().getName() + " and qualifier "
+                    + (qualifier == null ? "null" : qualifier.getName()));
 
-		}
+        }
 
-		// create view instance
-		Class<?> viewClass = AsmUtil.loadClass(
-				Type.getObjectType(entry.viewClassInternalName),
-				config.dynamicClassLoader);
-		ViewComponent<T> result = (ViewComponent<T>) injector
-				.getInstance(viewClass);
-		result.initialize(controller);
-		return result;
-	}
+        // create view instance
+        Class<?> viewClass = AsmUtil.loadClass(
+                Type.getObjectType(entry.viewClassInternalName),
+                config.dynamicClassLoader);
+        ViewComponent<T> result = (ViewComponent<T>) injector
+                .getInstance(viewClass);
+        result.initialize(controller);
+        return result;
+    }
 }

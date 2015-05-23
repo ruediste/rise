@@ -7,13 +7,13 @@ import com.github.ruediste.salta.jsr330.Injector;
 
 public class MvcRestartableModule extends DynamicModule {
 
-	public MvcRestartableModule(Injector permanentInjector) {
-		super(permanentInjector);
-	}
+    public MvcRestartableModule(Injector permanentInjector) {
+        super(permanentInjector);
+    }
 
-	@Override
-	protected void configure() throws Exception {
-		bindToPermanentInjector(ClassHierarchyIndex.class);
-		InitializerUtil.register(config(), MvcDynamicInitializer.class);
-	}
+    @Override
+    protected void configure() throws Exception {
+        bindToPermanentInjector(ClassHierarchyIndex.class);
+        InitializerUtil.register(config(), MvcDynamicInitializer.class);
+    }
 }

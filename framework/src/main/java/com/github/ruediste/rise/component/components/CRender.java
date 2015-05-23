@@ -6,13 +6,13 @@ import com.github.ruediste.rise.component.tree.ComponentBase;
 @DefaultTemplate(CRenderHtmlTemplate.class)
 public class CRender extends ComponentBase<CRender> {
 
-	private final Renderer renderer;
+    private final Renderer renderer;
 
-	public CRender(Renderer renderer) {
-		this.renderer = renderer;
-	}
+    public CRender(Renderer renderer) {
+        this.renderer = renderer;
+    }
 
-	public Renderer getRenderer() {
-		return renderer;
-	}
+    public Renderer getRenderer() {
+        return renderer;
+    }
 }

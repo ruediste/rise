@@ -13,44 +13,44 @@ import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Salta;
 
 public class TestAppFrontServlet extends FrontServletBase {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public TestAppFrontServlet(
-			TestRestartableApplication fixedApplicationInstance) {
-		super(fixedApplicationInstance);
-	}
+    public TestAppFrontServlet(
+            TestRestartableApplication fixedApplicationInstance) {
+        super(fixedApplicationInstance);
+    }
 
-	public TestAppFrontServlet() {
-		super(TestRestartableApplication.class);
-	}
+    public TestAppFrontServlet() {
+        super(TestRestartableApplication.class);
+    }
 
-	@Override
-	protected void initImpl() throws Exception {
-		Salta.createInjector(
-				new AbstractModule() {
+    @Override
+    protected void initImpl() throws Exception {
+        Salta.createInjector(
+                new AbstractModule() {
 
-					@Override
-					protected void configure() throws Exception {
-						PersistenceModuleUtil.bindDataSource(
-								binder(),
-								null,
-								new EclipseLinkPersistenceUnitManager("testApp"),
-								new BitronixDataSourceFactory(
-										new H2DatabaseIntegrationInfo()) {
+                    @Override
+                    protected void configure() throws Exception {
+                        PersistenceModuleUtil.bindDataSource(
+                                binder(),
+                                null,
+                                new EclipseLinkPersistenceUnitManager("testApp"),
+                                new BitronixDataSourceFactory(
+                                        new H2DatabaseIntegrationInfo()) {
 
-									@Override
-									protected void initializeProperties(
-											Properties props) {
-										props.setProperty("URL",
-												"jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MVCC=false");
-										props.setProperty("user", "sa");
-										props.setProperty("password", "sa");
-									}
-								});
-					}
-				}, new BitronixModule(),
-				new PermanentIntegrationModule(getServletConfig()))
-				.injectMembers(this);
-	}
+                                    @Override
+                                    protected void initializeProperties(
+                                            Properties props) {
+                                        props.setProperty("URL",
+                                                "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MVCC=false");
+                                        props.setProperty("user", "sa");
+                                        props.setProperty("password", "sa");
+                                    }
+                                });
+                    }
+                }, new BitronixModule(),
+                new PermanentIntegrationModule(getServletConfig()))
+                .injectMembers(this);
+    }
 
 }

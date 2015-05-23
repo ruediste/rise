@@ -9,19 +9,19 @@ import com.github.ruediste.rise.mvc.Updating;
 import com.github.ruediste.rise.testApp.persistence.TestEntity;
 
 public class TestComponentHelperController extends
-		ControllerMvc<TestComponentHelperController> {
+        ControllerMvc<TestComponentHelperController> {
 
-	@Inject
-	EntityManager em;
+    @Inject
+    EntityManager em;
 
-	@Updating
-	public ActionResult index() {
+    @Updating
+    public ActionResult index() {
 
-		TestEntity e = new TestEntity();
-		e.setValue("Hello World");
-		em.persist(e);
-		commit();
+        TestEntity e = new TestEntity();
+        e.setValue("Hello World");
+        em.persist(e);
+        commit();
 
-		return redirect(go(TestComponentController.class).initialize(e.getId()));
-	}
+        return redirect(go(TestComponentController.class).initialize(e.getId()));
+    }
 }

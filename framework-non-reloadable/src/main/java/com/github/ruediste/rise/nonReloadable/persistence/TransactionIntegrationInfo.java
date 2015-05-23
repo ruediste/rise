@@ -10,5 +10,5 @@ import org.eclipse.persistence.sessions.ExternalTransactionController;
  */
 public interface TransactionIntegrationInfo {
 
-	Class<? extends ExternalTransactionController> getEclipseLinkExternalTransactionController();
+    Class<? extends ExternalTransactionController> getEclipseLinkExternalTransactionController();
 }

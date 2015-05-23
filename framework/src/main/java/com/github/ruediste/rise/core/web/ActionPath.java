@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
 @Target({ ElementType.METHOD })
 @Repeatable(ActionPaths.class)
 public @interface ActionPath {
-	String value();
+    String value();
 
-	boolean primary() default false;
+    boolean primary() default false;
 }

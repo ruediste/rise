@@ -25,95 +25,95 @@ import com.github.ruediste.salta.jsr330.MembersInjector;
  * Tests a startup error after injecting the non-restartable application
  */
 public class StartupErrorAfterNonRestartableInjectionTest extends
-		StartupErrorTest {
-	@Override
-	protected final Servlet createServlet(Object testCase) {
-		TestRestartableApplication app = new TestRestartableApplication() {
+        StartupErrorTest {
+    @Override
+    protected final Servlet createServlet(Object testCase) {
+        TestRestartableApplication app = new TestRestartableApplication() {
 
-			@Override
-			protected void startImpl(Injector permanentInjector) {
-			}
-		};
+            @Override
+            protected void startImpl(Injector permanentInjector) {
+            }
+        };
 
-		Servlet frontServlet = new TestAppFrontServlet(app) {
-			private static final long serialVersionUID = 1L;
+        Servlet frontServlet = new TestAppFrontServlet(app) {
+            private static final long serialVersionUID = 1L;
 
-			@Inject
-			MembersInjector<StartupErrorAfterNonRestartableInjectionTest> membersInjector;
+            @Inject
+            MembersInjector<StartupErrorAfterNonRestartableInjectionTest> membersInjector;
 
-			@Override
-			protected void initImpl() throws Exception {
-				super.initImpl();
-				membersInjector
-						.injectMembers(StartupErrorAfterNonRestartableInjectionTest.this);
-				throw new RuntimeException("My Error");
-			}
-		};
+            @Override
+            protected void initImpl() throws Exception {
+                super.initImpl();
+                membersInjector
+                        .injectMembers(StartupErrorAfterNonRestartableInjectionTest.this);
+                throw new RuntimeException("My Error");
+            }
+        };
 
-		return frontServlet;
-	}
+        return frontServlet;
+    }
 
-	@Test
-	public void testErrorMessage() {
-		driver.navigate().to(getBaseUrl());
-		assertTrue(driver.getTitle().contains("Startup Error"));
-		assertTrue(driver.getPageSource().contains("My Error"));
+    @Test
+    public void testErrorMessage() {
+        driver.navigate().to(getBaseUrl());
+        assertTrue(driver.getTitle().contains("Startup Error"));
+        assertTrue(driver.getPageSource().contains("My Error"));
 
-		// make sure drop-and-create database is present
-		assertTrue(driver.getPageSource().contains("reate"));
-	}
+        // make sure drop-and-create database is present
+        assertTrue(driver.getPageSource().contains("reate"));
+    }
 
-	@Inject
-	DataBaseLinkRegistry registry;
+    @Inject
+    DataBaseLinkRegistry registry;
 
-	@Inject
-	TransactionManager txm;
+    @Inject
+    TransactionManager txm;
 
-	@Test
-	public void testDropAndCreate() throws Throwable {
-		driver.navigate().to(getBaseUrl());
-		assertTrue(driver.getTitle().contains("Startup Error"));
+    @Test
+    public void testDropAndCreate() throws Throwable {
+        driver.navigate().to(getBaseUrl());
+        assertTrue(driver.getTitle().contains("Startup Error"));
 
-		DataBaseLink link = registry.getLink(null);
-		EntityManagerFactory emf = link.getPersistenceUnitManager()
-				.getEntityManagerFactory();
+        DataBaseLink link = registry.getLink(null);
+        EntityManagerFactory emf = link.getPersistenceUnitManager()
+                .getEntityManagerFactory();
 
-		// test without generating schema
-		try {
-			txm.begin();
-			EntityManager em = emf.createEntityManager();
-			TestEntity e = new TestEntity();
-			em.persist(e);
-			txm.commit();
-			fail();
-		} catch (DatabaseException e) {
-			// swallow
-		} finally {
-			try {
-				txm.rollback();
-			} catch (Throwable t) {
-				// swallow
-			}
-		}
+        // test without generating schema
+        try {
+            txm.begin();
+            EntityManager em = emf.createEntityManager();
+            TestEntity e = new TestEntity();
+            em.persist(e);
+            txm.commit();
+            fail();
+        } catch (DatabaseException e) {
+            // swallow
+        } finally {
+            try {
+                txm.rollback();
+            } catch (Throwable t) {
+                // swallow
+            }
+        }
 
-		// hit create schema button
-		driver.findElement(By.cssSelector("input")).click();
+        // hit create schema button
+        driver.findElement(By.cssSelector("input")).click();
 
-		// now it should work
-		try {
-			txm.begin();
-			EntityManager em = emf.createEntityManager();
-			TestEntity e = new TestEntity();
-			em.persist(e);
-			txm.commit();
-		} finally {
-			try {
-				txm.rollback();
-			} catch (Throwable t) {
-				// swallow
-			}
-		}
+        // now it should work
+        try {
+            txm.begin();
+            EntityManager em = emf.createEntityManager();
+            TestEntity e = new TestEntity();
+            em.persist(e);
+            txm.commit();
+        } finally {
+            try {
+                txm.rollback();
+            } catch (Throwable t) {
+                // swallow
+            }
+        }
 
-	}
+    }
 
 }

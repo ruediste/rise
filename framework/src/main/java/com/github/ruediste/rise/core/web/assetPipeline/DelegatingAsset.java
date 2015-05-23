@@ -6,29 +6,29 @@ package com.github.ruediste.rise.core.web.assetPipeline;
  */
 public class DelegatingAsset implements Asset {
 
-	private Asset delegate;
+    private Asset delegate;
 
-	public DelegatingAsset(Asset delegate) {
-		this.delegate = delegate;
-	}
+    public DelegatingAsset(Asset delegate) {
+        this.delegate = delegate;
+    }
 
-	@Override
-	public String getName() {
-		return delegate.getName();
-	}
+    @Override
+    public String getName() {
+        return delegate.getName();
+    }
 
-	@Override
-	public AssetType getAssetType() {
-		return delegate.getAssetType();
-	}
+    @Override
+    public AssetType getAssetType() {
+        return delegate.getAssetType();
+    }
 
-	@Override
-	public String getContentType() {
-		return delegate.getContentType();
-	}
+    @Override
+    public String getContentType() {
+        return delegate.getContentType();
+    }
 
-	@Override
-	public byte[] getData() {
-		return delegate.getData();
-	}
+    @Override
+    public byte[] getData() {
+        return delegate.getData();
+    }
 }

@@ -5,13 +5,13 @@ import com.github.ruediste.rise.component.components.template.CTextFieldFormGrou
 @DefaultTemplate(CTextFieldFormGroupHtmlTemplate.class)
 public class CTextFieldFormGroup extends CFormGroup<CTextFieldFormGroup> {
 
-	private String text;
+    private String text;
 
-	public String getText() {
-		return text;
-	}
+    public String getText() {
+        return text;
+    }
 
-	public void setText(String text) {
-		this.text = text;
-	}
+    public void setText(String text) {
+        this.text = text;
+    }
 }

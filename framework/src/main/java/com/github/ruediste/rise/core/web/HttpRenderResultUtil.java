@@ -5,11 +5,11 @@ import javax.inject.Inject;
 import com.github.ruediste.rise.core.HttpService;
 
 public class HttpRenderResultUtil {
-	@Inject
-	public HttpService httpService;
+    @Inject
+    public HttpService httpService;
 
-	public HttpService getHttpService() {
-		return httpService;
-	}
+    public HttpService getHttpService() {
+        return httpService;
+    }
 
 }

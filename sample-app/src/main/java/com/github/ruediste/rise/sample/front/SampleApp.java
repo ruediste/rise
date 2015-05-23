@@ -15,29 +15,29 @@ import com.github.ruediste.salta.jsr330.Salta;
 
 public class SampleApp extends RestartableApplicationBase {
 
-	@Inject
-	CoreConfiguration config;
+    @Inject
+    CoreConfiguration config;
 
-	@Inject
-	ComponentTemplateIndex componentTemplateIndex;
+    @Inject
+    ComponentTemplateIndex componentTemplateIndex;
 
-	@Inject
-	DefaultRequestErrorHandler errorHandler;
+    @Inject
+    DefaultRequestErrorHandler errorHandler;
 
-	@Override
-	protected void startImpl(Injector permanentInjector) {
-		Salta.createInjector(
-				new RestartableApplicationModule(permanentInjector))
-				.injectMembers(this);
+    @Override
+    protected void startImpl(Injector permanentInjector) {
+        Salta.createInjector(
+                new RestartableApplicationModule(permanentInjector))
+                .injectMembers(this);
 
-		errorHandler.initialize(util -> util.go(ReqestErrorController.class)
-				.index());
-		config.requestErrorHandler = errorHandler;
+        errorHandler.initialize(util -> util.go(ReqestErrorController.class)
+                .index());
+        config.requestErrorHandler = errorHandler;
 
-		config.setBasePackage(SamplePackage.class);
+        config.setBasePackage(SamplePackage.class);
 
-		componentTemplateIndex.registerTemplate(CPage.class,
-				CPageHtmlTemplate.class);
-	}
+        componentTemplateIndex.registerTemplate(CPage.class,
+                CPageHtmlTemplate.class);
+    }
 
 }

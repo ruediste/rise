@@ -9,27 +9,27 @@ import com.github.ruediste.rise.core.ChainedRequestHandler;
 import com.github.ruediste.salta.standard.util.SimpleProxyScopeHandler;
 
 public class ReloadPageScopeHandler extends ChainedRequestHandler {
-	@Inject
-	@Named("pageScoped")
-	SimpleProxyScopeHandler pageScopeHandler;
+    @Inject
+    @Named("pageScoped")
+    SimpleProxyScopeHandler pageScopeHandler;
 
-	@Inject
-	ComponentSessionInfo sessionInfo;
+    @Inject
+    ComponentSessionInfo sessionInfo;
 
-	@Inject
-	PageReloadRequest request;
+    @Inject
+    PageReloadRequest request;
 
-	@Override
-	public void run(Runnable next) {
-		PageHandle pageHandle = sessionInfo.getPageHandle(request.getPageNr());
-		synchronized (pageHandle.lock) {
-			pageScopeHandler.enter(pageHandle.instances);
-			try {
-				next.run();
-			} finally {
-				pageScopeHandler.exit();
-			}
-		}
-	}
+    @Override
+    public void run(Runnable next) {
+        PageHandle pageHandle = sessionInfo.getPageHandle(request.getPageNr());
+        synchronized (pageHandle.lock) {
+            pageScopeHandler.enter(pageHandle.instances);
+            try {
+                next.run();
+            } finally {
+                pageScopeHandler.exit();
+            }
+        }
+    }
 
 }

@@ -11,30 +11,30 @@ import com.github.ruediste.rise.testApp.AssetReferencingController;
 
 public class AssetReferencingControllerTest extends WebTest {
 
-	private WebDriver driver;
+    private WebDriver driver;
 
-	@Before
-	public void before() {
-		driver = createDriver();
-		driver.navigate().to(url(go(AssetReferencingController.class).index()));
-	}
+    @Before
+    public void before() {
+        driver = createDriver();
+        driver.navigate().to(url(go(AssetReferencingController.class).index()));
+    }
 
-	@Test
-	public void simple() {
-		assertEquals("Hello", driver.findElement(By.cssSelector("#data"))
-				.getText());
-	}
+    @Test
+    public void simple() {
+        assertEquals("Hello", driver.findElement(By.cssSelector("#data"))
+                .getText());
+    }
 
-	@Test
-	public void cssPresent() {
-		checkCssPresent("#samePackage");
-		checkCssPresent("#bundleClass");
-		checkCssPresent("#default");
-		checkCssPresent("#absolute");
-	}
+    @Test
+    public void cssPresent() {
+        checkCssPresent("#samePackage");
+        checkCssPresent("#bundleClass");
+        checkCssPresent("#default");
+        checkCssPresent("#absolute");
+    }
 
-	private void checkCssPresent(String id) {
-		assertEquals("right", driver.findElement(By.cssSelector(id))
-				.getCssValue("text-align"));
-	}
+    private void checkCssPresent(String id) {
+        assertEquals("right", driver.findElement(By.cssSelector(id))
+                .getCssValue("text-align"));
+    }
 }

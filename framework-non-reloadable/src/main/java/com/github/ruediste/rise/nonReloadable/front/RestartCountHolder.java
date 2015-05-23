@@ -10,41 +10,41 @@ import com.github.ruediste.rise.nonReloadable.NonRestartable;
 @Singleton
 public class RestartCountHolder {
 
-	@Inject
-	CoreConfigurationNonRestartable config;
+    @Inject
+    CoreConfigurationNonRestartable config;
 
-	long restartNr = 0;
-	private Object lock = new Object();
+    long restartNr = 0;
+    private Object lock = new Object();
 
-	public void increment() {
-		synchronized (lock) {
-			restartNr++;
-			lock.notifyAll();
-		}
-	}
+    public void increment() {
+        synchronized (lock) {
+            restartNr++;
+            lock.notifyAll();
+        }
+    }
 
-	public long get() {
-		return restartNr;
-	}
+    public long get() {
+        return restartNr;
+    }
 
-	/**
-	 * Wait for a restart, if the current {@link #restartNr} matches the
-	 * expected Nr. Otherwise returns immediately
-	 * 
-	 * @return true if a restart occured
-	 */
-	public boolean waitForRestart(long expectedNr) {
-		synchronized (lock) {
-			if (expectedNr != restartNr)
-				return true;
-			try {
-				lock.wait(config.restartQueryTimeout);
-			} catch (InterruptedException e) {
-				// swallow
-			}
-			if (expectedNr != restartNr)
-				return true;
-			return false;
-		}
-	}
+    /**
+     * Wait for a restart, if the current {@link #restartNr} matches the
+     * expected Nr. Otherwise returns immediately
+     * 
+     * @return true if a restart occured
+     */
+    public boolean waitForRestart(long expectedNr) {
+        synchronized (lock) {
+            if (expectedNr != restartNr)
+                return true;
+            try {
+                lock.wait(config.restartQueryTimeout);
+            } catch (InterruptedException e) {
+                // swallow
+            }
+            if (expectedNr != restartNr)
+                return true;
+            return false;
+        }
+    }
 }

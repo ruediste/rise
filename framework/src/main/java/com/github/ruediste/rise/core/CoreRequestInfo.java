@@ -11,70 +11,70 @@ import com.github.ruediste.rise.core.web.HttpRenderResult;
 
 @RequestScoped
 public class CoreRequestInfo {
-	private HttpRequest request;
-	private HttpServletRequest servletRequest;
-	private HttpServletResponse servletResponse;
-	private HttpRenderResult actionResult;
+    private HttpRequest request;
+    private HttpServletRequest servletRequest;
+    private HttpServletResponse servletResponse;
+    private HttpRenderResult actionResult;
 
-	private ActionInvocation<String> stringActionInvocation;
+    private ActionInvocation<String> stringActionInvocation;
 
-	private Throwable requestError;
+    private Throwable requestError;
 
-	public ActionInvocation<String> getStringActionInvocation() {
-		return stringActionInvocation;
-	}
+    public ActionInvocation<String> getStringActionInvocation() {
+        return stringActionInvocation;
+    }
 
-	public void setStringActionInvocation(
-			ActionInvocation<String> stringActionInvocation) {
-		this.stringActionInvocation = stringActionInvocation;
-	}
+    public void setStringActionInvocation(
+            ActionInvocation<String> stringActionInvocation) {
+        this.stringActionInvocation = stringActionInvocation;
+    }
 
-	public HttpRenderResult getActionResult() {
-		return actionResult;
-	}
+    public HttpRenderResult getActionResult() {
+        return actionResult;
+    }
 
-	public void setActionResult(HttpRenderResult result) {
-		this.actionResult = result;
-	}
+    public void setActionResult(HttpRenderResult result) {
+        this.actionResult = result;
+    }
 
-	public HttpRequest getRequest() {
-		return request;
-	}
+    public HttpRequest getRequest() {
+        return request;
+    }
 
-	public void setRequest(HttpRequest request) {
-		this.request = request;
-	}
+    public void setRequest(HttpRequest request) {
+        this.request = request;
+    }
 
-	public HttpServletRequest getServletRequest() {
-		return servletRequest;
-	}
+    public HttpServletRequest getServletRequest() {
+        return servletRequest;
+    }
 
-	public void setServletRequest(HttpServletRequest servletRequest) {
-		this.servletRequest = servletRequest;
-	}
+    public void setServletRequest(HttpServletRequest servletRequest) {
+        this.servletRequest = servletRequest;
+    }
 
-	public HttpServletResponse getServletResponse() {
-		return servletResponse;
-	}
+    public HttpServletResponse getServletResponse() {
+        return servletResponse;
+    }
 
-	public void setServletResponse(HttpServletResponse servletResponse) {
-		this.servletResponse = servletResponse;
-	}
+    public void setServletResponse(HttpServletResponse servletResponse) {
+        this.servletResponse = servletResponse;
+    }
 
-	public ServletContext getServletContext() {
-		return servletRequest.getServletContext();
-	}
+    public ServletContext getServletContext() {
+        return servletRequest.getServletContext();
+    }
 
-	/**
-	 * Returns the error beeing handled during the evaluation of
-	 * {@link RequestErrorHandler#handle()}.
-	 */
-	public Throwable getRequestError() {
-		return requestError;
-	}
+    /**
+     * Returns the error beeing handled during the evaluation of
+     * {@link RequestErrorHandler#handle()}.
+     */
+    public Throwable getRequestError() {
+        return requestError;
+    }
 
-	public void setRequestError(Throwable requestError) {
-		this.requestError = requestError;
-	}
+    public void setRequestError(Throwable requestError) {
+        this.requestError = requestError;
+    }
 
 }

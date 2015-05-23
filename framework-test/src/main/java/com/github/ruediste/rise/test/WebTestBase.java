@@ -18,68 +18,68 @@ import com.github.ruediste.rise.mvc.IControllerMvc;
 
 public abstract class WebTestBase {
 
-	@Inject
-	IntegrationTestUtil util;
+    @Inject
+    IntegrationTestUtil util;
 
-	protected WebDriver driver;
+    protected WebDriver driver;
 
-	protected String url(ActionResult result) {
-		return util.url(result);
-	}
+    protected String url(ActionResult result) {
+        return util.url(result);
+    }
 
-	protected String url(PathInfo pathInfo) {
-		return util.url(pathInfo);
-	}
+    protected String url(PathInfo pathInfo) {
+        return util.url(pathInfo);
+    }
 
-	protected <T extends IControllerMvc> T go(Class<T> controllerClass) {
-		return util.go(controllerClass);
-	}
+    protected <T extends IControllerMvc> T go(Class<T> controllerClass) {
+        return util.go(controllerClass);
+    }
 
-	private AtomicBoolean started = new AtomicBoolean(false);
-	private String baseUrl;
+    private AtomicBoolean started = new AtomicBoolean(false);
+    private String baseUrl;
 
-	protected String getBaseUrl() {
-		return baseUrl;
-	}
+    protected String getBaseUrl() {
+        return baseUrl;
+    }
 
-	@Before
-	public void beforeWebTestBase() {
-		if (started.getAndSet(true))
-			return;
+    @Before
+    public void beforeWebTestBase() {
+        if (started.getAndSet(true))
+            return;
 
-		Servlet frontServlet = createServlet(this);
+        Servlet frontServlet = createServlet(this);
 
-		baseUrl = new StandaloneLafApplication().startForTesting(frontServlet,
-				0);
+        baseUrl = new StandaloneLafApplication().startForTesting(frontServlet,
+                0);
 
-		// util can be null if initialization failed
-		if (util != null)
-			util.initialize(baseUrl);
+        // util can be null if initialization failed
+        if (util != null)
+            util.initialize(baseUrl);
 
-		driver = createDriver();
-	}
+        driver = createDriver();
+    }
 
-	@Rule
-	public final TestRule closeDriverOnSuccess() {
-		return (base, description) -> new Statement() {
+    @Rule
+    public final TestRule closeDriverOnSuccess() {
+        return (base, description) -> new Statement() {
 
-			@Override
-			public void evaluate() throws Throwable {
-				base.evaluate();
-				try {
-					driver.close();
-				} catch (Throwable t) {
-					// swallow
-				}
-			}
-		};
-	}
+            @Override
+            public void evaluate() throws Throwable {
+                base.evaluate();
+                try {
+                    driver.close();
+                } catch (Throwable t) {
+                    // swallow
+                }
+            }
+        };
+    }
 
-	/**
-	 * Create the servlet for the integration tests
-	 */
-	protected abstract Servlet createServlet(Object testCase);
+    /**
+     * Create the servlet for the integration tests
+     */
+    protected abstract Servlet createServlet(Object testCase);
 
-	protected abstract WebDriver createDriver();
+    protected abstract WebDriver createDriver();
 
 }

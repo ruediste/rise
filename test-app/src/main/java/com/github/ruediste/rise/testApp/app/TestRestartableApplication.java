@@ -15,34 +15,34 @@ import com.github.ruediste.salta.jsr330.Salta;
 
 public class TestRestartableApplication extends RestartableApplicationBase {
 
-	@Inject
-	ComponentTemplateIndex index;
+    @Inject
+    ComponentTemplateIndex index;
 
-	private static class Initializer implements
-			com.github.ruediste.rise.util.Initializer {
+    private static class Initializer implements
+            com.github.ruediste.rise.util.Initializer {
 
-		@Inject
-		DataBaseLinkRegistry registry;
+        @Inject
+        DataBaseLinkRegistry registry;
 
-		@Override
-		public void initialize() {
-			registry.dropAndCreateSchemas();
+        @Override
+        public void initialize() {
+            registry.dropAndCreateSchemas();
 
-		}
+        }
 
-	}
+    }
 
-	@Override
-	protected void startImpl(Injector nonRestartableInjector) {
-		Salta.createInjector(new AbstractModule() {
+    @Override
+    protected void startImpl(Injector nonRestartableInjector) {
+        Salta.createInjector(new AbstractModule() {
 
-			@Override
-			protected void configure() throws Exception {
-				InitializerUtil.register(config(), Initializer.class);
-			}
-		}, new DynamicIntegrationModule(nonRestartableInjector)).injectMembers(
-				this);
-		index.registerTemplate(CPage.class, CPageTemplate.class);
-	}
+            @Override
+            protected void configure() throws Exception {
+                InitializerUtil.register(config(), Initializer.class);
+            }
+        }, new DynamicIntegrationModule(nonRestartableInjector)).injectMembers(
+                this);
+        index.registerTemplate(CPage.class, CPageTemplate.class);
+    }
 
 }

@@ -9,5 +9,5 @@ import com.github.ruediste.rise.nonReloadable.persistence.PersistenceModuleUtil.
  * type of data base
  */
 public interface DatabaseIntegrationInfo {
-	Class<? extends XADataSource> getDataSourceClass();
+    Class<? extends XADataSource> getDataSourceClass();
 }

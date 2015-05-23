@@ -5,20 +5,20 @@ package com.github.ruediste.rise.component.binding;
  */
 public abstract class BindingTransformer<TSource, TTarget> {
 
-	/**
-	 * Transform the view value to the model value
-	 */
-	public final TTarget transform(TSource source) {
-		BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager
-				.getCurrentLog();
-		if (info == null) {
-			return transformImpl(source);
-		} else {
-			info.transformer = this;
-			return null;
-		}
-	}
+    /**
+     * Transform the view value to the model value
+     */
+    public final TTarget transform(TSource source) {
+        BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager
+                .getCurrentLog();
+        if (info == null) {
+            return transformImpl(source);
+        } else {
+            info.transformer = this;
+            return null;
+        }
+    }
 
-	protected abstract TTarget transformImpl(TSource source);
+    protected abstract TTarget transformImpl(TSource source);
 
 }

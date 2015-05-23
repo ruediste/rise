@@ -8,10 +8,10 @@ import com.github.ruediste.rise.testApp.WebTest;
 
 public class RequestHandlingErrorControllerTest extends WebTest {
 
-	@Test
-	public void test() {
-		driver.navigate().to(
-				url(go(RequestHandlingErrorController.class).index()));
-		fail();
-	}
+    @Test
+    public void test() {
+        driver.navigate().to(
+                url(go(RequestHandlingErrorController.class).index()));
+        fail();
+    }
 }

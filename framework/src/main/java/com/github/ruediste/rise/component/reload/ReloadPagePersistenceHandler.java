@@ -8,20 +8,20 @@ import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 
 public class ReloadPagePersistenceHandler extends ChainedRequestHandler {
 
-	@Inject
-	PageInfo pageInfo;
+    @Inject
+    PageInfo pageInfo;
 
-	@Inject
-	EntityManagerHolder holder;
+    @Inject
+    EntityManagerHolder holder;
 
-	@Override
-	public void run(Runnable next) {
-		holder.setCurrentEntityManagerSet(pageInfo.getEntityManagerSet());
-		try {
-			next.run();
-		} finally {
-			holder.removeCurrentSet();
-		}
+    @Override
+    public void run(Runnable next) {
+        holder.setCurrentEntityManagerSet(pageInfo.getEntityManagerSet());
+        try {
+            next.run();
+        } finally {
+            holder.removeCurrentSet();
+        }
 
-	}
+    }
 }

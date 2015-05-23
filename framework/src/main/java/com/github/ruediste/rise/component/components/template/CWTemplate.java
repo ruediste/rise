@@ -18,9 +18,9 @@ import com.github.ruediste.rise.component.tree.Component;
  */
 public interface CWTemplate<T extends Component> {
 
-	void doRender(T component, HtmlCanvas html) throws IOException;
+    void doRender(T component, HtmlCanvas html) throws IOException;
 
-	void applyValues(T componentl);
+    void applyValues(T componentl);
 
-	void raiseEvents(T component);
+    void raiseEvents(T component);
 }

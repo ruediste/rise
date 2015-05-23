@@ -20,44 +20,44 @@ import com.github.ruediste.salta.jsr330.Injector;
 @Singleton
 public class ComponentTemplateIndex {
 
-	@Inject
-	Logger log;
+    @Inject
+    Logger log;
 
-	@Inject
-	Injector injector;
+    @Inject
+    Injector injector;
 
-	private ConcurrentHashMap<Class<?>, CWTemplate<?>> templates = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Class<?>, CWTemplate<?>> templates = new ConcurrentHashMap<>();
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public <T extends Component> CWTemplate<T> getTemplate(T component) {
-		return getTemplate((Class) component.getClass());
-	}
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public <T extends Component> CWTemplate<T> getTemplate(T component) {
+        return getTemplate((Class) component.getClass());
+    }
 
-	@SuppressWarnings("unchecked")
-	public <T extends Component> CWTemplate<T> getTemplate(Class<T> component) {
-		return (CWTemplate<T>) templates
-				.computeIfAbsent(
-						component,
-						cls -> {
-							DefaultTemplate defaultTemplate = component
-									.getAnnotation(DefaultTemplate.class);
-							if (defaultTemplate == null) {
-								throw new RuntimeException(
-										"No template has been registered explicitely for "
-												+ component.getName()
-												+ " and no @DefaultTemplate annotation is present");
-							}
-							return injector.getInstance(defaultTemplate.value());
-						});
-	}
+    @SuppressWarnings("unchecked")
+    public <T extends Component> CWTemplate<T> getTemplate(Class<T> component) {
+        return (CWTemplate<T>) templates
+                .computeIfAbsent(
+                        component,
+                        cls -> {
+                            DefaultTemplate defaultTemplate = component
+                                    .getAnnotation(DefaultTemplate.class);
+                            if (defaultTemplate == null) {
+                                throw new RuntimeException(
+                                        "No template has been registered explicitely for "
+                                                + component.getName()
+                                                + " and no @DefaultTemplate annotation is present");
+                            }
+                            return injector.getInstance(defaultTemplate.value());
+                        });
+    }
 
-	public <T extends Component> void registerTemplate(Class<T> component,
-			CWTemplate<T> template) {
-		templates.put(component, template);
-	}
+    public <T extends Component> void registerTemplate(Class<T> component,
+            CWTemplate<T> template) {
+        templates.put(component, template);
+    }
 
-	public <T extends Component> void registerTemplate(Class<T> component,
-			Class<? extends CWTemplate<T>> template) {
-		templates.put(component, injector.getInstance(template));
-	}
+    public <T extends Component> void registerTemplate(Class<T> component,
+            Class<? extends CWTemplate<T>> template) {
+        templates.put(component, injector.getInstance(template));
+    }
 }

@@ -7,14 +7,14 @@ import com.github.ruediste.rise.integration.StageRibbonControllerBase;
 import com.github.ruediste.rise.sample.SampleBundle;
 
 public class StageRibbonController extends
-		StageRibbonControllerBase<StageRibbonController> {
+        StageRibbonControllerBase<StageRibbonController> {
 
-	@Inject
-	SampleBundle bundle;
+    @Inject
+    SampleBundle bundle;
 
-	@Override
-	protected AssetBundleOutput getAssets() {
-		return bundle.out;
-	}
+    @Override
+    protected AssetBundleOutput getAssets() {
+        return bundle.out;
+    }
 
 }

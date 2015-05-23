@@ -8,44 +8,44 @@ import com.google.common.collect.Iterators;
  * Manages a relation referencing a single child
  */
 public class SingleChildRelation<TChild extends Component, TContainingComponent extends ComponentBase<TContainingComponent>>
-		extends ChildRelation<TContainingComponent> {
+        extends ChildRelation<TContainingComponent> {
 
-	private TChild child;
+    private TChild child;
 
-	public SingleChildRelation(TContainingComponent containingComponent) {
-		super(containingComponent);
-	}
+    public SingleChildRelation(TContainingComponent containingComponent) {
+        super(containingComponent);
+    }
 
-	public Component getChild() {
-		return child;
-	}
+    public Component getChild() {
+        return child;
+    }
 
-	public TChild setChild(TChild newChild) {
-		if (child != null && child.getParent() != null) {
-			child.getParent().childRemoved(child);
-			child.parentChanged(null);
-		}
+    public TChild setChild(TChild newChild) {
+        if (child != null && child.getParent() != null) {
+            child.getParent().childRemoved(child);
+            child.parentChanged(null);
+        }
 
-		child = newChild;
+        child = newChild;
 
-		if (child != null) {
-			child.parentChanged(containingComponent);
-		}
-		return newChild;
-	}
+        if (child != null) {
+            child.parentChanged(containingComponent);
+        }
+        return newChild;
+    }
 
-	@Override
-	public void childRemoved(Component child) {
-		if (this.child == child) {
-			child = null;
-		}
-	}
+    @Override
+    public void childRemoved(Component child) {
+        if (this.child == child) {
+            child = null;
+        }
+    }
 
-	@Override
-	public Iterator<Component> iterator() {
-		if (child == null) {
-			return Iterators.emptyIterator();
-		}
-		return Iterators.<Component> singletonIterator(child);
-	}
+    @Override
+    public Iterator<Component> iterator() {
+        if (child == null) {
+            return Iterators.emptyIterator();
+        }
+        return Iterators.<Component> singletonIterator(child);
+    }
 }

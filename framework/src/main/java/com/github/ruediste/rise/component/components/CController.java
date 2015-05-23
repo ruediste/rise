@@ -15,52 +15,52 @@ import com.github.ruediste.rise.component.tree.Component;
  */
 @DefaultTemplate(CControllerTemplate.class)
 public class CController extends AttachedPropertyBearerBase implements
-		Component {
+        Component {
 
-	@Inject
-	static ComponentViewRepository repo;
+    @Inject
+    static ComponentViewRepository repo;
 
-	private Component parent;
+    private Component parent;
 
-	private Component rootComponent;
+    private Component rootComponent;
 
-	public CController() {
-	}
+    public CController() {
+    }
 
-	public CController(Object controller) {
-		this();
-		setController(controller);
-	}
+    public CController(Object controller) {
+        this();
+        setController(controller);
+    }
 
-	public CController setController(Object controller) {
-		ViewComponent<Object> view = repo.createView(controller);
-		rootComponent = view.getRootComponent();
-		return this;
-	}
+    public CController setController(Object controller) {
+        ViewComponent<Object> view = repo.createView(controller);
+        rootComponent = view.getRootComponent();
+        return this;
+    }
 
-	@Override
-	public Iterable<Component> getChildren() {
-		return Collections.singletonList(rootComponent);
-	}
+    @Override
+    public Iterable<Component> getChildren() {
+        return Collections.singletonList(rootComponent);
+    }
 
-	@Override
-	public Component getParent() {
-		return parent;
-	}
+    @Override
+    public Component getParent() {
+        return parent;
+    }
 
-	@Override
-	public void parentChanged(Component newParent) {
-		parent = newParent;
-	}
+    @Override
+    public void parentChanged(Component newParent) {
+        parent = newParent;
+    }
 
-	@Override
-	public void childRemoved(Component child) {
-		throw new RuntimeException("Should not happen");
-	}
+    @Override
+    public void childRemoved(Component child) {
+        throw new RuntimeException("Should not happen");
+    }
 
-	@Override
-	public void initialize() {
+    @Override
+    public void initialize() {
 
-	}
+    }
 
 }
