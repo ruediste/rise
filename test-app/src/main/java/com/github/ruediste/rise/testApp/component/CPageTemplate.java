@@ -14,8 +14,8 @@ import com.github.ruediste.rise.core.web.CoreAssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.bootstrap.BootstrapBundleUtil;
-import com.github.ruediste.rise.integration.PageRenderer;
-import com.github.ruediste.rise.integration.PageRenderer.PageRendererParameters;
+import com.github.ruediste.rise.integration.RisePageTemplate;
+import com.github.ruediste.rise.integration.RisePageTemplate.RisePageTemplateParameters;
 
 public class CPageTemplate extends ComponentTemplateBase<CPage> {
 
@@ -39,11 +39,11 @@ public class CPageTemplate extends ComponentTemplateBase<CPage> {
     @Inject
     Bundle bundle;
     @Inject
-    PageRenderer renderer;
+    RisePageTemplate renderer;
 
     @Override
     public void doRender(CPage component, HtmlCanvas html) throws IOException {
-        renderer.renderOn(html, new PageRendererParameters() {
+        renderer.renderOn(html, new RisePageTemplateParameters() {
 
             @Override
             protected void renderJsLinks(HtmlCanvas html) throws IOException {

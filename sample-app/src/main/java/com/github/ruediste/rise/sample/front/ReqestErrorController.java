@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 
 import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.ActionResult;
+import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.web.RedirectToRefererRenderResult;
 import com.github.ruediste.rise.mvc.Updating;
@@ -33,7 +34,10 @@ public class ReqestErrorController extends ControllerMvc<ReqestErrorController> 
     ApplicationStage stage;
 
     @Inject
-    private DataBaseLinkRegistry registry;
+    DataBaseLinkRegistry registry;
+
+    @Inject
+    CoreConfiguration config;
 
     private static class Data {
         ApplicationStage stage;
@@ -91,7 +95,7 @@ public class ReqestErrorController extends ControllerMvc<ReqestErrorController> 
                         ._div()
                     ._div();
 			    }
-			    if (data().stage!=null && data().stage==ApplicationStage.DEVELOPMENT){
+			    if (data().stage==ApplicationStage.DEVELOPMENT){
 			        html.div(class_("row"))
     			        .div(class_("col-xs-12"))
     			            .a(class_("btn btn-danger").href(url(go().dropAndCreateDataBase()))).content("Drop-And-Create Database")
@@ -116,10 +120,14 @@ public class ReqestErrorController extends ControllerMvc<ReqestErrorController> 
 
     @Updating
     public ActionResult dropAndCreateDataBase() {
-        log.info("Dropping and Creating DB schemas ...");
-        registry.dropAndCreateSchemas();
-        commit();
+        if (stage == ApplicationStage.DEVELOPMENT) {
+            log.info("Dropping and Creating DB schemas ...");
+            registry.dropAndCreateSchemas();
+            config.loadDevelopmentFixture();
+            commit();
+        } else {
+            log.error("Stage is not development");
+        }
         return new RedirectToRefererRenderResult();
     }
-
 }

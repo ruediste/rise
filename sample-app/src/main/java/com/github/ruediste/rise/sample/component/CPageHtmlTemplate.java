@@ -8,8 +8,8 @@ import org.rendersnake.HtmlCanvas;
 
 import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.component.components.template.ComponentTemplateBase;
-import com.github.ruediste.rise.integration.PageRenderer;
-import com.github.ruediste.rise.integration.PageRenderer.PageRendererParameters;
+import com.github.ruediste.rise.integration.RisePageTemplate;
+import com.github.ruediste.rise.integration.RisePageTemplate.RisePageTemplateParameters;
 import com.github.ruediste.rise.sample.SampleBundle;
 
 public class CPageHtmlTemplate extends ComponentTemplateBase<CPage> {
@@ -18,11 +18,11 @@ public class CPageHtmlTemplate extends ComponentTemplateBase<CPage> {
     SampleBundle bundle;
 
     @Inject
-    PageRenderer page;
+    RisePageTemplate page;
 
     @Override
     public void doRender(CPage component, HtmlCanvas html) throws IOException {
-        page.renderOn(html, new PageRendererParameters() {
+        page.renderOn(html, new RisePageTemplateParameters() {
 
             @Override
             protected void renderJsLinks(HtmlCanvas html) throws IOException {

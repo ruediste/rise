@@ -7,9 +7,10 @@ import javax.inject.Inject;
 import org.rendersnake.HtmlCanvas;
 
 import com.github.ruediste.rise.api.ViewMvc;
-import com.github.ruediste.rise.integration.PageRenderer;
-import com.github.ruediste.rise.integration.PageRenderer.PageRendererParameters;
+import com.github.ruediste.rise.integration.RisePageTemplate;
+import com.github.ruediste.rise.integration.RisePageTemplate.RisePageTemplateParameters;
 import com.github.ruediste.rise.mvc.IControllerMvc;
+import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.sample.SampleBundle;
 import com.github.ruediste.rise.sample.welcome.StageRibbonController;
 
@@ -20,11 +21,11 @@ public abstract class PageView<TController extends IControllerMvc, TData>
     SampleBundle bundle;
 
     @Inject
-    PageRenderer pageRenderer;
+    RisePageTemplate risePageTemplate;
 
     @Override
     public void render(HtmlCanvas html) throws IOException {
-        pageRenderer.renderOn(html, new PageRendererParameters() {
+        risePageTemplate.renderOn(html, new RisePageTemplateParameters() {
 
             @Override
             protected void renderJsLinks(HtmlCanvas html) throws IOException {
@@ -43,10 +44,13 @@ public abstract class PageView<TController extends IControllerMvc, TData>
 
             }
 
+            @Inject
+            ApplicationStage stage;
+
             @Override
             protected void renderBody(HtmlCanvas html) throws IOException {
-                html.render(pageRenderer.stageRibbon(x -> go(
-                        StageRibbonController.class).index(x)));
+                html.render(risePageTemplate.stageRibbon(true,
+                        x -> go(StageRibbonController.class).index(x)));
                 PageView.this.renderBody(html);
             }
         });

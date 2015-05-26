@@ -6,7 +6,7 @@
 	/* top left corner */
 	position: absolute;
 	left: -220px;
-	top: 15px;
+	top: 20px;
 	/* 45 deg ccw rotation */
 	-webkit-transform: rotate(-45deg);
 	-moz-transform: rotate(-45deg);
@@ -18,42 +18,23 @@
 	-moz-box-shadow: 0 0 10px #888;
 	box-shadow: 0 0 10px #888;
 	z-index: 1500;
+	text-align: center;
+}
+
+.rise-ribbon.rise-ribbon-fixed {
+	position: fixed;
 }
 
 .rise-ribbon a {
-	border: 1px solid #faa;
+	/* border: 1px solid #faa; */
 	display: block;
 	font: bold 10px 'Helvetica Neue', Helvetica, Arial, sans-serif;
-	margin: 1px 0;
-	padding: 5px 220px;
+	margin: 1px 210px;
+	padding: 5px 0px;
 	text-align: center;
 	text-decoration: none;
 	/* shadow */
 	text-shadow: 0 0 5px #444;
-}
-
-.rise-ribbon-red {
-	background-color: #a00;
-}
-
-.rise-ribbon-red a {
-	color: #fff;
-}
-
-.rise-ribbon-green {
-	background-color: #0a0;
-}
-
-.rise-ribbon-green a {
-	color: #fff;
-}
-
-.rise-ribbon-blue {
-	background-color: #00a;
-}
-
-.rise-ribbon-blue a {
-	color: #fff;
 }
 
 #page-rise-ribbon {

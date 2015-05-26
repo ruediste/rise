@@ -191,7 +191,11 @@ public class CoreConfiguration {
     /**
      * when executed, fills the db with the fixture data
      */
-    public Optional<Runnable> dbFixture = Optional.empty();
+    public Optional<Runnable> developmentFixtureLoader = Optional.empty();
+
+    public void loadDevelopmentFixture() {
+        developmentFixtureLoader.ifPresent(Runnable::run);
+    }
 
     /**
      * Handler for request errors. If null, a plain 500 error code will be

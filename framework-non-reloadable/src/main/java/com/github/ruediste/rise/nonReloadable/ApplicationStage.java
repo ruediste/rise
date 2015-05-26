@@ -11,23 +11,29 @@ public enum ApplicationStage {
     /**
      * Show full errors
      */
-    DEVELOPMENT(Stage.DEVELOPMENT),
+    DEVELOPMENT(Stage.DEVELOPMENT, "white", "blue"),
 
     /**
      * As production like as possible, but don't do any dangerous interactions
      * with the environment (No mass mailing!)
      */
-    TESTING(Stage.PRODUCTION),
+    TESTING(Stage.PRODUCTION, "white", "green"),
 
     /**
      * Production mode
      */
-    PRODUCTION(Stage.PRODUCTION);
+    PRODUCTION(Stage.PRODUCTION, "white", "red");
 
     final private Stage saltaStage;
 
-    private ApplicationStage(Stage saltaStage) {
+    public String color;
+    public String backgroundColor;
+
+    private ApplicationStage(Stage saltaStage, String color,
+            String backgroundColor) {
         this.saltaStage = saltaStage;
+        this.color = color;
+        this.backgroundColor = backgroundColor;
     }
 
     public Stage getSaltaStage() {

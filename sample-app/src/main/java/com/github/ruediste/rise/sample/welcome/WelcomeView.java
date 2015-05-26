@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import org.rendersnake.HtmlCanvas;
 
 import com.github.ruediste.rise.core.CoreConfiguration;
-import com.github.ruediste.rise.integration.PageRenderer;
+import com.github.ruediste.rise.integration.RisePageTemplate;
 import com.github.ruediste.rise.nonReloadable.front.RestartCountHolder;
 import com.github.ruediste.rise.sample.SampleBundle;
 import com.github.ruediste.rise.sample.component.SampleComponentController;
@@ -32,7 +32,7 @@ public class WelcomeView extends
     SampleBundle sampleBundle;
 
     @Inject
-    PageRenderer renderer;
+    RisePageTemplate renderer;
 
     @Override
     protected void renderBody(HtmlCanvas html) throws IOException {

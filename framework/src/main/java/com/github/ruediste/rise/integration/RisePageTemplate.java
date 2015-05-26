@@ -2,9 +2,9 @@ package com.github.ruediste.rise.integration;
 
 import static org.rendersnake.HtmlAttributesFactory.charset;
 import static org.rendersnake.HtmlAttributesFactory.class_;
-import static org.rendersnake.HtmlAttributesFactory.href;
 import static org.rendersnake.HtmlAttributesFactory.http_equiv;
 import static org.rendersnake.HtmlAttributesFactory.name;
+import static org.rendersnake.HtmlAttributesFactory.style;
 
 import java.io.IOException;
 import java.util.function.Function;
@@ -23,11 +23,11 @@ import com.github.ruediste.rise.component.PageInfo;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
-import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
+import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.front.RestartCountHolder;
 
-public class PageRenderer {
+public class RisePageTemplate extends PageTemplateBase {
 
     @Inject
     RestartCountHolder holder;
@@ -39,9 +39,6 @@ public class PageRenderer {
     ComponentConfiguration componentConfig;
 
     @Inject
-    CoreUtil util;
-
-    @Inject
     CoreRequestInfo coreRequestInfo;
 
     @Inject
@@ -50,12 +47,15 @@ public class PageRenderer {
     @Inject
     PageInfo pageInfo;
 
-    public void renderOn(HtmlCanvas html, PageRendererParameters parameters)
+    @Inject
+    ApplicationStage stage;
+
+    public void renderOn(HtmlCanvas html, RisePageTemplateParameters parameters)
             throws IOException {
 
         HtmlAttributes bodyAttributes = HtmlAttributesFactory.data(
                 CoreAssetBundle.bodyAttributeRestartQueryUrl,
-                util.url(coreConfig.restartQueryPathInfo)).data(
+                url(coreConfig.restartQueryPathInfo)).data(
                 CoreAssetBundle.bodyAttributeRestartNr,
                 Long.toString(holder.get()));
         if (componentRequestInfo.isComponentRequest()) {
@@ -63,9 +63,9 @@ public class PageRenderer {
                     .data(CoreAssetBundle.bodyAttributePageNr,
                             Long.toString(pageInfo.getPageId()))
                     .data(CoreAssetBundle.bodyAttributeReloadUrl,
-                            util.url(componentConfig.getReloadPath()))
+                            url(componentConfig.getReloadPath()))
                     .data(CoreAssetBundle.bodyAttributeAjaxUrl,
-                            util.url(componentConfig.getAjaxPath()));
+                            url(componentConfig.getAjaxPath()));
         }
         //@formatter:off
 		html.write("<!DOCTYPE html>",false).html(parameters.htmlAttributes())
@@ -81,7 +81,7 @@ public class PageRenderer {
 		//@formatter:on
     }
 
-    public abstract static class PageRendererParameters {
+    public abstract static class RisePageTemplateParameters {
         protected void renderDefaultMetaTags(HtmlCanvas html)
                 throws IOException {
             html.meta(charset("UTF-8"))
@@ -124,12 +124,28 @@ public class PageRenderer {
         protected abstract void renderBody(HtmlCanvas html) throws IOException;
     }
 
-    public Renderable stageRibbon(Function<String, ActionResult> urlPoducer) {
+    /**
+     * create a renderable for the stage ribbon
+     * 
+     * @param isFixed
+     *            if true, the ribbon is fixed to the top of the viewport,
+     *            otherwise to the top of the page
+     * @param urlPoducer
+     *            produces the link to
+     *            {@link StageRibbonControllerBase#index(String)}
+     */
+    public Renderable stageRibbon(boolean isFixed,
+            Function<String, ActionResult> urlPoducer) {
         return html -> {
-            html.div(class_("rise-ribbon rise-ribbon-red"))
-                    .a(href(util.url(urlPoducer.apply(coreRequestInfo
-                            .getRequest().getPathInfo()))))
-                    .content("Development")._div();
+            html.div(
+                    class_(
+                            "rise-ribbon"
+                                    + (isFixed ? " rise-ribbon-fixed" : ""))
+                            .style("background: " + stage.backgroundColor))
+                    .a(style("color: " + stage.color).href(
+                            url(urlPoducer.apply(coreRequestInfo.getRequest()
+                                    .getPathInfo()))))
+                    .content(stage.toString())._div();
         };
     }
 }

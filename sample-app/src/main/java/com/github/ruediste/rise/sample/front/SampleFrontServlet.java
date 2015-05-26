@@ -24,8 +24,9 @@ public class SampleFrontServlet extends FrontServletBase {
     @Override
     protected void initImpl() throws Exception {
         // set stage in the super class
-        setStage(ApplicationStage.PRODUCTION);
+        setStage(ApplicationStage.DEVELOPMENT);
         Salta.createInjector(
+                getStage().getSaltaStage(),
                 new AbstractModule() {
 
                     @Override

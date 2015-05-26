@@ -1,5 +1,7 @@
 package com.github.ruediste.rise.sample.front;
 
+import java.util.Optional;
+
 import javax.inject.Inject;
 
 import com.github.ruediste.rise.api.RestartableApplicationModule;
@@ -8,6 +10,7 @@ import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.DefaultRequestErrorHandler;
 import com.github.ruediste.rise.core.front.RestartableApplicationBase;
+import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.sample.SamplePackage;
 import com.github.ruediste.rise.sample.component.CPageHtmlTemplate;
 import com.github.ruediste.salta.jsr330.Injector;
@@ -24,9 +27,14 @@ public class SampleApp extends RestartableApplicationBase {
     @Inject
     DefaultRequestErrorHandler errorHandler;
 
+    @Inject
+    DevelopmentFixture fixture;
+
     @Override
     protected void startImpl(Injector permanentInjector) {
         Salta.createInjector(
+                permanentInjector.getInstance(ApplicationStage.class)
+                        .getSaltaStage(),
                 new RestartableApplicationModule(permanentInjector))
                 .injectMembers(this);
 
@@ -35,6 +43,8 @@ public class SampleApp extends RestartableApplicationBase {
         config.requestErrorHandler = errorHandler;
 
         config.setBasePackage(SamplePackage.class);
+
+        config.developmentFixtureLoader = Optional.of(fixture);
 
         componentTemplateIndex.registerTemplate(CPage.class,
                 CPageHtmlTemplate.class);

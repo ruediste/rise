@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 import bitronix.tm.resource.jdbc.PoolingDataSource;
 
 import com.github.ruediste.rise.nonReloadable.persistence.PersistenceModuleUtil.DataSourceFactory;
+import com.p6spy.engine.spy.P6DataSource;
 
 public abstract class BitronixDataSourceFactory implements DataSourceFactory {
 
@@ -39,7 +40,7 @@ public abstract class BitronixDataSourceFactory implements DataSourceFactory {
         customizeDataSource(btmDataSource);
 
         closeableRegistrar.accept(btmDataSource::close);
-        return btmDataSource;
+        return new P6DataSource(btmDataSource);
     }
 
     /**
