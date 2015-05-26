@@ -10,11 +10,11 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.TransactionManager;
 
-import org.rendersnake.HtmlCanvas;
 import org.rendersnake.Renderable;
 import org.slf4j.Logger;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
+import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasTarget;
 import com.github.ruediste.rise.api.ViewComponent;
 import com.github.ruediste.rise.component.components.template.CWTemplate;
 import com.github.ruediste.rise.component.tree.Component;
@@ -26,7 +26,6 @@ import com.github.ruediste.rise.core.persistence.TransactionCallbackNoResult;
 import com.github.ruediste.rise.core.persistence.TransactionTemplate;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerSet;
-import com.github.ruediste.rise.core.web.assetPipeline.AssetRenderUtil;
 import com.github.ruediste.rise.nonReloadable.persistence.TransactionControl;
 import com.google.common.base.Charsets;
 
@@ -45,9 +44,6 @@ public class ComponentUtil implements ICoreUtil {
 
     @Inject
     ComponentTemplateIndex componentTemplateIndex;
-
-    @Inject
-    AssetRenderUtil assetRenderUtil;
 
     @Inject
     ComponentConfiguration componentConfiguration;
@@ -122,7 +118,7 @@ public class ComponentUtil implements ICoreUtil {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void render(Component component, HtmlCanvas html) {
+    public void render(Component component, HtmlCanvasTarget target) {
         try {
             ((CWTemplate) componentTemplateIndex.getTemplate(component
                     .getClass())).doRender(component, html);

@@ -1,12 +1,5 @@
 package com.github.ruediste.rise.integration;
 
-import static org.rendersnake.HtmlAttributesFactory.charset;
-import static org.rendersnake.HtmlAttributesFactory.class_;
-import static org.rendersnake.HtmlAttributesFactory.http_equiv;
-import static org.rendersnake.HtmlAttributesFactory.name;
-import static org.rendersnake.HtmlAttributesFactory.style;
-
-import java.io.IOException;
 import java.util.function.Function;
 
 import javax.inject.Inject;
@@ -26,48 +19,48 @@ import com.github.ruediste.rise.core.web.CoreAssetBundle;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.front.RestartCountHolder;
 
-public class RisePageTemplate<TCanvas extends Html5Canvas<? extends TCanvas>>
-		extends PageTemplateBase {
+public class RisePageTemplate<TCanvas extends Html5Canvas<TCanvas>> extends
+        PageTemplateBase {
 
-	@Inject
-	RestartCountHolder holder;
+    @Inject
+    RestartCountHolder holder;
 
-	@Inject
-	CoreConfiguration coreConfig;
+    @Inject
+    CoreConfiguration coreConfig;
 
-	@Inject
-	ComponentConfiguration componentConfig;
+    @Inject
+    ComponentConfiguration componentConfig;
 
-	@Inject
-	CoreRequestInfo coreRequestInfo;
+    @Inject
+    CoreRequestInfo coreRequestInfo;
 
-	@Inject
-	ComponentRequestInfo componentRequestInfo;
+    @Inject
+    ComponentRequestInfo componentRequestInfo;
 
-	@Inject
-	PageInfo pageInfo;
+    @Inject
+    PageInfo pageInfo;
 
-	@Inject
-	ApplicationStage stage;
+    @Inject
+    ApplicationStage stage;
 
-	public void renderOn(TCanvas html,
-			RisePageTemplateParameters<TCanvas> parameters) throws IOException {
+    public void renderOn(TCanvas html,
+            RisePageTemplateParameters<TCanvas> parameters) {
 
-		HtmlAttributes bodyAttributes = HtmlAttributesFactory.data(
-				CoreAssetBundle.bodyAttributeRestartQueryUrl,
-				url(coreConfig.restartQueryPathInfo)).data(
-				CoreAssetBundle.bodyAttributeRestartNr,
-				Long.toString(holder.get()));
-		if (componentRequestInfo.isComponentRequest()) {
-			bodyAttributes = bodyAttributes
-					.data(CoreAssetBundle.bodyAttributePageNr,
-							Long.toString(pageInfo.getPageId()))
-					.data(CoreAssetBundle.bodyAttributeReloadUrl,
-							url(componentConfig.getReloadPath()))
-					.data(CoreAssetBundle.bodyAttributeAjaxUrl,
-							url(componentConfig.getAjaxPath()));
-		}
-		//@formatter:off
+        HtmlAttributes bodyAttributes = HtmlAttributesFactory.data(
+                CoreAssetBundle.bodyAttributeRestartQueryUrl,
+                url(coreConfig.restartQueryPathInfo)).data(
+                CoreAssetBundle.bodyAttributeRestartNr,
+                Long.toString(holder.get()));
+        if (componentRequestInfo.isComponentRequest()) {
+            bodyAttributes = bodyAttributes
+                    .data(CoreAssetBundle.bodyAttributePageNr,
+                            Long.toString(pageInfo.getPageId()))
+                    .data(CoreAssetBundle.bodyAttributeReloadUrl,
+                            url(componentConfig.getReloadPath()))
+                    .data(CoreAssetBundle.bodyAttributeAjaxUrl,
+                            url(componentConfig.getAjaxPath()));
+        }
+        //@formatter:off
 		html.doctypeHtml5().html(); parameters.addHtmlAttributes(html);
 			html.head();
 				parameters.renderDefaultMetaTags(html);
@@ -79,68 +72,67 @@ public class RisePageTemplate<TCanvas extends Html5Canvas<? extends TCanvas>>
 			parameters.renderJsLinks(html);
 		html._body()._html();
 		//@formatter:on
-	}
+    }
 
-	public abstract static class RisePageTemplateParameters<TCanvas> {
-		protected void renderDefaultMetaTags(TCanvas html) throws IOException {
-			html.meta(charset("UTF-8"))
-					.meta(http_equiv("X-UA-Compatible").content("IE=edge"))
-					.meta(name("viewport").content(
-							"width=device-width, initial-scale=1"));
-		}
+    public abstract static class RisePageTemplateParameters<TCanvas extends Html5Canvas<TCanvas>> {
+        protected void renderDefaultMetaTags(TCanvas html) {
+            html.meta().CHARSET("UTF-8").meta().HTTP_EQUIV("X-UA-Compatible")
+                    .CONTENT("IE=edge").meta().NAME("viewport")
+                    .CONTENT("width=device-width, initial-scale=1");
+        }
 
-		protected void addHtmlAttributes(TCanvas html) {
-		}
+        protected void addHtmlAttributes(TCanvas html) {
+        }
 
-		/**
-		 * Hook to add additional attributes to the body tag
-		 */
-		protected void addBodyAttributes(TCanvas canvas) {
-		}
+        /**
+         * Hook to add additional attributes to the body tag
+         */
+        protected void addBodyAttributes(TCanvas canvas) {
+        }
 
-		/**
-		 * Render the CSS links of the resource bundle
-		 */
-		protected abstract void renderCssLinks(TCanvas html) throws IOException;
+        /**
+         * Render the CSS links of the resource bundle
+         */
+        protected abstract void renderCssLinks(TCanvas html);
 
-		/**
-		 * Render the JS links of the resource bundle
-		 */
-		protected abstract void renderJsLinks(TCanvas html) throws IOException;
+        /**
+         * Render the JS links of the resource bundle
+         */
+        protected abstract void renderJsLinks(TCanvas html);
 
-		/**
-		 * Render content of the head tag
-		 */
-		protected abstract void renderHead(TCanvas html) throws IOException;
+        /**
+         * Render content of the head tag
+         */
+        protected abstract void renderHead(TCanvas html);
 
-		/**
-		 * Render content of the body tag
-		 */
-		protected abstract void renderBody(TCanvas html) throws IOException;
-	}
+        /**
+         * Render content of the body tag
+         */
+        protected abstract void renderBody(TCanvas html);
+    }
 
-	/**
-	 * create a renderable for the stage ribbon
-	 * 
-	 * @param isFixed
-	 *            if true, the ribbon is fixed to the top of the viewport,
-	 *            otherwise to the top of the page
-	 * @param urlPoducer
-	 *            produces the link to
-	 *            {@link StageRibbonControllerBase#index(String)}
-	 */
-	public Renderable stageRibbon(boolean isFixed,
-			Function<String, ActionResult> urlPoducer) {
-		return html -> {
-			html.div(
-					class_(
-							"rise-ribbon"
-									+ (isFixed ? " rise-ribbon-fixed" : ""))
-							.style("background: " + stage.backgroundColor))
-					.a(style("color: " + stage.color).href(
-							url(urlPoducer.apply(coreRequestInfo.getRequest()
-									.getPathInfo()))))
-					.content(stage.toString())._div();
-		};
-	}
+    /**
+     * create a renderable for the stage ribbon
+     * 
+     * @param isFixed
+     *            if true, the ribbon is fixed to the top of the viewport,
+     *            otherwise to the top of the page
+     * @param urlPoducer
+     *            produces the link to
+     *            {@link StageRibbonControllerBase#index(String)}
+     */
+    public Renderable<TCanvas> stageRibbon(boolean isFixed,
+            Function<String, ActionResult> urlPoducer) {
+        return html -> {
+            html.div()
+                    .CLASS("rise-ribbon"
+                            + (isFixed ? " rise-ribbon-fixed" : ""))
+                    .STYLE("background: " + stage.backgroundColor)
+
+                    .a()
+                    .STYLE("color: " + stage.color)
+                    .HREF(url(urlPoducer.apply(coreRequestInfo.getRequest()
+                            .getPathInfo()))).content(stage.toString())._div();
+        };
+    }
 }

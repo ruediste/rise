@@ -5,7 +5,6 @@ import java.io.IOException;
 import javax.inject.Inject;
 
 import org.rendersnake.HtmlCanvas;
-import org.rendersnake.Renderable;
 
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.tree.Component;
@@ -14,7 +13,6 @@ import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
 import com.github.ruediste.rise.core.web.PathInfo;
-import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 
 public class ComponentTemplateBase<T extends Component> implements
         CWTemplate<T> {
@@ -49,14 +47,6 @@ public class ComponentTemplateBase<T extends Component> implements
 
     public String url(ActionResult path) {
         return util.url(path);
-    }
-
-    public Renderable cssLinks(AssetBundleOutput output) {
-        return util.cssLinks(output);
-    }
-
-    public Renderable jsLinks(AssetBundleOutput output) {
-        return util.jsLinks(output);
     }
 
     public String combineCssClasses(String... classes) {

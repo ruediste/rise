@@ -7,8 +7,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import org.rendersnake.Renderable;
-
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
@@ -16,8 +14,6 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.httpRequest.HttpRequestImpl;
 import com.github.ruediste.rise.core.web.PathInfo;
-import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
-import com.github.ruediste.rise.core.web.assetPipeline.AssetRenderUtil;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
 
@@ -28,9 +24,6 @@ public class CoreUtil implements ICoreUtil {
 
     @Inject
     HttpService httpService;
-
-    @Inject
-    AssetRenderUtil assetRenderUtil;
 
     @Inject
     Provider<ActionInvocationBuilder> actionPathBuilderProvider;
@@ -103,16 +96,6 @@ public class CoreUtil implements ICoreUtil {
                 .filter(x -> !Strings.isNullOrEmpty(x))
                 .map(CharMatcher.WHITESPACE::trimFrom)
                 .collect(Collectors.joining(" "));
-    }
-
-    @Override
-    public Renderable jsLinks(AssetBundleOutput output) {
-        return assetRenderUtil.renderJs(this::url, output);
-    }
-
-    @Override
-    public Renderable cssLinks(AssetBundleOutput output) {
-        return assetRenderUtil.renderCss(this::url, output);
     }
 
     @Override

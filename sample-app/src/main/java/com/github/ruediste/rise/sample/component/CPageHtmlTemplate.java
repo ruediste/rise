@@ -1,7 +1,5 @@
 package com.github.ruediste.rise.sample.component;
 
-import java.io.IOException;
-
 import javax.inject.Inject;
 
 import org.rendersnake.HtmlCanvas;
@@ -11,6 +9,7 @@ import com.github.ruediste.rise.component.components.template.ComponentTemplateB
 import com.github.ruediste.rise.integration.RisePageTemplate;
 import com.github.ruediste.rise.integration.RisePageTemplate.RisePageTemplateParameters;
 import com.github.ruediste.rise.sample.SampleBundle;
+import com.github.ruediste.rise.sample.SampleCanvas;
 
 public class CPageHtmlTemplate extends ComponentTemplateBase<CPage> {
 
@@ -18,29 +17,29 @@ public class CPageHtmlTemplate extends ComponentTemplateBase<CPage> {
     SampleBundle bundle;
 
     @Inject
-    RisePageTemplate page;
+    RisePageTemplate<SampleCanvas> page;
 
     @Override
-    public void doRender(CPage component, HtmlCanvas html) throws IOException {
-        page.renderOn(html, new RisePageTemplateParameters() {
+    public void doRender(CPage component, HtmlCanvas html) {
+        page.renderOn(html, new RisePageTemplateParameters<SampleCanvas>() {
 
             @Override
-            protected void renderJsLinks(HtmlCanvas html) throws IOException {
-                html.render(jsLinks(bundle.out));
+            protected void renderJsLinks(SampleCanvas html) {
+                html.rJsLinks(bundle.out);
             }
 
             @Override
-            protected void renderHead(HtmlCanvas html) throws IOException {
+            protected void renderHead(SampleCanvas html) {
 
             }
 
             @Override
-            protected void renderCssLinks(HtmlCanvas html) throws IOException {
-                html.render(cssLinks(bundle.out));
+            protected void renderCssLinks(SampleCanvas html) {
+                html.rCssLinks(bundle.out);
             }
 
             @Override
-            protected void renderBody(HtmlCanvas html) throws IOException {
+            protected void renderBody(SampleCanvas html) {
                 component.getChildren().forEach(
                         child -> util.render(child, html));
 

@@ -4,14 +4,11 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.rendersnake.Renderable;
-
 import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasTarget;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
 import com.github.ruediste.rise.core.web.PathInfo;
-import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.mvc.IControllerMvc;
 import com.github.ruediste.rise.mvc.MvcUtil;
 import com.google.common.reflect.TypeToken;
@@ -21,68 +18,60 @@ import com.google.common.reflect.TypeToken;
  */
 public abstract class ViewMvcBase<TController extends IControllerMvc, TData> {
 
-	@Inject
-	private MvcUtil util;
+    @Inject
+    private MvcUtil util;
 
-	private TData data;
+    private TData data;
 
-	private Class<? extends TController> controllerClass;
+    private Class<? extends TController> controllerClass;
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected ViewMvcBase() {
-		controllerClass = (Class) TypeToken.of(getClass())
-				.resolveType(ViewMvcBase.class.getTypeParameters()[0])
-				.getRawType();
-	}
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected ViewMvcBase() {
+        controllerClass = (Class) TypeToken.of(getClass())
+                .resolveType(ViewMvcBase.class.getTypeParameters()[0])
+                .getRawType();
+    }
 
-	public void setControllerClass(Class<? extends TController> controllerClass) {
-		this.controllerClass = controllerClass;
-	}
+    public void setControllerClass(Class<? extends TController> controllerClass) {
+        this.controllerClass = controllerClass;
+    }
 
-	public final void initialize(TData data) {
-		this.data = data;
-	}
+    public final void initialize(TData data) {
+        this.data = data;
+    }
 
-	public final TData data() {
-		return data;
-	}
+    public final TData data() {
+        return data;
+    }
 
-	/**
-	 * Render this view to the provided canvas
-	 */
-	abstract public void render(HtmlCanvasTarget htmlTarget) throws IOException;
+    /**
+     * Render this view to the provided canvas
+     */
+    abstract public void render(HtmlCanvasTarget htmlTarget) throws IOException;
 
-	public ActionInvocationBuilderKnownController<? extends TController> path() {
-		return util.path(controllerClass);
-	}
+    public ActionInvocationBuilderKnownController<? extends TController> path() {
+        return util.path(controllerClass);
+    }
 
-	public <T extends IController> ActionInvocationBuilderKnownController<T> path(
-			Class<T> controllerClass) {
-		return util.path(controllerClass);
-	}
+    public <T extends IController> ActionInvocationBuilderKnownController<T> path(
+            Class<T> controllerClass) {
+        return util.path(controllerClass);
+    }
 
-	public <T extends IController> T go(Class<T> controllerClass) {
-		return util.go(controllerClass);
-	}
+    public <T extends IController> T go(Class<T> controllerClass) {
+        return util.go(controllerClass);
+    }
 
-	public TController go() {
-		return util.go(controllerClass);
-	}
+    public TController go() {
+        return util.go(controllerClass);
+    }
 
-	public String url(ActionResult path) {
-		return util.url(path);
-	}
+    public String url(ActionResult path) {
+        return util.url(path);
+    }
 
-	public String url(PathInfo path) {
-		return util.url(path);
-	}
-
-	public Renderable jsLinks(AssetBundleOutput output) {
-		return util.jsLinks(output);
-	}
-
-	public Renderable cssLinks(AssetBundleOutput output) {
-		return util.cssLinks(output);
-	}
+    public String url(PathInfo path) {
+        return util.url(path);
+    }
 
 }

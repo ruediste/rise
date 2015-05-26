@@ -8,8 +8,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.transaction.TransactionManager;
 
-import org.rendersnake.HtmlCanvas;
-
+import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasTarget;
 import com.github.ruediste.rise.api.ViewMvcBase;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
@@ -59,10 +58,10 @@ public class MvcUtil implements ICoreUtil {
         ByteArrayOutputStream stream = new ByteArrayOutputStream(1024);
         OutputStreamWriter writer = new OutputStreamWriter(stream,
                 Charsets.UTF_8);
-        HtmlCanvas canvas = new HtmlCanvas(writer);
+        HtmlCanvasTarget target = new HtmlCanvasTarget(writer);
 
         try {
-            view.render(canvas);
+            view.render(target);
             writer.flush();
         } catch (IOException e) {
             throw new RuntimeException("Error while rendering view", e);

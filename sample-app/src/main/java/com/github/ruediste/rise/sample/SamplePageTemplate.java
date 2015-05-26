@@ -4,8 +4,6 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.rendersnake.HtmlCanvas;
-
 import com.github.ruediste.rise.integration.PageTemplateBase;
 import com.github.ruediste.rise.integration.RisePageTemplate;
 import com.github.ruediste.rise.integration.RisePageTemplate.RisePageTemplateParameters;
@@ -16,33 +14,38 @@ public class SamplePageTemplate extends PageTemplateBase {
     SampleBundle bundle;
 
     @Inject
-    RisePageTemplate risePageTemplate;
+    RisePageTemplate<SampleCanvas> risePageTemplate;
 
-    public void renderOn(HtmlCanvas canvas,
+    public void renderOn(SampleCanvas canvas,
             SamplePageTemplateParameters parameters) throws IOException {
         // your drawing code
-        risePageTemplate.renderOn(canvas, new RisePageTemplateParameters() {
+        risePageTemplate.renderOn(canvas,
+                new RisePageTemplateParameters<SampleCanvas>() {
 
-            @Override
-            protected void renderJsLinks(HtmlCanvas html) throws IOException {
-                html.render(jsLinks(bundle.out));
-            }
+                    @Override
+                    protected void renderJsLinks(SampleCanvas html)
+                            throws IOException {
+                        html.rJsLinks(bundle.out);
+                    }
 
-            @Override
-            protected void renderCssLinks(HtmlCanvas html) throws IOException {
-                html.render(cssLinks(bundle.out));
-            }
+                    @Override
+                    protected void renderCssLinks(SampleCanvas html)
+                            throws IOException {
+                        html.rCssLinks(bundle.out);
+                    }
 
-            @Override
-            protected void renderHead(HtmlCanvas html) throws IOException {
-                // YOUR DRAWING CODE
-            }
+                    @Override
+                    protected void renderHead(SampleCanvas html)
+                            throws IOException {
+                        // YOUR DRAWING CODE
+                    }
 
-            @Override
-            protected void renderBody(HtmlCanvas html) throws IOException {
-                // YOUR DRAWING CODE
-            }
-        });
+                    @Override
+                    protected void renderBody(SampleCanvas html)
+                            throws IOException {
+                        // YOUR DRAWING CODE
+                    }
+                });
     }
 
     public interface SamplePageTemplateParameters {

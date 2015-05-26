@@ -2,14 +2,11 @@ package com.github.ruediste.rise.core;
 
 import java.util.function.Supplier;
 
-import org.rendersnake.Renderable;
-
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.web.PathInfo;
-import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 
 public interface ICoreUtil {
 
@@ -52,14 +49,6 @@ public interface ICoreUtil {
 
     default PathInfo toPathInfo(ActionResult invocation) {
         return getCoreUtil().toPathInfo(invocation);
-    }
-
-    default Renderable cssLinks(AssetBundleOutput output) {
-        return getCoreUtil().cssLinks(output);
-    }
-
-    default Renderable jsLinks(AssetBundleOutput output) {
-        return getCoreUtil().jsLinks(output);
     }
 
     default String combineCssClasses(String... classes) {

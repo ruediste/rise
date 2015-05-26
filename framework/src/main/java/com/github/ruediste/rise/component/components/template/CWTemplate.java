@@ -2,8 +2,7 @@ package com.github.ruediste.rise.component.components.template;
 
 import java.io.IOException;
 
-import org.rendersnake.HtmlCanvas;
-
+import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasTarget;
 import com.github.ruediste.rise.component.tree.Component;
 
 /**
@@ -18,7 +17,7 @@ import com.github.ruediste.rise.component.tree.Component;
  */
 public interface CWTemplate<T extends Component> {
 
-    void doRender(T component, HtmlCanvas html) throws IOException;
+    void doRender(T component, HtmlCanvasTarget html) throws IOException;
 
     void applyValues(T componentl);
 
