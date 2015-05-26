@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import org.rendersnake.HtmlCanvas;
 
 import com.github.ruediste.rise.api.ControllerMvc;
-import com.github.ruediste.rise.api.ViewMvc;
+import com.github.ruediste.rise.api.ViewMvcBase;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.PathInfoIndex;
 import com.github.ruediste.rise.core.web.ActionPath;
@@ -17,7 +17,7 @@ import com.github.ruediste.rise.core.web.PathInfo;
 
 public class ShowAllController extends ControllerMvc<ShowAllController> {
 
-    private static class View extends ViewMvc<ShowAllController, Object> {
+    private static class View extends ViewMvcBase<ShowAllController, Object> {
 
         @Inject
         PathInfoIndex idx;

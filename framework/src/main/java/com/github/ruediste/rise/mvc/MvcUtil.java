@@ -10,7 +10,7 @@ import javax.transaction.TransactionManager;
 
 import org.rendersnake.HtmlCanvas;
 
-import com.github.ruediste.rise.api.ViewMvc;
+import com.github.ruediste.rise.api.ViewMvcBase;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreUtil;
@@ -50,7 +50,7 @@ public class MvcUtil implements ICoreUtil {
         return coreUtil;
     }
 
-    public <TView extends ViewMvc<?, TData>, TData> ActionResult view(
+    public <TView extends ViewMvcBase<?, TData>, TData> ActionResult view(
             Class<TView> viewClass, TData data) {
 
         TView view = injector.getInstance(viewClass);

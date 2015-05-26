@@ -12,7 +12,7 @@ import org.rendersnake.internal.CharactersWriteable;
 import org.slf4j.Logger;
 
 import com.github.ruediste.rise.api.ControllerMvc;
-import com.github.ruediste.rise.api.ViewMvc;
+import com.github.ruediste.rise.api.ViewMvcBase;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
@@ -46,7 +46,7 @@ public abstract class StageRibbonControllerBase<TSelf extends StageRibbonControl
     }
 
     private static class View extends
-            ViewMvc<StageRibbonControllerBase<?>, Data> {
+            ViewMvcBase<StageRibbonControllerBase<?>, Data> {
 
         @Inject
         ApplicationStage stage;
