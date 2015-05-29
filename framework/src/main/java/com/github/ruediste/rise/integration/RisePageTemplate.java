@@ -4,9 +4,6 @@ import java.util.function.Function;
 
 import javax.inject.Inject;
 
-import org.rendersnake.HtmlAttributes;
-import org.rendersnake.HtmlAttributesFactory;
-
 import com.github.ruediste.rendersnakeXT.canvas.Html5Canvas;
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.component.ComponentConfiguration;
@@ -19,7 +16,7 @@ import com.github.ruediste.rise.core.web.CoreAssetBundle;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.front.RestartCountHolder;
 
-public class RisePageTemplate<TCanvas extends Html5Canvas<TCanvas>> extends
+public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>> extends
         PageTemplateBase {
 
     @Inject
@@ -46,20 +43,6 @@ public class RisePageTemplate<TCanvas extends Html5Canvas<TCanvas>> extends
     public void renderOn(TCanvas html,
             RisePageTemplateParameters<TCanvas> parameters) {
 
-        HtmlAttributes bodyAttributes = HtmlAttributesFactory.data(
-                CoreAssetBundle.bodyAttributeRestartQueryUrl,
-                url(coreConfig.restartQueryPathInfo)).data(
-                CoreAssetBundle.bodyAttributeRestartNr,
-                Long.toString(holder.get()));
-        if (componentRequestInfo.isComponentRequest()) {
-            bodyAttributes = bodyAttributes
-                    .data(CoreAssetBundle.bodyAttributePageNr,
-                            Long.toString(pageInfo.getPageId()))
-                    .data(CoreAssetBundle.bodyAttributeReloadUrl,
-                            url(componentConfig.getReloadPath()))
-                    .data(CoreAssetBundle.bodyAttributeAjaxUrl,
-                            url(componentConfig.getAjaxPath()));
-        }
         //@formatter:off
 		html.doctypeHtml5().html(); parameters.addHtmlAttributes(html);
 			html.head();
@@ -67,7 +50,14 @@ public class RisePageTemplate<TCanvas extends Html5Canvas<TCanvas>> extends
 				parameters.renderHead(html);
 				parameters.renderCssLinks(html);
 		html._head()
-		.body(); parameters.addBodyAttributes(html);
+		.body().DATA(CoreAssetBundle.bodyAttributeRestartQueryUrl,url(coreConfig.restartQueryPathInfo))
+		       .DATA(CoreAssetBundle.bodyAttributeRestartNr,Long.toString(holder.get()));
+	        if (componentRequestInfo.isComponentRequest()) {
+	            html.DATA(CoreAssetBundle.bodyAttributePageNr,Long.toString(pageInfo.getPageId()))
+                    .DATA(CoreAssetBundle.bodyAttributeReloadUrl,url(componentConfig.getReloadPath()))
+                    .DATA(CoreAssetBundle.bodyAttributeAjaxUrl,url(componentConfig.getAjaxPath()));
+	        }
+		    parameters.addBodyAttributes(html);
 			parameters.renderBody(html);
 			parameters.renderJsLinks(html);
 		html._body()._html();
@@ -131,8 +121,8 @@ public class RisePageTemplate<TCanvas extends Html5Canvas<TCanvas>> extends
 
                     .a()
                     .STYLE("color: " + stage.color)
-                    .HREF(url(urlPoducer.apply(coreRequestInfo.getRequest()
-                            .getPathInfo()))).content(stage.toString())._div();
+                    .HREF(urlPoducer.apply(coreRequestInfo.getRequest()
+                            .getPathInfo())).content(stage.toString())._div();
         };
     }
 }

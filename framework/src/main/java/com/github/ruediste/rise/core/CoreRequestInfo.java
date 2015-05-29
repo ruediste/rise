@@ -17,6 +17,7 @@ public class CoreRequestInfo {
     private HttpRenderResult actionResult;
 
     private ActionInvocation<String> stringActionInvocation;
+    private ActionInvocation<Object> objectActionInvocation;
 
     private Throwable requestError;
 
@@ -75,6 +76,15 @@ public class CoreRequestInfo {
 
     public void setRequestError(Throwable requestError) {
         this.requestError = requestError;
+    }
+
+    public ActionInvocation<Object> getObjectActionInvocation() {
+        return objectActionInvocation;
+    }
+
+    public void setObjectActionInvocation(
+            ActionInvocation<Object> objectActionInvocation) {
+        this.objectActionInvocation = objectActionInvocation;
     }
 
 }

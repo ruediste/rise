@@ -7,9 +7,9 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.rendersnake.HtmlCanvas;
 import org.slf4j.Logger;
 
+import com.github.ruediste.rise.sample.SampleCanvas;
 import com.github.ruediste.rise.sample.db.TodoController.IndexData;
 
 public class TodoView extends PageView<TodoController, IndexData> {
@@ -18,7 +18,7 @@ public class TodoView extends PageView<TodoController, IndexData> {
     Logger log;
 
     @Override
-    protected void renderBody(HtmlCanvas html) throws IOException {
+    protected void renderBody(SampleCanvas html) throws IOException {
 
         // @formatter:off
 		html

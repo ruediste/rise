@@ -1,13 +1,7 @@
 package com.github.ruediste.rise.sample.front;
 
-import static org.rendersnake.HtmlAttributesFactory.class_;
-import static org.rendersnake.HtmlAttributesFactory.id;
-
-import java.io.IOException;
-
 import javax.inject.Inject;
 
-import org.rendersnake.HtmlCanvas;
 import org.slf4j.Logger;
 
 import com.github.ruediste.rise.api.ControllerMvc;
@@ -18,6 +12,7 @@ import com.github.ruediste.rise.core.web.RedirectToRefererRenderResult;
 import com.github.ruediste.rise.mvc.Updating;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
+import com.github.ruediste.rise.sample.SampleCanvas;
 import com.github.ruediste.rise.sample.db.PageView;
 import com.github.ruediste.rise.sample.welcome.WelcomeController;
 import com.google.common.base.Throwables;
@@ -47,64 +42,67 @@ public class ReqestErrorController extends ControllerMvc<ReqestErrorController> 
     private static class View extends PageView<ReqestErrorController, Data> {
 
         @Override
-        protected void renderBody(HtmlCanvas html) throws IOException {
+        public String getTitle() {
+            return "Unexpected Error";
+        }
+
+        @Override
+        public void renderBody(SampleCanvas html) {
             // @formatter:off
-			html
-			.nav(class_("navbar navbar-inverse navbar-fixed-top"))._nav()
-			.div(class_("container"))
-				.div(class_("row"))
-					.div(class_("col-xs-12"))
+			html.bContainer()
+			    .bRow()
+			        .bCol(x->x.xs(12))
 						.h1().content("Unexpected Error Occured")
-					._div()
-				._div()
-				.div(class_("jumbotron"))
-					.div(class_("row"))
-						.div(class_("col-xs-12"))
-						    .form(class_("form-horizontal"))
+					._bCol()
+				._bRow()
+				.div().CLASS("jumbotron")
+				    .bRow()
+				        .bCol(x->x.xs(12))
+						    .form().B_FORM_HORIZONTAL()
 						        .fieldset()
 						            .legend()
 						                .content("Open support ticket")
-						            .div(class_("control-group"))
-						                .label(class_("control-label").for_("message"))
-						                    .content("What were you doing?")
-						                .div(class_("controls"))
-						                    .textarea(id("message").name("message").style("width:100%;").rows("10"))
+						            .bFormGroup()
+						                .bControlLabel(x->x.sm(2)).FOR("message").content("What were you doing?")
+						                .bCol(x->x.sm(10))
+						                    .textarea().B_FORM_CONTROL().ID("message").NAME("message").STYLE("width:100%;").ROWS("10")
 						                        .content("I tried to ...")
-						                ._div()
-						            ._div()
-						            .div(class_("control-group"))
-						                .div(class_("controls"))
-						                    .button(id("createTicket").name("createTicket").class_("btn btn-success"))
+						                 ._bCol()
+						            ._bFormGroup();
+						            html.bFormGroup()
+						                .bCol(x->x.sm(10).smOffset(2))
+						                    .bButton(x->x.success()).ID("createTicket").NAME("createTicket")
 						                        .content("Create Ticket")
-						                ._div()
-						            ._div()
+				                        ._bCol()
+						            ._bFormGroup()
 						        ._fieldset()
 						    ._form()
-						._div()
-					._div()
-				._div()
-				.div(class_("row"))
-    				.div(class_("col-xs-12"))
-    					.a(class_("btn btn-primary").href(url(go(WelcomeController.class).index()))).content("Go to Start Page")
-    				._div()
+						._bCol()
+					._bRow()
 				._div();
+				html.bRow()
+				    .bCol(x->x.xs(12))
+				        .bButtonA(x->x.primary()).HREF(go(WelcomeController.class).index()).content("Go to Start Page")
+    				._bCol()
+				._bRow();
 			    if (data().stage!=null && data().stage!=ApplicationStage.PRODUCTION){
-    				html.div(class_("row"))
-                        .div(class_("col-xs-12"))
+    				html.bRow()
+    				    .bCol(x->x.xs(12))
                             .pre().content(data().message)
-                        ._div()
-                    ._div();
+                        ._bCol()
+                    ._bRow();
 			    }
 			    if (data().stage==ApplicationStage.DEVELOPMENT){
-			        html.div(class_("row"))
-    			        .div(class_("col-xs-12"))
-    			            .a(class_("btn btn-danger").href(url(go().dropAndCreateDataBase()))).content("Drop-And-Create Database")
-    			        ._div()
-			        ._div();
+			        html.bRow()
+                    .bCol(x->x.xs(12))
+                        .bButtonA(x->x.danger()).HREF(go().dropAndCreateDataBase()).content("Drop-And-Create Database")
+                        ._bCol()
+                    ._bRow();
 			    }
-			html._div();
+			html._bContainer();
 			// @formatter:on
         }
+
     }
 
     public ActionResult index() {

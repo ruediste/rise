@@ -82,13 +82,13 @@ public class StageRibbonController extends
                     .bRow()
                         .bCol(x->x.xs(12).sm(6)).BtextCenter()
                             .a().CLASS("btn btn-primary")
-                                    .HREF(url(new PathInfo(data().originPathInfo)))
+                                    .HREF(new PathInfo(data().originPathInfo))
                                       .span().CLASS("glyphicon glyphicon-arrow-left")._span().content("Go Back")
                         ._bCol();
                         if (stage==ApplicationStage.DEVELOPMENT)
                             html.div().CLASS("col-xs-12 col-sm-6 text-center")
                                 .a().CLASS("btn btn-danger")
-                                        .HREF(url(go().dropAndCreateDataBase(data().originPathInfo)))
+                                        .HREF(go().dropAndCreateDataBase(data().originPathInfo))
                                         .span().CLASS("glyphicon glyphicon-refresh")._span().content("Drop-and-Create Database")
                             ._div();
                     html._bRow() 

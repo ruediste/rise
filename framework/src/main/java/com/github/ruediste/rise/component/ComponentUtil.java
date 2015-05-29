@@ -10,13 +10,14 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.TransactionManager;
 
-import org.rendersnake.Renderable;
 import org.slf4j.Logger;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
+import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvas;
 import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasTarget;
+import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.api.ViewComponent;
-import com.github.ruediste.rise.component.components.template.CWTemplate;
+import com.github.ruediste.rise.component.components.template.ComponentTemplate;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ComponentTreeUtil;
 import com.github.ruediste.rise.core.CoreRequestInfo;
@@ -26,6 +27,7 @@ import com.github.ruediste.rise.core.persistence.TransactionCallbackNoResult;
 import com.github.ruediste.rise.core.persistence.TransactionTemplate;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerSet;
+import com.github.ruediste.rise.integration.RiseCanvas;
 import com.github.ruediste.rise.nonReloadable.persistence.TransactionControl;
 import com.google.common.base.Charsets;
 
@@ -107,8 +109,9 @@ public class ComponentUtil implements ICoreUtil {
         OutputStreamWriter writer = new OutputStreamWriter(stream,
                 Charsets.UTF_8);
         try {
-            HtmlCanvas canvas = new HtmlCanvas(writer);
-            render(rootComponent, canvas);
+            HtmlCanvasTarget target = new HtmlCanvasTarget(writer);
+            render(rootComponent, target);
+            target.commitAttributes();
             writer.close();
         } catch (IOException e) {
             throw new RuntimeException("Error while rendering component view",
@@ -117,11 +120,15 @@ public class ComponentUtil implements ICoreUtil {
         return stream.toByteArray();
     }
 
+    public void render(Component component, HtmlCanvas<?> canvas) {
+        render(component, canvas.internal_target());
+    }
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void render(Component component, HtmlCanvasTarget target) {
         try {
-            ((CWTemplate) componentTemplateIndex.getTemplate(component
-                    .getClass())).doRender(component, html);
+            ((ComponentTemplate) componentTemplateIndex.getTemplate(component
+                    .getClass())).doRender(component, target);
         } catch (IOException e) {
             throw new RuntimeException("Error while rendering component", e);
         }
@@ -130,14 +137,14 @@ public class ComponentUtil implements ICoreUtil {
     /**
      * Create a renderable rendering a component (including children)
      */
-    public Renderable component(Component component) {
+    public Renderable<RiseCanvas<?>> component(Component component) {
         return html -> render(component, html);
     }
 
     /**
      * Create a renderable rendering a component (including children)
      */
-    public Renderable components(Iterable<Component> components) {
+    public Renderable<RiseCanvas<?>> components(Iterable<Component> components) {
         return html -> components.forEach(c -> render(c, html));
     }
 

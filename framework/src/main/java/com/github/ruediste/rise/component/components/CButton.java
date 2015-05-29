@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.component.components;
 
 import com.github.ruediste.rise.component.components.template.CButtonHtmlTemplate;
+import com.github.ruediste.rise.component.tree.Component;
 
 @DefaultTemplate(CButtonHtmlTemplate.class)
 public class CButton extends MultiChildrenComponent<CButton> {
@@ -9,8 +10,8 @@ public class CButton extends MultiChildrenComponent<CButton> {
     public CButton() {
     }
 
-    public CButton(String text) {
-        add(new CRender(html -> html.write(text)));
+    public CButton(Component child) {
+        add(child);
     }
 
     public CButton handler(Runnable handler) {

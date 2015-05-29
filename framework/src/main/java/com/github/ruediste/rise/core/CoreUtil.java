@@ -38,7 +38,12 @@ public class CoreUtil implements ICoreUtil {
 
     @Override
     public PathInfo toPathInfo(ActionResult invocation) {
-        return toPathInfo((ActionInvocation<Object>) ((ActionInvocationResult) invocation));
+        return toPathInfo(toActionInvocation(invocation));
+    }
+
+    @Override
+    public ActionInvocation<Object> toActionInvocation(ActionResult invocation) {
+        return ((ActionInvocationResult) invocation);
     }
 
     @Override

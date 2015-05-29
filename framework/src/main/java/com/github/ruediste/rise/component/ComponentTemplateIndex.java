@@ -8,12 +8,12 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 
 import com.github.ruediste.rise.component.components.DefaultTemplate;
-import com.github.ruediste.rise.component.components.template.CWTemplate;
+import com.github.ruediste.rise.component.components.template.ComponentTemplate;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.salta.jsr330.Injector;
 
 /**
- * Index storing the {@link CWTemplate}s associated with a {@link Component}.
+ * Index storing the {@link ComponentTemplate}s associated with a {@link Component}.
  * The index typically looks up templates using the {@link DefaultTemplate}
  * annotation.
  */
@@ -26,16 +26,16 @@ public class ComponentTemplateIndex {
     @Inject
     Injector injector;
 
-    private ConcurrentHashMap<Class<?>, CWTemplate<?>> templates = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Class<?>, ComponentTemplate<?>> templates = new ConcurrentHashMap<>();
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <T extends Component> CWTemplate<T> getTemplate(T component) {
+    public <T extends Component> ComponentTemplate<T> getTemplate(T component) {
         return getTemplate((Class) component.getClass());
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Component> CWTemplate<T> getTemplate(Class<T> component) {
-        return (CWTemplate<T>) templates
+    public <T extends Component> ComponentTemplate<T> getTemplate(Class<T> component) {
+        return (ComponentTemplate<T>) templates
                 .computeIfAbsent(
                         component,
                         cls -> {
@@ -52,12 +52,12 @@ public class ComponentTemplateIndex {
     }
 
     public <T extends Component> void registerTemplate(Class<T> component,
-            CWTemplate<T> template) {
+            ComponentTemplate<T> template) {
         templates.put(component, template);
     }
 
     public <T extends Component> void registerTemplate(Class<T> component,
-            Class<? extends CWTemplate<T>> template) {
+            Class<? extends ComponentTemplate<T>> template) {
         templates.put(component, injector.getInstance(template));
     }
 }

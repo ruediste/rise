@@ -1,6 +1,8 @@
 package com.github.ruediste.rise.integration;
 
 import com.github.ruediste.rendersnakeXT.canvas.Html5Canvas;
+import com.github.ruediste.rise.core.ActionResult;
+import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
 
@@ -25,5 +27,13 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends
     default TSelf rJsLinks(AssetBundleOutput output) {
         internal_riseHelper().rJsLinks(this, output);
         return self();
+    }
+
+    default TSelf HREF(ActionResult destination) {
+        return HREF(internal_riseHelper().getUtil().url(destination));
+    }
+
+    default TSelf HREF(PathInfo destination) {
+        return HREF(internal_riseHelper().getUtil().url(destination));
     }
 }

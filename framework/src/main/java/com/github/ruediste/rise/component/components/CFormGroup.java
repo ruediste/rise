@@ -9,6 +9,9 @@ import com.github.ruediste.rise.component.ConstraintViolationAware;
 import com.github.ruediste.rise.component.ValidationState;
 import com.github.ruediste.rise.component.tree.ComponentBase;
 
+/**
+ * 
+ */
 public class CFormGroup<T extends ComponentBase<T>> extends ComponentBase<T>
         implements ConstraintViolationAware {
 

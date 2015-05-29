@@ -1,11 +1,8 @@
 package com.github.ruediste.rise.component.components.template;
 
-import java.io.IOException;
-
 import javax.inject.Inject;
 
-import org.rendersnake.HtmlCanvas;
-
+import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.ActionResult;
@@ -13,19 +10,13 @@ import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
 import com.github.ruediste.rise.core.web.PathInfo;
+import com.github.ruediste.rise.integration.RiseCanvas;
 
-public class ComponentTemplateBase<T extends Component> implements
-        CWTemplate<T> {
+public abstract class ComponentTemplateBase<T extends Component> implements
+        ComponentTemplate<T> {
 
     @Inject
     protected ComponentUtil util;
-
-    @Override
-    public void doRender(T component, HtmlCanvas html) throws IOException {
-        for (Component child : component.getChildren()) {
-            render(child, html);
-        }
-    }
 
     @Override
     public void applyValues(T component) {
@@ -53,12 +44,12 @@ public class ComponentTemplateBase<T extends Component> implements
         return util.combineCssClasses(classes);
     }
 
-    public <T extends IController> T go(Class<T> controllerClass) {
+    public <P extends IController> P go(Class<P> controllerClass) {
         return util.go(controllerClass);
     }
 
-    public <T extends IController> ActionInvocationBuilderKnownController<T> path(
-            Class<T> controllerClass) {
+    public <P extends IController> ActionInvocationBuilderKnownController<P> path(
+            Class<P> controllerClass) {
         return util.path(controllerClass);
     }
 
@@ -74,10 +65,6 @@ public class ComponentTemplateBase<T extends Component> implements
         return util.path();
     }
 
-    public void render(Component component, HtmlCanvas html) {
-        util.render(component, html);
-    }
-
     public String getComponentId(Component component) {
         return util.getComponentId(component);
     }
@@ -90,4 +77,42 @@ public class ComponentTemplateBase<T extends Component> implements
         return util.isParameterDefined(component, key);
     }
 
+    /**
+     * To be used together with {@link RiseCanvas#render(Renderable)}.
+     * 
+     * <pre>
+     * {@code
+     * html.render(component(c));
+     * }
+     * </pre>
+     */
+    public Renderable<RiseCanvas<?>> component(Component component) {
+        return util.component(component);
+    }
+
+    /**
+     * To be used together with {@link RiseCanvas#render(Renderable)}.
+     * 
+     * <pre>
+     * {@code
+     * html.render(components(c.getChildren()));
+     * }
+     * </pre>
+     */
+    public Renderable<RiseCanvas<?>> components(Iterable<Component> components) {
+        return util.components(components);
+    }
+
+    /**
+     * To be used together with {@link RiseCanvas#render(Renderable)}.
+     * 
+     * <pre>
+     * {@code
+     * html.render(children(c)));
+     * }
+     * </pre>
+     */
+    public Renderable<RiseCanvas<?>> children(Component c) {
+        return util.components(c.getChildren());
+    }
 }

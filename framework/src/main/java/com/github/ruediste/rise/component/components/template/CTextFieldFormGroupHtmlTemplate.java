@@ -1,20 +1,18 @@
 package com.github.ruediste.rise.component.components.template;
 
-import static org.rendersnake.HtmlAttributesFactory.type;
-
-import java.io.IOException;
-
 import javax.inject.Inject;
-
-import org.rendersnake.HtmlCanvas;
 
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.components.CTextFieldFormGroup;
+import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 
 public class CTextFieldFormGroupHtmlTemplate extends
-        CFormGroupHtmlTemplate<CTextFieldFormGroup> {
+        BootstrapComponentTemplateBase<CTextFieldFormGroup> {
     @Inject
     ComponentUtil util;
+
+    @Inject
+    FormGroupTemplateHelper helper;
 
     @Override
     public void applyValues(CTextFieldFormGroup component) {
@@ -22,12 +20,14 @@ public class CTextFieldFormGroupHtmlTemplate extends
     }
 
     @Override
-    public void innerRender(CTextFieldFormGroup component, HtmlCanvas html)
-            throws IOException {
-        html.input(type("text")
-                .class_(util.combineCssClasses("form-control",
-                        component.class_())).value(component.getText())
-                .name(util.getKey(component, "value"))
-                .id(util.getComponentId(component)));
+    public void doRender(CTextFieldFormGroup component,
+            BootstrapRiseCanvas<?> html) {
+        helper.renderFormGroup(
+                component,
+                html,
+                () -> html.input().TYPE("text").B_FORM_CONTROL()
+                        .VALUE(component.getText())
+                        .NAME(util.getKey(component, "value"))
+                        .ID(util.getComponentId(component)));
     }
 }

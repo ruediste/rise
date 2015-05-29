@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.github.ruediste.rise.component.ComponentTemplateIndex;
-import com.github.ruediste.rise.component.components.template.CWTemplate;
+import com.github.ruediste.rise.component.components.template.ComponentTemplate;
 import com.github.ruediste.rise.component.tree.Component;
 
 /**
@@ -16,5 +16,5 @@ import com.github.ruediste.rise.component.tree.Component;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface DefaultTemplate {
-    Class<? extends CWTemplate<?>> value();
+    Class<? extends ComponentTemplate<?>> value();
 }

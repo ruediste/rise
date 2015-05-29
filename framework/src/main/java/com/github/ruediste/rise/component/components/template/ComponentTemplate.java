@@ -15,9 +15,9 @@ import com.github.ruediste.rise.component.tree.Component;
  * between components. The interface was designed to allow this.
  * </p>
  */
-public interface CWTemplate<T extends Component> {
+public interface ComponentTemplate<T extends Component> {
 
-    void doRender(T component, HtmlCanvasTarget html) throws IOException;
+    void doRender(T component, HtmlCanvasTarget target) throws IOException;
 
     void applyValues(T componentl);
 

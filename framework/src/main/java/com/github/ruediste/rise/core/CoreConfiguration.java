@@ -17,6 +17,7 @@ import javax.inject.Singleton;
 
 import org.objectweb.asm.tree.ClassNode;
 
+import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasTarget;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.rise.core.argumentSerializer.ArgumentSerializer;
 import com.github.ruediste.rise.core.argumentSerializer.EntityArgumentSerializer;
@@ -25,6 +26,8 @@ import com.github.ruediste.rise.core.argumentSerializer.LongSerializer;
 import com.github.ruediste.rise.core.argumentSerializer.StringSerializer;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.web.PathInfo;
+import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
+import com.github.ruediste.rise.integration.RiseCanvas;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.google.common.reflect.Reflection;
 
@@ -209,5 +212,27 @@ public class CoreConfiguration {
                     "No error handler defined. Initialize CoreConfiguration.requestErrorHandler",
                     t);
         requestErrorHandler.handle();
+    }
+
+    public Optional<Function<HtmlCanvasTarget, RiseCanvas<?>>> riseCanvasFactory = Optional
+            .empty();
+
+    public RiseCanvas<?> createRiseCanvas(HtmlCanvasTarget target) {
+        return riseCanvasFactory
+                .map(f -> f.apply(target))
+                .orElseThrow(
+                        () -> new RuntimeException(
+                                "Initialize riseCanvasFactory from your restartable application"));
+    }
+
+    public Optional<Function<HtmlCanvasTarget, BootstrapRiseCanvas<?>>> bootstrapCanvasFactory = Optional
+            .empty();
+
+    public BootstrapRiseCanvas<?> createBootstrapCanvas(HtmlCanvasTarget target) {
+        return bootstrapCanvasFactory
+                .map(f -> f.apply(target))
+                .orElseThrow(
+                        () -> new RuntimeException(
+                                "Initialize bootstrapCanvasFactory from your restartable application"));
     }
 }

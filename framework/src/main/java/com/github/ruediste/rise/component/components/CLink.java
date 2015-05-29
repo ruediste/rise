@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.component.components;
 
 import com.github.ruediste.rise.component.components.template.CLinkHtmlTemplate;
+import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.ActionResult;
 
 /**
@@ -19,9 +20,9 @@ public class CLink extends MultiChildrenComponent<CLink> {
         this.destination = destination;
     }
 
-    public CLink(String text, ActionResult destination) {
+    public CLink(ActionResult destination, Component child) {
         this(destination);
-        add(new CRender(html -> html.write(text)));
+        add(child);
     }
 
     public CLink withDestination(ActionResult destination) {
