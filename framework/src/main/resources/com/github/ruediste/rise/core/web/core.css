@@ -48,4 +48,8 @@
 	display: block;
 }
 
+.nav.nav-stacked .nav-stacked {
+	margin-left: 20px;
+}
+
 

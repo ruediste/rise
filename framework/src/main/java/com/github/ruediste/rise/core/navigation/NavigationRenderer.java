@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.core.navigation;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
@@ -22,84 +23,108 @@ public class NavigationRenderer {
             this.html = html;
         }
 
-        public NavigationRendererOptions pills() {
-            html.CLASS("nav-pills");
-            return this;
-        }
-
-        public NavigationRendererOptions tabs() {
-            html.CLASS("nav-tabs");
-            return this;
-        }
-
-        /**
-         * Easily make tabs or pills equal widths of their parent at screens
-         * wider than 768px with .nav-justified. On smaller screens, the nav
-         * links are stacked.
-         */
-        public NavigationRendererOptions justified() {
-            html.CLASS("nav-justified");
-            return this;
-        }
-
-        /**
-         * Pills are also vertically stackable.
-         */
-        public NavigationRendererOptions stacked() {
-            html.CLASS("nav-pills nav-stacked");
-            return this;
-        }
     }
 
     private static class Ctx {
-        int nextId;
         NavigationItemSelectionCache cache;
 
-        String nextId() {
-            return baseName + nextId++;
-        }
-
-        String baseName;
         public Consumer<NavigationRendererOptions> opts;
     }
 
-    public Renderable<BootstrapRiseCanvas<?>> nav(Navigation nav,
-            String baseName, Consumer<NavigationRendererOptions> opts) {
+    public Renderable<BootstrapRiseCanvas<?>> side(Navigation nav,
+            Consumer<NavigationRendererOptions> opts) {
         return html -> {
             Ctx ctx = new Ctx();
-            ctx.baseName = baseName;
             ctx.opts = opts;
             ctx.cache = cache.get();
-            renderItems(html, ctx, nav.getRootItems());
+
+            html.ul().CLASS("nav nav-pills nav-stacked");
+            renderSideItems(html, ctx, nav.getRootItems());
+            html._ul();
         };
     }
 
-    private void renderItems(BootstrapRiseCanvas<?> html, Ctx ctx,
-            Iterable<NavigationItem> items) {
-        String groupName = ctx.nextId();
-        html.div().CLASS("navbar navbar-default");
-        html.bContainer_fluid().div().CLASS("collapse navbar-collapse");
+    private void renderSideItems(BootstrapRiseCanvas<?> html, Ctx ctx,
+            List<NavigationItem> items) {
+        for (NavigationItem item : items) {
+            html.li().CLASS("").ROLE("presentation");
+            boolean selected = ctx.cache.isSelected(item);
+            if (selected)
+                html.CLASS("active");
+            if (item.getChildren().isEmpty()) {
+                if (item.target.isPresent())
+                    html.a().HREF(item.target.get()).content(item.text);
+                else
+                    html.a().HREF("#").content(item.text);
+                html._li();
+            } else {
+                html.a().HREF("#").CLASS("rise-tree-toggler")
+                        .content(item.text).ul()
+                        .CLASS("nav nav-pills nav-stacked rise-tree");
+                if (!selected)
+                    html.STYLE("display: none;");
+                renderSideItems(html, ctx, item.getChildren());
+                html._ul();
+                html._li();
+            }
+        }
+    }
 
-        html.ul().CLASS("nav navbar-nav");
+    public Renderable<BootstrapRiseCanvas<?>> navbar(Navigation nav, String id,
+            Consumer<NavigationRendererOptions> opts) {
+        //@formatter:off
+        return html -> {
+            Ctx ctx = new Ctx();
+            ctx.opts = opts;
+            ctx.cache = cache.get();
+            html.div().CLASS("navbar navbar-default");
+                html.bContainer_fluid()
+                    .div().CLASS("navbar-header")
+                        .button().TYPE("button").CLASS("navbar-toggle collapsed").DATA("toggle", "collapse").DATA("target", "#"+id)
+                            .span().CLASS("sr-only").content("Toggle navigation")
+                            .span().CLASS("icon-bar")._span()
+                            .span().CLASS("icon-bar")._span()
+                            .span().CLASS("icon-bar")._span()
+                            .span().CLASS("icon-bar")._span()
+                        ._button()
+                        .a().CLASS("navbar-brand").HREF("#").content("RISE")
+                    ._div()
+                    .div().CLASS("collapse navbar-collapse").ID(id);
+
+            html.ul().CLASS("nav navbar-nav");
+            renderNavItems(html, ctx, nav.getRootItems());
+            html._ul();
+            html._div()._bContainer_fluid()._div();
+
+        };
+        //@formatter:on
+    }
+
+    private void renderNavItems(BootstrapRiseCanvas<?> html, Ctx ctx,
+            Iterable<NavigationItem> items) {
+
         ctx.opts.accept(new NavigationRendererOptions(html));
         for (NavigationItem item : items) {
-            String id = ctx.nextId();
             html.li();
             if (ctx.cache.isSelected(item))
                 html.CLASS("active");
-            if (item.target.isPresent())
-                html.a().HREF(item.target.get()).content(item.text);
-            else
-                html.a().HREF("#").content(item.text);
-            html._li();
-        }
-        html._ul();
-        html._div()._bContainer_fluid()._div();
 
-        for (NavigationItem item : items) {
-            if (!item.children.isEmpty()) {
-                renderItems(html, ctx, item.getChildren());
+            if (item.getChildren().isEmpty()) {
+                if (item.target.isPresent())
+                    html.a().HREF(item.target.get()).content(item.text);
+                else
+                    html.a().HREF("#").content(item.text);
+                html._li();
+            } else {
+                html.CLASS("dropdown").a().HREF("#").CLASS("dropdown-toggle")
+                        .DATA("toggle", "dropdown").ROLE("button")
+                        .ARIA_EXPANDED("false").write(item.text).bCaret()._a();
+                html.ul().CLASS("dropdown-menu").ROLE("menu");
+                renderNavItems(html, ctx, item.getChildren());
+                html._ul()._li();
             }
+
         }
+
     }
 }

@@ -45,14 +45,14 @@ public class SamplePageTemplate extends PageTemplateBase {
 
                     @Override
                     protected void renderBody(SampleCanvas html) {
-                        html.render(navRenderer.nav(navigations.sideNavigation,"top", x->x.pills()))
+                        html.render(navRenderer.navbar(navigations.sideNavigation,"top-nav",x->{}))
                        
                         .bContainer_fluid()
                             .bRow()
-                                .bCol(x->x.xs(2).sm(1))
-                                    .render(navRenderer.nav(navigations.sideNavigation,"top", x->x.stacked()))
+                                .bCol(x->x.xs(12).sm(2))
+                                    .render(navRenderer.side(navigations.sideNavigation,x->{}))
                                 ._bCol()
-                                .bCol(x->x.xs(10).sm(11));
+                                .bCol(x->x.xs(12).sm(10));
                                     parameters.renderBody(html);
                                 html._bCol()
                             ._bRow()

@@ -2,12 +2,12 @@ package com.github.ruediste.rise.core.navigation;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Provider;
 
 import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
+import com.github.ruediste.salta.jsr330.Injector;
 
 public abstract class NavigationsContainer {
 
@@ -15,7 +15,7 @@ public abstract class NavigationsContainer {
     CoreUtil util;
 
     @Inject
-    Provider<NavigationBuilder> builder;
+    Injector injector;
 
     public <T extends IController> T go(Class<T> controllerClass) {
         return util.go(controllerClass);
@@ -36,7 +36,7 @@ public abstract class NavigationsContainer {
     }
 
     protected NavigationBuilder build() {
-        return builder.get();
+        return injector.getInstance(NavigationBuilder.class);
     }
 
     protected abstract void initializeImpl();

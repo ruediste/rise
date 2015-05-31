@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.core.navigation;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -23,7 +24,7 @@ public class Navigation {
             this.selected = selected;
         }
 
-        public Iterable<NavigationItem> getChildren() {
+        public List<NavigationItem> getChildren() {
             return children;
         }
     }

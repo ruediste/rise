@@ -15,6 +15,7 @@ public class NavigationBuilder {
 
     @Inject
     CoreUtil util;
+
     private final Navigation result = new Navigation();
 
     private Deque<NavigationItem> currentGroup = new ArrayDeque<>();

@@ -66,11 +66,12 @@ var rise = (function() {
 						});
 					});
 
-			// submit buttons trigger a view reload
-//			$(document).on("submit", function(event) {
-//				$(this).trigger("rise_viewReload");
-//				return false;
-//			});
+			// add tree toggler
+			$(document).ready(function () {
+				$('.rise-tree-toggler').click(function () {
+					$(this).parent().children('ul.rise-tree').toggle(300);
+				});
+			});
 
 			// clicks on rise_buttons trigger a view reload
 			$(document).on(
