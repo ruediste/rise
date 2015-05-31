@@ -1,10 +1,5 @@
 package com.github.ruediste.rise.sample.db;
 
-import static org.rendersnake.HtmlAttributesFactory.action;
-import static org.rendersnake.HtmlAttributesFactory.class_;
-
-import java.io.IOException;
-
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
@@ -18,37 +13,38 @@ public class TodoView extends PageView<TodoController, IndexData> {
     Logger log;
 
     @Override
-    protected void renderBody(SampleCanvas html) throws IOException {
+    public void renderBody(SampleCanvas html) {
 
         // @formatter:off
-		html
-			.div(class_("container"))
-				.div(class_("row"))
-					.div(class_("col-xs-12"))
-						.h1().content("Todo Items")
-					._div()
-				._div();
-		for (TodoItem item : data().allItems) {
-			html.div(class_("row"))
-				.div(class_("col-xs-9"))
-					.write(item.getName())
-				._div()
-				.div(class_("col-xs-3"))
-					.a(class_("btn btn-default").href(url(go().delete(item))))
-						.content("delete")
-				._div()
-			._div();
-		}
-		html.form(action(url(go().add())).method("POST"))
-		.div(class_("row"))
-			.div(class_("col-xs-9"))
-				.input(class_("form-control").type("text").name("name"))
-			._div()
-			.div(class_("col-xs-3"))
-					.input(class_("form-control").type("submit").value("add"))
-				._div()
-		._div()
-		._form()
-		._div();
+		html.bRow()
+		    .bCol(x->x.xs(12))
+		        .h1().content("Todo Items")
+		    ._bCol()
+		._bRow()
+		.fForEach(data().allItems, item->{
+		    html.bRow()
+		        .bCol(x->x.xs(9))
+		            .write(item.getName())
+		        ._bCol()
+		        .bCol(x->x.xs(3))
+		            .bButtonA().HREF(go().delete(item)).content("delete")
+		        ._bCol()
+		    ._bRow();
+		})
+		.form().ACTION(url(go().add())).METHOD("POST")
+		    .bRow()
+		        .bCol(x->x.xs(9))
+				    .input().B_FORM_CONTROL().TYPE("text").NAME("name")
+				._bCol()
+				.bCol(x->x.xs(3))
+					.input().B_FORM_CONTROL().TYPE("submit").VALUE("add")
+				._bCol()
+			._bRow()
+		._form();
 	}
+
+    @Override
+    public String getTitle() {
+        return "Todo Items";
+    }
 }

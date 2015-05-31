@@ -26,7 +26,7 @@ public class FormGroupTemplateHelper {
             html.B_HAS_ERROR();
         }
 
-        html.label().B_CONTROL_LABEL().FOR(util.getComponentId(component))
+        html.bControlLabel().FOR(util.getComponentId(component))
                 .content(component.getLabel());
 
         innerRenderer.run();

@@ -25,6 +25,7 @@ public class CoreNonRestartableModule extends AbstractModule {
         bind(ClassHierarchyIndex.class).asEagerSingleton();
         InitializerUtil.register(config(), CoreNonRestartableInitializer.class);
         bind(FileChangeNotifier.class).named("classPath").in(Singleton.class);
+        bind(ReloadebleClassesIndex.class).asEagerSingleton();
     }
 
     @Named("dynamic")

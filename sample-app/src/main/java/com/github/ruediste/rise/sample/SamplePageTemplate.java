@@ -6,6 +6,8 @@ import com.github.ruediste.rise.core.navigation.NavigationRenderer;
 import com.github.ruediste.rise.integration.PageTemplateBase;
 import com.github.ruediste.rise.integration.RisePageTemplate;
 import com.github.ruediste.rise.integration.RisePageTemplate.RisePageTemplateParameters;
+import com.github.ruediste.rise.sample.welcome.StageRibbonController;
+import com.github.ruediste.rise.sample.welcome.WelcomeController;
 
 public class SamplePageTemplate extends PageTemplateBase {
 
@@ -45,14 +47,13 @@ public class SamplePageTemplate extends PageTemplateBase {
 
                     @Override
                     protected void renderBody(SampleCanvas html) {
-                        html.render(navRenderer.navbar(navigations.sideNavigation,"top-nav",x->{}))
+                        html.render(risePageTemplate.stageRibbon(false,x-> go(StageRibbonController.class).index(x)));
+                        html.render(navRenderer.navbar(navigations.sideNavigation,"top-nav",
+                                x->x.setBrandRenderer(()->html.HREF(go(WelcomeController.class).index()).content("RISE"))))
                        
                         .bContainer_fluid()
                             .bRow()
-                                .bCol(x->x.xs(12).sm(2))
-                                    .render(navRenderer.side(navigations.sideNavigation,x->{}))
-                                ._bCol()
-                                .bCol(x->x.xs(12).sm(10));
+                                .bCol(x->x.xs(12));
                                     parameters.renderBody(html);
                                 html._bCol()
                             ._bRow()
