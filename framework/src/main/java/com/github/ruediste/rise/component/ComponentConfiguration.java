@@ -11,7 +11,7 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletResponse;
 
-import com.github.ruediste.rise.api.ViewComponent;
+import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.initial.ComponentControllerInvoker;
 import com.github.ruediste.rise.component.initial.ComponentRequestMapperImpl;
 import com.github.ruediste.rise.component.initial.InitialPagePersistenceHandler;
@@ -189,14 +189,14 @@ public class ComponentConfiguration {
         reloadParserSupplier = reloadParser::get;
     }
 
-    public Supplier<BiFunction<IControllerComponent, Class<? extends IViewQualifier>, ViewComponent<?>>> viewFactorySupplier;
-    public BiFunction<IControllerComponent, Class<? extends IViewQualifier>, ViewComponent<?>> viewFactory;
+    public Supplier<BiFunction<IControllerComponent, Class<? extends IViewQualifier>, ViewComponentBase<?>>> viewFactorySupplier;
+    public BiFunction<IControllerComponent, Class<? extends IViewQualifier>, ViewComponentBase<?>> viewFactory;
 
-    public ViewComponent<?> createView(IControllerComponent controller) {
+    public ViewComponentBase<?> createView(IControllerComponent controller) {
         return createView(controller, null);
     }
 
-    public ViewComponent<?> createView(IControllerComponent controller,
+    public ViewComponentBase<?> createView(IControllerComponent controller,
             Class<? extends IViewQualifier> qualifier) {
         return viewFactory.apply(controller, qualifier);
     }

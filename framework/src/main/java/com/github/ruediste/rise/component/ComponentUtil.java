@@ -2,7 +2,6 @@ package com.github.ruediste.rise.component;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,10 +15,11 @@ import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvas;
 import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasTarget;
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
-import com.github.ruediste.rise.api.ViewComponent;
+import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.components.template.ComponentTemplate;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ComponentTreeUtil;
+import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.ICoreUtil;
@@ -29,7 +29,6 @@ import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerSet;
 import com.github.ruediste.rise.integration.RiseCanvas;
 import com.github.ruediste.rise.nonReloadable.persistence.TransactionControl;
-import com.google.common.base.Charsets;
 
 @Singleton
 public class ComponentUtil implements ICoreUtil {
@@ -38,8 +37,8 @@ public class ComponentUtil implements ICoreUtil {
     Logger log;
 
     private final AttachedProperty<Component, Long> componentNr = new AttachedProperty<>();
-    private final AttachedProperty<ViewComponent<?>, Map<Long, Component>> componentIdMap = new AttachedProperty<>();
-    private final AttachedProperty<ViewComponent<?>, Long> maxComponentNr = new AttachedProperty<>();
+    private final AttachedProperty<ViewComponentBase<?>, Map<Long, Component>> componentIdMap = new AttachedProperty<>();
+    private final AttachedProperty<ViewComponentBase<?>, Long> maxComponentNr = new AttachedProperty<>();
 
     @Inject
     PageInfo pageInfo;
@@ -52,6 +51,8 @@ public class ComponentUtil implements ICoreUtil {
 
     @Inject
     CoreUtil coreUtil;
+    @Inject
+    CoreConfiguration coreConfiguration;
 
     @Inject
     CoreRequestInfo coreRequestInfo;
@@ -68,7 +69,7 @@ public class ComponentUtil implements ICoreUtil {
         return componentNr.get(component);
     }
 
-    public Component getComponent(ViewComponent<?> view, long componentId) {
+    public Component getComponent(ViewComponentBase<?> view, long componentId) {
         return componentIdMap.get(view).get(componentId);
     }
 
@@ -76,7 +77,7 @@ public class ComponentUtil implements ICoreUtil {
      * Set the component number of all children of the root component which do
      * not have a number yet
      */
-    public byte[] renderComponents(ViewComponent<?> view,
+    public byte[] renderComponents(ViewComponentBase<?> view,
             Component rootComponent) {
         {
             // set the component IDs
@@ -106,13 +107,10 @@ public class ComponentUtil implements ICoreUtil {
         // render the view first, to detect possible errors
         // before rendering the result
         ByteArrayOutputStream stream = new ByteArrayOutputStream(1000);
-        OutputStreamWriter writer = new OutputStreamWriter(stream,
-                Charsets.UTF_8);
+        RiseCanvas<?> html = coreConfiguration.createApplicationCanvas(stream);
         try {
-            HtmlCanvasTarget target = new HtmlCanvasTarget(writer);
-            render(rootComponent, target);
-            target.commitAttributes();
-            writer.close();
+            render(rootComponent, html);
+            html.flush();
         } catch (IOException e) {
             throw new RuntimeException("Error while rendering component view",
                     e);

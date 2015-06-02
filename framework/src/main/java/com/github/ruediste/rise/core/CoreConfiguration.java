@@ -2,6 +2,7 @@ package com.github.ruediste.rise.core;
 
 import static java.util.stream.Collectors.toList;
 
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -214,15 +215,18 @@ public class CoreConfiguration {
         requestErrorHandler.handle();
     }
 
-    public Optional<Function<HtmlCanvasTarget, RiseCanvas<?>>> riseCanvasFactory = Optional
+    /**
+     * Factory for the {@link RiseCanvas} subtype used by the application
+     */
+    public Optional<Function<ByteArrayOutputStream, RiseCanvas<?>>> applicationCanvasFactory = Optional
             .empty();
 
-    public RiseCanvas<?> createRiseCanvas(HtmlCanvasTarget target) {
-        return riseCanvasFactory
-                .map(f -> f.apply(target))
+    public RiseCanvas<?> createApplicationCanvas(ByteArrayOutputStream baos) {
+        return applicationCanvasFactory
+                .map(f -> f.apply(baos))
                 .orElseThrow(
                         () -> new RuntimeException(
-                                "Initialize riseCanvasFactory from your restartable application"));
+                                "Initialize applicationCanvasFactory from your restartable application"));
     }
 
     public Optional<Function<HtmlCanvasTarget, BootstrapRiseCanvas<?>>> bootstrapCanvasFactory = Optional

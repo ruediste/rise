@@ -2,8 +2,8 @@ package com.github.ruediste.rise.component.components.template;
 
 import java.io.IOException;
 
-import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasTarget;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.integration.RiseCanvas;
 
 /**
  * Renders a {@link Component} to HTML and processes updates from the view.
@@ -17,7 +17,7 @@ import com.github.ruediste.rise.component.tree.Component;
  */
 public interface ComponentTemplate<T extends Component> {
 
-    void doRender(T component, HtmlCanvasTarget target) throws IOException;
+    void doRender(T component, RiseCanvas<?> canvas) throws IOException;
 
     void applyValues(T componentl);
 

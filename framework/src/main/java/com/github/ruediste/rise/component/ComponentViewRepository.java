@@ -13,7 +13,7 @@ import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 
-import com.github.ruediste.rise.api.ViewComponent;
+import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndex;
 import com.github.ruediste.rise.util.AsmUtil;
@@ -21,7 +21,7 @@ import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste.salta.jsr330.Injector;
 
 /**
- * Repository keeping track of all {@link ViewComponent}s
+ * Repository keeping track of all {@link ViewComponentBase}s
  */
 @Singleton
 public class ComponentViewRepository {
@@ -51,14 +51,14 @@ public class ComponentViewRepository {
     public void initialize() {
         // iterate over all views
         for (ClassNode view : index.getAllChildren(Type
-                .getInternalName(ViewComponent.class))) {
+                .getInternalName(ViewComponentBase.class))) {
             // check if it is a concrete class
             if ((view.access & Opcodes.ACC_ABSTRACT) != 0) {
                 continue;
             }
 
             // find the controller class of the view
-            String controllerClass = index.resolve(view, ViewComponent.class,
+            String controllerClass = index.resolve(view, ViewComponentBase.class,
                     "TController");
 
             // create an entry for the view
@@ -92,7 +92,7 @@ public class ComponentViewRepository {
     /**
      * Create a view for the given controller
      */
-    public <T> ViewComponent<T> createView(T controller) {
+    public <T> ViewComponentBase<T> createView(T controller) {
         return createView(controller, null);
     }
 
@@ -103,7 +103,7 @@ public class ComponentViewRepository {
      *            qualifier class, or null if no qualifier is set
      */
     @SuppressWarnings("unchecked")
-    public <T> ViewComponent<T> createView(T controller,
+    public <T> ViewComponentBase<T> createView(T controller,
             Class<? extends IViewQualifier> qualifier) {
         // get view, trying super classes
         ViewEntry entry = null;
@@ -130,7 +130,7 @@ public class ComponentViewRepository {
         Class<?> viewClass = AsmUtil.loadClass(
                 Type.getObjectType(entry.viewClassInternalName),
                 config.dynamicClassLoader);
-        ViewComponent<T> result = (ViewComponent<T>) injector
+        ViewComponentBase<T> result = (ViewComponentBase<T>) injector
                 .getInstance(viewClass);
         result.initialize(controller);
         return result;

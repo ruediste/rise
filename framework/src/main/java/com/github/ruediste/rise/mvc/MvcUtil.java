@@ -2,13 +2,11 @@ package com.github.ruediste.rise.mvc;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.transaction.TransactionManager;
 
-import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasTarget;
 import com.github.ruediste.rise.api.ViewMvcBase;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
@@ -19,7 +17,6 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.web.ContentRenderResult;
 import com.github.ruediste.rise.core.web.RedirectRenderResult;
 import com.github.ruediste.salta.jsr330.Injector;
-import com.google.common.base.Charsets;
 
 public class MvcUtil implements ICoreUtil {
 
@@ -56,13 +53,8 @@ public class MvcUtil implements ICoreUtil {
         view.initialize(data);
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream(1024);
-        OutputStreamWriter writer = new OutputStreamWriter(stream,
-                Charsets.UTF_8);
-        HtmlCanvasTarget target = new HtmlCanvasTarget(writer);
-
         try {
-            view.render(target);
-            writer.flush();
+            view.render(stream);
         } catch (IOException e) {
             throw new RuntimeException("Error while rendering view", e);
 

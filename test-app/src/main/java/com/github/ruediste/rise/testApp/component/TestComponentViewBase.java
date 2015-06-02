@@ -1,8 +1,8 @@
 package com.github.ruediste.rise.testApp.component;
 
-import com.github.ruediste.rise.api.ViewComponent;
+import com.github.ruediste.rise.api.ViewComponentBase;
 
 public abstract class TestComponentViewBase extends
-        ViewComponent<TestComponentController> {
+        ViewComponentBase<TestComponentController> {
 
 }

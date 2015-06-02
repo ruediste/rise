@@ -2,11 +2,11 @@ package com.github.ruediste.rise.sample;
 
 import javax.inject.Inject;
 
-import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasBase;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
+import com.github.ruediste.rise.integration.RiseCanvasBase;
 import com.github.ruediste.rise.integration.RiseCanvasHelper;
 
-public class SampleCanvas extends HtmlCanvasBase<SampleCanvas> implements
+public class SampleCanvas extends RiseCanvasBase<SampleCanvas> implements
         BootstrapRiseCanvas<SampleCanvas> {
 
     @Inject

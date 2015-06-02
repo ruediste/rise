@@ -5,7 +5,7 @@ import java.util.Collections;
 import javax.inject.Inject;
 
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
-import com.github.ruediste.rise.api.ViewComponent;
+import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.ComponentViewRepository;
 import com.github.ruediste.rise.component.components.template.CControllerTemplate;
 import com.github.ruediste.rise.component.tree.Component;
@@ -33,7 +33,7 @@ public class CController extends AttachedPropertyBearerBase implements
     }
 
     public CController setController(Object controller) {
-        ViewComponent<Object> view = repo.createView(controller);
+        ViewComponentBase<Object> view = repo.createView(controller);
         rootComponent = view.getRootComponent();
         return this;
     }

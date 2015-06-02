@@ -7,7 +7,7 @@ import javax.persistence.EntityManager;
 
 import org.slf4j.Logger;
 
-import com.github.ruediste.rise.api.ViewComponent;
+import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CButton;
@@ -22,7 +22,7 @@ import com.github.ruediste.rise.testApp.persistence.TestEntity;
 @OwnEntityManagers
 public class TestSubController {
 
-    public static class View extends ViewComponent<TestSubController> {
+    public static class View extends ViewComponentBase<TestSubController> {
 
         @Override
         protected Component createComponents() {

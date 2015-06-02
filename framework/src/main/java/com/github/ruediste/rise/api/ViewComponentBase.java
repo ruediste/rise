@@ -6,7 +6,7 @@ import com.github.ruediste.rise.component.tree.Component;
 /**
  * Base class for view displaying {@link Component}s
  */
-public abstract class ViewComponent<TController> extends
+public abstract class ViewComponentBase<TController> extends
         AttachedPropertyBearerBase {
 
     protected TController controller;

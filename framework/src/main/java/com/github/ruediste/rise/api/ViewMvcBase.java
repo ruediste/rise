@@ -1,14 +1,16 @@
 package com.github.ruediste.rise.api;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
-import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasTarget;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
 import com.github.ruediste.rise.core.web.PathInfo;
+import com.github.ruediste.rise.integration.RiseCanvasBase;
 import com.github.ruediste.rise.mvc.IControllerMvc;
 import com.github.ruediste.rise.mvc.MvcUtil;
 import com.google.common.reflect.TypeToken;
@@ -44,10 +46,19 @@ public abstract class ViewMvcBase<TController extends IControllerMvc, TData> {
         return data;
     }
 
+    protected <T extends RiseCanvasBase<?>> void render(
+            ByteArrayOutputStream stream, T canvas, Consumer<T> renderer) {
+        canvas.initializeForOutput(stream);
+        renderer.accept(canvas);
+        canvas.flush();
+    }
+
     /**
-     * Render this view to the provided canvas
+     * Render this by calling
+     * {@link #render(ByteArrayOutputStream, RiseCanvasBase, Consumer)}
      */
-    abstract public void render(HtmlCanvasTarget htmlTarget) throws IOException;
+    abstract public void render(ByteArrayOutputStream stream)
+            throws IOException;
 
     public ActionInvocationBuilderKnownController<? extends TController> path() {
         return util.path(controllerClass);
