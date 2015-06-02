@@ -20,8 +20,6 @@ import com.google.common.base.Charsets;
 public abstract class RiseCanvasBase<TSelf extends RiseCanvasBase<TSelf>>
         extends HtmlCanvasBase<TSelf> implements RiseCanvas<TSelf> {
 
-    ByteArrayOutputStream outStream = new ByteArrayOutputStream(128);
-
     @Inject
     RiseCanvasHelper helper;
 
@@ -32,7 +30,7 @@ public abstract class RiseCanvasBase<TSelf extends RiseCanvasBase<TSelf>>
 
     public void initializeForOutput(ByteArrayOutputStream baos) {
         super.initialize(new OutputStreamWriter(baos, Charsets.UTF_8));
-        helper.initializeForOutput(baos);
+        helper.initializeForOutput(baos, internal_target());
     }
 
     @Override
@@ -41,6 +39,7 @@ public abstract class RiseCanvasBase<TSelf extends RiseCanvasBase<TSelf>>
     }
 
     public void flush() {
+        internal_target().commitAttributes();
         if (helper.isComponent())
             helper.commitBuffer();
         internal_target().flush();

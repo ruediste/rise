@@ -37,6 +37,7 @@ public class SampleComponentController extends ControllerComponent {
 
     public ActionResult index() {
         data.set(new Data());
+        data.get().setText("Hello World");
         return null;
     }
 }

@@ -8,9 +8,9 @@ import java.util.Date;
  * expression.
  *
  * <p>
- * <img src="doc-files/bindingInformationCollector.png" />
+ * see wiki for an overview
  * </p>
- *
+ * 
  * <p>
  * {@link BindingUtil} and {@link BindingGroup} create proxies which record
  * method invocations in the {@link BindingExpressionExecutionLog}. The recorded

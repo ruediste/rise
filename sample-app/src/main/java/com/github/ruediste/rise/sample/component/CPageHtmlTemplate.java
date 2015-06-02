@@ -2,47 +2,34 @@ package com.github.ruediste.rise.sample.component;
 
 import javax.inject.Inject;
 
-import org.rendersnake.HtmlCanvas;
-
 import com.github.ruediste.rise.component.components.CPage;
-import com.github.ruediste.rise.component.components.template.ComponentTemplateBase;
-import com.github.ruediste.rise.integration.RisePageTemplate;
-import com.github.ruediste.rise.integration.RisePageTemplate.RisePageTemplateParameters;
+import com.github.ruediste.rise.sample.ComponentTemplate;
 import com.github.ruediste.rise.sample.SampleBundle;
 import com.github.ruediste.rise.sample.SampleCanvas;
+import com.github.ruediste.rise.sample.SamplePageTemplate;
+import com.github.ruediste.rise.sample.SamplePageTemplate.SamplePageTemplateParameters;
 
-public class CPageHtmlTemplate extends ComponentTemplateBase<CPage> {
+public class CPageHtmlTemplate extends ComponentTemplate<CPage> {
 
     @Inject
     SampleBundle bundle;
 
     @Inject
-    RisePageTemplate<SampleCanvas> page;
+    SamplePageTemplate template;
 
     @Override
-    public void doRender(CPage component, HtmlCanvas html) {
-        page.renderOn(html, new RisePageTemplateParameters<SampleCanvas>() {
+    public void doRender(CPage component, SampleCanvas html) {
+        template.renderOn(html, new SamplePageTemplateParameters() {
 
             @Override
-            protected void renderJsLinks(SampleCanvas html) {
-                html.rJsLinks(bundle.out);
-            }
-
-            @Override
-            protected void renderHead(SampleCanvas html) {
+            public void renderBody(SampleCanvas html) {
+                html.render(children(component));
 
             }
 
             @Override
-            protected void renderCssLinks(SampleCanvas html) {
-                html.rCssLinks(bundle.out);
-            }
-
-            @Override
-            protected void renderBody(SampleCanvas html) {
-                component.getChildren().forEach(
-                        child -> util.render(child, html));
-
+            public String getTitle() {
+                return component.getTitle();
             }
         });
     }

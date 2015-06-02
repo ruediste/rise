@@ -1,7 +1,5 @@
 package com.github.ruediste.rise.component.components.template;
 
-import java.io.IOException;
-
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.integration.RiseCanvas;
 
@@ -17,7 +15,7 @@ import com.github.ruediste.rise.integration.RiseCanvas;
  */
 public interface ComponentTemplate<T extends Component> {
 
-    void doRender(T component, RiseCanvas<?> canvas) throws IOException;
+    void doRender(T component, RiseCanvas<?> html);
 
     void applyValues(T componentl);
 

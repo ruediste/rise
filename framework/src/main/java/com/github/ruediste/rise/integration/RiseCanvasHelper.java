@@ -84,12 +84,15 @@ public class RiseCanvasHelper {
     /**
      * Initialize the heleper for component rendering
      */
-    public void initializeForOutput(ByteArrayOutputStream baos) {
+    public void initializeForOutput(ByteArrayOutputStream baos,
+            HtmlCanvasTarget target) {
         this.baos = baos;
+        this.target = target;
     }
 
     public void writeRaw(byte[] buffer) {
         target.commitAttributes();
+        target.flush();
         try {
             baos.write(buffer);
         } catch (IOException e) {

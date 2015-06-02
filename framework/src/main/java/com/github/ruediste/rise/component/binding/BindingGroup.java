@@ -21,15 +21,9 @@ import com.google.common.reflect.TypeToken;
 
 /**
  * A group of bindings managed by a controller.
- *
+ * 
  * <p>
- * Data binding is used to move data between the domain objects and the view
- * components. Properties are bound together in a typesafe manner using lambda
- * expressions.
- * </p>
- *
- * <p>
- * <img src="doc-files/overview.png" />
+ * see wiki for an overview
  * </p>
  *
  * <p>

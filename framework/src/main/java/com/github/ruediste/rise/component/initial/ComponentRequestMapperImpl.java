@@ -37,8 +37,12 @@ public class ComponentRequestMapperImpl extends RequestMapperBase {
     protected RequestParseResult createParseResult(ActionInvocation<String> path) {
         return new MvcRequestParseResult(path, actionInvocation -> {
             componentRequestInfo.setComponentRequest(true);
-            requestInfo.setStringActionInvocation(actionInvocation);
-            componentConfig.handleInitialRequest();
+            try {
+                requestInfo.setStringActionInvocation(actionInvocation);
+                componentConfig.handleInitialRequest();
+            } finally {
+                componentRequestInfo.setComponentRequest(false);
+            }
         });
     }
 }

@@ -2,7 +2,6 @@ package com.github.ruediste.rise.core;
 
 import static java.util.stream.Collectors.toList;
 
-import java.io.ByteArrayOutputStream;
 import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -29,6 +28,7 @@ import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.integration.RiseCanvas;
+import com.github.ruediste.rise.integration.RiseCanvasBase;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.google.common.reflect.Reflection;
 
@@ -218,12 +218,12 @@ public class CoreConfiguration {
     /**
      * Factory for the {@link RiseCanvas} subtype used by the application
      */
-    public Optional<Function<ByteArrayOutputStream, RiseCanvas<?>>> applicationCanvasFactory = Optional
+    public Optional<Supplier<RiseCanvasBase<?>>> applicationCanvasFactory = Optional
             .empty();
 
-    public RiseCanvas<?> createApplicationCanvas(ByteArrayOutputStream baos) {
+    public RiseCanvasBase<?> createApplicationCanvas() {
         return applicationCanvasFactory
-                .map(f -> f.apply(baos))
+                .map(f -> f.get())
                 .orElseThrow(
                         () -> new RuntimeException(
                                 "Initialize applicationCanvasFactory from your restartable application"));

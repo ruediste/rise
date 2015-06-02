@@ -13,12 +13,19 @@ import com.google.common.base.CaseFormat;
 
 public class BeanutilPropertyGenerationUtil {
 
+    /**
+     * Convert a javax.validation path to a beanutils property
+     */
     public static String toBeanUtilsProperty(Path path) {
         return StreamSupport.stream(path.spliterator(), false)
                 .map(BeanutilPropertyGenerationUtil::toBeanUtilsProperty)
                 .collect(Collectors.joining("."));
     }
 
+    /**
+     * Convert a single node of a javax.validation path to the corresponding
+     * beanutils property path segment.
+     */
     public static String toBeanUtilsProperty(Path.Node node) {
         if (!node.isInIterable()) {
             return node.getName();
@@ -52,8 +59,8 @@ public class BeanutilPropertyGenerationUtil {
     }
 
     /**
-     * Return the name of the property accessed by a method invocation and if a
-     * setter has been accessed.
+     * Return the name of the property accessed by a method invocation and if
+     * acessor of the property has been accessed. Otherwise return null
      */
     public static Pair<String, Boolean> getPropertyInfo(
             MethodInvocation invocation) {

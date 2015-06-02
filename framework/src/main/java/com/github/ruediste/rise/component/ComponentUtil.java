@@ -1,7 +1,6 @@
 package com.github.ruediste.rise.component;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,8 +11,6 @@ import javax.transaction.TransactionManager;
 import org.slf4j.Logger;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
-import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvas;
-import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasTarget;
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.components.template.ComponentTemplate;
@@ -28,6 +25,7 @@ import com.github.ruediste.rise.core.persistence.TransactionTemplate;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerSet;
 import com.github.ruediste.rise.integration.RiseCanvas;
+import com.github.ruediste.rise.integration.RiseCanvasBase;
 import com.github.ruediste.rise.nonReloadable.persistence.TransactionControl;
 
 @Singleton
@@ -107,29 +105,32 @@ public class ComponentUtil implements ICoreUtil {
         // render the view first, to detect possible errors
         // before rendering the result
         ByteArrayOutputStream stream = new ByteArrayOutputStream(1000);
-        RiseCanvas<?> html = coreConfiguration.createApplicationCanvas(stream);
+        RiseCanvasBase<?> html = coreConfiguration.createApplicationCanvas();
+        html.initializeForOutput(stream);
         try {
             render(rootComponent, html);
             html.flush();
-        } catch (IOException e) {
+        } catch (Throwable t) {
             throw new RuntimeException("Error while rendering component view",
-                    e);
+                    t);
         }
         return stream.toByteArray();
     }
 
-    public void render(Component component, HtmlCanvas<?> canvas) {
-        render(component, canvas.internal_target());
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public Component toComponent(Renderable<?> renderable) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream(1000);
+        RiseCanvasBase<?> html = coreConfiguration.createApplicationCanvas();
+        html.initializeForComponent(stream);
+        ((Renderable) renderable).renderOn(html);
+        html.flush();
+        return html.internal_riseHelper().getcRender();
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void render(Component component, HtmlCanvasTarget target) {
-        try {
-            ((ComponentTemplate) componentTemplateIndex.getTemplate(component
-                    .getClass())).doRender(component, target);
-        } catch (IOException e) {
-            throw new RuntimeException("Error while rendering component", e);
-        }
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public void render(Component component, RiseCanvas<?> canvas) {
+        ((ComponentTemplate) componentTemplateIndex.getTemplate(component
+                .getClass())).doRender(component, canvas);
     }
 
     /**

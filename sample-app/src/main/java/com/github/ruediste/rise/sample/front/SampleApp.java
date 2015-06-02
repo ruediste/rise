@@ -3,6 +3,7 @@ package com.github.ruediste.rise.sample.front;
 import java.util.Optional;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import com.github.ruediste.rise.api.RestartableApplicationModule;
 import com.github.ruediste.rise.component.ComponentTemplateIndex;
@@ -11,6 +12,7 @@ import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.DefaultRequestErrorHandler;
 import com.github.ruediste.rise.core.front.RestartableApplicationBase;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
+import com.github.ruediste.rise.sample.SampleCanvas;
 import com.github.ruediste.rise.sample.SamplePackage;
 import com.github.ruediste.rise.sample.component.CPageHtmlTemplate;
 import com.github.ruediste.salta.jsr330.Injector;
@@ -30,6 +32,9 @@ public class SampleApp extends RestartableApplicationBase {
     @Inject
     DevelopmentFixture fixture;
 
+    @Inject
+    Provider<SampleCanvas> canvasProvider;
+
     @Override
     protected void startImpl(Injector permanentInjector) {
         Salta.createInjector(
@@ -43,11 +48,11 @@ public class SampleApp extends RestartableApplicationBase {
         config.requestErrorHandler = errorHandler;
 
         config.setBasePackage(SamplePackage.class);
+        config.applicationCanvasFactory = Optional.of(canvasProvider::get);
 
         config.developmentFixtureLoader = Optional.of(fixture);
 
         componentTemplateIndex.registerTemplate(CPage.class,
                 CPageHtmlTemplate.class);
     }
-
 }

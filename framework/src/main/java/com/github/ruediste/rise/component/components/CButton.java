@@ -10,6 +10,10 @@ public class CButton extends MultiChildrenComponent<CButton> {
     public CButton() {
     }
 
+    public CButton(String text) {
+        add(new CText(text));
+    }
+
     public CButton(Component child) {
         add(child);
     }

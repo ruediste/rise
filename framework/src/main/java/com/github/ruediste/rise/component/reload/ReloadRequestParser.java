@@ -28,7 +28,11 @@ public class ReloadRequestParser implements RequestParser {
         @Override
         public void handle() {
             componentRequestInfo.setComponentRequest(true);
-            config.handleReloadRequest();
+            try {
+                config.handleReloadRequest();
+            } finally {
+                componentRequestInfo.setComponentRequest(false);
+            }
         }
 
     }
