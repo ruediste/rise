@@ -20,8 +20,8 @@ public class SampleBundle extends AssetBundle {
 
     @PostConstruct
     public void initialize() {
-        bootstrapUtil.loadAssets().sentAllTo(out);
         core.out.send(out);
+        bootstrapUtil.loadAssets().sentAllTo(out);
         paths("/assets/welcome.css", "/assets/welcome.js").load().send(out);
     }
 }

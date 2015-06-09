@@ -7,7 +7,7 @@ import java.util.stream.StreamSupport;
 
 import javax.validation.Path;
 
-import com.github.ruediste.rise.component.binding.BindingExpressionExecutionLogManager.MethodInvocation;
+import com.github.ruediste.rise.component.binding.BindingExpressionExecutionRecorder.MethodInvocation;
 import com.github.ruediste.rise.util.Pair;
 import com.google.common.base.CaseFormat;
 

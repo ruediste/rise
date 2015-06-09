@@ -3,7 +3,9 @@ package com.github.ruediste.rise.core.web;
 import javax.annotation.PostConstruct;
 
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
+import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetGroup;
+import com.github.ruediste.rise.core.web.assetPipeline.AssetRequestMapper;
 
 public class CoreAssetBundle extends AssetBundle {
 
@@ -16,7 +18,9 @@ public class CoreAssetBundle extends AssetBundle {
     public static final String componentAttributeNr = "rise-component-nr";
 
     /**
-     * Contains the necessary assets to use Rise.
+     * Contains the necessary assets to use Rise. Note that these assets will
+     * not be picked up by the {@link AssetRequestMapper}. You need to send them
+     * to an {@link AssetBundleOutput}.
      */
     public AssetGroup out;
 

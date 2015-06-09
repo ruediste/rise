@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.core;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
@@ -7,6 +8,9 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.web.PathInfo;
+import com.github.ruediste1.i18n.lString.LString;
+import com.github.ruediste1.i18n.lString.TranslatedString;
+import com.github.ruediste1.i18n.label.LabelUtil;
 
 public interface ICoreUtil {
 
@@ -71,4 +75,13 @@ public interface ICoreUtil {
     default ActionInvocation<Object> toActionInvocation(ActionResult invocation) {
         return getCoreUtil().toActionInvocation(invocation);
     }
+
+    default LabelUtil labelUtil() {
+        return getCoreUtil().labelUtil();
+    }
+
+    default String toString(LString string) {
+        return getCoreUtil().toString(string);
+    }
+
 }

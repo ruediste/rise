@@ -1,13 +1,20 @@
 package com.github.ruediste.rise.api;
 
+import javax.inject.Inject;
+
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
+import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste1.i18n.lString.LString;
 
 /**
  * Base class for view displaying {@link Component}s
  */
 public abstract class ViewComponentBase<TController> extends
         AttachedPropertyBearerBase {
+
+    @Inject
+    ComponentUtil componentUtil;
 
     protected TController controller;
     private Component rootComponent;
@@ -40,4 +47,11 @@ public abstract class ViewComponentBase<TController> extends
         return rootComponent;
     }
 
+    protected LString label(Class<?> clazz) {
+        return componentUtil.labelUtil().getTypeLabel(clazz);
+    }
+
+    protected LString label(Object obj) {
+        return label(obj.getClass());
+    }
 }

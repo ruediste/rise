@@ -6,7 +6,9 @@ import org.slf4j.Logger;
 
 import com.github.ruediste.rise.sample.SampleCanvas;
 import com.github.ruediste.rise.sample.db.TodoController.IndexData;
+import com.github.ruediste1.i18n.label.Label;
 
+@Label("Todo Items")
 public class TodoView extends PageView<TodoController, IndexData> {
 
     @Inject
@@ -43,8 +45,4 @@ public class TodoView extends PageView<TodoController, IndexData> {
 		._form();
 	}
 
-    @Override
-    public String getTitle() {
-        return "Todo Items";
-    }
 }

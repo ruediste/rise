@@ -11,7 +11,7 @@ public abstract class TwoWayBindingTransformer<TSource, TTarget> extends
      */
     public final TSource transformInv(TTarget target) {
 
-        BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager
+        BindingExpressionExecutionRecord info = BindingExpressionExecutionRecorder
                 .getCurrentLog();
         if (info == null) {
             return transformInvImpl(target);

@@ -9,11 +9,11 @@ import com.github.ruediste.rise.sample.welcome.WelcomeController;
 @Singleton
 public class Navigations extends NavigationsContainer {
 
-    Navigation sideNavigation;
+    Navigation topNavigation;
 
     @Override
     protected void initializeImpl() {
-        sideNavigation = build().group("A")
+        topNavigation = build().group("A")
                 .add("Home", go(WelcomeController.class).index())._group()
                 .add("Other", go(WelcomeController.class).other()).getResult();
     }

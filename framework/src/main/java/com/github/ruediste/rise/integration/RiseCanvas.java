@@ -7,6 +7,7 @@ import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
+import com.github.ruediste1.i18n.lString.LString;
 
 public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends
         Html5Canvas<TSelf>, FuncCanvas<TSelf> {
@@ -58,5 +59,13 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends
     default TSelf writeRaw(byte[] buffer) {
         internal_riseHelper().writeRaw(buffer);
         return self();
+    }
+
+    default TSelf content(LString value) {
+        return content(value.resolve(internal_riseHelper().getCurrentLocale()));
+    }
+
+    default TSelf write(LString value) {
+        return write(value.resolve(internal_riseHelper().getCurrentLocale()));
     }
 }

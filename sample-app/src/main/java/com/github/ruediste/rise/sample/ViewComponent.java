@@ -2,18 +2,19 @@ package com.github.ruediste.rise.sample;
 
 import javax.inject.Inject;
 
-import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.api.ViewComponentBase;
-import com.github.ruediste.rise.component.ComponentUtil;
-import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.component.ComponentFactory;
+import com.github.ruediste.rise.component.ComponentFactoryUtil;
 
 public abstract class ViewComponent<TController> extends
-        ViewComponentBase<TController> {
+        ViewComponentBase<TController> implements
+        ComponentFactory<SampleCanvas> {
 
     @Inject
-    ComponentUtil util;
+    ComponentFactoryUtil util;
 
-    protected Component toComponent(Renderable<SampleCanvas> renderable) {
-        return util.toComponent(renderable);
+    @Override
+    public ComponentFactoryUtil internal_componentFactoryUtil() {
+        return util;
     }
 }

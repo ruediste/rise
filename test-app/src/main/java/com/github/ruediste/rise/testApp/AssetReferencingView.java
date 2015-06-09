@@ -1,20 +1,13 @@
 package com.github.ruediste.rise.testApp;
 
-import static org.rendersnake.HtmlAttributesFactory.id;
-
-import java.io.IOException;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.rendersnake.HtmlCanvas;
-
-import com.github.ruediste.rise.api.ViewMvcBase;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 
 public class AssetReferencingView extends
-        ViewMvcBase<AssetReferencingController, String> {
+        ViewMvc<AssetReferencingController, String> {
 
     static class Bundle extends AssetBundle {
 
@@ -33,18 +26,18 @@ public class AssetReferencingView extends
     Bundle bundle;
 
     @Override
-    public void render(HtmlCanvas html) throws IOException {
+    public void render(TestCanvas html) {
         // @formatter:off
 		html.html()
 			.head()
-				.render(cssLinks(bundle.out))
+				.rCssLinks(bundle.out)
 			._head()
 			.body()
-				.div(id("data")).content(data())
-				.div(id("samePackage")).content("foo")
-				.div(id("bundleClass")).content("foo")
-				.div(id("default")).content("foo")
-				.div(id("absolute")).content("foo")
+				.div().ID("data").content(data())
+				.div().ID("samePackage").content("foo")
+				.div().ID("bundleClass").content("foo")
+				.div().ID("default").content("foo")
+				.div().ID("absolute").content("foo")
 			._body()
 		._html();
 	}

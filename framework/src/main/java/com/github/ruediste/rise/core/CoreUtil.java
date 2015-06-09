@@ -14,10 +14,18 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.httpRequest.HttpRequestImpl;
 import com.github.ruediste.rise.core.web.PathInfo;
+import com.github.ruediste1.i18n.lString.LString;
+import com.github.ruediste1.i18n.label.LabelUtil;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
 
 public class CoreUtil implements ICoreUtil {
+
+    @Inject
+    LabelUtil labelUtil;
+
+    @Inject
+    CurrentLocale currentLocale;
 
     @Inject
     CoreConfiguration coreConfiguration;
@@ -118,5 +126,15 @@ public class CoreUtil implements ICoreUtil {
     @Override
     public ActionInvocationBuilder path() {
         return actionPathBuilderProvider.get();
+    }
+
+    @Override
+    public String toString(LString string) {
+        return string.resolve(currentLocale.getCurrentLocale());
+    }
+
+    @Override
+    public LabelUtil labelUtil() {
+        return labelUtil;
     }
 }

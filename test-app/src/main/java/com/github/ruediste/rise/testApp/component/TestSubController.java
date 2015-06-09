@@ -1,18 +1,13 @@
 package com.github.ruediste.rise.testApp.component;
 
-import static org.rendersnake.HtmlAttributesFactory.class_;
-
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import org.slf4j.Logger;
 
-import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CButton;
-import com.github.ruediste.rise.component.components.CGroup;
-import com.github.ruediste.rise.component.components.CRender;
 import com.github.ruediste.rise.component.components.CTextFieldFormGroup;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.persistence.OwnEntityManagers;
@@ -22,23 +17,26 @@ import com.github.ruediste.rise.testApp.persistence.TestEntity;
 @OwnEntityManagers
 public class TestSubController {
 
-    public static class View extends ViewComponentBase<TestSubController> {
+    public static class View extends ViewComponent<TestSubController> {
 
         @Override
         protected Component createComponents() {
-            return new CGroup()
+            return toComponent(html -> html
 
-                    .add(new CRender(html -> html.span(class_("value"))
-                            .content(controller.entity().getValue())))
+                    .span()
+                    .CLASS("value")
+                    .add(toComponentDirect(x -> x.write(controller.entity()
+                            .getValue())))
+                    ._span()
 
-                    .add(new CButton("refresh").class_("refresh").handler(
+                    .add(new CButton("refresh").CLASS("refresh").handler(
                             controller::refresh))
 
-                    .add(new CButton("save").class_("save").handler(
+                    .add(new CButton("save").CLASS("save").handler(
                             controller::save))
 
                     .add(new CTextFieldFormGroup().bind(g -> g
-                            .setText(controller.entity().getValue())));
+                            .setText(controller.entity().getValue()))));
         }
     }
 

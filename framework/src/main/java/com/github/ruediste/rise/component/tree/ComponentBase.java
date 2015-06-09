@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.component.tree;
 
 import java.util.ArrayList;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -74,25 +75,24 @@ public class ComponentBase<TSelf extends AttachedPropertyBearer> extends
         return self();
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public TSelf bind(Supplier<?> bindingAccessor, Consumer<TSelf> pullUp,
-            Consumer<TSelf> pushDown) {
+    public <T> TSelf bind(Supplier<T> bindingGroupAccessor,
+            BiConsumer<TSelf, T> pullUp, BiConsumer<TSelf, T> pushDown) {
 
-        Binding<?> binding = new Binding<>();
+        Binding<T> binding = new Binding<>();
         binding.setComponent(this);
-        binding.setPullUp(d -> pullUp.accept(self()));
-        binding.setPushDown(d -> pushDown.accept(self()));
+        binding.setPullUp(d -> pullUp.accept(self(), d));
+        binding.setPushDown(d -> pushDown.accept(self(), d));
 
-        BindingUtil.bind(bindingAccessor, (Binding) binding);
+        BindingUtil.bind(bindingGroupAccessor, binding);
         return self();
     }
 
-    public TSelf class_(String class_) {
+    public TSelf CLASS(String class_) {
         this.class_ = class_;
         return self();
     }
 
-    public String class_() {
+    public String CLASS() {
         return class_;
     }
 }

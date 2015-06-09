@@ -80,7 +80,11 @@ public class ClassPathWalker {
                 Supplier<InputStream> inputStreamSupplier);
 
         /**
-         * Visit a class
+         * Visit a class.
+         * 
+         * @param inputStreamSupplier
+         *            provides access to the class bytecode. Not valid after the
+         *            method returns.
          */
         void visitClass(String className, ClassLoader classLoader,
                 Supplier<InputStream> inputStreamSupplier);

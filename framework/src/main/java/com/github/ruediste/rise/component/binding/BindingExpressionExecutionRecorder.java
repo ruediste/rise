@@ -13,11 +13,11 @@ import java.util.Date;
  * 
  * <p>
  * {@link BindingUtil} and {@link BindingGroup} create proxies which record
- * method invocations in the {@link BindingExpressionExecutionLog}. The recorded
+ * method invocations in the {@link BindingExpressionExecutionRecord}. The recorded
  * information is used to determine the bindings to be created.
  * </p>
  */
-class BindingExpressionExecutionLogManager {
+class BindingExpressionExecutionRecorder {
 
     static class MethodInvocation {
         Method method;
@@ -29,9 +29,9 @@ class BindingExpressionExecutionLogManager {
         }
     }
 
-    private static ThreadLocal<BindingExpressionExecutionLog> currentLog = new ThreadLocal<BindingExpressionExecutionLog>();
+    private static ThreadLocal<BindingExpressionExecutionRecord> currentLog = new ThreadLocal<BindingExpressionExecutionRecord>();
 
-    static BindingExpressionExecutionLog getCurrentLog() {
+    static BindingExpressionExecutionRecord getCurrentLog() {
         return currentLog.get();
     }
 
@@ -40,14 +40,14 @@ class BindingExpressionExecutionLogManager {
      * invoke the binding expression, supplying proxies which record invoked
      * methods in the current log. The log is then returned.
      */
-    static BindingExpressionExecutionLog collectBindingExpressionLog(
+    static BindingExpressionExecutionRecord collectBindingExpressionLog(
             Runnable runnable) {
         if (currentLog.get() != null) {
             throw new RuntimeException(
                     "Attempt to collect binding information while collecting binding information is already in progress");
         }
 
-        BindingExpressionExecutionLog result = new BindingExpressionExecutionLog();
+        BindingExpressionExecutionRecord result = new BindingExpressionExecutionRecord();
         try {
             currentLog.set(result);
             runnable.run();

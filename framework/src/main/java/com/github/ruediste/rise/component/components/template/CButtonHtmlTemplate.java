@@ -14,7 +14,7 @@ public class CButtonHtmlTemplate extends Html5ComponentTemplateBase<CButton> {
     @Override
     public void doRender(CButton component, RiseCanvas<?> html) {
         html.button()
-                .CLASS(util.combineCssClasses("rise_button", component.class_()))
+                .CLASS(util.combineCssClasses("rise_button", component.CLASS()))
                 .DATA(CoreAssetBundle.componentAttributeNr,
                         String.valueOf(util.getComponentNr(component)))
                 .render(components(component.getChildren()))._button();

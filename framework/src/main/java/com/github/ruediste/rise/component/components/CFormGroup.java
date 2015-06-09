@@ -5,9 +5,14 @@ import java.util.Collections;
 
 import javax.validation.ConstraintViolation;
 
+import com.github.ruediste.c3java.properties.NoPropertyAccessor;
+import com.github.ruediste.c3java.properties.PropertyPath;
 import com.github.ruediste.rise.component.ConstraintViolationAware;
 import com.github.ruediste.rise.component.ValidationState;
+import com.github.ruediste.rise.component.binding.Binding;
 import com.github.ruediste.rise.component.tree.ComponentBase;
+import com.github.ruediste1.i18n.lString.FixedLString;
+import com.github.ruediste1.i18n.lString.LString;
 
 /**
  * 
@@ -18,7 +23,12 @@ public class CFormGroup<T extends ComponentBase<T>> extends ComponentBase<T>
     private boolean isValidated;
     private Collection<ConstraintViolation<?>> constraintViolations = Collections
             .emptyList();
-    private String label;
+    private LString label;
+
+    /**
+     * Property to use to generate a label, if not set explicitely
+     */
+    private PropertyPath labelProperty;
 
     @Override
     public void clearConstraintViolations() {
@@ -40,12 +50,12 @@ public class CFormGroup<T extends ComponentBase<T>> extends ComponentBase<T>
         return constraintViolations;
     }
 
-    public String getLabel() {
+    public LString getLabel() {
         return label;
     }
 
     public T setLabel(String label) {
-        this.label = label;
+        this.label = new FixedLString(label);
         return self();
     }
 
@@ -58,4 +68,18 @@ public class CFormGroup<T extends ComponentBase<T>> extends ComponentBase<T>
         }
         return ValidationState.ERROR;
     }
+
+    public PropertyPath getLabelProperty() {
+        return labelProperty;
+    }
+
+    public void setLabelProperty(PropertyPath labelProperty) {
+        this.labelProperty = labelProperty;
+    }
+
+    @NoPropertyAccessor
+    public void setLabelProperty(Binding<?> binding) {
+        setLabelProperty(binding.modelPath);
+    }
+
 }

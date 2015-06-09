@@ -17,6 +17,9 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.slf4j.Logger;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
+import com.github.ruediste.rise.nonReloadable.front.StartupTimeLogger;
+import com.google.common.base.Stopwatch;
+
 /**
  * Manages a persistence unit using EclipseLink
  */
@@ -83,6 +86,7 @@ public class EclipseLinkPersistenceUnitManager implements
             return null;
         isOpen = true;
 
+        Stopwatch watch = Stopwatch.createStarted();
         ClassLoader classLoader = Thread.currentThread()
                 .getContextClassLoader();
         log.info("Creating EntityManagerFactory for " + qualifier);
@@ -123,6 +127,9 @@ public class EclipseLinkPersistenceUnitManager implements
 
         }
         log.debug("initialized provider for " + qualifier);
+        StartupTimeLogger.stopAndLog("Eclipselink Startup of "
+                + (qualifier == null ? "default" : qualifier.getSimpleName()),
+                watch);
         return properties;
     }
 

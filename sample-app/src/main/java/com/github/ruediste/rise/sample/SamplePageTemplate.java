@@ -8,6 +8,7 @@ import com.github.ruediste.rise.integration.RisePageTemplate;
 import com.github.ruediste.rise.integration.RisePageTemplate.RisePageTemplateParameters;
 import com.github.ruediste.rise.sample.welcome.StageRibbonController;
 import com.github.ruediste.rise.sample.welcome.WelcomeController;
+import com.github.ruediste1.i18n.lString.LString;
 
 public class SamplePageTemplate extends PageTemplateBase {
 
@@ -48,7 +49,7 @@ public class SamplePageTemplate extends PageTemplateBase {
                     @Override
                     protected void renderBody(SampleCanvas html) {
                         html.render(risePageTemplate.stageRibbon(false,x-> go(StageRibbonController.class).index(x)));
-                        html.render(navRenderer.navbar(navigations.sideNavigation,"top-nav",
+                        html.render(navRenderer.navbar(navigations.topNavigation,"top-nav",
                                 x->x.setBrandRenderer(()->html.HREF(go(WelcomeController.class).index()).content("RISE"))))
                        
                         .bContainer_fluid()
@@ -64,7 +65,7 @@ public class SamplePageTemplate extends PageTemplateBase {
     }
 
     public interface SamplePageTemplateParameters {
-        String getTitle();
+        LString getTitle();
 
         void renderBody(SampleCanvas html);
     }

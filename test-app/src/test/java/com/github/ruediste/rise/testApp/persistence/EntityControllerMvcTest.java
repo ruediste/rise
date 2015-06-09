@@ -14,7 +14,6 @@ import javax.persistence.EntityManager;
 
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 
 import com.github.ruediste.rise.core.persistence.TransactionTemplate;
 import com.github.ruediste.rise.testApp.WebTest;
@@ -40,7 +39,6 @@ public class EntityControllerMvcTest extends WebTest {
             trx.commit();
         });
 
-        WebDriver driver = createDriver();
         driver.navigate().to(url(go(EntityControllerMvc.class).index()));
 
         Set<String> items = driver.findElements(By.cssSelector("li")).stream()
@@ -65,7 +63,6 @@ public class EntityControllerMvcTest extends WebTest {
         });
 
         // delete
-        WebDriver driver = createDriver();
         driver.navigate().to(url(go(EntityControllerMvc.class).delete(entity)));
 
         // check entity has been deleted

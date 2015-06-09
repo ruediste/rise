@@ -1,6 +1,5 @@
 package com.github.ruediste.rise.core.navigation;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -45,45 +44,6 @@ public class NavigationRenderer {
         NavigationItemSelectionCache cache;
 
         public NavigationRendererOptions opts;
-    }
-
-    public Renderable<BootstrapRiseCanvas<?>> side(Navigation nav,
-            NavigationRendererOptions opts) {
-        return html -> {
-            Ctx ctx = new Ctx();
-            ctx.opts = opts;
-            ctx.cache = cache.get();
-
-            html.ul().CLASS("nav nav-pills nav-stacked");
-            renderSideItems(html, ctx, nav.getRootItems());
-            html._ul();
-        };
-    }
-
-    private void renderSideItems(BootstrapRiseCanvas<?> html, Ctx ctx,
-            List<NavigationItem> items) {
-        for (NavigationItem item : items) {
-            html.li().CLASS("").ROLE("presentation");
-            boolean selected = ctx.cache.isSelected(item);
-            if (selected)
-                html.CLASS("active");
-            if (item.getChildren().isEmpty()) {
-                if (item.target.isPresent())
-                    html.a().HREF(item.target.get()).content(item.text);
-                else
-                    html.a().HREF("#").content(item.text);
-                html._li();
-            } else {
-                html.a().HREF("#").CLASS("rise-tree-toggler")
-                        .content(item.text).ul()
-                        .CLASS("nav nav-pills nav-stacked rise-tree");
-                if (!selected)
-                    html.STYLE("display: none;");
-                renderSideItems(html, ctx, item.getChildren());
-                html._ul();
-                html._li();
-            }
-        }
     }
 
     public Renderable<BootstrapRiseCanvas<?>> navbar(Navigation nav, String id,

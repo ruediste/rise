@@ -11,6 +11,14 @@ import com.github.ruediste.rise.testApp.app.TestRestartableApplication;
 import com.github.ruediste.salta.jsr330.Injector;
 
 public class WebTest extends WebTestBase {
+
+    private static TestContainerInstance containerInstance = new TestContainerInstance();
+
+    @Override
+    protected TestContainerInstance getTestContainerInstance() {
+        return containerInstance;
+    }
+
     @Override
     protected final Servlet createServlet(Object testCase) {
         TestRestartableApplication app = new TestRestartableApplication() {

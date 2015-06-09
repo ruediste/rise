@@ -3,15 +3,16 @@ package com.github.ruediste.rise.component.components;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ComponentBase;
 import com.github.ruediste.rise.component.tree.SingleChildRelation;
+import com.github.ruediste1.i18n.lString.LString;
 
 public class CPage extends ComponentBase<CPage> {
-    private String title;
+    private LString title;
     private final SingleChildRelation<Component, CPage> child = new SingleChildRelation<Component, CPage>(
             this);
 
     private CReload reload = new CReload();
 
-    public CPage(String title) {
+    public CPage(LString title) {
         this();
         this.title = title;
     }
@@ -25,11 +26,11 @@ public class CPage extends ComponentBase<CPage> {
         return this;
     }
 
-    public String getTitle() {
+    public LString getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(LString title) {
         this.title = title;
     }
 }

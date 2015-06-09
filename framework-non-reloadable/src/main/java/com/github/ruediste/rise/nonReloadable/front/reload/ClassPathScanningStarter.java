@@ -79,6 +79,8 @@ public class ClassPathScanningStarter {
                     public void visitClass(String className,
                             ClassLoader classLoader,
                             Supplier<InputStream> inputStreamSupplier) {
+                        if (!config.shouldBeScanned(className))
+                            return;
                         if (classes.containsKey(className))
                             return;
 
@@ -106,6 +108,7 @@ public class ClassPathScanningStarter {
                 trx.addedClasses.addAll(classes.values());
         });
         fileChangeNotifier.start(rootDirs, config.fileChangeSettleDelayMs);
+
     }
 
     protected ClassNode readClass(byte[] bb) {

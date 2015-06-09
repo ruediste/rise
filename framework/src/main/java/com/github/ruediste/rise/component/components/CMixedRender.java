@@ -6,8 +6,11 @@ import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.integration.RiseCanvas;
 
-@DefaultTemplate(CRenderTemplate.class)
-public class CRender extends MultiChildrenComponent<CRender> {
+/**
+ * Component containing a mix of fixed html snippets and child components.
+ */
+@DefaultTemplate(CMixedRenderTemplate.class)
+public class CMixedRender extends MultiChildrenComponent<CMixedRender> {
 
     private static abstract class Entry {
 
@@ -47,12 +50,12 @@ public class CRender extends MultiChildrenComponent<CRender> {
     private ArrayList<Entry> entries = new ArrayList<>();
 
     @Override
-    public CRender add(Component child) {
+    public CMixedRender add(Component child) {
         entries.add(new ComponentEntry(child));
         return super.add(child);
     }
 
-    public CRender add(byte[] buffer) {
+    public CMixedRender add(byte[] buffer) {
         entries.add(new BufferEntry(buffer));
         return this;
     }

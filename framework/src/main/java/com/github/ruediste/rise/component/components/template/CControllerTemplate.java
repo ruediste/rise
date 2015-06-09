@@ -8,7 +8,7 @@ public class CControllerTemplate extends
 
     @Override
     public void doRender(CController component, RiseCanvas<?> html) {
-        html.render(component(component));
+        html.render(children(component));
     }
 
 }

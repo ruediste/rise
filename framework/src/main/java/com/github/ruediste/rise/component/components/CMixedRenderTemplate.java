@@ -3,10 +3,10 @@ package com.github.ruediste.rise.component.components;
 import com.github.ruediste.rise.component.components.template.Html5ComponentTemplateBase;
 import com.github.ruediste.rise.integration.RiseCanvas;
 
-public class CRenderTemplate extends Html5ComponentTemplateBase<CRender> {
+public class CMixedRenderTemplate extends Html5ComponentTemplateBase<CMixedRender> {
 
     @Override
-    public void doRender(CRender component, RiseCanvas<?> html) {
+    public void doRender(CMixedRender component, RiseCanvas<?> html) {
         component.doRender(html, util);
     }
 

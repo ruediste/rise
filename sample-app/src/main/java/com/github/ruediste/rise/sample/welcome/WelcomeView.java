@@ -4,14 +4,11 @@ import com.github.ruediste.rise.sample.SampleCanvas;
 import com.github.ruediste.rise.sample.component.SampleComponentController;
 import com.github.ruediste.rise.sample.db.PageView;
 import com.github.ruediste.rise.sample.db.TodoController;
+import com.github.ruediste1.i18n.label.Label;
 
+@Label("Welcome")
 public class WelcomeView extends
         PageView<WelcomeController, WelcomeController.Data> {
-
-    @Override
-    public String getTitle() {
-        return "Welcome";
-    }
 
     @Override
     public void renderBody(SampleCanvas html) {

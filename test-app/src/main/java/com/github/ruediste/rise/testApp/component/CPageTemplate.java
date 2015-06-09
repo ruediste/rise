@@ -1,11 +1,7 @@
 package com.github.ruediste.rise.testApp.component;
 
-import java.io.IOException;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-
-import org.rendersnake.HtmlCanvas;
 
 import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.component.components.template.ComponentTemplateBase;
@@ -14,8 +10,10 @@ import com.github.ruediste.rise.core.web.CoreAssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.bootstrap.BootstrapBundleUtil;
+import com.github.ruediste.rise.integration.RiseCanvas;
 import com.github.ruediste.rise.integration.RisePageTemplate;
 import com.github.ruediste.rise.integration.RisePageTemplate.RisePageTemplateParameters;
+import com.github.ruediste.rise.testApp.TestCanvas;
 
 public class CPageTemplate extends ComponentTemplateBase<CPage> {
 
@@ -39,30 +37,34 @@ public class CPageTemplate extends ComponentTemplateBase<CPage> {
     @Inject
     Bundle bundle;
     @Inject
-    RisePageTemplate renderer;
+    RisePageTemplate<TestCanvas> renderer;
 
     @Override
-    public void doRender(CPage component, HtmlCanvas html) throws IOException {
-        renderer.renderOn(html, new RisePageTemplateParameters() {
+    public void doRender(CPage component, RiseCanvas<?> html) {
+        doRender(component, (TestCanvas) html);
+    }
+
+    public void doRender(CPage component, TestCanvas html) {
+        renderer.renderOn(html, new RisePageTemplateParameters<TestCanvas>() {
 
             @Override
-            protected void renderJsLinks(HtmlCanvas html) throws IOException {
-                html.render(util.jsLinks(bundle.out));
+            protected void renderJsLinks(TestCanvas html) {
+                html.rJsLinks(bundle.out);
 
             }
 
             @Override
-            protected void renderHead(HtmlCanvas html) throws IOException {
+            protected void renderHead(TestCanvas html) {
 
             }
 
             @Override
-            protected void renderCssLinks(HtmlCanvas html) throws IOException {
-                html.render(util.cssLinks(bundle.out));
+            protected void renderCssLinks(TestCanvas html) {
+                html.rCssLinks(bundle.out);
             }
 
             @Override
-            protected void renderBody(HtmlCanvas html) throws IOException {
+            protected void renderBody(TestCanvas html) {
                 for (Component child : component.getChildren())
                     util.render(child, html);
             }

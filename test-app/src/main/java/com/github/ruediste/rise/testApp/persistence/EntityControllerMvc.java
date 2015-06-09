@@ -1,26 +1,24 @@
 package com.github.ruediste.rise.testApp.persistence;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
-import org.rendersnake.HtmlCanvas;
-
 import com.github.ruediste.rise.api.ControllerMvc;
-import com.github.ruediste.rise.api.ViewMvcBase;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.mvc.Updating;
+import com.github.ruediste.rise.testApp.TestCanvas;
+import com.github.ruediste.rise.testApp.ViewMvc;
 
 public class EntityControllerMvc extends ControllerMvc<EntityControllerMvc> {
 
     static class ListView extends
-            ViewMvcBase<EntityControllerMvc, List<TestEntity>> {
+            ViewMvc<EntityControllerMvc, List<TestEntity>> {
 
         @Override
-        public void render(HtmlCanvas html) throws IOException {
+        public void render(TestCanvas html) {
             html.html().body().ul().render(x -> {
                 for (TestEntity item : data())
                     x.li().content(Objects.toString(item.getId()));

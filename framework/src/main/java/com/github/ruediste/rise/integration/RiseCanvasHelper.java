@@ -2,13 +2,15 @@ package com.github.ruediste.rise.integration;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
 import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasTarget;
-import com.github.ruediste.rise.component.components.CRender;
+import com.github.ruediste.rise.component.components.CMixedRender;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.CoreUtil;
+import com.github.ruediste.rise.core.CurrentLocale;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetRequestMapper;
 import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
@@ -21,10 +23,13 @@ public class RiseCanvasHelper {
     @Inject
     AssetRequestMapper mapper;
 
+    @Inject
+    CurrentLocale currentLocale;
+
     private ByteArrayOutputStream baos;
     private HtmlCanvasTarget target;
     private boolean isComponent;
-    private CRender cRender;
+    private CMixedRender cRender;
 
     public void rCssLinks(RiseCanvas<?> html, AssetBundleOutput output) {
         output.forEach(asset -> {
@@ -77,7 +82,7 @@ public class RiseCanvasHelper {
             HtmlCanvasTarget target) {
         this.baos = baos;
         this.target = target;
-        cRender = new CRender();
+        cRender = new CMixedRender();
         isComponent = true;
     }
 
@@ -100,13 +105,17 @@ public class RiseCanvasHelper {
         }
     }
 
-    public CRender getcRender() {
+    public CMixedRender getcRender() {
         checkComponent();
         return cRender;
     }
 
     public boolean isComponent() {
         return isComponent;
+    }
+
+    public Locale getCurrentLocale() {
+        return currentLocale.getCurrentLocale();
     }
 
 }

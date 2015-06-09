@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -238,5 +239,14 @@ public class CoreConfiguration {
                 .orElseThrow(
                         () -> new RuntimeException(
                                 "Initialize bootstrapCanvasFactory from your restartable application"));
+    }
+
+    /**
+     * Set the locale which is used by default
+     */
+    public Locale defaultLocale = Locale.ENGLISH;
+
+    public Locale getDefaultLocale() {
+        return defaultLocale;
     }
 }

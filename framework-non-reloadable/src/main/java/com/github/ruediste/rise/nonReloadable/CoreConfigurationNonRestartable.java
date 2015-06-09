@@ -1,6 +1,8 @@
 package com.github.ruediste.rise.nonReloadable;
 
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.TreeSet;
 import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;
@@ -77,4 +79,13 @@ public class CoreConfigurationNonRestartable {
     }
 
     public long restartQueryTimeout = 30000;
+
+    public final TreeSet<String> nonScannedPackages = new TreeSet<String>(
+            Arrays.asList("org.eclipse.", "org.springframework.",
+                    "ch.qos.logback.", "org.hibernate."));
+
+    public boolean shouldBeScanned(String internalClassName) {
+        String prefix = nonScannedPackages.ceiling(internalClassName);
+        return prefix == null || internalClassName.startsWith(prefix);
+    }
 }

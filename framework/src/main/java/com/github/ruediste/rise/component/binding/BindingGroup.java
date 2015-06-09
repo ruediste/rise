@@ -14,7 +14,6 @@ import net.sf.cglib.proxy.MethodProxy;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
-import com.github.ruediste.rise.component.binding.BindingExpressionExecutionLogManager.MethodInvocation;
 import com.github.ruediste.rise.component.tree.ComponentBase;
 import com.google.common.base.Defaults;
 import com.google.common.reflect.TypeToken;
@@ -138,38 +137,20 @@ public class BindingGroup<T> implements Serializable {
      * Otherwise return {@link #data}.
      */
     public T proxy() {
-        BindingExpressionExecutionLog log = BindingExpressionExecutionLogManager
+        BindingExpressionExecutionRecord log = BindingExpressionExecutionRecorder
                 .getCurrentLog();
         if (log == null) {
             return data;
         }
-        log.involvedBindingGroup = this;
+        log.setInvolvedBindingGroup(this);
         return createModelProxy(tClass);
     }
 
     @SuppressWarnings("unchecked")
     private <TModel> TModel createModelProxy(Class<?> modelClass) {
-        Enhancer e = new Enhancer();
-        e.setSuperclass(modelClass);
-        e.setCallback(new MethodInterceptor() {
+        return (TModel) BindingExpressionExecutionRecorder.getCurrentLog().modelRecorder
+                .getProxy(modelClass);
 
-            @Override
-            public Object intercept(Object obj, Method method, Object[] args,
-                    MethodProxy proxy) throws Throwable {
-                BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager
-                        .getCurrentLog();
-                info.modelPath.add(new MethodInvocation(method, args));
-
-                Class<?> returnType = method.getReturnType();
-                if (isTerminal(returnType)) {
-                    return Defaults.defaultValue(returnType);
-                }
-                return createModelProxy(returnType);
-            }
-
-        });
-
-        return (TModel) e.create();
     }
 
     private boolean isTerminal(Class<?> clazz) {

@@ -88,7 +88,7 @@ public class AssetRequestMapper {
 
     public void initialize() {
         String internalName = Type.getInternalName(AssetBundle.class);
-        registerBundles(internalName);
+        registerChildBundles(internalName);
         registerAssets(bundles);
     }
 
@@ -155,10 +155,10 @@ public class AssetRequestMapper {
         return new PathInfo(getPathInfoString(asset));
     }
 
-    void registerBundles(String internalName) {
+    void registerChildBundles(String internalName) {
         for (ClassNode child : cache.getChildren(internalName)) {
             registerBundle(child);
-            registerBundles(child.name);
+            registerChildBundles(child.name);
         }
     }
 

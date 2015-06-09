@@ -117,16 +117,6 @@ public class ComponentUtil implements ICoreUtil {
         return stream.toByteArray();
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public Component toComponent(Renderable<?> renderable) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream(1000);
-        RiseCanvasBase<?> html = coreConfiguration.createApplicationCanvas();
-        html.initializeForComponent(stream);
-        ((Renderable) renderable).renderOn(html);
-        html.flush();
-        return html.internal_riseHelper().getcRender();
-    }
-
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void render(Component component, RiseCanvas<?> canvas) {
         ((ComponentTemplate) componentTemplateIndex.getTemplate(component

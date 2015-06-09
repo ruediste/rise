@@ -28,7 +28,6 @@ public class TestComponentControllerTest extends WebTest {
 
     @Test
     public void testSubControllers() {
-        WebDriver driver = createDriver();
 
         // create test entity
         TestEntity entity = t.builder().updating()

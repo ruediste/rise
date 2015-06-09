@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.test;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreUtil;
@@ -8,6 +9,7 @@ import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.mvc.IControllerMvc;
 import com.github.ruediste.rise.mvc.MvcUtil;
 
+@Singleton
 public class IntegrationTestUtil {
 
     private String baseUrl;

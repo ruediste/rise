@@ -25,6 +25,7 @@ import com.github.ruediste.rise.util.InitializerUtil;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste.salta.standard.Stage;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Stopwatch;
 
 public abstract class FrontServletBase extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -71,6 +72,9 @@ public abstract class FrontServletBase extends HttpServlet {
 
     private ApplicationStage stage;
 
+    private Stopwatch startupStopwatch;
+    private boolean isInitialStartup = true;
+
     /**
      * Construct using a {@link RestartableApplication} class. Enables reloading
      */
@@ -109,6 +113,7 @@ public abstract class FrontServletBase extends HttpServlet {
 
     @Override
     public final void init() throws ServletException {
+        startupStopwatch = Stopwatch.createStarted();
         try {
             startupErrorHandler = createStartupErrorHandler();
 
@@ -116,6 +121,7 @@ public abstract class FrontServletBase extends HttpServlet {
 
             // continue in AET
             queue.submit(this::initInAET).get();
+
         } catch (Throwable t) {
             log.error("Error during non-restartable startup", t);
             startupError = t;
@@ -142,6 +148,10 @@ public abstract class FrontServletBase extends HttpServlet {
                     fixedDynamicApplicationInstance, Thread.currentThread()
                             .getContextClassLoader());
             fixedDynamicApplicationInstance.start(nonRestartableInjector);
+            StartupTimeLogger
+                    .stopAndLog("Total Startup Time", startupStopwatch);
+            StartupTimeLogger
+                    .writeTimesToLog("Startup with fixed application instance times");
         } else {
             // application gets started through the initial file change
             // transaction
@@ -149,6 +159,8 @@ public abstract class FrontServletBase extends HttpServlet {
     }
 
     private void reloadApplicationInstance() {
+        if (!isInitialStartup)
+            startupStopwatch = Stopwatch.createStarted();
         log.info("Reloading application instance ...");
         long startTime = System.currentTimeMillis();
         try {
@@ -187,6 +199,12 @@ public abstract class FrontServletBase extends HttpServlet {
                     + (System.currentTimeMillis() - startTime) + "ms");
             restartCountHolder.increment();
             startupError = null;
+            StartupTimeLogger
+                    .stopAndLog("Total Startup Time", startupStopwatch);
+            StartupTimeLogger
+                    .writeTimesToLog(isInitialStartup ? "Initial Startup Times"
+                            : "Reload Times");
+            isInitialStartup = false;
         } catch (Throwable t) {
             log.warn("Error loading application instance", t);
             startupError = t;

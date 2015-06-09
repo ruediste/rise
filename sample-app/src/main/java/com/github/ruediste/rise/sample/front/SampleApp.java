@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 
 import com.github.ruediste.rise.api.RestartableApplicationModule;
 import com.github.ruediste.rise.component.ComponentTemplateIndex;
@@ -15,8 +16,12 @@ import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.sample.SampleCanvas;
 import com.github.ruediste.rise.sample.SamplePackage;
 import com.github.ruediste.rise.sample.component.CPageHtmlTemplate;
+import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
+import com.github.ruediste.salta.jsr330.Provides;
 import com.github.ruediste.salta.jsr330.Salta;
+import com.github.ruediste1.i18n.lString.ResouceBundleTStringResolver;
+import com.github.ruediste1.i18n.lString.TStringResolver;
 
 public class SampleApp extends RestartableApplicationBase {
 
@@ -39,8 +44,20 @@ public class SampleApp extends RestartableApplicationBase {
     protected void startImpl(Injector permanentInjector) {
         Salta.createInjector(
                 permanentInjector.getInstance(ApplicationStage.class)
-                        .getSaltaStage(),
-                new RestartableApplicationModule(permanentInjector))
+                        .getSaltaStage(), new AbstractModule() {
+
+                    @Override
+                    protected void configure() throws Exception {
+                    }
+
+                    @Provides
+                    @Singleton
+                    TStringResolver tStringResolver(
+                            ResouceBundleTStringResolver resolver) {
+                        resolver.initialize("translations/translations");
+                        return resolver;
+                    }
+                }, new RestartableApplicationModule(permanentInjector))
                 .injectMembers(this);
 
         errorHandler.initialize(util -> util.go(ReqestErrorController.class)

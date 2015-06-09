@@ -9,7 +9,7 @@ public abstract class BindingTransformer<TSource, TTarget> {
      * Transform the view value to the model value
      */
     public final TTarget transform(TSource source) {
-        BindingExpressionExecutionLog info = BindingExpressionExecutionLogManager
+        BindingExpressionExecutionRecord info = BindingExpressionExecutionRecorder
                 .getCurrentLog();
         if (info == null) {
             return transformImpl(source);

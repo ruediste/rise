@@ -8,6 +8,7 @@ import com.github.ruediste.rise.sample.SampleBundle;
 import com.github.ruediste.rise.sample.SampleCanvas;
 import com.github.ruediste.rise.sample.SamplePageTemplate;
 import com.github.ruediste.rise.sample.SamplePageTemplate.SamplePageTemplateParameters;
+import com.github.ruediste1.i18n.lString.LString;
 
 public class CPageHtmlTemplate extends ComponentTemplate<CPage> {
 
@@ -28,7 +29,7 @@ public class CPageHtmlTemplate extends ComponentTemplate<CPage> {
             }
 
             @Override
-            public String getTitle() {
+            public LString getTitle() {
                 return component.getTitle();
             }
         });
