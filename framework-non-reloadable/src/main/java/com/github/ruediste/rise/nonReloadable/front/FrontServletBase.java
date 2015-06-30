@@ -16,6 +16,8 @@ import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.ruediste.c3java.linearization.JavaC3;
+import com.github.ruediste.c3java.properties.PropertyUtil;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.CoreConfigurationNonRestartable;
 import com.github.ruediste.rise.nonReloadable.front.reload.FileChangeNotifier;
@@ -159,11 +161,17 @@ public abstract class FrontServletBase extends HttpServlet {
     }
 
     private void reloadApplicationInstance() {
-        if (!isInitialStartup)
+        if (!isInitialStartup) {
+            StartupTimeLogger.clear();
             startupStopwatch = Stopwatch.createStarted();
+        }
         log.info("Reloading application instance ...");
-        long startTime = System.currentTimeMillis();
         try {
+
+            // avoid classloader leaks by clearing the caches
+            JavaC3.clearCache();
+            PropertyUtil.clearCache();
+
             // close old application instance
             if (currentApplicationInfo != null) {
                 currentApplicationInfo.application.close();
@@ -195,8 +203,6 @@ public abstract class FrontServletBase extends HttpServlet {
             } finally {
                 currentThread.setContextClassLoader(old);
             }
-            log.info("Reloading complete. Took "
-                    + (System.currentTimeMillis() - startTime) + "ms");
             restartCountHolder.increment();
             startupError = null;
             StartupTimeLogger

@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
+import com.github.ruediste1.i18n.lString.LString;
 
 public class Navigation {
 
@@ -14,10 +15,10 @@ public class Navigation {
         public final ArrayList<NavigationItem> children = new ArrayList<>();
 
         public final Optional<ActionResult> target;
-        public final String text;
+        public final LString text;
         public final Predicate<ActionInvocation<Object>> selected;
 
-        public NavigationItem(String text, Optional<ActionResult> target,
+        public NavigationItem(LString text, Optional<ActionResult> target,
                 Predicate<ActionInvocation<Object>> selected) {
             this.text = text;
             this.target = target;

@@ -14,11 +14,17 @@ import com.github.ruediste.rise.core.CurrentLocale;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetRequestMapper;
 import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
+import com.github.ruediste1.i18n.label.LabelUtil;
 
 public class RiseCanvasHelper {
 
     @Inject
-    private CoreUtil util;
+    CoreUtil util;
+
+    @Inject
+    LabelUtil labelUtil;
+    @Inject
+    IconUtil iconUtil;
 
     @Inject
     AssetRequestMapper mapper;
@@ -116,6 +122,14 @@ public class RiseCanvasHelper {
 
     public Locale getCurrentLocale() {
         return currentLocale.getCurrentLocale();
+    }
+
+    public LabelUtil getLabelUtil() {
+        return labelUtil;
+    }
+
+    public IconUtil getIconUtil() {
+        return iconUtil;
     }
 
 }

@@ -79,6 +79,16 @@ public class NavigationRenderer {
         //@formatter:on
     }
 
+    public <T extends BootstrapRiseCanvas<T>> T renderNavItems(T html,
+            Navigation nav) {
+        Ctx ctx = new Ctx();
+        ctx.cache = cache.get();
+        html.bNavbarNav();
+        renderNavItems(html, ctx, nav.getRootItems(), 1);
+        html._bNavbarNav();
+        return html;
+    }
+
     private void renderNavItems(BootstrapRiseCanvas<?> html, Ctx ctx,
             Iterable<NavigationItem> items, int level) {
 

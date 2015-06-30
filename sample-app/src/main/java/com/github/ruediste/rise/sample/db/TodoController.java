@@ -12,6 +12,7 @@ import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.mvc.Updating;
+import com.github.ruediste1.i18n.label.Label;
 
 public class TodoController extends ControllerMvc<TodoController> {
 
@@ -25,6 +26,7 @@ public class TodoController extends ControllerMvc<TodoController> {
     @Inject
     CoreRequestInfo info;
 
+    @Label("Todo Items")
     public ActionResult index() {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<TodoItem> query = cb.createQuery(TodoItem.class);

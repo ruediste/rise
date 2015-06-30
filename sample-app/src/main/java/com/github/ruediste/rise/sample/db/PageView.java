@@ -34,4 +34,11 @@ public abstract class PageView<TController extends IControllerMvc, TData>
         template.renderOn(html, this);
     }
 
+    public LString label(Class<?> clazz) {
+        return labelUtil.getTypeLabel(clazz);
+    }
+
+    public LString label(Object obj) {
+        return labelUtil.getTypeLabel(obj.getClass());
+    }
 }

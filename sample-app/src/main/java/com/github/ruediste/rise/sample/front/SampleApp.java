@@ -20,8 +20,10 @@ import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste.salta.jsr330.Provides;
 import com.github.ruediste.salta.jsr330.Salta;
-import com.github.ruediste1.i18n.lString.ResouceBundleTStringResolver;
-import com.github.ruediste1.i18n.lString.TStringResolver;
+import com.github.ruediste1.i18n.lString.DefaultPatternStringResolver;
+import com.github.ruediste1.i18n.lString.PatternStringResolver;
+import com.github.ruediste1.i18n.lString.ResouceBundleTranslatedStringResolver;
+import com.github.ruediste1.i18n.lString.TranslatedStringResolver;
 
 public class SampleApp extends RestartableApplicationBase {
 
@@ -48,15 +50,20 @@ public class SampleApp extends RestartableApplicationBase {
 
                     @Override
                     protected void configure() throws Exception {
+                        bind(PatternStringResolver.class).to(
+                                DefaultPatternStringResolver.class).in(
+                                Singleton.class);
+
                     }
 
                     @Provides
                     @Singleton
-                    TStringResolver tStringResolver(
-                            ResouceBundleTStringResolver resolver) {
+                    TranslatedStringResolver tStringResolver(
+                            ResouceBundleTranslatedStringResolver resolver) {
                         resolver.initialize("translations/translations");
                         return resolver;
                     }
+
                 }, new RestartableApplicationModule(permanentInjector))
                 .injectMembers(this);
 

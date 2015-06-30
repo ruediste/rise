@@ -54,6 +54,7 @@ public class CFormGroup<T extends ComponentBase<T>> extends ComponentBase<T>
         return label;
     }
 
+    @NoPropertyAccessor
     public T setLabel(String label) {
         this.label = new FixedLString(label);
         return self();

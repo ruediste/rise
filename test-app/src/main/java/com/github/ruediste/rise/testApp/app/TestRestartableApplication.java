@@ -20,8 +20,8 @@ import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste.salta.jsr330.Provides;
 import com.github.ruediste.salta.jsr330.Salta;
-import com.github.ruediste1.i18n.lString.ResouceBundleTStringResolver;
-import com.github.ruediste1.i18n.lString.TStringResolver;
+import com.github.ruediste1.i18n.lString.ResouceBundleTranslatedStringResolver;
+import com.github.ruediste1.i18n.lString.TranslatedStringResolver;
 
 public class TestRestartableApplication extends RestartableApplicationBase {
 
@@ -64,8 +64,8 @@ public class TestRestartableApplication extends RestartableApplicationBase {
 
             @Singleton
             @Provides
-            public TStringResolver resolver(
-                    ResouceBundleTStringResolver resolver) {
+            public TranslatedStringResolver resolver(
+                    ResouceBundleTranslatedStringResolver resolver) {
                 resolver.initialize("translations/translations");
                 return resolver;
             }

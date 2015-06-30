@@ -16,6 +16,7 @@ import com.github.ruediste.rise.sample.SampleCanvas;
 import com.github.ruediste.rise.sample.db.PageView;
 import com.github.ruediste.rise.sample.welcome.WelcomeController;
 import com.github.ruediste1.i18n.label.Label;
+import com.github.ruediste1.i18n.label.Labeled;
 import com.google.common.base.Throwables;
 
 public class ReqestErrorController extends ControllerMvc<ReqestErrorController> {
@@ -40,6 +41,7 @@ public class ReqestErrorController extends ControllerMvc<ReqestErrorController> 
         String message;
     }
 
+    @Labeled
     @Label("Unexpected Error")
     private static class View extends PageView<ReqestErrorController, Data> {
 

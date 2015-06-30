@@ -68,4 +68,5 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends
     default TSelf write(LString value) {
         return write(value.resolve(internal_riseHelper().getCurrentLocale()));
     }
+
 }

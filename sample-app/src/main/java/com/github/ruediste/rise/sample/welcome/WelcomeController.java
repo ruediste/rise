@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.web.ActionPath;
+import com.github.ruediste1.i18n.label.Label;
+import com.github.ruediste1.i18n.label.Labeled;
 
 public class WelcomeController extends ControllerMvc<WelcomeController> {
 
@@ -17,11 +19,13 @@ public class WelcomeController extends ControllerMvc<WelcomeController> {
 
     }
 
+    @Label("Home")
     @ActionPath(value = "/", primary = true)
     public ActionResult index() {
         return view(WelcomeView.class, new Data());
     }
 
+    @Labeled
     public ActionResult other() {
         return view(OtherView.class, "Test");
     }

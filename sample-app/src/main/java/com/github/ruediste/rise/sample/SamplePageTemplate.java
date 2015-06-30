@@ -6,6 +6,7 @@ import com.github.ruediste.rise.core.navigation.NavigationRenderer;
 import com.github.ruediste.rise.integration.PageTemplateBase;
 import com.github.ruediste.rise.integration.RisePageTemplate;
 import com.github.ruediste.rise.integration.RisePageTemplate.RisePageTemplateParameters;
+import com.github.ruediste.rise.sample.welcome.LanguageController;
 import com.github.ruediste.rise.sample.welcome.StageRibbonController;
 import com.github.ruediste.rise.sample.welcome.WelcomeController;
 import com.github.ruediste1.i18n.lString.LString;
@@ -49,9 +50,13 @@ public class SamplePageTemplate extends PageTemplateBase {
                     @Override
                     protected void renderBody(SampleCanvas html) {
                         html.render(risePageTemplate.stageRibbon(false,x-> go(StageRibbonController.class).index(x)));
-                        html.render(navRenderer.navbar(navigations.topNavigation,"top-nav",
-                                x->x.setBrandRenderer(()->html.HREF(go(WelcomeController.class).index()).content("RISE"))))
-                       
+                        html.bNavbar("mainNav", opts->{}, ()->html.a().BNavbarBrand().HREF(go(WelcomeController.class).index()).content("RISE"), ()->{
+                            navRenderer.renderNavItems(html, navigations.topNavigation)
+                            .p().BnavbarText().BnavbarRight()
+                              .a().BnavbarLink().HREF(go(LanguageController.class).switchLanguage("de")).content("de")
+                              .a().BnavbarLink().HREF(go(LanguageController.class).switchLanguage("en")).content("en")
+                            ._p();
+                        })
                         .bContainer_fluid()
                             .bRow()
                                 .bCol(x->x.xs(12));
