@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.api.ViewComponentBase;
-import com.github.ruediste.rise.component.components.template.ComponentTemplate;
+import com.github.ruediste.rise.component.components.ComponentTemplate;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ComponentTreeUtil;
 import com.github.ruediste.rise.core.CoreConfiguration;

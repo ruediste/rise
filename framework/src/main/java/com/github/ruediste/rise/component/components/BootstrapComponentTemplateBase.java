@@ -1,4 +1,4 @@
-package com.github.ruediste.rise.component.components.template;
+package com.github.ruediste.rise.component.components;
 
 import javax.inject.Inject;
 

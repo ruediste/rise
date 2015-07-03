@@ -1,6 +1,5 @@
 package com.github.ruediste.rise.component.components;
 
-import com.github.ruediste.rise.component.components.template.CLinkHtmlTemplate;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.ActionResult;
 

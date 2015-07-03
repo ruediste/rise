@@ -1,30 +1,32 @@
 package com.github.ruediste.rise.crud;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Repeatable;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Root;
+import com.github.ruediste.rise.crud.CrudUtil.BrowserFactory;
 
-public class CrudFactory {
-
-    public interface Filter<T> {
-        void applyFilter(Root<T> root, CriteriaBuilder cb);
-    }
-
-    public static class BrowserSettings<T> {
-        List<Consumer<T>> operations = new ArrayList<>();
-        List<Filter<T>> fixedFilters = new ArrayList<>();
-        CrudModel model;
-    }
+/**
+ * Defines the factory to be used for a certain type
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Repeatable(CrudFactories.class)
+@Inherited
+@Documented
+public @interface CrudFactory {
 
     /**
-     * A browser controller displays all instances of a certain type and allows
-     * the user to search/filter the list. For each instance, certain operations
-     * can be performed.
+     * The type of the factory to set, for example {@link BrowserFactory}
      */
-    public <T> void createBrowserController(BrowserSettings<T> settings) {
+    Class<?> type();
 
-    }
+    /**
+     * The class implementing the {@link #type()}
+     */
+    Class<?> implementation();
 }

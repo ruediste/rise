@@ -7,7 +7,6 @@ import javax.inject.Inject;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
 import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.ComponentViewRepository;
-import com.github.ruediste.rise.component.components.template.CControllerTemplate;
 import com.github.ruediste.rise.component.tree.Component;
 
 /**

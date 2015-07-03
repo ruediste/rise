@@ -1,14 +1,17 @@
 package com.github.ruediste.rise.component;
 
 import java.io.ByteArrayOutputStream;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import javax.inject.Inject;
 
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
+import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.binding.BindingUtil;
 import com.github.ruediste.rise.component.components.CComponentContainer;
 import com.github.ruediste.rise.component.components.CMixedRender;
+import com.github.ruediste.rise.component.components.CSubView;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.integration.RiseCanvasBase;
@@ -19,8 +22,11 @@ public class ComponentFactoryUtil {
     CoreConfiguration coreConfiguration;
 
     @Inject
-    BindingUtil bindingUtil;
+    ComponentViewRepository repository;
 
+    /**
+     * @see ComponentFactory#toComponent(Renderable)
+     */
     public Component toComponent(Renderable<?> renderable) {
         return renderToCanvas(renderable);
     }
@@ -35,6 +41,9 @@ public class ComponentFactoryUtil {
         return html.internal_riseHelper().getcRender();
     }
 
+    /**
+     * @see ComponentFactory#toComponentBound(Supplier, Renderable)
+     */
     public Component toComponentBound(Supplier<?> bindingAccessor,
             Renderable<?> renderable) {
         CComponentContainer container = new CComponentContainer();
@@ -43,5 +52,39 @@ public class ComponentFactoryUtil {
         }, x -> {
         });
         return container;
+    }
+
+    /**
+     * @see ComponentFactory#toSubView(ViewComponentBase)
+     */
+    public Component toSubView(ViewComponentBase<?> view) {
+        return new CSubView(view);
+    }
+
+    /**
+     * @see ComponentFactory#toSubView(Object)
+     */
+    public Component toSubView(Object controller) {
+        return toSubView(repository.createView(controller));
+    }
+
+    /**
+     * @see ComponentFactory#toSubView(Supplier)
+     */
+    public <T> Component toSubView(Supplier<Object> controllerAccessor) {
+        CSubView result = new CSubView();
+        BindingUtil.bind(result, new Consumer<CSubView>() {
+            private Object controller;
+
+            @Override
+            public void accept(CSubView x) {
+                Object newController = controllerAccessor.get();
+                if (newController != controller) {
+                    controller = newController;
+                    x.setView(repository.createView(controller));
+                }
+            }
+        });
+        return result;
     }
 }

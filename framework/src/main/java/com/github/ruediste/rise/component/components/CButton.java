@@ -1,6 +1,5 @@
 package com.github.ruediste.rise.component.components;
 
-import com.github.ruediste.rise.component.components.template.CButtonHtmlTemplate;
 import com.github.ruediste.rise.component.tree.Component;
 
 @DefaultTemplate(CButtonHtmlTemplate.class)

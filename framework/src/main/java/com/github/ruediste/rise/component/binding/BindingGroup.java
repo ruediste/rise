@@ -101,6 +101,11 @@ public class BindingGroup<T> implements Serializable {
 
     T data;
 
+    public BindingGroup(T data) {
+        tClass = data.getClass();
+        this.data = data;
+    }
+
     public BindingGroup(Class<T> cls) {
         tClass = cls;
     }
@@ -114,20 +119,32 @@ public class BindingGroup<T> implements Serializable {
                 .flatMap(c -> bindings.get(c).stream());
     }
 
+    /**
+     * Pull the data of all bindings up from the model to the view
+     */
     public void pullUp() {
         getBindings().filter(b -> b.getPullUp() != null).forEach(
                 b -> b.getPullUp().accept(data));
     }
 
+    /**
+     * Push the data of all bindings down from the view to the model
+     */
     public void pushDown() {
         getBindings().filter(b -> b.getPushDown() != null).forEach(
                 b -> b.getPushDown().accept(data));
     }
 
+    /**
+     * Get the data object. The bindings push/pull to/from this object;
+     */
     public T get() {
         return data;
     }
 
+    /**
+     * Set the data object. The bindings push/pull to/from this object;
+     */
     public void set(T data) {
         this.data = data;
     }

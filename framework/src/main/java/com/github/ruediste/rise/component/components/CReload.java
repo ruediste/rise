@@ -1,6 +1,5 @@
 package com.github.ruediste.rise.component.components;
 
-import com.github.ruediste.rise.component.components.template.CReloadHtmlTemplate;
 
 /**
  * Component representing a partial page reload context

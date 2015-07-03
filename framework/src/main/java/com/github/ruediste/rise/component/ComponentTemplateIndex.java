@@ -7,8 +7,8 @@ import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 
+import com.github.ruediste.rise.component.components.ComponentTemplate;
 import com.github.ruediste.rise.component.components.DefaultTemplate;
-import com.github.ruediste.rise.component.components.template.ComponentTemplate;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.salta.jsr330.Injector;
 

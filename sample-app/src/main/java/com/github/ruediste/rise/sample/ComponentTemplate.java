@@ -1,6 +1,6 @@
 package com.github.ruediste.rise.sample;
 
-import com.github.ruediste.rise.component.components.template.ComponentTemplateBase;
+import com.github.ruediste.rise.component.components.ComponentTemplateBase;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.integration.RiseCanvas;
 

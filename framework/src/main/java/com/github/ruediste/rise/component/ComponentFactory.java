@@ -4,6 +4,8 @@ import java.util.function.Supplier;
 
 import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvas;
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
+import com.github.ruediste.rise.api.ViewComponentBase;
+import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CDirectRender;
 import com.github.ruediste.rise.component.tree.Component;
 
@@ -15,6 +17,10 @@ public interface ComponentFactory<TCanvas extends HtmlCanvas<TCanvas>> {
 
     ComponentFactoryUtil internal_componentFactoryUtil();
 
+    /**
+     * Create a component containing a rendered form of the given renderable.
+     * The renderable will be evaluated only once.
+     */
     default Component toComponent(Renderable<TCanvas> renderable) {
         return internal_componentFactoryUtil().toComponent(renderable);
     }
@@ -27,9 +33,27 @@ public interface ComponentFactory<TCanvas extends HtmlCanvas<TCanvas>> {
         return new CDirectRender(renderable);
     }
 
+    /**
+     * Create a component rendering the given renderable. The renderable is
+     * reevaluated whenever the given binding group is
+     * {@link BindingGroup#pullUp() pulled up}.
+     */
     default Component toComponentBound(Supplier<?> bindingAccessor,
             Renderable<TCanvas> renderable) {
         return internal_componentFactoryUtil().toComponentBound(
                 bindingAccessor, renderable);
+    }
+
+    default Component toSubView(ViewComponentBase<?> view) {
+        return internal_componentFactoryUtil().toSubView(view);
+    }
+
+    default Component toSubView(Object controller) {
+        return internal_componentFactoryUtil().toSubView(controller);
+    }
+
+    default <T> Component toSubView(Supplier<Object> controllerAccessor) {
+
+        return internal_componentFactoryUtil().toSubView(controllerAccessor);
     }
 }

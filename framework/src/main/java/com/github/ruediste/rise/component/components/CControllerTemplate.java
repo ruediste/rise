@@ -1,6 +1,5 @@
-package com.github.ruediste.rise.component.components.template;
+package com.github.ruediste.rise.component.components;
 
-import com.github.ruediste.rise.component.components.CController;
 import com.github.ruediste.rise.integration.RiseCanvas;
 
 public class CControllerTemplate extends

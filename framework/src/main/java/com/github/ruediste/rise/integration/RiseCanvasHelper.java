@@ -58,6 +58,9 @@ public class RiseCanvasHelper {
         return util;
     }
 
+    /**
+     * Add a component to the canvas. Only available in component mode.
+     */
     public void add(Component c) {
         checkComponent();
         target.commitAttributes();

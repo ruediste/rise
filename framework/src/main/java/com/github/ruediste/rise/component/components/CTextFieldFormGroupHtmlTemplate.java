@@ -1,9 +1,8 @@
-package com.github.ruediste.rise.component.components.template;
+package com.github.ruediste.rise.component.components;
 
 import javax.inject.Inject;
 
 import com.github.ruediste.rise.component.ComponentUtil;
-import com.github.ruediste.rise.component.components.CTextFieldFormGroup;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 
 public class CTextFieldFormGroupHtmlTemplate extends

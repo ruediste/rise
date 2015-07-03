@@ -4,7 +4,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import com.github.ruediste.rise.component.components.CPage;
-import com.github.ruediste.rise.component.components.template.ComponentTemplateBase;
+import com.github.ruediste.rise.component.components.ComponentTemplateBase;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;

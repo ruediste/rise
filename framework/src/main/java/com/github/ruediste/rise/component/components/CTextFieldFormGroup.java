@@ -1,7 +1,6 @@
 package com.github.ruediste.rise.component.components;
 
 import com.github.ruediste.rise.component.binding.BindingUtil;
-import com.github.ruediste.rise.component.components.template.CTextFieldFormGroupHtmlTemplate;
 import com.google.common.base.Supplier;
 
 @DefaultTemplate(CTextFieldFormGroupHtmlTemplate.class)

@@ -1,11 +1,10 @@
-package com.github.ruediste.rise.component.components.template;
+package com.github.ruediste.rise.component.components;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.ValidationState;
-import com.github.ruediste.rise.component.components.CFormGroup;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.LabelUtil;

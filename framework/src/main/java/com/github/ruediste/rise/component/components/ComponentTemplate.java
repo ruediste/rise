@@ -1,4 +1,4 @@
-package com.github.ruediste.rise.component.components.template;
+package com.github.ruediste.rise.component.components;
 
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.integration.RiseCanvas;

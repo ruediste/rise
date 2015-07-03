@@ -56,21 +56,25 @@ public class AssetRequestMapperTest {
 
     @Test
     public void testRegisterAssets() throws Exception {
-        mapper.registerAssets(Arrays.asList(new A(new TestAsset("foo", "bar"))));
+        A a = new A(new TestAsset("foo", "bar"));
+        a.initialize();
+        mapper.registerAssets(Arrays.asList(a));
         verify(index).registerPathInfo(eq("/assets/foo"), any());
     }
 
     @Test
     public void testRegisterAssetsTwoSame() throws Exception {
-        mapper.registerAssets(Arrays.asList(new A(new TestAsset("/foo", "bar"),
-                new TestAsset("foo", "bar"))));
+        A a = new A(new TestAsset("/foo", "bar"), new TestAsset("foo", "bar"));
+        a.initialize();
+        mapper.registerAssets(Arrays.asList(a));
         verify(index).registerPathInfo(eq("/assets/foo"), any());
     }
 
     @Test(expected = RuntimeException.class)
     public void testRegisterAssetsTwoDifferent() throws Exception {
-        mapper.registerAssets(Arrays.asList(new A(new TestAsset("/foo", "bar"),
-                new TestAsset("/foo", "barr"))));
+        A a = new A(new TestAsset("/foo", "bar"), new TestAsset("/foo", "barr"));
+        a.initialize();
+        mapper.registerAssets(Arrays.asList(a));
         fail();
     }
 
