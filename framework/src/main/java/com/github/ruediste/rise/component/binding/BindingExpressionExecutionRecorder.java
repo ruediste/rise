@@ -13,8 +13,8 @@ import java.util.Date;
  * 
  * <p>
  * {@link BindingUtil} and {@link BindingGroup} create proxies which record
- * method invocations in the {@link BindingExpressionExecutionRecord}. The recorded
- * information is used to determine the bindings to be created.
+ * method invocations in the {@link BindingExpressionExecutionRecord}. The
+ * recorded information is used to determine the bindings to be created.
  * </p>
  */
 class BindingExpressionExecutionRecorder {
@@ -42,17 +42,13 @@ class BindingExpressionExecutionRecorder {
      */
     static BindingExpressionExecutionRecord collectBindingExpressionLog(
             Runnable runnable) {
-        if (currentLog.get() != null) {
-            throw new RuntimeException(
-                    "Attempt to collect binding information while collecting binding information is already in progress");
-        }
-
+        BindingExpressionExecutionRecord oldLog = currentLog.get();
         BindingExpressionExecutionRecord result = new BindingExpressionExecutionRecord();
         try {
             currentLog.set(result);
             runnable.run();
         } finally {
-            currentLog.set(null);
+            currentLog.set(oldLog);
         }
         return result;
     }

@@ -66,13 +66,15 @@ public class ComponentBase<TSelf extends AttachedPropertyBearer> extends
     }
 
     public TSelf bind(Consumer<TSelf> property) {
-        BindingUtil.bind(self(), property);
-        return self();
+        TSelf self = self();
+        BindingUtil.bind(self, property);
+        return self;
     }
 
     public TSelf bindOneWay(Consumer<TSelf> property) {
-        BindingUtil.bindOneWay(self(), property);
-        return self();
+        TSelf self = self();
+        BindingUtil.bindOneWay(self, property);
+        return self;
     }
 
     public <T> TSelf bind(Supplier<T> bindingGroupAccessor,

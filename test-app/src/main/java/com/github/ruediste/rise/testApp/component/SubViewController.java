@@ -6,18 +6,23 @@ import com.github.ruediste.rise.component.components.CButton;
 import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.component.components.CText;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.core.ActionResult;
+import com.github.ruediste1.i18n.label.Labeled;
 import com.github.ruediste1.i18n.label.PropertiesLabeled;
 
 public class SubViewController extends ControllerComponent {
 
+    @Labeled
     static class View extends ViewComponent<SubViewController> {
 
         @Override
         protected Component createComponents() {
-            return new CPage(label(this)).add(
-                    toSubView(() -> controller.data().getSubController())).add(
-                    new CButton("Sub1").handler(() -> controller
-                            .showController1()));
+            // @formatter:off
+            return new CPage(label(this))
+                    .add(toSubView(() -> controller.data(),x->x.getSubController()))
+                    .add(new CButton("Sub1").CLASS("sub1").handler(() -> controller.showController1()))
+                    .add(new CButton("Sub2").CLASS("sub2").handler(() -> controller.showController2()));
+            // @formatter:on
         }
     }
 
@@ -38,6 +43,9 @@ public class SubViewController extends ControllerComponent {
 
         BindingGroup<SubData> data = new BindingGroup<>(new SubData());
 
+        public SubController() {
+        }
+
         public SubController(String string) {
             data.get().setText(string);
         }
@@ -51,7 +59,11 @@ public class SubViewController extends ControllerComponent {
 
         @Override
         protected Component createComponents() {
-            return new CText().bindText(() -> controller.data().getText());
+            return toComponent(html -> html
+                    .span()
+                    .CLASS("subText")
+                    .add(new CText().CLASS("subText").bindText(
+                            () -> controller.data().getText()))._span());
         }
 
     }
@@ -68,14 +80,19 @@ public class SubViewController extends ControllerComponent {
         }
     }
 
+    SubController sub1 = new SubController("Foo");
+    SubController sub2 = new SubController("bar");
+
     BindingGroup<Data> data = new BindingGroup<>(new Data());
 
     Data data() {
         return data.proxy();
     }
 
-    public SubController sub1 = new SubController("Foo");
-    public SubController sub2 = new SubController("bar");
+    public ActionResult index() {
+        data.get().setSubController(sub1);
+        return null;
+    }
 
     void showController1() {
         data.get().setSubController(sub1);

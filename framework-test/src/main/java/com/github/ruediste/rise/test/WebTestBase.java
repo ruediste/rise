@@ -12,9 +12,9 @@ import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 
 import com.github.ruediste.rise.core.ActionResult;
+import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.integration.StandaloneLafApplication;
-import com.github.ruediste.rise.mvc.IControllerMvc;
 import com.github.ruediste.salta.jsr330.Injector;
 
 public abstract class WebTestBase {
@@ -52,7 +52,7 @@ public abstract class WebTestBase {
         return util.url(pathInfo);
     }
 
-    protected <T extends IControllerMvc> T go(Class<T> controllerClass) {
+    protected <T extends IController> T go(Class<T> controllerClass) {
         return util.go(controllerClass);
     }
 

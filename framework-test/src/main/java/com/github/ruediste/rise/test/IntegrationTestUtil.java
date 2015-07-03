@@ -5,8 +5,8 @@ import javax.inject.Singleton;
 
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreUtil;
+import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.web.PathInfo;
-import com.github.ruediste.rise.mvc.IControllerMvc;
 import com.github.ruediste.rise.mvc.MvcUtil;
 
 @Singleton
@@ -32,7 +32,7 @@ public class IntegrationTestUtil {
         return baseUrl + pathInfo.getValue();
     }
 
-    public <T extends IControllerMvc> T go(Class<T> controllerClass) {
-        return util.path(controllerClass).go();
+    public <T extends IController> T go(Class<T> controllerClass) {
+        return coreUtil.go(controllerClass);
     }
 }

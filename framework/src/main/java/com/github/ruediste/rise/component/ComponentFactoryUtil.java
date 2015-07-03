@@ -2,6 +2,7 @@ package com.github.ruediste.rise.component;
 
 import java.io.ByteArrayOutputStream;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import javax.inject.Inject;
@@ -71,20 +72,24 @@ public class ComponentFactoryUtil {
     /**
      * @see ComponentFactory#toSubView(Supplier)
      */
-    public <T> Component toSubView(Supplier<Object> controllerAccessor) {
+    public <T> Component toSubView(Supplier<T> bindingGroupAccessor,
+            Function<T, Object> controllerAccessor) {
         CSubView result = new CSubView();
-        BindingUtil.bind(result, new Consumer<CSubView>() {
+
+        BindingUtil.bind(result, bindingGroupAccessor, new Consumer<T>() {
             private Object controller;
 
             @Override
-            public void accept(CSubView x) {
-                Object newController = controllerAccessor.get();
+            public void accept(T x) {
+                Object newController = controllerAccessor.apply(x);
                 if (newController != controller) {
                     controller = newController;
-                    x.setView(repository.createView(controller));
+                    result.setView(repository.createView(controller));
                 }
             }
+        }, x -> {
         });
+
         return result;
     }
 }

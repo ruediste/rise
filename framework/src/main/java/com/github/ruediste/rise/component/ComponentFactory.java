@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.component;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvas;
@@ -52,8 +53,10 @@ public interface ComponentFactory<TCanvas extends HtmlCanvas<TCanvas>> {
         return internal_componentFactoryUtil().toSubView(controller);
     }
 
-    default <T> Component toSubView(Supplier<Object> controllerAccessor) {
+    default <T> Component toSubView(Supplier<T> bindingGroupAccessor,
+            Function<T, Object> controllerAccessor) {
 
-        return internal_componentFactoryUtil().toSubView(controllerAccessor);
+        return internal_componentFactoryUtil().toSubView(bindingGroupAccessor,
+                controllerAccessor);
     }
 }
