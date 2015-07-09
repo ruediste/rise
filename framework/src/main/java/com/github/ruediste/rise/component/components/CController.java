@@ -57,9 +57,4 @@ public class CController extends AttachedPropertyBearerBase implements
         throw new RuntimeException("Should not happen");
     }
 
-    @Override
-    public void initialize() {
-
-    }
-
 }

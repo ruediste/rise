@@ -8,7 +8,7 @@ import java.util.Iterator;
 /**
  * Relation of a component to multiple children.
  */
-public class MultiChildrenRelation<TChild extends Component, TContainingComponent extends ComponentBase<TContainingComponent>>
+public class MultiChildrenRelation<TChild extends Component, TContainingComponent extends RelationsComponent<TContainingComponent>>
         extends ChildRelation<TContainingComponent> {
 
     private final ArrayList<TChild> children = new ArrayList<>();

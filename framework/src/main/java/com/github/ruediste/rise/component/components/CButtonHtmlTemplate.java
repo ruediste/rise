@@ -16,7 +16,7 @@ public class CButtonHtmlTemplate extends Html5ComponentTemplateBase<CButton> {
                 .CLASS(util.combineCssClasses("rise_button", component.CLASS()))
                 .DATA(CoreAssetBundle.componentAttributeNr,
                         String.valueOf(util.getComponentNr(component)))
-                .render(components(component.getChildren()))._button();
+                .renderChildren(component)._button();
     }
 
     @Override

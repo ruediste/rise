@@ -14,7 +14,7 @@ import com.github.ruediste.rise.component.tree.Component;
  * Provide various methods to create components based on a certain type of
  * canvas.
  */
-public interface ComponentFactory<TCanvas extends HtmlCanvas<TCanvas>> {
+public interface ComponentFactory<TCanvas extends HtmlCanvas<?>> {
 
     ComponentFactoryUtil internal_componentFactoryUtil();
 

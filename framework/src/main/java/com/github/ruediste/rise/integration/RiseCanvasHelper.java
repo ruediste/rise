@@ -7,6 +7,7 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasTarget;
+import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.components.CMixedRender;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.CoreUtil;
@@ -31,6 +32,9 @@ public class RiseCanvasHelper {
 
     @Inject
     CurrentLocale currentLocale;
+
+    @Inject
+    ComponentUtil componentUtil;
 
     private ByteArrayOutputStream baos;
     private HtmlCanvasTarget target;
@@ -135,4 +139,7 @@ public class RiseCanvasHelper {
         return iconUtil;
     }
 
+    public void renderComponent(Component c, RiseCanvas<?> html) {
+        componentUtil.render(c, html);
+    }
 }

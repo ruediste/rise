@@ -46,12 +46,6 @@ public class CSubView extends AttachedPropertyBearerBase implements Component {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void initialize() {
-        if (view != null)
-            view.getRootComponent().initialize();
-    }
-
     public ViewComponentBase<?> getView() {
         return view;
     }

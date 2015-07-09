@@ -69,4 +69,14 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends
         return write(value.resolve(internal_riseHelper().getCurrentLocale()));
     }
 
+    default TSelf render(Component c) {
+        internal_riseHelper().renderComponent(c, this);
+        return self();
+    }
+
+    default TSelf renderChildren(Component parent) {
+        for (Component c : parent.getChildren())
+            internal_riseHelper().renderComponent(c, this);
+        return self();
+    }
 }

@@ -24,8 +24,7 @@ public class CPageHtmlTemplate extends ComponentTemplate<CPage> {
 
             @Override
             public void renderBody(SampleCanvas html) {
-                html.render(children(component));
-
+                html.renderChildren(component);
             }
 
             @Override

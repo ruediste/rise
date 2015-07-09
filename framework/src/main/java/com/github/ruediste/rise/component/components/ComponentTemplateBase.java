@@ -2,7 +2,6 @@ package com.github.ruediste.rise.component.components;
 
 import javax.inject.Inject;
 
-import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.ActionResult;
@@ -10,7 +9,6 @@ import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
 import com.github.ruediste.rise.core.web.PathInfo;
-import com.github.ruediste.rise.integration.RiseCanvas;
 
 public abstract class ComponentTemplateBase<T extends Component> implements
         ComponentTemplate<T> {
@@ -75,44 +73,5 @@ public abstract class ComponentTemplateBase<T extends Component> implements
 
     public boolean isParameterDefined(Component component, String key) {
         return util.isParameterDefined(component, key);
-    }
-
-    /**
-     * To be used together with {@link RiseCanvas#render(Renderable)}.
-     * 
-     * <pre>
-     * {@code
-     * html.render(component(c));
-     * }
-     * </pre>
-     */
-    public Renderable<RiseCanvas<?>> component(Component component) {
-        return util.component(component);
-    }
-
-    /**
-     * To be used together with {@link RiseCanvas#render(Renderable)}.
-     * 
-     * <pre>
-     * {@code
-     * html.render(components(c.getChildren()));
-     * }
-     * </pre>
-     */
-    public Renderable<RiseCanvas<?>> components(Iterable<Component> components) {
-        return util.components(components);
-    }
-
-    /**
-     * To be used together with {@link RiseCanvas#render(Renderable)}.
-     * 
-     * <pre>
-     * {@code
-     * html.render(children(c)));
-     * }
-     * </pre>
-     */
-    public Renderable<RiseCanvas<?>> children(Component c) {
-        return util.components(c.getChildren());
     }
 }

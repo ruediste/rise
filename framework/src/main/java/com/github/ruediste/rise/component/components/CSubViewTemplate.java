@@ -6,7 +6,7 @@ public class CSubViewTemplate extends ComponentTemplateBase<CSubView> {
 
     @Override
     public void doRender(CSubView component, RiseCanvas<?> html) {
-        html.render(children(component));
+        html.renderChildren(component);
     }
 
 }

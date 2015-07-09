@@ -56,8 +56,6 @@ public class EntityArgumentSerializer implements ArgumentSerializer {
     public String generate(AnnotatedType type, Object value) {
 
         Info info = createInfo(type);
-        if (info == null)
-            return null;
 
         if (value == null)
             return "null";
@@ -117,11 +115,16 @@ public class EntityArgumentSerializer implements ArgumentSerializer {
     }
 
     @Override
+    public boolean handles(AnnotatedType type) {
+        Info info = createInfo(type);
+        return info != null;
+    }
+
+    @Override
     public Supplier<Object> parse(AnnotatedType type, String urlPart) {
 
         Info info = createInfo(type);
-        if (info == null)
-            return null;
+
         if (urlPart == "null")
             return () -> null;
 

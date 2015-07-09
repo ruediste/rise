@@ -2,32 +2,49 @@ package com.github.ruediste.rise.component.components;
 
 import java.util.function.Supplier;
 
-import com.github.ruediste.rise.component.tree.ComponentBase;
+import com.github.ruediste.c3java.properties.NoPropertyAccessor;
+import com.github.ruediste.rise.component.tree.RelationsComponent;
+import com.github.ruediste1.i18n.lString.LString;
 
 @DefaultTemplate(CTextTemplate.class)
-public class CText extends ComponentBase<CText> {
+public class CText extends RelationsComponent<CText> {
 
-    private String text;
+    private LString text;
 
     public CText() {
 
     }
 
-    public CText(String text) {
+    public CText(LString text) {
         this.text = text;
+    }
+
+    public CText(String text) {
+        this.text = locale -> text;
 
     }
 
-    public String getText() {
+    public LString getText() {
         return text;
     }
 
+    @NoPropertyAccessor
     public CText setText(String text) {
+        this.text = locale -> text;
+        return this;
+    }
+
+    public CText setText(LString text) {
         this.text = text;
         return this;
     }
 
-    public CText bindText(Supplier<String> supplier) {
+    public CText bindTextString(Supplier<String> supplier) {
+        bind(x -> x.setText(supplier.get()));
+        return this;
+    }
+
+    public CText bindText(Supplier<LString> supplier) {
         bind(x -> x.setText(supplier.get()));
         return this;
     }

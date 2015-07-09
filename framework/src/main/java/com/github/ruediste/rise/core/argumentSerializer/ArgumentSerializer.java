@@ -9,6 +9,11 @@ import java.util.function.Supplier;
 public interface ArgumentSerializer {
 
     /**
+     * Return true if this serializer could handle a given type
+     */
+    boolean handles(AnnotatedType type);
+
+    /**
      * Generate a string representation which can be parsed later
      */
     String generate(AnnotatedType type, Object value);

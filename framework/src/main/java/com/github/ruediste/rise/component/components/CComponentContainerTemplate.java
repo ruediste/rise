@@ -7,7 +7,7 @@ public class CComponentContainerTemplate extends
 
     @Override
     public void doRender(CComponentContainer component, RiseCanvas<?> html) {
-        html.render(children(component));
+        html.renderChildren(component);
     }
 
 }

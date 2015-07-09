@@ -33,11 +33,4 @@ public interface Component extends AttachedPropertyBearer {
      */
     void childRemoved(Component child);
 
-    /**
-     * Called on the root component before rendering a page for the first time.
-     * The implementation of this method has to call the {@link #initialize()}
-     * method of all child components.
-     */
-    void initialize();
-
 }

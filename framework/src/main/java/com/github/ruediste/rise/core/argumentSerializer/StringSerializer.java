@@ -7,15 +7,13 @@ import java.util.function.Supplier;
 import com.google.common.base.Charsets;
 
 public class StringSerializer implements ArgumentSerializer {
-    private boolean handles(AnnotatedType type) {
+    @Override
+    public boolean handles(AnnotatedType type) {
         return String.class.equals(type.getType());
     }
 
     @Override
     public String generate(AnnotatedType type, Object value) {
-        if (!handles(type)) {
-            return null;
-        }
 
         if (value == null)
             return "~";
@@ -26,9 +24,6 @@ public class StringSerializer implements ArgumentSerializer {
 
     @Override
     public Supplier<Object> parse(AnnotatedType type, String urlPart) {
-        if (!handles(type)) {
-            return null;
-        }
         if ("~".equals(urlPart)) {
             return () -> null;
         }

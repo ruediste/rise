@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.crud;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,11 +8,11 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Root;
 
-import com.github.ruediste.rise.api.ControllerComponent;
 import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste.salta.jsr330.ImplementedBy;
 import com.github.ruediste.salta.jsr330.Injector;
@@ -60,10 +61,7 @@ public class CrudUtil {
     public static class BrowserSettings<T> {
         final public List<Consumer<T>> additionalOperations = new ArrayList<>();
         final public List<Filter<T>> fixedFilters = new ArrayList<>();
-    }
-
-    public interface Browser<T> {
-        ControllerComponent getController();
+        public Class<? extends Annotation> emQualifier;
     }
 
     /**
@@ -73,17 +71,21 @@ public class CrudUtil {
      */
     @ImplementedBy(DefaultBrowserFactory.class)
     public interface BrowserFactory {
-        <T> ControllerComponent createBrowser(Class<T> entityClass,
+        <T> Object createBrowser(Class<T> entityClass,
                 BrowserSettings<T> settings);
     }
 
     private static class DefaultBrowserFactory implements BrowserFactory {
 
+        @Inject
+        Provider<DefaultCrudBrowserController> browserControllerProvider;
+
         @Override
-        public <T> ControllerComponent createBrowser(Class<T> entityClass,
+        public <T> Object createBrowser(Class<T> entityClass,
                 BrowserSettings<T> settings) {
-            // TODO Auto-generated method stub
-            return null;
+
+            return browserControllerProvider.get().initialize(entityClass,
+                    settings);
         }
 
     }

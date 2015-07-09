@@ -10,14 +10,14 @@ import com.github.ruediste.c3java.properties.PropertyPath;
 import com.github.ruediste.rise.component.ConstraintViolationAware;
 import com.github.ruediste.rise.component.ValidationState;
 import com.github.ruediste.rise.component.binding.Binding;
-import com.github.ruediste.rise.component.tree.ComponentBase;
+import com.github.ruediste.rise.component.tree.RelationsComponent;
 import com.github.ruediste1.i18n.lString.FixedLString;
 import com.github.ruediste1.i18n.lString.LString;
 
 /**
  * 
  */
-public class CFormGroup<T extends ComponentBase<T>> extends ComponentBase<T>
+public class CFormGroup<T extends RelationsComponent<T>> extends RelationsComponent<T>
         implements ConstraintViolationAware {
 
     private boolean isValidated;

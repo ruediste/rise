@@ -1,13 +1,13 @@
 package com.github.ruediste.rise.component.components;
 
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
-import com.github.ruediste.rise.component.tree.ComponentBase;
+import com.github.ruediste.rise.component.tree.RelationsComponent;
 
 /**
  * A component directly rendering a {@link Renderable} to the output
  */
 @DefaultTemplate(CDirectRenderTemplate.class)
-public class CDirectRender extends ComponentBase<CDirectRender> {
+public class CDirectRender extends RelationsComponent<CDirectRender> {
 
     private Renderable<?> renderable;
 

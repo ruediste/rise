@@ -1,11 +1,11 @@
 package com.github.ruediste.rise.component.components;
 
 import com.github.ruediste.rise.component.tree.Component;
-import com.github.ruediste.rise.component.tree.ComponentBase;
+import com.github.ruediste.rise.component.tree.RelationsComponent;
 import com.github.ruediste.rise.component.tree.SingleChildRelation;
 import com.github.ruediste1.i18n.lString.LString;
 
-public class CPage extends ComponentBase<CPage> {
+public class CPage extends RelationsComponent<CPage> {
     private LString title;
     private final SingleChildRelation<Component, CPage> child = new SingleChildRelation<Component, CPage>(
             this);

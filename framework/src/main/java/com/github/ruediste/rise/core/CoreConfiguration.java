@@ -21,6 +21,7 @@ import org.objectweb.asm.tree.ClassNode;
 import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasTarget;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.rise.core.argumentSerializer.ArgumentSerializer;
+import com.github.ruediste.rise.core.argumentSerializer.ClassArgumentSerializer;
 import com.github.ruediste.rise.core.argumentSerializer.EntityArgumentSerializer;
 import com.github.ruediste.rise.core.argumentSerializer.IntSerializer;
 import com.github.ruediste.rise.core.argumentSerializer.LongSerializer;
@@ -127,15 +128,16 @@ public class CoreConfiguration {
     public final LinkedList<Supplier<ArgumentSerializer>> argumentSerializerSuppliers = new LinkedList<>();
 
     public class SerializerSupplierRefs {
-        Supplier<ArgumentSerializer> longSerializerSupplier = () -> injector
+        final Supplier<ArgumentSerializer> longSerializerSupplier = () -> injector
                 .getInstance(LongSerializer.class);
-        Supplier<ArgumentSerializer> intSerializerSupplier = () -> injector
+        final Supplier<ArgumentSerializer> intSerializerSupplier = () -> injector
                 .getInstance(IntSerializer.class);
-        Supplier<ArgumentSerializer> stringSerializerSupplier = () -> injector
+        final Supplier<ArgumentSerializer> stringSerializerSupplier = () -> injector
                 .getInstance(StringSerializer.class);
-
-        Supplier<ArgumentSerializer> entitySerializerSupplier = () -> injector
+        final Supplier<ArgumentSerializer> entitySerializerSupplier = () -> injector
                 .getInstance(EntityArgumentSerializer.class);
+        final Supplier<ArgumentSerializer> classSerializer = () -> injector
+                .getInstance(ClassArgumentSerializer.class);
 
     }
 
@@ -150,6 +152,7 @@ public class CoreConfiguration {
                 .add(serializerSupplierRefs.stringSerializerSupplier);
         argumentSerializerSuppliers
                 .add(serializerSupplierRefs.entitySerializerSupplier);
+        argumentSerializerSuppliers.add(serializerSupplierRefs.classSerializer);
     }
 
     private java.util.List<ArgumentSerializer> argumentSerializers;
@@ -157,9 +160,9 @@ public class CoreConfiguration {
     public String generateArgument(AnnotatedType type, Object value) {
         return argumentSerializers
                 .stream()
-                .map(a -> a.generate(type, value))
-                .filter(x -> x != null)
+                .filter(a -> a.handles(type))
                 .findFirst()
+                .map(a -> a.generate(type, value))
                 .orElseThrow(
                         () -> new RuntimeException(
                                 "No argument serializer found for "
@@ -169,9 +172,9 @@ public class CoreConfiguration {
     public Supplier<Object> parseArgument(AnnotatedType type, String urlPart) {
         return argumentSerializers
                 .stream()
-                .map(a -> a.parse(type, urlPart))
-                .filter(x -> x != null)
+                .filter(a -> a.handles(type))
                 .findFirst()
+                .map(a -> a.parse(type, urlPart))
                 .orElseThrow(
                         () -> new RuntimeException(
                                 "No argument serializer found for " + type));

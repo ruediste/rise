@@ -5,7 +5,6 @@ import java.util.function.Consumer;
 
 import com.github.ruediste.rendersnakeXT.canvas.BootstrapCanvas;
 import com.github.ruediste.rise.core.ActionResult;
-import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 
 public interface BootstrapRiseCanvas<TSelf extends BootstrapRiseCanvas<TSelf>>
@@ -25,7 +24,8 @@ public interface BootstrapRiseCanvas<TSelf extends BootstrapRiseCanvas<TSelf>>
         Method method = actionInvocation.methodInvocation.getMethod();
 
         return bButtonA(args)
-                .HREF(helper.getUtil().url(helper.getUtil().toPathInfo(actionInvocation)))
+                .HREF(helper.getUtil().url(
+                        helper.getUtil().toPathInfo(actionInvocation)))
                 .fIfPresent(helper.getIconUtil().tryGetIcon(method),
                         this::render)
                 .content(helper.getLabelUtil().getMethodLabel(method));

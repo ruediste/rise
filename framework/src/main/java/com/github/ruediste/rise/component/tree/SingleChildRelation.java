@@ -7,7 +7,7 @@ import com.google.common.collect.Iterators;
 /**
  * Manages a relation referencing a single child
  */
-public class SingleChildRelation<TChild extends Component, TContainingComponent extends ComponentBase<TContainingComponent>>
+public class SingleChildRelation<TChild extends Component, TContainingComponent extends RelationsComponent<TContainingComponent>>
         extends ChildRelation<TContainingComponent> {
 
     private TChild child;

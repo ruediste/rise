@@ -18,7 +18,7 @@ public class CReloadHtmlTemplate extends Html5ComponentTemplateBase<CReload> {
                         String.valueOf(util.getComponentNr(component)))
                 .DATA("lwf-reload-count",
                         String.valueOf(component.getReloadCount()))
-                .render(children(component))._form();
+                .renderChildren(component)._form();
     }
 
     @Override

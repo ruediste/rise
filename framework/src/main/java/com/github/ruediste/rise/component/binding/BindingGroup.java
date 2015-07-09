@@ -14,7 +14,7 @@ import net.sf.cglib.proxy.MethodProxy;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
-import com.github.ruediste.rise.component.tree.ComponentBase;
+import com.github.ruediste.rise.component.tree.RelationsComponent;
 import com.google.common.base.Defaults;
 import com.google.common.reflect.TypeToken;
 
@@ -36,7 +36,7 @@ import com.google.common.reflect.TypeToken;
  *
  * <p>
  * The component classes have a
- * {@link ComponentBase#bind(java.util.function.Consumer)} method which accepts
+ * {@link RelationsComponent#bind(java.util.function.Consumer)} method which accepts
  * a lambda expression. The lambda expression has the component as parameter and
  * sets a property of the component to some value retrieved via a binding group
  * exposed by the controller.
@@ -64,7 +64,7 @@ import com.google.common.reflect.TypeToken;
  *
  * <p>
  * <strong> One Way Bindings </strong><br/>
- * Using {@link ComponentBase#bindOneWay(java.util.function.Consumer)} the check
+ * Using {@link RelationsComponent#bindOneWay(java.util.function.Consumer)} the check
  * if a binding could be two way is suppressed and the binding always takes the
  * direction as specified by the lambda expression.
  * </p>
@@ -72,7 +72,7 @@ import com.google.common.reflect.TypeToken;
  * <p>
  * <strong> Explicit Bindings </strong><br/>
  * Using
- * {@link ComponentBase#bind(java.util.function.Consumer, java.util.function.Consumer)}
+ * {@link RelationsComponent#bind(java.util.function.Consumer, java.util.function.Consumer)}
  * an explicit binding is established. The two lambda expressions are always
  * invoked with the real objects. This can be used to easily define
  * one-of-a-kind transformations in place. Either expression can be null, in
