@@ -7,7 +7,7 @@ import javax.servlet.ServletConfig;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndex;
 import com.github.ruediste.rise.nonReloadable.front.reload.FileChangeNotifier;
 import com.github.ruediste.rise.nonReloadable.front.reload.ReloadableClassLoader;
-import com.github.ruediste.rise.nonReloadable.front.reload.ReloadebleClassesIndex;
+import com.github.ruediste.rise.nonReloadable.front.reload.ReloadableClassesIndex;
 import com.github.ruediste.rise.util.InitializerUtil;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Provides;
@@ -25,13 +25,13 @@ public class CoreNonRestartableModule extends AbstractModule {
         bind(ClassHierarchyIndex.class).asEagerSingleton();
         InitializerUtil.register(config(), CoreNonRestartableInitializer.class);
         bind(FileChangeNotifier.class).named("classPath").in(Singleton.class);
-        bind(ReloadebleClassesIndex.class).asEagerSingleton();
+        bind(ReloadableClassesIndex.class).asEagerSingleton();
     }
 
     @Named("dynamic")
     @Provides
     ReloadableClassLoader spaceAwareClassLoaderDynamic(
-            ReloadebleClassesIndex cache) {
+            ReloadableClassesIndex cache) {
         return new ReloadableClassLoader(Thread.currentThread()
                 .getContextClassLoader(), cache);
     }

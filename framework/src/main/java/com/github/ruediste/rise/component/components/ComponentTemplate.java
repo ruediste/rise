@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.component.components;
 
+import com.github.ruediste.rise.component.ComponentTemplateIndex;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.integration.RiseCanvas;
 
@@ -11,6 +12,11 @@ import com.github.ruediste.rise.integration.RiseCanvas;
  * render a component and to parse results sent by the client. A template is
  * associated with each component, but a single template can well be shared
  * between components. The interface was designed to allow this.
+ * </p>
+ * 
+ * <p>
+ * Instances are held by the {@link ComponentTemplateIndex} and instantiated
+ * only once.
  * </p>
  */
 public interface ComponentTemplate<T extends Component> {

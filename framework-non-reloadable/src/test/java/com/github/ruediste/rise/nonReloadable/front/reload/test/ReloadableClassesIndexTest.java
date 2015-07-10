@@ -17,7 +17,7 @@ import com.github.ruediste.rise.nonReloadable.front.reload.ClassChangeNotifier.C
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndexTest;
 import com.github.ruediste.rise.nonReloadable.front.reload.Reloadable;
 import com.github.ruediste.rise.nonReloadable.front.reload.ReloadableClassesIndexTestHelper;
-import com.github.ruediste.rise.nonReloadable.front.reload.ReloadebleClassesIndex;
+import com.github.ruediste.rise.nonReloadable.front.reload.ReloadableClassesIndex;
 import com.github.ruediste.rise.util.AsmUtil;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -27,7 +27,7 @@ public class ReloadableClassesIndexTest {
     Logger log;
 
     @InjectMocks
-    ReloadebleClassesIndex cache;
+    ReloadableClassesIndex cache;
 
     private Object tst;
 

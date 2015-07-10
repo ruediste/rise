@@ -22,6 +22,6 @@ public class SampleBundle extends AssetBundle {
     public void initialize() {
         bootstrapUtil.loadAssets().sentAllTo(out);
         core.out.send(out);
-        paths("/assets/welcome.css", "/assets/welcome.js").load().send(out);
+        locations("/assets/welcome.css", "/assets/welcome.js").load().send(out);
     }
 }

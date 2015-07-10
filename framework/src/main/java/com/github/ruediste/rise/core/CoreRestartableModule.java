@@ -5,6 +5,7 @@ import java.util.function.Function;
 
 import com.github.ruediste.rise.core.persistence.PersistenceRestartableModule;
 import com.github.ruediste.rise.core.scopes.HttpScopeModule;
+import com.github.ruediste.rise.core.web.assetDir.AssetDir;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.nonReloadable.NonRestartable;
 import com.github.ruediste.rise.util.InitializerUtil;
@@ -33,7 +34,7 @@ public class CoreRestartableModule extends AbstractModule {
 
     @Override
     protected void configure() throws Exception {
-        InitializerUtil.register(config(), CoreDynamicInitializer.class);
+        InitializerUtil.register(config(), CoreRestartableInitializer.class);
         installHttpScopeModule();
         installPersistenceDynamicModule();
         registerPermanentRule();
@@ -51,7 +52,8 @@ public class CoreRestartableModule extends AbstractModule {
 
             @Override
             public Scope getScope(TypeToken<?> type) {
-                if (TypeToken.of(AssetBundle.class).isAssignableFrom(type)) {
+                if (TypeToken.of(AssetBundle.class).isAssignableFrom(type)
+                        || TypeToken.of(AssetDir.class).isAssignableFrom(type)) {
                     return standardConfig.singletonScope;
                 }
                 return null;

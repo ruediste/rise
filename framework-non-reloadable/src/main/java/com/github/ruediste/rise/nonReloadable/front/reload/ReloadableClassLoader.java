@@ -10,10 +10,10 @@ import com.google.common.io.ByteStreams;
  */
 public class ReloadableClassLoader extends ClassLoader {
 
-    private ReloadebleClassesIndex index;
+    private ReloadableClassesIndex index;
 
     public ReloadableClassLoader(ClassLoader parent,
-            ReloadebleClassesIndex index) {
+            ReloadableClassesIndex index) {
         super(parent);
         this.index = index;
     }

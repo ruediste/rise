@@ -8,15 +8,15 @@ import javax.servlet.http.HttpServletResponse;
 
 public class ContentRenderResult implements HttpRenderResult {
     public final byte[] content;
-    public final String contentType;
+    final private HttpServletResponseCustomizer responseCustomizer;
 
     public ContentRenderResult(byte[] content, String contentType) {
         this.content = content;
-        this.contentType = contentType;
+        this.responseCustomizer = r -> r.setContentType(contentType);
     }
 
     public ContentRenderResult(String content, String contentType) {
-        this.contentType = contentType;
+        this.responseCustomizer = r -> r.setContentType(contentType);
         try {
             this.content = content.getBytes("UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -24,13 +24,18 @@ public class ContentRenderResult implements HttpRenderResult {
         }
     }
 
+    public ContentRenderResult(byte[] content,
+            HttpServletResponseCustomizer responseCustomizer) {
+        this.content = content;
+        this.responseCustomizer = responseCustomizer;
+    }
+
     @Override
     public void sendTo(HttpServletResponse response, HttpRenderResultUtil util)
             throws IOException {
         response.setCharacterEncoding("UTF-8");
-        response.setContentType(contentType);
         response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType(null);
+        responseCustomizer.customizeServletResponse(response);
         try (ServletOutputStream out = response.getOutputStream()) {
             out.write(content);
             out.flush();

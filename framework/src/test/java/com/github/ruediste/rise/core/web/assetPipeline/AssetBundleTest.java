@@ -10,16 +10,16 @@ public class AssetBundleTest {
     }
 
     @Test
-    public void testCalculateFullPath() throws Exception {
-        AssetBundle bundle = new Bundle();
-        bundle.pipelineConfiguration = new AssetPipelineConfiguration();
-
-        assertEquals("foo.css", bundle.calculateFullPath("/foo.css"));
-        assertEquals(getClass().getPackage().getName().replace('.', '/')
-                + "/foo.css", bundle.calculateFullPath("./foo.css"));
-        assertEquals(Bundle.class.getName().replace('.', '/') + "-foo.css",
-                bundle.calculateFullPath(".-foo.css"));
-        assertEquals("assets/foo.css", bundle.calculateFullPath("foo.css"));
-    }
+        public void testCalculateAbsoluteLocation() throws Exception {
+            AssetBundle bundle = new Bundle();
+            bundle.pipelineConfiguration = new AssetPipelineConfiguration();
+    
+            assertEquals("foo.css", bundle.calculateAbsoluteLocation("/foo.css"));
+            assertEquals(getClass().getPackage().getName().replace('.', '/')
+                    + "/foo.css", bundle.calculateAbsoluteLocation("./foo.css"));
+            assertEquals(Bundle.class.getName().replace('.', '/') + "-foo.css",
+                    bundle.calculateAbsoluteLocation(".-foo.css"));
+            assertEquals("assets/foo.css", bundle.calculateAbsoluteLocation("foo.css"));
+        }
 
 }

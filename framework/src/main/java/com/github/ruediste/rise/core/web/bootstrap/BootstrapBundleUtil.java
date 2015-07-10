@@ -51,15 +51,15 @@ public class BootstrapBundleUtil extends AssetBundle {
     public BootstrapAssetGroups loadAssets(
             BiFunction<AssetGroup, String, AssetGroup> fontCustomizer) {
         BootstrapAssetGroups result = new BootstrapAssetGroups();
-        AssetGroup js = paths("./js/jquery-2.1.3.js", "./js/bootstrap.js")
+        AssetGroup js = locations("./js/jquery-2.1.3.js", "./js/bootstrap.js")
                 .insertMinInProd().load();
         ArrayList<Asset> fonts = new ArrayList<>();
         AssetGroup css = replaceFonts(fonts, fontCustomizer,
-                paths("./css/bootstrap.css").insertMinInProd().load(), "eot",
+                locations("./css/bootstrap.css").insertMinInProd().load(), "eot",
                 "svg", "ttf", "woff", "woff2");
-        result.out = css.join(js, paths("./css/bootstrap.css.map").load());
+        result.out = css.join(js, locations("./css/bootstrap.css.map").load());
         result.fonts = new AssetGroup(this, fonts);
-        result.theme = paths("./css/bootstrap-theme.css").insertMinInProd()
+        result.theme = locations("./css/bootstrap-theme.css").insertMinInProd()
                 .load();
 
         return result;
@@ -96,7 +96,7 @@ public class BootstrapBundleUtil extends AssetBundle {
             BiFunction<AssetGroup, String, AssetGroup> fontCustomizer,
             String ext) {
         return fontCustomizer.apply(
-                paths("./fonts/glyphicons-halflings-regular." + ext).load(),
+                locations("./fonts/glyphicons-halflings-regular." + ext).load(),
                 ext);
     }
 

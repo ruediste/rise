@@ -4,12 +4,12 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.github.ruediste.rise.core.web.assetPipeline.AssetPathGroup;
+import com.github.ruediste.rise.core.web.assetPipeline.AssetLocationGroup;
 
-public class AssetPathGroupTest {
+public class AssetLocationGroupTest {
     @Test
     public void testInsertMin() throws Exception {
-        AssetPathGroup group = new AssetPathGroup(null);
+        AssetLocationGroup group = new AssetLocationGroup(null);
         assertEquals("foo.min.bar", group.insertMin("foo.bar"));
         assertEquals("bar", group.insertMin("bar"));
     }

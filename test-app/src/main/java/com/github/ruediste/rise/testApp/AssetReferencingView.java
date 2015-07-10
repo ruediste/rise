@@ -15,7 +15,7 @@ public class AssetReferencingView extends
 
         @PostConstruct
         public void initialize() {
-            paths("./assetReferencing.css", ".-test.css",
+            locations("./assetReferencing.css", ".-test.css",
                     "/assetReferencing/test.css", "assetReferencing.css")
                     .load().send(out);
         }

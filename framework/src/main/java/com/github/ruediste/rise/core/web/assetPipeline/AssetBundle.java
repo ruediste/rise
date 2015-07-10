@@ -38,6 +38,10 @@ public abstract class AssetBundle {
 
     final List<AssetBundleOutput> outputs = new ArrayList<>();
 
+    /**
+     * Generate the URL for an asset. This can be used to replace urls enclosed
+     * for example in CSS files
+     */
     public String url(Asset asset) {
         return httpService.urlStatic(requestMapper.getPathInfo(asset));
     }
@@ -55,6 +59,10 @@ public abstract class AssetBundle {
         cache.getAttachedPropertyMap().clearAll();
     }
 
+    /**
+     * Called from the constructor of {@link AssetBundleOutput} to register the
+     * output with the bundle.
+     */
     void registerOutput(AssetBundleOutput assetBundleOutput) {
         outputs.add(assetBundleOutput);
     }
@@ -73,71 +81,74 @@ public abstract class AssetBundle {
 
     /**
      * Map the path of an asset to the full resouce path to be used to load the
-     * asset from the classpath. Rules see {@link #paths(String...)}
+     * asset from the classpath. Rules see {@link #locations(String...)}
      */
-    String calculateFullPath(String assetPath) {
-        if (assetPath.startsWith("/"))
-            return assetPath.substring(1);
-        if (assetPath.startsWith("./"))
-            return getPackageName(getClass()).replace('.', '/')
-                    + assetPath.substring(1);
-        if (assetPath.startsWith("."))
-            return getClass().getName().replace('.', '/')
-                    + assetPath.substring(1);
-        return pipelineConfiguration.assetBasePath + assetPath;
+    String calculateAbsoluteLocation(String location) {
+        return calculateAbsoluteLocation(location,
+                pipelineConfiguration.assetBasePath, getClass());
     }
 
-    Function<AssetPathGroup, AssetGroup> classPath() {
+    /**
+     * Map the path of an asset to the full resouce path to be used to load the
+     * asset from the classpath. Rules see {@link #locations(String...)}
+     */
+    public static String calculateAbsoluteLocation(String location,
+            String basePath, Class<?> cls) {
+        if (location.startsWith("/"))
+            return location.substring(1);
+        if (location.startsWith("./"))
+            return getPackageName(cls).replace('.', '/')
+                    + location.substring(1);
+        if (location.startsWith("."))
+            return cls.getName().replace('.', '/') + location.substring(1);
+        return basePath + location;
+    }
 
-        return group -> new AssetGroup(this, group
-                .getPaths()
-                .stream()
-                .<Asset> map(
-                        path -> {
-                            AssetType type = pipelineConfiguration
-                                    .getDefaultType(getExtension(path));
-                            String fullPath = calculateFullPath(path);
-                            return new Asset() {
+    Function<AssetLocationGroup, AssetGroup> classPath() {
 
-                                @Override
-                                public String getName() {
-                                    return fullPath;
-                                }
+        return group -> new AssetGroup(this, group.getLocations().stream()
+                .map(this::loadAssetFromClasspath));
+    }
 
-                                @Override
-                                public byte[] getData() {
-                                    InputStream in = getClass()
-                                            .getClassLoader()
-                                            .getResourceAsStream(fullPath);
-                                    if (in == null) {
-                                        throw new RuntimeException(
-                                                "Unable to find resource on classpath: "
-                                                        + fullPath
-                                                        + ", reference from "
-                                                        + AssetBundle.this
-                                                                .getClass()
-                                                                .getName());
-                                    }
-                                    return toByteArray(in);
-                                }
+    private Asset loadAssetFromClasspath(String path) {
+        AssetType type = pipelineConfiguration
+                .getDefaultAssetType(getExtension(path));
+        String fullPath = calculateAbsoluteLocation(path);
+        return new Asset() {
 
-                                @Override
-                                public AssetType getAssetType() {
-                                    return type;
-                                }
+            @Override
+            public String getName() {
+                return fullPath;
+            }
 
-                                @Override
-                                public String getContentType() {
-                                    return pipelineConfiguration
-                                            .getDefaultContentType(type);
-                                }
+            @Override
+            public byte[] getData() {
+                InputStream in = getClass().getClassLoader()
+                        .getResourceAsStream(fullPath);
+                if (in == null) {
+                    throw new RuntimeException(
+                            "Unable to find resource on classpath: " + fullPath
+                                    + ", reference from "
+                                    + AssetBundle.this.getClass().getName());
+                }
+                return toByteArray(in);
+            }
 
-                                @Override
-                                public String toString() {
-                                    return "classpath(" + fullPath + ")";
-                                }
-                            };
-                        }));
+            @Override
+            public AssetType getAssetType() {
+                return type;
+            }
+
+            @Override
+            public String getContentType() {
+                return pipelineConfiguration.getDefaultContentType(type);
+            }
+
+            @Override
+            public String toString() {
+                return "classpath(" + fullPath + ")";
+            }
+        };
     }
 
     /**
@@ -145,20 +156,20 @@ public abstract class AssetBundle {
      * following rules:
      * 
      * <ul>
-     * <li>if the path starts with a `/`, the path is absolute, based on the
+     * <li>if the location starts with a `/`, the path is absolute, based on the
      * root of the classpath</li>
-     * <li>if the path starts with a `./`, the path is interpreted relative to
-     * the package the asset bundle is located in</li>
-     * <li>if the path startign with a `.`, the full name of the bundle class is
-     * prepended to the path.</li>
-     * <li>otherwise, the asset path is interpreted relative to the asset base
-     * path configured in `AssetPipelineConfiguration#assetBasePath`. By
+     * <li>if the location starts with a `./`, the path is interpreted relative
+     * to the package the asset bundle is located in</li>
+     * <li>if the location is starting with a `.`, the full name of the bundle
+     * class is prepended to the path.</li>
+     * <li>otherwise, the asset location is interpreted relative to the asset
+     * base path configured in `AssetPipelineConfiguration#assetBasePath`. By
      * default, this is `/assets/`.</li>
      * 
      * </ul>
      */
-    public AssetPathGroup paths(String... paths) {
-        return new AssetPathGroup(this, Arrays.stream(paths));
+    public AssetLocationGroup locations(String... locations) {
+        return new AssetLocationGroup(this, Arrays.stream(locations));
     }
 
     private byte[] toByteArray(InputStream in) {
@@ -179,10 +190,16 @@ public abstract class AssetBundle {
         }
     }
 
+    /**
+     * true if the current {@link AssetMode} is development
+     */
     public boolean dev() {
         return getAssetMode() == AssetMode.DEVELOPMENT;
     }
 
+    /**
+     * true if the current {@link AssetMode} is production
+     */
     public boolean prod() {
         return getAssetMode() == AssetMode.PRODUCTION;
     }

@@ -2,6 +2,7 @@ package com.github.ruediste.rise.component.initial;
 
 import javax.inject.Inject;
 
+import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.ComponentConfiguration;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.PageInfo;
@@ -9,6 +10,7 @@ import com.github.ruediste.rise.core.ChainedRequestHandler;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.web.ContentRenderResult;
+import com.github.ruediste.rise.core.web.HttpServletResponseCustomizer;
 
 public class ViewRenderer extends ChainedRequestHandler {
 
@@ -32,9 +34,15 @@ public class ViewRenderer extends ChainedRequestHandler {
         next.run();
         PageInfo pi = pageInfo;
         pi.setView(config.createView(pi.getController()));
-        coreRequestInfo
-                .setActionResult(new ContentRenderResult(util.renderComponents(
-                        pi.getView(), pi.getView().getRootComponent()),
-                        coreConfiguration.htmlContentType));
+        ViewComponentBase<?> view = pi.getView();
+        coreRequestInfo.setActionResult(new ContentRenderResult(
+                util.renderComponents(view, view
+                        .getRootComponent()), r -> {
+                    r.setContentType(coreConfiguration.htmlContentType);
+                    if (view instanceof HttpServletResponseCustomizer) {
+                        ((HttpServletResponseCustomizer) view)
+                                .customizeServletResponse(r);
+                    }
+                }));
     }
 }

@@ -22,7 +22,7 @@ public class AssetPipelineConfiguration {
     /**
      * get an asset type by a file extension
      */
-    public AssetType getDefaultType(String extension) {
+    public AssetType getDefaultAssetType(String extension) {
         return extensionToAssetTypeMap.get(extension);
     }
 
@@ -55,6 +55,31 @@ public class AssetPipelineConfiguration {
         assetTypeToDefaultContentTypeMap.put(DefaultAssetTypes.CSS,
                 "text/css; ; charset=UTF-8");
 
+    }
+
+    /**
+     * Map extensions (without leading dot) to content types
+     */
+    public final Map<String, String> contentTypeMap = new HashMap<>();
+
+    {
+
+    }
+
+    /**
+     * Get the content type for an extension. After checking
+     * {@link #contentTypeMap}, the configured asset types are taken into
+     * account
+     * 
+     * @param extension
+     *            extension without leading dot (for example "css","jpg","js")
+     */
+    public String getContentType(String extension) {
+        String result = contentTypeMap.get(extension);
+        if (result == null) {
+            result = getDefaultContentType(getDefaultAssetType(extension));
+        }
+        return result;
     }
 
     public AssetMode assetMode;

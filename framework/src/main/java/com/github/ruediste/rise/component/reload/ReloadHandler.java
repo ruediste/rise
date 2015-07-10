@@ -9,14 +9,15 @@ import org.slf4j.Logger;
 import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.component.ComponentSessionInfo;
+import com.github.ruediste.rise.component.ComponentTemplateIndex;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.PageInfo;
-import com.github.ruediste.rise.component.ComponentTemplateIndex;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ComponentTreeUtil;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.web.ContentRenderResult;
+import com.github.ruediste.rise.core.web.HttpServletResponseCustomizer;
 
 /**
  * Handler applying values, raising events and rendering the reloaded component
@@ -77,8 +78,13 @@ public class ReloadHandler implements Runnable {
         } else {
             // render result
             coreRequestInfo.setActionResult(new ContentRenderResult(util
-                    .renderComponents(view, reloadComponent),
-                    coreConfiguration.htmlContentType));
+                    .renderComponents(view, reloadComponent), r -> {
+                r.setContentType(coreConfiguration.htmlContentType);
+                if (view instanceof HttpServletResponseCustomizer) {
+                    ((HttpServletResponseCustomizer) view)
+                            .customizeServletResponse(r);
+                }
+            }));
         }
     }
 }

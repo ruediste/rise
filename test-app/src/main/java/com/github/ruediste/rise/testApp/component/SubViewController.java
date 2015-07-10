@@ -62,7 +62,7 @@ public class SubViewController extends ControllerComponent {
             return toComponent(html -> html
                     .span()
                     .CLASS("subText")
-                    .add(new CText().CLASS("subText").bindText(
+                    .add(new CText().CLASS("subText").bindTextString(
                             () -> controller.data().getText()))._span());
         }
 

@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.testApp.app;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 
@@ -8,6 +9,7 @@ import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
+import com.github.ruediste.rise.core.web.HttpServletResponseCustomizer;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
 import com.github.ruediste.rise.testApp.TestCanvas;
@@ -37,13 +39,19 @@ public class RequestErrorHandlerController extends
     }
 
     private static class View extends
-            ViewMvc<RequestErrorHandlerController, Data> {
+            ViewMvc<RequestErrorHandlerController, Data> implements
+            HttpServletResponseCustomizer {
 
         @Override
         protected void render(TestCanvas html) {
             html.html().head()._head().body().h1()
                     .content("An Unexpected error occurred").pre()
                     .content(data().message)._body()._html();
+        }
+
+        @Override
+        public void customizeServletResponse(HttpServletResponse response) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
 
     }

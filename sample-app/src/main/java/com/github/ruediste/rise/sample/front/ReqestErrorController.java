@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.sample.front;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 
@@ -8,6 +9,7 @@ import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
+import com.github.ruediste.rise.core.web.HttpServletResponseCustomizer;
 import com.github.ruediste.rise.core.web.RedirectToRefererRenderResult;
 import com.github.ruediste.rise.mvc.Updating;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
@@ -19,7 +21,8 @@ import com.github.ruediste1.i18n.label.Label;
 import com.github.ruediste1.i18n.label.Labeled;
 import com.google.common.base.Throwables;
 
-public class ReqestErrorController extends ControllerMvc<ReqestErrorController> {
+public class ReqestErrorController extends ControllerMvc<ReqestErrorController>
+        implements HttpServletResponseCustomizer {
 
     @Inject
     Logger log;
@@ -126,5 +129,10 @@ public class ReqestErrorController extends ControllerMvc<ReqestErrorController> 
             log.error("Stage is not development");
         }
         return new RedirectToRefererRenderResult();
+    }
+
+    @Override
+    public void customizeServletResponse(HttpServletResponse response) {
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
     }
 }

@@ -2,11 +2,12 @@ package com.github.ruediste.rise.core;
 
 import javax.inject.Inject;
 
+import com.github.ruediste.rise.core.web.assetDir.AssetDirRequestMapper;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetPipelineConfiguration;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetRequestMapper;
 import com.github.ruediste.rise.util.Initializer;
 
-public class CoreDynamicInitializer implements Initializer {
+public class CoreRestartableInitializer implements Initializer {
 
     @Inject
     CoreConfiguration config;
@@ -16,6 +17,9 @@ public class CoreDynamicInitializer implements Initializer {
 
     @Inject
     AssetRequestMapper assetRequestMapper;
+
+    @Inject
+    AssetDirRequestMapper assetDirRequestMapper;
 
     @Inject
     PathInfoIndex index;
@@ -30,6 +34,7 @@ public class CoreDynamicInitializer implements Initializer {
         config.initialize();
         pipelineConfig.initialize();
         assetRequestMapper.initialize();
+        assetDirRequestMapper.initialize();
 
         index.registerPathInfo(config.restartQueryPathInfo.getValue(),
                 restartQueryParser);

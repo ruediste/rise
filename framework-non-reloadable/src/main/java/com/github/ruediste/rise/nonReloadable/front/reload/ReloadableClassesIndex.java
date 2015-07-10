@@ -16,10 +16,10 @@ import org.objectweb.asm.tree.InnerClassNode;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassChangeNotifier.ClassChangeTransaction;
 
 /**
- * Information cache storing information about the class space classes are in
+ * Information cache to determine if a class is reloadable or not
  */
 @Singleton
-public class ReloadebleClassesIndex {
+public class ReloadableClassesIndex {
     @Inject
     ClassChangeNotifier notifier;
 
@@ -92,10 +92,10 @@ public class ReloadebleClassesIndex {
         }
 
         String[] parts = internalName.split("/");
-        return getPackageSpace(parts, parts.length - 1);
+        return isReloadableByPackages(parts, parts.length - 1);
     }
 
-    private boolean getPackageSpace(String[] parts, int length) {
+    private boolean isReloadableByPackages(String[] parts, int length) {
         if (length == 0) {
             return false;
         }
@@ -111,6 +111,6 @@ public class ReloadebleClassesIndex {
         if (result != null) {
             return result;
         }
-        return getPackageSpace(parts, length - 1);
+        return isReloadableByPackages(parts, length - 1);
     }
 }

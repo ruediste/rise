@@ -2,7 +2,6 @@ package com.github.ruediste.rise.component.components;
 
 import java.util.function.Supplier;
 
-import com.github.ruediste.c3java.properties.NoPropertyAccessor;
 import com.github.ruediste.rise.component.tree.RelationsComponent;
 import com.github.ruediste1.i18n.lString.LString;
 
@@ -28,8 +27,7 @@ public class CText extends RelationsComponent<CText> {
         return text;
     }
 
-    @NoPropertyAccessor
-    public CText setText(String text) {
+    public CText setTextString(String text) {
         this.text = locale -> text;
         return this;
     }
@@ -40,7 +38,7 @@ public class CText extends RelationsComponent<CText> {
     }
 
     public CText bindTextString(Supplier<String> supplier) {
-        bind(x -> x.setText(supplier.get()));
+        bind(x -> x.setTextString(supplier.get()));
         return this;
     }
 
