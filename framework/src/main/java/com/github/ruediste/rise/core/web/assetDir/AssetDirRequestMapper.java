@@ -21,10 +21,12 @@ import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetPipelineConfiguration;
+import com.github.ruediste.rise.nonReloadable.front.StartupTimeLogger;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndex;
 import com.github.ruediste.rise.nonReloadable.front.reload.DirectoryChangeWatcher;
 import com.github.ruediste.rise.util.AsmUtil;
 import com.github.ruediste.salta.jsr330.Injector;
+import com.google.common.base.Stopwatch;
 import com.google.common.io.ByteStreams;
 
 public class AssetDirRequestMapper {
@@ -131,13 +133,11 @@ public class AssetDirRequestMapper {
     private List<AssetDir> dirs = new ArrayList<>();
 
     public void initialize() {
+        Stopwatch watch = Stopwatch.createStarted();
         String internalName = Type.getInternalName(AssetDir.class);
         registerChilDirs(internalName);
         registerDirs(dirs);
-    }
-
-    public void refresh() {
-        registerDirs(dirs);
+        StartupTimeLogger.stopAndLog("Asset Directory Registration", watch);
     }
 
     void registerDirs(List<AssetDir> dirs) {

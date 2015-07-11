@@ -21,8 +21,10 @@ import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 
 import com.github.ruediste.rise.nonReloadable.CoreConfigurationNonRestartable;
+import com.github.ruediste.rise.nonReloadable.front.StartupTimeLogger;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassPathWalker.ClassPathVisitResult;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassPathWalker.ClassPathVisitor;
+import com.google.common.base.Stopwatch;
 import com.google.common.io.ByteStreams;
 
 /**
@@ -44,6 +46,8 @@ public class ClassPathScanningStarter {
     FileChangeNotifier fileChangeNotifier;
 
     public void start() {
+        log.debug("Start Classpath scanning ...");
+        Stopwatch watch = Stopwatch.createStarted();
         ConcurrentHashMap<String, ClassNode> classes = new ConcurrentHashMap<>();
         Set<Path> rootDirs = Collections
                 .newSetFromMap(new ConcurrentHashMap<>());
@@ -107,8 +111,12 @@ public class ClassPathScanningStarter {
             if (trx.isInitial)
                 trx.addedClasses.addAll(classes.values());
         });
-        fileChangeNotifier.start(rootDirs, config.fileChangeSettleDelayMs);
 
+        StartupTimeLogger.stopAndLog("Classpath Scanning", watch);
+        log.debug("Classpath scanning done");
+
+        // start notifier
+        fileChangeNotifier.start(rootDirs, config.fileChangeSettleDelayMs);
     }
 
     protected ClassNode readClass(byte[] bb) {

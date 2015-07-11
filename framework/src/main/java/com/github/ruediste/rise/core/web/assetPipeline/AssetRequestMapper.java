@@ -20,11 +20,13 @@ import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.PathInfoIndex;
 import com.github.ruediste.rise.core.RequestParseResult;
 import com.github.ruediste.rise.core.web.PathInfo;
+import com.github.ruediste.rise.nonReloadable.front.StartupTimeLogger;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndex;
 import com.github.ruediste.rise.nonReloadable.front.reload.DirectoryChangeWatcher;
 import com.github.ruediste.rise.util.AsmUtil;
 import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste.salta.jsr330.Injector;
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -87,14 +89,11 @@ public class AssetRequestMapper {
     private List<AssetBundle> bundles = new ArrayList<>();
 
     public void initialize() {
+        Stopwatch watch = Stopwatch.createStarted();
         String internalName = Type.getInternalName(AssetBundle.class);
         registerChildBundles(internalName);
         registerAssets(bundles);
-    }
-
-    public void refresh() {
-        bundles.forEach(x -> x.reset());
-        registerAssets(bundles);
+        StartupTimeLogger.stopAndLog("Asset Bundle Registration", watch);
     }
 
     void registerAssets(List<AssetBundle> bundles) {

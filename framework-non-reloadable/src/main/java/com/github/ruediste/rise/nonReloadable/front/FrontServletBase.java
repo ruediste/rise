@@ -205,8 +205,9 @@ public abstract class FrontServletBase extends HttpServlet {
             }
             restartCountHolder.increment();
             startupError = null;
-            StartupTimeLogger
-                    .stopAndLog("Total Startup Time", startupStopwatch);
+            StartupTimeLogger.stopAndLog(
+                    isInitialStartup ? "Total Startup Time"
+                            : "Total Reload Time", startupStopwatch);
             StartupTimeLogger
                     .writeTimesToLog(isInitialStartup ? "Initial Startup Times"
                             : "Reload Times");
