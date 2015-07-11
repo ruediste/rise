@@ -146,6 +146,10 @@ public class AssetGroup {
      * <li><b>extT:</b> extension from the {@link AssetType} of the underlying
      * asset
      * </ul>
+     * 
+     * If the resulting name starts with a "/", the resource will be registered
+     * under the absolute name, otherwise
+     * {@link AssetPipelineConfiguration#assetPathInfoPrefix} will be prepended.
      */
     public AssetGroup name(String template) {
         Pattern p = Pattern.compile("(\\A|[^\\\\])\\{hash\\}");

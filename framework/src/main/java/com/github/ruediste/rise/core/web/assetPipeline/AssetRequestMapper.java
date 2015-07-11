@@ -142,13 +142,18 @@ public class AssetRequestMapper {
             Asset asset = first.getB();
             index.registerPathInfo(entry.getKey(), x -> resultProvider.get()
                     .initialize(asset));
-            log.debug("Registered {}.{}", first.getA().getClass()
+            log.debug("Registered {} -> {}", first.getA().getClass()
                     .getSimpleName(), entry.getKey());
         }
     }
 
     public String getPathInfoString(Asset asset) {
-        return pipelineConfiguration.assetPathInfoPrefix + asset.getName();
+
+        String name = asset.getName();
+        if (name.startsWith("/"))
+            return name;
+        else
+            return pipelineConfiguration.assetPathInfoPrefix + name;
     }
 
     public PathInfo getPathInfo(Asset asset) {
