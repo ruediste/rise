@@ -31,7 +31,7 @@ import com.google.common.collect.Sets;
 import com.google.common.reflect.ClassPath;
 
 /**
- * Wald the classpath and notify a {@link ClassPathVisitor} of all root
+ * Walk the classpath and notify a {@link ClassPathVisitor} of all root
  * directories, jar files, classes and resouces present.
  * 
  * <p>
@@ -40,7 +40,7 @@ import com.google.common.reflect.ClassPath;
  */
 public class ClassPathWalker {
     private static org.slf4j.Logger log = org.slf4j.LoggerFactory
-            .getLogger(ClassPathWalker.class.getName());
+            .getLogger(ClassPathWalker.class);
 
     public enum ClassPathVisitResult {
         /**
@@ -207,6 +207,7 @@ public class ClassPathWalker {
     private void scanDirectory(File directory, ClassLoader classloader,
             String packagePrefix, ImmutableSet<File> ancestors,
             ClassPathVisitor visitor) throws IOException {
+        log.debug("Scanning directory file {}", directory);
         File canonical = directory.getCanonicalFile();
         if (ancestors.contains(canonical)) {
             // A cycle in the filesystem, for example due to a symbolic link.
@@ -243,6 +244,8 @@ public class ClassPathWalker {
 
     private void scanJar(File file, ClassLoader classloader,
             ClassPathVisitor visitor) throws IOException {
+        log.debug("Scanning jar file {}", file);
+
         JarFile jarFile;
         try {
             jarFile = new JarFile(file);

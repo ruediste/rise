@@ -12,7 +12,6 @@ import org.openqa.selenium.WebDriver;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.core.persistence.TransactionCallback;
 import com.github.ruediste.rise.core.persistence.TransactionTemplate;
-import com.github.ruediste.rise.nonReloadable.persistence.TransactionControl;
 import com.github.ruediste.rise.testApp.WebTest;
 import com.github.ruediste.rise.testApp.persistence.TestEntity;
 
@@ -30,15 +29,14 @@ public class TestComponentControllerTest extends WebTest {
     public void testSubControllers() {
 
         // create test entity
-        TestEntity entity = t.builder().updating()
+        TestEntity entity = t.executor().updating()
                 .execute(new TransactionCallback<TestEntity>() {
 
                     @Override
-                    public TestEntity doInTransaction(TransactionControl trx) {
+                    public TestEntity doInTransaction() {
                         TestEntity e = new TestEntity();
                         e.setValue("foo");
                         em.persist(e);
-                        trx.commit();
                         return e;
                     }
                 });

@@ -85,7 +85,7 @@ public class CoreConfigurationNonRestartable {
                     "ch.qos.logback.", "org.hibernate."));
 
     public boolean shouldBeScanned(String internalClassName) {
-        String prefix = nonScannedPackages.ceiling(internalClassName);
-        return prefix == null || internalClassName.startsWith(prefix);
+        String prefix = nonScannedPackages.floor(internalClassName);
+        return prefix == null || !internalClassName.startsWith(prefix);
     }
 }

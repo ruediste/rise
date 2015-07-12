@@ -112,8 +112,7 @@ public class PersistenceRestartableModule extends AbstractModule {
                 EntityManagerSet set = ownEntityManagerSetProperty.setIfAbsent(
                         invocation.getPropertyBearer(),
                         () -> holder.createEntityManagerSet());
-                EntityManagerSet old = holder.getCurrentEntityManagerSet();
-                holder.setCurrentEntityManagerSet(set);
+                EntityManagerSet old = holder.setCurrentEntityManagerSet(set);
                 try {
                     return invocation.proceed();
                 } finally {

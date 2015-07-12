@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.testApp.requestHandlingError;
 
-import static org.junit.Assert.fail;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
@@ -12,6 +13,6 @@ public class RequestHandlingErrorControllerTest extends WebTest {
     public void test() {
         driver.navigate().to(
                 url(go(RequestHandlingErrorController.class).index()));
-        fail();
+        assertThat(driver.getPageSource(), containsString("Boom!"));
     }
 }

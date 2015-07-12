@@ -60,6 +60,7 @@ public class ComponentConfiguration {
                 finalInitialHandlerSupplier);
         this.reloadHandler = chainHandlers(reloadHandlerSuppliers,
                 finalReloadHandlerSupplier);
+        ajaxParser = ajaxParserSupplier.get();
         reloadParser = reloadParserSupplier.get();
     }
 
@@ -173,7 +174,8 @@ public class ComponentConfiguration {
             Provider<ReloadPageScopeHandler> scopeHandler,
             Provider<ReloadPagePersistenceHandler> persistenceHandler,
             Provider<ReloadHandler> reloadHandler,
-            Provider<ReloadRequestParser> reloadParser) {
+            Provider<ReloadRequestParser> reloadParser,
+            Provider<AjaxRequestParser> ajaxParser) {
         reloadChain.actionResultRendererSupplier = actionResultRenderer::get;
         reloadHandlerSuppliers.add(reloadChain.actionResultRendererSupplier);
 
@@ -187,6 +189,7 @@ public class ComponentConfiguration {
         finalReloadHandlerSupplier = reloadChain.reloadHandler;
 
         reloadParserSupplier = reloadParser::get;
+        ajaxParserSupplier = ajaxParser::get;
     }
 
     public Supplier<BiFunction<IControllerComponent, Class<? extends IViewQualifier>, ViewComponentBase<?>>> viewFactorySupplier;
@@ -237,6 +240,13 @@ public class ComponentConfiguration {
 
     public RequestParser getReloadParser() {
         return reloadParser;
+    }
+
+    public Supplier<RequestParser> ajaxParserSupplier;
+    private RequestParser ajaxParser;
+
+    public RequestParser getAjaxParser() {
+        return ajaxParser;
     }
 
 }

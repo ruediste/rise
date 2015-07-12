@@ -28,7 +28,7 @@ public class ComponentRestartableModule extends AbstractModule {
         bind(SimpleProxyScopeHandler.class).named("pageScoped").toInstance(
                 scopeHandler);
 
-        InitializerUtil.register(config(), ComponentDynamicInitializer.class);
+        InitializerUtil.register(config(), ComponentRestartableInitializer.class);
         requestStaticInjection(CController.class);
     }
 }

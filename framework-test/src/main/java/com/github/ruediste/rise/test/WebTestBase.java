@@ -103,7 +103,8 @@ public abstract class WebTestBase {
     }
 
     /**
-     * Create the servlet for the integration tests
+     * Create the servlet for the integration tests. The members of the provided
+     * test case have to be injected using the restartable injector.
      */
     protected abstract Servlet createServlet(Object testCase);
 

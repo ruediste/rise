@@ -59,8 +59,9 @@ public class AsmUtil {
         case Type.OBJECT:
             try {
                 return loader.loadClass(type.getClassName());
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException("error while loading " + type, e);
+            } catch (Throwable t) {
+                throw new RuntimeException("error while loading " + type
+                        + " from classloader " + loader, t);
             }
         default:
             return null;

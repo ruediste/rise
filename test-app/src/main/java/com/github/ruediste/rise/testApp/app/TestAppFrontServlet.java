@@ -12,6 +12,7 @@ import com.github.ruediste.rise.nonReloadable.persistence.H2DatabaseIntegrationI
 import com.github.ruediste.rise.nonReloadable.persistence.PersistenceModuleUtil;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Salta;
+import com.github.ruediste1.i18n.label.LabelUtil;
 
 public class TestAppFrontServlet extends FrontServletBase {
     private static final long serialVersionUID = 1L;
@@ -35,6 +36,9 @@ public class TestAppFrontServlet extends FrontServletBase {
                     @Override
                     protected void configure() throws Exception {
                         bind(ApplicationStage.class).toInstance(getStage());
+                        bind(LabelUtil.class).toInstance(
+                                new LabelUtil((str, locale) -> str
+                                        .getFallback()));
                         PersistenceModuleUtil
                                 .bindDataSource(
                                         binder(),

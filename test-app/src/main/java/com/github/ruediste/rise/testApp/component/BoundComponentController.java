@@ -13,6 +13,7 @@ import com.github.ruediste1.i18n.label.PropertiesLabeled;
 @Labeled
 public class BoundComponentController extends ControllerComponent {
 
+    @Labeled
     static class View extends ViewComponent<BoundComponentController> {
 
         @Override

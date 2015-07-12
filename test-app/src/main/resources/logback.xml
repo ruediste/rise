@@ -20,4 +20,12 @@
 <!-- 		level="DEBUG" />  -->
 <!--   	<logger name="com.github.ruediste.rise.core.PathInfoIndexBase" -->
 <!-- 		level="DEBUG" />  -->
+<!--   	<logger name="com.github.ruediste.rise.nonReloadable.front.reload.ClassPathWalker" -->
+<!-- 		level="DEBUG" />  -->
+<!--   	<logger name="com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndex" -->
+<!-- 		level="TRACE" />  -->
+<!--   	<logger name="com.github.ruediste.rise.nonReloadable.front.reload.ClassChangeNotifier" -->
+<!-- 		level="TRACE" />  -->
+<!--   	<logger name="com.github.ruediste.rise.nonReloadable.front.reload.ClassPathScanningStarter" -->
+<!-- 		level="TRACE" />  -->
 </configuration>

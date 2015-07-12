@@ -10,6 +10,7 @@ import javax.servlet.Servlet;
 import javax.transaction.TransactionManager;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 
@@ -70,6 +71,7 @@ public class StartupErrorAfterNonRestartableInjectionTest extends
     TransactionManager txm;
 
     @Test
+    @Ignore("needs to be run individually")
     public void testDropAndCreate() throws Throwable {
         driver.navigate().to(getBaseUrl());
         assertTrue(driver.getTitle().contains("Startup Error"));

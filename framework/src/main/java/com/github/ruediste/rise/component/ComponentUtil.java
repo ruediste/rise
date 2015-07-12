@@ -23,10 +23,8 @@ import com.github.ruediste.rise.core.ICoreUtil;
 import com.github.ruediste.rise.core.persistence.TransactionCallbackNoResult;
 import com.github.ruediste.rise.core.persistence.TransactionTemplate;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
-import com.github.ruediste.rise.core.persistence.em.EntityManagerSet;
 import com.github.ruediste.rise.integration.RiseCanvas;
 import com.github.ruediste.rise.integration.RiseCanvasBase;
-import com.github.ruediste.rise.nonReloadable.persistence.TransactionControl;
 
 @Singleton
 public class ComponentUtil implements ICoreUtil {
@@ -186,32 +184,22 @@ public class ComponentUtil implements ICoreUtil {
     TransactionTemplate template;
 
     public void checkAndCommit(Runnable checker, Runnable inTransaction) {
-        template.builder().updating().noNewEntityManagerSet()
-                .execute(new TransactionCallbackNoResult() {
+        template.updating().execute(new TransactionCallbackNoResult() {
 
-                    @Override
-                    public void doInTransaction(TransactionControl trx) {
+            @Override
+            public void doInTransaction() {
 
-                        // run checker with separate EMs
-                        if (checker != null) {
-                            EntityManagerSet old = holder
-                                    .getCurrentEntityManagerSet();
-                            try {
-                                checker.run();
-                            } finally {
-                                holder.closeCurrentEntityManagers();
-                                holder.setCurrentEntityManagerSet(old);
-                            }
-                        }
+                // run checker with separate EMs
+                if (checker != null) {
+                    template.forceNewEntityManagerSet().execute(checker::run);
+                }
 
-                        holder.joinTransaction();
+                holder.joinTransaction();
 
-                        if (inTransaction != null) {
-                            inTransaction.run();
-                        }
-                        // holder.flush();
-                        trx.commit();
-                    }
-                });
+                if (inTransaction != null) {
+                    inTransaction.run();
+                }
+            }
+        });
     }
 }

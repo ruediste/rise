@@ -44,6 +44,5 @@ public class ControllerMvc<TSelf extends ControllerMvc<TSelf>> implements
     }
 
     public void commit() {
-        util.commit();
     }
 }

@@ -1,14 +1,11 @@
 package com.github.ruediste.rise.mvc;
 
 import com.github.ruediste.rise.core.scopes.RequestScoped;
-import com.github.ruediste.rise.nonReloadable.persistence.TransactionControl;
 
 @RequestScoped
 public class MvcRequestInfo {
 
     private boolean updating;
-
-    private TransactionControl transactionControl;
 
     public MvcRequestInfo self() {
         return this;
@@ -26,12 +23,4 @@ public class MvcRequestInfo {
         this.updating = updating;
     }
 
-    public void setTransactionControl(TransactionControl transactionControl) {
-        this.transactionControl = transactionControl;
-
-    }
-
-    public TransactionControl getTransactionControl() {
-        return transactionControl;
-    }
 }

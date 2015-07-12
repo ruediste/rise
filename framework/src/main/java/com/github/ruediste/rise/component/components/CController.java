@@ -32,14 +32,22 @@ public class CController extends AttachedPropertyBearerBase implements
     }
 
     public CController setController(Object controller) {
-        ViewComponentBase<Object> view = repo.createView(controller);
-        rootComponent = view.getRootComponent();
+        if (controller == null)
+            rootComponent = null;
+        else {
+            ViewComponentBase<Object> view = repo.createView(controller);
+            rootComponent = view.getRootComponent();
+            rootComponent.parentChanged(this);
+        }
         return this;
     }
 
     @Override
     public Iterable<Component> getChildren() {
-        return Collections.singletonList(rootComponent);
+        if (rootComponent == null)
+            return Collections.emptyList();
+        else
+            return Collections.singletonList(rootComponent);
     }
 
     @Override

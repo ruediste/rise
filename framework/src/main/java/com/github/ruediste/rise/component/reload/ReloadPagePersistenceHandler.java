@@ -16,12 +16,6 @@ public class ReloadPagePersistenceHandler extends ChainedRequestHandler {
 
     @Override
     public void run(Runnable next) {
-        holder.setCurrentEntityManagerSet(pageInfo.getEntityManagerSet());
-        try {
-            next.run();
-        } finally {
-            holder.removeCurrentSet();
-        }
-
+        holder.withEntityManagerSet(pageInfo.getEntityManagerSet(), next);
     }
 }

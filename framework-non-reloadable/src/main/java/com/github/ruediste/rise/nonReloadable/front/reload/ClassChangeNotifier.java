@@ -123,14 +123,6 @@ public class ClassChangeNotifier {
                     classTrx.addedClasses.add(pair.getB());
 
                 });
-        // for (Path file : trx.addedFiles) {
-        // if (!file.getFileName().toString().endsWith(".class")) {
-        // continue;
-        // }
-        // ClassNode node = readClass(file);
-        // classNameMap.put(file, node.name);
-        // classTrx.addedClasses.add(node);
-        // }
 
         for (Path file : trx.modifiedFiles) {
             if (!file.getFileName().toString().endsWith(".class")) {

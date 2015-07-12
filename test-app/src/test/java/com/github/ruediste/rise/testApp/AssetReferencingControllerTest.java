@@ -5,17 +5,11 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-
-import com.github.ruediste.rise.testApp.AssetReferencingController;
 
 public class AssetReferencingControllerTest extends WebTest {
 
-    private WebDriver driver;
-
     @Before
     public void before() {
-        driver = createDriver();
         driver.navigate().to(url(go(AssetReferencingController.class).index()));
     }
 

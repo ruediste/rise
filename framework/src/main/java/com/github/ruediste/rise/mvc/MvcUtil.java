@@ -17,6 +17,7 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.web.ContentRenderResult;
 import com.github.ruediste.rise.core.web.HttpServletResponseCustomizer;
 import com.github.ruediste.rise.core.web.RedirectRenderResult;
+import com.github.ruediste.rise.nonReloadable.persistence.TransactionControl;
 import com.github.ruediste.salta.jsr330.Injector;
 
 public class MvcUtil implements ICoreUtil {
@@ -34,7 +35,7 @@ public class MvcUtil implements ICoreUtil {
     Injector injector;
 
     @Inject
-    TransactionManager txm;
+    TransactionControl transactionControl;
 
     @Inject
     MvcRequestInfo info;
@@ -77,16 +78,10 @@ public class MvcUtil implements ICoreUtil {
     }
 
     /**
-     * Commit the current transaction. After this method returns, the current
-     * transaction is closed. Thus views should be created before calling this
-     * method.
+     * force the rollback of the transaction of an {@link Updating @Updating}
+     * action method.
      */
-    public void commit() {
-        if (!info.isUpdating()) {
-            throw new RuntimeException(
-                    "Cannot commit from a method not annotated with @Updating");
-        }
-
-        info.getTransactionControl().commit();
+    public void forceRollback() {
+        transactionControl.forceRollback();
     }
 }

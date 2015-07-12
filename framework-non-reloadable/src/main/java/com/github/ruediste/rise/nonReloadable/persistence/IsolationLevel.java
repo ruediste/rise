@@ -7,6 +7,12 @@ import java.sql.Connection;
  */
 public enum IsolationLevel {
     /**
+     * Use the default level, determined by if the transaction is read only or
+     * not.
+     */
+    DEFAULT(-1),
+
+    /**
      * A constant indicating that dirty reads, non-repeatable reads and phantom
      * reads can occur. This level allows a row changed by one transaction to be
      * read by another transaction before any changes in that row have been

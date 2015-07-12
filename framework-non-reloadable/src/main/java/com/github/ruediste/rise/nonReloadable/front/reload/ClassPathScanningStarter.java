@@ -83,8 +83,12 @@ public class ClassPathScanningStarter {
                     public void visitClass(String className,
                             ClassLoader classLoader,
                             Supplier<InputStream> inputStreamSupplier) {
-                        if (!config.shouldBeScanned(className))
+                        if (!config.shouldBeScanned(className)) {
+                            log.trace("not scanning {}", className);
                             return;
+                        }
+                        log.trace("scanning class {}", className);
+
                         if (classes.containsKey(className))
                             return;
 

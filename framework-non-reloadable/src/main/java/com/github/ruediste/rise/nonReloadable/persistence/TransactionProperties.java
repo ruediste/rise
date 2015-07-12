@@ -14,6 +14,7 @@ public class TransactionProperties {
 
     private Object isolationLevel = new Object();
     private Object defaultIsolationLevel = new Object();
+    private Object forceRollback = new Object();
 
     /**
      * Set the isolation level of the current transaction for the given data
@@ -25,6 +26,14 @@ public class TransactionProperties {
 
     public void setDefaultIsolationLevel(IsolationLevel level) {
         registry.putResource(defaultIsolationLevel, level);
+    }
+
+    public void forceRollback() {
+        registry.putResource(forceRollback, true);
+    }
+
+    public boolean isForceRollback() {
+        return registry.getResource(forceRollback) != null;
     }
 
     /**

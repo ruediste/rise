@@ -1,9 +1,21 @@
 package com.github.ruediste.rise.nonReloadable.persistence;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * Interface for controlling transaction
  */
-public interface TransactionControl {
+@Singleton
+public class TransactionControl {
 
-    void commit();
+    @Inject
+    TransactionProperties transactionProperties;
+
+    /**
+     * Setup the transaction to force a rollback when the transaction ends
+     */
+    public void forceRollback() {
+        transactionProperties.forceRollback();
+    }
 }

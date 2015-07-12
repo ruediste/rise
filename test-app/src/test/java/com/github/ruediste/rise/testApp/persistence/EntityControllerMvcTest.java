@@ -34,9 +34,9 @@ public class EntityControllerMvcTest extends WebTest {
         TestEntity entity = new TestEntity();
         entity.setValue("Hello World");
 
-        template.builder().updating().execute(trx -> {
+        template.executor().updating().execute(() -> {
+            em.createQuery("delete from TestEntity").executeUpdate();
             em.persist(entity);
-            trx.commit();
         });
 
         driver.navigate().to(url(go(EntityControllerMvc.class).index()));
@@ -52,13 +52,12 @@ public class EntityControllerMvcTest extends WebTest {
         TestEntity entity = new TestEntity();
         entity.setValue("Hello World");
 
-        template.builder().updating().execute(trx -> {
+        template.executor().updating().execute(() -> {
             em.persist(entity);
-            trx.commit();
         });
 
         // check entity present
-        template.builder().execute(trx -> {
+        template.executor().execute(() -> {
             assertNotNull(em.find(TestEntity.class, entity.getId()));
         });
 
@@ -66,7 +65,7 @@ public class EntityControllerMvcTest extends WebTest {
         driver.navigate().to(url(go(EntityControllerMvc.class).delete(entity)));
 
         // check entity has been deleted
-        template.builder().execute(trx -> {
+        template.executor().execute(() -> {
             assertNull(em.find(TestEntity.class, entity.getId()));
         });
     }

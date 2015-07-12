@@ -1,7 +1,6 @@
 package com.github.ruediste.rise.core.persistence;
 
 import com.github.ruediste.rise.core.persistence.em.EntityManagerSet;
-import com.github.ruediste.rise.nonReloadable.persistence.TransactionControl;
 
 /**
  * Callback for transactional code. Typically used as argument to {@link
@@ -9,7 +8,7 @@ import com.github.ruediste.rise.nonReloadable.persistence.TransactionControl;
  */
 public interface TransactionCallbackNoResult {
 
-    void doInTransaction(TransactionControl trx);
+    void doInTransaction();
 
     /**
      * Called before the {@link EntityManagerSet} is created. Can be used to
