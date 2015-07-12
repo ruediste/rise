@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.transaction.TransactionManager;
 
@@ -25,6 +26,7 @@ import com.github.ruediste.rise.core.persistence.TransactionTemplate;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 import com.github.ruediste.rise.integration.RiseCanvas;
 import com.github.ruediste.rise.integration.RiseCanvasBase;
+import com.github.ruediste.salta.standard.util.SimpleProxyScopeHandler;
 
 @Singleton
 public class ComponentUtil implements ICoreUtil {
@@ -52,6 +54,13 @@ public class ComponentUtil implements ICoreUtil {
 
     @Inject
     CoreRequestInfo coreRequestInfo;
+
+    @Inject
+    ComponentRequestInfo componentRequestInfo;
+
+    @Inject
+    @Named("pageScoped")
+    SimpleProxyScopeHandler pageScopeHandler;
 
     public long pageId() {
         return pageInfo.getPageId();
@@ -147,6 +156,11 @@ public class ComponentUtil implements ICoreUtil {
                 + pageId());
     }
 
+    public String getAjaxUrl(Component component) {
+        return coreUtil.url(componentConfiguration.getAjaxPath() + "/"
+                + pageId() + "/" + getComponentNr(component));
+    }
+
     @Override
     public CoreUtil getCoreUtil() {
         return coreUtil;
@@ -201,5 +215,23 @@ public class ComponentUtil implements ICoreUtil {
                 }
             }
         });
+    }
+
+    /**
+     * Run the given runnable in the page scope of the current request. Mainly
+     * useful in ajax request handling code. Note that only a single thread can
+     * enter the scope of a page. Do not lock the page for extended periods of
+     * time (like long running search queries)
+     */
+    public void runInPageScope(Runnable r) {
+        PageHandle pageHandle = componentRequestInfo.getPageHandle();
+        synchronized (pageHandle.lock) {
+            pageScopeHandler.enter(pageHandle.instances);
+            try {
+                r.run();
+            } finally {
+                pageScopeHandler.exit();
+            }
+        }
     }
 }

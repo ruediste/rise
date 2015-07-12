@@ -29,7 +29,9 @@ public class CPageHtmlTemplate extends ComponentTemplate<CPage> {
 
             @Override
             public LString getTitle() {
-                return component.getTitle();
+                LString title = component.getTitle();
+
+                return title == null ? (locale -> "") : title;
             }
         });
     }

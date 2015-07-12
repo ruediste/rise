@@ -54,7 +54,8 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends
     }
 
     /**
-     * Write the supplied buffer directly to the output
+     * Write the supplied buffer directly to the output, but commit attributes
+     * beforehand
      */
     default TSelf writeRaw(byte[] buffer) {
         internal_riseHelper().writeRaw(buffer);

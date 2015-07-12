@@ -59,7 +59,6 @@ var rise = (function() {
 									+ receiver.data("rise-component-nr"),
 							data : data,
 							success : function(data) {
-								// receiver.replaceWith($(data).children());
 								receiver.replaceWith(data);
 							},
 							dataType : "html"

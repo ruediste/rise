@@ -5,7 +5,9 @@ import javax.inject.Named;
 
 import org.slf4j.Logger;
 
+import com.github.ruediste.rise.component.components.ComponentTemplate;
 import com.github.ruediste.rise.component.reload.PageReloadRequest;
+import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.RequestParseResult;
 import com.github.ruediste.rise.core.RequestParser;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
@@ -31,6 +33,15 @@ public class AjaxRequestParser implements RequestParser {
 
     @Inject
     ComponentSessionInfo sessionInfo;
+
+    @Inject
+    ComponentUtil componentUtil;
+
+    @Inject
+    PageInfo pageInfo;
+
+    @Inject
+    ComponentTemplateIndex componentTemplateIndex;
 
     @Inject
     @Named("pageScoped")
@@ -61,12 +72,36 @@ public class AjaxRequestParser implements RequestParser {
                 long componentNr;
                 {
                     int idx = suffix.indexOf('/');
-                    pageNr = Long.parseLong(suffix.substring(0, idx));
-                    suffix = suffix.substring(idx + 1);
+                    if (idx < 0)
+                        idx = suffix.length();
+                    componentNr = Long.parseLong(suffix.substring(0, idx));
+                    if (idx < suffix.length())
+                        suffix = suffix.substring(idx + 1);
+                    else
+                        suffix = "";
                 }
 
+                // get the component
                 PageHandle page = sessionInfo.getPageHandle(pageNr);
-
+                ComponentTemplate<Component> template;
+                Component component;
+                synchronized (page.lock) {
+                    pageScopeHandler.enter(page.instances);
+                    try {
+                        component = componentUtil.getComponent(
+                                pageInfo.getView(), componentNr);
+                        template = componentTemplateIndex
+                                .getTemplate(component);
+                    } finally {
+                        pageScopeHandler.exit();
+                    }
+                }
+                try {
+                    template.handleAjaxRequest(component);
+                } catch (Throwable e) {
+                    throw new RuntimeException(
+                            "Error while handling ajax request", e);
+                }
             } finally {
                 componentRequestInfo.setComponentRequest(false);
             }
@@ -75,7 +110,6 @@ public class AjaxRequestParser implements RequestParser {
 
     @Override
     public RequestParseResult parse(HttpRequest req) {
-
         return new AjaxParseResult(req);
     }
 }

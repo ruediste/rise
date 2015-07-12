@@ -26,6 +26,10 @@ public abstract class ComponentTemplateBase<T extends Component> implements
 
     }
 
+    @Override
+    public void handleAjaxRequest(T component) throws Throwable {
+    }
+
     public String url(PathInfo path) {
         return util.url(path);
     }
@@ -74,4 +78,9 @@ public abstract class ComponentTemplateBase<T extends Component> implements
     public boolean isParameterDefined(Component component, String key) {
         return util.isParameterDefined(component, key);
     }
+
+    public String getAjaxUrl(Component component) {
+        return util.getAjaxUrl(component);
+    }
+
 }

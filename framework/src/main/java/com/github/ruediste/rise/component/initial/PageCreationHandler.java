@@ -4,6 +4,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.github.ruediste.rise.component.ComponentConfiguration;
+import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.component.ComponentSessionInfo;
 import com.github.ruediste.rise.component.ComponentViewRepository;
 import com.github.ruediste.rise.component.IControllerComponent;
@@ -38,11 +39,15 @@ public class PageCreationHandler extends ChainedRequestHandler {
     @Inject
     ComponentConfiguration config;
 
+    @Inject
+    ComponentRequestInfo componentRequestInfo;
+
     @Override
     public void run(Runnable next) {
         pageScopeHandler.enter();
         try {
             PageHandle handle = sessionInfo.createPageHandle();
+            componentRequestInfo.setPageHandle(handle);
             handle.instances = pageScopeHandler.getValueMap();
             synchronized (handle.lock) {
                 PageInfo pi = pageInfo.self();

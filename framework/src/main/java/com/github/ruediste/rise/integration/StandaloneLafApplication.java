@@ -5,7 +5,9 @@ import java.nio.file.Paths;
 import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.Servlet;
+import javax.servlet.annotation.MultipartConfig;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
@@ -29,18 +31,19 @@ public class StandaloneLafApplication {
      * Start the server on port 8080
      */
     public void start(Class<? extends FrontServletBase> frontServletClass) {
-        if (Modifier.isAbstract(frontServletClass.getModifiers()))
-            throw new RuntimeException(
-                    "Front servlet class may not be abstact: "
-                            + frontServletClass.getName());
+
         start(frontServletClass, 8080);
     }
 
     public void start(Class<? extends FrontServletBase> frontServletClass,
             int port) {
-
+        if (Modifier.isAbstract(frontServletClass.getModifiers()))
+            throw new RuntimeException(
+                    "Front servlet class may not be abstact: "
+                            + frontServletClass.getName());
         try {
-            startImpl(new ServletHolder(frontServletClass), port);
+            startImpl(frontServletClass, new ServletHolder(frontServletClass),
+                    port);
             server.join();
         } catch (Exception e) {
             log.error("Error starting Jetty", e);
@@ -55,15 +58,28 @@ public class StandaloneLafApplication {
     public String startForTesting(Servlet frontServlet, int port) {
 
         try {
-            return startImpl(
-                    new ServletHolder("testFrontServlet", frontServlet), port);
+            return startImpl(frontServlet.getClass(), new ServletHolder(
+                    "testFrontServlet", frontServlet), port);
         } catch (Exception e) {
             throw new RuntimeException("Error starting Jetty", e);
         }
     }
 
-    protected String startImpl(ServletHolder holder, int port) throws Exception {
+    protected String startImpl(Class<?> frontServletClass,
+            ServletHolder holder, int port) throws Exception {
         holder.setInitOrder(0);
+
+        {
+            MultipartConfig multipartConfig = frontServletClass
+                    .getAnnotation(MultipartConfig.class);
+            if (multipartConfig != null)
+
+                holder.getRegistration().setMultipartConfig(
+                        new MultipartConfigElement(multipartConfig));
+            else
+                holder.getRegistration().setMultipartConfig(
+                        new MultipartConfigElement(""));
+        }
 
         ServletContextHandler ctx = new ServletContextHandler(
                 ServletContextHandler.SESSIONS);
