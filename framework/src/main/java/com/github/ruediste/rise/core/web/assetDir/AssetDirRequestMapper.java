@@ -23,7 +23,6 @@ import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetPipelineConfiguration;
 import com.github.ruediste.rise.nonReloadable.front.StartupTimeLogger;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndex;
-import com.github.ruediste.rise.nonReloadable.front.reload.DirectoryChangeWatcher;
 import com.github.ruediste.rise.util.AsmUtil;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.google.common.base.Stopwatch;
@@ -123,9 +122,6 @@ public class AssetDirRequestMapper {
 
     @Inject
     PathInfoIndex index;
-
-    @Inject
-    DirectoryChangeWatcher watcher;
 
     @Inject
     javax.inject.Provider<AssetDirRequestParseResult> resultProvider;

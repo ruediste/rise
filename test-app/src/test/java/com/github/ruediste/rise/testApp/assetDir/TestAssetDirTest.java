@@ -14,7 +14,7 @@ import javax.inject.Inject;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.junit.Test;
 
 import com.github.ruediste.rise.core.web.assetDir.AssetDirRequestMapper;
@@ -34,7 +34,7 @@ public class TestAssetDirTest extends WebTest {
         check("Test Text", "test.txt");
         check("function testJavascript(){}", "test.js");
 
-        CloseableHttpClient client = new DefaultHttpClient();
+        CloseableHttpClient client = HttpClients.createDefault();
         HttpResponse response = client.execute(new HttpGet(url(mapper
                 .getPathInfo(dir, ""))));
         assertEquals(404, response.getStatusLine().getStatusCode());

@@ -101,7 +101,7 @@ public class ClassChangeNotifier {
         classTrx.isInitial = trx.isInitial;
 
         for (Path file : trx.removedFiles) {
-            if (!file.endsWith(".class")) {
+            if (!file.getFileName().toString().endsWith(".class")) {
                 continue;
             }
 

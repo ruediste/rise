@@ -37,7 +37,7 @@ public class CoreConfigurationNonRestartable {
      * corresponding event is raised. Allows multiple changes to be sent in one
      * {@link FileChangeTransaction}.
      */
-    public long fileChangeSettleDelayMs = 10;
+    public long fileChangeSettleDelayMs = 500;
 
     /**
      * controls if the the schema migration using Flyway scripts should be run
