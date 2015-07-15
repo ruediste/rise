@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.servlet.http.HttpServletResponse;
 
 import org.objectweb.asm.Type;
@@ -30,6 +31,7 @@ import com.google.common.base.Stopwatch;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
+@Singleton
 public class AssetRequestMapper {
     @Inject
     Logger log;
@@ -90,9 +92,17 @@ public class AssetRequestMapper {
 
     public void initialize() {
         Stopwatch watch = Stopwatch.createStarted();
+
+        // collect all bundles
         String internalName = Type.getInternalName(AssetBundle.class);
         registerChildBundles(internalName);
+
+        // call initialize methods in correct order
+        queuedForInitialization.forEach(AssetBundle::initialize);
+
+        // register bundles with PathInfoIndex
         registerAssets(bundles);
+
         StartupTimeLogger.stopAndLog("Asset Bundle Registration", watch);
     }
 
@@ -173,5 +183,15 @@ public class AssetRequestMapper {
 
         AssetBundle bundle = (AssetBundle) injector.getInstance(bundleClass);
         bundles.add(bundle);
+    }
+
+    private ArrayList<AssetBundle> queuedForInitialization = new ArrayList<AssetBundle>();
+
+    /**
+     * Called from the initialize of {@link AssetBundle}. Used to call the
+     * initialize() methods in the correct order.
+     */
+    public void queueInitialization(AssetBundle assetBundle) {
+        queuedForInitialization.add(assetBundle);
     }
 }

@@ -7,9 +7,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
+import com.github.ruediste.rise.core.CoreRestartableModule;
 import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.HttpService;
 import com.google.common.base.Splitter;
@@ -18,7 +20,10 @@ import com.google.common.io.ByteStreams;
 
 /**
  * Defines a set of {@link AssetBundleOutput}s and how {@link Asset}s are loaded
- * and passed to them
+ * and passed to them.
+ * <p>
+ * {@link AssetBundle}s are always singletons. See
+ * {@link CoreRestartableModule#registerAssetBundleScopeRule()}
  */
 public abstract class AssetBundle {
 
@@ -45,6 +50,13 @@ public abstract class AssetBundle {
     public String url(Asset asset) {
         return httpService.urlStatic(requestMapper.getPathInfo(asset));
     }
+
+    @PostConstruct
+    private void queueInitialization() {
+        requestMapper.queueInitialization(this);
+    }
+
+    protected abstract void initialize();
 
     public AssetMode getAssetMode() {
         return pipelineConfiguration.getAssetMode();
@@ -195,6 +207,10 @@ public abstract class AssetBundle {
      */
     public boolean dev() {
         return getAssetMode() == AssetMode.DEVELOPMENT;
+    }
+
+    public AssetPipelineConfiguration getPipelineConfiguration() {
+        return pipelineConfiguration;
     }
 
     /**

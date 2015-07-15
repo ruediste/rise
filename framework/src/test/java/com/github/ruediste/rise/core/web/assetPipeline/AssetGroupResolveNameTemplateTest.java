@@ -29,6 +29,9 @@ public class AssetGroupResolveNameTemplateTest {
 
     @InjectMocks
     AssetBundle bundle = new AssetBundle() {
+        @Override
+        protected void initialize() {
+        }
 
     };
 

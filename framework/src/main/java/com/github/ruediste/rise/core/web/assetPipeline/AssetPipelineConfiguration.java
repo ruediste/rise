@@ -2,11 +2,18 @@ package com.github.ruediste.rise.core.web.assetPipeline;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.servlet.ServletConfig;
+
+import ro.isdc.wro.extensions.processor.css.Less4jProcessor;
+import ro.isdc.wro.extensions.processor.css.SassCssProcessor;
+import ro.isdc.wro.extensions.processor.css.YUICssCompressorProcessor;
+import ro.isdc.wro.model.resource.processor.impl.js.JSMinProcessor;
 
 import com.github.ruediste.rise.nonReloadable.NonRestartable;
 import com.github.ruediste.salta.standard.Stage;
@@ -44,17 +51,26 @@ public class AssetPipelineConfiguration {
         return assetTypeToDefaultContentTypeMap.get(type);
     }
 
+    public void registerExtension(AssetType assetType, String primaryExtension,
+            String... otherExtensions) {
+        assetTypeToExtensionMap.put(assetType, primaryExtension);
+        extensionToAssetTypeMap.put(primaryExtension, assetType);
+        for (String extension : otherExtensions) {
+            assetTypeToExtensionMap.put(assetType, extension);
+        }
+    }
+
     {
-        extensionToAssetTypeMap.put("js", DefaultAssetTypes.JS);
-        assetTypeToExtensionMap.put(DefaultAssetTypes.JS, "js");
+        registerExtension(DefaultAssetTypes.JS, "js");
         assetTypeToDefaultContentTypeMap.put(DefaultAssetTypes.JS,
                 "application/javascript; ; charset=UTF-8");
 
-        extensionToAssetTypeMap.put("css", DefaultAssetTypes.CSS);
-        assetTypeToExtensionMap.put(DefaultAssetTypes.CSS, "css");
+        registerExtension(DefaultAssetTypes.CSS, "css");
         assetTypeToDefaultContentTypeMap.put(DefaultAssetTypes.CSS,
                 "text/css; ; charset=UTF-8");
 
+        registerExtension(DefaultAssetTypes.LESS, "less");
+        registerExtension(DefaultAssetTypes.SASS, "sass");
     }
 
     /**
@@ -113,5 +129,36 @@ public class AssetPipelineConfiguration {
 
     public void initialize() {
 
+    }
+
+    public final Map<AssetType, Function<Asset, Asset>> defaultProcessors = new HashMap<>();
+
+    public Function<Asset, Asset> getDefaultProcessor(AssetType type) {
+        return defaultProcessors.get(type);
+    }
+
+    public final Map<AssetType, Function<Asset, Asset>> defaultMinifiers = new HashMap<>();
+
+    public Function<Asset, Asset> getDefaultMinifier(AssetType type) {
+        return defaultMinifiers.get(type);
+    }
+
+    @PostConstruct
+    void initializeProcessors(Provider<ProcessorWrapper> processorSupplier) {
+        defaultProcessors
+                .put(DefaultAssetTypes.LESS,
+                        processorSupplier.get().initialize(
+                                DefaultAssetTypes.CSS,
+                                () -> new Less4jProcessor()));
+        defaultProcessors.put(
+                DefaultAssetTypes.SASS,
+                processorSupplier.get().initialize(DefaultAssetTypes.CSS,
+                        () -> new SassCssProcessor()));
+        defaultMinifiers.put(
+                DefaultAssetTypes.CSS,
+                processorSupplier.get().initialize(DefaultAssetTypes.CSS,
+                        () -> new YUICssCompressorProcessor()));
+        defaultMinifiers.put(DefaultAssetTypes.JS, processorSupplier.get()
+                .initialize(DefaultAssetTypes.JS, () -> new JSMinProcessor()));
     }
 }

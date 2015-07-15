@@ -1,6 +1,5 @@
 package com.github.ruediste.rise.testApp;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
@@ -13,7 +12,7 @@ public class AssetReferencingView extends
 
         AssetBundleOutput out = new AssetBundleOutput(this);
 
-        @PostConstruct
+        @Override
         public void initialize() {
             locations("./assetReferencing.css", ".-test.css",
                     "/assetReferencing/test.css", "assetReferencing.css")

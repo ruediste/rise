@@ -27,7 +27,7 @@ public abstract class ComponentTemplateBase<T extends Component> implements
     }
 
     @Override
-    public void handleAjaxRequest(T component) throws Throwable {
+    public void handleAjaxRequest(T component, String suffix) throws Throwable {
     }
 
     public String url(PathInfo path) {

@@ -32,6 +32,9 @@ public class AssetGroupTest {
     @Before
     public void setup() throws UnsupportedEncodingException {
         bundle = new AssetBundle() {
+            @Override
+            protected void initialize() {
+            }
 
         };
 
@@ -111,7 +114,7 @@ public class AssetGroupTest {
         Asset r1 = new TestAsset("foo1", "bar1");
         Asset r2 = new TestAsset("foo2", "bar2");
         group = new AssetGroup(bundle, Arrays.asList(r1, r2));
-        AssetGroup collect = group.combine("foo3");
+        AssetGroup collect = group.combine();
         assertEquals(
                 "AssetGroup[combine[testAsset(foo1,bar1), testAsset(foo2,bar2)]]",
                 collect.toString());

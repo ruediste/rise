@@ -27,5 +27,5 @@ public interface ComponentTemplate<T extends Component> {
 
     void raiseEvents(T component);
 
-    void handleAjaxRequest(T component) throws Throwable;
+    void handleAjaxRequest(T component, String suffix) throws Throwable;
 }

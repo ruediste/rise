@@ -1,6 +1,5 @@
 package com.github.ruediste.rise.testApp.component;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import com.github.ruediste.rise.component.components.CPage;
@@ -26,9 +25,9 @@ public class CPageTemplate extends ComponentTemplateBase<CPage> {
 
         AssetBundleOutput out = new AssetBundleOutput(this);
 
-        @PostConstruct
+        @Override
         public void initialize() {
-            bootstrapBundleUtil.loadAssets().sentAllTo(out);
+            bootstrapBundleUtil.loadAssets().all().send(out);
             coreBundle.out.send(out);
         }
 

@@ -8,7 +8,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -48,15 +47,71 @@ public class AssetGroup {
         return "AssetGroup" + assets;
     }
 
+    /**
+     * Map all assets of the group
+     */
     public AssetGroup map(Function<Asset, Asset> processor) {
         return new AssetGroup(bundle, assets.stream().map(processor)
                 .collect(Collectors.toList()));
+    }
+
+    /**
+     * Apply a filter to the assets. If it matches, map it with a processor
+     */
+    public AssetGroup filterMap(Predicate<? super Asset> filter,
+            Function<Asset, Asset> matchProcessor) {
+        return map(a -> filter.test(a) ? matchProcessor.apply(a) : a);
+    }
+
+    /**
+     * Apply a filter to the assets. If it matches, map it with one processor,
+     * otherwise with another processor
+     */
+    public AssetGroup filterMap(Predicate<? super Asset> filter,
+            Function<Asset, Asset> matchProcessor,
+            Function<Asset, Asset> noMatchPocessor) {
+        return map(a -> filter.test(a) ? matchProcessor.apply(a)
+                : noMatchPocessor.apply(a));
+    }
+
+    /**
+     * Apply the default minifier (
+     * {@link AssetPipelineConfiguration#defaultMinifiers}) to the assets of
+     * this group
+     */
+    public AssetGroup min() {
+        return map(asset -> {
+            Function<Asset, Asset> minifier = bundle.getPipelineConfiguration()
+                    .getDefaultMinifier(asset.getAssetType());
+            if (minifier != null)
+                return minifier.apply(asset);
+            else
+                return asset;
+        });
+    }
+
+    /**
+     * Apply the default processor (
+     * {@link AssetPipelineConfiguration#defaultProcessors}) to the assets of
+     * this group
+     */
+    public AssetGroup process() {
+        return map(asset -> {
+            Function<Asset, Asset> minifier = bundle.getPipelineConfiguration()
+                    .getDefaultProcessor(asset.getAssetType());
+            if (minifier != null)
+                return minifier.apply(asset);
+            return asset;
+        });
     }
 
     public void send(Consumer<Asset> consumer) {
         assets.forEach(consumer);
     }
 
+    /**
+     * Run each consumer with the asset group
+     */
     @SafeVarargs
     final public AssetGroup fork(final Consumer<AssetGroup>... consumers) {
         for (Consumer<AssetGroup> consumer : consumers) {
@@ -64,19 +119,6 @@ public class AssetGroup {
         }
 
         return this;
-    }
-
-    /**
-     * If the current {@link AssetMode} matches the given asset mode, let all
-     * assets pass. Otherwise returns an empty group
-     */
-    public AssetGroup filter(AssetMode mode) {
-        if (bundle.getAssetMode() == mode) {
-            return this;
-        } else {
-            return new AssetGroup(bundle, Collections.emptyList());
-        }
-
     }
 
     /**
@@ -95,19 +137,58 @@ public class AssetGroup {
     }
 
     /**
-     * In {@link AssetMode#PRODUCTION Production Mode}, let all assets pass.
-     * Otherwise returns an empty group
+     * map the asset group to a consumer if a condition is true.
      */
-    public AssetGroup prod() {
-        return filter(AssetMode.PRODUCTION);
+    public AssetGroup if_(boolean condition,
+            Function<AssetGroup, AssetGroup> func) {
+        if (condition)
+            return func.apply(this);
+        else
+            return this;
+    }
+
+    public AssetGroup if_(AssetMode mode, Function<AssetGroup, AssetGroup> func) {
+        return if_(bundle.getAssetMode() == mode, func);
+    }
+
+    public AssetGroup ifProd(Function<AssetGroup, AssetGroup> func) {
+        return if_(AssetMode.PRODUCTION, func);
+    }
+
+    public AssetGroup ifDev(Function<AssetGroup, AssetGroup> func) {
+        return if_(AssetMode.DEVELOPMENT, func);
     }
 
     /**
-     * In {@link AssetMode#DEVELOPMENT Development Mode}, let all assets pass.
-     * Otherwise returns an empty group
+     * Map with the given processor if a condition is true. Otherwise leave
+     * group unchanged
      */
-    public AssetGroup dev() {
-        return filter(AssetMode.DEVELOPMENT);
+    public AssetGroup mapIf(boolean condition, Function<Asset, Asset> processor) {
+        if (condition)
+            return map(processor);
+        else
+            return this;
+    }
+
+    /**
+     * Map with a processor if we are running in the given {@link AssetMode}
+     */
+    public AssetGroup mapIn(AssetMode mode, Function<Asset, Asset> processor) {
+        return mapIf(bundle.getAssetMode() == mode, processor);
+    }
+
+    /**
+     * Map with a processor if we are running in production mode
+     */
+    public AssetGroup mapInProd(Function<Asset, Asset> processor) {
+        return mapIn(AssetMode.PRODUCTION, processor);
+    }
+
+    /**
+     * Map with a processor if we are running in development mode
+     */
+    public AssetGroup mapInDev(Function<Asset, Asset> processor) {
+        return mapIn(AssetMode.DEVELOPMENT, processor);
     }
 
     /**
@@ -218,8 +299,8 @@ public class AssetGroup {
             }
                 break;
             case "extT": {
-                sb.append(bundle.pipelineConfiguration.getExtension(asset
-                        .getAssetType()));
+                sb.append(bundle.getPipelineConfiguration().getExtension(
+                        asset.getAssetType()));
             }
                 break;
             default:
@@ -267,13 +348,13 @@ public class AssetGroup {
      * Asset caching the results of a delegate
      */
     private static class CachingAsset implements Asset {
-        static AttachedProperty<AttachedPropertyBearer, String> name = new AttachedProperty<>(
+        AttachedProperty<AttachedPropertyBearer, String> name = new AttachedProperty<>(
                 "name");
-        static AttachedProperty<AttachedPropertyBearer, String> contentType = new AttachedProperty<>(
+        AttachedProperty<AttachedPropertyBearer, String> contentType = new AttachedProperty<>(
                 "contentType");
-        static AttachedProperty<AttachedPropertyBearer, AssetType> assetType = new AttachedProperty<>(
+        AttachedProperty<AttachedPropertyBearer, AssetType> assetType = new AttachedProperty<>(
                 "assetType");
-        static AttachedProperty<AttachedPropertyBearer, byte[]> data = new AttachedProperty<>(
+        AttachedProperty<AttachedPropertyBearer, byte[]> data = new AttachedProperty<>(
                 "byte[]");
 
         private Asset delegate;
@@ -317,13 +398,8 @@ public class AssetGroup {
      * Combine all {@link Asset}s in the group into one asset for each
      * combination of {@link Asset#getAssetType()} and
      * {@link Asset#getContentType()}.
-     * 
-     * @param nameTemplate
-     *            name template for the generated assets. The underlying name is
-     *            set to the empty string. see {@link #name} for details on the
-     *            template format
      */
-    public AssetGroup combine(String nameTemplate) {
+    public AssetGroup combine() {
         Multimap<Pair<AssetType, String>, Asset> map = ArrayListMultimap
                 .create();
         for (Asset asset : assets) {

@@ -1,9 +1,15 @@
 package com.github.ruediste.rise.sample.fileupload;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.github.ruediste.rise.api.ControllerComponent;
+import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CButton;
 import com.github.ruediste.rise.component.components.CFileInput;
+import com.github.ruediste.rise.component.components.CFileInput.UploadedFile;
 import com.github.ruediste.rise.component.components.CPage;
+import com.github.ruediste.rise.component.components.CSwitch;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.sample.ViewComponent;
@@ -12,16 +18,75 @@ import com.github.ruediste1.i18n.label.Labeled;
 
 public class FileUploadController extends ControllerComponent {
 
+    private enum Mode {
+        LIST, UPLOAD
+    }
+
     @Labeled
-    public static class View extends ViewComponent<FileUploadController> {
+    private static class MainView extends ViewComponent<FileUploadController> {
 
         @Override
         protected Component createComponents() {
-            return new CPage(label(this)).add(toComponent(html -> html.h1()
-                    .content("File Upload Demo").add(new CFileInput())
-                    .add(new CButton("reload"))));
+            return new CPage(label(this))
+                    .add(new CSwitch<Mode>()
+                            .put(Mode.LIST,
+                                    () -> {
+                                        return toComponent(html -> html
+                                                .ul()
+                                                .fForEach(
+                                                        controller.data().files,
+                                                        f -> html
+                                                                .li()
+                                                                .content(
+                                                                        f.getSubmittedFileName()))
+                                                ._ul()
+                                                .add(new CButton("Upload")
+                                                        .handler(() -> controller
+                                                                .upload())));
+                                    })
+                            .put(Mode.UPLOAD,
+                                    () -> {
+                                        CFileInput fileInput = new CFileInput();
+                                        return toComponent(html -> html
+                                                .h1()
+                                                .content("File Upload Demo")
+                                                .add(fileInput)
+                                                .add(new CButton("Done").handler(() -> {
+                                                    controller.uploaded(fileInput
+                                                            .getUploadedFiles());
+                                                })));
+                                    }).bind(() -> controller.data().getMode()));
+        }
+    }
+
+    public static class Data {
+        List<UploadedFile> files = new ArrayList<>();
+        private Mode mode = Mode.UPLOAD;
+
+        public Mode getMode() {
+            return mode;
         }
 
+        public void setMode(Mode mode) {
+            this.mode = mode;
+        }
+    }
+
+    BindingGroup<Data> data = new BindingGroup<>(new Data());
+
+    Data data() {
+        return data.proxy();
+    }
+
+    public void upload() {
+        data.get().setMode(Mode.UPLOAD);
+        data.pullUp();
+    }
+
+    public void uploaded(List<UploadedFile> uploadedFiles) {
+        data.get().files.addAll(uploadedFiles);
+        data.get().setMode(Mode.LIST);
+        data.pullUp();
     }
 
     @Label("File Upload Demo")

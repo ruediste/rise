@@ -3,7 +3,6 @@ package com.github.ruediste.rise.core.web.bootstrap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.github.ruediste.rise.core.web.assetPipeline.Asset;
@@ -24,10 +23,12 @@ public class BootstrapBundleUtil extends AssetBundle {
         public AssetGroup fonts;
         public AssetGroup theme;
 
-        public void sentAllTo(Consumer<Asset> out) {
-            this.out.send(out);
-            this.fonts.send(out);
-            this.theme.send(out);
+        public AssetGroup all() {
+            return withoutFonts().join(fonts);
+        }
+
+        public AssetGroup withoutFonts() {
+            return out.join(theme);
         }
     }
 
@@ -35,8 +36,8 @@ public class BootstrapBundleUtil extends AssetBundle {
      * Load the necessary assets to use bootstrap, including jquery
      */
     public BootstrapAssetGroups loadAssets() {
-        return loadAssets((group, ext) -> group.forkJoin(
-                g -> g.prod().name("{name}.{hash}.{ext}"), g -> g.dev()));
+        return loadAssets((group, ext) -> group.ifProd(g -> g.name("{hash}."
+                + ext)));
     }
 
     /**
@@ -52,15 +53,15 @@ public class BootstrapBundleUtil extends AssetBundle {
             BiFunction<AssetGroup, String, AssetGroup> fontCustomizer) {
         BootstrapAssetGroups result = new BootstrapAssetGroups();
         AssetGroup js = locations("./js/jquery-2.1.3.js", "./js/bootstrap.js")
-                .insertMinInProd().load();
+                .load();
         ArrayList<Asset> fonts = new ArrayList<>();
         AssetGroup css = replaceFonts(fonts, fontCustomizer,
-                locations("./css/bootstrap.css").insertMinInProd().load(), "eot",
-                "svg", "ttf", "woff", "woff2");
-        result.out = css.join(js, locations("./css/bootstrap.css.map").load());
+                locations("./css/bootstrap.css").insertMinInProd().load(),
+                "eot", "svg", "ttf", "woff", "woff2");
+        result.out = css.join(js).ifDev(
+                g -> g.join(locations("./css/bootstrap.css.map").load()));
         result.fonts = new AssetGroup(this, fonts);
-        result.theme = locations("./css/bootstrap-theme.css").insertMinInProd()
-                .load();
+        result.theme = locations("./css/bootstrap-theme.css").load();
 
         return result;
     }
@@ -95,9 +96,13 @@ public class BootstrapBundleUtil extends AssetBundle {
     private AssetGroup loadFont(
             BiFunction<AssetGroup, String, AssetGroup> fontCustomizer,
             String ext) {
-        return fontCustomizer.apply(
-                locations("./fonts/glyphicons-halflings-regular." + ext).load(),
-                ext);
+        return fontCustomizer
+                .apply(locations("./fonts/glyphicons-halflings-regular." + ext)
+                        .load(), ext);
+    }
+
+    @Override
+    protected void initialize() {
     }
 
 }

@@ -1,7 +1,5 @@
 package com.github.ruediste.rise.core.web;
 
-import javax.annotation.PostConstruct;
-
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetGroup;
@@ -24,7 +22,7 @@ public class CoreAssetBundle extends AssetBundle {
      */
     public AssetGroup out;
 
-    @PostConstruct
+    @Override
     public void initialize() {
         out = locations("./core.js", "./core.css").load();
     }

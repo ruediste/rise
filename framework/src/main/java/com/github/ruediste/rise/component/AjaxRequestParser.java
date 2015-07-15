@@ -97,7 +97,7 @@ public class AjaxRequestParser implements RequestParser {
                     }
                 }
                 try {
-                    template.handleAjaxRequest(component);
+                    template.handleAjaxRequest(component, suffix);
                 } catch (Throwable e) {
                     throw new RuntimeException(
                             "Error while handling ajax request", e);

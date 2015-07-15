@@ -24,8 +24,12 @@ public class CFileInputTemplate extends
     @Override
     public void doRender(CFileInput component, BootstrapRiseCanvas<?> html) {
 
-        html.input().ID(getComponentId(component)).TYPE("file").CLASS("file")
-                .MULTIPLE("multiple").DATA("upload-url", getAjaxUrl(component));
+        html.input().ID(getComponentId(component)).TYPE("file")
+                .CLASS("rise_fileinput").MULTIPLE("multiple")
+                .DATA("upload-url", getAjaxUrl(component) + "/upload")
+                .DATA("delete-url", getAjaxUrl(component) + "/delete")
+        // .DATA("show-upload", "false")
+        ;
         if (!component.getUploadedFiles().isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (UploadedFile file : component.getUploadedFiles())
@@ -49,29 +53,35 @@ public class CFileInputTemplate extends
     }
 
     @Override
-    public void handleAjaxRequest(CFileInput component) throws Throwable {
-        // read submitted files
-        for (Part part : coreRequestInfo.getServletRequest().getParts()) {
-            if (part.getSubmittedFileName() != null) {
-                component.getUploadedFiles().add(new UploadedFile() {
+    public void handleAjaxRequest(CFileInput component, String suffix)
+            throws Throwable {
+        if ("upload".equals(suffix)) {
+            // read submitted files
+            for (Part part : coreRequestInfo.getServletRequest().getParts()) {
+                if (part.getSubmittedFileName() != null) {
+                    component.getUploadedFiles().add(new UploadedFile() {
 
-                    @Override
-                    public String getSubmittedFileName() {
-                        return part.getSubmittedFileName();
-                    }
+                        @Override
+                        public String getSubmittedFileName() {
+                            return part.getSubmittedFileName();
+                        }
 
-                    @Override
-                    public InputStream getInputStream() throws IOException {
-                        return part.getInputStream();
-                    }
-                });
+                        @Override
+                        public InputStream getInputStream() throws IOException {
+                            return part.getInputStream();
+                        }
+                    });
+                }
             }
-        }
 
-        // send response
-        HttpServletResponse resp = coreRequestInfo.getServletResponse();
-        resp.setStatus(HttpServletResponse.SC_OK);
-        resp.setCharacterEncoding("utf-8");
-        mapper.writeValue(resp.getWriter(), new Response());
+            // send response
+            HttpServletResponse resp = coreRequestInfo.getServletResponse();
+            resp.setStatus(HttpServletResponse.SC_OK);
+            resp.setCharacterEncoding("utf-8");
+            mapper.writeValue(resp.getWriter(), new Response());
+        } else if ("delete".equals(suffix)) {
+            // TODO: does not work yet
+            System.out.println("Delete!");
+        }
     }
 }
