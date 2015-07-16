@@ -13,7 +13,6 @@ public class TestCrudController extends CrudControllerBase {
 
         @Override
         protected Component createComponents() {
-            // TODO Auto-generated method stub
             return new CPage(label(this)).add(toSubView(
                     () -> controller.data(), x -> x.getSubController()));
         }

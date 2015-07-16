@@ -6,11 +6,13 @@ import javax.inject.Named;
 import org.slf4j.Logger;
 
 import com.github.ruediste.rise.component.components.ComponentTemplate;
-import com.github.ruediste.rise.component.reload.PageReloadRequest;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.RequestParseResult;
 import com.github.ruediste.rise.core.RequestParser;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
+import com.github.ruediste.rise.core.web.HttpRenderResult;
+import com.github.ruediste.rise.core.web.HttpRenderResultUtil;
 import com.github.ruediste.salta.standard.util.SimpleProxyScopeHandler;
 
 /**
@@ -24,9 +26,6 @@ public class AjaxRequestParser implements RequestParser {
 
     @Inject
     ComponentConfiguration config;
-
-    @Inject
-    PageReloadRequest request;
 
     @Inject
     ComponentRequestInfo componentRequestInfo;
@@ -46,6 +45,12 @@ public class AjaxRequestParser implements RequestParser {
     @Inject
     @Named("pageScoped")
     SimpleProxyScopeHandler pageScopeHandler;
+
+    @Inject
+    HttpRenderResultUtil httpRenderResultUtil;
+
+    @Inject
+    CoreRequestInfo coreRequestInfo;
 
     private class AjaxParseResult implements RequestParseResult {
 
@@ -97,7 +102,12 @@ public class AjaxRequestParser implements RequestParser {
                     }
                 }
                 try {
-                    template.handleAjaxRequest(component, suffix);
+                    HttpRenderResult renderResult = template.handleAjaxRequest(
+                            component, suffix);
+                    if (renderResult != null)
+                        renderResult.sendTo(
+                                coreRequestInfo.getServletResponse(),
+                                httpRenderResultUtil);
                 } catch (Throwable e) {
                     throw new RuntimeException(
                             "Error while handling ajax request", e);

@@ -9,7 +9,7 @@ import com.github.ruediste1.i18n.label.Label;
 import com.github.ruediste1.i18n.label.Labeled;
 
 @Labeled
-@Label("Welcome")
+@Label("Welcomee")
 public class WelcomeView extends
         PageView<WelcomeController, WelcomeController.Data> {
 

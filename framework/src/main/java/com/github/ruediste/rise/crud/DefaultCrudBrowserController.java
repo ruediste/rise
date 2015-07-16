@@ -39,7 +39,7 @@ public class DefaultCrudBrowserController<T> {
                     .getListProperties(controller.entityClass)) {
                 columns.add(new Column<>(() -> new CDataGrid.Cell(labelUtil
                         .getPropertyLabel(p)), item -> new Cell(new CText(
-                        Objects.toString(item)))));
+                        Objects.toString(p.getValue(item))))));
             }
 
             return toComponent(html -> html

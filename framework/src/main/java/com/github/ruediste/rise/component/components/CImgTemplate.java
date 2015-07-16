@@ -1,10 +1,10 @@
 package com.github.ruediste.rise.component.components;
 
 import javax.inject.Inject;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 
 import com.github.ruediste.rise.core.CoreRequestInfo;
+import com.github.ruediste.rise.core.web.ContentRenderResult;
+import com.github.ruediste.rise.core.web.HttpRenderResult;
 import com.github.ruediste.rise.integration.RiseCanvas;
 
 public class CImgTemplate extends ComponentTemplateBase<CImg> {
@@ -18,13 +18,10 @@ public class CImgTemplate extends ComponentTemplateBase<CImg> {
     CoreRequestInfo info;
 
     @Override
-    public void handleAjaxRequest(CImg component, String suffix)
+    public HttpRenderResult handleAjaxRequest(CImg component, String suffix)
             throws Throwable {
 
-        HttpServletResponse resp = info.getServletResponse();
-        resp.setContentType("image/jpeg");
-        ServletOutputStream out = resp.getOutputStream();
-        out.write(component.getSource().get());
-        out.close();
+        return new ContentRenderResult(component.getSource().get(),
+                "image/jpeg");
     };
 }

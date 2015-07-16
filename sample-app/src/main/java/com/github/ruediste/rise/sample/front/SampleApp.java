@@ -12,7 +12,6 @@ import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.DefaultRequestErrorHandler;
 import com.github.ruediste.rise.core.front.RestartableApplicationBase;
-import com.github.ruediste.rise.core.web.assetPipeline.AssetMode;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetPipelineConfiguration;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.sample.SampleCanvas;
@@ -84,6 +83,6 @@ public class SampleApp extends RestartableApplicationBase {
         componentTemplateIndex.registerTemplate(CPage.class,
                 CPageHtmlTemplate.class);
 
-        assetPipelineConfiguration.assetMode = AssetMode.PRODUCTION;
+        // assetPipelineConfiguration.assetMode = AssetMode.PRODUCTION;
     }
 }

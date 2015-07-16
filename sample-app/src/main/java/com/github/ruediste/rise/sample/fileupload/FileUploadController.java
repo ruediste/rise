@@ -44,6 +44,9 @@ public class FileUploadController extends ControllerComponent {
                                                                 .CLASS("thumbnail")
                                                                 .add(new CImg()
                                                                         .setSource(f::getBytes))
+                                                                .add(new CViewerJS()
+                                                                        .setSource(f
+                                                                                .getBytes()))
                                                                 .h2()
                                                                 .content(
                                                                         f.getSubmittedFileName())

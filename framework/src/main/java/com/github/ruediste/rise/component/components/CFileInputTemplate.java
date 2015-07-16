@@ -10,6 +10,7 @@ import javax.servlet.http.Part;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.ruediste.rise.component.components.CFileInput.UploadedFile;
 import com.github.ruediste.rise.core.CoreRequestInfo;
+import com.github.ruediste.rise.core.web.HttpRenderResult;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 
 public class CFileInputTemplate extends
@@ -53,8 +54,8 @@ public class CFileInputTemplate extends
     }
 
     @Override
-    public void handleAjaxRequest(CFileInput component, String suffix)
-            throws Throwable {
+    public HttpRenderResult handleAjaxRequest(CFileInput component,
+            String suffix) throws Throwable {
         if ("upload".equals(suffix)) {
             // read submitted files
             for (Part part : coreRequestInfo.getServletRequest().getParts()) {
@@ -79,9 +80,12 @@ public class CFileInputTemplate extends
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.setCharacterEncoding("utf-8");
             mapper.writeValue(resp.getWriter(), new Response());
+            return null;
         } else if ("delete".equals(suffix)) {
             // TODO: does not work yet
             System.out.println("Delete!");
+            return null;
         }
+        throw new RuntimeException("unknown suffis " + suffix);
     }
 }

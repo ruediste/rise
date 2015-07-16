@@ -8,6 +8,7 @@ import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
+import com.github.ruediste.rise.core.web.HttpRenderResult;
 import com.github.ruediste.rise.core.web.PathInfo;
 
 public abstract class ComponentTemplateBase<T extends Component> implements
@@ -27,7 +28,9 @@ public abstract class ComponentTemplateBase<T extends Component> implements
     }
 
     @Override
-    public void handleAjaxRequest(T component, String suffix) throws Throwable {
+    public HttpRenderResult handleAjaxRequest(T component, String suffix)
+            throws Throwable {
+        throw new UnsupportedOperationException();
     }
 
     public String url(PathInfo path) {
