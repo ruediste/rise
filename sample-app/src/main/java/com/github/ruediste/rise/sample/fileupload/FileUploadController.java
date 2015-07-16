@@ -8,6 +8,7 @@ import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CButton;
 import com.github.ruediste.rise.component.components.CFileInput;
 import com.github.ruediste.rise.component.components.CFileInput.UploadedFile;
+import com.github.ruediste.rise.component.components.CImg;
 import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.component.components.CSwitch;
 import com.github.ruediste.rise.component.tree.Component;
@@ -32,14 +33,23 @@ public class FileUploadController extends ControllerComponent {
                             .put(Mode.LIST,
                                     () -> {
                                         return toComponent(html -> html
-                                                .ul()
+                                                .bRow()
                                                 .fForEach(
                                                         controller.data().files,
                                                         f -> html
-                                                                .li()
+                                                                .bCol(x -> x
+                                                                        .sm(6)
+                                                                        .md(4))
+                                                                .div()
+                                                                .CLASS("thumbnail")
+                                                                .add(new CImg()
+                                                                        .setSource(f::getBytes))
+                                                                .h2()
                                                                 .content(
-                                                                        f.getSubmittedFileName()))
-                                                ._ul()
+                                                                        f.getSubmittedFileName())
+                                                                ._div()._bCol())
+                                                ._bRow()
+
                                                 .add(new CButton("Upload")
                                                         .handler(() -> controller
                                                                 .upload())));

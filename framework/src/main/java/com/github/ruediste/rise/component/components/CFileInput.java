@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.ruediste.rise.component.tree.RelationsComponent;
+import com.google.common.io.ByteStreams;
 
 @DefaultTemplate(CFileInputTemplate.class)
 public class CFileInput extends RelationsComponent<CFileInput> {
@@ -18,7 +19,7 @@ public class CFileInput extends RelationsComponent<CFileInput> {
          *
          * @since Servlet 3.1
          */
-        public String getSubmittedFileName();
+        String getSubmittedFileName();
 
         /**
          * Gets the content of this part as an <tt>InputStream</tt>
@@ -28,7 +29,16 @@ public class CFileInput extends RelationsComponent<CFileInput> {
          *             If an error occurs in retrieving the contet as an
          *             <tt>InputStream</tt>
          */
-        public InputStream getInputStream() throws IOException;
+        InputStream getInputStream() throws IOException;
+
+        default byte[] getBytes() {
+            try {
+                return ByteStreams.toByteArray(getInputStream());
+            } catch (IOException e) {
+                throw new RuntimeException("Unable to load data of file "
+                        + getSubmittedFileName(), e);
+            }
+        }
     }
 
     private final List<UploadedFile> uploadedFiles = new ArrayList<CFileInput.UploadedFile>();

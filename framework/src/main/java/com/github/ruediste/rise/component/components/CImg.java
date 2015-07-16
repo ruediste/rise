@@ -27,7 +27,8 @@ public class CImg extends RelationsComponent<CImg> {
         return source;
     }
 
-    public void setSource(Supplier<byte[]> source) {
+    public CImg setSource(Supplier<byte[]> source) {
         this.source = source;
+        return this;
     }
 }
