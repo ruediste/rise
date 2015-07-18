@@ -13,6 +13,7 @@ import javax.inject.Singleton;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Root;
 
+import com.github.ruediste.rise.crud.annotations.CrudFactory;
 import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste.salta.jsr330.ImplementedBy;
 import com.github.ruediste.salta.jsr330.Injector;

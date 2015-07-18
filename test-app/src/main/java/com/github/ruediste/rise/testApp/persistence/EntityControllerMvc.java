@@ -8,7 +8,8 @@ import javax.persistence.EntityManager;
 
 import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.ActionResult;
-import com.github.ruediste.rise.mvc.Updating;
+import com.github.ruediste.rise.core.persistence.NoTransaction;
+import com.github.ruediste.rise.core.persistence.Updating;
 import com.github.ruediste.rise.testApp.TestCanvas;
 import com.github.ruediste.rise.testApp.ViewMvc;
 
@@ -37,10 +38,14 @@ public class EntityControllerMvc extends ControllerMvc<EntityControllerMvc> {
         return view(ListView.class, repo.getAll());
     }
 
+    @NoTransaction
+    public ActionResult indexNoTransaction() {
+        return view(ListView.class, repo.getAll());
+    }
+
     @Updating
     public ActionResult delete(TestEntity entity) {
         em.remove(entity);
-        commit();
         return redirect(go().index());
     }
 }

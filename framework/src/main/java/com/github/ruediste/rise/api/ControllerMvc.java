@@ -42,7 +42,4 @@ public class ControllerMvc<TSelf extends ControllerMvc<TSelf>> implements
     public ActionInvocationBuilderKnownController<TSelf> path() {
         return util.path(controllerClass);
     }
-
-    public void commit() {
-    }
 }

@@ -6,12 +6,12 @@ import org.slf4j.Logger;
 
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
+import com.github.ruediste.rise.core.persistence.Updating;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.core.web.RedirectRenderResult;
 import com.github.ruediste.rise.integration.RisePageTemplate;
 import com.github.ruediste.rise.integration.RisePageTemplate.RisePageTemplateParameters;
 import com.github.ruediste.rise.integration.StageRibbonControllerBase;
-import com.github.ruediste.rise.mvc.Updating;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
 import com.github.ruediste.rise.sample.SampleBundle;
@@ -113,7 +113,6 @@ public class StageRibbonController extends
             log.info("Dropping and Creating DB schemas ...");
             registry.dropAndCreateSchemas();
             config.loadDevelopmentFixture();
-            commit();
         } else {
             log.error("Stage is not development");
         }

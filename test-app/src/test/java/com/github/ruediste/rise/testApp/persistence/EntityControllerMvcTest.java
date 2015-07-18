@@ -2,6 +2,7 @@ package com.github.ruediste.rise.testApp.persistence;
 
 import static java.util.stream.Collectors.toSet;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -34,7 +35,7 @@ public class EntityControllerMvcTest extends WebTest {
         TestEntity entity = new TestEntity();
         entity.setValue("Hello World");
 
-        template.executor().updating().execute(() -> {
+        template.updating().execute(() -> {
             em.createQuery("delete from TestEntity").executeUpdate();
             em.persist(entity);
         });
@@ -45,6 +46,16 @@ public class EntityControllerMvcTest extends WebTest {
                 .map(e -> e.getText()).collect(toSet());
 
         assertThat(items, contains(Objects.toString(entity.getId())));
+    }
+
+    @Test
+    public void testIndexNoTransaction() throws Exception {
+
+        driver.navigate().to(
+                url(go(EntityControllerMvc.class).indexNoTransaction()));
+
+        assertThat(driver.getPageSource(),
+                containsString("No EntityManagerSet is currently set"));
     }
 
     @Test

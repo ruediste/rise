@@ -11,7 +11,7 @@ import javax.persistence.criteria.Root;
 import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreRequestInfo;
-import com.github.ruediste.rise.mvc.Updating;
+import com.github.ruediste.rise.core.persistence.Updating;
 import com.github.ruediste1.i18n.label.Label;
 
 public class TodoController extends ControllerMvc<TodoController> {
@@ -41,7 +41,6 @@ public class TodoController extends ControllerMvc<TodoController> {
     @Updating
     public ActionResult delete(TodoItem item) {
         em.remove(item);
-        commit();
         return redirect(go().index());
     }
 
@@ -51,7 +50,6 @@ public class TodoController extends ControllerMvc<TodoController> {
         TodoItem item = new TodoItem();
         item.setName(name);
         em.persist(item);
-        commit();
         return redirect(go().index());
     }
 }

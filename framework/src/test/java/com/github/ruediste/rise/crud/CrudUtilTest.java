@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import com.github.ruediste.rise.crud.annotations.CrudFactory;
 import com.github.ruediste.salta.jsr330.Injector;
 
 @RunWith(MockitoJUnitRunner.class)

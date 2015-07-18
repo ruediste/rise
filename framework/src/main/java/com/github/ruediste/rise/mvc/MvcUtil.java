@@ -14,6 +14,7 @@ import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.HttpService;
 import com.github.ruediste.rise.core.ICoreUtil;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
+import com.github.ruediste.rise.core.persistence.Updating;
 import com.github.ruediste.rise.core.web.ContentRenderResult;
 import com.github.ruediste.rise.core.web.HttpServletResponseCustomizer;
 import com.github.ruediste.rise.core.web.RedirectRenderResult;

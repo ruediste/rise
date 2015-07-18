@@ -9,7 +9,9 @@ import org.slf4j.Logger;
 import com.github.ruediste.rise.core.ChainedRequestHandler;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
+import com.github.ruediste.rise.core.persistence.NoTransaction;
 import com.github.ruediste.rise.core.persistence.TransactionTemplate;
+import com.github.ruediste.rise.core.persistence.Updating;
 
 public class MvcPersistenceHandler extends ChainedRequestHandler {
 
@@ -31,11 +33,16 @@ public class MvcPersistenceHandler extends ChainedRequestHandler {
         ActionInvocation<String> invocation = coreRequestInfo
                 .getStringActionInvocation();
         Method method = invocation.methodInvocation.getMethod();
-        boolean updating = method.isAnnotationPresent(Updating.class);
-        log.debug("updating = {} for method {}", updating, method);
-        info.setIsUpdating(updating);
 
-        template.updating(updating).execute(next::run);
+        if (method.isAnnotationPresent(NoTransaction.class)) {
+            next.run();
+        } else {
+            boolean updating = method.isAnnotationPresent(Updating.class);
+            log.debug("updating = {} for method {}", updating, method);
+            info.setIsUpdating(updating);
+
+            template.updating(updating).execute(next::run);
+        }
 
     }
 

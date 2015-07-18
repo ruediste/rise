@@ -9,9 +9,9 @@ import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
+import com.github.ruediste.rise.core.persistence.Updating;
 import com.github.ruediste.rise.core.web.HttpServletResponseCustomizer;
 import com.github.ruediste.rise.core.web.RedirectToRefererRenderResult;
-import com.github.ruediste.rise.mvc.Updating;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
 import com.github.ruediste.rise.sample.SampleCanvas;
@@ -124,7 +124,6 @@ public class ReqestErrorController extends ControllerMvc<ReqestErrorController>
             log.info("Dropping and Creating DB schemas ...");
             registry.dropAndCreateSchemas();
             config.loadDevelopmentFixture();
-            commit();
         } else {
             log.error("Stage is not development");
         }

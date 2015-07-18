@@ -5,7 +5,7 @@ import javax.persistence.EntityManager;
 
 import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.ActionResult;
-import com.github.ruediste.rise.mvc.Updating;
+import com.github.ruediste.rise.core.persistence.Updating;
 import com.github.ruediste.rise.testApp.persistence.TestEntity;
 
 public class TestComponentHelperController extends
@@ -20,8 +20,6 @@ public class TestComponentHelperController extends
         TestEntity e = new TestEntity();
         e.setValue("Hello World");
         em.persist(e);
-        commit();
-
         return redirect(go(TestComponentController.class).initialize(e.getId()));
     }
 }

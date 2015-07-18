@@ -3,3 +3,4 @@ target/
 /web/btm?.tlog
 /btm?.tlog
 dependency-reduced-pom.xml
+/framework/spy.log
