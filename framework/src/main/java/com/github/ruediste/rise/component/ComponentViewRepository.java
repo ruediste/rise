@@ -58,8 +58,8 @@ public class ComponentViewRepository {
             }
 
             // find the controller class of the view
-            String controllerClass = index.resolve(view, ViewComponentBase.class,
-                    "TController");
+            String controllerClass = index.resolve(view,
+                    ViewComponentBase.class, "TController");
 
             // create an entry for the view
             ViewEntry entry = new ViewEntry();

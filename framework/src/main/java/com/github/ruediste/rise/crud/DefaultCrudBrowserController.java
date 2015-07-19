@@ -8,12 +8,13 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import com.github.ruediste.c3java.properties.PropertyDeclaration;
+import com.github.ruediste.rendersnakeXT.canvas.Glyphicon;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CButton;
 import com.github.ruediste.rise.component.components.CDataGrid;
@@ -24,7 +25,9 @@ import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 import com.github.ruediste.rise.crud.CrudPropertyFilter.CrudFilterPersitenceContext;
 import com.github.ruediste.rise.crud.CrudUtil.BrowserSettings;
+import com.github.ruediste.rise.integration.GlyphiconIcon;
 import com.github.ruediste1.i18n.label.LabelUtil;
+import com.github.ruediste1.i18n.label.Labeled;
 
 public class DefaultCrudBrowserController<T> {
     @Inject
@@ -33,22 +36,19 @@ public class DefaultCrudBrowserController<T> {
     @Inject
     CrudPropertyFilters filters;
 
+    @SuppressWarnings("unused")
     private static class DefaultCrudBrowserView<T> extends
             DefaultCrudViewComponent<DefaultCrudBrowserController<T>> {
 
         @Inject
         LabelUtil labelUtil;
 
-        @Inject
-        CrudUtil crudUtil;
-
         @Override
         protected Component createComponents() {
 
+            // create columns
             ArrayList<Column<T>> columns = new ArrayList<>();
-            List<PropertyDeclaration> browserProperties = crudReflectionUtil
-                    .getBrowserProperties(controller.entityClass);
-            for (PropertyDeclaration p : browserProperties) {
+            for (PropertyDeclaration p : controller.properties) {
                 columns.add(new Column<>(() -> new CDataGrid.Cell(labelUtil
                         .getPropertyLabel(p)), item -> new Cell(new CText(
                         Objects.toString(p.getValue(item))))));
@@ -61,7 +61,7 @@ public class DefaultCrudBrowserController<T> {
                     .fForEach(controller.filterList, filter -> {
                         html.add(filter.getComponent());
                     })
-                    .add(new CButton().handler(() -> controller.loadItems()))
+                    .add(new CButton(controller, x -> x.search()))
                     ._div()
                     .add(new CDataGrid<T>().setColumns(columns).bindOneWay(
                             g -> g.setItems(controller.data().getItems()))));
@@ -100,7 +100,9 @@ public class DefaultCrudBrowserController<T> {
 
     private List<CrudPropertyFilter> filterList;
 
-    private void loadItems() {
+    @Labeled
+    @GlyphiconIcon(Glyphicon.search)
+    void search() {
         EntityManager em = getEm();
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -108,11 +110,12 @@ public class DefaultCrudBrowserController<T> {
         Root<T> root = q.from(entityClass);
         q.select(root);
 
+        ArrayList<Predicate> whereClauses = new ArrayList<>();
         for (CrudPropertyFilter filter : filterList) {
             filter.applyFilter(new CrudFilterPersitenceContext() {
 
                 @Override
-                public Query query() {
+                public CriteriaQuery<?> query() {
                     return q;
                 }
 
@@ -120,10 +123,23 @@ public class DefaultCrudBrowserController<T> {
                 public CriteriaBuilder cb() {
                     return cb;
                 }
+
+                @Override
+                public Root<?> root() {
+                    return root;
+                }
+
+                @Override
+                public void addWhere(Predicate predicate) {
+                    whereClauses.add(predicate);
+                }
             });
         }
 
+        q.where(whereClauses.toArray(new Predicate[] {}));
+
         data.get().setItems(em.createQuery(q).getResultList());
+        data.pullUp();
     }
 
     public DefaultCrudBrowserController<T> initialize(Class<T> entityClass,
@@ -135,7 +151,7 @@ public class DefaultCrudBrowserController<T> {
         filterList = properties.stream().map(filters::createPropertyFilter)
                 .collect(toList());
 
-        loadItems();
+        search();
 
         return this;
     }

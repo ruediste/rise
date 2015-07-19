@@ -17,8 +17,8 @@ import com.github.ruediste1.i18n.lString.LString;
 /**
  * 
  */
-public class CFormGroup<T extends RelationsComponent<T>> extends RelationsComponent<T>
-        implements ConstraintViolationAware {
+public class CFormGroup<T extends RelationsComponent<T>> extends
+        RelationsComponent<T> implements ConstraintViolationAware {
 
     private boolean isValidated;
     private Collection<ConstraintViolation<?>> constraintViolations = Collections
@@ -52,6 +52,11 @@ public class CFormGroup<T extends RelationsComponent<T>> extends RelationsCompon
 
     public LString getLabel() {
         return label;
+    }
+
+    public T setLabel(LString label) {
+        this.label = label;
+        return self();
     }
 
     @NoPropertyAccessor

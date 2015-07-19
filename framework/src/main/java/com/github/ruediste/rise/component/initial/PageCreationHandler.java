@@ -3,10 +3,8 @@ package com.github.ruediste.rise.component.initial;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import com.github.ruediste.rise.component.ComponentConfiguration;
 import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.component.ComponentSessionInfo;
-import com.github.ruediste.rise.component.ComponentViewRepository;
 import com.github.ruediste.rise.component.IControllerComponent;
 import com.github.ruediste.rise.component.PageHandle;
 import com.github.ruediste.rise.component.PageInfo;
@@ -32,12 +30,6 @@ public class PageCreationHandler extends ChainedRequestHandler {
 
     @Inject
     Injector injector;
-
-    @Inject
-    ComponentViewRepository repository;
-
-    @Inject
-    ComponentConfiguration config;
 
     @Inject
     ComponentRequestInfo componentRequestInfo;

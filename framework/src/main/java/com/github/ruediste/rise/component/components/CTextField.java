@@ -3,8 +3,8 @@ package com.github.ruediste.rise.component.components;
 import com.github.ruediste.rise.component.binding.BindingUtil;
 import com.google.common.base.Supplier;
 
-@DefaultTemplate(CTextFieldFormGroupHtmlTemplate.class)
-public class CTextFieldFormGroup extends CFormGroup<CTextFieldFormGroup> {
+@DefaultTemplate(CTextFieldTemplate.class)
+public class CTextField extends CFormGroup<CTextField> {
 
     private String text;
 
@@ -12,11 +12,12 @@ public class CTextFieldFormGroup extends CFormGroup<CTextFieldFormGroup> {
         return text;
     }
 
-    public void setText(String text) {
+    public CTextField setText(String text) {
         this.text = text;
+        return this;
     }
 
-    public CTextFieldFormGroup bindText(Supplier<String> binder) {
+    public CTextField bindText(Supplier<String> binder) {
         setLabelProperty(BindingUtil.bind(this,
                 view -> view.setText(binder.get())).getB());
         return self();

@@ -5,8 +5,8 @@ import javax.inject.Inject;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 
-public class CTextFieldFormGroupHtmlTemplate extends
-        BootstrapComponentTemplateBase<CTextFieldFormGroup> {
+public class CTextFieldTemplate extends
+        BootstrapComponentTemplateBase<CTextField> {
     @Inject
     ComponentUtil util;
 
@@ -14,12 +14,12 @@ public class CTextFieldFormGroupHtmlTemplate extends
     FormGroupTemplateHelper helper;
 
     @Override
-    public void applyValues(CTextFieldFormGroup component) {
+    public void applyValues(CTextField component) {
         component.setText(util.getParameterValue(component, "value"));
     }
 
     @Override
-    public void doRender(CTextFieldFormGroup component,
+    public void doRender(CTextField component,
             BootstrapRiseCanvas<?> html) {
         helper.renderFormGroup(
                 component,

@@ -2,6 +2,7 @@ package com.github.ruediste.rise.sample.welcome;
 
 import com.github.ruediste.rise.sample.SampleCanvas;
 import com.github.ruediste.rise.sample.component.SampleComponentController;
+import com.github.ruediste.rise.sample.crud.CrudController;
 import com.github.ruediste.rise.sample.db.PageView;
 import com.github.ruediste.rise.sample.db.TodoController;
 import com.github.ruediste.rise.sample.fileupload.FileUploadController;
@@ -21,6 +22,7 @@ public class WelcomeView extends
                 .content("Todo Items");
         html.bButtonA().HREF(go().error()).content("Page with error");
         html.rButtonA(go(FileUploadController.class).index());
+        html.rButtonA(go(CrudController.class).showTodos());
         html.rButtonA(go(SampleComponentController.class).index(), a -> {
         });
 

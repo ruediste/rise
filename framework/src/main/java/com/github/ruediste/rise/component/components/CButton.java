@@ -6,9 +6,18 @@ import java.util.function.Consumer;
 import com.github.ruediste.c3java.invocationRecording.MethodInvocationRecorder;
 import com.github.ruediste.rise.component.tree.Component;
 
+/**
+ * Represents a button.
+ * 
+ * <p>
+ * If no children are present, the handler will be used to determine the invoked
+ * proxy method on the controller. The label (mandatory) and icon (optional)
+ * present on that method are shown.
+ */
 @DefaultTemplate(CButtonHtmlTemplate.class)
 public class CButton extends MultiChildrenComponent<CButton> {
     private Runnable handler;
+    private Method invokedMethod;
 
     public CButton() {
     }
@@ -21,22 +30,37 @@ public class CButton extends MultiChildrenComponent<CButton> {
         add(child);
     }
 
+    /**
+     * When the button is clicked, the handler will be called with the target as
+     * argument.
+     * 
+     * <p>
+     * The button is rendered using the label an icon of the method invoked by
+     * the handler.
+     * 
+     */
+    @SuppressWarnings("unchecked")
+    public <T> CButton(T target, Consumer<T> handler) {
+        this.handler = () -> handler.accept(target);
+        invokedMethod = MethodInvocationRecorder.getLastInvocation(
+                (Class<T>) target.getClass(), handler).getMethod();
+    }
+
     public CButton handler(Runnable handler) {
         this.handler = handler;
         return this;
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> CButton handler(T target, Consumer<T> handler) {
-        Method method = MethodInvocationRecorder.getLastInvocation(
-                (Class<T>) target.getClass(), handler).getMethod();
-        this.handler = () -> handler.accept(target);
-        ;
-        return this;
-    }
-
     public Runnable getHandler() {
         return handler;
+    }
+
+    /**
+     * Return the method which get's invoked by this button. If non-null, the
+     * optional icon and the label should be rendered instead of the children.
+     */
+    public Method getInvokedMethod() {
+        return invokedMethod;
     }
 
 }

@@ -5,6 +5,8 @@ import javax.inject.Inject;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.core.IController;
+import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste1.i18n.lString.LString;
 
 /**
@@ -24,8 +26,7 @@ public abstract class ViewComponentBase<TController> extends
     }
 
     /**
-     * Initialize this view. To be called after instantiation and setting the
-     * controller ({@link #setController(Object)})
+     * Initialize this view. To be called after instantiation
      */
     public final void initialize(TController controller) {
         this.controller = controller;
@@ -53,5 +54,13 @@ public abstract class ViewComponentBase<TController> extends
 
     protected LString label(Object obj) {
         return label(obj.getClass());
+    }
+
+    protected <T extends IController> T go(Class<T> cls) {
+        return componentUtil.go(cls);
+    }
+
+    protected ActionInvocationBuilder path() {
+        return componentUtil.path();
     }
 }
