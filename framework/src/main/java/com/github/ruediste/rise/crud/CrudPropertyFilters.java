@@ -14,7 +14,12 @@ import com.github.ruediste.rise.component.components.CTextField;
 import com.github.ruediste.rise.component.components.InputType;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
+import com.github.ruediste1.i18n.lString.LString;
+import com.github.ruediste1.i18n.lString.PatternString;
+import com.github.ruediste1.i18n.lString.TranslatedString;
 import com.github.ruediste1.i18n.label.LabelUtil;
+import com.github.ruediste1.i18n.message.TMessage;
+import com.github.ruediste1.i18n.message.TMessages;
 import com.google.common.base.Strings;
 import com.google.common.primitives.Primitives;
 import com.google.common.reflect.TypeToken;
@@ -27,6 +32,22 @@ public class CrudPropertyFilters {
 
     @Inject
     ComponentFactoryUtil componentFactoryUtil;
+
+    @TMessages
+    public interface Messages {
+        @TMessage("Minimum of {property}")
+        PatternString minLong(LString property);
+
+        @TMessage("Maximum of {property}")
+        PatternString maxLong(LString property);
+
+        TranslatedString min();
+
+        TranslatedString max();
+    }
+
+    @Inject
+    Messages messages;
 
     private final ArrayList<Function<PropertyDeclaration, CrudPropertyFilter>> filterFactories = new ArrayList<>();
 
@@ -60,27 +81,32 @@ public class CrudPropertyFilters {
                         }
 
                         if (Long.class.equals(Primitives.wrap(rawType))) {
-                            CInput min = new CInput(InputType.number).setLabel(
-                                    labelUtil.getPropertyLabel(decl)).setValue(
-                                    "");
+                            LString propertyLabel = labelUtil
+                                    .getPropertyLabel(decl);
+                            CInput min = new CInput(InputType.number)
+                                    .setLabel(messages.minLong(propertyLabel))
+                                    .setValue("").setRenderFormGroup(false);
 
-                            CInput max = new CInput(InputType.number).setLabel(
-                                    labelUtil.getPropertyLabel(decl)).setValue(
-                                    "");
+                            CInput max = new CInput(InputType.number)
+                                    .setLabel(messages.maxLong(propertyLabel))
+                                    .setValue("").setRenderFormGroup(false);
 
                             // @formatter:off
                             Component component = componentFactoryUtil.toComponent((BootstrapRiseCanvas<?> html) -> 
-                              html.
-                              bRow()
-                                .bCol(x -> x.xs(12)).div().CLASS("input-group")
-                                  .span().CLASS("input-group-addon").content("Min")
-                                  .add(min)
-                                ._div()._bCol()
-                                .bCol(x -> x.xs(6)).div().CLASS("input-group")
-                                  .span().CLASS("input-group-addon").content("Max")
-                                  .add(max)
-                                ._div()._bCol()
-                              ._bRow());
+                              html
+                              .bFormGroup()
+                                .label().content(labelUtil.getPropertyLabel(decl))
+                                  .div().B_FORM_INLINE()
+                                    .div().B_INPUT_GROUP().CLASS(x->x.sm(6))
+                                      .span().B_INPUT_GROUP_ADDON().content(messages.min())
+                                      .add(min)
+                                    ._div()
+                                    .div().B_INPUT_GROUP().CLASS(x->x.sm(6))
+                                      .span().B_INPUT_GROUP_ADDON().content(messages.max())
+                                      .add(max)
+                                    ._div()
+                                ._div()
+                              ._bFormGroup());
                             // @formatter:on
 
                             return new CrudPropertyFilter() {

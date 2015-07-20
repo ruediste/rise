@@ -7,11 +7,13 @@ import javax.inject.Inject;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.PageInfo;
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
+import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.integration.IconUtil;
-import com.github.ruediste.rise.integration.RiseCanvas;
+import com.github.ruediste1.i18n.lString.TranslatedString;
 import com.github.ruediste1.i18n.label.LabelUtil;
 
-public class CButtonHtmlTemplate extends Html5ComponentTemplateBase<CButton> {
+public class CButtonHtmlTemplate extends
+        BootstrapComponentTemplateBase<CButton> {
     @Inject
     ComponentUtil util;
 
@@ -25,18 +27,25 @@ public class CButtonHtmlTemplate extends Html5ComponentTemplateBase<CButton> {
     IconUtil iconUtil;
 
     @Override
-    public void doRender(CButton button, RiseCanvas<?> html) {
-        html.button()
-                .CLASS(util.combineCssClasses("rise_button", button.CLASS()))
+    public void doRender(CButton button, BootstrapRiseCanvas<?> html) {
+        html.bButton(button.getArgs())
+                .CLASS("rise_button")
+                .CLASS(button.CLASS())
                 .DATA(CoreAssetBundle.componentAttributeNr,
                         String.valueOf(util.getComponentNr(button)));
         Method method = button.getInvokedMethod();
         if (method != null) {
+            TranslatedString label = labelUtil.getMethodLabel(method);
+
+            if (button.isIconOnly())
+                html.TITLE(label);
+
             iconUtil.tryGetIcon(method).ifPresent(html::render);
-            html.write(labelUtil.getMethodLabel(method));
+            if (!button.isIconOnly())
+                html.write(label);
         } else
             html.renderChildren(button);
-        html._button();
+        html._bButton();
     }
 
     @Override

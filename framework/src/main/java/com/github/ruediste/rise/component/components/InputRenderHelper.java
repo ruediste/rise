@@ -10,7 +10,7 @@ import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.google.common.collect.Iterables;
 
-public class FormGroupTemplateHelper {
+public class InputRenderHelper {
 
     @Inject
     ComponentUtil util;
@@ -18,8 +18,23 @@ public class FormGroupTemplateHelper {
     @Inject
     LabelUtil labelUtil;
 
-    final public void renderFormGroup(CFormGroup<?> component,
+    final public void renderInput(CInputBase<?> component,
             BootstrapRiseCanvas<?> html, Runnable innerRenderer) {
+        LString label = component.getLabel();
+        if (label == null && component.getLabelProperty() != null) {
+            label = labelUtil.getPropertyLabel(component.getLabelProperty());
+        }
+        if (label == null) {
+            label = locale -> "";
+        }
+
+        if (!component.isRenderFormGroup()
+                || (component.getParent() instanceof CInputGroup)) {
+            html.bControlLabel().BsrOnly().FOR(util.getComponentId(component))
+                    .content(label);
+            innerRenderer.run();
+            return;
+        }
         html.bFormGroup().CLASS(component.CLASS());
 
         if (component.getValidationState() == ValidationState.SUCCESS) {
@@ -28,14 +43,6 @@ public class FormGroupTemplateHelper {
 
         if (component.getValidationState() == ValidationState.ERROR) {
             html.B_HAS_ERROR();
-        }
-
-        LString label = component.getLabel();
-        if (label == null && component.getLabelProperty() != null) {
-            label = labelUtil.getPropertyLabel(component.getLabelProperty());
-        }
-        if (label == null) {
-            label = locale -> "";
         }
 
         html.bControlLabel().FOR(util.getComponentId(component)).content(label);

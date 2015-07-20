@@ -17,7 +17,7 @@ import com.github.ruediste1.i18n.lString.LString;
 /**
  * 
  */
-public class CFormGroup<T extends RelationsComponent<T>> extends
+public class CInputBase<T extends RelationsComponent<T>> extends
         RelationsComponent<T> implements ConstraintViolationAware {
 
     private boolean isValidated;
@@ -26,9 +26,11 @@ public class CFormGroup<T extends RelationsComponent<T>> extends
     private LString label;
 
     /**
-     * Property to use to generate a label, if not set explicitely
+     * Property to use to generate a label, if {@link #label} is null
      */
     private PropertyPath labelProperty;
+
+    private boolean renderFormGroup = true;
 
     @Override
     public void clearConstraintViolations() {
@@ -86,6 +88,15 @@ public class CFormGroup<T extends RelationsComponent<T>> extends
     @NoPropertyAccessor
     public void setLabelProperty(Binding<?> binding) {
         setLabelProperty(binding.modelPath);
+    }
+
+    public boolean isRenderFormGroup() {
+        return renderFormGroup;
+    }
+
+    public T setRenderFormGroup(boolean renderFormGroup) {
+        this.renderFormGroup = renderFormGroup;
+        return self();
     }
 
 }

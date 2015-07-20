@@ -11,7 +11,7 @@ public class CTextFieldTemplate extends
     ComponentUtil util;
 
     @Inject
-    FormGroupTemplateHelper helper;
+    InputRenderHelper helper;
 
     @Override
     public void applyValues(CTextField component) {
@@ -21,7 +21,7 @@ public class CTextFieldTemplate extends
     @Override
     public void doRender(CTextField component,
             BootstrapRiseCanvas<?> html) {
-        helper.renderFormGroup(
+        helper.renderInput(
                 component,
                 html,
                 () -> html.input().TYPE("text").B_FORM_CONTROL()

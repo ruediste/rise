@@ -4,7 +4,7 @@ import com.github.ruediste.rise.component.binding.BindingUtil;
 import com.google.common.base.Supplier;
 
 @DefaultTemplate(CInputTemplate.class)
-public class CInput extends CFormGroup<CInput> {
+public class CInput extends CInputBase<CInput> {
 
     private String value;
     private InputType inputType;

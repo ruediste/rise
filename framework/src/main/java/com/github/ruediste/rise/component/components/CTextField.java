@@ -4,7 +4,7 @@ import com.github.ruediste.rise.component.binding.BindingUtil;
 import com.google.common.base.Supplier;
 
 @DefaultTemplate(CTextFieldTemplate.class)
-public class CTextField extends CFormGroup<CTextField> {
+public class CTextField extends CInputBase<CTextField> {
 
     private String text;
 

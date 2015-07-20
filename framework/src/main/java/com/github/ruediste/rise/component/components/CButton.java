@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
 import com.github.ruediste.c3java.invocationRecording.MethodInvocationRecorder;
+import com.github.ruediste.rendersnakeXT.canvas.BootstrapCanvasCss.B_ButtonArgs;
 import com.github.ruediste.rise.component.tree.Component;
 
 /**
@@ -18,6 +19,10 @@ import com.github.ruediste.rise.component.tree.Component;
 public class CButton extends MultiChildrenComponent<CButton> {
     private Runnable handler;
     private Method invokedMethod;
+    private Consumer<B_ButtonArgs> args = x -> {
+    };
+
+    private boolean iconOnly;
 
     public CButton() {
     }
@@ -61,6 +66,28 @@ public class CButton extends MultiChildrenComponent<CButton> {
      */
     public Method getInvokedMethod() {
         return invokedMethod;
+    }
+
+    public CButton args(Consumer<B_ButtonArgs> args) {
+        this.args = args;
+        return this;
+    }
+
+    public Consumer<B_ButtonArgs> getArgs() {
+        return args;
+    }
+
+    public boolean isIconOnly() {
+        return iconOnly;
+    }
+
+    /**
+     * If set to true, only the icon will be shown if the {@link #invokedMethod}
+     * is set.
+     */
+    public CButton setIconOnly(boolean iconOnly) {
+        this.iconOnly = iconOnly;
+        return this;
     }
 
 }

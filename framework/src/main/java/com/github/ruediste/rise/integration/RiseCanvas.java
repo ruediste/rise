@@ -62,8 +62,17 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends
         return self();
     }
 
+    default TSelf TITLE(LString value) {
+        return TITLE(value.resolve(internal_riseHelper().getCurrentLocale()));
+    }
+
     default TSelf content(LString value) {
         return content(value.resolve(internal_riseHelper().getCurrentLocale()));
+    }
+
+    default TSelf content(Enum<?> value) {
+        return content(internal_riseHelper().getLabelUtil().getEnumMemberLabel(
+                value));
     }
 
     default TSelf write(LString value) {

@@ -28,6 +28,7 @@ import com.github.ruediste.rise.crud.CrudUtil.BrowserSettings;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.github.ruediste1.i18n.label.Labeled;
+import com.github.ruediste1.i18n.label.MembersLabeled;
 
 public class DefaultCrudBrowserController<T> {
     @Inject
@@ -35,6 +36,11 @@ public class DefaultCrudBrowserController<T> {
 
     @Inject
     CrudPropertyFilters filters;
+
+    @MembersLabeled
+    private enum Messages {
+        FILTER, ACTIONS
+    }
 
     @SuppressWarnings("unused")
     private static class DefaultCrudBrowserView<T> extends
@@ -53,18 +59,26 @@ public class DefaultCrudBrowserController<T> {
                         .getPropertyLabel(p)), item -> new Cell(new CText(
                         Objects.toString(p.getValue(item))))));
             }
-
+            columns.add(new Column<T>(() -> new Cell(new CText(
+                    label(Messages.ACTIONS))), item -> new Cell(new CButton(
+                    controller, x -> x.display(item)).setIconOnly(true).args(
+                    x -> x.primary()))));
+//@formatter:off
             return toComponent(html -> html
-                    .h1()
-                    .content("Browser for " + controller.entityClass)
-                    .div()
-                    .fForEach(controller.filterList, filter -> {
-                        html.add(filter.getComponent());
-                    })
-                    .add(new CButton(controller, x -> x.search()))
+                    .h1().content("Browser for " + controller.entityClass)
+                    .div().CLASS("panel panel-default")
+                      .div().CLASS("panel-heading")
+                        .content(Messages.FILTER)
+                      .div().CLASS("panel-body")
+                        .fForEach(controller.filterList, filter -> {
+                          html.add(filter.getComponent());
+                        })
+                      ._div()
                     ._div()
+                    .add(new CButton(controller, x -> x.search()).args(x->x.primary()))
                     .add(new CDataGrid<T>().setColumns(columns).bindOneWay(
                             g -> g.setItems(controller.data().getItems()))));
+//@formatter:off
         }
     }
 
@@ -100,6 +114,11 @@ public class DefaultCrudBrowserController<T> {
 
     private List<CrudPropertyFilter> filterList;
 
+    @Labeled
+    @GlyphiconIcon(Glyphicon.eye_open)
+    void display(T item){
+        
+    }
     @Labeled
     @GlyphiconIcon(Glyphicon.search)
     void search() {

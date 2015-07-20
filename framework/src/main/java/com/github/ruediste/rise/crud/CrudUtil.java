@@ -76,11 +76,13 @@ public class CrudUtil {
                 BrowserSettings<T> settings);
     }
 
+    @SuppressWarnings("rawtypes")
     private static class DefaultBrowserFactory implements BrowserFactory {
 
         @Inject
         Provider<DefaultCrudBrowserController> browserControllerProvider;
 
+        @SuppressWarnings("unchecked")
         @Override
         public <T> Object createBrowser(Class<T> entityClass,
                 BrowserSettings<T> settings) {

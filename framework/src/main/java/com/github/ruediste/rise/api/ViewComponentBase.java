@@ -52,6 +52,10 @@ public abstract class ViewComponentBase<TController> extends
         return componentUtil.labelUtil().getTypeLabel(clazz);
     }
 
+    protected LString label(Enum<?> e) {
+        return componentUtil.labelUtil().getEnumMemberLabel(e);
+    }
+
     protected LString label(Object obj) {
         return label(obj.getClass());
     }

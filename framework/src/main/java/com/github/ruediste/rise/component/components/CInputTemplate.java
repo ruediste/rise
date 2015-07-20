@@ -10,7 +10,7 @@ public class CInputTemplate extends BootstrapComponentTemplateBase<CInput> {
     ComponentUtil util;
 
     @Inject
-    FormGroupTemplateHelper helper;
+    InputRenderHelper helper;
 
     @Override
     public void applyValues(CInput component) {
@@ -23,7 +23,7 @@ public class CInputTemplate extends BootstrapComponentTemplateBase<CInput> {
         if (inputType == null)
             throw new RuntimeException("Input type of CInput not set");
 
-        helper.renderFormGroup(
+        helper.renderInput(
                 component,
                 html,
                 () -> html.input().TYPE(inputType.toString()).B_FORM_CONTROL()
