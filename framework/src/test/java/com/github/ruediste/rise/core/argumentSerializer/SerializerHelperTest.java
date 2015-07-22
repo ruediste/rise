@@ -33,7 +33,11 @@ public class SerializerHelperTest {
     @Test(expected = IllegalArgumentException.class)
     public void emptyStringPrefix() {
         SerializerHelper.generatePrefix(Optional.of(""), "123");
+    }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void colonInPrefix() {
+        SerializerHelper.generatePrefix(Optional.of("fo:o"), "123");
     }
 
     private void check(Optional<String> prefix, String value,
