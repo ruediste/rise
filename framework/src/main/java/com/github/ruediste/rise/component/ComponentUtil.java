@@ -24,6 +24,7 @@ import com.github.ruediste.rise.core.ICoreUtil;
 import com.github.ruediste.rise.core.persistence.TransactionCallbackNoResult;
 import com.github.ruediste.rise.core.persistence.TransactionTemplate;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
+import com.github.ruediste.rise.core.web.HttpRenderResult;
 import com.github.ruediste.rise.integration.RiseCanvas;
 import com.github.ruediste.rise.integration.RiseCanvasBase;
 import com.github.ruediste.salta.standard.util.SimpleProxyScopeHandler;
@@ -215,6 +216,14 @@ public class ComponentUtil implements ICoreUtil {
                 }
             }
         });
+    }
+
+    /**
+     * Instead of rendering this page again, close it an use the given result to
+     * render the response.
+     */
+    public void closePage(HttpRenderResult closePageResult) {
+        componentRequestInfo.setClosePageResult(closePageResult);
     }
 
     /**

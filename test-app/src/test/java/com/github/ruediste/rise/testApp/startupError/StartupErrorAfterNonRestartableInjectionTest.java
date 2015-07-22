@@ -18,7 +18,7 @@ import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLink;
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
 import com.github.ruediste.rise.testApp.app.TestAppFrontServlet;
 import com.github.ruediste.rise.testApp.app.TestRestartableApplication;
-import com.github.ruediste.rise.testApp.persistence.TestEntity;
+import com.github.ruediste.rise.testApp.persistence.TestAppEntity;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste.salta.jsr330.MembersInjector;
 
@@ -84,7 +84,7 @@ public class StartupErrorAfterNonRestartableInjectionTest extends
         try {
             txm.begin();
             EntityManager em = emf.createEntityManager();
-            TestEntity e = new TestEntity();
+            TestAppEntity e = new TestAppEntity();
             em.persist(e);
             txm.commit();
             fail();
@@ -105,7 +105,7 @@ public class StartupErrorAfterNonRestartableInjectionTest extends
         try {
             txm.begin();
             EntityManager em = emf.createEntityManager();
-            TestEntity e = new TestEntity();
+            TestAppEntity e = new TestAppEntity();
             em.persist(e);
             txm.commit();
         } finally {

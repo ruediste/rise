@@ -9,7 +9,7 @@ import com.github.ruediste1.i18n.label.PropertiesLabeled;
 
 @Entity
 @PropertiesLabeled
-public class TestEntity {
+public class TestAppEntity {
 
     @Id
     @GeneratedValue

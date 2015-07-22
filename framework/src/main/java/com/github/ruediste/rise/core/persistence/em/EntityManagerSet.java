@@ -1,7 +1,9 @@
 package com.github.ruediste.rise.core.persistence.em;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -29,6 +31,10 @@ public class EntityManagerSet {
 
     public Iterable<EntityManager> getManagers() {
         return managers.values();
+    }
+
+    public Collection<Entry<Class<? extends Annotation>, EntityManager>> getManagerEntries() {
+        return managers.entrySet();
     }
 
 }

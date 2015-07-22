@@ -1,6 +1,8 @@
 package com.github.ruediste.rise.nonReloadable.persistence;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 import javax.inject.Inject;
@@ -8,6 +10,8 @@ import javax.inject.Singleton;
 
 import com.github.ruediste.rise.nonReloadable.CoreConfigurationNonRestartable;
 import com.github.ruediste.rise.nonReloadable.NonRestartable;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 /**
  * Registry holding the available {@link DataBaseLink}s. Used to register the
@@ -20,22 +24,35 @@ public class DataBaseLinkRegistry {
     @Inject
     CoreConfigurationNonRestartable configurationNonRestartable;
 
-    final private HashMap<Class<? extends Annotation>, DataBaseLink> links = new HashMap<>();
+    final private BiMap<Class<? extends Annotation>, Integer> linkNrs = HashBiMap
+            .create();
 
-    public Iterable<DataBaseLink> getLinks() {
-        return links.values();
+    private final ArrayList<DataBaseLink> links = new ArrayList<>();
+    final private HashMap<Class<? extends Annotation>, DataBaseLink> linkMap = new HashMap<>();
+
+    public Class<? extends Annotation> getQualifier(int linkNr) {
+        return linkNrs.inverse().get(linkNr);
+    }
+
+    public int getQualifierNr(Class<? extends Annotation> qualifier) {
+        return linkNrs.get(qualifier);
+    }
+
+    public Collection<DataBaseLink> getLinks() {
+        return linkMap.values();
     }
 
     public void addLink(DataBaseLink dataBaseLink) {
-        links.put(dataBaseLink.getQualifier(), dataBaseLink);
+        linkMap.put(dataBaseLink.getQualifier(), dataBaseLink);
+        links.add(dataBaseLink);
     }
 
     public DataBaseLink getLink(Class<? extends Annotation> qualifier) {
-        return links.get(qualifier);
+        return linkMap.get(qualifier);
     }
 
     public void close() {
-        links.values().forEach(DataBaseLink::close);
+        linkMap.values().forEach(DataBaseLink::close);
     }
 
     /**
@@ -44,17 +61,17 @@ public class DataBaseLinkRegistry {
      */
     public void runSchemaMigrations() {
         if (configurationNonRestartable.isRunSchemaMigration()) {
-            links.values().forEach(DataBaseLink::runSchemaMigration);
+            linkMap.values().forEach(DataBaseLink::runSchemaMigration);
         }
     }
 
     public void dropAndCreateSchemas() {
-        links.values().forEach(
+        linkMap.values().forEach(
                 link -> link.getPersistenceUnitManager().dropAndCreateSchema());
     }
 
     public void closePersistenceUnitManagers() {
-        links.values()
-                .forEach(link -> link.getPersistenceUnitManager().close());
+        linkMap.values().forEach(
+                link -> link.getPersistenceUnitManager().close());
     }
 }

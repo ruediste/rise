@@ -13,10 +13,10 @@ public class TestEntityRepository {
     @Inject
     EntityManager em;
 
-    public List<TestEntity> getAll() {
+    public List<TestAppEntity> getAll() {
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<TestEntity> query = cb.createQuery(TestEntity.class);
-        Root<TestEntity> root = query.from(TestEntity.class);
+        CriteriaQuery<TestAppEntity> query = cb.createQuery(TestAppEntity.class);
+        Root<TestAppEntity> root = query.from(TestAppEntity.class);
         query.select(root);
         return em.createQuery(query).getResultList();
     }

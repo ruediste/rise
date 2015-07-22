@@ -6,7 +6,7 @@ import javax.persistence.EntityManager;
 import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.persistence.Updating;
-import com.github.ruediste.rise.testApp.persistence.TestEntity;
+import com.github.ruediste.rise.testApp.persistence.TestAppEntity;
 
 public class TestComponentHelperController extends
         ControllerMvc<TestComponentHelperController> {
@@ -17,7 +17,7 @@ public class TestComponentHelperController extends
     @Updating
     public ActionResult index() {
 
-        TestEntity e = new TestEntity();
+        TestAppEntity e = new TestAppEntity();
         e.setValue("Hello World");
         em.persist(e);
         return redirect(go(TestComponentController.class).initialize(e.getId()));

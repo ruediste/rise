@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Inherited
 @Documented
-public @interface CrudFactories {
+public @interface CrudStrategies {
 
-    CrudFactory[] value();
+    CrudStrategy[] value();
 }

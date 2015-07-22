@@ -8,7 +8,7 @@ import javax.persistence.EntityManager;
 import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.persistence.Updating;
-import com.github.ruediste.rise.testApp.persistence.TestEntity;
+import com.github.ruediste.rise.testApp.persistence.TestAppEntity;
 
 public class CrudInvocationController extends
         ControllerMvc<CrudInvocationController> {
@@ -18,9 +18,10 @@ public class CrudInvocationController extends
 
     @Updating
     public ActionResult browseTestEnties() {
-        TestEntity e = new TestEntity();
+        TestAppEntity e = new TestAppEntity();
         e.setValue(new Date().toString());
         em.persist(e);
-        return redirect(go(TestCrudController.class).browse(TestEntity.class));
+        return redirect(go(TestCrudController.class).browse(TestAppEntity.class,
+                null));
     }
 }

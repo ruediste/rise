@@ -2,6 +2,7 @@ package com.github.ruediste.rise.crud;
 
 import static java.util.stream.Collectors.toList;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -15,6 +16,7 @@ import javax.persistence.criteria.Root;
 
 import com.github.ruediste.c3java.properties.PropertyDeclaration;
 import com.github.ruediste.rendersnakeXT.canvas.Glyphicon;
+import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CButton;
 import com.github.ruediste.rise.component.components.CDataGrid;
@@ -23,8 +25,8 @@ import com.github.ruediste.rise.component.components.CDataGrid.Column;
 import com.github.ruediste.rise.component.components.CText;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
+import com.github.ruediste.rise.core.web.RedirectRenderResult;
 import com.github.ruediste.rise.crud.CrudPropertyFilter.CrudFilterPersitenceContext;
-import com.github.ruediste.rise.crud.CrudUtil.BrowserSettings;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.github.ruediste1.i18n.label.Labeled;
@@ -36,6 +38,9 @@ public class DefaultCrudBrowserController<T> {
 
     @Inject
     CrudPropertyFilters filters;
+
+    @Inject
+    ComponentUtil componentUtil;
 
     @MembersLabeled
     private enum Messages {
@@ -86,7 +91,6 @@ public class DefaultCrudBrowserController<T> {
     EntityManagerHolder emh;
 
     private Class<T> entityClass;
-    private BrowserSettings<?> settings;
 
     static class Data<T> {
         private List<T> items;
@@ -107,21 +111,24 @@ public class DefaultCrudBrowserController<T> {
     }
 
     private EntityManager getEm() {
-        return emh.getEntityManager(settings.emQualifier);
+        return emh.getEntityManager(emQualifier);
     }
 
     List<PropertyDeclaration> properties;
 
     private List<CrudPropertyFilter> filterList;
 
+    private Class<? extends Annotation> emQualifier;
+
     @Labeled
     @GlyphiconIcon(Glyphicon.eye_open)
-    void display(T item){
-        
+    public void display(T item){
+        componentUtil.closePage(new RedirectRenderResult(componentUtil.toPathInfo(componentUtil.go(CrudControllerBase.class).display(item))));
     }
+    
     @Labeled
     @GlyphiconIcon(Glyphicon.search)
-    void search() {
+    public void search() {
         EntityManager em = getEm();
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -162,9 +169,9 @@ public class DefaultCrudBrowserController<T> {
     }
 
     public DefaultCrudBrowserController<T> initialize(Class<T> entityClass,
-            BrowserSettings<T> settings) {
+            Class<? extends Annotation> emQualifier) {
         this.entityClass = entityClass;
-        this.settings = settings;
+        this.emQualifier = emQualifier;
 
         properties = crudReflectionUtil.getBrowserProperties(entityClass);
         filterList = properties.stream().map(filters::createPropertyFilter)

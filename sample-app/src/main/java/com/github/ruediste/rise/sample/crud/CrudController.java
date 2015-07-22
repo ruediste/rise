@@ -22,6 +22,6 @@ public class CrudController extends CrudControllerBase {
 
     @Labeled
     public ActionResult showTodos() {
-        return browse(TodoItem.class);
+        return browse(TodoItem.class, null);
     }
 }

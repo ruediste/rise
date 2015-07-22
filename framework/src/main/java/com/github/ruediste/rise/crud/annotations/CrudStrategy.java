@@ -8,7 +8,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.github.ruediste.rise.crud.CrudUtil;
 import com.github.ruediste.rise.crud.CrudUtil.BrowserFactory;
 
 /**
@@ -17,13 +16,13 @@ import com.github.ruediste.rise.crud.CrudUtil.BrowserFactory;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Repeatable(CrudFactories.class)
+@Repeatable(CrudStrategies.class)
 @Inherited
 @Documented
-public @interface CrudFactory {
+public @interface CrudStrategy {
 
     /**
-     * The type of the factory to set, for example {@link BrowserFactory}
+     * The type of the strategy to set, for example {@link BrowserFactory}
      */
     Class<?> type();
 

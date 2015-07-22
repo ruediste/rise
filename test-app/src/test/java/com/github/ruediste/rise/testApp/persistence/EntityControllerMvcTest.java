@@ -32,7 +32,7 @@ public class EntityControllerMvcTest extends WebTest {
 
     @Test
     public void testIndex() throws Exception {
-        TestEntity entity = new TestEntity();
+        TestAppEntity entity = new TestAppEntity();
         entity.setValue("Hello World");
 
         template.updating().execute(() -> {
@@ -60,7 +60,7 @@ public class EntityControllerMvcTest extends WebTest {
 
     @Test
     public void testDelete() throws Exception {
-        TestEntity entity = new TestEntity();
+        TestAppEntity entity = new TestAppEntity();
         entity.setValue("Hello World");
 
         template.executor().updating().execute(() -> {
@@ -69,7 +69,7 @@ public class EntityControllerMvcTest extends WebTest {
 
         // check entity present
         template.executor().execute(() -> {
-            assertNotNull(em.find(TestEntity.class, entity.getId()));
+            assertNotNull(em.find(TestAppEntity.class, entity.getId()));
         });
 
         // delete
@@ -77,7 +77,7 @@ public class EntityControllerMvcTest extends WebTest {
 
         // check entity has been deleted
         template.executor().execute(() -> {
-            assertNull(em.find(TestEntity.class, entity.getId()));
+            assertNull(em.find(TestAppEntity.class, entity.getId()));
         });
     }
 }

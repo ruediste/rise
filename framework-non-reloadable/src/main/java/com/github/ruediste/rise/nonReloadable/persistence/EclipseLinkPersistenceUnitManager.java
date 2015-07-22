@@ -51,6 +51,8 @@ public class EclipseLinkPersistenceUnitManager implements
 
     @Override
     synchronized public void dropAndCreateSchema() {
+        Stopwatch watch = Stopwatch.createStarted();
+        log.info("Dropping and creating schema of " + qualifierName());
         // we got to close the link and reopen it again with schema generation
         // enabled
         close();
@@ -61,6 +63,14 @@ public class EclipseLinkPersistenceUnitManager implements
             customizeSchemaGenerationProperties(props);
         });
         close();
+        StartupTimeLogger.stopAndLog("Dropping and creatin schema of "
+                + qualifierName(), watch);
+        log.info("Dropping and creating schema of " + qualifierName()
+                + " completed. Time: " + watch);
+    }
+
+    private String qualifierName() {
+        return qualifier == null ? "<default>" : qualifier.getSimpleName();
     }
 
     @Override
@@ -89,7 +99,7 @@ public class EclipseLinkPersistenceUnitManager implements
         Stopwatch watch = Stopwatch.createStarted();
         ClassLoader classLoader = Thread.currentThread()
                 .getContextClassLoader();
-        log.info("Creating EntityManagerFactory for " + qualifier);
+        log.info("Creating EntityManagerFactory for " + qualifierName());
         bean = new LocalContainerEntityManagerFactoryBean();
 
         bean.setBeanClassLoader(classLoader);
@@ -115,7 +125,7 @@ public class EclipseLinkPersistenceUnitManager implements
         } catch (Exception e) {
             throw new RuntimeException(
                     "Error while creating EntityManagerFactory for "
-                            + qualifier, e);
+                            + qualifierName(), e);
         } finally {
             if (manageTx)
                 try {
@@ -128,8 +138,7 @@ public class EclipseLinkPersistenceUnitManager implements
         }
         log.debug("initialized provider for " + qualifier);
         StartupTimeLogger.stopAndLog("Eclipselink Startup of "
-                + (qualifier == null ? "default" : qualifier.getSimpleName()),
-                watch);
+                + qualifierName(), watch);
         return properties;
     }
 
@@ -164,7 +173,7 @@ public class EclipseLinkPersistenceUnitManager implements
      * Hook to set the loglevel to be used
      */
     protected String getLogLevel() {
-        return SessionLog.INFO_LABEL;
+        return SessionLog.WARNING_LABEL;
     }
 
     /**

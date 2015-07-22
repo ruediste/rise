@@ -12,7 +12,7 @@ import com.github.ruediste.rise.component.components.CTextField;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.persistence.OwnEntityManagers;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
-import com.github.ruediste.rise.testApp.persistence.TestEntity;
+import com.github.ruediste.rise.testApp.persistence.TestAppEntity;
 
 @OwnEntityManagers
 public class TestSubController {
@@ -49,9 +49,9 @@ public class TestSubController {
     Logger log;
 
     @Inject
-    private BindingGroup<TestEntity> entity;
+    private BindingGroup<TestAppEntity> entity;
 
-    public TestEntity entity() {
+    public TestAppEntity entity() {
         return entity.proxy();
     }
 
@@ -59,7 +59,7 @@ public class TestSubController {
     EntityManagerHolder holder;
 
     public void initialize(long id) {
-        TestEntity e = em.find(TestEntity.class, id);
+        TestAppEntity e = em.find(TestAppEntity.class, id);
         if (e == null)
             throw new RuntimeException("TestEntity " + id + " not found");
         entity.set(e);

@@ -16,12 +16,12 @@ import com.github.ruediste.rise.testApp.ViewMvc;
 public class EntityControllerMvc extends ControllerMvc<EntityControllerMvc> {
 
     static class ListView extends
-            ViewMvc<EntityControllerMvc, List<TestEntity>> {
+            ViewMvc<EntityControllerMvc, List<TestAppEntity>> {
 
         @Override
         public void render(TestCanvas html) {
             html.html().body().ul().render(x -> {
-                for (TestEntity item : data())
+                for (TestAppEntity item : data())
                     x.li().content(Objects.toString(item.getId()));
             })._ul()._body()._html();
         }
@@ -44,7 +44,7 @@ public class EntityControllerMvc extends ControllerMvc<EntityControllerMvc> {
     }
 
     @Updating
-    public ActionResult delete(TestEntity entity) {
+    public ActionResult delete(TestAppEntity entity) {
         em.remove(entity);
         return redirect(go().index());
     }

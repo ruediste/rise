@@ -1,6 +1,8 @@
 package com.github.ruediste.rise.core.persistence.em;
 
 import java.lang.annotation.Annotation;
+import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -116,5 +118,18 @@ public class EntityManagerHolder {
 
     public Iterable<EntityManager> getCurrentManagers() {
         return getCurrentEntityManagerSet().getManagers();
+    }
+
+    /**
+     * Return the qualifier of the entity manager containing the given entity
+     */
+    public Class<? extends Annotation> getEmQualifier(Object entity) {
+        return getEmEntry(entity).get().getKey();
+    }
+
+    public Optional<Entry<Class<? extends Annotation>, EntityManager>> getEmEntry(
+            Object entity) {
+        return getCurrentEntityManagerSet().getManagerEntries().stream()
+                .filter(e -> e.getValue().contains(entity)).findFirst();
     }
 }

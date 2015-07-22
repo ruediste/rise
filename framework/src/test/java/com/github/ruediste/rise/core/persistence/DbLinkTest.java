@@ -12,23 +12,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.TransactionManager;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
-public class DbLinkTest {
-
-    PersistenceTestHelper helper = new PersistenceTestHelper(this);
-
-    @Before
-    public void before() {
-        helper.before();
-    }
-
-    @After
-    public void after() {
-        helper.after();
-    }
+public class DbLinkTest extends DbTestBase {
 
     @Inject
     TransactionManager txm;

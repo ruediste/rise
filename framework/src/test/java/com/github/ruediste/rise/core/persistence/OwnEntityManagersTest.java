@@ -12,13 +12,9 @@ import org.junit.Test;
 
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 
-public class OwnEntityManagersTest {
-
-    PersistenceTestHelper helper = new PersistenceTestHelper(this);
-
+public class OwnEntityManagersTest extends DbTestBase {
     @Before
     public void before() {
-        helper.before();
         holder.setNewEntityManagerSet();
     }
 
@@ -26,7 +22,6 @@ public class OwnEntityManagersTest {
     public void after() {
         holder.closeCurrentEntityManagers();
         holder.removeCurrentSet();
-        helper.after();
     }
 
     @Inject

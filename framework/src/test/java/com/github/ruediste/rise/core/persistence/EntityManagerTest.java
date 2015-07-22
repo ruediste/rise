@@ -9,25 +9,11 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.transaction.TransactionManager;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 
-public class EntityManagerTest {
-
-    PersistenceTestHelper helper = new PersistenceTestHelper(this);
-
-    @Before
-    public void before() {
-        helper.before();
-    }
-
-    @After
-    public void after() {
-        helper.after();
-    }
+public class EntityManagerTest extends DbTestBase {
 
     @Inject
     TransactionManager txm;
