@@ -12,7 +12,6 @@
 		<module>test-app</module>
 		<module>skeleton-app</module>
 		<module>sample-app</module>
-		<module>framework-integration</module>
 		<module>framework-non-reloadable</module>
 		<module>framework-test</module>
 	</modules>

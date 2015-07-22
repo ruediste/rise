@@ -96,12 +96,6 @@
 			<version>0.0.2-SNAPSHOT</version>
 		</dependency>
 
-
-		<dependency>
-			<groupId>com.github.ruediste.rise</groupId>
-			<artifactId>framework-integration</artifactId>
-			<version>1.0-SNAPSHOT</version>
-		</dependency>
 		<dependency>
 			<groupId>com.github.ruediste.rise</groupId>
 			<artifactId>framework-non-reloadable</artifactId>
