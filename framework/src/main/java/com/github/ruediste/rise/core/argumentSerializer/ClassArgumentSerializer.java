@@ -15,14 +15,21 @@ public class ClassArgumentSerializer implements ArgumentSerializer {
     CoreConfiguration config;
 
     @Override
-    public boolean couldHandle(AnnotatedType type) {
-        return Class.class.equals(TypeToken.of(type.getType()).getRawType());
+    public HandleStatement canHandle(AnnotatedType type) {
+        TypeToken<?> token = TypeToken.of(type.getType());
+        if (Class.class.isAssignableFrom(token.getRawType()))
+            return HandleStatement.WILL_HANDLE;
+        if (token.isAssignableFrom(Class.class))
+            return HandleStatement.MIGHT_HANDLE;
+        return HandleStatement.CANNOT_HANDLE;
     }
 
     @Override
     public Optional<String> generate(AnnotatedType type, Object value) {
         if (value == null)
             return Optional.of("");
+        if (!(value instanceof Class))
+            return Optional.empty();
         return Optional.of(((Class<?>) value).getName());
     }
 

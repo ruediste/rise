@@ -25,6 +25,7 @@ import com.github.ruediste.rise.core.argumentSerializer.ClassArgumentSerializer;
 import com.github.ruediste.rise.core.argumentSerializer.EntityArgumentSerializer;
 import com.github.ruediste.rise.core.argumentSerializer.IntSerializer;
 import com.github.ruediste.rise.core.argumentSerializer.LongSerializer;
+import com.github.ruediste.rise.core.argumentSerializer.SerializableArgumentSerializer;
 import com.github.ruediste.rise.core.argumentSerializer.SerializerHelper;
 import com.github.ruediste.rise.core.argumentSerializer.StringSerializer;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
@@ -136,10 +137,12 @@ public class CoreConfiguration {
                 .getInstance(IntSerializer.class);
         final Supplier<ArgumentSerializer> stringSerializerSupplier = () -> injector
                 .getInstance(StringSerializer.class);
-        final Supplier<ArgumentSerializer> entitySerializerSupplier = () -> injector
-                .getInstance(EntityArgumentSerializer.class);
         final Supplier<ArgumentSerializer> classSerializer = () -> injector
                 .getInstance(ClassArgumentSerializer.class);
+        final Supplier<ArgumentSerializer> entitySerializerSupplier = () -> injector
+                .getInstance(EntityArgumentSerializer.class);
+        final Supplier<ArgumentSerializer> serializableSerializerSupplier = () -> injector
+                .getInstance(SerializableArgumentSerializer.class);
 
     }
 
@@ -152,9 +155,11 @@ public class CoreConfiguration {
                 .add(serializerSupplierRefs.intSerializerSupplier);
         argumentSerializerSuppliers
                 .add(serializerSupplierRefs.stringSerializerSupplier);
+        argumentSerializerSuppliers.add(serializerSupplierRefs.classSerializer);
         argumentSerializerSuppliers
                 .add(serializerSupplierRefs.entitySerializerSupplier);
-        argumentSerializerSuppliers.add(serializerSupplierRefs.classSerializer);
+        argumentSerializerSuppliers
+                .add(serializerSupplierRefs.serializableSerializerSupplier);
     }
 
     private java.util.List<ArgumentSerializer> argumentSerializers;
@@ -184,9 +189,23 @@ public class CoreConfiguration {
     private List<ArgumentSerializer> getMatchingArgumentSerializers(
             AnnotatedType type) {
 
-        List<ArgumentSerializer> matchingFilters = argumentSerializers.stream()
-                .filter(a -> a.couldHandle(type)).collect(toList());
-        return matchingFilters;
+        ArrayList<ArgumentSerializer> result = new ArrayList<>();
+        loop: for (ArgumentSerializer s : argumentSerializers) {
+            switch (s.canHandle(type)) {
+            case CANNOT_HANDLE:
+                break;
+            case MIGHT_HANDLE:
+                result.add(s);
+                break;
+            case WILL_HANDLE:
+                result.add(s);
+                break loop;
+            default:
+                throw new UnsupportedOperationException("Unknown case");
+
+            }
+        }
+        return result;
     }
 
     public Supplier<Object> parseArgument(AnnotatedType type, String urlPart) {

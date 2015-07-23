@@ -8,10 +8,16 @@ import com.google.common.reflect.TypeToken;
 
 public class LongSerializer implements ArgumentSerializer {
     @Override
-    public boolean couldHandle(AnnotatedType type) {
+    public HandleStatement canHandle(AnnotatedType type) {
 
-        return type.getType() == Long.TYPE
-                || TypeToken.of(type.getType()).isAssignableFrom(Long.class);
+        if (type.getType() == Long.TYPE)
+            return HandleStatement.WILL_HANDLE;
+        TypeToken<?> token = TypeToken.of(type.getType());
+        if (Long.class.isAssignableFrom(token.getRawType()))
+            return HandleStatement.WILL_HANDLE;
+        if (token.isAssignableFrom(Long.class))
+            return HandleStatement.MIGHT_HANDLE;
+        return HandleStatement.CANNOT_HANDLE;
     }
 
     @Override

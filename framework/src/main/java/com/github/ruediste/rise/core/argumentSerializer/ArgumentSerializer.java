@@ -10,9 +10,16 @@ import java.util.function.Supplier;
 public interface ArgumentSerializer {
 
     /**
-     * Return true if this serializer could handle a given type.
+     * Describes if a serializer handles a given parameter
      */
-    boolean couldHandle(AnnotatedType type);
+    public enum HandleStatement {
+        CANNOT_HANDLE, MIGHT_HANDLE, WILL_HANDLE
+    }
+
+    /**
+     * determine if this serializer handles a parameter of a type
+     */
+    HandleStatement canHandle(AnnotatedType type);
 
     /**
      * Generate a string representation which can be parsed later. If

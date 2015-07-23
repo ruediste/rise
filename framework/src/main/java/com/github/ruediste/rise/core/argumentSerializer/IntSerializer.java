@@ -8,9 +8,15 @@ import com.google.common.reflect.TypeToken;
 
 public class IntSerializer implements ArgumentSerializer {
     @Override
-    public boolean couldHandle(AnnotatedType type) {
-        return type.getType() == Integer.TYPE
-                || TypeToken.of(type.getType()).isAssignableFrom(Integer.class);
+    public HandleStatement canHandle(AnnotatedType type) {
+        if (type.getType() == Integer.TYPE)
+            return HandleStatement.WILL_HANDLE;
+        TypeToken<?> token = TypeToken.of(type.getType());
+        if (Integer.class.isAssignableFrom(token.getRawType()))
+            return HandleStatement.WILL_HANDLE;
+        if (token.isAssignableFrom(Integer.class))
+            return HandleStatement.MIGHT_HANDLE;
+        return HandleStatement.CANNOT_HANDLE;
     }
 
     @Override

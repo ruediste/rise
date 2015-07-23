@@ -23,7 +23,6 @@ import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
 import com.github.ruediste.rise.util.AnnotatedTypes;
 import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste.salta.jsr330.Injector;
-import com.google.common.primitives.Primitives;
 import com.google.common.reflect.TypeToken;
 
 @Singleton
@@ -118,8 +117,12 @@ public class EntityArgumentSerializer implements ArgumentSerializer {
     }
 
     @Override
-    public boolean couldHandle(AnnotatedType type) {
-        return !Primitives.allPrimitiveTypes().contains(type.getType());
+    public HandleStatement canHandle(AnnotatedType type) {
+
+        if (TypeToken.of(type.getType()).getRawType().isPrimitive())
+            return HandleStatement.CANNOT_HANDLE;
+        return HandleStatement.MIGHT_HANDLE;
+
     }
 
     @Override

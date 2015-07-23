@@ -10,8 +10,13 @@ import com.google.common.reflect.TypeToken;
 
 public class StringSerializer implements ArgumentSerializer {
     @Override
-    public boolean couldHandle(AnnotatedType type) {
-        return TypeToken.of(type.getType()).isAssignableFrom(String.class);
+    public HandleStatement canHandle(AnnotatedType type) {
+        TypeToken<?> token = TypeToken.of(type.getType());
+        if (String.class.isAssignableFrom(token.getRawType()))
+            return HandleStatement.WILL_HANDLE;
+        if (token.isAssignableFrom(String.class))
+            return HandleStatement.MIGHT_HANDLE;
+        return HandleStatement.CANNOT_HANDLE;
     }
 
     @Override
