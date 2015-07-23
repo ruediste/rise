@@ -79,8 +79,11 @@ public class EntityArgumentSerializer implements ArgumentSerializer {
             if (Optional.of("null").equals(pair.getA()))
                 return null;
 
-            Class<? extends Annotation> qualifier = pair.getA()
-                    .map(s -> dbLinkRegistry.getQualifier(Integer.parseInt(s)))
+            Class<? extends Annotation> qualifier = pair
+                    .getA()
+                    .<Class<? extends Annotation>> map(
+                            s -> dbLinkRegistry.getQualifier(Integer
+                                    .parseInt(s)))
                     .orElseGet(() -> getRequiredQualifier(type));
 
             Class<?> cls = TypeToken.of(type.getType()).getRawType();
