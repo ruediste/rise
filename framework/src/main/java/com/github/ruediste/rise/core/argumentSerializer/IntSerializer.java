@@ -1,18 +1,25 @@
 package com.github.ruediste.rise.core.argumentSerializer;
 
 import java.lang.reflect.AnnotatedType;
+import java.util.Optional;
 import java.util.function.Supplier;
+
+import com.google.common.reflect.TypeToken;
 
 public class IntSerializer implements ArgumentSerializer {
     @Override
-    public boolean handles(AnnotatedType type) {
-        return type.getType() == Integer.class
-                || type.getType() == Integer.TYPE;
+    public boolean couldHandle(AnnotatedType type) {
+        return type.getType() == Integer.TYPE
+                || TypeToken.of(type.getType()).isAssignableFrom(Integer.class);
     }
 
     @Override
-    public String generate(AnnotatedType type, Object value) {
-        return String.valueOf(value);
+    public Optional<String> generate(AnnotatedType type, Object value) {
+        if (value == null)
+            return Optional.of("null");
+        if (!(value instanceof Integer))
+            return Optional.empty();
+        return Optional.of(Integer.toString((int) value));
     }
 
     @Override

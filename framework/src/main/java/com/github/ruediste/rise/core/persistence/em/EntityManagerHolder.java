@@ -129,7 +129,9 @@ public class EntityManagerHolder {
 
     public Optional<Entry<Class<? extends Annotation>, EntityManager>> getEmEntry(
             Object entity) {
-        return getCurrentEntityManagerSet().getManagerEntries().stream()
-                .filter(e -> e.getValue().contains(entity)).findFirst();
+        EntityManagerSet set = getCurrentEntityManagerSet();
+        if (set == null)
+            return Optional.empty();
+        return set.getEmEntry(entity);
     }
 }

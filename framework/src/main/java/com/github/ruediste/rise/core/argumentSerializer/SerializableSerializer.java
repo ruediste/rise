@@ -8,12 +8,12 @@ import java.util.function.Supplier;
 import com.google.common.base.Charsets;
 import com.google.common.reflect.TypeToken;
 
-public class StringSerializer implements ArgumentSerializer {
+public class SerializableSerializer implements ArgumentSerializer {
     @Override
     public boolean couldHandle(AnnotatedType type) {
         return TypeToken.of(type.getType()).isAssignableFrom(String.class);
     }
-
+asdf
     @Override
     public Optional<String> generate(AnnotatedType type, Object value) {
 

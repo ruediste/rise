@@ -2,13 +2,16 @@ package com.github.ruediste.rise.core.argumentSerializer;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedType;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
 import javax.inject.Inject;
-import javax.persistence.Entity;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.metamodel.IdentifiableType;
 import javax.persistence.metamodel.ManagedType;
@@ -20,8 +23,10 @@ import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
 import com.github.ruediste.rise.util.AnnotatedTypes;
 import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste.salta.jsr330.Injector;
+import com.google.common.primitives.Primitives;
 import com.google.common.reflect.TypeToken;
 
+@Singleton
 public class EntityArgumentSerializer implements ArgumentSerializer {
 
     @Inject
@@ -39,63 +44,117 @@ public class EntityArgumentSerializer implements ArgumentSerializer {
     @Inject
     EntityManagerHolder holder;
 
-    @Override
-    public String generate(AnnotatedType type, Object value) {
-        if (value == null)
-            return SerializerHelper.generatePrefix(Optional.of("null"), "");
+    private Map<Optional<Class<? extends Annotation>>, AtomicInteger> nextTypeNrMap = new ConcurrentHashMap<>();
+    private Map<Pair<Class<? extends Annotation>, Class<?>>, Integer> typeNrMap = new ConcurrentHashMap<>();
+    private Map<Pair<Class<? extends Annotation>, Integer>, Class<?>> parameterTypeMap = new ConcurrentHashMap<>();
 
-        Class<? extends Annotation> defaultQualifier = getRequiredQualifier(type);
-        Entry<Class<? extends Annotation>, EntityManager> entry = holder
-                .getEmEntry(value).get();
+    private int getTypeNr(Class<? extends Annotation> qualifier, Class<?> type) {
+        Integer result = typeNrMap.computeIfAbsent(
+                Pair.of(qualifier, type),
+                p -> nextTypeNrMap.computeIfAbsent(
+                        Optional.ofNullable(qualifier),
+                        q -> new AtomicInteger()).getAndIncrement());
+        parameterTypeMap.put(Pair.of(qualifier, result), type);
+        return result;
+    }
+
+    private Class<?> getType(Class<? extends Annotation> qualifier, int typeNr) {
+        return parameterTypeMap.get(Pair.of(qualifier, typeNr));
+    }
+
+    @Override
+    public Optional<String> generate(AnnotatedType parameterType, Object value) {
+        if (value == null)
+            return Optional.of(SerializerHelper.generatePrefix(
+                    Optional.of("null"),
+                    SerializerHelper.generatePrefix(Optional.empty(), "")));
+
+        Class<? extends Annotation> defaultQualifier = getRequiredQualifier(parameterType);
+
+        // try to find entity manager for the value
+        Entry<Class<? extends Annotation>, EntityManager> entry;
+        {
+            Optional<Entry<Class<? extends Annotation>, EntityManager>> emEntry = holder
+                    .getEmEntry(value);
+            // if no EM found, give up
+            if (!emEntry.isPresent())
+                return Optional.empty();
+            entry = emEntry.get();
+        }
         Class<? extends Annotation> acutalQualifier = entry.getKey();
 
         Object identifier = entry.getValue().getEntityManagerFactory()
                 .getPersistenceUnitUtil().getIdentifier(value);
 
-        AnnotatedType idType = getIdType(acutalQualifier, type);
+        ManagedType<?> managedType = getManagedType(acutalQualifier,
+                value.getClass());
+
+        AnnotatedType idType = getIdType(managedType);
 
         String serializedIdentifier = config.generateArgument(idType,
                 identifier);
+        String result;
         if (Objects.equals(acutalQualifier, defaultQualifier)) {
-            return SerializerHelper.generatePrefix(Optional.empty(),
+            result = SerializerHelper.generatePrefix(Optional.empty(),
                     serializedIdentifier);
         } else
-            return SerializerHelper.generatePrefix(Optional.of(String
+            result = SerializerHelper.generatePrefix(Optional.of(String
                     .valueOf(dbLinkRegistry.getQualifierNr(acutalQualifier))),
                     serializedIdentifier);
+
+        // include the type of the value in the result if necessary
+        ManagedType<?> parameterManagedType = getManagedType(acutalQualifier,
+                TypeToken.of(parameterType.getType()).getRawType());
+        if (parameterManagedType == null
+                || !parameterManagedType.getJavaType().isAssignableFrom(
+                        value.getClass()))
+            result = SerializerHelper.generatePrefix(Optional.of(Integer
+                    .toString(getTypeNr(acutalQualifier, value.getClass()))),
+                    result);
+        else
+            result = SerializerHelper.generatePrefix(Optional.empty(), result);
+
+        return Optional.of(result);
     }
 
     @Override
-    public boolean handles(AnnotatedType type) {
-        return type.isAnnotationPresent(Entity.class);
+    public boolean couldHandle(AnnotatedType type) {
+        return !Primitives.allPrimitiveTypes().contains(type.getType());
     }
 
     @Override
     public Supplier<Object> parse(AnnotatedType type, String urlPart) {
 
-        return () -> {
-            Pair<Optional<String>, String> pair = SerializerHelper
+        Optional<String> typeNrStr;
+        Optional<String> qualifierStr;
+        String idStr;
+
+        {
+            Pair<Optional<String>, String> p = SerializerHelper
                     .parsePrefix(urlPart);
-            if (Optional.of("null").equals(pair.getA()))
-                return null;
+            typeNrStr = p.getA();
+            p = SerializerHelper.parsePrefix(p.getB());
+            qualifierStr = p.getA();
+            idStr = p.getB();
+        }
+        if (Optional.of("null").equals(typeNrStr))
+            return () -> null;
 
-            Class<? extends Annotation> qualifier = pair
-                    .getA()
-                    .<Class<? extends Annotation>> map(
-                            s -> dbLinkRegistry.getQualifier(Integer
-                                    .parseInt(s)))
-                    .orElseGet(() -> getRequiredQualifier(type));
+        Class<? extends Annotation> qualifier = qualifierStr
+                .<Class<? extends Annotation>> map(
+                        s -> dbLinkRegistry.getQualifier(Integer.parseInt(s)))
+                .orElseGet(() -> getRequiredQualifier(type));
 
-            Class<?> cls = TypeToken.of(type.getType()).getRawType();
+        Class<?> cls = typeNrStr.map(
+                s -> getType(qualifier, Integer.parseInt(s))).orElseGet(
+                () -> TypeToken.of(type.getType()).getRawType());
 
-            AnnotatedType idType = getIdType(qualifier, cls);
+        AnnotatedType idType = getIdType(qualifier, cls);
 
-            Supplier<Object> idSupplier = config.parseArgument(idType,
-                    pair.getB());
+        Supplier<Object> idSupplier = config.parseArgument(idType, idStr);
 
-            return holder.getEntityManager(qualifier).find(cls,
-                    idSupplier.get());
-        };
+        return () -> holder.getEntityManager(qualifier).find(cls,
+                idSupplier.get());
     }
 
     private Class<? extends Annotation> getRequiredQualifier(AnnotatedType type) {
@@ -114,10 +173,23 @@ public class EntityArgumentSerializer implements ArgumentSerializer {
 
     private AnnotatedType getIdType(Class<? extends Annotation> qualifier,
             Class<?> cls) {
-        ManagedType<?> managedType = registry.getManagedTypeMap(qualifier)
-                .get().get(cls);
+        return getIdType(getManagedType(qualifier, cls));
+    }
+
+    private AnnotatedType getIdType(ManagedType<?> managedType) {
         return AnnotatedTypes.of(((IdentifiableType<?>) managedType)
                 .getIdType().getJavaType());
+    }
+
+    /**
+     * Get the {@link ManagedType} or null if the class is not part of the
+     * persistence unit.
+     */
+    private ManagedType<?> getManagedType(
+            Class<? extends Annotation> qualifier, Class<?> cls) {
+        ManagedType<?> managedType = registry.getManagedTypeMap(qualifier)
+                .get().get(cls);
+        return managedType;
     }
 
 }

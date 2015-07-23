@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.core.argumentSerializer;
 
 import java.lang.reflect.AnnotatedType;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -9,14 +10,15 @@ import java.util.function.Supplier;
 public interface ArgumentSerializer {
 
     /**
-     * Return true if this serializer could handle a given type
+     * Return true if this serializer could handle a given type.
      */
-    boolean handles(AnnotatedType type);
+    boolean couldHandle(AnnotatedType type);
 
     /**
-     * Generate a string representation which can be parsed later
+     * Generate a string representation which can be parsed later. If
+     * {@link Optional#empty()} is returned, the next serializer is tried
      */
-    String generate(AnnotatedType type, Object value);
+    Optional<String> generate(AnnotatedType type, Object value);
 
     /**
      * Parse the string representation of the parameter.

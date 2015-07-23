@@ -25,12 +25,14 @@ import com.github.ruediste.rise.core.argumentSerializer.ClassArgumentSerializer;
 import com.github.ruediste.rise.core.argumentSerializer.EntityArgumentSerializer;
 import com.github.ruediste.rise.core.argumentSerializer.IntSerializer;
 import com.github.ruediste.rise.core.argumentSerializer.LongSerializer;
+import com.github.ruediste.rise.core.argumentSerializer.SerializerHelper;
 import com.github.ruediste.rise.core.argumentSerializer.StringSerializer;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.integration.RiseCanvas;
 import com.github.ruediste.rise.integration.RiseCanvasBase;
+import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.google.common.reflect.Reflection;
 
@@ -158,26 +160,46 @@ public class CoreConfiguration {
     private java.util.List<ArgumentSerializer> argumentSerializers;
 
     public String generateArgument(AnnotatedType type, Object value) {
-        return argumentSerializers
-                .stream()
-                .filter(a -> a.handles(type))
-                .findFirst()
-                .map(a -> a.generate(type, value))
-                .orElseThrow(
-                        () -> new RuntimeException(
-                                "No argument serializer found for "
-                                        + type.getType()));
+        List<ArgumentSerializer> matchingFilters = getMatchingArgumentSerializers(type);
+
+        if (matchingFilters.size() == 1) {
+            Optional<String> result = matchingFilters.get(0).generate(type,
+                    value);
+            if (result.isPresent())
+                return result.get();
+        } else if (matchingFilters.size() > 1)
+            for (int i = 0; i < matchingFilters.size(); i++) {
+                ArgumentSerializer filter = matchingFilters.get(i);
+                Optional<String> result = filter.generate(type, value);
+                if (result.isPresent())
+                    return SerializerHelper.generatePrefix(
+                            Optional.of(Integer.toString(i)), result.get());
+            }
+
+        // no serializer matched
+        throw new RuntimeException("No argument serializer found for "
+                + type.getType() + " and value " + value);
+    }
+
+    private List<ArgumentSerializer> getMatchingArgumentSerializers(
+            AnnotatedType type) {
+
+        List<ArgumentSerializer> matchingFilters = argumentSerializers.stream()
+                .filter(a -> a.couldHandle(type)).collect(toList());
+        return matchingFilters;
     }
 
     public Supplier<Object> parseArgument(AnnotatedType type, String urlPart) {
-        return argumentSerializers
-                .stream()
-                .filter(a -> a.handles(type))
-                .findFirst()
-                .map(a -> a.parse(type, urlPart))
-                .orElseThrow(
-                        () -> new RuntimeException(
-                                "No argument serializer found for " + type));
+        List<ArgumentSerializer> matchingFilters = getMatchingArgumentSerializers(type);
+        if (matchingFilters.size() == 1)
+            return matchingFilters.get(0).parse(type, urlPart);
+        else if (matchingFilters.size() > 1) {
+            Pair<Optional<String>, String> pair = SerializerHelper
+                    .parsePrefix(urlPart);
+            int idx = Integer.parseInt(pair.getA().get());
+            return matchingFilters.get(idx).parse(type, pair.getB());
+        }
+        throw new RuntimeException("No argument serializer found for " + type);
     }
 
     public List<Function<ActionInvocation<String>, Optional<PathInfo>>> actionInvocationToPathInfoMappingFunctions = new ArrayList<>();
