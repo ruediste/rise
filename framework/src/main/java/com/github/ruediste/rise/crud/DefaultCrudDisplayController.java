@@ -9,13 +9,14 @@ import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.persistence.RisePersistenceUtil;
+import com.github.ruediste.rise.util.Pair;
 
 public class DefaultCrudDisplayController extends SubControllerComponent {
 
     @Inject
     RisePersistenceUtil util;
 
-    private static class View extends
+    static class View extends
             DefaultCrudViewComponent<DefaultCrudDisplayController> {
         @Inject
         CrudReflectionUtil util;
@@ -29,11 +30,15 @@ public class DefaultCrudDisplayController extends SubControllerComponent {
                 for (PropertyDeclaration p : util
                         .getDisplayProperties(controller.data().getEntity()
                                 .getClass())) {
-                    html.add(displayComponents.create(p).getComponent());
+                    html.add(displayComponents.create(
+                            Pair.of(p, controller.data().getEntity()))
+                            .getComponent());
                 }
                 html.rButtonA(go(CrudControllerBase.class).browse(
                         controller.data().getEntity().getClass(),
                         controller.data().getEmQualifier()));
+                html.rButtonA(go(CrudControllerBase.class).edit(
+                        controller.data().getEntity()));
 
             });
         }
@@ -68,7 +73,7 @@ public class DefaultCrudDisplayController extends SubControllerComponent {
     }
 
     public DefaultCrudDisplayController initialize(Object entity) {
-        data.get().setEmQualifier(util.getEmQualifier(entity).get());
+        data.get().setEmQualifier(util.getEmQualifier(entity));
         data.get().setEntity(entity);
         return this;
     }

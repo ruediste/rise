@@ -23,7 +23,7 @@ public class FileUploadController extends ControllerComponent {
         LIST, UPLOAD
     }
 
-    @Labeled
+    @Label("File Upload Demo")
     private static class MainView extends ViewComponent<FileUploadController> {
 
         @Override
@@ -53,21 +53,22 @@ public class FileUploadController extends ControllerComponent {
                                                                 ._div()._bCol())
                                                 ._bRow()
 
-                                                .add(new CButton("Upload")
-                                                        .setHandler(() -> controller
-                                                                .upload())));
+                                                .add(new CButton(controller,
+                                                        c -> c.upload())));
                                     })
                             .put(Mode.UPLOAD,
                                     () -> {
                                         CFileInput fileInput = new CFileInput();
                                         return toComponent(html -> html
                                                 .h1()
-                                                .content("File Upload Demo")
+                                                .content(label(MainView.class))
                                                 .add(fileInput)
-                                                .add(new CButton("Done").setHandler(() -> {
-                                                    controller.uploaded(fileInput
-                                                            .getUploadedFiles());
-                                                })));
+                                                .add(new CButton(
+                                                        controller,
+                                                        c -> {
+                                                            c.done(fileInput
+                                                                    .getUploadedFiles());
+                                                        })));
                                     }).bind(() -> controller.data().getMode()));
         }
     }
@@ -91,12 +92,14 @@ public class FileUploadController extends ControllerComponent {
         return data.proxy();
     }
 
+    @Labeled
     public void upload() {
         data.get().setMode(Mode.UPLOAD);
         data.pullUp();
     }
 
-    public void uploaded(List<UploadedFile> uploadedFiles) {
+    @Labeled
+    public void done(List<UploadedFile> uploadedFiles) {
         data.get().files.addAll(uploadedFiles);
         data.get().setMode(Mode.LIST);
         data.pullUp();

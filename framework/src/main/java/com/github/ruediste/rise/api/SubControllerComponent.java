@@ -8,6 +8,7 @@ import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
 import com.github.ruediste.rise.core.web.HttpRenderResult;
+import com.github.ruediste.rise.core.web.RedirectRenderResult;
 
 public class SubControllerComponent {
 
@@ -62,6 +63,6 @@ public class SubControllerComponent {
      * </pre>
      */
     public void redirect(ActionResult destination) {
-
+        closePage(new RedirectRenderResult(util.toPathInfo(destination)));
     }
 }

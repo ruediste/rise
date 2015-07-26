@@ -29,9 +29,11 @@ import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 import com.github.ruediste.rise.crud.CrudPropertyFilter.CrudFilterPersitenceContext;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
+import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.github.ruediste1.i18n.label.Labeled;
-import com.github.ruediste1.i18n.label.MembersLabeled;
+import com.github.ruediste1.i18n.message.TMessage;
+import com.github.ruediste1.i18n.message.TMessages;
 
 public class DefaultCrudBrowserController<T> extends SubControllerComponent {
     @Inject
@@ -43,14 +45,25 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent {
     @Inject
     ComponentUtil componentUtil;
 
-    @MembersLabeled
-    private enum Messages {
-        FILTER, ACTIONS
-    }
-
     @SuppressWarnings("unused")
     private static class DefaultCrudBrowserView<T> extends
             DefaultCrudViewComponent<DefaultCrudBrowserController<T>> {
+
+        @TMessages
+        public interface Messages {
+
+            @TMessage("Filter")
+            LString filter();
+
+            @TMessage("Actions")
+            LString actions();
+
+            @TMessage("Browser for {clazz}")
+            LString browserFor(String clazz);
+        }
+
+        @Inject
+        Messages messages;
 
         @Inject
         LabelUtil labelUtil;
@@ -65,16 +78,16 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent {
                         .getPropertyLabel(p)), item -> new Cell(new CText(
                         Objects.toString(p.getValue(item))))));
             }
-            columns.add(new Column<T>(() -> new Cell(new CText(
-                    label(Messages.ACTIONS))), item -> new Cell(new CButton(go(
+            columns.add(new Column<T>(() -> new Cell(new CText(messages
+                    .actions())), item -> new Cell(new CButton(go(
                     CrudControllerBase.class).display(item), true)
                     .apply(CButtonTemplate.setArgs(x -> x.primary())))));
 //@formatter:off
             return toComponent(html -> html
-                    .h1().content("Browser for " + controller.entityClass)
+                    .h1().content(messages.browserFor(controller.entityClass.getName()))
                     .div().CLASS("panel panel-default")
                       .div().CLASS("panel-heading")
-                        .content(Messages.FILTER)
+                        .content(messages.filter())
                       .div().CLASS("panel-body")
                         .fForEach(controller.filterList, filter -> {
                           html.add(filter.getComponent());

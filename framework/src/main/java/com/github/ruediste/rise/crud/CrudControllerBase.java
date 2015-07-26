@@ -10,6 +10,7 @@ import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.crud.CrudUtil.BrowserFactory;
 import com.github.ruediste.rise.crud.CrudUtil.DisplayFactory;
+import com.github.ruediste.rise.crud.CrudUtil.EditFactory;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
 import com.github.ruediste1.i18n.label.Labeled;
 
@@ -53,6 +54,15 @@ public abstract class CrudControllerBase extends ControllerComponent {
         data.get().setSubController(
                 crudUtil.getStrategy(DisplayFactory.class, entity.getClass())
                         .createDisplay(entity));
+        return null;
+    }
+
+    @Labeled
+    @GlyphiconIcon(Glyphicon.edit)
+    public ActionResult edit(Object entity) {
+        data.get().setSubController(
+                crudUtil.getStrategy(EditFactory.class, entity.getClass())
+                        .createEdit(entity));
         return null;
     }
 }

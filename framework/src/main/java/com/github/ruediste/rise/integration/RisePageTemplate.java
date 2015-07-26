@@ -68,8 +68,8 @@ public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>> extends
         protected void renderDefaultMetaTags(TCanvas html) {
             //@formatter:off
             html.meta().CHARSET("UTF-8").meta().HTTP_EQUIV("X-UA-Compatible")
-                    .addAttribute("conent","IE=edge").meta().NAME("viewport")
-                    .addAttribute("conent","width=device-width, initial-scale=1");
+                    .addAttribute("content","IE=edge").meta().NAME("viewport")
+                    .addAttribute("content","width=device-width, initial-scale=1");
             //@formatter:on
         }
 

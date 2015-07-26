@@ -1,8 +1,5 @@
 package com.github.ruediste.rise.nonReloadable.front;
 
-import static org.rendersnake.HtmlAttributesFactory.method;
-import static org.rendersnake.HtmlAttributesFactory.type;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -10,10 +7,11 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.rendersnake.HtmlCanvas;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.ruediste.rendersnakeXT.canvas.Html5Canvas;
+import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasBase;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
 import com.google.common.base.Throwables;
@@ -38,6 +36,20 @@ public class DefaultStartupErrorHandler implements StartupErrorHandler {
         this.dropAndCreatePathInfo = dropAndCreatePathInfo;
     }
 
+    private static class SimpleCanvas extends HtmlCanvasBase<SimpleCanvas>
+            implements Html5Canvas<SimpleCanvas> {
+
+        public SimpleCanvas(PrintWriter writer) {
+            initialize(writer);
+        }
+
+        @Override
+        public SimpleCanvas self() {
+            return this;
+        }
+
+    }
+
     @Override
     public void handle(Throwable t, HttpServletRequest request,
             HttpServletResponse response) {
@@ -49,9 +61,9 @@ public class DefaultStartupErrorHandler implements StartupErrorHandler {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.setContentType("text/html; charset=UTF-8");
             try (PrintWriter writer = response.getWriter()) {
-                HtmlCanvas html = new HtmlCanvas(writer);
+                SimpleCanvas html = new SimpleCanvas(writer);
                 // @formatter:off
-			html.write("<!DOCTYPE html>",false)
+			html.writeUnescaped("<!DOCTYPE html>")
 			.html()
 				.head()
 					.title().content("Startup Error")
@@ -68,8 +80,8 @@ public class DefaultStartupErrorHandler implements StartupErrorHandler {
 						._pre();
 					}
 					if (stage==ApplicationStage.DEVELOPMENT){
-						html.form(method("POST").action(dropAndCreatePathInfo))
-							.input(type("submit").value("Drop-and-Create Database"))
+						html.form().METHOD("POST").ACTION(dropAndCreatePathInfo)
+							.input().TYPE("submit").VALUE("Drop-and-Create Database")
 						._form();
 					}
 				html._body()

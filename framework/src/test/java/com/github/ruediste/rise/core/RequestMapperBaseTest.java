@@ -3,6 +3,7 @@ package com.github.ruediste.rise.core;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -21,9 +22,11 @@ import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
+import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndex;
 import com.github.ruediste.rise.util.AsmUtil;
 import com.github.ruediste.rise.util.AsmUtil.MethodRef;
+import com.github.ruediste.rise.util.MethodInvocation;
 import com.google.common.collect.BiMap;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -100,8 +103,8 @@ public class RequestMapperBaseTest {
         when(index.tryGetNode(any())).thenReturn(Optional.empty());
         when(index.tryGetNode(a.name)).thenReturn(Optional.of(a));
         when(index.tryGetNode(b.name)).thenReturn(Optional.of(b));
-        when(config.calculateControllerName(a)).thenReturn("/a/");
-        when(config.calculateControllerName(b)).thenReturn("/b/");
+        when(config.calculateControllerName(a)).thenReturn("a");
+        when(config.calculateControllerName(b)).thenReturn("b");
     }
 
     @Test
@@ -123,5 +126,15 @@ public class RequestMapperBaseTest {
                                 + Type.getDescriptor(ActionResult.class)),
                         new MethodRef(b.name, "b", "()"
                                 + Type.getDescriptor(ActionResult.class))));
+    }
+
+    @Test
+    public void testGenerateBaseClass() throws Throwable {
+        mapper.register(b);
+        ActionInvocation<String> invocation = new ActionInvocation<>();
+        invocation.methodInvocation = new MethodInvocation<>(A.class,
+                A.class.getMethod("a"));
+        PathInfo pathInfo = mapper.generate(invocation);
+        assertEquals("/b.a", pathInfo.getValue());
     }
 }

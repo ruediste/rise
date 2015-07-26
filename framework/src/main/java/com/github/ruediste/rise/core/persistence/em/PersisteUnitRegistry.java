@@ -37,6 +37,10 @@ public class PersisteUnitRegistry {
 
     }
 
+    /**
+     * Get the managed types for the given persistence unit. If the map is not
+     * yet loaded, load it.
+     */
     public Optional<Map<Class<?>, ManagedType<?>>> getManagedTypeMap(
             Class<? extends Annotation> qualifier) {
         return managedTypeMaps

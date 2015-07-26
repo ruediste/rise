@@ -143,6 +143,18 @@ public class BindingUtil {
     }
 
     /**
+     * Add a binding to a binding group
+     */
+    static public <T> void bind(AttachedPropertyBearer component,
+            BindingGroup<T> group, Consumer<T> pullUp, Consumer<T> pushDown) {
+        Binding<T> binding = new Binding<>();
+        binding.setComponent(component);
+        binding.setPullUp(pullUp);
+        binding.setPushDown(pushDown);
+        group.addBinding(binding);
+    }
+
+    /**
      * Add a binding to a binding group sepecified by an accessor.
      * 
      * @param <T>
@@ -153,7 +165,6 @@ public class BindingUtil {
      *            access {@link BindingGroup#proxy()} of the binding group to
      *            add the binding to
      */
-
     static public <T> void bind(AttachedPropertyBearer component,
             Supplier<T> bindingGroupAccessor, Consumer<T> pullUp,
             Consumer<T> pushDown) {

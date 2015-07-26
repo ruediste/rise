@@ -36,7 +36,7 @@ public class ClassArgumentSerializer implements ArgumentSerializer {
     @Override
     public Supplier<Object> parse(AnnotatedType type, String urlPart) {
         if ("".equals(urlPart))
-            return null;
+            return () -> null;
         return () -> {
             try {
                 return config.dynamicClassLoader.loadClass(urlPart);

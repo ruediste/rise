@@ -1,11 +1,13 @@
 package com.github.ruediste.rise.core;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
 import javax.inject.Inject;
 
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -25,6 +27,9 @@ import com.github.ruediste.rise.util.Pair;
 import com.google.common.base.Splitter;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 
 /**
  * Registers the {@link ControllerMvc}s with the {@link PathInfoIndex} during
@@ -55,6 +60,16 @@ public abstract class RequestMapperBase implements RequestMapper {
     final HashMap<Pair<String, MethodRef>, String> methodToPrefixMap = new HashMap<>();
 
     /**
+     * Map controller methods to prefixes. Unlike {@link #methodToPrefixMap},
+     * the instance class of the controller is not included. The entries are
+     * only used if there is exactly one prefix per {@link MethodRef}. The map
+     * allows {@link #generate(ActionInvocation)} to generate paths if the base
+     * class is given instead of the actual registered controller class.
+     */
+    final Multimap<MethodRef, String> baseMethodToPrefixMap = MultimapBuilder
+            .hashKeys().arrayListValues().build();
+
+    /**
      * Map between methods and their action method names, grouped by class
      */
     final HashMap<String, BiMap<MethodRef, String>> actionMethodNameMap = new HashMap<>();
@@ -69,8 +84,12 @@ public abstract class RequestMapperBase implements RequestMapper {
     @Override
     public void initialize() {
         String internalName = Type.getInternalName(controllerInterface);
-        for (ClassNode cls : cache.getAllChildren(internalName))
+        for (ClassNode cls : cache.getAllChildren(internalName)) {
+            // skip abstract methods
+            if ((cls.access & Opcodes.ACC_ABSTRACT) != 0)
+                continue;
             register(cls);
+        }
     }
 
     void register(ClassNode cls) {
@@ -86,7 +105,6 @@ public abstract class RequestMapperBase implements RequestMapper {
         ClassNode instanceCls = cls;
         // TODO: testing
         while (cls != null) {
-            ClassNode clsFinal = cls;
             HashSet<String> addedMethods = new HashSet<>();
 
             if (cls.methods != null)
@@ -154,6 +172,8 @@ public abstract class RequestMapperBase implements RequestMapper {
                     }
 
                     methodToPrefixMap.put(Pair.of(instanceCls.name, methodRef),
+                            pathInfos.primaryPathInfo);
+                    baseMethodToPrefixMap.put(methodRef,
                             pathInfos.primaryPathInfo);
                 }
             subclassMethods.addAll(addedMethods);
@@ -226,6 +246,14 @@ public abstract class RequestMapperBase implements RequestMapper {
         String prefix = methodToPrefixMap.get(Pair.of(
                 Type.getInternalName(path.methodInvocation.getInstanceClass()),
                 ref));
+
+        // try the base map
+        if (prefix == null) {
+            Collection<String> prefixes = baseMethodToPrefixMap.get(ref);
+            if (prefixes.size() == 1)
+                prefix = Iterables.getOnlyElement(prefixes);
+        }
+
         if (prefix == null)
             throw new RuntimeException("Unable to find prefix for\n" + ref
                     + "\nfor instance class "

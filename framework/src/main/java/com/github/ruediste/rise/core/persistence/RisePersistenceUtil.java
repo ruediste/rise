@@ -2,6 +2,7 @@ package com.github.ruediste.rise.core.persistence;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -40,9 +41,18 @@ public class RisePersistenceUtil {
      */
     public ManagedType<?> getManagedType(Class<? extends Annotation> qualifier,
             Class<?> cls) {
-        ManagedType<?> managedType = registry.getManagedTypeMap(qualifier)
-                .get().get(cls);
+        ManagedType<?> managedType = getManagedTypeMap(qualifier).get()
+                .get(cls);
         return managedType;
+    }
+
+    /**
+     * Get the managed types for the given persistence unit. If the map is not
+     * yet loaded, load it.
+     */
+    public Optional<Map<Class<?>, ManagedType<?>>> getManagedTypeMap(
+            Class<? extends Annotation> qualifier) {
+        return registry.getManagedTypeMap(qualifier);
     }
 
     /**
@@ -92,8 +102,8 @@ public class RisePersistenceUtil {
         return getIdentifier(holder.getEntityManager(qualifier), entity);
     }
 
-    public Optional<Class<? extends Annotation>> getEmQualifier(Object entity) {
-        return getEmEntry(entity).map(e -> e.getKey());
+    public Class<? extends Annotation> getEmQualifier(Object entity) {
+        return getEmEntry(entity).get().getKey();
     }
 
     public Optional<Entry<Class<? extends Annotation>, EntityManager>> getEmEntry(

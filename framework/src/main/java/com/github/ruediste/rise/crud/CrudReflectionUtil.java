@@ -16,6 +16,11 @@ public class CrudReflectionUtil {
                 .values());
     }
 
+    public List<PropertyDeclaration> getEditProperties(Class<?> cls) {
+        return new ArrayList<>(PropertyUtil.getPropertyIntroductionMap(cls)
+                .values());
+    }
+
     public List<PropertyDeclaration> getBrowserProperties(Class<?> cls) {
         ArrayList<PropertyDeclaration> result = new ArrayList<>();
 

@@ -98,4 +98,22 @@ public class CrudUtil {
 
     }
 
+    @ImplementedBy(DefaultEditFactory.class)
+    public interface EditFactory {
+
+        Object createEdit(Object entity);
+    }
+
+    private static class DefaultEditFactory implements EditFactory {
+
+        @Inject
+        Provider<DefaultCrudEditController> provider;
+
+        @Override
+        public Object createEdit(Object entity) {
+            return provider.get().initialize(entity);
+        }
+
+    }
+
 }
