@@ -29,10 +29,10 @@ public class TestSubController {
                             .getValue())))
                     ._span()
 
-                    .add(new CButton("refresh").CLASS("refresh").handler(
+                    .add(new CButton("refresh").CLASS("refresh").setHandler(
                             controller::refresh))
 
-                    .add(new CButton("save").CLASS("save").handler(
+                    .add(new CButton("save").CLASS("save").setHandler(
                             controller::save))
 
                     .add(new CTextField().bind(g -> g

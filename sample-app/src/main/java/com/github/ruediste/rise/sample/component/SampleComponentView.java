@@ -30,7 +30,7 @@ public class SampleComponentView extends
                 .add(toComponentDirect(x -> x.write(messageUtil
                         .getMessageInterfaceInstance(Messages.class)
                         .theCounterIs(controller.counter))))
-                .add(new CButton("ClickMe").handler(() -> controller.inc()))
+                .add(new CButton("ClickMe").setHandler(() -> controller.inc()))
                 .add(new CTextField().bindText(() -> controller
                         .getData().getText()))));
     }

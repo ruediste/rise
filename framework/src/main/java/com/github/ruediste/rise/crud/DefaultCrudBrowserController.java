@@ -16,23 +16,24 @@ import javax.persistence.criteria.Root;
 
 import com.github.ruediste.c3java.properties.PropertyDeclaration;
 import com.github.ruediste.rendersnakeXT.canvas.Glyphicon;
+import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CButton;
+import com.github.ruediste.rise.component.components.CButtonTemplate;
 import com.github.ruediste.rise.component.components.CDataGrid;
 import com.github.ruediste.rise.component.components.CDataGrid.Cell;
 import com.github.ruediste.rise.component.components.CDataGrid.Column;
 import com.github.ruediste.rise.component.components.CText;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
-import com.github.ruediste.rise.core.web.RedirectRenderResult;
 import com.github.ruediste.rise.crud.CrudPropertyFilter.CrudFilterPersitenceContext;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.github.ruediste1.i18n.label.Labeled;
 import com.github.ruediste1.i18n.label.MembersLabeled;
 
-public class DefaultCrudBrowserController<T> {
+public class DefaultCrudBrowserController<T> extends SubControllerComponent {
     @Inject
     CrudReflectionUtil crudReflectionUtil;
 
@@ -65,9 +66,9 @@ public class DefaultCrudBrowserController<T> {
                         Objects.toString(p.getValue(item))))));
             }
             columns.add(new Column<T>(() -> new Cell(new CText(
-                    label(Messages.ACTIONS))), item -> new Cell(new CButton(
-                    controller, x -> x.display(item)).setIconOnly(true).args(
-                    x -> x.primary()))));
+                    label(Messages.ACTIONS))), item -> new Cell(new CButton(go(
+                    CrudControllerBase.class).display(item), true)
+                    .apply(CButtonTemplate.setArgs(x -> x.primary())))));
 //@formatter:off
             return toComponent(html -> html
                     .h1().content("Browser for " + controller.entityClass)
@@ -80,7 +81,7 @@ public class DefaultCrudBrowserController<T> {
                         })
                       ._div()
                     ._div()
-                    .add(new CButton(controller, x -> x.search()).args(x->x.primary()))
+                    .add(new CButton(controller, x -> x.search()).apply(CButtonTemplate.setArgs(x->x.primary())))
                     .add(new CDataGrid<T>().setColumns(columns).bindOneWay(
                             g -> g.setItems(controller.data().getItems()))));
 //@formatter:off
@@ -120,12 +121,6 @@ public class DefaultCrudBrowserController<T> {
 
     private Class<? extends Annotation> emQualifier;
 
-    @Labeled
-    @GlyphiconIcon(Glyphicon.eye_open)
-    public void display(T item){
-        componentUtil.closePage(new RedirectRenderResult(componentUtil.toPathInfo(componentUtil.go(CrudControllerBase.class).display(item))));
-    }
-    
     @Labeled
     @GlyphiconIcon(Glyphicon.search)
     public void search() {
@@ -174,8 +169,7 @@ public class DefaultCrudBrowserController<T> {
         this.emQualifier = emQualifier;
 
         properties = crudReflectionUtil.getBrowserProperties(entityClass);
-        filterList = properties.stream().map(filters::createPropertyFilter)
-                .collect(toList());
+        filterList = properties.stream().map(filters::create).collect(toList());
 
         search();
 

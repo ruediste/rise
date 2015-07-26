@@ -7,11 +7,16 @@ import java.util.List;
 
 import com.github.ruediste.c3java.properties.PropertyDeclaration;
 import com.github.ruediste.c3java.properties.PropertyUtil;
-import com.github.ruediste.rise.crud.annotations.CrudColumn;
+import com.github.ruediste.rise.crud.annotations.CrudBrowserColumn;
 
 public class CrudReflectionUtil {
 
-    List<PropertyDeclaration> getBrowserProperties(Class<?> cls) {
+    public List<PropertyDeclaration> getDisplayProperties(Class<?> cls) {
+        return new ArrayList<>(PropertyUtil.getPropertyIntroductionMap(cls)
+                .values());
+    }
+
+    public List<PropertyDeclaration> getBrowserProperties(Class<?> cls) {
         ArrayList<PropertyDeclaration> result = new ArrayList<>();
 
         Collection<PropertyDeclaration> allDeclarations = PropertyUtil
@@ -20,7 +25,7 @@ public class CrudReflectionUtil {
             Field backingField = declaration.getBackingField();
             if (backingField == null)
                 continue;
-            if (backingField.isAnnotationPresent(CrudColumn.class))
+            if (backingField.isAnnotationPresent(CrudBrowserColumn.class))
                 result.add(declaration);
         }
         if (result.isEmpty())

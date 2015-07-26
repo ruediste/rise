@@ -54,7 +54,7 @@ public class FileUploadController extends ControllerComponent {
                                                 ._bRow()
 
                                                 .add(new CButton("Upload")
-                                                        .handler(() -> controller
+                                                        .setHandler(() -> controller
                                                                 .upload())));
                                     })
                             .put(Mode.UPLOAD,
@@ -64,7 +64,7 @@ public class FileUploadController extends ControllerComponent {
                                                 .h1()
                                                 .content("File Upload Demo")
                                                 .add(fileInput)
-                                                .add(new CButton("Done").handler(() -> {
+                                                .add(new CButton("Done").setHandler(() -> {
                                                     controller.uploaded(fileInput
                                                             .getUploadedFiles());
                                                 })));

@@ -67,4 +67,9 @@ public abstract class ComponentBase<TSelf extends AttachedPropertyBearer>
         return class_;
     }
 
+    public TSelf apply(Consumer<TSelf> consumer) {
+        TSelf self = self();
+        consumer.accept(self);
+        return self;
+    }
 }

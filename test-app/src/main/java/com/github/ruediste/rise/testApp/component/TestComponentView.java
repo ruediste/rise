@@ -23,7 +23,7 @@ public class TestComponentView extends ViewComponent<TestComponentController> {
                 .div().ID("main")
                     .span().ID("mainValue").add(toComponentDirect(x->x.write(controller.entity.getValue())))
                     ._span()
-                    .add(new CButton("refresh").CLASS("refresh").handler(controller::refresh))
+                    .add(new CButton("refresh").CLASS("refresh").setHandler(controller::refresh))
                 ._div()
             ));
     }

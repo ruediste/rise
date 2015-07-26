@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * Mark a property as identifying. It is shown in 'identify' and
- * 'identify-table'. Also implies {@link CrudColumn @CrudColumn}.
+ * 'identify-table'. Also implies {@link CrudBrowserColumn @CrudBrowserColumn}.
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

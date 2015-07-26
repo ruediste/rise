@@ -20,8 +20,8 @@ public class SubViewController extends ControllerComponent {
             // @formatter:off
             return new CPage(label(this))
                     .add(toSubView(() -> controller.data(),x->x.getSubController()))
-                    .add(new CButton("Sub1").CLASS("sub1").handler(() -> controller.showController1()))
-                    .add(new CButton("Sub2").CLASS("sub2").handler(() -> controller.showController2()));
+                    .add(new CButton("Sub1").CLASS("sub1").setHandler(() -> controller.showController1()))
+                    .add(new CButton("Sub2").CLASS("sub2").setHandler(() -> controller.showController2()));
             // @formatter:on
         }
     }

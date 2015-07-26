@@ -20,7 +20,16 @@ public interface ComponentFactory<TCanvas extends HtmlCanvas<?>> {
 
     /**
      * Create a component containing a rendered form of the given renderable.
-     * The renderable will be evaluated only once.
+     * The renderable will be evaluated only once. Usage:
+     * 
+     * <pre>
+     * {@code
+     * toComponent(html -> html
+     *   .div.CLASS("foo")
+     *     .add(new CButton("hello"))
+     *   ._div());
+     * }
+     * </pre>
      */
     default Component toComponent(Renderable<TCanvas> renderable) {
         return internal_componentFactoryUtil().toComponent(renderable);

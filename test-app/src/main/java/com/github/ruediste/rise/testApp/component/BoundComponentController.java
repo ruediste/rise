@@ -30,9 +30,9 @@ public class BoundComponentController extends ControllerComponent {
                     .add(new CTextField().CLASS("textField").bindText(
                             () -> controller.data().getValue()))
 
-                    .add(new CButton("pushDown").CLASS("pushDown").handler(
+                    .add(new CButton("pushDown").CLASS("pushDown").setHandler(
                             () -> controller.pushDown()))
-                    .add(new CButton("pullUp").CLASS("pullUp").handler(
+                    .add(new CButton("pullUp").CLASS("pullUp").setHandler(
                             () -> controller.pullUp()))
 
             ));

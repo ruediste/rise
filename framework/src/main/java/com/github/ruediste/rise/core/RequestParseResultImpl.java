@@ -1,16 +1,15 @@
-package com.github.ruediste.rise.mvc;
+package com.github.ruediste.rise.core;
 
 import java.util.function.Consumer;
 
-import com.github.ruediste.rise.core.RequestParseResult;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 
-public class MvcRequestParseResult implements RequestParseResult {
+public class RequestParseResultImpl implements RequestParseResult {
 
     private Consumer<ActionInvocation<String>> handler;
     private final ActionInvocation<String> invocation;
 
-    public MvcRequestParseResult(ActionInvocation<String> invocation,
+    public RequestParseResultImpl(ActionInvocation<String> invocation,
             Consumer<ActionInvocation<String>> handler) {
         this.invocation = invocation;
         this.handler = handler;

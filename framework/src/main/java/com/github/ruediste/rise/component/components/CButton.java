@@ -4,25 +4,23 @@ import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
 import com.github.ruediste.c3java.invocationRecording.MethodInvocationRecorder;
-import com.github.ruediste.rendersnakeXT.canvas.BootstrapCanvasCss.B_ButtonArgs;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.core.ActionResult;
+import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
 
 /**
- * Represents a button.
+ * A button triggering a handler on the server. For a direct link, use
+ * {@link CButtonLink}
  * 
  * <p>
  * If no children are present, the handler will be used to determine the invoked
  * proxy method on the controller. The label (mandatory) and icon (optional)
  * present on that method are shown.
  */
-@DefaultTemplate(CButtonHtmlTemplate.class)
+@DefaultTemplate(CButtonTemplate.class)
 public class CButton extends MultiChildrenComponent<CButton> {
     private Runnable handler;
-    private Method invokedMethod;
-    private Consumer<B_ButtonArgs> args = x -> {
-    };
-
-    private boolean iconOnly;
+    private ActionResult target;
 
     public CButton() {
     }
@@ -37,21 +35,56 @@ public class CButton extends MultiChildrenComponent<CButton> {
 
     /**
      * When the button is clicked, the handler will be called with the target as
-     * argument.
-     * 
-     * <p>
-     * The button is rendered using the label an icon of the method invoked by
-     * the handler.
-     * 
+     * argument. A {@link CIconLabel} is added as child, using the invoked
+     * method to obtain a label and an (optional) icon.
      */
-    @SuppressWarnings("unchecked")
     public <T> CButton(T target, Consumer<T> handler) {
-        this.handler = () -> handler.accept(target);
-        invokedMethod = MethodInvocationRecorder.getLastInvocation(
-                (Class<T>) target.getClass(), handler).getMethod();
+        this(target, handler, false);
     }
 
-    public CButton handler(Runnable handler) {
+    /**
+     * Create a button which will link directly to the specified target (without
+     * causing a request to the containing page). A {@link CIconLabel} is added
+     * as child, using the invoked action method to obtain a label and an
+     * (optional) icon.
+     */
+    public <T> CButton(ActionResult target) {
+        this(target, false);
+    }
+
+    /**
+     * Create a button which will link directly to the specified target (without
+     * causing a request to the containing page). A {@link CIconLabel} is added
+     * as child, using the invoked action method to obtain a label and an
+     * (optional) icon.
+     */
+    public <T> CButton(ActionResult target, boolean showIconOnly) {
+        this.setTarget(target);
+        Method invokedMethod = ((ActionInvocationResult) target).methodInvocation
+                .getMethod();
+        add(new CIconLabel().setMethod(invokedMethod).setShowIconOnly(
+                showIconOnly));
+    }
+
+    /**
+     * When the button is clicked, the handler will be called with the target as
+     * argument. A {@link CIconLabel} is added as child, using the invoked
+     * method to obtain a label and an (optional) icon.
+     */
+    @SuppressWarnings("unchecked")
+    public <T> CButton(T target, Consumer<T> handler, boolean showIconOnly) {
+        this.handler = () -> handler.accept(target);
+        Method invokedMethod = MethodInvocationRecorder.getLastInvocation(
+                (Class<T>) target.getClass(), handler).getMethod();
+        add(new CIconLabel().setMethod(invokedMethod).setShowIconOnly(
+                showIconOnly));
+    }
+
+    public CButton setHandler(Runnable handler) {
+        if (target != null && handler != null)
+            throw new IllegalStateException(
+                    "Cannot set handler if the target is set. Clear target first");
+
         this.handler = handler;
         return this;
     }
@@ -60,33 +93,15 @@ public class CButton extends MultiChildrenComponent<CButton> {
         return handler;
     }
 
-    /**
-     * Return the method which get's invoked by this button. If non-null, the
-     * optional icon and the label should be rendered instead of the children.
-     */
-    public Method getInvokedMethod() {
-        return invokedMethod;
+    public ActionResult getTarget() {
+        return target;
     }
 
-    public CButton args(Consumer<B_ButtonArgs> args) {
-        this.args = args;
-        return this;
-    }
-
-    public Consumer<B_ButtonArgs> getArgs() {
-        return args;
-    }
-
-    public boolean isIconOnly() {
-        return iconOnly;
-    }
-
-    /**
-     * If set to true, only the icon will be shown if the {@link #invokedMethod}
-     * is set.
-     */
-    public CButton setIconOnly(boolean iconOnly) {
-        this.iconOnly = iconOnly;
+    public CButton setTarget(ActionResult target) {
+        if (target != null && handler != null)
+            throw new IllegalStateException(
+                    "Cannot set target if the handler is set. Clear handler first");
+        this.target = target;
         return this;
     }
 

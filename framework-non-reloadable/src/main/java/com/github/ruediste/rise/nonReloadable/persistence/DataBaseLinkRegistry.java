@@ -30,7 +30,7 @@ public class DataBaseLinkRegistry {
     private final ArrayList<DataBaseLink> links = new ArrayList<>();
     final private HashMap<Class<? extends Annotation>, DataBaseLink> linkMap = new HashMap<>();
 
-    public Class<? extends Annotation> getQualifier(int linkNr) {
+    public Class<? extends Annotation> getQualifierByNr(int linkNr) {
         return linkNrs.inverse().get(linkNr);
     }
 

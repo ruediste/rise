@@ -7,11 +7,11 @@ import com.github.ruediste.rise.component.ComponentConfiguration;
 import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.component.IControllerComponent;
 import com.github.ruediste.rise.core.CoreRequestInfo;
+import com.github.ruediste.rise.core.RequestParseResultImpl;
 import com.github.ruediste.rise.core.PathInfoIndex;
 import com.github.ruediste.rise.core.RequestMapperBase;
 import com.github.ruediste.rise.core.RequestParseResult;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
-import com.github.ruediste.rise.mvc.MvcRequestParseResult;
 
 /**
  * Registers the {@link ControllerMvc}s with the {@link PathInfoIndex} during
@@ -35,7 +35,7 @@ public class ComponentRequestMapperImpl extends RequestMapperBase {
 
     @Override
     protected RequestParseResult createParseResult(ActionInvocation<String> path) {
-        return new MvcRequestParseResult(path, actionInvocation -> {
+        return new RequestParseResultImpl(path, actionInvocation -> {
             componentRequestInfo.setComponentRequest(true);
             try {
                 requestInfo.setStringActionInvocation(actionInvocation);

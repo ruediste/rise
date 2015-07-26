@@ -1,7 +1,6 @@
 package com.github.ruediste.rise.crud;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.function.Function;
 
 import javax.inject.Inject;
@@ -25,7 +24,8 @@ import com.google.common.primitives.Primitives;
 import com.google.common.reflect.TypeToken;
 
 @Singleton
-public class CrudPropertyFilters {
+public class CrudPropertyFilters extends
+        FactoryCollection<PropertyDeclaration, CrudPropertyFilter> {
 
     @Inject
     LabelUtil labelUtil;
@@ -49,11 +49,9 @@ public class CrudPropertyFilters {
     @Inject
     Messages messages;
 
-    private final ArrayList<Function<PropertyDeclaration, CrudPropertyFilter>> filterFactories = new ArrayList<>();
-
     {
-        filterFactories
-                .add(new Function<PropertyDeclaration, CrudPropertyFilter>() {
+        getFactories().add(
+                new Function<PropertyDeclaration, CrudPropertyFilter>() {
                     @Override
                     public CrudPropertyFilter apply(PropertyDeclaration decl) {
 
@@ -148,18 +146,4 @@ public class CrudPropertyFilters {
                 });
     }
 
-    public ArrayList<Function<PropertyDeclaration, CrudPropertyFilter>> getFilterFactories() {
-        return filterFactories;
-    }
-
-    public CrudPropertyFilter createPropertyFilter(PropertyDeclaration decl) {
-        return filterFactories
-                .stream()
-                .map(x -> x.apply(decl))
-                .filter(x -> x != null)
-                .findFirst()
-                .orElseThrow(
-                        () -> new RuntimeException(
-                                "No FilterFactory found for " + decl));
-    }
 }
