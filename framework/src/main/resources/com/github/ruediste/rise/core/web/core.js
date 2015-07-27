@@ -41,12 +41,19 @@ var rise = (function() {
 			url : $("body").data("rise-reload-url") + "?page="+$("body").data("rise-page-nr")+"&nr="
 					+ receiver.data("rise-component-nr"),
 			data : data,
-			success : function(data) {
-				var dom=$.parseHTML(data);
-				receiver.replaceWith(dom);
-				onReload.fire($(dom));
+			success : function(data, status, jqXHR) {
+				var redirectTarget=jqXHR.getResponseHeader("rise-redirect-target");
+				if (redirectTarget){
+					window.location=redirectTarget;
+				}
+				else {
+				   var dom=$.parseHTML(data);
+				   receiver.replaceWith(dom);
+				   onReload.fire($(dom));
+				}
 			},
-			dataType : "html"
+			dataType : "html",
+			headers: { "rise-is-ajax": "true"}
 		});
 	};
 	
