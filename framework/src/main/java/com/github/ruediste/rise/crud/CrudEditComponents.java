@@ -36,13 +36,14 @@ public class CrudEditComponents extends
 
                     @Override
                     public Component createComponent(BindingGroup<?> group) {
-                        CTextField result = new CTextField().setLabel(labelUtil
-                                .getPropertyLabel(decl));
+                        CTextField result = new CTextField().setLabel(
+                                labelUtil.getPropertyLabel(decl)).bindText(
+                                () -> (String) decl.getValue(group.proxy()));
 
-                        BindingUtil.bind(result, group,
-                                entity -> result.setText(String.valueOf(decl
-                                        .getValue(entity))), entity -> decl
-                                        .setValue(entity, result.getText()));
+                        // BindingUtil.bind(result, group,
+                        // entity -> result.setText(String.valueOf(decl
+                        // .getValue(entity))), entity -> decl
+                        // .setValue(entity, result.getText()));
                         return result;
                     }
                 };

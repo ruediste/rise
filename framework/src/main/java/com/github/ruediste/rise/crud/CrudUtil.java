@@ -116,4 +116,42 @@ public class CrudUtil {
 
     }
 
+    @ImplementedBy(DefaultCreateFactory.class)
+    public interface CreateFactory {
+
+        Object createCreate(Class<?> entityClass,
+                Class<? extends Annotation> emQualifier);
+    }
+
+    private static class DefaultCreateFactory implements CreateFactory {
+
+        @Inject
+        Provider<DefaultCrudCreateController> provider;
+
+        @Override
+        public Object createCreate(Class<?> entityClass,
+                Class<? extends Annotation> emQualifier) {
+            return provider.get().initialize(entityClass, emQualifier);
+        }
+
+    }
+
+    @ImplementedBy(DefaultDeleteFactory.class)
+    public interface DeleteFactory {
+
+        Object createDelete(Object entity);
+    }
+
+    private static class DefaultDeleteFactory implements DeleteFactory {
+
+        @Inject
+        Provider<DefaultCrudDeleteController> provider;
+
+        @Override
+        public Object createDelete(Object entity) {
+            return provider.get().initialize(entity);
+        }
+
+    }
+
 }

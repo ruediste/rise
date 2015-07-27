@@ -5,6 +5,8 @@ import java.util.function.Function;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Path;
 
 import com.github.ruediste.c3java.properties.PropertyDeclaration;
 import com.github.ruediste.rise.component.ComponentFactoryUtil;
@@ -71,9 +73,14 @@ public class CrudPropertyFilters extends
                                 @Override
                                 public void applyFilter(
                                         CrudFilterPersitenceContext ctx) {
-                                    ctx.addWhere(ctx.cb().like(
-                                            ctx.root().get(decl.getName()),
-                                            "%" + textField.getText() + "%"));
+                                    CriteriaBuilder cb = ctx.cb();
+                                    Path<String> path = ctx.root().get(
+                                            decl.getName());
+                                    ctx.addWhere(cb.or(
+                                            path.isNull(),
+                                            cb.like(path,
+                                                    "%" + textField.getText()
+                                                            + "%")));
                                 }
                             };
                         }

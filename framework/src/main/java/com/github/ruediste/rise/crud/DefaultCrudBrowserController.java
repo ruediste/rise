@@ -78,11 +78,15 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent {
                         .getPropertyLabel(p)), item -> new Cell(new CText(
                         Objects.toString(p.getValue(item))))));
             }
-            columns.add(new Column<T>(() -> new Cell(new CText(messages
-                    .actions())), item -> new Cell(new CButton(go(
-                    CrudControllerBase.class).display(item), true)
-                    .apply(CButtonTemplate.setArgs(x -> x.primary())))));
 //@formatter:off
+            columns.add(new Column<T>(
+                    () -> new Cell(new CText(messages.actions())),
+                    item -> new Cell(toComponent(html -> html
+                            .add(new CButton(go(CrudControllerBase.class).display(item), true)
+                              .apply(CButtonTemplate.setArgs(x -> x.primary())))
+                            .add(new CButton(go(CrudControllerBase.class).delete(item), true)
+                              .apply(CButtonTemplate.setArgs(x -> x.danger())))
+                              ))));
             return toComponent(html -> html
                     .h1().content(messages.browserFor(controller.entityClass.getName()))
                     .div().CLASS("panel panel-default")
@@ -95,6 +99,7 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent {
                       ._div()
                     ._div()
                     .add(new CButton(controller, x -> x.search()).apply(CButtonTemplate.setArgs(x->x.primary())))
+                    .add(new CButton(go(CrudControllerBase.class).create(controller.entityClass, controller.emQualifier)).apply(CButtonTemplate.setArgs(x->{})))
                     .add(new CDataGrid<T>().setColumns(columns).bindOneWay(
                             g -> g.setItems(controller.data().getItems()))));
 //@formatter:off

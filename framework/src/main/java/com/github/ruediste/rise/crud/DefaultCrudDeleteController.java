@@ -4,7 +4,6 @@ import java.lang.annotation.Annotation;
 
 import javax.inject.Inject;
 
-import com.github.ruediste.c3java.properties.PropertyDeclaration;
 import com.github.ruediste.rendersnakeXT.canvas.Glyphicon;
 import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.component.binding.BindingGroup;
@@ -13,15 +12,26 @@ import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.persistence.RisePersistenceUtil;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
+import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.Labeled;
+import com.github.ruediste1.i18n.message.TMessage;
+import com.github.ruediste1.i18n.message.TMessages;
 
-public class DefaultCrudEditController extends SubControllerComponent {
+public class DefaultCrudDeleteController extends SubControllerComponent {
 
     @Inject
     RisePersistenceUtil util;
 
+    @TMessages
+    public interface Messages {
+        @TMessage("Really delete {name}")
+        LString delete(String name);
+    }
+
     static class View extends
-            DefaultCrudViewComponent<DefaultCrudEditController> {
+            DefaultCrudViewComponent<DefaultCrudDeleteController> {
+        @Inject
+        Messages messages;
         @Inject
         CrudReflectionUtil util;
 
@@ -31,16 +41,19 @@ public class DefaultCrudEditController extends SubControllerComponent {
         @Override
         protected Component createComponents() {
             return toComponent(html -> {
-                for (PropertyDeclaration p : util
-                        .getEditProperties(controller.entityGroup.get()
-                                .getClass())) {
-                    html.add(editComponents.create(p).createComponent(
-                            controller.entityGroup));
-                }
-                html.add(new CButton(controller, c -> c.save()));
+                html.div()
+                        .B_BG_DANGER()
+                        .content(
+                                messages.delete(controller.entityGroup.get()
+                                        .getClass().getName()));
+
+                html.add(new CButton(controller, c -> c.delete()));
                 html.rButtonA(go(CrudControllerBase.class).browse(
                         controller.entityGroup.get().getClass(),
                         controller.emQualifier));
+                html.rButtonA(
+                        go(CrudControllerBase.class).display(
+                                controller.entityGroup.get()), x -> x.danger());
 
             });
         }
@@ -54,9 +67,9 @@ public class DefaultCrudEditController extends SubControllerComponent {
         return entityGroup.proxy();
     }
 
-    public DefaultCrudEditController initialize(Object entity) {
+    public DefaultCrudDeleteController initialize(Object entity) {
         this.entityGroup = new BindingGroup<>(entity);
-        emQualifier = util.getEmQualifier(entity);
+        this.emQualifier = util.getEmQualifier(entity);
         return this;
     }
 
@@ -64,10 +77,12 @@ public class DefaultCrudEditController extends SubControllerComponent {
     EntityManagerHolder holder;
 
     @Labeled
-    @GlyphiconIcon(Glyphicon.save)
-    void save() {
-        entityGroup.pushDown();
+    @GlyphiconIcon(Glyphicon.remove_sign)
+    void delete() {
+        Object entity = entityGroup.get();
+        Class<? extends Object> entityClass = entity.getClass();
+        holder.getEntityManager(emQualifier).remove(entity);
         commit();
-        redirect(go(CrudControllerBase.class).display(entityGroup.get()));
+        redirect(go(CrudControllerBase.class).browse(entityClass, emQualifier));
     }
 }

@@ -15,13 +15,13 @@ import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
 import com.github.ruediste1.i18n.label.Labeled;
 
-public class DefaultCrudEditController extends SubControllerComponent {
+public class DefaultCrudCreateController extends SubControllerComponent {
 
     @Inject
     RisePersistenceUtil util;
 
     static class View extends
-            DefaultCrudViewComponent<DefaultCrudEditController> {
+            DefaultCrudViewComponent<DefaultCrudCreateController> {
         @Inject
         CrudReflectionUtil util;
 
@@ -37,7 +37,7 @@ public class DefaultCrudEditController extends SubControllerComponent {
                     html.add(editComponents.create(p).createComponent(
                             controller.entityGroup));
                 }
-                html.add(new CButton(controller, c -> c.save()));
+                html.add(new CButton(controller, c -> c.create()));
                 html.rButtonA(go(CrudControllerBase.class).browse(
                         controller.entityGroup.get().getClass(),
                         controller.emQualifier));
@@ -54,9 +54,15 @@ public class DefaultCrudEditController extends SubControllerComponent {
         return entityGroup.proxy();
     }
 
-    public DefaultCrudEditController initialize(Object entity) {
-        this.entityGroup = new BindingGroup<>(entity);
-        emQualifier = util.getEmQualifier(entity);
+    public DefaultCrudCreateController initialize(Class<?> entityClass,
+            Class<? extends Annotation> emQualifier) {
+        try {
+            this.entityGroup = new BindingGroup<>(entityClass.newInstance());
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException("Error while creating instance of "
+                    + entityClass + " for default create CRUD controller");
+        }
+        this.emQualifier = emQualifier;
         return this;
     }
 
@@ -64,9 +70,10 @@ public class DefaultCrudEditController extends SubControllerComponent {
     EntityManagerHolder holder;
 
     @Labeled
-    @GlyphiconIcon(Glyphicon.save)
-    void save() {
+    @GlyphiconIcon(Glyphicon.plus_sign)
+    void create() {
         entityGroup.pushDown();
+        holder.getEntityManager(emQualifier).persist(entityGroup.get());
         commit();
         redirect(go(CrudControllerBase.class).display(entityGroup.get()));
     }

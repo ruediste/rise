@@ -39,6 +39,9 @@ public class DefaultCrudDisplayController extends SubControllerComponent {
                         controller.data().getEmQualifier()));
                 html.rButtonA(go(CrudControllerBase.class).edit(
                         controller.data().getEntity()));
+                html.rButtonA(
+                        go(CrudControllerBase.class).delete(
+                                controller.data().getEntity()), x -> x.danger());
 
             });
         }

@@ -9,6 +9,8 @@ import com.github.ruediste.rise.api.ControllerComponent;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.crud.CrudUtil.BrowserFactory;
+import com.github.ruediste.rise.crud.CrudUtil.CreateFactory;
+import com.github.ruediste.rise.crud.CrudUtil.DeleteFactory;
 import com.github.ruediste.rise.crud.CrudUtil.DisplayFactory;
 import com.github.ruediste.rise.crud.CrudUtil.EditFactory;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
@@ -63,6 +65,25 @@ public abstract class CrudControllerBase extends ControllerComponent {
         data.get().setSubController(
                 crudUtil.getStrategy(EditFactory.class, entity.getClass())
                         .createEdit(entity));
+        return null;
+    }
+
+    @Labeled
+    @GlyphiconIcon(Glyphicon.plus_sign)
+    public ActionResult create(Class<?> entityClass,
+            Class<? extends Annotation> emQualifier) {
+        data.get().setSubController(
+                crudUtil.getStrategy(CreateFactory.class, entityClass)
+                        .createCreate(entityClass, emQualifier));
+        return null;
+    }
+
+    @Labeled
+    @GlyphiconIcon(Glyphicon.remove_sign)
+    public ActionResult delete(Object entity) {
+        data.get().setSubController(
+                crudUtil.getStrategy(DeleteFactory.class, entity.getClass())
+                        .createDelete(entity));
         return null;
     }
 }
