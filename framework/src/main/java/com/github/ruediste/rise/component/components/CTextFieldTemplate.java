@@ -15,12 +15,11 @@ public class CTextFieldTemplate extends
 
     @Override
     public void applyValues(CTextField component) {
-        component.setText(util.getParameterValue(component, "value"));
+        getParameterValue(component, "value").ifPresent(component::setText);
     }
 
     @Override
-    public void doRender(CTextField component,
-            BootstrapRiseCanvas<?> html) {
+    public void doRender(CTextField component, BootstrapRiseCanvas<?> html) {
         helper.renderInput(
                 component,
                 html,

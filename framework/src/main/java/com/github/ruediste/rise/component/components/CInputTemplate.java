@@ -14,7 +14,7 @@ public class CInputTemplate extends BootstrapComponentTemplateBase<CInput> {
 
     @Override
     public void applyValues(CInput component) {
-        component.setValue(util.getParameterValue(component, "value"));
+        getParameterValue(component, "value").ifPresent(component::setValue);
     }
 
     @Override

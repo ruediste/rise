@@ -37,6 +37,7 @@ import com.github.ruediste1.i18n.label.LabelUtil;
 import com.github.ruediste1.i18n.label.Labeled;
 import com.github.ruediste1.i18n.message.TMessage;
 import com.github.ruediste1.i18n.message.TMessages;
+import com.google.common.base.Preconditions;
 
 public class DefaultCrudBrowserController<T> extends SubControllerComponent
         implements CrudPicker {
@@ -68,6 +69,9 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent
 
             @TMessage("Browser for {clazz}")
             LString browserFor(String clazz);
+
+            @TMessage("Picker for {clazz}")
+            LString pickerFor(String clazz);
         }
 
         @Inject
@@ -88,24 +92,27 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent
             }
 //@formatter:off
             Function<T, Cell> actionsFactory;
-            if (controller.mode==Mode.BROWSER)
+            if (controller.mode==Mode.BROWSER) {
                 actionsFactory = item -> new Cell(toComponent(html -> html
                     .add(new CButton(go(CrudControllerBase.class).display(item), true)
                       .apply(CButtonTemplate.setArgs(x -> x.primary())))
                     .add(new CButton(go(CrudControllerBase.class).delete(item), true)
                       .apply(CButtonTemplate.setArgs(x -> x.danger())))
                       ));
-            else
+            } else {
                 actionsFactory = item -> new Cell(toComponent(html -> html
                         .add(new CButton(controller,c->c.pick(item), true)
                         .apply(CButtonTemplate.setArgs(x -> x.primary())))
                         ));
+            }
                 
             columns.add(new Column<T>(
                     () -> new Cell(new CText(messages.actions())),
                     actionsFactory));
             return toComponent(html -> html
-                    .h1().content(messages.browserFor(controller.entityClass.getName()))
+                    .h1().content(controller.mode==Mode.BROWSER?
+                      messages.browserFor(controller.entityClass.getName())
+                      :messages.pickerFor(controller.entityClass.getName()))
                     .div().CLASS("panel panel-default")
                       .div().CLASS("panel-heading")
                         .content(messages.filter())
@@ -115,14 +122,14 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent
                         })
                       ._div()
                     ._div()
-                    .fIf(controller.mode==Mode.BROWSER, ()->{html
-                        .add(new CButton(controller, x -> x.search()).apply(CButtonTemplate.setArgs(x->x.primary())))
-                        .add(new CButton(go(CrudControllerBase.class).create(controller.entityClass, controller.emQualifier)).apply(CButtonTemplate.setArgs(x->{})))
-                        .add(new CDataGrid<T>().setColumns(columns).bindOneWay(
-                            g -> g.setItems(controller.data().getItems())));
-                    }, ()->{ html 
-                        .add(new CButton(controller, c -> c.cancel()));
-                    }));
+                    .add(new CButton(controller, x -> x.search()).apply(CButtonTemplate.setArgs(x->x.primary())))
+                    .fIf(controller.mode==Mode.BROWSER, 
+                      ()->html.add(new CButton(go(CrudControllerBase.class).create(controller.entityClass, controller.emQualifier)))
+                    )
+                    .add(new CDataGrid<T>().setColumns(columns).bindOneWay(
+                            g -> g.setItems(controller.data().getItems())))
+                    .add(new CButton(controller, c -> c.cancel()))
+                    );
 //@formatter:on
         }
     }
@@ -223,11 +230,13 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent
 
     public DefaultCrudBrowserController<T> initialize(Class<T> entityClass,
             Class<? extends Annotation> emQualifier) {
+        Preconditions.checkNotNull(entityClass, "entityClass is null");
         this.entityClass = entityClass;
         this.emQualifier = emQualifier;
 
         properties = crudReflectionUtil.getBrowserProperties(entityClass);
-        filterList = properties.stream().map(filters::getFactory).collect(toList());
+        filterList = properties.stream().map(filters::getFactory)
+                .collect(toList());
 
         search();
 

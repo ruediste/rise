@@ -23,6 +23,7 @@ public class WelcomeView extends
         html.bButtonA().HREF(go().error()).content("Page with error");
         html.rButtonA(go(FileUploadController.class).index());
         html.rButtonA(go(CrudController.class).showTodos());
+        html.rButtonA(go(CrudController.class).showTodoCategories());
         html.rButtonA(go(SampleComponentController.class).index(), a -> {
         });
 

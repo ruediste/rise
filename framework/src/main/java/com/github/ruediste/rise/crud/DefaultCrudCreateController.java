@@ -73,8 +73,9 @@ public class DefaultCrudCreateController extends SubControllerComponent {
     @GlyphiconIcon(Glyphicon.plus_sign)
     void create() {
         entityGroup.pushDown();
-        holder.getEntityManager(emQualifier).persist(entityGroup.get());
-        commit();
+        commit(() -> {
+            holder.getEntityManager(emQualifier).persist(entityGroup.get());
+        });
         redirect(go(CrudControllerBase.class).display(entityGroup.get()));
     }
 }

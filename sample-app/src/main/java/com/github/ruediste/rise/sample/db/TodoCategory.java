@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.sample.db;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import com.github.ruediste.rise.crud.annotations.CrudIdentifying;
@@ -10,6 +11,7 @@ import com.github.ruediste1.i18n.label.PropertiesLabeled;
 @PropertiesLabeled
 public class TodoCategory {
 
+    @GeneratedValue
     @Id
     private long id;
 

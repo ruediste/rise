@@ -18,6 +18,7 @@ import com.github.ruediste.rise.util.GenericEvent;
 import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste.salta.jsr330.ImplementedBy;
 import com.github.ruediste.salta.jsr330.Injector;
+import com.google.common.base.Preconditions;
 
 @Singleton
 public class CrudUtil {
@@ -203,7 +204,7 @@ public class CrudUtil {
     }
 
     @SuppressWarnings("rawtypes")
-    public class DefaultCrudPickerFactory implements CrudPickerFactory {
+    public static class DefaultCrudPickerFactory implements CrudPickerFactory {
 
         @Inject
         Provider<DefaultCrudBrowserController> provider;
@@ -212,7 +213,9 @@ public class CrudUtil {
         @Override
         public CrudPicker createPicker(Class<? extends Annotation> emQualifier,
                 Class<?> entityClass) {
-            return provider.get().initialize(emQualifier, entityClass);
+            Preconditions.checkNotNull(entityClass, "entityClass is null");
+            return provider.get().initialize(entityClass, emQualifier)
+                    .toPicker();
         }
 
     }

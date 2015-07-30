@@ -1,5 +1,7 @@
 package com.github.ruediste.rise.crud;
 
+import java.lang.annotation.Annotation;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -13,11 +15,16 @@ import com.github.ruediste.rise.component.ComponentFactoryUtil;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.binding.BindingUtil;
 import com.github.ruediste.rise.component.components.CButton;
+import com.github.ruediste.rise.component.components.CComponentStack;
+import com.github.ruediste.rise.component.components.CController;
 import com.github.ruediste.rise.component.components.CInput;
 import com.github.ruediste.rise.component.components.CTextField;
 import com.github.ruediste.rise.component.components.InputType;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.component.tree.ComponentTreeUtil;
 import com.github.ruediste.rise.core.persistence.RisePersistenceUtil;
+import com.github.ruediste.rise.crud.CrudUtil.CrudPicker;
+import com.github.ruediste.rise.crud.CrudUtil.CrudPickerFactory;
 import com.github.ruediste.rise.crud.CrudUtil.IdentificationRenderer;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
@@ -105,7 +112,22 @@ public class CrudEditComponents
                                                           cls).renderIdenification(
                                                           html, decl.getValue(group.get())))
                             ._span()
-                            .add(new CButton(this,(btn, c)->c.pick(btn)))
+                            .add(new CButton(this,(btn, c)->c.pick(()->{
+                                Class<? extends Annotation> emQualifier = persistenceUtil
+                                        .getEmQualifier(group.get());
+                                CrudPicker picker = crudUtil.getStrategy(CrudPickerFactory.class, cls)
+                                        .createPicker(emQualifier, cls);
+                                picker.pickerClosed().addListener(value->{
+                                    if (value!=null){
+                                        decl.setValue(group.get(), value);
+                                    }
+                                    ComponentTreeUtil
+                                    .raiseEvent(btn, new CComponentStack.PopComponentEvent());
+                                });
+                                ComponentTreeUtil
+                                        .raiseEvent(btn, new CComponentStack.PushComponentEvent(
+                                                new CController(picker)));
+                            })))
                             ._bFormGroup());
                     //@formatter:on);
                 });
@@ -113,8 +135,8 @@ public class CrudEditComponents
 
     @Labeled
     @GlyphiconIcon(Glyphicon.hand_right)
-    void pick(CButton btn) {
-
+    void pick(Runnable callback) {
+        callback.run();
     }
 
 }

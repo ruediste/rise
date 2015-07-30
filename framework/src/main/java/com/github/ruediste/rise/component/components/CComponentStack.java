@@ -50,9 +50,15 @@ public class CComponentStack extends ComponentBase<CComponentStack> {
 
     public CComponentStack() {
         ComponentTreeUtil.registerEventListener(this, PopComponentEvent.class,
-                e -> pop());
+                e -> {
+                    e.cancel();
+                    pop();
+                });
         ComponentTreeUtil.registerEventListener(this, PushComponentEvent.class,
-                e -> push(e.getComponent()));
+                e -> {
+                    e.cancel();
+                    push(e.getComponent());
+                });
     }
 
     public CComponentStack(Component component) {
@@ -78,6 +84,7 @@ public class CComponentStack extends ComponentBase<CComponentStack> {
      * @return the component stack (this)
      */
     public CComponentStack push(Component e) {
+
         stack.push(e);
         if (e.getParent() != null)
             e.getParent().childRemoved(e);

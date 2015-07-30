@@ -3,6 +3,7 @@ package com.github.ruediste.rise.component;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -167,9 +168,9 @@ public class ComponentUtil implements ICoreUtil {
         return coreUtil;
     }
 
-    public String getParameterValue(Component component, String key) {
-        return coreRequestInfo.getRequest()
-                .getParameter(getKey(component, key));
+    public Optional<String> getParameterValue(Component component, String key) {
+        return Optional.ofNullable(coreRequestInfo.getRequest().getParameter(
+                getKey(component, key)));
     }
 
     public boolean isParameterDefined(Component component, String key) {

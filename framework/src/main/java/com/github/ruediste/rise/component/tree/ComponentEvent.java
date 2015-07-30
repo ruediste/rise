@@ -17,7 +17,7 @@ public interface ComponentEvent {
         BUBBLE {
             @Override
             public Iterable<Component> getComponentsToVisit(Component target) {
-                return ComponentTreeUtil.ancestors(null, true);
+                return ComponentTreeUtil.ancestors(target, true);
             }
         },
 

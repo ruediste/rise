@@ -1,5 +1,7 @@
 package com.github.ruediste.rise.component.components;
 
+import java.util.Optional;
+
 import javax.inject.Inject;
 
 import com.github.ruediste.rise.component.ComponentUtil;
@@ -74,7 +76,7 @@ public abstract class ComponentTemplateBase<T extends Component> implements
         return util.getComponentId(component);
     }
 
-    public String getParameterValue(Component component, String key) {
+    public Optional<String> getParameterValue(Component component, String key) {
         return util.getParameterValue(component, key);
     }
 

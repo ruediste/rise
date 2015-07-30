@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.testApp.crud;
 
+import com.github.ruediste.rise.component.components.CComponentStack;
 import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.crud.CrudControllerBase;
@@ -13,8 +14,8 @@ public class TestCrudController extends CrudControllerBase {
 
         @Override
         protected Component createComponents() {
-            return new CPage(label(this)).add(toSubView(
-                    () -> controller.data(), x -> x.getSubController()));
+            return new CPage(label(this)).add(new CComponentStack(toSubView(
+                    () -> controller.data(), x -> x.getSubController())));
         }
     }
 

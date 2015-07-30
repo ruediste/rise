@@ -1,5 +1,7 @@
 package com.github.ruediste.rise.crud;
 
+import static java.util.stream.Collectors.toList;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import com.github.ruediste.c3java.properties.PropertyDeclaration;
 import com.github.ruediste.c3java.properties.PropertyUtil;
 import com.github.ruediste.rise.crud.annotations.CrudBrowserColumn;
 import com.github.ruediste.rise.crud.annotations.CrudIdentifying;
+import com.google.common.base.Preconditions;
 
 public class CrudReflectionUtil {
 
@@ -19,11 +22,15 @@ public class CrudReflectionUtil {
     }
 
     public List<PropertyDeclaration> getEditProperties(Class<?> cls) {
-        return new ArrayList<>(PropertyUtil.getPropertyIntroductionMap(cls)
-                .values());
+        return PropertyUtil.getPropertyIntroductionMap(cls).values().stream()
+        // .filter(decl -> decl.getBackingField() == null
+        // || !decl.getBackingField()
+        // .isAnnotationPresent(Id.class))
+                .collect(toList());
     }
 
     public List<PropertyDeclaration> getBrowserProperties(Class<?> cls) {
+        Preconditions.checkNotNull(cls, "cls is null");
         return getPropertiesAnnotatedWith(cls, CrudBrowserColumn.class);
     }
 
@@ -33,6 +40,7 @@ public class CrudReflectionUtil {
 
     private List<PropertyDeclaration> getPropertiesAnnotatedWith(Class<?> cls,
             Class<? extends Annotation> annotationClass) {
+        Preconditions.checkNotNull(cls, "cls is null");
         ArrayList<PropertyDeclaration> result = new ArrayList<>();
 
         Collection<PropertyDeclaration> allDeclarations = PropertyUtil
