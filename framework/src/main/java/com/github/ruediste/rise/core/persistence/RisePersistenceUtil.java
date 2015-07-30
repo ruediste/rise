@@ -39,11 +39,31 @@ public class RisePersistenceUtil {
      * Get the {@link ManagedType} or null if the class is not part of the
      * persistence unit.
      */
-    public ManagedType<?> getManagedType(Class<? extends Annotation> qualifier,
-            Class<?> cls) {
-        ManagedType<?> managedType = getManagedTypeMap(qualifier).get()
-                .get(cls);
-        return managedType;
+    @SuppressWarnings("unchecked")
+    public <T> ManagedType<T> getManagedType(
+            Class<? extends Annotation> qualifier, TypeToken<T> type) {
+        return (ManagedType<T>) getManagedTypeMap(qualifier).get().get(
+                type.getRawType());
+    }
+
+    /**
+     * Get the {@link ManagedType} or null if the class is not part of the
+     * persistence unit.
+     */
+    @SuppressWarnings("unchecked")
+    public <T> ManagedType<T> getManagedType(
+            Class<? extends Annotation> qualifier, Class<T> cls) {
+        return (ManagedType<T>) getManagedTypeMap(qualifier).get().get(cls);
+    }
+
+    /**
+     * Get the {@link ManagedType} or null if the class is not part of the
+     * persistence unit.
+     */
+    @SuppressWarnings("unchecked")
+    public <T> ManagedType<T> getManagedType(PersistentTypeIdentifier identifier) {
+        return (ManagedType<T>) getManagedTypeMap(identifier.getEmQualifier())
+                .get().get(identifier.getType());
     }
 
     /**
@@ -103,7 +123,10 @@ public class RisePersistenceUtil {
     }
 
     public Class<? extends Annotation> getEmQualifier(Object entity) {
-        return getEmEntry(entity).get().getKey();
+        return getEmEntry(entity).orElseThrow(
+                () -> new RuntimeException(
+                        "No EntityManager qualifier found for " + entity))
+                .getKey();
     }
 
     public Optional<Entry<Class<? extends Annotation>, EntityManager>> getEmEntry(

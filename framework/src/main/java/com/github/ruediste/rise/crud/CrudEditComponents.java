@@ -6,9 +6,8 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.ManyToOne;
-import javax.persistence.metamodel.ManagedType;
+import javax.persistence.metamodel.Attribute;
 
-import com.github.ruediste.c3java.properties.PropertyDeclaration;
 import com.github.ruediste.rendersnakeXT.canvas.Glyphicon;
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.component.ComponentFactoryUtil;
@@ -36,7 +35,7 @@ import com.google.common.reflect.TypeToken;
 @Singleton
 public class CrudEditComponents
         extends
-        FactoryCollectionNew<PropertyDeclaration, CrudEditComponents.CrudEditComponentFactory> {
+        FactoryCollectionNew<Attribute<?, ?>, CrudEditComponents.CrudEditComponentFactory> {
     @Inject
     ComponentFactoryUtil util;
 
@@ -49,7 +48,7 @@ public class CrudEditComponents
     RisePersistenceUtil persistenceUtil;
 
     public interface CrudEditComponentFactory {
-        Component create(PropertyDeclaration decl, BindingGroup<?> group);
+        Component create(Attribute<?, ?> decl, BindingGroup<?> group);
     }
 
     private Component toComponent(Renderable<BootstrapRiseCanvas<?>> renderer) {
@@ -62,7 +61,7 @@ public class CrudEditComponents
         abstract void pick();
     }
 
-    public Component createEditComponent(PropertyDeclaration decl,
+    public Component createEditComponent(Attribute<?, ?> decl,
             BindingGroup<?> group) {
         return getFactory(decl).create(decl, group);
     }
@@ -94,10 +93,6 @@ public class CrudEditComponents
                         && decl.getBackingField().isAnnotationPresent(
                                 ManyToOne.class),
                 (decl, group) -> {
-                    ManagedType<?> managedType = persistenceUtil.getManagedType(
-                            persistenceUtil.getEmQualifier(group.get()), group
-                                    .get().getClass());
-
                     TypeToken<?> propertyType = TypeToken.of(decl
                             .getPropertyType());
                     Class<?> propertyCls = propertyType.getRawType();
@@ -106,9 +101,8 @@ public class CrudEditComponents
                     CValue<Object> cValue = new CValue<>(
                             v -> toComponent(html -> crudUtil.getStrategy(
                                     IdentificationRenderer.class, cls)
-                                    .renderIdenification(html,
-                                            decl.getValue(group.get()))))
-                            .bindValue(() -> group.proxy());
+                                    .renderIdenification(html, v)))
+                            .bindValue(() -> decl.getValue(group.proxy()));
 
                     //@formatter:off
                     return toComponent(html -> html

@@ -14,8 +14,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.metamodel.Attribute;
 
-import com.github.ruediste.c3java.properties.PropertyDeclaration;
+import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.github.ruediste.rendersnakeXT.canvas.Glyphicon;
 import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.component.ComponentUtil;
@@ -27,6 +28,7 @@ import com.github.ruediste.rise.component.components.CDataGrid.Cell;
 import com.github.ruediste.rise.component.components.CDataGrid.Column;
 import com.github.ruediste.rise.component.components.CText;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.core.persistence.PersistentTypeIdentifier;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 import com.github.ruediste.rise.crud.CrudPropertyFilter.CrudFilterPersitenceContext;
 import com.github.ruediste.rise.crud.CrudUtil.CrudPicker;
@@ -75,6 +77,9 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent
         }
 
         @Inject
+        CrudReflectionUtil crudReflectionUtil;
+
+        @Inject
         Messages messages;
 
         @Inject
@@ -85,10 +90,11 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent
 
             // create columns
             ArrayList<Column<T>> columns = new ArrayList<>();
-            for (PropertyDeclaration p : controller.properties) {
+            for (Attribute<?, ?> p : controller.properties) {
+                PropertyInfo property = crudReflectionUtil.getProperty(p);
                 columns.add(new Column<>(() -> new CDataGrid.Cell(labelUtil
-                        .getPropertyLabel(p)), item -> new Cell(new CText(
-                        Objects.toString(p.getValue(item))))));
+                        .getPropertyLabel(property)), item -> new Cell(
+                        new CText(Objects.toString(property.getValue(item))))));
             }
 //@formatter:off
             Function<T, Cell> actionsFactory;
@@ -96,6 +102,8 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent
                 actionsFactory = item -> new Cell(toComponent(html -> html
                     .add(new CButton(go(CrudControllerBase.class).display(item), true)
                       .apply(CButtonTemplate.setArgs(x -> x.primary())))
+                    .add(new CButton(go(CrudControllerBase.class).edit(item), true)
+                      .apply(CButtonTemplate.setArgs(x -> {})))
                     .add(new CButton(go(CrudControllerBase.class).delete(item), true)
                       .apply(CButtonTemplate.setArgs(x -> x.danger())))
                       ));
@@ -128,7 +136,8 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent
                     )
                     .add(new CDataGrid<T>().setColumns(columns).bindOneWay(
                             g -> g.setItems(controller.data().getItems())))
-                    .add(new CButton(controller, c -> c.cancel()))
+                    .fIf(controller.mode==Mode.PICKER,()->html
+                      .add(new CButton(controller, c -> c.cancel())))
                     );
 //@formatter:on
         }
@@ -161,7 +170,7 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent
         return emh.getEntityManager(emQualifier);
     }
 
-    List<PropertyDeclaration> properties;
+    List<Attribute<?, ?>> properties;
 
     private List<CrudPropertyFilter> filterList;
 
@@ -228,13 +237,16 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent
         return this;
     }
 
+    PersistentTypeIdentifier type;
+
     public DefaultCrudBrowserController<T> initialize(Class<T> entityClass,
             Class<? extends Annotation> emQualifier) {
         Preconditions.checkNotNull(entityClass, "entityClass is null");
         this.entityClass = entityClass;
         this.emQualifier = emQualifier;
+        type = new PersistentTypeIdentifier(emQualifier, entityClass);
 
-        properties = crudReflectionUtil.getBrowserProperties(entityClass);
+        properties = crudReflectionUtil.getBrowserProperties2(type);
         filterList = properties.stream().map(filters::getFactory)
                 .collect(toList());
 
