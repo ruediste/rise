@@ -85,7 +85,9 @@ public class ReqestErrorController extends ControllerMvc<ReqestErrorController>
 				html.bRow()
 				    .bCol(x->x.xs(12))
 				        .bButtonA(x->x.primary()).HREF(go(WelcomeController.class).index()).content("Go to Start Page")
-    				._bCol()
+				        .fIf(data().stage==ApplicationStage.DEVELOPMENT, () ->html.
+				            bButtonA(x->x.danger()).HREF(go().dropAndCreateDataBase()).content("Drop-And-Create Database"))
+    				    ._bCol()
 				._bRow();
 			    if (data().stage!=null && data().stage!=ApplicationStage.PRODUCTION){
     				html.bRow()
@@ -94,17 +96,10 @@ public class ReqestErrorController extends ControllerMvc<ReqestErrorController>
                         ._bCol()
                     ._bRow();
 			    }
-			    if (data().stage==ApplicationStage.DEVELOPMENT){
-			        html.bRow()
-                    .bCol(x->x.xs(12))
-                        .bButtonA(x->x.danger()).HREF(go().dropAndCreateDataBase()).content("Drop-And-Create Database")
-                        ._bCol()
-                    ._bRow();
-			    }
+			   
 			html._bContainer();
 			// @formatter:on
         }
-
     }
 
     public ActionResult index() {

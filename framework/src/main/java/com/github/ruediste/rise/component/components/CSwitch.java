@@ -13,7 +13,7 @@ import com.google.common.base.Objects;
 @DefaultTemplate(CSwitchTemplate.class)
 public class CSwitch<T> extends ComponentBase<CSwitch<T>> {
 
-    public interface Case {
+    private interface Case {
         void onEnter();
 
         void onLeave();

@@ -1,5 +1,7 @@
 package com.github.ruediste.rise.crud;
 
+import static java.util.stream.Collectors.joining;
+
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +13,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Root;
 
 import com.github.ruediste.rise.crud.annotations.CrudStrategy;
+import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
+import com.github.ruediste.rise.util.GenericEvent;
 import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste.salta.jsr330.ImplementedBy;
 import com.github.ruediste.salta.jsr330.Injector;
@@ -154,4 +158,62 @@ public class CrudUtil {
 
     }
 
+    @ImplementedBy(DefaultIdentificationRenderer.class)
+    public interface IdentificationRenderer {
+        void renderIdenification(BootstrapRiseCanvas<?> html, Object entity);
+    }
+
+    private static class DefaultIdentificationRenderer implements
+            IdentificationRenderer {
+
+        @Inject
+        CrudReflectionUtil util;
+
+        @Override
+        public void renderIdenification(BootstrapRiseCanvas<?> html,
+                Object entity) {
+            if (entity == null)
+                html.write("<null>");
+            else
+                html.write(util
+                        .getIdentificationProperties(entity.getClass())
+                        .stream()
+                        .map(p -> p.getName() + ":"
+                                + String.valueOf(p.getValue(entity)))
+                        .collect(joining(" ")));
+        }
+    }
+
+    /**
+     * A sub controller which allows to pick an instance of an entity
+     */
+    public interface CrudPicker {
+
+        /**
+         * fired when the picker is closed. The argument is the picked entity,
+         * or null if picking has been canceled
+         */
+        GenericEvent<Object> pickerClosed();
+    }
+
+    @ImplementedBy(DefaultCrudPickerFactory.class)
+    public interface CrudPickerFactory {
+        CrudPicker createPicker(Class<? extends Annotation> emQualifier,
+                Class<?> entityClass);
+    }
+
+    @SuppressWarnings("rawtypes")
+    public class DefaultCrudPickerFactory implements CrudPickerFactory {
+
+        @Inject
+        Provider<DefaultCrudBrowserController> provider;
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public CrudPicker createPicker(Class<? extends Annotation> emQualifier,
+                Class<?> entityClass) {
+            return provider.get().initialize(emQualifier, entityClass);
+        }
+
+    }
 }

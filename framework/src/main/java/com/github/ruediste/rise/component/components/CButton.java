@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.component.components;
 
 import java.lang.reflect.Method;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import com.github.ruediste.c3java.invocationRecording.MethodInvocationRecorder;
@@ -43,6 +44,24 @@ public class CButton extends MultiChildrenComponent<CButton> {
     }
 
     /**
+     * When the button is clicked, the handler will be called with the target as
+     * argument. A {@link CIconLabel} is added as child, using the invoked
+     * method to obtain a label and an (optional) icon.
+     */
+    public <T> CButton(T target, BiConsumer<CButton, T> handler) {
+        this(target, handler, false);
+    }
+
+    /**
+     * When the button is clicked, the handler will be called with the target as
+     * argument. A {@link CIconLabel} is added as child, using the invoked
+     * method to obtain a label and an (optional) icon.
+     */
+    public <T> CButton(T target, Consumer<T> handler, boolean showIconOnly) {
+        this(target, (btn, t) -> handler.accept(t), showIconOnly);
+    }
+
+    /**
      * Create a button which will link directly to the specified target (without
      * causing a request to the containing page). A {@link CIconLabel} is added
      * as child, using the invoked action method to obtain a label and an
@@ -72,10 +91,12 @@ public class CButton extends MultiChildrenComponent<CButton> {
      * method to obtain a label and an (optional) icon.
      */
     @SuppressWarnings("unchecked")
-    public <T> CButton(T target, Consumer<T> handler, boolean showIconOnly) {
-        this.handler = () -> handler.accept(target);
+    public <T> CButton(T target, BiConsumer<CButton, T> handler,
+            boolean showIconOnly) {
+        this.handler = () -> handler.accept(this, target);
         Method invokedMethod = MethodInvocationRecorder.getLastInvocation(
-                (Class<T>) target.getClass(), handler).getMethod();
+                (Class<T>) target.getClass(), t -> handler.accept(this, t))
+                .getMethod();
         add(new CIconLabel().setMethod(invokedMethod).setShowIconOnly(
                 showIconOnly));
     }

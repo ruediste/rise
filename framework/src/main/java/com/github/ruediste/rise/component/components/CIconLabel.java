@@ -1,7 +1,9 @@
 package com.github.ruediste.rise.component.components;
 
 import java.lang.reflect.Method;
+import java.util.function.Consumer;
 
+import com.github.ruediste.c3java.invocationRecording.MethodInvocationRecorder;
 import com.github.ruediste.rendersnakeXT.canvas.Html5Canvas;
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.component.tree.RelationsComponent;
@@ -65,6 +67,12 @@ public class CIconLabel extends RelationsComponent<CIconLabel> {
 
     public CIconLabel setIcon(Renderable<Html5Canvas<?>> icon) {
         this.icon = icon;
+        return this;
+    }
+
+    public <T> CIconLabel setMethod(Class<T> cls, Consumer<T> target) {
+        method = MethodInvocationRecorder.getLastInvocation(cls, target)
+                .getMethod();
         return this;
     }
 }

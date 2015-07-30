@@ -34,7 +34,7 @@ public class DefaultCrudCreateController extends SubControllerComponent {
                 for (PropertyDeclaration p : util
                         .getEditProperties(controller.entityGroup.get()
                                 .getClass())) {
-                    html.add(editComponents.create(p).createComponent(
+                    html.add(editComponents.createEditComponent(p,
                             controller.entityGroup));
                 }
                 html.add(new CButton(controller, c -> c.create()));

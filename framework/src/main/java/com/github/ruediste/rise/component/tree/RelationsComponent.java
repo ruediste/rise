@@ -32,7 +32,7 @@ public class RelationsComponent<TSelf extends RelationsComponent<TSelf>>
         }
     }
 
-    public void addChildRelation(ChildRelation<?> childRelation) {
+    void addChildRelation(ChildRelation<?> childRelation) {
         childRelations.add(childRelation);
     }
 }

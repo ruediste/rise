@@ -4,21 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public class FactoryCollection<IN, OUT> {
-    private final ArrayList<Function<IN, OUT>> factories = new ArrayList<>();
+public class FactoryCollection<TKey, TFactory> {
+    private final ArrayList<Function<TKey, TFactory>> factories = new ArrayList<>();
 
-    public List<Function<IN, OUT>> getFactories() {
+    public List<Function<TKey, TFactory>> getFactories() {
         return factories;
     }
 
-    public OUT create(IN input) {
+    public TFactory getFactory(TKey key) {
         return factories
                 .stream()
-                .map(x -> x.apply(input))
+                .map(x -> x.apply(key))
                 .filter(x -> x != null)
                 .findFirst()
                 .orElseThrow(
                         () -> new RuntimeException("No factory found for "
-                                + input));
+                                + key));
     }
 }

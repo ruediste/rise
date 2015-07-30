@@ -6,6 +6,7 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -28,14 +29,17 @@ import com.github.ruediste.rise.component.components.CText;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 import com.github.ruediste.rise.crud.CrudPropertyFilter.CrudFilterPersitenceContext;
+import com.github.ruediste.rise.crud.CrudUtil.CrudPicker;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
+import com.github.ruediste.rise.util.GenericEvent;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.github.ruediste1.i18n.label.Labeled;
 import com.github.ruediste1.i18n.message.TMessage;
 import com.github.ruediste1.i18n.message.TMessages;
 
-public class DefaultCrudBrowserController<T> extends SubControllerComponent {
+public class DefaultCrudBrowserController<T> extends SubControllerComponent
+        implements CrudPicker {
     @Inject
     CrudReflectionUtil crudReflectionUtil;
 
@@ -44,6 +48,10 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent {
 
     @Inject
     ComponentUtil componentUtil;
+
+    private enum Mode {
+        BROWSER, PICKER
+    }
 
     @SuppressWarnings("unused")
     private static class DefaultCrudBrowserView<T> extends
@@ -79,14 +87,23 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent {
                         Objects.toString(p.getValue(item))))));
             }
 //@formatter:off
+            Function<T, Cell> actionsFactory;
+            if (controller.mode==Mode.BROWSER)
+                actionsFactory = item -> new Cell(toComponent(html -> html
+                    .add(new CButton(go(CrudControllerBase.class).display(item), true)
+                      .apply(CButtonTemplate.setArgs(x -> x.primary())))
+                    .add(new CButton(go(CrudControllerBase.class).delete(item), true)
+                      .apply(CButtonTemplate.setArgs(x -> x.danger())))
+                      ));
+            else
+                actionsFactory = item -> new Cell(toComponent(html -> html
+                        .add(new CButton(controller,c->c.pick(item), true)
+                        .apply(CButtonTemplate.setArgs(x -> x.primary())))
+                        ));
+                
             columns.add(new Column<T>(
                     () -> new Cell(new CText(messages.actions())),
-                    item -> new Cell(toComponent(html -> html
-                            .add(new CButton(go(CrudControllerBase.class).display(item), true)
-                              .apply(CButtonTemplate.setArgs(x -> x.primary())))
-                            .add(new CButton(go(CrudControllerBase.class).delete(item), true)
-                              .apply(CButtonTemplate.setArgs(x -> x.danger())))
-                              ))));
+                    actionsFactory));
             return toComponent(html -> html
                     .h1().content(messages.browserFor(controller.entityClass.getName()))
                     .div().CLASS("panel panel-default")
@@ -98,11 +115,15 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent {
                         })
                       ._div()
                     ._div()
-                    .add(new CButton(controller, x -> x.search()).apply(CButtonTemplate.setArgs(x->x.primary())))
-                    .add(new CButton(go(CrudControllerBase.class).create(controller.entityClass, controller.emQualifier)).apply(CButtonTemplate.setArgs(x->{})))
-                    .add(new CDataGrid<T>().setColumns(columns).bindOneWay(
-                            g -> g.setItems(controller.data().getItems()))));
-//@formatter:off
+                    .fIf(controller.mode==Mode.BROWSER, ()->{html
+                        .add(new CButton(controller, x -> x.search()).apply(CButtonTemplate.setArgs(x->x.primary())))
+                        .add(new CButton(go(CrudControllerBase.class).create(controller.entityClass, controller.emQualifier)).apply(CButtonTemplate.setArgs(x->{})))
+                        .add(new CDataGrid<T>().setColumns(columns).bindOneWay(
+                            g -> g.setItems(controller.data().getItems())));
+                    }, ()->{ html 
+                        .add(new CButton(controller, c -> c.cancel()));
+                    }));
+//@formatter:on
         }
     }
 
@@ -138,6 +159,18 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent {
     private List<CrudPropertyFilter> filterList;
 
     private Class<? extends Annotation> emQualifier;
+
+    @Labeled
+    @GlyphiconIcon(Glyphicon.check)
+    public void pick(T item) {
+        pickerClosed.fire(item);
+    }
+
+    @Labeled
+    @GlyphiconIcon(Glyphicon.arrow_left)
+    public void cancel() {
+        pickerClosed.fire(null);
+    }
 
     @Labeled
     @GlyphiconIcon(Glyphicon.search)
@@ -181,16 +214,31 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent {
         data.pullUp();
     }
 
+    Mode mode = Mode.BROWSER;
+
+    public DefaultCrudBrowserController<T> toPicker() {
+        mode = Mode.PICKER;
+        return this;
+    }
+
     public DefaultCrudBrowserController<T> initialize(Class<T> entityClass,
             Class<? extends Annotation> emQualifier) {
         this.entityClass = entityClass;
         this.emQualifier = emQualifier;
 
         properties = crudReflectionUtil.getBrowserProperties(entityClass);
-        filterList = properties.stream().map(filters::create).collect(toList());
+        filterList = properties.stream().map(filters::getFactory).collect(toList());
 
         search();
 
         return this;
     }
+
+    GenericEvent<Object> pickerClosed = new GenericEvent<>();
+
+    @Override
+    public GenericEvent<Object> pickerClosed() {
+        return pickerClosed;
+    }
+
 }

@@ -30,7 +30,7 @@ public class DefaultCrudDisplayController extends SubControllerComponent {
                 for (PropertyDeclaration p : util
                         .getDisplayProperties(controller.data().getEntity()
                                 .getClass())) {
-                    html.add(displayComponents.create(
+                    html.add(displayComponents.getFactory(
                             Pair.of(p, controller.data().getEntity()))
                             .getComponent());
                 }
