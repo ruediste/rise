@@ -250,4 +250,19 @@ public class BindingUtilTest {
         assertEquals(4, b.valueB);
     }
 
+    @Test
+    public void bindToData() {
+        TestA a = new TestA();
+        BindingGroup<String> group = new BindingGroup<>("Hello World");
+
+        // establish binding
+        BindingUtil.bind(a, x -> x.setValueString(group.proxy()));
+
+        assertEquals("Hello World", a.getValueA());
+
+        a.setValueString("foo");
+        group.pushDown();
+        assertEquals("foo", group.get());
+
+    }
 }

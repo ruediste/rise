@@ -10,7 +10,7 @@ import com.github.ruediste.rise.component.tree.Component;
  * Component rendering either a fixed sub view, or the view belonging to a
  * controller
  */
-@DefaultTemplate(CSubViewTemplate.class)
+@DefaultTemplate(RenderChildrenTemplate.class)
 public class CSubView extends AttachedPropertyBearerBase implements Component {
 
     private ViewComponentBase<?> view;

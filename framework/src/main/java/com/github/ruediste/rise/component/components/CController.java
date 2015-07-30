@@ -12,7 +12,7 @@ import com.github.ruediste.rise.component.tree.Component;
 /**
  * Embeds the view of a controller
  */
-@DefaultTemplate(CControllerTemplate.class)
+@DefaultTemplate(RenderChildrenTemplate.class)
 public class CController extends AttachedPropertyBearerBase implements
         Component {
 

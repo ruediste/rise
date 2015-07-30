@@ -19,6 +19,7 @@ import com.github.ruediste.rise.component.components.CComponentStack;
 import com.github.ruediste.rise.component.components.CController;
 import com.github.ruediste.rise.component.components.CInput;
 import com.github.ruediste.rise.component.components.CTextField;
+import com.github.ruediste.rise.component.components.CValue;
 import com.github.ruediste.rise.component.components.InputType;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ComponentTreeUtil;
@@ -102,15 +103,19 @@ public class CrudEditComponents
                     Class<?> propertyCls = propertyType.getRawType();
                     Class<?> cls = propertyCls;
 
+                    CValue<Object> cValue = new CValue<>(
+                            v -> toComponent(html -> crudUtil.getStrategy(
+                                    IdentificationRenderer.class, cls)
+                                    .renderIdenification(html,
+                                            decl.getValue(group.get()))))
+                            .bindValue(() -> group.proxy());
+
                     //@formatter:off
                     return toComponent(html -> html
                             .bFormGroup()
                               .label().content(labelUtil.getPropertyLabel(decl))
                             .span().B_FORM_CONTROL().DISABLED("disbled")
-                                .render(x-> crudUtil.getStrategy(
-                                                          IdentificationRenderer.class,
-                                                          cls).renderIdenification(
-                                                          html, decl.getValue(group.get())))
+                                .add(cValue)
                             ._span()
                             .add(new CButton(this,(btn, c)->c.pick(()->{
                                 Class<? extends Annotation> emQualifier = persistenceUtil
@@ -119,7 +124,7 @@ public class CrudEditComponents
                                         .createPicker(emQualifier, cls);
                                 picker.pickerClosed().addListener(value->{
                                     if (value!=null){
-                                        decl.setValue(group.get(), value);
+                                        cValue.setValue(value);
                                     }
                                     ComponentTreeUtil
                                     .raiseEvent(btn, new CComponentStack.PopComponentEvent());

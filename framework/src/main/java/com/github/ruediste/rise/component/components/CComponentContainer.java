@@ -7,8 +7,9 @@ import com.github.ruediste.rise.component.tree.SingleChildRelation;
 /**
  * Component containing a single child
  */
-@DefaultTemplate(CComponentContainerTemplate.class)
-public class CComponentContainer extends RelationsComponent<CComponentContainer> {
+@DefaultTemplate(RenderChildrenTemplate.class)
+public class CComponentContainer extends
+        RelationsComponent<CComponentContainer> {
     public final SingleChildRelation<Component, CComponentContainer> child = new SingleChildRelation<Component, CComponentContainer>(
             self());
 }
