@@ -1,25 +1,25 @@
 package com.github.ruediste.rise.crud;
 
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.persistence.ManyToOne;
+import javax.persistence.metamodel.Attribute.PersistentAttributeType;
+import javax.persistence.metamodel.PluralAttribute;
 
-import com.github.ruediste.c3java.properties.PropertyDeclaration;
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.component.ComponentFactoryUtil;
+import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.crud.CrudUtil.IdentificationRenderer;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
-import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste1.i18n.label.LabelUtil;
-import com.google.common.reflect.TypeToken;
+import com.google.common.primitives.Primitives;
 
 @Singleton
 public class CrudDisplayComponents
         extends
-        FactoryCollection<Pair<PropertyDeclaration, Object>, CrudDisplayComponent> {
+        FactoryCollectionNew<PersistentProperty, CrudDisplayComponents.CrudDisplayComponentFactory> {
 
     @Inject
     ComponentFactoryUtil util;
@@ -30,70 +30,57 @@ public class CrudDisplayComponents
     @Inject
     CrudUtil crudUtil;
 
-    private Component toComponent(Renderable<BootstrapRiseCanvas<?>> renderer) {
-        return util.toComponent(renderer);
+    private Component toComponentBound(Supplier<?> bindingAccessor,
+            Renderable<BootstrapRiseCanvas<?>> renderer) {
+        return util.toComponentBound(bindingAccessor, renderer);
+    }
+
+    public interface CrudDisplayComponentFactory {
+        Component create(PersistentProperty property, BindingGroup<?> group);
+    }
+
+    public Component create(PersistentProperty property, BindingGroup<?> group) {
+        return getFactory(property).create(property, group);
     }
 
     public CrudDisplayComponents() {
-        getFactories()
-                .add(new Function<Pair<PropertyDeclaration, Object>, CrudDisplayComponent>() {
-                    @Override
-                    public CrudDisplayComponent apply(
-                            Pair<PropertyDeclaration, Object> pair) {
-                        PropertyDeclaration decl = pair.getA();
-                        Object entity = pair.getB();
-                        if (Long.TYPE.equals(decl.getPropertyType())
-                                || Long.class.equals(decl.getPropertyType())
-                                || String.class.equals(decl.getPropertyType())) {
-                            return new CrudDisplayComponent() {
-
-                                @Override
-                                public Component getComponent() {
-                                    return toComponent(html -> html
-                                        //@formatter:off
-                                        .bFormGroup()
-                                          .label().content(labelUtil.getPropertyLabel(decl))
-                                          .span().B_FORM_CONTROL().DISABLED("disabled")
-                                            .content(String.valueOf(decl.getValue(entity)))
-                                        ._bFormGroup());
-                                        //@formatter:on
-                                }
-                            };
-                        }
-
-                        if (decl.getBackingField().isAnnotationPresent(
-                                ManyToOne.class)) {
-                            Object value = decl.getValue(entity);
-                            Class<?> cls;
-                            if (value == null)
-                                cls = TypeToken.of(decl.getPropertyType())
-                                        .getRawType();
-                            else
-                                cls = value.getClass();
-                            return new CrudDisplayComponent() {
-
-                                @Override
-                                public Component getComponent() {
-                                    return toComponent(html -> {
-                                        //@formatter:off
-                                        html.bFormGroup()
-                                        .label().content(labelUtil.getPropertyLabel(decl))
-                                        .span().B_FORM_CONTROL().DISABLED("disabled")
-                                          .render(x-> crudUtil
-                                                  .getStrategy(
-                                                          IdentificationRenderer.class,
-                                                          cls).renderIdenification(
-                                                          html, decl.getValue(entity)))
-                                        ._span()
-                                      ._bFormGroup();
-                                        //@formatter:on
-                                    });
-                                }
-                            };
-                        }
-
-                        return null;
-                    }
+        addFactory(
+                p -> Long.class.equals(Primitives.wrap(p.getAttribute()
+                        .getJavaType()))
+                        || String.class.equals(p.getAttribute().getJavaType()),
+                (property, group) -> {
+                    return toComponentBound(()->group.proxy(),html -> html
+                        //@formatter:off
+                        .bFormGroup()
+                          .label().content(labelUtil.getPropertyLabel(property.getProperty()))
+                          .span().B_FORM_CONTROL().DISABLED("disabled")
+                            .content(String.valueOf(property.getProperty().getValue(group.get())))
+                        ._bFormGroup());
+                        //@formatter:on
                 });
+
+        addFactory(
+                p -> p.getAttribute().getPersistentAttributeType() == PersistentAttributeType.MANY_TO_ONE,
+                (p, g) -> {
+                    //@formatter:off
+                    return toComponentBound(
+                        () -> g.proxy(),
+                        html -> {
+                            PluralAttribute<?, ?, ?> attribute = (PluralAttribute<?, ?, ?>) p
+                                            .getAttribute();
+                            html.bFormGroup()
+                                .label().content(labelUtil.getPropertyLabel(p.getProperty()))
+                                .span().B_FORM_CONTROL().DISABLED("disabled")
+                                  .render(x-> crudUtil
+                                          .getStrategy(
+                                                  IdentificationRenderer.class,
+                                                  attribute.getElementType().getJavaType()).renderIdenification(
+                                                  html, p.getProperty().getValue(g.get())))
+                                ._span()
+                            ._bFormGroup();
+                     });
+                    //@formatter:on
+                });
+
     }
 }

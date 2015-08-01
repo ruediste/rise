@@ -1,13 +1,11 @@
 package com.github.ruediste.rise.crud;
 
-import java.lang.reflect.Type;
 import java.util.function.Function;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Path;
-import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.SingularAttribute;
 
 import com.github.ruediste.c3java.properties.PropertyInfo;
@@ -25,12 +23,11 @@ import com.github.ruediste1.i18n.message.TMessage;
 import com.github.ruediste1.i18n.message.TMessages;
 import com.google.common.base.Strings;
 import com.google.common.primitives.Primitives;
-import com.google.common.reflect.TypeToken;
 
 @Singleton
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class CrudPropertyFilters extends
-        FactoryCollection<Attribute<?, ?>, CrudPropertyFilter> {
+        FactoryCollection<PersistentProperty, CrudPropertyFilter> {
 
     @Inject
     LabelUtil labelUtil;
@@ -58,51 +55,57 @@ public class CrudPropertyFilters extends
     Messages messages;
 
     {
-        getFactories().add(new Function<Attribute<?, ?>, CrudPropertyFilter>() {
+        getFactories().add(
+                new Function<PersistentProperty, CrudPropertyFilter>() {
 
-            @Override
-            public CrudPropertyFilter apply(Attribute<?, ?> decl) {
+                    @Override
+                    public CrudPropertyFilter apply(PersistentProperty decl) {
 
-                Type type = decl.getJavaType();
-                Class<?> rawType = TypeToken.of(type).getRawType();
+                        Class<?> cls = decl.getAttribute().getJavaType();
 
-                PropertyInfo property = reflectionUtil.getProperty(decl);
+                        PropertyInfo property = decl.getProperty();
 
-                if (String.class.equals(type)) {
-                    CTextField textField = new CTextField().setText("")
-                            .setLabel(labelUtil.getPropertyLabel(property));
-                    return new CrudPropertyFilter() {
+                        if (String.class.equals(cls)) {
+                            CTextField textField = new CTextField()
+                                    .setText("")
+                                    .setLabel(
+                                            labelUtil
+                                                    .getPropertyLabel(property));
+                            return new CrudPropertyFilter() {
 
-                        @Override
-                        public Component getComponent() {
-                            return textField;
+                                @Override
+                                public Component getComponent() {
+                                    return textField;
+                                }
+
+                                @Override
+                                public void applyFilter(
+                                        CrudFilterPersitenceContext ctx) {
+                                    CriteriaBuilder cb = ctx.cb();
+                                    Path<String> path = ctx.root().get(
+                                            (SingularAttribute) decl
+                                                    .getAttribute());
+                                    ctx.addWhere(cb.or(
+                                            path.isNull(),
+                                            cb.like(path,
+                                                    "%" + textField.getText()
+                                                            + "%")));
+                                }
+                            };
                         }
 
-                        @Override
-                        public void applyFilter(CrudFilterPersitenceContext ctx) {
-                            CriteriaBuilder cb = ctx.cb();
-                            Path<String> path = ctx.root().get(
-                                    (SingularAttribute) decl);
-                            ctx.addWhere(cb.or(
-                                    path.isNull(),
-                                    cb.like(path, "%" + textField.getText()
-                                            + "%")));
-                        }
-                    };
-                }
+                        if (Long.class.equals(Primitives.wrap(cls))) {
+                            LString propertyLabel = labelUtil
+                                    .getPropertyLabel(property);
+                            CInput min = new CInput(InputType.number)
+                                    .setLabel(messages.minLong(propertyLabel))
+                                    .setValue("").setRenderFormGroup(false);
 
-                if (Long.class.equals(Primitives.wrap(rawType))) {
-                    LString propertyLabel = labelUtil
-                            .getPropertyLabel(property);
-                    CInput min = new CInput(InputType.number)
-                            .setLabel(messages.minLong(propertyLabel))
-                            .setValue("").setRenderFormGroup(false);
+                            CInput max = new CInput(InputType.number)
+                                    .setLabel(messages.maxLong(propertyLabel))
+                                    .setValue("").setRenderFormGroup(false);
 
-                    CInput max = new CInput(InputType.number)
-                            .setLabel(messages.maxLong(propertyLabel))
-                            .setValue("").setRenderFormGroup(false);
-
-                    // @formatter:off
+                            // @formatter:off
                             Component component = componentFactoryUtil.toComponent((BootstrapRiseCanvas<?> html) -> 
                               html
                               .bFormGroup()
@@ -120,34 +123,47 @@ public class CrudPropertyFilters extends
                               ._bFormGroup());
                             // @formatter:on
 
-                    return new CrudPropertyFilter() {
+                            return new CrudPropertyFilter() {
 
-                        @Override
-                        public Component getComponent() {
-                            return component;
+                                @Override
+                                public Component getComponent() {
+                                    return component;
+                                }
+
+                                @Override
+                                public void applyFilter(
+                                        CrudFilterPersitenceContext ctx) {
+                                    if (!Strings.isNullOrEmpty(min.getValue())) {
+                                        ctx.addWhere(ctx
+                                                .cb()
+                                                .greaterThanOrEqualTo(
+                                                        ctx.root()
+                                                                .get(decl
+                                                                        .getProperty()
+                                                                        .getName()),
+                                                        Long.parseLong(min
+                                                                .getValue())));
+
+                                    }
+                                    if (!Strings.isNullOrEmpty(max.getValue())) {
+                                        ctx.addWhere(ctx
+                                                .cb()
+                                                .lessThanOrEqualTo(
+                                                        ctx.root()
+                                                                .get(decl
+                                                                        .getProperty()
+                                                                        .getName()),
+                                                        Long.parseLong(max
+                                                                .getValue())));
+
+                                    }
+
+                                }
+                            };
                         }
-
-                        @Override
-                        public void applyFilter(CrudFilterPersitenceContext ctx) {
-                            if (!Strings.isNullOrEmpty(min.getValue())) {
-                                ctx.addWhere(ctx.cb().greaterThanOrEqualTo(
-                                        ctx.root().get(decl.getName()),
-                                        Long.parseLong(min.getValue())));
-
-                            }
-                            if (!Strings.isNullOrEmpty(max.getValue())) {
-                                ctx.addWhere(ctx.cb().lessThanOrEqualTo(
-                                        ctx.root().get(decl.getName()),
-                                        Long.parseLong(max.getValue())));
-
-                            }
-
-                        }
-                    };
-                }
-                return null;
-            }
-        });
+                        return null;
+                    }
+                });
     }
 
 }

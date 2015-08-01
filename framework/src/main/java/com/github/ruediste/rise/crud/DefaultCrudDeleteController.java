@@ -1,19 +1,19 @@
 package com.github.ruediste.rise.crud;
 
-import java.lang.annotation.Annotation;
-
 import javax.inject.Inject;
 
 import com.github.ruediste.rendersnakeXT.canvas.Glyphicon;
 import com.github.ruediste.rise.api.SubControllerComponent;
-import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CButton;
+import com.github.ruediste.rise.component.components.CButtonTemplate;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.core.persistence.PersistentType;
 import com.github.ruediste.rise.core.persistence.RisePersistenceUtil;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.Labeled;
+import com.github.ruediste1.i18n.label.MembersLabeled;
 import com.github.ruediste1.i18n.message.TMessage;
 import com.github.ruediste1.i18n.message.TMessages;
 
@@ -22,10 +22,21 @@ public class DefaultCrudDeleteController extends SubControllerComponent {
     @Inject
     RisePersistenceUtil util;
 
+    @Inject
+    CrudReflectionUtil reflectionUtil;
+
+    @Inject
+    EntityManagerHolder holder;
+
     @TMessages
     public interface Messages {
         @TMessage("Really delete {name}")
         LString delete(String name);
+    }
+
+    @MembersLabeled
+    public enum Labels {
+        REALLY_DELETE
     }
 
     static class View extends
@@ -36,53 +47,45 @@ public class DefaultCrudDeleteController extends SubControllerComponent {
         CrudReflectionUtil util;
 
         @Inject
-        CrudEditComponents editComponents;
+        CrudUtil crudUtil;
 
         @Override
         protected Component createComponents() {
             return toComponent(html -> {
-                html.div()
-                        .B_BG_DANGER()
-                        .content(
-                                messages.delete(controller.entityGroup.get()
-                                        .getClass().getName()));
+                html.div().B_BG_DANGER().h1().content(Labels.REALLY_DELETE);
 
-                html.add(new CButton(controller, c -> c.delete()));
+                crudUtil.getStrategy(CrudUtil.IdentificationRenderer.class,
+                        controller.type.getClass()).renderIdenification(html,
+                        controller.entity);
+                html._div();
+
+                html.add(new CButton(controller, c -> c.delete())
+                        .apply(CButtonTemplate.setArgs(x -> x.danger())));
                 html.rButtonA(go(CrudControllerBase.class).browse(
-                        controller.entityGroup.get().getClass(),
-                        controller.emQualifier));
-                html.rButtonA(
-                        go(CrudControllerBase.class).display(
-                                controller.entityGroup.get()), x -> x.danger());
+                        controller.type.getEntityClass(),
+                        controller.type.getEmQualifier()));
+                html.rButtonA(go(CrudControllerBase.class).display(
+                        controller.entity));
 
             });
         }
     }
 
-    Class<? extends Annotation> emQualifier;
-
-    BindingGroup<Object> entityGroup;
-
-    Object entity() {
-        return entityGroup.proxy();
-    }
+    private Object entity;
+    private PersistentType type;
 
     public DefaultCrudDeleteController initialize(Object entity) {
-        this.entityGroup = new BindingGroup<>(entity);
-        this.emQualifier = util.getEmQualifier(entity);
+        this.entity = entity;
+        type = reflectionUtil.getPersistentType(entity);
         return this;
     }
-
-    @Inject
-    EntityManagerHolder holder;
 
     @Labeled
     @GlyphiconIcon(Glyphicon.remove_sign)
     void delete() {
-        Object entity = entityGroup.get();
-        Class<? extends Object> entityClass = entity.getClass();
-        holder.getEntityManager(emQualifier).remove(entity);
+        holder.getEntityManager(type.getEmQualifier()).remove(entity);
         commit();
-        redirect(go(CrudControllerBase.class).browse(entityClass, emQualifier));
+        redirect(go(CrudControllerBase.class).browse(type.getEntityClass(),
+                type.getEmQualifier()));
     }
 }

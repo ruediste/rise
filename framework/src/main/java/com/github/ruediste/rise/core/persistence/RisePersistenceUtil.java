@@ -61,9 +61,9 @@ public class RisePersistenceUtil {
      * persistence unit.
      */
     @SuppressWarnings("unchecked")
-    public <T> ManagedType<T> getManagedType(PersistentTypeIdentifier identifier) {
+    public <T> ManagedType<T> getManagedType(PersistentType identifier) {
         return (ManagedType<T>) getManagedTypeMap(identifier.getEmQualifier())
-                .get().get(identifier.getType());
+                .get().get(identifier.getEntityClass());
     }
 
     /**

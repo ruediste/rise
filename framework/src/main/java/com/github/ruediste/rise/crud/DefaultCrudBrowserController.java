@@ -14,7 +14,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.Attribute;
 
 import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.github.ruediste.rendersnakeXT.canvas.Glyphicon;
@@ -28,7 +27,7 @@ import com.github.ruediste.rise.component.components.CDataGrid.Cell;
 import com.github.ruediste.rise.component.components.CDataGrid.Column;
 import com.github.ruediste.rise.component.components.CText;
 import com.github.ruediste.rise.component.tree.Component;
-import com.github.ruediste.rise.core.persistence.PersistentTypeIdentifier;
+import com.github.ruediste.rise.core.persistence.PersistentType;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 import com.github.ruediste.rise.crud.CrudPropertyFilter.CrudFilterPersitenceContext;
 import com.github.ruediste.rise.crud.CrudUtil.CrudPicker;
@@ -41,7 +40,7 @@ import com.github.ruediste1.i18n.message.TMessage;
 import com.github.ruediste1.i18n.message.TMessages;
 import com.google.common.base.Preconditions;
 
-public class DefaultCrudBrowserController<T> extends SubControllerComponent
+public class DefaultCrudBrowserController extends SubControllerComponent
         implements CrudPicker {
     @Inject
     CrudReflectionUtil crudReflectionUtil;
@@ -57,8 +56,8 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent
     }
 
     @SuppressWarnings("unused")
-    private static class DefaultCrudBrowserView<T> extends
-            DefaultCrudViewComponent<DefaultCrudBrowserController<T>> {
+    private static class DefaultCrudBrowserView extends
+            DefaultCrudViewComponent<DefaultCrudBrowserController> {
 
         @TMessages
         public interface Messages {
@@ -76,8 +75,8 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent
             LString pickerFor(String clazz);
         }
 
-        @Inject
-        CrudReflectionUtil crudReflectionUtil;
+        // @Inject
+        // CrudReflectionUtil crudReflectionUtil;
 
         @Inject
         Messages messages;
@@ -89,15 +88,15 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent
         protected Component createComponents() {
 
             // create columns
-            ArrayList<Column<T>> columns = new ArrayList<>();
-            for (Attribute<?, ?> p : controller.properties) {
-                PropertyInfo property = crudReflectionUtil.getProperty(p);
+            ArrayList<Column<Object>> columns = new ArrayList<>();
+            for (PersistentProperty p : controller.columnProperties) {
+                PropertyInfo property = p.getProperty();
                 columns.add(new Column<>(() -> new CDataGrid.Cell(labelUtil
                         .getPropertyLabel(property)), item -> new Cell(
                         new CText(Objects.toString(property.getValue(item))))));
             }
 //@formatter:off
-            Function<T, Cell> actionsFactory;
+            Function<Object, Cell> actionsFactory;
             if (controller.mode==Mode.BROWSER) {
                 actionsFactory = item -> new Cell(toComponent(html -> html
                     .add(new CButton(go(CrudControllerBase.class).display(item), true)
@@ -114,13 +113,13 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent
                         ));
             }
                 
-            columns.add(new Column<T>(
+            columns.add(new Column<Object>(
                     () -> new Cell(new CText(messages.actions())),
                     actionsFactory));
             return toComponent(html -> html
                     .h1().content(controller.mode==Mode.BROWSER?
-                      messages.browserFor(controller.entityClass.getName())
-                      :messages.pickerFor(controller.entityClass.getName()))
+                      messages.browserFor(controller.type.getEntityClass().getName())
+                      :messages.pickerFor(controller.type.getEntityClass().getName()))
                     .div().CLASS("panel panel-default")
                       .div().CLASS("panel-heading")
                         .content(messages.filter())
@@ -132,9 +131,9 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent
                     ._div()
                     .add(new CButton(controller, x -> x.search()).apply(CButtonTemplate.setArgs(x->x.primary())))
                     .fIf(controller.mode==Mode.BROWSER, 
-                      ()->html.add(new CButton(go(CrudControllerBase.class).create(controller.entityClass, controller.emQualifier)))
+                      ()->html.add(new CButton(go(CrudControllerBase.class).create(controller.type.getEntityClass(), controller.type.getEmQualifier())))
                     )
-                    .add(new CDataGrid<T>().setColumns(columns).bindOneWay(
+                    .add(new CDataGrid<Object>().setColumns(columns).bindOneWay(
                             g -> g.setItems(controller.data().getItems())))
                     .fIf(controller.mode==Mode.PICKER,()->html
                       .add(new CButton(controller, c -> c.cancel())))
@@ -146,39 +145,41 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent
     @Inject
     EntityManagerHolder emh;
 
-    private Class<T> entityClass;
+    static class Data {
+        private List<Object> items;
 
-    static class Data<T> {
-        private List<T> items;
-
-        public List<T> getItems() {
+        public List<Object> getItems() {
             return items;
         }
 
-        public void setItems(List<T> objects) {
+        public void setItems(List<Object> objects) {
             this.items = objects;
         }
     }
 
-    BindingGroup<Data<T>> data = new BindingGroup<>(new Data<>());
+    GenericEvent<Object> pickerClosed = new GenericEvent<>();
 
-    Data<T> data() {
+    Mode mode = Mode.BROWSER;
+
+    PersistentType type;
+
+    BindingGroup<Data> data = new BindingGroup<>(new Data());
+
+    List<PersistentProperty> columnProperties;
+
+    List<CrudPropertyFilter> filterList;
+
+    Data data() {
         return data.proxy();
     }
 
     private EntityManager getEm() {
-        return emh.getEntityManager(emQualifier);
+        return emh.getEntityManager(type.getEmQualifier());
     }
-
-    List<Attribute<?, ?>> properties;
-
-    private List<CrudPropertyFilter> filterList;
-
-    private Class<? extends Annotation> emQualifier;
 
     @Labeled
     @GlyphiconIcon(Glyphicon.check)
-    public void pick(T item) {
+    public void pick(Object item) {
         pickerClosed.fire(item);
     }
 
@@ -188,14 +189,15 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent
         pickerClosed.fire(null);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Labeled
     @GlyphiconIcon(Glyphicon.search)
     public void search() {
         EntityManager em = getEm();
 
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<T> q = cb.createQuery(entityClass);
-        Root<T> root = q.from(entityClass);
+        CriteriaQuery q = cb.createQuery(type.getEntityClass());
+        Root root = q.from(type.getEntityClass());
         q.select(root);
 
         ArrayList<Predicate> whereClauses = new ArrayList<>();
@@ -230,32 +232,24 @@ public class DefaultCrudBrowserController<T> extends SubControllerComponent
         data.pullUp();
     }
 
-    Mode mode = Mode.BROWSER;
-
-    public DefaultCrudBrowserController<T> toPicker() {
+    public DefaultCrudBrowserController toPicker() {
         mode = Mode.PICKER;
         return this;
     }
 
-    PersistentTypeIdentifier type;
-
-    public DefaultCrudBrowserController<T> initialize(Class<T> entityClass,
+    public DefaultCrudBrowserController initialize(Class<?> entityClass,
             Class<? extends Annotation> emQualifier) {
         Preconditions.checkNotNull(entityClass, "entityClass is null");
-        this.entityClass = entityClass;
-        this.emQualifier = emQualifier;
-        type = new PersistentTypeIdentifier(emQualifier, entityClass);
+        type = crudReflectionUtil.getPersistentType(emQualifier, entityClass);
 
-        properties = crudReflectionUtil.getBrowserProperties2(type);
-        filterList = properties.stream().map(filters::getFactory)
+        columnProperties = crudReflectionUtil.getBrowserProperties2(type);
+        filterList = columnProperties.stream().map(filters::getFactory)
                 .collect(toList());
 
         search();
 
         return this;
     }
-
-    GenericEvent<Object> pickerClosed = new GenericEvent<>();
 
     @Override
     public GenericEvent<Object> pickerClosed() {

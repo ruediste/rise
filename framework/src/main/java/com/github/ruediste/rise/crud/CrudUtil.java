@@ -71,7 +71,6 @@ public class CrudUtil {
                 Class<? extends Annotation> emQualifier);
     }
 
-    @SuppressWarnings("rawtypes")
     private static class DefaultBrowserFactory implements BrowserFactory {
 
         @Inject
@@ -203,13 +202,11 @@ public class CrudUtil {
                 Class<?> entityClass);
     }
 
-    @SuppressWarnings("rawtypes")
     public static class DefaultCrudPickerFactory implements CrudPickerFactory {
 
         @Inject
         Provider<DefaultCrudBrowserController> provider;
 
-        @SuppressWarnings("unchecked")
         @Override
         public CrudPicker createPicker(Class<? extends Annotation> emQualifier,
                 Class<?> entityClass) {
