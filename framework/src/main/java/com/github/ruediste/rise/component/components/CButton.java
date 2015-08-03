@@ -37,7 +37,8 @@ public class CButton extends MultiChildrenComponent<CButton> {
     /**
      * When the button is clicked, the handler will be called with the target as
      * argument. A {@link CIconLabel} is added as child, using the invoked
-     * method to obtain a label and an (optional) icon.
+     * method to obtain a label and an (optional) icon. In addition, the
+     * {@link #TEST_NAME(String)} is set to the name of the method.
      */
     public <T> CButton(T target, Consumer<T> handler) {
         this(target, handler, false);
@@ -46,7 +47,8 @@ public class CButton extends MultiChildrenComponent<CButton> {
     /**
      * When the button is clicked, the handler will be called with the target as
      * argument. A {@link CIconLabel} is added as child, using the invoked
-     * method to obtain a label and an (optional) icon.
+     * method to obtain a label and an (optional) icon. In addition, the
+     * {@link #TEST_NAME(String)} is set to the name of the method.
      */
     public <T> CButton(T target, BiConsumer<CButton, T> handler) {
         this(target, handler, false);
@@ -55,7 +57,8 @@ public class CButton extends MultiChildrenComponent<CButton> {
     /**
      * When the button is clicked, the handler will be called with the target as
      * argument. A {@link CIconLabel} is added as child, using the invoked
-     * method to obtain a label and an (optional) icon.
+     * method to obtain a label and an (optional) icon. In addition, the
+     * {@link #TEST_NAME(String)} is set to the name of the method.
      */
     public <T> CButton(T target, Consumer<T> handler, boolean showIconOnly) {
         this(target, (btn, t) -> handler.accept(t), showIconOnly);
@@ -65,7 +68,8 @@ public class CButton extends MultiChildrenComponent<CButton> {
      * Create a button which will link directly to the specified target (without
      * causing a request to the containing page). A {@link CIconLabel} is added
      * as child, using the invoked action method to obtain a label and an
-     * (optional) icon.
+     * (optional) icon. In addition, the {@link #TEST_NAME(String)} is set to
+     * the name of the method.
      */
     public <T> CButton(ActionResult target) {
         this(target, false);
@@ -75,12 +79,14 @@ public class CButton extends MultiChildrenComponent<CButton> {
      * Create a button which will link directly to the specified target (without
      * causing a request to the containing page). A {@link CIconLabel} is added
      * as child, using the invoked action method to obtain a label and an
-     * (optional) icon.
+     * (optional) icon. In addition, the {@link #TEST_NAME(String)} is set to
+     * the name of the method.
      */
     public <T> CButton(ActionResult target, boolean showIconOnly) {
         this.setTarget(target);
         Method invokedMethod = ((ActionInvocationResult) target).methodInvocation
                 .getMethod();
+        TEST_NAME(invokedMethod.getName());
         add(new CIconLabel().setMethod(invokedMethod).setShowIconOnly(
                 showIconOnly));
     }
@@ -88,7 +94,8 @@ public class CButton extends MultiChildrenComponent<CButton> {
     /**
      * When the button is clicked, the handler will be called with the target as
      * argument. A {@link CIconLabel} is added as child, using the invoked
-     * method to obtain a label and an (optional) icon.
+     * method to obtain a label and an (optional) icon. In addition, the
+     * {@link #TEST_NAME(String)} is set to the name of the method.
      */
     @SuppressWarnings("unchecked")
     public <T> CButton(T target, BiConsumer<CButton, T> handler,
@@ -97,6 +104,7 @@ public class CButton extends MultiChildrenComponent<CButton> {
         Method invokedMethod = MethodInvocationRecorder.getLastInvocation(
                 (Class<T>) target.getClass(), t -> handler.accept(this, t))
                 .getMethod();
+        TEST_NAME(invokedMethod.getName());
         add(new CIconLabel().setMethod(invokedMethod).setShowIconOnly(
                 showIconOnly));
     }

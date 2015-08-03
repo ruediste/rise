@@ -37,12 +37,14 @@ public class CButtonTemplate extends BootstrapComponentTemplateBase<CButton> {
     public void doRender(CButton button, BootstrapRiseCanvas<?> html) {
         if (button.getTarget() != null) {
             html.bButtonA(args.get(button)).CLASS("rise_button_link")
-                    .CLASS(button.CLASS()).HREF(button.getTarget())
-                    .renderChildren(button)._bButtonA();
+                    .CLASS(button.CLASS()).TEST_NAME(button.TEST_NAME())
+                    .HREF(button.getTarget()).renderChildren(button)
+                    ._bButtonA();
         } else {
             html.bButton(args.get(button))
                     .CLASS("rise_button")
                     .CLASS(button.CLASS())
+                    .TEST_NAME(button.TEST_NAME())
                     .DATA(CoreAssetBundle.componentAttributeNr,
                             String.valueOf(util.getComponentNr(button)))
                     .renderChildren(button)._bButton();

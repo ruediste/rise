@@ -37,7 +37,7 @@ public class DefaultCrudCreateController extends SubControllerComponent {
                 for (PersistentProperty p : util
                         .getEditProperties2(controller.type)) {
                     html.add(editComponents.createEditComponent(p,
-                            controller.entityGroup));
+                            controller.type, controller.entityGroup));
                 }
                 html.add(new CButton(controller, c -> c.create()));
                 html.rButtonA(go(CrudControllerBase.class).browse(

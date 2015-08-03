@@ -21,6 +21,9 @@ public class CoreRequestInfo {
 
     private Throwable requestError;
 
+    /**
+     * Set after parsing a component or mvc request
+     */
     public ActionInvocation<String> getStringActionInvocation() {
         return stringActionInvocation;
     }
@@ -78,6 +81,10 @@ public class CoreRequestInfo {
         this.requestError = requestError;
     }
 
+    /**
+     * Set immediately before calling the controller, after the transaction is
+     * started, since loading arguments might require DB access.
+     */
     public ActionInvocation<Object> getObjectActionInvocation() {
         return objectActionInvocation;
     }

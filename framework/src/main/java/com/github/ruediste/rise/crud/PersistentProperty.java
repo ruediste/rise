@@ -42,4 +42,8 @@ public class PersistentProperty {
                 && Objects.equal(attribute, other.attribute);
     }
 
+    @Override
+    public String toString() {
+        return property.toString();
+    }
 }

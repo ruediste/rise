@@ -14,6 +14,7 @@ public abstract class ComponentBase<TSelf extends AttachedPropertyBearer>
 
     private Component parent;
     private String class_;
+    private String testName;
 
     public ComponentBase() {
         super();
@@ -58,6 +59,10 @@ public abstract class ComponentBase<TSelf extends AttachedPropertyBearer>
         return self();
     }
 
+    /**
+     * Set the CSS-class to for to this component. It will generally be added to
+     * the outermost HTML-element rendered for this component by the template.
+     */
     public TSelf CLASS(String class_) {
         this.class_ = class_;
         return self();
@@ -65,6 +70,20 @@ public abstract class ComponentBase<TSelf extends AttachedPropertyBearer>
 
     public String CLASS() {
         return class_;
+    }
+
+    /**
+     * Set the "data-test-name" attribute to for this component. It will
+     * generally be added to the outermost HTML-element rendered for this
+     * component by the template.
+     */
+    public TSelf TEST_NAME(String testName) {
+        this.testName = testName;
+        return self();
+    }
+
+    public String TEST_NAME() {
+        return testName;
     }
 
     public TSelf apply(Consumer<TSelf> consumer) {

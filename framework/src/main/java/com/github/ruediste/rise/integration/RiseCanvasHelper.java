@@ -10,12 +10,14 @@ import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasTarget;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.components.CMixedRender;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.CurrentLocale;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetRequestMapper;
 import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
 import com.github.ruediste1.i18n.label.LabelUtil;
+import com.google.common.base.Strings;
 
 public class RiseCanvasHelper {
 
@@ -35,6 +37,8 @@ public class RiseCanvasHelper {
 
     @Inject
     ComponentUtil componentUtil;
+    @Inject
+    CoreConfiguration coreConfiguration;
 
     private ByteArrayOutputStream baos;
     private HtmlCanvasTarget target;
@@ -141,5 +145,15 @@ public class RiseCanvasHelper {
 
     public void renderComponent(Component c, RiseCanvas<?> html) {
         componentUtil.render(c, html);
+    }
+
+    /**
+     * @see RiseCanvas#TEST_NAME(String)
+     */
+    public void TEST_NAME(String name) {
+        if (coreConfiguration.isRenderTestName()
+                && !Strings.isNullOrEmpty(name)) {
+            target.addAttribute("data-test-name", name);
+        }
     }
 }

@@ -78,7 +78,7 @@ var rise = (function() {
 					// add the button id as hidden input
 					var componentId = $(this).data("rise-component-nr");
 					$(this).after(
-							"<input type=\"text\" class=\"rise_hidden\" name=\""
+							"<input type=\"text\" style=\"display: none;\" name=\""
 									+ generateKey(componentId, "clicked")
 									+ "\" />");
 					$(this).trigger("rise_viewReload");

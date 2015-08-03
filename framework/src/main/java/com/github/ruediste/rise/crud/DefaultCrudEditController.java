@@ -8,7 +8,6 @@ import com.github.ruediste.rendersnakeXT.canvas.Glyphicon;
 import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CButton;
-import com.github.ruediste.rise.component.components.CComponentStack;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.persistence.PersistentType;
 import com.github.ruediste.rise.core.persistence.RisePersistenceUtil;
@@ -34,19 +33,18 @@ public class DefaultCrudEditController extends SubControllerComponent {
 
         @Override
         protected Component createComponents() {
-            return new CComponentStack(
-                    toComponent(html -> {
-                        for (PersistentProperty p : util
-                                .getEditProperties2(controller.type)) {
-                            html.add(editComponents.createEditComponent(p,
-                                    controller.entityGroup));
-                        }
-                        html.add(new CButton(controller, c -> c.save()));
-                        html.rButtonA(go(CrudControllerBase.class).browse(
-                                controller.entityGroup.get().getClass(),
-                                controller.emQualifier));
+            return toComponent(html -> {
+                for (PersistentProperty p : util
+                        .getEditProperties2(controller.type)) {
+                    html.add(editComponents.createEditComponent(p,
+                            controller.type, controller.entityGroup));
+                }
+                html.add(new CButton(controller, c -> c.save()));
+                html.rButtonA(go(CrudControllerBase.class).browse(
+                        controller.entityGroup.get().getClass(),
+                        controller.emQualifier));
 
-                    }));
+            });
         }
     }
 

@@ -26,6 +26,17 @@ public class CInput extends CInputBase<CInput> {
         return this;
     }
 
+    /**
+     * Bind the value to a property. In addition, the {@link #TEST_NAME()} is
+     * set to the name of the property.
+     * 
+     * <pre>
+     * {@code
+     * new CInput(InputType.date).bindValue(
+     *   () -> controller.data().getPerson().getBirthDate())
+     * }
+     * </pre>
+     */
     public CInput bindValue(Supplier<String> binder) {
         setLabelProperty(BindingUtil.bind(this,
                 view -> view.setValue(binder.get())).getB());

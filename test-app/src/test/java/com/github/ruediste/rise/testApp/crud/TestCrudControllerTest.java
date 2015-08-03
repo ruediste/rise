@@ -9,6 +9,8 @@ public class TestCrudControllerTest extends WebTest {
     @Test
     public void browse() {
         driver.navigate().to(
-                url(go(CrudInvocationController.class).browseTestEnties()));
+                url(go(TestCrudController.class).browse(TestCrudEntityA.class,
+                        null)));
+
     }
 }

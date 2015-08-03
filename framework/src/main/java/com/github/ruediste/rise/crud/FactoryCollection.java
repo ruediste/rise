@@ -18,7 +18,7 @@ public class FactoryCollection<TKey, TFactory> {
                 .filter(x -> x != null)
                 .findFirst()
                 .orElseThrow(
-                        () -> new RuntimeException("No factory found for "
-                                + key));
+                        () -> new RuntimeException(getClass().getSimpleName()
+                                + ": No factory found for " + key));
     }
 }

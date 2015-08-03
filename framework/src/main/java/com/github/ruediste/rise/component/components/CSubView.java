@@ -21,7 +21,7 @@ public class CSubView extends AttachedPropertyBearerBase implements Component {
     }
 
     public CSubView(ViewComponentBase<?> view) {
-        this.view = view;
+        setView(view);
     }
 
     @Override
@@ -51,7 +51,16 @@ public class CSubView extends AttachedPropertyBearerBase implements Component {
     }
 
     public void setView(ViewComponentBase<?> view) {
+        if (this.view != null) {
+            view.getRootComponent().parentChanged(null);
+        }
         this.view = view;
+        if (this.view != null) {
+            if (view.getRootComponent().getParent() != null)
+                view.getRootComponent().getParent()
+                        .childRemoved(view.getRootComponent());
+            view.getRootComponent().parentChanged(this);
+        }
     }
 
 }

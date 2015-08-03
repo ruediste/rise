@@ -1,7 +1,5 @@
 package com.github.ruediste.rise.crud;
 
-import java.lang.annotation.Annotation;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -21,6 +19,7 @@ import com.github.ruediste.rise.component.components.CValue;
 import com.github.ruediste.rise.component.components.InputType;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ComponentTreeUtil;
+import com.github.ruediste.rise.core.persistence.PersistentType;
 import com.github.ruediste.rise.core.persistence.RisePersistenceUtil;
 import com.github.ruediste.rise.crud.CrudUtil.CrudPicker;
 import com.github.ruediste.rise.crud.CrudUtil.CrudPickerFactory;
@@ -46,7 +45,8 @@ public class CrudEditComponents
     RisePersistenceUtil persistenceUtil;
 
     public interface CrudEditComponentFactory {
-        Component create(PersistentProperty decl, BindingGroup<?> group);
+        Component create(PersistentProperty decl, PersistentType entityType,
+                BindingGroup<?> group);
     }
 
     private Component toComponent(Renderable<BootstrapRiseCanvas<?>> renderer) {
@@ -60,15 +60,15 @@ public class CrudEditComponents
     }
 
     public Component createEditComponent(PersistentProperty property,
-            BindingGroup<?> group) {
-        return getFactory(property).create(property, group);
+            PersistentType entityType, BindingGroup<?> group) {
+        return getFactory(property).create(property, entityType, group);
     }
 
     @PostConstruct
     public void initialize() {
         addFactory(
                 decl -> String.class.equals(decl.getAttribute().getJavaType()),
-                (decl, group) -> new CTextField().setLabel(
+                (decl, entityType, group) -> new CTextField().setLabel(
                         labelUtil.getPropertyLabel(decl.getProperty()))
                         .bindText(
                                 () -> (String) decl.getProperty().getValue(
@@ -77,7 +77,7 @@ public class CrudEditComponents
         addFactory(
                 decl -> Long.TYPE.equals(decl.getAttribute().getJavaType())
                         || Long.class.equals(decl.getAttribute().getJavaType()),
-                (decl, group) -> {
+                (decl, entityType, group) -> {
                     CInput result = new CInput(InputType.number)
                             .setLabel(labelUtil.getPropertyLabel(decl
                                     .getProperty()));
@@ -94,7 +94,7 @@ public class CrudEditComponents
 
         addFactory(
                 decl -> decl.getAttribute().getPersistentAttributeType() == PersistentAttributeType.MANY_TO_ONE,
-                (decl, group) -> {
+                (decl, entityType, group) -> {
                     Class<?> cls = decl.getAttribute().getJavaType();
 
                     CValue<Object> cValue = new CValue<>(
@@ -112,10 +112,8 @@ public class CrudEditComponents
                                 .add(cValue)
                             ._span()
                             .add(new CButton(this,(btn, c)->c.pick(()->{
-                                Class<? extends Annotation> emQualifier = persistenceUtil
-                                        .getEmQualifier(group.get());
                                 CrudPicker picker = crudUtil.getStrategy(CrudPickerFactory.class, cls)
-                                        .createPicker(emQualifier, cls);
+                                        .createPicker(entityType.getEmQualifier(), cls);
                                 picker.pickerClosed().addListener(value->{
                                     if (value!=null){
                                         cValue.setValue(value);

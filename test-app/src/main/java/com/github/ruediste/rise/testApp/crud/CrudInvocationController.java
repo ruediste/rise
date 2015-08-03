@@ -21,7 +21,7 @@ public class CrudInvocationController extends
         TestAppEntity e = new TestAppEntity();
         e.setValue(new Date().toString());
         em.persist(e);
-        return redirect(go(TestCrudController.class).browse(TestAppEntity.class,
-                null));
+        return redirect(go(TestCrudController.class).browse(
+                TestCrudEntityA.class, null));
     }
 }

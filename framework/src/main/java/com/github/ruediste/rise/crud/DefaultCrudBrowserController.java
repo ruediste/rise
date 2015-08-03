@@ -120,23 +120,22 @@ public class DefaultCrudBrowserController extends SubControllerComponent
                     .h1().content(controller.mode==Mode.BROWSER?
                       messages.browserFor(controller.type.getEntityClass().getName())
                       :messages.pickerFor(controller.type.getEntityClass().getName()))
-                    .div().CLASS("panel panel-default")
-                      .div().CLASS("panel-heading")
-                        .content(messages.filter())
-                      .div().CLASS("panel-body")
-                        .fForEach(controller.filterList, filter -> {
-                          html.add(filter.getComponent());
-                        })
-                      ._div()
-                    ._div()
-                    .add(new CButton(controller, x -> x.search()).apply(CButtonTemplate.setArgs(x->x.primary())))
-                    .fIf(controller.mode==Mode.BROWSER, 
-                      ()->html.add(new CButton(go(CrudControllerBase.class).create(controller.type.getEntityClass(), controller.type.getEmQualifier())))
-                    )
-                    .add(new CDataGrid<Object>().setColumns(columns).bindOneWay(
-                            g -> g.setItems(controller.data().getItems())))
-                    .fIf(controller.mode==Mode.PICKER,()->html
-                      .add(new CButton(controller, c -> c.cancel())))
+                        .div().CLASS("panel panel-default")
+                          .div().CLASS("panel-heading")
+                            .content(messages.filter())
+                          .div().CLASS("panel-body")
+                            .fForEach(controller.filterList, filter -> {
+                              html.add(filter.getComponent());
+                            })
+                          ._div()
+                        ._div()
+                          .add(new CButton(controller, x -> x.search()).apply(CButtonTemplate.setArgs(x->x.primary())))
+                          .fIf(controller.mode==Mode.BROWSER, 
+                            ()->html.add(new CButton(go(CrudControllerBase.class).create(controller.type.getEntityClass(), controller.type.getEmQualifier()))))
+                        .add(new CDataGrid<Object>().setColumns(columns).bindOneWay(
+                                g -> g.setItems(controller.data().getItems())))
+                        .fIf(controller.mode==Mode.PICKER,()->html
+                          .add(new CButton(controller, c -> c.cancel())))
                     );
 //@formatter:on
         }

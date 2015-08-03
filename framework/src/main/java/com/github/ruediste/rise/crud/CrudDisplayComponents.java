@@ -5,7 +5,6 @@ import java.util.function.Supplier;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.metamodel.Attribute.PersistentAttributeType;
-import javax.persistence.metamodel.PluralAttribute;
 
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.component.ComponentFactoryUtil;
@@ -66,19 +65,37 @@ public class CrudDisplayComponents
                     return toComponentBound(
                         () -> g.proxy(),
                         html -> {
-                            PluralAttribute<?, ?, ?> attribute = (PluralAttribute<?, ?, ?>) p
-                                            .getAttribute();
                             html.bFormGroup()
                                 .label().content(labelUtil.getPropertyLabel(p.getProperty()))
                                 .span().B_FORM_CONTROL().DISABLED("disabled")
                                   .render(x-> crudUtil
                                           .getStrategy(
                                                   IdentificationRenderer.class,
-                                                  attribute.getElementType().getJavaType()).renderIdenification(
+                                                  p.getAttribute().getJavaType()).renderIdenification(
                                                   html, p.getProperty().getValue(g.get())))
                                 ._span()
                             ._bFormGroup();
                      });
+                    //@formatter:on
+                });
+        addFactory(
+                p -> p.getAttribute().getPersistentAttributeType() == PersistentAttributeType.ONE_TO_MANY,
+                (p, g) -> {
+                    //@formatter:off
+                    return toComponentBound(
+                            () -> g.proxy(),
+                            html -> {
+                                html.bFormGroup()
+                                .label().content(labelUtil.getPropertyLabel(p.getProperty()))
+                                .span().B_FORM_CONTROL().DISABLED("disabled")
+                                .render(x-> crudUtil
+                                        .getStrategy(
+                                                IdentificationRenderer.class,
+                                                p.getAttribute().getJavaType()).renderIdenification(
+                                                        html, p.getProperty().getValue(g.get())))
+                                                        ._span()
+                                                        ._bFormGroup();
+                            });
                     //@formatter:on
                 });
 

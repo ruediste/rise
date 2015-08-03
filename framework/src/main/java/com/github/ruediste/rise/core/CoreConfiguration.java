@@ -293,4 +293,15 @@ public class CoreConfiguration {
     public Locale getDefaultLocale() {
         return defaultLocale;
     }
+
+    public boolean renderTestName;
+
+    public boolean isRenderTestName() {
+        return renderTestName;
+    }
+
+    @PostConstruct
+    void postContruct() {
+        renderTestName = projectStage != ProjectStage.PRODUCTION;
+    }
 }

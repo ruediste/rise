@@ -35,7 +35,8 @@ public class InputRenderHelper {
             innerRenderer.run();
             return;
         }
-        html.bFormGroup().CLASS(component.CLASS());
+        html.bFormGroup().CLASS(component.CLASS())
+                .TEST_NAME(component.TEST_NAME());
 
         if (component.getValidationState() == ValidationState.SUCCESS) {
             html.B_HAS_SUCCESS();

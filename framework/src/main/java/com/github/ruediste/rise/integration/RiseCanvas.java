@@ -4,6 +4,8 @@ import com.github.ruediste.rendersnakeXT.canvas.FuncCanvas;
 import com.github.ruediste.rendersnakeXT.canvas.Html5Canvas;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.ActionResult;
+import com.github.ruediste.rise.core.CoreConfiguration;
+import com.github.ruediste.rise.core.ProjectStage;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
@@ -87,6 +89,21 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends
     default TSelf renderChildren(Component parent) {
         for (Component c : parent.getChildren())
             internal_riseHelper().renderComponent(c, this);
+        return self();
+    }
+
+    /**
+     * Add a "data-test-name" attribute to the current element. The name can be
+     * used to locate elements in selenium tests. It is only written if
+     * {@link CoreConfiguration#isRenderTestName()}, which is by default the
+     * case in all stages except {@link ProjectStage#PRODUCTION}.
+     * 
+     * @param name
+     *            test name to render. If null or empty, the attribute will be
+     *            omitted
+     */
+    default TSelf TEST_NAME(String name) {
+        internal_riseHelper().TEST_NAME(name);
         return self();
     }
 }

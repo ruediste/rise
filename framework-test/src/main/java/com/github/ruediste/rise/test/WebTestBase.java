@@ -9,6 +9,7 @@ import org.junit.Rule;
 import org.junit.rules.TestRule;
 import org.junit.runners.model.Statement;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 
 import com.github.ruediste.rise.core.ActionResult;
@@ -65,7 +66,7 @@ public abstract class WebTestBase {
     protected abstract TestContainerInstance getTestContainerInstance();
 
     @Before
-    public void beforeWebTestBase() {
+    public final void beforeWebTestBase() {
         TestContainerInstance testContainerInstance = getTestContainerInstance();
         if (testContainerInstance.isStarted) {
             if (!isInjected)
@@ -110,4 +111,7 @@ public abstract class WebTestBase {
 
     protected abstract WebDriver createDriver();
 
+    protected WebDriverWait doWait(long timeOutInSeconds) {
+        return new WebDriverWait(driver, timeOutInSeconds);
+    }
 }

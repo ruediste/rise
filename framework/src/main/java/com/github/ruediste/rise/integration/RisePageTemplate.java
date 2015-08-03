@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.integration;
 
+import java.lang.reflect.Method;
 import java.util.function.Function;
 
 import javax.inject.Inject;
@@ -12,6 +13,7 @@ import com.github.ruediste.rise.component.PageInfo;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
+import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.front.RestartCountHolder;
@@ -43,6 +45,16 @@ public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>> extends
     public void renderOn(TCanvas html,
             RisePageTemplateParameters<TCanvas> parameters) {
 
+        String testName = null;
+        {
+            ActionInvocation<String> invocation = coreRequestInfo
+                    .getStringActionInvocation();
+            if (invocation != null) {
+                Method method = invocation.methodInvocation.getMethod();
+                testName = method.getDeclaringClass().getName() + "."
+                        + method.getName();
+            }
+        }
         //@formatter:off
 		html.doctypeHtml5().html(); parameters.addHtmlAttributes(html);
 			html.head();
@@ -51,7 +63,8 @@ public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>> extends
 				parameters.renderCssLinks(html);
 		html._head()
 		.body().DATA(CoreAssetBundle.bodyAttributeRestartQueryUrl,url(coreConfig.restartQueryPathInfo))
-		       .DATA(CoreAssetBundle.bodyAttributeRestartNr,Long.toString(holder.get()));
+		       .DATA(CoreAssetBundle.bodyAttributeRestartNr,Long.toString(holder.get()))
+		       .TEST_NAME(testName);
 	        if (componentRequestInfo.isComponentRequest()) {
 	            html.DATA(CoreAssetBundle.bodyAttributePageNr,Long.toString(pageInfo.getPageId()))
                     .DATA(CoreAssetBundle.bodyAttributeReloadUrl,url(componentConfig.getReloadPath()))

@@ -6,7 +6,7 @@ import java.util.Collections;
 import javax.validation.ConstraintViolation;
 
 import com.github.ruediste.c3java.properties.NoPropertyAccessor;
-import com.github.ruediste.c3java.properties.PropertyPath;
+import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.github.ruediste.rise.component.ConstraintViolationAware;
 import com.github.ruediste.rise.component.ValidationState;
 import com.github.ruediste.rise.component.binding.Binding;
@@ -28,7 +28,7 @@ public class CInputBase<T extends RelationsComponent<T>> extends
     /**
      * Property to use to generate a label, if {@link #label} is null
      */
-    private PropertyPath labelProperty;
+    private PropertyInfo labelProperty;
 
     private boolean renderFormGroup = true;
 
@@ -77,17 +77,22 @@ public class CInputBase<T extends RelationsComponent<T>> extends
         return ValidationState.ERROR;
     }
 
-    public PropertyPath getLabelProperty() {
+    public PropertyInfo getLabelProperty() {
         return labelProperty;
     }
 
-    public void setLabelProperty(PropertyPath labelProperty) {
+    /**
+     * set the property used to get the label from. In addition, set the
+     * {@link #TEST_NAME()}
+     */
+    public void setLabelProperty(PropertyInfo labelProperty) {
         this.labelProperty = labelProperty;
+        TEST_NAME(labelProperty.getName());
     }
 
     @NoPropertyAccessor
     public void setLabelProperty(Binding<?> binding) {
-        setLabelProperty(binding.modelPath);
+        setLabelProperty(binding.modelPath.getAccessedProperty());
     }
 
     public boolean isRenderFormGroup() {
