@@ -2,7 +2,6 @@ package com.github.ruediste.rise.nonReloadable.front.reload;
 
 import static org.objectweb.asm.Opcodes.ASM5;
 
-import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,7 +13,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -81,7 +79,6 @@ public class ClassHierarchyIndex {
     @Inject
     Logger log;
 
-    @PostConstruct
     public void setup() {
         notifier.addPreListener(this::onChange);
     }
@@ -160,6 +157,10 @@ public class ClassHierarchyIndex {
         if (result == null)
             return Collections.emptySet();
         return result;
+    }
+
+    public Set<ClassNode> getAllChildren(Class<?> cls) {
+        return getAllChildren(Type.getInternalName(cls));
     }
 
     public Set<ClassNode> getAllChildren(String internalName) {
@@ -258,9 +259,4 @@ public class ClassHierarchyIndex {
         return null;
     }
 
-    public List<Member> orderMembers(Iterable<Member> members) {
-        ArrayList<Member> result = new ArrayList<Member>();
-        members.forEach(x -> result.add(x));
-        return result;
-    }
 }

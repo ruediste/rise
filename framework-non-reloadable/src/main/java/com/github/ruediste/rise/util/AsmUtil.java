@@ -17,6 +17,8 @@ import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
+import com.github.ruediste.rise.nonReloadable.front.reload.MemberOrderVisitor;
+
 /**
  * Utility class for the use of the ASM framework
  */
@@ -273,11 +275,17 @@ public class AsmUtil {
     }
 
     public static ClassNode readClass(Class<?> cls) {
+        return readClassWithMembers(cls).getA();
+    }
+
+    public static Pair<ClassNode, List<String>> readClassWithMembers(
+            Class<?> cls) {
+        ClassNode node = new ClassNode();
+        MemberOrderVisitor orderVisitor = new MemberOrderVisitor(node);
         try (InputStream in = cls.getClassLoader().getResourceAsStream(
                 cls.getName().replace('.', '/') + ".class")) {
-            ClassNode result = new ClassNode();
-            new ClassReader(in).accept(result, 0);
-            return result;
+            new ClassReader(in).accept(orderVisitor, 0);
+            return Pair.of(node, orderVisitor.getMembers());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

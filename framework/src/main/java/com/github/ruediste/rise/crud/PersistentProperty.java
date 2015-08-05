@@ -4,6 +4,7 @@ import javax.persistence.metamodel.Attribute;
 
 import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
 
 public class PersistentProperty {
 
@@ -11,7 +12,8 @@ public class PersistentProperty {
     private final Attribute<?, ?> attribute;
 
     public PersistentProperty(PropertyInfo property, Attribute<?, ?> attribute) {
-        super();
+        Preconditions.checkNotNull(property);
+        Preconditions.checkNotNull(attribute);
         this.property = property;
         this.attribute = attribute;
     }

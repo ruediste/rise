@@ -31,7 +31,7 @@ public class ClassHierarchyIndexTest {
     @Before
     public void before() throws IOException {
         readClasses(IA.class, A.class, IB.class, B.class, Base.class,
-                Derived1.class, Derived2.class, MemberOrder.class);
+                Derived1.class, Derived2.class);
     }
 
     private void readClasses(Class<?>... classes) {
@@ -54,19 +54,25 @@ public class ClassHierarchyIndexTest {
     private class B extends A implements IB {
     }
 
-    private class Base<T> {
+    private static class Base<T> {
+        public void foo() {
+        }
+
     }
 
-    private class Derived1<P, T> extends Base<T> {
+    private static class Derived1<P, T> extends Base<T> {
+        public void bar() {
+        }
     }
 
-    private class Derived2 extends Derived1<Integer, String> {
-    }
+    private static class Derived2 extends Derived1<Integer, String> {
+        @Override
+        public void bar() {
+        }
 
-    private class MemberOrder {
-        int a;
-        int b;
-        int c;
+        @Override
+        public void foo() {
+        }
     }
 
     @Test
@@ -106,11 +112,6 @@ public class ClassHierarchyIndexTest {
                         Type.getInternalName(Base.class), "T"));
         assertNull(cache.resolve(Type.getInternalName(Derived1.class),
                 Type.getInternalName(Base.class), "T"));
-    }
-
-    @Test
-    public void testOrderMembers() throws Exception {
-        throw new RuntimeException("not yet implemented");
     }
 
 }

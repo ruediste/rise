@@ -32,6 +32,8 @@ public class CController extends AttachedPropertyBearerBase implements
     }
 
     public CController setController(Object controller) {
+        if (rootComponent != null)
+            rootComponent.parentChanged(null);
         if (controller == null)
             rootComponent = null;
         else {

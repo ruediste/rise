@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -51,6 +52,8 @@ public class ClassChangeNotifier {
         public Set<String> removedClasses = new HashSet<>();
         public Set<ClassNode> addedClasses = new HashSet<>();
         public Set<ClassNode> modifiedClasses = new HashSet<>();
+        public Map<String, List<String>> addedClassesMembers = new HashMap<>();
+        public Map<String, List<String>> modifiedClassesMembers = new HashMap<>();
         public boolean isInitial;
     }
 
@@ -119,16 +122,19 @@ public class ClassChangeNotifier {
                         .endsWith(".class"))
                 .map(file -> Pair.of(file, readClass(file))).sequential()
                 .forEach(pair -> {
-                    classNameMap.put(pair.getA(), pair.getB().name);
-                    classTrx.addedClasses.add(pair.getB());
-
+                    String name = pair.getB().getA().name;
+                    classNameMap.put(pair.getA(), name);
+                    classTrx.addedClasses.add(pair.getB().getA());
+                    classTrx.addedClassesMembers.put(name, pair.getB().getB());
                 });
 
         for (Path file : trx.modifiedFiles) {
             if (!file.getFileName().toString().endsWith(".class")) {
                 continue;
             }
-            classTrx.modifiedClasses.add(readClass(file));
+            Pair<ClassNode, List<String>> pair = readClass(file);
+            classTrx.modifiedClasses.add(pair.getA());
+            classTrx.modifiedClassesMembers.put(pair.getA().name, pair.getB());
         }
 
         trxPostProcessor.accept(classTrx);
@@ -157,13 +163,15 @@ public class ClassChangeNotifier {
         }
     }
 
-    ClassNode readClass(Path file) {
+    Pair<ClassNode, List<String>> readClass(Path file) {
         ClassNode node = new ClassNode();
+
+        MemberOrderVisitor orderVisitor = new MemberOrderVisitor(node);
         try (InputStream in = Files.newInputStream(file)) {
-            new ClassReader(in).accept(node, config.classScanningFlags);
+            new ClassReader(in).accept(orderVisitor, config.classScanningFlags);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return node;
+        return Pair.of(node, orderVisitor.getMembers());
     }
 }

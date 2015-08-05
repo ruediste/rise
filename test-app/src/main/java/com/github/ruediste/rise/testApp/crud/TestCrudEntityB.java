@@ -11,5 +11,14 @@ import com.github.ruediste1.i18n.label.PropertiesLabeled;
 public class TestCrudEntityB {
     @GeneratedValue
     @Id
+    private
     long id;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 }

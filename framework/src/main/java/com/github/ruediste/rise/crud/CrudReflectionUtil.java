@@ -6,7 +6,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -18,6 +20,7 @@ import com.github.ruediste.c3java.properties.PropertyUtil;
 import com.github.ruediste.rise.core.persistence.PersistentType;
 import com.github.ruediste.rise.core.persistence.RisePersistenceUtil;
 import com.github.ruediste.rise.crud.annotations.CrudBrowserColumn;
+import com.github.ruediste.rise.nonReloadable.front.reload.MemberOrderIndex;
 import com.google.common.base.Preconditions;
 
 @Singleton
@@ -25,6 +28,9 @@ public class CrudReflectionUtil {
 
     @Inject
     RisePersistenceUtil persistenceUtil;
+
+    @Inject
+    MemberOrderIndex memberOrderIndex;
 
     public PropertyInfo getProperty(Attribute<?, ?> attribute) {
         return PropertyUtil.getPropertyInfo(attribute.getDeclaringType()
@@ -40,7 +46,7 @@ public class CrudReflectionUtil {
     }
 
     private List<PersistentProperty> getAllProperties(PersistentType type) {
-        return type.getType().getAttributes().stream()
+        return getOrderedAttributes(type.getType()).stream()
                 .map(this::toPersistentAttribute).collect(toList());
     }
 
@@ -59,7 +65,8 @@ public class CrudReflectionUtil {
         List<Attribute<?, ?>> result = new ArrayList<>();
 
         ManagedType<?> type2 = type.getType();
-        for (Attribute<?, ?> attribute : getOrderedAttributes(type2)) {
+        List<Attribute<?, ?>> orderedAttributes = getOrderedAttributes(type2);
+        for (Attribute<?, ?> attribute : orderedAttributes) {
             Member member = attribute.getJavaMember();
             if (member instanceof AnnotatedElement)
                 if (((AnnotatedElement) member)
@@ -67,21 +74,29 @@ public class CrudReflectionUtil {
                     result.add(attribute);
         }
         if (result.isEmpty())
-            result = new ArrayList<>(type2.getAttributes());
+            result = orderedAttributes;
         return result.stream().map(this::toPersistentAttribute)
                 .collect(toList());
     }
 
     private List<Attribute<?, ?>> getOrderedAttributes(ManagedType<?> type2) {
-        Attribute<?, ?> a = null;
-        Member member = a.getJavaMember();
-        return new ArrayList<>(type2.getAttributes());
+        Map<Member, Attribute<?, ?>> memberMap = new HashMap<>();
+        for (Attribute<?, ?> attr : type2.getAttributes()) {
+            memberMap.put(attr.getJavaMember(), attr);
+        }
+        ArrayList<Attribute<?, ?>> result = new ArrayList<>();
+        for (Member member : memberOrderIndex.orderMembers(type2.getJavaType(),
+                memberMap.keySet())) {
+            result.add(memberMap.get(member));
+        }
+        return result;
     }
 
     public PersistentProperty toPersistentAttribute(Attribute<?, ?> attribute) {
-        return new PersistentProperty(PropertyUtil.getPropertyInfo(attribute
-                .getDeclaringType().getJavaType(), attribute.getName()),
-                attribute);
+        PropertyInfo property = PropertyUtil.getPropertyInfo(attribute
+                .getDeclaringType().getJavaType(), attribute.getName());
+
+        return new PersistentProperty(property, attribute);
     }
 
     public PersistentType getPersistentType(Object entity) {
