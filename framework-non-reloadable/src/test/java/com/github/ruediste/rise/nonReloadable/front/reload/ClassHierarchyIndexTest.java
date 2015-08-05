@@ -14,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassChangeNotifier.ClassChangeTransaction;
@@ -31,14 +30,15 @@ public class ClassHierarchyIndexTest {
 
     @Before
     public void before() throws IOException {
+        readClasses(IA.class, A.class, IB.class, B.class, Base.class,
+                Derived1.class, Derived2.class, MemberOrder.class);
+    }
+
+    private void readClasses(Class<?>... classes) {
         ClassChangeTransaction trx = new ClassChangeNotifier.ClassChangeTransaction();
-        trx.addedClasses.add(AsmUtil.readClass(IA.class));
-        trx.addedClasses.add(AsmUtil.readClass(A.class));
-        trx.addedClasses.add(AsmUtil.readClass(IB.class));
-        trx.addedClasses.add(AsmUtil.readClass(B.class));
-        trx.addedClasses.add(AsmUtil.readClass(Base.class));
-        trx.addedClasses.add(AsmUtil.readClass(Derived1.class));
-        trx.addedClasses.add(AsmUtil.readClass(Derived2.class));
+        for (Class<?> cls : classes) {
+            trx.addedClasses.add(AsmUtil.readClass(cls));
+        }
         cache.onChange(trx);
     }
 
@@ -61,6 +61,12 @@ public class ClassHierarchyIndexTest {
     }
 
     private class Derived2 extends Derived1<Integer, String> {
+    }
+
+    private class MemberOrder {
+        int a;
+        int b;
+        int c;
     }
 
     @Test
@@ -101,4 +107,10 @@ public class ClassHierarchyIndexTest {
         assertNull(cache.resolve(Type.getInternalName(Derived1.class),
                 Type.getInternalName(Base.class), "T"));
     }
+
+    @Test
+    public void testOrderMembers() throws Exception {
+        throw new RuntimeException("not yet implemented");
+    }
+
 }

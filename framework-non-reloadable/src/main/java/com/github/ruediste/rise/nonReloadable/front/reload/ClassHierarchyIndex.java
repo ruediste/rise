@@ -2,6 +2,7 @@ package com.github.ruediste.rise.nonReloadable.front.reload;
 
 import static org.objectweb.asm.Opcodes.ASM5;
 
+import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -257,4 +258,9 @@ public class ClassHierarchyIndex {
         return null;
     }
 
+    public List<Member> orderMembers(Iterable<Member> members) {
+        ArrayList<Member> result = new ArrayList<Member>();
+        members.forEach(x -> result.add(x));
+        return result;
+    }
 }
