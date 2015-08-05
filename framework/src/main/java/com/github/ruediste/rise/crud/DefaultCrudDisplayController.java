@@ -29,7 +29,7 @@ public class DefaultCrudDisplayController extends SubControllerComponent {
             return toComponent(html -> {
                 html.div().TEST_NAME("properties");
                 for (PersistentProperty p : util
-                        .getDisplayProperties2(controller.type)) {
+                        .getDisplayProperties(controller.type)) {
                     html.add(displayComponents.create(p, controller.data));
                 }
                 html._div()

@@ -35,7 +35,7 @@ public class DefaultCrudCreateController extends SubControllerComponent {
         protected Component createComponents() {
             return toComponent(html -> {
                 for (PersistentProperty p : util
-                        .getEditProperties2(controller.type)) {
+                        .getEditProperties(controller.type)) {
                     html.add(editComponents.createEditComponent(p,
                             controller.type, controller.entityGroup));
                 }

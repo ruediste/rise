@@ -4,23 +4,20 @@ import static java.util.stream.Collectors.toList;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.ManagedType;
 
-import com.github.ruediste.c3java.properties.PropertyDeclaration;
 import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.github.ruediste.c3java.properties.PropertyUtil;
 import com.github.ruediste.rise.core.persistence.PersistentType;
 import com.github.ruediste.rise.core.persistence.RisePersistenceUtil;
 import com.github.ruediste.rise.crud.annotations.CrudBrowserColumn;
-import com.github.ruediste.rise.crud.annotations.CrudIdentifying;
 import com.google.common.base.Preconditions;
 
 @Singleton
@@ -34,21 +31,11 @@ public class CrudReflectionUtil {
                 .getJavaType(), attribute.getName());
     }
 
-    public List<PropertyDeclaration> getDisplayProperties(Class<?> cls) {
-        return new ArrayList<>(PropertyUtil.getPropertyIntroductionMap(cls)
-                .values());
-    }
-
-    public List<PersistentProperty> getDisplayProperties2(PersistentType type) {
+    public List<PersistentProperty> getDisplayProperties(PersistentType type) {
         return getAllProperties(type);
     }
 
-    public List<PropertyDeclaration> getEditProperties(Class<?> cls) {
-        return PropertyUtil.getPropertyIntroductionMap(cls).values().stream()
-                .collect(toList());
-    }
-
-    public List<PersistentProperty> getEditProperties2(PersistentType type) {
+    public List<PersistentProperty> getEditProperties(PersistentType type) {
         return getAllProperties(type);
     }
 
@@ -57,50 +44,22 @@ public class CrudReflectionUtil {
                 .map(this::toPersistentAttribute).collect(toList());
     }
 
-    public List<PropertyDeclaration> getBrowserProperties(Class<?> cls) {
-        Preconditions.checkNotNull(cls, "cls is null");
-        return getPropertiesAnnotatedWith(cls, CrudBrowserColumn.class);
+    public List<PersistentProperty> getBrowserProperties(PersistentType type) {
+        return getPropertiesAnnotatedWith(type, CrudBrowserColumn.class);
     }
 
-    public List<PersistentProperty> getBrowserProperties2(PersistentType type) {
-        return getPropertiesAnnotatedWith2(type, CrudBrowserColumn.class);
-    }
-
-    public List<PropertyDeclaration> getIdentificationProperties(Class<?> cls) {
-        return getPropertiesAnnotatedWith(cls, CrudIdentifying.class);
-    }
-
-    public List<PersistentProperty> getIdentificationProperties2(
+    public List<PersistentProperty> getIdentificationProperties(
             PersistentType type) {
-        return getPropertiesAnnotatedWith2(type, CrudBrowserColumn.class);
+        return getPropertiesAnnotatedWith(type, CrudBrowserColumn.class);
     }
 
-    private List<PropertyDeclaration> getPropertiesAnnotatedWith(Class<?> cls,
-            Class<? extends Annotation> annotationClass) {
-        Preconditions.checkNotNull(cls, "cls is null");
-        ArrayList<PropertyDeclaration> result = new ArrayList<>();
-
-        Collection<PropertyDeclaration> allDeclarations = PropertyUtil
-                .getPropertyIntroductionMap(cls).values();
-        for (PropertyDeclaration declaration : allDeclarations) {
-            Field backingField = declaration.getBackingField();
-            if (backingField == null)
-                continue;
-            if (backingField.isAnnotationPresent(annotationClass))
-                result.add(declaration);
-        }
-        if (result.isEmpty())
-            return new ArrayList<>(allDeclarations);
-        else
-            return result;
-    }
-
-    private List<PersistentProperty> getPropertiesAnnotatedWith2(
+    private List<PersistentProperty> getPropertiesAnnotatedWith(
             PersistentType type, Class<? extends Annotation> annotationClass) {
         Preconditions.checkNotNull(type, "cls is null");
         List<Attribute<?, ?>> result = new ArrayList<>();
 
-        for (Attribute<?, ?> attribute : type.getType().getAttributes()) {
+        ManagedType<?> type2 = type.getType();
+        for (Attribute<?, ?> attribute : getOrderedAttributes(type2)) {
             Member member = attribute.getJavaMember();
             if (member instanceof AnnotatedElement)
                 if (((AnnotatedElement) member)
@@ -108,9 +67,15 @@ public class CrudReflectionUtil {
                     result.add(attribute);
         }
         if (result.isEmpty())
-            result = new ArrayList<>(type.getType().getAttributes());
+            result = new ArrayList<>(type2.getAttributes());
         return result.stream().map(this::toPersistentAttribute)
                 .collect(toList());
+    }
+
+    private List<Attribute<?, ?>> getOrderedAttributes(ManagedType<?> type2) {
+        Attribute<?, ?> a = null;
+        Member member = a.getJavaMember();
+        return new ArrayList<>(type2.getAttributes());
     }
 
     public PersistentProperty toPersistentAttribute(Attribute<?, ?> attribute) {

@@ -242,7 +242,7 @@ public class DefaultCrudBrowserController extends SubControllerComponent
         Preconditions.checkNotNull(entityClass, "entityClass is null");
         type = crudReflectionUtil.getPersistentType(emQualifier, entityClass);
 
-        columnProperties = crudReflectionUtil.getBrowserProperties2(type);
+        columnProperties = crudReflectionUtil.getBrowserProperties(type);
         filterList = columnProperties.stream().map(filters::getFactory)
                 .collect(toList());
 

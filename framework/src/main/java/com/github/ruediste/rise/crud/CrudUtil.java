@@ -12,6 +12,7 @@ import javax.inject.Singleton;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Root;
 
+import com.github.ruediste.rise.core.persistence.PersistentType;
 import com.github.ruediste.rise.crud.annotations.CrudStrategy;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.util.GenericEvent;
@@ -174,13 +175,16 @@ public class CrudUtil {
                 Object entity) {
             if (entity == null)
                 html.write("<null>");
-            else
+            else {
+                PersistentType type = util.getPersistentType(entity);
                 html.write(util
-                        .getIdentificationProperties(entity.getClass())
+                        .getIdentificationProperties(type)
                         .stream()
-                        .map(p -> p.getName() + ":"
-                                + String.valueOf(p.getValue(entity)))
-                        .collect(joining(" ")));
+                        .map(p -> p.getProperty().getName()
+                                + ":"
+                                + String.valueOf(p.getProperty().getValue(
+                                        entity))).collect(joining(" ")));
+            }
         }
     }
 
