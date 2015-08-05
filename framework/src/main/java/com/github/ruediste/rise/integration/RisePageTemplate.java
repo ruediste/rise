@@ -68,7 +68,8 @@ public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>> extends
 	        if (componentRequestInfo.isComponentRequest()) {
 	            html.DATA(CoreAssetBundle.bodyAttributePageNr,Long.toString(pageInfo.getPageId()))
                     .DATA(CoreAssetBundle.bodyAttributeReloadUrl,url(componentConfig.getReloadPath()))
-                    .DATA(CoreAssetBundle.bodyAttributeAjaxUrl,url(componentConfig.getAjaxPath()));
+                    .DATA(CoreAssetBundle.bodyAttributeAjaxUrl,url(componentConfig.getAjaxPath()))
+                    .DATA(CoreAssetBundle.bodyAttributeReloadNr,"0");
 	        }
 		    parameters.addBodyAttributes(html);
 			parameters.renderBody(html);

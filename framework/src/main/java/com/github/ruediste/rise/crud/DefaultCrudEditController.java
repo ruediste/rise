@@ -34,12 +34,13 @@ public class DefaultCrudEditController extends SubControllerComponent {
         @Override
         protected Component createComponents() {
             return toComponent(html -> {
+                html.div().TEST_NAME("properties");
                 for (PersistentProperty p : util
                         .getEditProperties2(controller.type)) {
                     html.add(editComponents.createEditComponent(p,
                             controller.type, controller.entityGroup));
                 }
-                html.add(new CButton(controller, c -> c.save()));
+                html._div().add(new CButton(controller, c -> c.save()));
                 html.rButtonA(go(CrudControllerBase.class).browse(
                         controller.entityGroup.get().getClass(),
                         controller.emQualifier));

@@ -83,13 +83,32 @@ public class CDataGrid<T> extends ComponentBase<CDataGrid<T>> {
     }
 
     public static class Column<T> {
-        Supplier<Cell> headSupplier;
-        Function<T, Cell> cellFactory;
+        private final Supplier<Cell> headSupplier;
+        private final Function<T, Cell> cellFactory;
+
+        private String testName;
 
         public Column(Supplier<Cell> headSupplier, Function<T, Cell> cellFactory) {
             super();
             this.headSupplier = headSupplier;
             this.cellFactory = cellFactory;
+        }
+
+        public Supplier<Cell> getHeadSupplier() {
+            return headSupplier;
+        }
+
+        public Function<T, Cell> getCellFactory() {
+            return cellFactory;
+        }
+
+        public String TEST_NAME() {
+            return testName;
+        }
+
+        public Column<T> TEST_NAME(String testName) {
+            this.testName = testName;
+            return this;
         }
     }
 
@@ -97,6 +116,7 @@ public class CDataGrid<T> extends ComponentBase<CDataGrid<T>> {
     private boolean columnsDirty = true;
     private List<T> items;
     private List<Column<T>> columns = new ArrayList<>();
+    private Function<T, String> itemTestNameExtractor;
 
     @NoPropertyAccessor
     public void setItems(@SuppressWarnings("unchecked") T... items) {
@@ -143,7 +163,7 @@ public class CDataGrid<T> extends ComponentBase<CDataGrid<T>> {
             for (Column<T> column : columns) {
                 Cell cell = headers.get(column);
                 if (cell == null)
-                    cell = column.headSupplier.get();
+                    cell = column.getHeadSupplier().get();
                 newHeaders.put(column, cell);
             }
             headers = newHeaders;
@@ -156,7 +176,7 @@ public class CDataGrid<T> extends ComponentBase<CDataGrid<T>> {
 
                     Cell cell = cells.get(key);
                     if (cell == null)
-                        cell = column.cellFactory.apply(item);
+                        cell = column.getCellFactory().apply(item);
                     newCells.put(key, cell);
                 }
             cells = newCells;
@@ -191,4 +211,18 @@ public class CDataGrid<T> extends ComponentBase<CDataGrid<T>> {
     public List<Column<T>> getColumns() {
         return columns;
     }
+
+    public Function<T, String> getItemTestNameExtractor() {
+        return itemTestNameExtractor;
+    }
+
+    /**
+     * Uset to set the test name of the tr elements.
+     */
+    public CDataGrid<T> setItemTestNameExtractor(
+            Function<T, String> itemTestNameExtractor) {
+        this.itemTestNameExtractor = itemTestNameExtractor;
+        return this;
+    }
+
 }

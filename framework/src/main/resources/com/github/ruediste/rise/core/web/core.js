@@ -30,45 +30,47 @@ var rise = (function() {
 			});
 		}
 	};
-	
-	var onReload=$.Callbacks();
-	
-	var reload=function(receiver){
-	    receiver = $(receiver);
+
+	var onReload = $.Callbacks();
+
+	var reload = function(receiver) {
+		receiver = $(receiver);
 		var data = receiver.serialize();
 		$.ajax({
 			method : "POST",
-			url : $("body").data("rise-reload-url") + "?page="+$("body").data("rise-page-nr")+"&nr="
+			url : $("body").data("rise-reload-url") + "?page="
+					+ $("body").data("rise-page-nr") + "&nr="
 					+ receiver.data("rise-component-nr"),
 			data : data,
 			success : function(data, status, jqXHR) {
-				var redirectTarget=jqXHR.getResponseHeader("rise-redirect-target");
-				if (redirectTarget){
-					window.location=redirectTarget;
-				}
-				else {
-				   var dom=$.parseHTML(data);
-				   receiver.replaceWith(dom);
-				   onReload.fire($(dom));
+				var redirectTarget = jqXHR
+						.getResponseHeader("rise-redirect-target");
+				if (redirectTarget) {
+					window.location = redirectTarget;
+				} else {
+					receiver.get(0).innerHTML = data;
+					$("body").attr("data-rise-reload-count",
+							1 + $("body").attr("data-rise-reload-count"));
+					// var dom=$.parseHTML(data);
+					// receiver.replaceWith(dom);
+					onReload.fire(receiver);
 				}
 			},
 			dataType : "html",
-			headers: { "rise-is-ajax": "true"}
+			headers : {
+				"rise-is-ajax" : "true"
+			}
 		});
 	};
-	
+
 	// Register for document load event
 	$(function() {
-		// handler for  reloads
-		$(document).on(
-				"rise_viewReload",
-				".rise_reload",
-				function(event) {
-					event.preventDefault();
-					event.stopPropagation();
-					reload(this);
-				});
-
+		// handler for reloads
+		$(document).on("rise_viewReload", ".rise_reload", function(event) {
+			event.preventDefault();
+			event.stopPropagation();
+			reload(this);
+		});
 
 		// clicks on rise_buttons trigger a view reload
 		$(document).on(
@@ -90,7 +92,7 @@ var rise = (function() {
 	});
 
 	return {
-		onReload: onReload
+		onReload : onReload
 	};
 
 })();

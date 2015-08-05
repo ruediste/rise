@@ -12,6 +12,7 @@ public class CoreAssetBundle extends AssetBundle {
     public static final String bodyAttributeReloadUrl = "rise-reload-url";
     public static final String bodyAttributeAjaxUrl = "rise-ajax-url";
     public static final String bodyAttributePageNr = "rise-page-nr";
+    public static final String bodyAttributeReloadNr = "rise-reload-nr";
 
     public static final String componentAttributeNr = "rise-component-nr";
 

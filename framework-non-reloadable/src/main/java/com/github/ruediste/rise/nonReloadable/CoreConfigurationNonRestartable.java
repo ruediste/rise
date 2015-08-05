@@ -1,6 +1,5 @@
 package com.github.ruediste.rise.nonReloadable;
 
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.TreeSet;
 import java.util.function.Supplier;
@@ -18,8 +17,11 @@ import com.github.ruediste.rise.nonReloadable.front.DefaultStartupErrorHandler;
 import com.github.ruediste.rise.nonReloadable.front.StartupErrorHandler;
 import com.github.ruediste.rise.nonReloadable.front.reload.FileChangeNotifier.FileChangeTransaction;
 import com.github.ruediste.salta.standard.Stage;
+import com.google.common.base.Strings;
+import com.google.common.reflect.Reflection;
 
 @Singleton
+@NonRestartable
 public class CoreConfigurationNonRestartable {
     @Inject
     Stage stage;
@@ -76,16 +78,34 @@ public class CoreConfigurationNonRestartable {
 
     public void initialize() {
         startupEventHandler = startupEventHandlerSupplier.get();
+        if (!Strings.isNullOrEmpty(basePackage))
+            scannedPrefixes.add(basePackage);
     }
 
     public long restartQueryTimeout = 30000;
 
-    public final TreeSet<String> nonScannedPackages = new TreeSet<String>(
-            Arrays.asList("org.eclipse.", "org.springframework.",
-                    "ch.qos.logback.", "org.hibernate."));
+    public final TreeSet<String> scannedPrefixes = new TreeSet<String>();
 
-    public boolean shouldBeScanned(String internalClassName) {
-        String prefix = nonScannedPackages.floor(internalClassName);
-        return prefix == null || !internalClassName.startsWith(prefix);
+    public boolean shouldBeScanned(String className) {
+        String prefix = scannedPrefixes.floor(className);
+        return prefix != null && className.startsWith(prefix);
     }
+
+    public String basePackage = "";
+
+    public String getBasePackage() {
+        return basePackage;
+    }
+
+    public void setBasePackage(String basePackage) {
+        this.basePackage = basePackage;
+    }
+
+    /**
+     * set {@link #basePackage} to the package of the given class
+     */
+    public void setBasePackage(Class<?> clazz) {
+        basePackage = Reflection.getPackageName(clazz);
+    }
+
 }

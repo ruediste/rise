@@ -27,18 +27,24 @@ public class DefaultCrudDisplayController extends SubControllerComponent {
         @Override
         protected Component createComponents() {
             return toComponent(html -> {
+                html.div().TEST_NAME("properties");
                 for (PersistentProperty p : util
                         .getDisplayProperties2(controller.type)) {
                     html.add(displayComponents.create(p, controller.data));
                 }
-                html.rButtonA(go(CrudControllerBase.class).browse(
-                        controller.type.getEntityClass(),
-                        controller.type.getEmQualifier()));
+                html._div()
+                        .div()
+                        .TEST_NAME("buttons")
+                        .rButtonA(
+                                go(CrudControllerBase.class).browse(
+                                        controller.type.getEntityClass(),
+                                        controller.type.getEmQualifier()));
                 html.rButtonA(go(CrudControllerBase.class).edit(
                         controller.data.get()));
                 html.rButtonA(
                         go(CrudControllerBase.class).delete(
                                 controller.data.get()), x -> x.danger());
+                html._div();
 
             });
         }

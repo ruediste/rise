@@ -15,7 +15,6 @@ import com.github.ruediste.rise.core.front.RestartableApplicationBase;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetPipelineConfiguration;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.sample.SampleCanvas;
-import com.github.ruediste.rise.sample.SamplePackage;
 import com.github.ruediste.rise.sample.component.CPageHtmlTemplate;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
@@ -75,7 +74,6 @@ public class SampleApp extends RestartableApplicationBase {
                 .index());
         config.requestErrorHandler = errorHandler;
 
-        config.setBasePackage(SamplePackage.class);
         config.applicationCanvasFactory = Optional.of(canvasProvider::get);
 
         config.developmentFixtureLoader = Optional.of(fixture);

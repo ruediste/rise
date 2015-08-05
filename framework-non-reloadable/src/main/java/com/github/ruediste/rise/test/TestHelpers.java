@@ -9,9 +9,9 @@ import java.nio.file.attribute.BasicFileAttributes;
 /**
  * Utility class for unit tests
  */
-public class TestUtil {
+public class TestHelpers {
 
-    private TestUtil() {
+    private TestHelpers() {
     }
 
     /**

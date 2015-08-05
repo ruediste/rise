@@ -2,14 +2,18 @@ package com.github.ruediste.rise.sample.front;
 
 import java.util.Properties;
 
+import javax.inject.Inject;
+
 import com.github.ruediste.rise.integration.PermanentIntegrationModule;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
+import com.github.ruediste.rise.nonReloadable.CoreConfigurationNonRestartable;
 import com.github.ruediste.rise.nonReloadable.front.FrontServletBase;
 import com.github.ruediste.rise.nonReloadable.persistence.BitronixDataSourceFactory;
 import com.github.ruediste.rise.nonReloadable.persistence.BitronixModule;
 import com.github.ruediste.rise.nonReloadable.persistence.EclipseLinkPersistenceUnitManager;
 import com.github.ruediste.rise.nonReloadable.persistence.H2DatabaseIntegrationInfo;
 import com.github.ruediste.rise.nonReloadable.persistence.PersistenceModuleUtil;
+import com.github.ruediste.rise.sample.SamplePackage;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Provides;
 import com.github.ruediste.salta.jsr330.Salta;
@@ -19,11 +23,13 @@ public class SampleFrontServlet extends FrontServletBase {
         super(SampleApp.class);
     }
 
+    @Inject
+    CoreConfigurationNonRestartable config;
+
     private static final long serialVersionUID = 1L;
 
     @Override
     protected void initImpl() throws Exception {
-        // set stage in the super class
         setStage(ApplicationStage.DEVELOPMENT);
         Salta.createInjector(
                 getStage().getSaltaStage(),
@@ -56,5 +62,7 @@ public class SampleFrontServlet extends FrontServletBase {
                 }, new BitronixModule(),
                 new PermanentIntegrationModule(getServletConfig()))
                 .injectMembers(this);
+        config.setBasePackage(SamplePackage.class);
     }
+
 }

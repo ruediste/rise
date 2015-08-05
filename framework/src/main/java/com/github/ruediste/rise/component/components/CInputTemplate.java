@@ -28,6 +28,7 @@ public class CInputTemplate extends BootstrapComponentTemplateBase<CInput> {
                 html,
                 () -> html.input().TYPE(inputType.toString()).B_FORM_CONTROL()
                         .VALUE(component.getValue())
+                        .TEST_NAME(component.TEST_NAME())
                         .NAME(util.getKey(component, "value"))
                         .ID(util.getComponentId(component)));
     }

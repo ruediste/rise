@@ -10,6 +10,10 @@ public class ComponentRequestInfo {
 
     private HttpRenderResult closePageResult;
 
+    private boolean isComponentRequest;
+
+    private boolean isReloadRequest;
+
     public HttpRenderResult getClosePageResult() {
         return closePageResult;
     }
@@ -34,5 +38,11 @@ public class ComponentRequestInfo {
         this.pageHandle = pageHandle;
     }
 
-    private boolean isComponentRequest;
+    public boolean isReloadRequest() {
+        return isReloadRequest;
+    }
+
+    public void setReloadRequest(boolean isReloadRequest) {
+        this.isReloadRequest = isReloadRequest;
+    }
 }

@@ -24,7 +24,7 @@ import com.github.ruediste.rise.nonReloadable.front.LoggerModule;
 import com.github.ruediste.rise.nonReloadable.front.reload.DirectoryChangeWatcher;
 import com.github.ruediste.rise.nonReloadable.front.reload.FileChangeNotifier;
 import com.github.ruediste.rise.nonReloadable.front.reload.FileChangeNotifier.FileChangeTransaction;
-import com.github.ruediste.rise.test.TestUtil;
+import com.github.ruediste.rise.test.TestHelpers;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Salta;
 
@@ -69,7 +69,7 @@ public class FileChangeNotifierTest {
 
     @After
     public void after() throws Exception {
-        TestUtil.deleteDirTree(tempDir);
+        TestHelpers.deleteDirTree(tempDir);
     }
 
     @Test

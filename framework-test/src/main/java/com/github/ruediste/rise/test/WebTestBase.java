@@ -9,7 +9,6 @@ import org.junit.Rule;
 import org.junit.rules.TestRule;
 import org.junit.runners.model.Statement;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 
 import com.github.ruediste.rise.core.ActionResult;
@@ -18,7 +17,7 @@ import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.integration.StandaloneLafApplication;
 import com.github.ruediste.salta.jsr330.Injector;
 
-public abstract class WebTestBase {
+public abstract class WebTestBase implements TestUtil {
     @Inject
     Logger log;
 
@@ -111,7 +110,8 @@ public abstract class WebTestBase {
 
     protected abstract WebDriver createDriver();
 
-    protected WebDriverWait doWait(long timeOutInSeconds) {
-        return new WebDriverWait(driver, timeOutInSeconds);
+    @Override
+    public WebDriver internal_getDriver() {
+        return driver;
     }
 }

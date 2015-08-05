@@ -53,11 +53,11 @@ public class DefaultCrudDeleteController extends SubControllerComponent {
         protected Component createComponents() {
             return toComponent(html -> {
                 html.div().B_BG_DANGER().h1().content(Labels.REALLY_DELETE);
-
+                html.span().TEST_NAME("identification");
                 crudUtil.getStrategy(CrudUtil.IdentificationRenderer.class,
                         controller.type.getClass()).renderIdenification(html,
                         controller.entity);
-                html._div();
+                html._span()._div();
 
                 html.add(new CButton(controller, c -> c.delete())
                         .apply(CButtonTemplate.setArgs(x -> x.danger())));

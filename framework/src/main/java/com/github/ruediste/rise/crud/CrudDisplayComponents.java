@@ -52,7 +52,7 @@ public class CrudDisplayComponents
                         //@formatter:off
                         .bFormGroup()
                           .label().content(labelUtil.getPropertyLabel(property.getProperty()))
-                          .span().B_FORM_CONTROL().DISABLED("disabled")
+                          .span().B_FORM_CONTROL().DISABLED("disabled").TEST_NAME(property.getProperty().getName())
                             .content(String.valueOf(property.getProperty().getValue(group.get())))
                         ._bFormGroup());
                         //@formatter:on
@@ -67,7 +67,7 @@ public class CrudDisplayComponents
                         html -> {
                             html.bFormGroup()
                                 .label().content(labelUtil.getPropertyLabel(p.getProperty()))
-                                .span().B_FORM_CONTROL().DISABLED("disabled")
+                                .span().B_FORM_CONTROL().DISABLED("disabled").TEST_NAME(p.getProperty().getName())
                                   .render(x-> crudUtil
                                           .getStrategy(
                                                   IdentificationRenderer.class,
@@ -87,7 +87,7 @@ public class CrudDisplayComponents
                             html -> {
                                 html.bFormGroup()
                                 .label().content(labelUtil.getPropertyLabel(p.getProperty()))
-                                .span().B_FORM_CONTROL().DISABLED("disabled")
+                                .span().B_FORM_CONTROL().DISABLED("disabled").TEST_NAME(p.getProperty().getName())
                                 .render(x-> crudUtil
                                         .getStrategy(
                                                 IdentificationRenderer.class,

@@ -68,6 +68,7 @@ public class CrudPropertyFilters extends
                         if (String.class.equals(cls)) {
                             CTextField textField = new CTextField()
                                     .setText("")
+                                    .TEST_NAME(property.getName())
                                     .setLabel(
                                             labelUtil
                                                     .getPropertyLabel(property));

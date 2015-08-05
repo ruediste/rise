@@ -25,6 +25,7 @@ public class CTextFieldTemplate extends
                 html,
                 () -> html.input().TYPE("text").B_FORM_CONTROL()
                         .VALUE(component.getText())
+                        .TEST_NAME(component.TEST_NAME())
                         .NAME(util.getKey(component, "value"))
                         .ID(util.getComponentId(component)));
     }

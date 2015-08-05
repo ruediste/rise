@@ -26,6 +26,7 @@ public interface BootstrapRiseCanvas<TSelf extends BootstrapRiseCanvas<TSelf>>
         return bButtonA(args)
                 .HREF(helper.getUtil().url(
                         helper.getUtil().toPathInfo(actionInvocation)))
+                .TEST_NAME(method.getName())
                 .fIfPresent(helper.getIconUtil().tryGetIcon(method),
                         this::render)
                 .content(helper.getLabelUtil().getMethodLabel(method));

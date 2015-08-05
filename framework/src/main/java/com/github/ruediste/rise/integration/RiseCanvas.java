@@ -5,7 +5,6 @@ import com.github.ruediste.rendersnakeXT.canvas.Html5Canvas;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
-import com.github.ruediste.rise.core.ProjectStage;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;

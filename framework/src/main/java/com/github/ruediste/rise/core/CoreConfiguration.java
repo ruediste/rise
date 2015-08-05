@@ -33,9 +33,10 @@ import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.integration.RiseCanvas;
 import com.github.ruediste.rise.integration.RiseCanvasBase;
+import com.github.ruediste.rise.nonReloadable.ApplicationStage;
+import com.github.ruediste.rise.nonReloadable.CoreConfigurationNonRestartable;
 import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste.salta.jsr330.Injector;
-import com.google.common.reflect.Reflection;
 
 /**
  * Defines the default configuration of the framework.
@@ -46,17 +47,11 @@ public class CoreConfiguration {
     @Inject
     Injector injector;
 
+    @Inject
+    CoreConfigurationNonRestartable configNonRestartable;
+
     private <T> T get(Class<T> cls) {
         return injector.getInstance(cls);
-    }
-
-    public String basePackage = "";
-
-    /**
-     * set {@link #basePackage} to the package of the given class
-     */
-    public void setBasePackage(Class<?> clazz) {
-        basePackage = Reflection.getPackageName(clazz);
     }
 
     public String controllerSuffix = "Controller";
@@ -67,7 +62,8 @@ public class CoreConfiguration {
      */
     public Supplier<Function<ClassNode, String>> controllerNameMapperSupplier = () -> {
         DefaultClassNameMapping mapping = get(DefaultClassNameMapping.class);
-        mapping.initialize(basePackage, controllerSuffix);
+        mapping.initialize(configNonRestartable.getBasePackage(),
+                controllerSuffix);
         return mapping;
     };
 
@@ -121,7 +117,8 @@ public class CoreConfiguration {
         return null;
     }
 
-    public ProjectStage projectStage;
+    @Inject
+    public ApplicationStage applicationStage;
 
     /**
      * The classloader used to load the classes in the dynamic class space
@@ -302,6 +299,6 @@ public class CoreConfiguration {
 
     @PostConstruct
     void postContruct() {
-        renderTestName = projectStage != ProjectStage.PRODUCTION;
+        renderTestName = applicationStage != ApplicationStage.PRODUCTION;
     }
 }

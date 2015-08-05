@@ -93,7 +93,8 @@ public class DefaultCrudBrowserController extends SubControllerComponent
                 PropertyInfo property = p.getProperty();
                 columns.add(new Column<>(() -> new CDataGrid.Cell(labelUtil
                         .getPropertyLabel(property)), item -> new Cell(
-                        new CText(Objects.toString(property.getValue(item))))));
+                        new CText(Objects.toString(property.getValue(item)))))
+                        .TEST_NAME(property.getName()));
             }
 //@formatter:off
             Function<Object, Cell> actionsFactory;
@@ -115,7 +116,7 @@ public class DefaultCrudBrowserController extends SubControllerComponent
                 
             columns.add(new Column<Object>(
                     () -> new Cell(new CText(messages.actions())),
-                    actionsFactory));
+                    actionsFactory).TEST_NAME("actions"));
             return toComponent(html -> html
                     .h1().content(controller.mode==Mode.BROWSER?
                       messages.browserFor(controller.type.getEntityClass().getName())
@@ -132,7 +133,7 @@ public class DefaultCrudBrowserController extends SubControllerComponent
                           .add(new CButton(controller, x -> x.search()).apply(CButtonTemplate.setArgs(x->x.primary())))
                           .fIf(controller.mode==Mode.BROWSER, 
                             ()->html.add(new CButton(go(CrudControllerBase.class).create(controller.type.getEntityClass(), controller.type.getEmQualifier()))))
-                        .add(new CDataGrid<Object>().setColumns(columns).bindOneWay(
+                        .add(new CDataGrid<Object>().TEST_NAME("resultList").setColumns(columns).bindOneWay(
                                 g -> g.setItems(controller.data().getItems())))
                         .fIf(controller.mode==Mode.PICKER,()->html
                           .add(new CButton(controller, c -> c.cancel())))

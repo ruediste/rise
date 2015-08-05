@@ -12,10 +12,10 @@ public class CDataGridTemplate extends
 
     private <T> void innerRender(CDataGrid<T> grid, BootstrapRiseCanvas<?> html) {
         // @formatter:off
-        html.bTable()
+        html.bTable().TEST_NAME(grid.TEST_NAME())
           .thead()
             .fForEach(grid.getColumns(), c-> html
-              .th()
+              .th().TEST_NAME(c.TEST_NAME())
                 .fIfPresent(grid.getHeaderCell(c).component, html::render)
               ._th()
             )
@@ -24,7 +24,7 @@ public class CDataGridTemplate extends
             .fForEach(grid.getItems(), item-> html
               .tr()
                 .fForEach(grid.getColumns(), column-> html.fWith(grid.getCell(column, item), cell-> html
-                  .td()
+                  .td().TEST_NAME(column.TEST_NAME())
                     .fIfPresent(cell.component, html::render)
                   ._td()
                 ))
