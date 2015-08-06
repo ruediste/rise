@@ -209,14 +209,13 @@ public class CrudUtil {
     public static class DefaultCrudPickerFactory implements CrudPickerFactory {
 
         @Inject
-        Provider<DefaultCrudBrowserController> provider;
+        Provider<DefaultCrudPickerController> provider;
 
         @Override
         public CrudPicker createPicker(Class<? extends Annotation> emQualifier,
                 Class<?> entityClass) {
             Preconditions.checkNotNull(entityClass, "entityClass is null");
-            return provider.get().initialize(entityClass, emQualifier)
-                    .toPicker();
+            return provider.get().initialize(entityClass, emQualifier);
         }
 
     }

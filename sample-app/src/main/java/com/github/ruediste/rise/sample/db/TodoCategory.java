@@ -8,10 +8,12 @@ import javax.persistence.Id;
 import javax.persistence.Transient;
 
 import com.github.ruediste.rise.crud.annotations.CrudIdentifying;
+import com.github.ruediste1.i18n.label.Labeled;
 import com.github.ruediste1.i18n.label.PropertiesLabeled;
 
 @Entity
 @PropertiesLabeled
+@Labeled
 public class TodoCategory {
 
     @GeneratedValue

@@ -6,10 +6,12 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 import com.github.ruediste.rise.crud.annotations.CrudBrowserColumn;
+import com.github.ruediste1.i18n.label.Labeled;
 import com.github.ruediste1.i18n.label.PropertiesLabeled;
 
 @Entity
 @PropertiesLabeled
+@Labeled
 public class TodoItem {
 
     @GeneratedValue
