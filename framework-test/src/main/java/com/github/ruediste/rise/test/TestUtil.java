@@ -57,6 +57,10 @@ public interface TestUtil {
         return By.cssSelector(dataTestSelector(name));
     }
 
+    default <T> String dataTestSelector(Class<T> cls, Consumer<T> accessor) {
+        return dataTestSelector(dataTestName(cls, accessor));
+    }
+
     default String dataTestSelector(String name) {
         return "*[data-test-name=\"" + name + "\"] ";
     }
@@ -72,6 +76,20 @@ public interface TestUtil {
                 .tryGetAccessedProperty(invocation);
         return property.map(p -> p.getName()).orElseGet(
                 () -> invocation.getMethod().getName());
+    }
+
+    /**
+     * wait for refresh after clicking the element
+     */
+    default void clickAndWaitForRefresh(WebElement element) {
+        clickAndWaitForRefresh(element, defaultWaitSeconds);
+    }
+
+    /**
+     * wait for refresh after clicking the element
+     */
+    default void clickAndWaitForRefresh(WebElement element, int waitSeconds) {
+        waitForRefresh(element, waitSeconds, x -> x.click());
     }
 
     default <T extends WebElement> void waitForRefresh(T element,

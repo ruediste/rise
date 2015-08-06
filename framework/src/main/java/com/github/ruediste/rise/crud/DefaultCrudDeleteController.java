@@ -82,7 +82,7 @@ public class DefaultCrudDeleteController extends SubControllerComponent {
 
     @Labeled
     @GlyphiconIcon(Glyphicon.remove_sign)
-    void delete() {
+    public void delete() {
         holder.getEntityManager(type.getEmQualifier()).remove(entity);
         commit();
         redirect(go(CrudControllerBase.class).browse(type.getEntityClass(),

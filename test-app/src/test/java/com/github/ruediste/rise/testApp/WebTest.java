@@ -41,5 +41,4 @@ public class WebTest extends WebTestBase {
         FirefoxDriver driver = new FirefoxDriver();
         return driver;
     }
-
 }

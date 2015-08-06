@@ -33,19 +33,24 @@ public class DefaultCrudEditController extends SubControllerComponent {
 
         @Override
         protected Component createComponents() {
+            //@formatter:off
             return toComponent(html -> {
                 html.div().TEST_NAME("properties");
-                for (PersistentProperty p : util
-                        .getEditProperties(controller.type)) {
-                    html.add(editComponents.createEditComponent(p,
-                            controller.type, controller.entityGroup));
-                }
-                html._div().add(new CButton(controller, c -> c.save()));
-                html.rButtonA(go(CrudControllerBase.class).browse(
+                    for (PersistentProperty p : util
+                            .getEditProperties(controller.type)) {
+                        html.add(editComponents.createEditComponent(p,
+                                controller.type, controller.entityGroup));
+                    }
+                html._div()
+                .div().TEST_NAME("buttons")
+                    .add(new CButton(controller, c -> c.save()))
+                    .rButtonA(go(CrudControllerBase.class).browse(
                         controller.entityGroup.get().getClass(),
-                        controller.emQualifier));
+                        controller.emQualifier))
+                ._div();
 
             });
+            //@formatter:on
         }
     }
 
@@ -71,7 +76,7 @@ public class DefaultCrudEditController extends SubControllerComponent {
 
     @Labeled
     @GlyphiconIcon(Glyphicon.save)
-    void save() {
+    public void save() {
         entityGroup.pushDown();
         commit();
         redirect(go(CrudControllerBase.class).display(entityGroup.get()));

@@ -78,9 +78,9 @@ public class CrudEditComponents
                 decl -> Long.TYPE.equals(decl.getAttribute().getJavaType())
                         || Long.class.equals(decl.getAttribute().getJavaType()),
                 (decl, entityType, group) -> {
-                    CInput result = new CInput(InputType.number)
-                            .setLabel(labelUtil.getPropertyLabel(decl
-                                    .getProperty()));
+                    CInput result = new CInput(InputType.number).setLabel(
+                            labelUtil.getPropertyLabel(decl.getProperty()))
+                            .TEST_NAME(decl.getAttribute().getName());
 
                     BindingUtil.bind(
                             result,
@@ -108,7 +108,7 @@ public class CrudEditComponents
                     return toComponent(html -> html
                             .bFormGroup()
                               .label().content(labelUtil.getPropertyLabel(decl.getProperty()))
-                            .span().B_FORM_CONTROL().DISABLED("disbled")
+                            .span().B_FORM_CONTROL().DISABLED("disbled").TEST_NAME(decl.getAttribute().getName())
                                 .add(cValue)
                             ._span()
                             .add(new CButton(this,(btn, c)->c.pick(()->{

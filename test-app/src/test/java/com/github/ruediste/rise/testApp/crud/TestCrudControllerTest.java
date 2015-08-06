@@ -4,11 +4,16 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,12 +30,19 @@ public class TestCrudControllerTest extends WebTest {
     @Inject
     TransactionTemplate trx;
 
+    @Inject
+    EntityManager em;
+
     private TestCrudEntityA a;
+    private TestCrudEntityB b;
 
     @Before
     public void before() {
         if (a == null)
             a = factory.testCrudEntityA();
+        if (b == null)
+            b = factory.testCrudEntityB();
+
         driver.navigate().to(
                 url(go(TestCrudController.class).browse(TestCrudEntityA.class,
                         null)));
@@ -98,7 +110,7 @@ public class TestCrudControllerTest extends WebTest {
 
     @Test
     public void displayShownProperties() {
-        assertThat(searchEntity().display(0).getShownProperties(),
+        assertThat(searchEntity().display(0).getPropertyTestNames(),
                 contains("id", "stringValue", "entityB"));
     }
 
@@ -122,6 +134,51 @@ public class TestCrudControllerTest extends WebTest {
 
         assertThat(delete.getIdentification(),
                 containsString(a.getStringValue()));
+    }
+
+    @Test
+    public void deleteDoDelete() {
+        trx.execute(() -> {
+            assertNotNull(loadA());
+        });
+        searchEntity().display(0).delete().delete();
+
+        trx.execute(() -> {
+            assertNull(loadA());
+        });
+    }
+
+    private TestCrudEntityA loadA() {
+        return em.find(TestCrudEntityA.class, a.getId());
+    }
+
+    @Test
+    public void editShownProperties() {
+        assertThat(searchEntity().edit(0).getPropertyTestNames(),
+                contains("id", "stringValue", "entityB"));
+    }
+
+    @Test
+    public void editPick() {
+        searchEntity().edit(0).pick("entityB");
+        fail();
+    }
+
+    @Test
+    public void editBrowse() {
+        searchEntity().edit(0).browse();
+    }
+
+    @Test
+    public void editSave() {
+        searchEntity()
+                .edit(0)
+                .setProperty(
+                        dataTestName(TestCrudEntityA.class,
+                                x -> x.getStringValue()), "foo").save();
+        trx.execute(() -> {
+            assertEquals("foo", loadA().getStringValue());
+        });
     }
 
 }

@@ -131,10 +131,10 @@ public class DefaultCrudBrowserController extends SubControllerComponent
                           ._div()
                         ._div()
                           .add(new CButton(controller, x -> x.search()).apply(CButtonTemplate.setArgs(x->x.primary())))
-                          .fIf(controller.mode==Mode.BROWSER, 
-                            ()->html.add(new CButton(go(CrudControllerBase.class).create(controller.type.getEntityClass(), controller.type.getEmQualifier()))))
                         .add(new CDataGrid<Object>().TEST_NAME("resultList").setColumns(columns).bindOneWay(
                                 g -> g.setItems(controller.data().getItems())))
+                        .fIf(controller.mode==Mode.BROWSER, ()->html
+                          .add(new CButton(go(CrudControllerBase.class).create(controller.type.getEntityClass(), controller.type.getEmQualifier())))) 
                         .fIf(controller.mode==Mode.PICKER,()->html
                           .add(new CButton(controller, c -> c.cancel())))
                     );

@@ -27,6 +27,10 @@ public abstract class WebTestBase implements TestUtil {
 
         boolean isStarted;
         Injector injector;
+
+        WebDriver driver;
+        boolean errorOccured;
+
     }
 
     @Inject
@@ -42,8 +46,6 @@ public abstract class WebTestBase implements TestUtil {
         isInjected = true;
     }
 
-    protected WebDriver driver;
-
     protected String url(ActionResult result) {
         return util.url(result);
     }
@@ -58,6 +60,10 @@ public abstract class WebTestBase implements TestUtil {
 
     private String baseUrl;
 
+    protected WebDriver driver;
+
+    private TestContainerInstance testContainerInstance;
+
     protected String getBaseUrl() {
         return baseUrl;
     }
@@ -66,7 +72,7 @@ public abstract class WebTestBase implements TestUtil {
 
     @Before
     public final void beforeWebTestBase() {
-        TestContainerInstance testContainerInstance = getTestContainerInstance();
+        testContainerInstance = getTestContainerInstance();
         if (testContainerInstance.isStarted) {
             if (!isInjected)
                 testContainerInstance.injector.injectMembers(this);
@@ -82,8 +88,22 @@ public abstract class WebTestBase implements TestUtil {
 
             testContainerInstance.injector = injector;
             testContainerInstance.isStarted = true;
+            testContainerInstance.driver = createDriver();
+            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    if (!testContainerInstance.errorOccured) {
+                        testContainerInstance.driver.close();
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            // swallow
+                        }
+                    }
+                }
+            }));
         }
-        driver = createDriver();
+        driver = testContainerInstance.driver;
     }
 
     @Rule
@@ -92,11 +112,10 @@ public abstract class WebTestBase implements TestUtil {
 
             @Override
             public void evaluate() throws Throwable {
-                base.evaluate();
                 try {
-                    driver.close();
+                    base.evaluate();
                 } catch (Throwable t) {
-                    // swallow
+                    testContainerInstance.errorOccured = true;
                 }
             }
         };
@@ -114,4 +133,5 @@ public abstract class WebTestBase implements TestUtil {
     public WebDriver internal_getDriver() {
         return driver;
     }
+
 }

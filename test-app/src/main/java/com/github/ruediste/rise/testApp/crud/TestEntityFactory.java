@@ -22,6 +22,11 @@ public class TestEntityFactory {
         return save(result);
     }
 
+    public TestCrudEntityB testCrudEntityB() {
+        TestCrudEntityB result = new TestCrudEntityB();
+        return save(result);
+    }
+
     private <T> T save(T result) {
         trx.updating().execute(() -> em.persist(result));
         return result;

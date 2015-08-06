@@ -43,7 +43,7 @@ public class CrudDisplayPO extends PageObject {
         return new CrudDeletePO(driver);
     }
 
-    public List<String> getShownProperties() {
+    public List<String> getPropertyTestNames() {
         return driver
                 .findElements(
                         By.cssSelector(dataTestSelector("properties")

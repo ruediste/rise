@@ -12,7 +12,7 @@ import com.github.ruediste.rise.crud.CrudControllerBase;
 
 public class CrudBrowserPO extends PageObject {
 
-    protected CrudBrowserPO(WebDriver driver) {
+    public CrudBrowserPO(WebDriver driver) {
         super(driver);
         assertPage(CrudControllerBase.class, x -> x.browse(null, null));
     }
