@@ -30,13 +30,15 @@ import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.persistence.PersistentType;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 import com.github.ruediste.rise.crud.CrudPropertyFilter.CrudFilterPersitenceContext;
+import com.github.ruediste.rise.crud.CrudUtil.CrudList;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.github.ruediste1.i18n.label.Labeled;
 import com.github.ruediste1.i18n.label.MembersLabeled;
 import com.google.common.base.Preconditions;
 
-public class DefaultCrudListController extends SubControllerComponent {
+public class DefaultCrudListController extends SubControllerComponent implements
+        CrudList {
     @Inject
     CrudReflectionUtil crudReflectionUtil;
 
@@ -126,12 +128,13 @@ public class DefaultCrudListController extends SubControllerComponent {
         return bottomActions;
     }
 
+    @Override
     public DefaultCrudListController setBottomActions(Component bottomActions) {
         this.bottomActions = bottomActions;
         return this;
     }
 
-    public PersistentType type;
+    private PersistentType type;
 
     BindingGroup<Data> data = new BindingGroup<>(new Data());
 
@@ -208,10 +211,16 @@ public class DefaultCrudListController extends SubControllerComponent {
         return itemActionsFactory;
     }
 
+    @Override
     public DefaultCrudListController setItemActionsFactory(
             Function<Object, Cell> itemActionsFactory) {
         this.itemActionsFactory = itemActionsFactory;
         return this;
+    }
+
+    @Override
+    public PersistentType getType() {
+        return type;
     }
 
 }

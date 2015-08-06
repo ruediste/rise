@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.joining;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -12,6 +13,8 @@ import javax.inject.Singleton;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Root;
 
+import com.github.ruediste.rise.component.components.CDataGrid.Cell;
+import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.persistence.PersistentType;
 import com.github.ruediste.rise.crud.annotations.CrudStrategy;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
@@ -213,6 +216,37 @@ public class CrudUtil {
 
         @Override
         public CrudPicker createPicker(Class<? extends Annotation> emQualifier,
+                Class<?> entityClass) {
+            Preconditions.checkNotNull(entityClass, "entityClass is null");
+            return provider.get().initialize(entityClass, emQualifier);
+        }
+
+    }
+
+    public interface CrudList {
+
+        PersistentType getType();
+
+        DefaultCrudListController setItemActionsFactory(
+                Function<Object, Cell> itemActionsFactory);
+
+        DefaultCrudListController setBottomActions(Component bottomActions);
+
+    }
+
+    @ImplementedBy(DefaultCrudListFactory.class)
+    public interface CrudListFactory {
+        CrudList createList(Class<? extends Annotation> emQualifier,
+                Class<?> entityClass);
+    }
+
+    public static class DefaultCrudListFactory implements CrudListFactory {
+
+        @Inject
+        Provider<DefaultCrudListController> provider;
+
+        @Override
+        public CrudList createList(Class<? extends Annotation> emQualifier,
                 Class<?> entityClass) {
             Preconditions.checkNotNull(entityClass, "entityClass is null");
             return provider.get().initialize(entityClass, emQualifier);

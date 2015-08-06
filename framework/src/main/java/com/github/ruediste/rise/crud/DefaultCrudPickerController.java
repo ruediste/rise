@@ -11,6 +11,7 @@ import com.github.ruediste.rise.component.components.CButtonTemplate;
 import com.github.ruediste.rise.component.components.CController;
 import com.github.ruediste.rise.component.components.CDataGrid.Cell;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.crud.CrudUtil.CrudList;
 import com.github.ruediste.rise.crud.CrudUtil.CrudPicker;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
 import com.github.ruediste.rise.util.GenericEvent;
@@ -23,7 +24,9 @@ public class DefaultCrudPickerController extends SubControllerComponent
         implements CrudPicker {
 
     @Inject
-    DefaultCrudListController ctrl;
+    CrudUtil util;
+
+    private CrudList ctrl;
 
     public static class View extends
             DefaultCrudViewComponent<DefaultCrudPickerController> {
@@ -43,7 +46,7 @@ public class DefaultCrudPickerController extends SubControllerComponent
             return toComponent(html -> html
                     .h1()
                     .content(
-                            messages.pickerFor(label(controller.ctrl.type
+                            messages.pickerFor(label(controller.ctrl.getType()
                                     .getEntityClass())))
                     .add(new CController(controller.ctrl)));
         }
@@ -71,7 +74,8 @@ public class DefaultCrudPickerController extends SubControllerComponent
 
     public CrudPicker initialize(Class<?> entityClass,
             Class<? extends Annotation> emQualifier) {
-        ctrl.initialize(entityClass, emQualifier);
+        ctrl = util.getStrategy(CrudUtil.CrudListFactory.class, entityClass)
+                .createList(emQualifier, entityClass);
         ctrl.setBottomActions(new CButton(this, c -> c.cancel()));
         ctrl.setItemActionsFactory(item -> new Cell(new CButton(this, c -> c
                 .pick(item), true).apply(CButtonTemplate.setArgs(x -> x

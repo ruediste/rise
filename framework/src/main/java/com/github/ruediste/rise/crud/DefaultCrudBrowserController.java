@@ -11,6 +11,7 @@ import com.github.ruediste.rise.component.components.CController;
 import com.github.ruediste.rise.component.components.CDataGrid;
 import com.github.ruediste.rise.component.components.CGroup;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.crud.CrudUtil.CrudList;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.message.TMessage;
 import com.github.ruediste1.i18n.message.TMessages;
@@ -18,7 +19,9 @@ import com.github.ruediste1.i18n.message.TMessages;
 public class DefaultCrudBrowserController extends SubControllerComponent {
 
     @Inject
-    DefaultCrudListController ctrl;
+    CrudUtil util;
+
+    private CrudList ctrl;
 
     public static class View extends
             DefaultCrudViewComponent<DefaultCrudBrowserController> {
@@ -39,7 +42,7 @@ public class DefaultCrudBrowserController extends SubControllerComponent {
             return toComponent(html -> html
                     .h1()
                     .content(
-                            messages.browserFor(label(controller.ctrl.type
+                            messages.browserFor(label(controller.ctrl.getType()
                                     .getEntityClass())))
                     .add(new CController(controller.ctrl)));
         }
@@ -48,7 +51,9 @@ public class DefaultCrudBrowserController extends SubControllerComponent {
 
     public DefaultCrudBrowserController initialize(Class<?> entityClass,
             Class<? extends Annotation> emQualifier) {
-        ctrl.initialize(entityClass, emQualifier);
+        ctrl = util.getStrategy(CrudUtil.CrudListFactory.class, entityClass)
+                .createList(emQualifier, entityClass);
+
         ctrl.setItemActionsFactory(item -> new CDataGrid.Cell(new CGroup()
                 .add(new CButton(go(CrudControllerBase.class).display(item),
                         true).apply(CButtonTemplate.setArgs(x -> x.primary())))
@@ -59,7 +64,7 @@ public class DefaultCrudBrowserController extends SubControllerComponent {
                         true).apply(CButtonTemplate.setArgs(x -> x.danger())))));
 
         ctrl.setBottomActions(new CButton(go(CrudControllerBase.class).create(
-                ctrl.type.getEntityClass(), ctrl.type.getEmQualifier())));
+                entityClass, emQualifier)));
 
         return this;
     }
