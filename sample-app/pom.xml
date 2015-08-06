@@ -79,7 +79,7 @@
 						</goals>
 						<configuration>
 							<outputFile>${basedir}/src/main/resources/translations/translations.properties</outputFile>
-							<basePackage>com.github.ruediste.rise.sample</basePackage>
+							<basePackages>com.github.ruediste.rise.sample,com.github.ruediste.rise.crud</basePackages>
 						</configuration>
 					</execution>
 				</executions>

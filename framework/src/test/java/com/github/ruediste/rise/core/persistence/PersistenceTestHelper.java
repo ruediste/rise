@@ -6,6 +6,7 @@ import bitronix.tm.resource.jdbc.PoolingDataSource;
 
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRestartableModule;
+import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.front.LoggerModule;
 import com.github.ruediste.rise.nonReloadable.persistence.BitronixDataSourceFactory;
 import com.github.ruediste.rise.nonReloadable.persistence.BitronixModule;
@@ -34,6 +35,8 @@ public class PersistenceTestHelper {
 
                     @Override
                     protected void configure() throws Exception {
+                        bind(ApplicationStage.class).toInstance(
+                                ApplicationStage.DEVELOPMENT);
                         PersistenceModuleUtil.bindDataSource(binder(), null,
                                 new EclipseLinkPersistenceUnitManager(
                                         "frameworkTest"),
@@ -89,7 +92,11 @@ public class PersistenceTestHelper {
         dbLinkRegistry.dropAndCreateSchemas();
         Injector restartableInjector = Salta.createInjector(
                 new CoreRestartableModule(nonRestartableInjector),
-                new LoggerModule());
+                new LoggerModule(), new AbstractModule() {
+                    @Override
+                    protected void configure() throws Exception {
+                    }
+                });
         restartableInjector.injectMembers(testCase);
         restartableInjector.getInstance(CoreConfiguration.class).initialize();
     }
