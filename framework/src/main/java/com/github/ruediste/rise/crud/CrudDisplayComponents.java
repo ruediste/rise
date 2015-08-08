@@ -52,8 +52,8 @@ public class CrudDisplayComponents
                         //@formatter:off
                         .bFormGroup()
                           .label().content(labelUtil.getPropertyLabel(property.getProperty()))
-                          .span().B_FORM_CONTROL().DISABLED("disabled").TEST_NAME(property.getProperty().getName())
-                            .content(String.valueOf(property.getProperty().getValue(group.get())))
+                          .span().B_FORM_CONTROL().DISABLED("disabled").TEST_NAME(property.getName())
+                            .content(String.valueOf(property.getValue(group.get())))
                         ._bFormGroup());
                         //@formatter:on
                 });
@@ -67,12 +67,12 @@ public class CrudDisplayComponents
                         html -> {
                             html.bFormGroup()
                                 .label().content(labelUtil.getPropertyLabel(p.getProperty()))
-                                .span().B_FORM_CONTROL().DISABLED("disabled").TEST_NAME(p.getProperty().getName())
+                                .span().B_FORM_CONTROL().DISABLED("disabled").TEST_NAME(p.getName())
                                   .render(x-> crudUtil
                                           .getStrategy(
                                                   IdentificationRenderer.class,
                                                   p.getAttribute().getJavaType()).renderIdenification(
-                                                  html, p.getProperty().getValue(g.get())))
+                                                  html, p.getValue(g.get())))
                                 ._span()
                             ._bFormGroup();
                      });
@@ -86,18 +86,20 @@ public class CrudDisplayComponents
                             () -> g.proxy(),
                             html -> {
                                 html.bFormGroup()
-                                .label().content(labelUtil.getPropertyLabel(p.getProperty()))
-                                .span().B_FORM_CONTROL().DISABLED("disabled").TEST_NAME(p.getProperty().getName())
-                                .render(x-> crudUtil
-                                        .getStrategy(
-                                                IdentificationRenderer.class,
-                                                p.getAttribute().getJavaType()).renderIdenification(
-                                                        html, p.getProperty().getValue(g.get())))
-                                                        ._span()
-                                                        ._bFormGroup();
+                                    .label().content(labelUtil.getPropertyLabel(p.getProperty()))
+                                    .span().B_FORM_CONTROL().DISABLED("disabled").TEST_NAME(p.getName())
+                                    .render(x-> crudUtil .getStrategy(IdentificationRenderer.class, p.getAttribute().getJavaType())
+                                      .renderIdenification(html, p.getValue(g.get())))
+                                    ._span()
+                                ._bFormGroup();
                             });
                     //@formatter:on
                 });
-
+        addFactory(
+                p -> p.getAttribute().getPersistentAttributeType() == PersistentAttributeType.MANY_TO_ONE,
+                (p, g) -> {
+                    p.getAttribute().;
+                    return null;
+                });
     }
 }

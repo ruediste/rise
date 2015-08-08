@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.crud;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -32,11 +33,6 @@ public class CrudReflectionUtil {
     @Inject
     MemberOrderIndex memberOrderIndex;
 
-    public PropertyInfo getProperty(Attribute<?, ?> attribute) {
-        return PropertyUtil.getPropertyInfo(attribute.getDeclaringType()
-                .getJavaType(), attribute.getName());
-    }
-
     public List<PersistentProperty> getDisplayProperties(PersistentType type) {
         return getAllProperties(type);
     }
@@ -45,9 +41,15 @@ public class CrudReflectionUtil {
         return getAllProperties(type);
     }
 
-    private List<PersistentProperty> getAllProperties(PersistentType type) {
+    public Map<String, PersistentProperty> getAllPropertiesMap(
+            PersistentType type) {
+        return getAllProperties(type).stream().collect(
+                toMap(x -> x.getAttribute().getName(), x -> x));
+    }
+
+    public List<PersistentProperty> getAllProperties(PersistentType type) {
         return getOrderedAttributes(type.getType()).stream()
-                .map(this::toPersistentAttribute).collect(toList());
+                .map(this::toPersistentProperty).collect(toList());
     }
 
     public List<PersistentProperty> getBrowserProperties(PersistentType type) {
@@ -75,7 +77,7 @@ public class CrudReflectionUtil {
         }
         if (result.isEmpty())
             result = orderedAttributes;
-        return result.stream().map(this::toPersistentAttribute)
+        return result.stream().map(this::toPersistentProperty)
                 .collect(toList());
     }
 
@@ -92,7 +94,7 @@ public class CrudReflectionUtil {
         return result;
     }
 
-    public PersistentProperty toPersistentAttribute(Attribute<?, ?> attribute) {
+    public PersistentProperty toPersistentProperty(Attribute<?, ?> attribute) {
         PropertyInfo property = PropertyUtil.getPropertyInfo(attribute
                 .getDeclaringType().getJavaType(), attribute.getName());
 

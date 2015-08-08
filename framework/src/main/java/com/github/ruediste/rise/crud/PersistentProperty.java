@@ -1,5 +1,8 @@
 package com.github.ruediste.rise.crud;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+
 import javax.persistence.metamodel.Attribute;
 
 import com.github.ruediste.c3java.properties.PropertyInfo;
@@ -16,6 +19,38 @@ public class PersistentProperty {
         Preconditions.checkNotNull(attribute);
         this.property = property;
         this.attribute = attribute;
+    }
+
+    public Object getValue(Object entity) {
+        Member member = attribute.getJavaMember();
+        if (member instanceof Field) {
+            Field field = (Field) member;
+            field.setAccessible(true);
+            try {
+                return field.get(entity);
+            } catch (IllegalArgumentException | IllegalAccessException e) {
+                throw new RuntimeException("Error while getting field " + field);
+            }
+        } else
+            throw new RuntimeException("Unknown member type " + member);
+    }
+
+    public void setValue(Object entity, Object value) {
+        Member member = attribute.getJavaMember();
+        if (member instanceof Field) {
+            Field field = (Field) member;
+            field.setAccessible(true);
+            try {
+                field.set(entity, value);
+            } catch (IllegalArgumentException | IllegalAccessException e) {
+                throw new RuntimeException("Error while setting field " + field);
+            }
+        } else
+            throw new RuntimeException("Unknown member type " + member);
+    }
+
+    public String getName() {
+        return getAttribute().getName();
     }
 
     public PropertyInfo getProperty() {

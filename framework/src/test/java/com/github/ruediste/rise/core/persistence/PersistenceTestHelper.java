@@ -23,7 +23,7 @@ public class PersistenceTestHelper {
     private Object testCase;
     private DataBaseLinkRegistry dbLinkRegistry;
 
-    PersistenceTestHelper(Object testCase) {
+    public PersistenceTestHelper(Object testCase) {
         this.testCase = testCase;
 
     }
