@@ -1,28 +1,22 @@
 package com.github.ruediste.rise.component.components;
 
-import java.util.Collection;
-import java.util.Collections;
-
-import javax.validation.ConstraintViolation;
-
 import com.github.ruediste.c3java.properties.NoPropertyAccessor;
 import com.github.ruediste.c3java.properties.PropertyInfo;
-import com.github.ruediste.rise.component.ConstraintViolationAware;
-import com.github.ruediste.rise.component.ValidationState;
+import com.github.ruediste.rise.component.ViolationStatus;
+import com.github.ruediste.rise.component.ViolationStatusBearer;
 import com.github.ruediste.rise.component.binding.Binding;
 import com.github.ruediste.rise.component.tree.RelationsComponent;
 import com.github.ruediste1.i18n.lString.FixedLString;
 import com.github.ruediste1.i18n.lString.LString;
+import com.github.ruediste1.i18n.label.LabelUtil;
 
 /**
  * 
  */
 public class CInputBase<T extends RelationsComponent<T>> extends
-        RelationsComponent<T> implements ConstraintViolationAware {
+        RelationsComponent<T> implements ViolationStatusBearer,
+        LabeledComponent {
 
-    private boolean isValidated;
-    private Collection<ConstraintViolation<?>> constraintViolations = Collections
-            .emptyList();
     private LString label;
 
     /**
@@ -32,25 +26,7 @@ public class CInputBase<T extends RelationsComponent<T>> extends
 
     private boolean renderFormGroup = true;
 
-    @Override
-    public void clearConstraintViolations() {
-        isValidated = false;
-    }
-
-    @Override
-    public void setConstraintViolations(
-            Collection<ConstraintViolation<?>> constraintViolations) {
-        this.constraintViolations = constraintViolations;
-        isValidated = true;
-    }
-
-    public boolean isValidated() {
-        return isValidated;
-    }
-
-    public Collection<ConstraintViolation<?>> getConstraintViolations() {
-        return constraintViolations;
-    }
+    private ViolationStatus violationStatus = new ViolationStatus();
 
     public LString getLabel() {
         return label;
@@ -65,16 +41,6 @@ public class CInputBase<T extends RelationsComponent<T>> extends
     public T setLabel(String label) {
         this.label = new FixedLString(label);
         return self();
-    }
-
-    public ValidationState getValidationState() {
-        if (!isValidated) {
-            return ValidationState.NOT_VALIDATED;
-        }
-        if (constraintViolations.isEmpty()) {
-            return ValidationState.SUCCESS;
-        }
-        return ValidationState.ERROR;
     }
 
     public PropertyInfo getLabelProperty() {
@@ -102,6 +68,20 @@ public class CInputBase<T extends RelationsComponent<T>> extends
     public T setRenderFormGroup(boolean renderFormGroup) {
         this.renderFormGroup = renderFormGroup;
         return self();
+    }
+
+    @Override
+    public LString getLabel(LabelUtil labelUtil) {
+        if (label != null)
+            return label;
+        if (labelProperty != null)
+            return labelUtil.getPropertyLabel(labelProperty);
+        return null;
+    }
+
+    @Override
+    public ViolationStatus getViolationStatus() {
+        return violationStatus;
     }
 
 }

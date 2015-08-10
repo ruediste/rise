@@ -3,6 +3,7 @@ package com.github.ruediste.rise.testApp.component;
 import com.github.ruediste.rise.api.ControllerComponent;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CButton;
+import com.github.ruediste.rise.component.components.CFormGroup;
 import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.component.components.CTextField;
 import com.github.ruediste.rise.component.tree.Component;
@@ -27,8 +28,8 @@ public class BoundComponentController extends ControllerComponent {
                     .add(toComponentDirect(x -> x.span().ID("direct")
                             .content(controller.data().getValue())))
 
-                    .add(new CTextField().CLASS("textField").bindText(
-                            () -> controller.data().getValue()))
+                    .add(new CFormGroup(new CTextField().CLASS("textField")
+                            .bindText(() -> controller.data().getValue())))
 
                     .add(new CButton("pushDown").CLASS("pushDown").setHandler(
                             () -> controller.pushDown()))

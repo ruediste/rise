@@ -121,6 +121,16 @@ public class CoreConfigurationNonRestartable {
         basePackage = Reflection.getPackageName(clazz);
     }
 
+    /**
+     * The stack trace filter is used to omit stack frames which are not part of
+     * the application code (see {@link StackTraceFilter}).
+     * 
+     * <p>
+     * If this field is left {@code null}, a default filter which filters stack
+     * frames which are not within the {@link #basePackage} is installed in
+     * {@link ApplicationStage#DEVELOPMENT DEVELOPMENT} stage. In the other
+     * stages no filtering is performed by default.
+     */
     public StackTraceFilter stackTraceFilter;
 
     public StackTraceFilter getStackTraceFilter() {

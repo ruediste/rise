@@ -9,9 +9,6 @@ public class CInputTemplate extends BootstrapComponentTemplateBase<CInput> {
     @Inject
     ComponentUtil util;
 
-    @Inject
-    InputRenderHelper helper;
-
     @Override
     public void applyValues(CInput component) {
         getParameterValue(component, "value").ifPresent(component::setValue);
@@ -23,13 +20,9 @@ public class CInputTemplate extends BootstrapComponentTemplateBase<CInput> {
         if (inputType == null)
             throw new RuntimeException("Input type of CInput not set");
 
-        helper.renderInput(
-                component,
-                html,
-                () -> html.input().TYPE(inputType.toString()).B_FORM_CONTROL()
-                        .VALUE(component.getValue())
-                        .TEST_NAME(component.TEST_NAME())
-                        .NAME(util.getKey(component, "value"))
-                        .ID(util.getComponentId(component)));
+        html.input().TYPE(inputType.toString()).B_FORM_CONTROL()
+                .VALUE(component.getValue()).TEST_NAME(component.TEST_NAME())
+                .NAME(util.getKey(component, "value"))
+                .ID(util.getComponentId(component));
     }
 }

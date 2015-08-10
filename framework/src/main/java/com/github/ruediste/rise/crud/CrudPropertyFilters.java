@@ -10,6 +10,7 @@ import javax.persistence.metamodel.SingularAttribute;
 
 import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.github.ruediste.rise.component.ComponentFactoryUtil;
+import com.github.ruediste.rise.component.components.CFormGroup;
 import com.github.ruediste.rise.component.components.CInput;
 import com.github.ruediste.rise.component.components.CTextField;
 import com.github.ruediste.rise.component.components.InputType;
@@ -72,11 +73,12 @@ public class CrudPropertyFilters extends
                                     .setLabel(
                                             labelUtil
                                                     .getPropertyLabel(property));
+                            CFormGroup component = new CFormGroup(textField);
                             return new CrudPropertyFilter() {
 
                                 @Override
                                 public Component getComponent() {
-                                    return textField;
+                                    return component;
                                 }
 
                                 @Override

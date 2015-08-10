@@ -10,9 +10,6 @@ public class CTextFieldTemplate extends
     @Inject
     ComponentUtil util;
 
-    @Inject
-    InputRenderHelper helper;
-
     @Override
     public void applyValues(CTextField component) {
         getParameterValue(component, "value").ifPresent(component::setText);
@@ -20,13 +17,9 @@ public class CTextFieldTemplate extends
 
     @Override
     public void doRender(CTextField component, BootstrapRiseCanvas<?> html) {
-        helper.renderInput(
-                component,
-                html,
-                () -> html.input().TYPE("text").B_FORM_CONTROL()
-                        .VALUE(component.getText())
-                        .TEST_NAME(component.TEST_NAME())
-                        .NAME(util.getKey(component, "value"))
-                        .ID(util.getComponentId(component)));
+        html.input().TYPE("text").B_FORM_CONTROL().VALUE(component.getText())
+                .TEST_NAME(component.TEST_NAME())
+                .NAME(util.getKey(component, "value"))
+                .ID(util.getComponentId(component));
     }
 }

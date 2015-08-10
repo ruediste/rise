@@ -13,6 +13,7 @@ import com.github.ruediste.rise.component.binding.BindingUtil;
 import com.github.ruediste.rise.component.components.CButton;
 import com.github.ruediste.rise.component.components.CComponentStack;
 import com.github.ruediste.rise.component.components.CController;
+import com.github.ruediste.rise.component.components.CFormGroup;
 import com.github.ruediste.rise.component.components.CInput;
 import com.github.ruediste.rise.component.components.CTextField;
 import com.github.ruediste.rise.component.components.CValue;
@@ -68,28 +69,29 @@ public class CrudEditComponents
     public void initialize() {
         addFactory(
                 decl -> String.class.equals(decl.getAttribute().getJavaType()),
-                (decl, entityType, group) -> new CTextField().setLabel(
-                        labelUtil.getPropertyLabel(decl.getProperty()))
+                (decl, entityType, group) -> new CFormGroup(new CTextField()
+                        .setLabel(
+                                labelUtil.getPropertyLabel(decl.getProperty()))
                         .bindText(
                                 () -> (String) decl.getProperty().getValue(
-                                        group.proxy())));
+                                        group.proxy()))));
 
         addFactory(
                 decl -> Long.TYPE.equals(decl.getAttribute().getJavaType())
                         || Long.class.equals(decl.getAttribute().getJavaType()),
                 (decl, entityType, group) -> {
-                    CInput result = new CInput(InputType.number).setLabel(
+                    CInput input = new CInput(InputType.number).setLabel(
                             labelUtil.getPropertyLabel(decl.getProperty()))
                             .TEST_NAME(decl.getAttribute().getName());
 
                     BindingUtil.bind(
-                            result,
+                            input,
                             group,
-                            entity -> result.setValue(String.valueOf(decl
+                            entity -> input.setValue(String.valueOf(decl
                                     .getProperty().getValue(entity))),
                             entity -> decl.getProperty().setValue(entity,
-                                    Long.parseLong(result.getValue())));
-                    return result;
+                                    Long.parseLong(input.getValue())));
+                    return new CFormGroup(input);
                 });
 
         addFactory(

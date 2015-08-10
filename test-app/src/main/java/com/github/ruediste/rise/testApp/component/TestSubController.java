@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CButton;
+import com.github.ruediste.rise.component.components.CFormGroup;
 import com.github.ruediste.rise.component.components.CTextField;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.persistence.OwnEntityManagers;
@@ -35,8 +36,8 @@ public class TestSubController {
                     .add(new CButton("save").CLASS("save").setHandler(
                             controller::save))
 
-                    .add(new CTextField().bind(g -> g
-                            .setText(controller.entity().getValue()))));
+                    .add(new CFormGroup(new CTextField().bind(g -> g
+                            .setText(controller.entity().getValue())))));
         }
     }
 

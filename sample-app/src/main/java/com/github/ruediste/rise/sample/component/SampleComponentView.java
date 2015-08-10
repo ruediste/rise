@@ -3,6 +3,7 @@ package com.github.ruediste.rise.sample.component;
 import javax.inject.Inject;
 
 import com.github.ruediste.rise.component.components.CButton;
+import com.github.ruediste.rise.component.components.CFormGroup;
 import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.component.components.CTextField;
 import com.github.ruediste.rise.component.tree.Component;
@@ -31,7 +32,7 @@ public class SampleComponentView extends
                         .getMessageInterfaceInstance(Messages.class)
                         .theCounterIs(controller.counter))))
                 .add(new CButton("ClickMe").setHandler(() -> controller.inc()))
-                .add(new CTextField().bindText(() -> controller
-                        .getData().getText()))));
+                .add(new CFormGroup(new CTextField().bindText(() -> controller
+                        .getData().getText())))));
     }
 }
