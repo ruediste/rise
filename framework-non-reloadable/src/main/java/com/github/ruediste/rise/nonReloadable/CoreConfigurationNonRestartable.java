@@ -78,13 +78,22 @@ public class CoreConfigurationNonRestartable {
 
     public void initialize() {
         startupEventHandler = startupEventHandlerSupplier.get();
-        if (!Strings.isNullOrEmpty(basePackage))
+        if (!Strings.isNullOrEmpty(basePackage)) {
             scannedPrefixes.add(basePackage);
+            if (stackTraceFilter == null)
+                stackTraceFilter = new DefaultStrackTraceFilter(
+                        e -> e.getClassName() == null
+                                || e.getClassName().startsWith(basePackage));
+        }
+
     }
 
     public long restartQueryTimeout = 30000;
 
     public final TreeSet<String> scannedPrefixes = new TreeSet<String>();
+    {
+        scannedPrefixes.add("com.github.ruediste.rise.");
+    }
 
     public boolean shouldBeScanned(String className) {
         String prefix = scannedPrefixes.floor(className);

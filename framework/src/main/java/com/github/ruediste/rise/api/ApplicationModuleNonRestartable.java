@@ -2,15 +2,15 @@ package com.github.ruediste.rise.api;
 
 import javax.servlet.ServletConfig;
 
-import com.github.ruediste.rise.core.CoreNonRestartableModule;
+import com.github.ruediste.rise.nonReloadable.CoreNonRestartableModule;
 import com.github.ruediste.rise.nonReloadable.front.LoggerModule;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 
-public class PermanentApplicationModule extends AbstractModule {
+public class ApplicationModuleNonRestartable extends AbstractModule {
 
     protected ServletConfig servletConfig;
 
-    public PermanentApplicationModule(ServletConfig servletConfig) {
+    public ApplicationModuleNonRestartable(ServletConfig servletConfig) {
         this.servletConfig = servletConfig;
     }
 

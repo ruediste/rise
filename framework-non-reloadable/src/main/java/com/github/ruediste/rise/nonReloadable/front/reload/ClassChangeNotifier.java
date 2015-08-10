@@ -120,7 +120,10 @@ public class ClassChangeNotifier {
                 .parallel()
                 .filter(file -> file.getFileName().toString()
                         .endsWith(".class"))
-                .map(file -> Pair.of(file, readClass(file))).sequential()
+                .map(file -> Pair.of(file, readClass(file)))
+                .sequential()
+                .filter(pair -> config.shouldBeScanned(org.objectweb.asm.Type
+                        .getObjectType(pair.getB().getA().name).getClassName()))
                 .forEach(pair -> {
                     String name = pair.getB().getA().name;
                     classNameMap.put(pair.getA(), name);

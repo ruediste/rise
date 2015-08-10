@@ -1,4 +1,4 @@
-package com.github.ruediste.rise.core;
+package com.github.ruediste.rise.nonReloadable;
 
 import javax.inject.Inject;
 
@@ -17,8 +17,13 @@ public class CoreNonRestartableInitializer implements Initializer {
     @Inject
     MemberOrderIndex memberOrderIndex;
 
+    @Inject
+    CoreConfigurationNonRestartable config;
+
     @Override
     public void initialize() {
+        config.initialize();
+
         classHierarchyIndex.setup();
         memberOrderIndex.setup();
 

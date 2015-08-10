@@ -4,8 +4,8 @@ import org.junit.Before;
 
 import com.github.ruediste.rise.api.RestartableApplicationModule;
 import com.github.ruediste.rise.core.CoreConfiguration;
-import com.github.ruediste.rise.core.CoreNonRestartableModule;
 import com.github.ruediste.rise.mvc.MvcPermanentModule;
+import com.github.ruediste.rise.nonReloadable.CoreNonRestartableModule;
 import com.github.ruediste.rise.nonReloadable.front.ApplicationEventQueue;
 import com.github.ruediste.rise.nonReloadable.front.LoggerModule;
 import com.github.ruediste.rise.util.InitializerUtil;

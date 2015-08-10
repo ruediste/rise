@@ -2,7 +2,7 @@ package com.github.ruediste.rise.testApp.app;
 
 import java.util.Properties;
 
-import com.github.ruediste.rise.integration.PermanentIntegrationModule;
+import com.github.ruediste.rise.integration.IntegrationModuleNonRestartable;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.front.FrontServletBase;
 import com.github.ruediste.rise.nonReloadable.persistence.BitronixDataSourceFactory;
@@ -61,7 +61,7 @@ public class TestAppFrontServlet extends FrontServletBase {
                     }
 
                 }, new BitronixModule(),
-                new PermanentIntegrationModule(getServletConfig()))
+                new IntegrationModuleNonRestartable(getServletConfig()))
                 .injectMembers(this);
     }
 

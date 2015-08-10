@@ -2,23 +2,22 @@ package com.github.ruediste.rise.integration;
 
 import javax.servlet.ServletConfig;
 
-import com.github.ruediste.rise.api.PermanentApplicationModule;
+import com.github.ruediste.rise.api.ApplicationModuleNonRestartable;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 
 /**
  * Module configuring the permanent injector for LAF
  */
-public class PermanentIntegrationModule extends AbstractModule {
+public class IntegrationModuleNonRestartable extends AbstractModule {
 
     private ServletConfig servletConfig;
 
-    public PermanentIntegrationModule(ServletConfig servletConfig) {
+    public IntegrationModuleNonRestartable(ServletConfig servletConfig) {
         this.servletConfig = servletConfig;
     }
 
     @Override
     protected void configure() {
-        install(new PermanentApplicationModule(servletConfig));
+        install(new ApplicationModuleNonRestartable(servletConfig));
     }
-
 }

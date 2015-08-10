@@ -4,7 +4,7 @@ import java.util.Properties;
 
 import javax.inject.Inject;
 
-import com.github.ruediste.rise.integration.PermanentIntegrationModule;
+import com.github.ruediste.rise.integration.IntegrationModuleNonRestartable;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.CoreConfigurationNonRestartable;
 import com.github.ruediste.rise.nonReloadable.front.FrontServletBase;
@@ -60,7 +60,7 @@ public class SampleFrontServlet extends FrontServletBase {
                         return getStage();
                     }
                 }, new BitronixModule(),
-                new PermanentIntegrationModule(getServletConfig()))
+                new IntegrationModuleNonRestartable(getServletConfig()))
                 .injectMembers(this);
         config.setBasePackage(SamplePackage.class);
     }

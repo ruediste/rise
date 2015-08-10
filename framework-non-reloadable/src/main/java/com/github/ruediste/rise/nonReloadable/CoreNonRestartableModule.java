@@ -1,4 +1,4 @@
-package com.github.ruediste.rise.core;
+package com.github.ruediste.rise.nonReloadable;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
