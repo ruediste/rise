@@ -81,9 +81,13 @@ public class CoreConfigurationNonRestartable {
         if (!Strings.isNullOrEmpty(basePackage)) {
             scannedPrefixes.add(basePackage);
             if (stackTraceFilter == null)
-                stackTraceFilter = new DefaultStrackTraceFilter(
-                        e -> e.getClassName() == null
-                                || e.getClassName().startsWith(basePackage));
+                if (stage == Stage.DEVELOPMENT)
+                    stackTraceFilter = new DefaultStrackTraceFilter(
+                            e -> e.getClassName() == null
+                                    || e.getClassName().startsWith(basePackage));
+                else
+                    stackTraceFilter = e -> {
+                    };
         }
 
     }
@@ -117,4 +121,12 @@ public class CoreConfigurationNonRestartable {
         basePackage = Reflection.getPackageName(clazz);
     }
 
+    public StackTraceFilter stackTraceFilter;
+
+    public StackTraceFilter getStackTraceFilter() {
+        if (stackTraceFilter == null)
+            return e -> {
+            };
+        return stackTraceFilter;
+    }
 }

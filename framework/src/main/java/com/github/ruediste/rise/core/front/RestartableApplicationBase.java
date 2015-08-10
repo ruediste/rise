@@ -14,6 +14,7 @@ import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.RequestParseResult;
 import com.github.ruediste.rise.core.httpRequest.DelegatingHttpRequest;
 import com.github.ruediste.rise.core.scopes.HttpScopeManager;
+import com.github.ruediste.rise.nonReloadable.CoreConfigurationNonRestartable;
 import com.github.ruediste.rise.nonReloadable.front.HttpMethod;
 import com.github.ruediste.rise.nonReloadable.front.RestartableApplication;
 import com.github.ruediste.rise.nonReloadable.front.reload.Reloadable;
@@ -36,6 +37,8 @@ public abstract class RestartableApplicationBase implements
 
     @Inject
     CoreConfiguration config;
+    @Inject
+    CoreConfigurationNonRestartable configNonRestartable;
 
     @Inject
     Injector injector;
@@ -90,6 +93,8 @@ public abstract class RestartableApplicationBase implements
                 } else
                     parseResult.handle();
             } catch (Throwable t) {
+                configNonRestartable.getStackTraceFilter().filter(t);
+
                 if (!(t instanceof NoLoggingRequestException))
                     log.error(
                             "Error while handling request to "

@@ -214,6 +214,8 @@ public abstract class FrontServletBase extends HttpServlet {
             isInitialStartup = false;
         } catch (Throwable t) {
             log.warn("Error loading application instance", t);
+            if (configurationNonRestartable != null)
+                configurationNonRestartable.getStackTraceFilter().filter(t);
             startupError = t;
         }
     }
@@ -286,8 +288,11 @@ public abstract class FrontServletBase extends HttpServlet {
             }
         } else {
             log.error("current application info is null");
-            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "FrontServlet: current application info is null");
+            RuntimeException e = new RuntimeException(
+                    "current application info is null");
+            if (configurationNonRestartable != null)
+                configurationNonRestartable.getStackTraceFilter().filter(e);
+            startupErrorHandler.handle(e, req, resp);
         }
     }
 
