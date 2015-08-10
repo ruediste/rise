@@ -15,6 +15,7 @@ import com.github.ruediste.rise.component.components.CInput;
 import com.github.ruediste.rise.component.components.CTextField;
 import com.github.ruediste.rise.component.components.InputType;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.crud.CrudUtil.PersistenceFilterContext;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.lString.PatternString;
@@ -83,7 +84,7 @@ public class CrudPropertyFilters extends
 
                                 @Override
                                 public void applyFilter(
-                                        CrudFilterPersitenceContext ctx) {
+                                        PersistenceFilterContext ctx) {
                                     CriteriaBuilder cb = ctx.cb();
                                     Path<String> path = ctx.root().get(
                                             (SingularAttribute) decl
@@ -109,19 +110,19 @@ public class CrudPropertyFilters extends
                                     .setValue("").setRenderFormGroup(false);
 
                             // @formatter:off
-                            Component component = componentFactoryUtil.toComponent((BootstrapRiseCanvas<?> html) -> 
+                            Component component = componentFactoryUtil.toComponent((BootstrapRiseCanvas<?> html) ->
                               html
                               .bFormGroup()
                                 .label().content(labelUtil.getPropertyLabel(property))
-                                  .div().B_FORM_INLINE()
-                                    .div().B_INPUT_GROUP().CLASS(x->x.sm(6))
-                                      .span().B_INPUT_GROUP_ADDON().content(messages.min())
+                                  .div().BformInline()
+                                    .div().bInputGroup().CLASS(x->x.sm(6))
+                                      .span().BinputGroupAddon().content(messages.min())
                                       .add(min)
                                     ._div()
-                                    .div().B_INPUT_GROUP().CLASS(x->x.sm(6))
-                                      .span().B_INPUT_GROUP_ADDON().content(messages.max())
+                                    .bInputGroup().CLASS(x->x.sm(6))
+                                      .span().BinputGroupAddon().content(messages.max())
                                       .add(max)
-                                    ._div()
+                                    ._bInputGroup()
                                 ._div()
                               ._bFormGroup());
                             // @formatter:on
@@ -135,7 +136,7 @@ public class CrudPropertyFilters extends
 
                                 @Override
                                 public void applyFilter(
-                                        CrudFilterPersitenceContext ctx) {
+                                        PersistenceFilterContext ctx) {
                                     if (!Strings.isNullOrEmpty(min.getValue())) {
                                         ctx.addWhere(ctx
                                                 .cb()

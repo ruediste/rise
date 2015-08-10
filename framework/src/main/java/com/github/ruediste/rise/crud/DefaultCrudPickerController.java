@@ -75,7 +75,7 @@ public class DefaultCrudPickerController extends SubControllerComponent
     public CrudPicker initialize(Class<?> entityClass,
             Class<? extends Annotation> emQualifier) {
         ctrl = util.getStrategy(CrudUtil.CrudListFactory.class, entityClass)
-                .createList(emQualifier, entityClass);
+                .createList(emQualifier, entityClass, null);
         ctrl.setBottomActions(new CButton(this, c -> c.cancel()));
         ctrl.setItemActionsFactory(item -> new Cell(new CButton(this, c -> c
                 .pick(item), true).apply(CButtonTemplate.setArgs(x -> x

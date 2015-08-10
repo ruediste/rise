@@ -52,7 +52,7 @@ public class DefaultCrudBrowserController extends SubControllerComponent {
     public DefaultCrudBrowserController initialize(Class<?> entityClass,
             Class<? extends Annotation> emQualifier) {
         ctrl = util.getStrategy(CrudUtil.CrudListFactory.class, entityClass)
-                .createList(emQualifier, entityClass);
+                .createList(emQualifier, entityClass, null);
 
         ctrl.setItemActionsFactory(item -> new CDataGrid.Cell(new CGroup()
                 .add(new CButton(go(CrudControllerBase.class).display(item),

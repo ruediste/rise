@@ -20,7 +20,7 @@ public class CInputTemplate extends BootstrapComponentTemplateBase<CInput> {
         if (inputType == null)
             throw new RuntimeException("Input type of CInput not set");
 
-        html.input().TYPE(inputType.toString()).B_FORM_CONTROL()
+        html.input().TYPE(inputType.toString()).BformControl()
                 .VALUE(component.getValue()).TEST_NAME(component.TEST_NAME())
                 .NAME(util.getKey(component, "value"))
                 .ID(util.getComponentId(component));

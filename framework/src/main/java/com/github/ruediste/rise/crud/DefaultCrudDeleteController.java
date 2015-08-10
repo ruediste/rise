@@ -52,7 +52,7 @@ public class DefaultCrudDeleteController extends SubControllerComponent {
         @Override
         protected Component createComponents() {
             return toComponent(html -> {
-                html.div().B_BG_DANGER().h1().content(Labels.REALLY_DELETE);
+                html.div().BbgDanger().h1().content(Labels.REALLY_DELETE);
                 html.span().TEST_NAME("identification");
                 crudUtil.getStrategy(CrudUtil.IdentificationRenderer.class,
                         controller.type.getClass()).renderIdenification(html,

@@ -36,10 +36,10 @@ public class TodoView extends PageView<TodoController, IndexData> {
 		.form().ACTION(go().add()).METHOD("POST")
 		    .bRow()
 		        .bCol(x->x.xs(9))
-				    .input().B_FORM_CONTROL().TYPE("text").NAME("name")
+				    .input().BformControl().TYPE("text").NAME("name")
 				._bCol()
 				.bCol(x->x.xs(3))
-					.input().B_FORM_CONTROL().TYPE("submit").VALUE("add")
+					.input().BformControl().TYPE("submit").VALUE("add")
 				._bCol()
 			._bRow()
 		._form();

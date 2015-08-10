@@ -3,14 +3,20 @@ package com.github.ruediste.rise.crud;
 import static java.util.stream.Collectors.joining;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import com.github.ruediste.rise.component.components.CDataGrid.Cell;
@@ -60,8 +66,52 @@ public class CrudUtil {
         return (T) result;
     }
 
-    public interface Filter<T> {
-        void applyFilter(Root<T> root, CriteriaBuilder cb);
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public <T> TypedQuery<T> queryWithFilters(PersistentType type,
+            EntityManager em, Consumer<PersistenceFilterContext> action) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery q = cb.createQuery(type.getEntityClass());
+        Root root = q.from(type.getEntityClass());
+        q.select(root);
+
+        ArrayList<Predicate> whereClauses = new ArrayList<>();
+        PersistenceFilterContext filterContext = new PersistenceFilterContext<T>() {
+
+            @Override
+            public CriteriaQuery<T> query() {
+                return q;
+            }
+
+            @Override
+            public CriteriaBuilder cb() {
+                return cb;
+            }
+
+            @Override
+            public Root<T> root() {
+                return root;
+            }
+
+            @Override
+            public void addWhere(Predicate predicate) {
+                whereClauses.add(predicate);
+            }
+        };
+
+        action.accept(filterContext);
+
+        q.where(whereClauses.toArray(new Predicate[] {}));
+        return em.createQuery(filterContext.query());
+    }
+
+    interface PersistenceFilterContext<T> {
+        CriteriaBuilder cb();
+
+        CriteriaQuery<T> query();
+
+        Root<T> root();
+
+        void addWhere(Predicate predicate);
     }
 
     /**
@@ -237,7 +287,8 @@ public class CrudUtil {
     @ImplementedBy(DefaultCrudListFactory.class)
     public interface CrudListFactory {
         CrudList createList(Class<? extends Annotation> emQualifier,
-                Class<?> entityClass);
+                Class<?> entityClass,
+                Consumer<PersistenceFilterContext<?>> constantFilter);
     }
 
     public static class DefaultCrudListFactory implements CrudListFactory {
@@ -247,9 +298,11 @@ public class CrudUtil {
 
         @Override
         public CrudList createList(Class<? extends Annotation> emQualifier,
-                Class<?> entityClass) {
+                Class<?> entityClass,
+                Consumer<PersistenceFilterContext<?>> constantFilter) {
             Preconditions.checkNotNull(entityClass, "entityClass is null");
-            return provider.get().initialize(entityClass, emQualifier);
+            return provider.get().initialize(entityClass, emQualifier,
+                    constantFilter);
         }
 
     }

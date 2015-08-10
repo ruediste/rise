@@ -53,11 +53,11 @@ public class CFormGroupTemplate extends
 
         if (violationStatus != null) {
             if (violationStatus.getValidationState() == ValidationState.SUCCESS) {
-                html.B_HAS_SUCCESS();
+                html.BhasSuccess();
             }
 
             if (violationStatus.getValidationState() == ValidationState.ERROR) {
-                html.B_HAS_ERROR();
+                html.BhasError();
             }
         }
 
@@ -70,13 +70,13 @@ public class CFormGroupTemplate extends
         if (constraintViolations != null && !constraintViolations.isEmpty()) {
             if (constraintViolations.size() == 1) {
                 html.span()
-                        .B_HELP_BLOCK()
+                        .BhelpBlock()
                         .content(
                                 Iterables.getOnlyElement(constraintViolations)
                                         .getMessage());
             }
             if (constraintViolations.size() > 1) {
-                html.ul().B_HELP_BLOCK();
+                html.ul().BhelpBlock();
                 for (ConstraintViolation<?> v : constraintViolations) {
                     html.li().content(v.getMessage());
                 }

@@ -109,24 +109,29 @@ public class CrudEditComponents
                     //@formatter:off
                     return toComponent(html -> html
                             .bFormGroup()
-                              .label().content(labelUtil.getPropertyLabel(decl.getProperty()))
-                            .span().B_FORM_CONTROL().DISABLED("disbled").TEST_NAME(decl.getAttribute().getName())
-                                .add(cValue)
-                            ._span()
-                            .add(new CButton(this,(btn, c)->c.pick(()->{
-                                CrudPicker picker = crudUtil.getStrategy(CrudPickerFactory.class, cls)
-                                        .createPicker(entityType.getEmQualifier(), cls);
-                                picker.pickerClosed().addListener(value->{
-                                    if (value!=null){
-                                        cValue.setValue(value);
-                                    }
-                                    ComponentTreeUtil
-                                    .raiseEvent(btn, new CComponentStack.PopComponentEvent());
-                                });
-                                ComponentTreeUtil
-                                        .raiseEvent(btn, new CComponentStack.PushComponentEvent(
-                                                new CController(picker)));
-                            })))
+                                .label().content(labelUtil.getPropertyLabel(decl.getProperty()))
+                                .bInputGroup()
+                                .span().BformControl().DISABLED("disbled").TEST_NAME(decl.getAttribute().getName())
+                                    .add(cValue)
+                                ._span()
+                                .bInputGroupBtn()
+                                    .add(new CButton(this,(btn, c)->c.pick(()->{
+                                        CrudPicker picker = crudUtil.getStrategy(CrudPickerFactory.class, cls)
+                                                .createPicker(entityType.getEmQualifier(), cls);
+                                        picker.pickerClosed().addListener(value->{
+                                            if (value!=null){
+                                                cValue.setValue(value);
+                                            }
+                                            ComponentTreeUtil
+                                            .raiseEvent(btn, new CComponentStack.PopComponentEvent());
+                                        });
+                                        ComponentTreeUtil
+                                                .raiseEvent(btn, new CComponentStack.PushComponentEvent(
+                                                        new CController(picker)));
+                                    })))
+                                    .add(new CButton(this,c->c.clear(()->cValue.setValue(null))))
+                                ._bInputGroupBtn()
+                                ._bInputGroup()
                             ._bFormGroup());
                     //@formatter:on);
                 });
@@ -135,6 +140,12 @@ public class CrudEditComponents
     @Labeled
     @GlyphiconIcon(Glyphicon.hand_right)
     void pick(Runnable callback) {
+        callback.run();
+    }
+
+    @Labeled
+    @GlyphiconIcon(Glyphicon.remove)
+    void clear(Runnable callback) {
         callback.run();
     }
 

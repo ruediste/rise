@@ -21,6 +21,7 @@ import com.github.ruediste.c3java.properties.PropertyUtil;
 import com.github.ruediste.rise.core.persistence.PersistentType;
 import com.github.ruediste.rise.core.persistence.RisePersistenceUtil;
 import com.github.ruediste.rise.crud.annotations.CrudBrowserColumn;
+import com.github.ruediste.rise.crud.annotations.CrudIdentifying;
 import com.github.ruediste.rise.nonReloadable.front.reload.MemberOrderIndex;
 import com.google.common.base.Preconditions;
 
@@ -53,27 +54,33 @@ public class CrudReflectionUtil {
     }
 
     public List<PersistentProperty> getBrowserProperties(PersistentType type) {
-        return getPropertiesAnnotatedWith(type, CrudBrowserColumn.class);
+        return getPropertiesAnnotatedWith(type, CrudBrowserColumn.class,
+                CrudIdentifying.class);
     }
 
     public List<PersistentProperty> getIdentificationProperties(
             PersistentType type) {
-        return getPropertiesAnnotatedWith(type, CrudBrowserColumn.class);
+        return getPropertiesAnnotatedWith(type, CrudIdentifying.class);
     }
 
-    private List<PersistentProperty> getPropertiesAnnotatedWith(
-            PersistentType type, Class<? extends Annotation> annotationClass) {
+    @SafeVarargs
+    final private List<PersistentProperty> getPropertiesAnnotatedWith(
+            PersistentType type,
+            Class<? extends Annotation>... annotationClasses) {
         Preconditions.checkNotNull(type, "cls is null");
         List<Attribute<?, ?>> result = new ArrayList<>();
 
         ManagedType<?> type2 = type.getType();
         List<Attribute<?, ?>> orderedAttributes = getOrderedAttributes(type2);
-        for (Attribute<?, ?> attribute : orderedAttributes) {
+        attributeLoop: for (Attribute<?, ?> attribute : orderedAttributes) {
             Member member = attribute.getJavaMember();
             if (member instanceof AnnotatedElement)
-                if (((AnnotatedElement) member)
-                        .isAnnotationPresent(annotationClass))
-                    result.add(attribute);
+                for (Class<? extends Annotation> annotationClass : annotationClasses)
+                    if (((AnnotatedElement) member)
+                            .isAnnotationPresent(annotationClass)) {
+                        result.add(attribute);
+                        continue attributeLoop;
+                    }
         }
         if (result.isEmpty())
             result = orderedAttributes;

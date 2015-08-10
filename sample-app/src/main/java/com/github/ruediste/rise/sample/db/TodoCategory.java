@@ -5,7 +5,7 @@ import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.OneToMany;
 
 import com.github.ruediste.rise.crud.annotations.CrudIdentifying;
 import com.github.ruediste1.i18n.label.Labeled;
@@ -23,8 +23,8 @@ public class TodoCategory {
     @CrudIdentifying
     private String name;
 
-    // @OneToMany
-    @Transient
+    @OneToMany(mappedBy = "category")
+    // @Transient
     private Set<TodoItem> todoItems;
 
     public long getId() {

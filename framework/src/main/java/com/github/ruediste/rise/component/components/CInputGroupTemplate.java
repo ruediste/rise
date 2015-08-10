@@ -7,7 +7,7 @@ public class CInputGroupTemplate extends
 
     @Override
     public void doRender(CInputGroup component, BootstrapRiseCanvas<?> html) {
-        html.div().B_INPUT_GROUP().renderChildren(component)._div();
+        html.bInputGroup().renderChildren(component)._bInputGroup();
     }
 
 }

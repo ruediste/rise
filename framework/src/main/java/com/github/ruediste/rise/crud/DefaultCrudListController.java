@@ -6,14 +6,12 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.TypedQuery;
 
 import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.github.ruediste.rendersnakeXT.canvas.Glyphicon;
@@ -29,8 +27,8 @@ import com.github.ruediste.rise.component.components.CText;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.persistence.PersistentType;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
-import com.github.ruediste.rise.crud.CrudPropertyFilter.CrudFilterPersitenceContext;
 import com.github.ruediste.rise.crud.CrudUtil.CrudList;
+import com.github.ruediste.rise.crud.CrudUtil.PersistenceFilterContext;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.github.ruediste1.i18n.label.Labeled;
@@ -47,6 +45,9 @@ public class DefaultCrudListController extends SubControllerComponent implements
 
     @Inject
     ComponentUtil componentUtil;
+
+    @Inject
+    CrudUtil crudUtil;
 
     @SuppressWarnings("unused")
     private static class DefaultCrudBrowserView extends
@@ -142,6 +143,8 @@ public class DefaultCrudListController extends SubControllerComponent implements
 
     List<CrudPropertyFilter> filterList;
 
+    private Consumer<PersistenceFilterContext<?>> constantFilter;
+
     Data data() {
         return data.proxy();
     }
@@ -154,47 +157,23 @@ public class DefaultCrudListController extends SubControllerComponent implements
     @Labeled
     @GlyphiconIcon(Glyphicon.search)
     public void search() {
-        EntityManager em = getEm();
+        TypedQuery<Object> q = crudUtil.queryWithFilters(type, getEm(),
+                ctx -> {
+                    if (constantFilter != null)
+                        constantFilter.accept(ctx);
+                    for (CrudPropertyFilter filter : filterList) {
+                        filter.applyFilter(ctx);
+                    }
+                });
 
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery q = cb.createQuery(type.getEntityClass());
-        Root root = q.from(type.getEntityClass());
-        q.select(root);
-
-        ArrayList<Predicate> whereClauses = new ArrayList<>();
-        for (CrudPropertyFilter filter : filterList) {
-            filter.applyFilter(new CrudFilterPersitenceContext() {
-
-                @Override
-                public CriteriaQuery<?> query() {
-                    return q;
-                }
-
-                @Override
-                public CriteriaBuilder cb() {
-                    return cb;
-                }
-
-                @Override
-                public Root<?> root() {
-                    return root;
-                }
-
-                @Override
-                public void addWhere(Predicate predicate) {
-                    whereClauses.add(predicate);
-                }
-            });
-        }
-
-        q.where(whereClauses.toArray(new Predicate[] {}));
-
-        data.get().setItems(em.createQuery(q).getResultList());
+        data.get().setItems(q.getResultList());
         data.pullUp();
     }
 
     public DefaultCrudListController initialize(Class<?> entityClass,
-            Class<? extends Annotation> emQualifier) {
+            Class<? extends Annotation> emQualifier,
+            Consumer<PersistenceFilterContext<?>> constantFilter) {
+        this.constantFilter = constantFilter;
         Preconditions.checkNotNull(entityClass, "entityClass is null");
         type = crudReflectionUtil.getPersistentType(emQualifier, entityClass);
 
