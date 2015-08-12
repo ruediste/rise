@@ -163,7 +163,7 @@ public class CrudEditComponents
                             .label().content(labelUtil.getPropertyLabel(decl.getProperty()))
                             .div()
                                 .add(new CButton(this,
-                                (btn, x) -> x.editItems(() -> {
+                                (btn, x) -> x.chooseItems(() -> {
                                     Object entity = group.get();
                                     PluralAttribute attr=(PluralAttribute) decl.getAttribute();
                                     OneToMany oneToMany = ((AnnotatedElement)attr.getJavaMember()).getAnnotation(OneToMany.class);
@@ -223,7 +223,7 @@ public class CrudEditComponents
 
     @Labeled
     @GlyphiconIcon(Glyphicon.edit)
-    void editItems(Runnable callback) {
+    void chooseItems(Runnable callback) {
         callback.run();
     }
 

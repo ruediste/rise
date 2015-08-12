@@ -12,6 +12,7 @@ import com.github.ruediste1.i18n.lString.PatternString;
 import com.github.ruediste1.i18n.label.Labeled;
 import com.github.ruediste1.i18n.message.TMessage;
 import com.github.ruediste1.i18n.message.TMessageUtil;
+import com.github.ruediste1.i18n.message.TMessages;
 
 @Labeled
 public class SampleComponentView extends
@@ -20,6 +21,7 @@ public class SampleComponentView extends
     @Inject
     TMessageUtil messageUtil;
 
+    @TMessages
     public interface Messages {
         @TMessage("The counter is {count}")
         PatternString theCounterIs(int count);
