@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.sample.db;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -24,8 +25,7 @@ public class TodoCategory {
     private String name;
 
     @OneToMany(mappedBy = "category")
-    // @Transient
-    private Set<TodoItem> todoItems;
+    private Set<TodoItem> todoItems = new HashSet<>();
 
     public long getId() {
         return id;

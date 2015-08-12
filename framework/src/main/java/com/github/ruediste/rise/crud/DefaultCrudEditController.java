@@ -8,6 +8,7 @@ import com.github.ruediste.rendersnakeXT.canvas.Glyphicon;
 import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CButton;
+import com.github.ruediste.rise.component.components.CButtonTemplate;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.persistence.PersistentType;
 import com.github.ruediste.rise.core.persistence.RisePersistenceUtil;
@@ -43,7 +44,8 @@ public class DefaultCrudEditController extends SubControllerComponent {
                     }
                 html._div()
                 .div().TEST_NAME("buttons")
-                    .add(new CButton(controller, c -> c.save()))
+                    .add(new CButton(controller, c -> c.save()).apply(CButtonTemplate.setArgs(x->x.primary())))
+                    .rButtonA(go(CrudControllerBase.class).display(controller.entityGroup.get()))
                     .rButtonA(go(CrudControllerBase.class).browse(
                         controller.entityGroup.get().getClass(),
                         controller.emQualifier))

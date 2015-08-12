@@ -10,7 +10,7 @@
 	<properties>
 		<selenium.version>2.46.0</selenium.version>
 	</properties>
-	<dependencies>
+	<dependencies> 
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

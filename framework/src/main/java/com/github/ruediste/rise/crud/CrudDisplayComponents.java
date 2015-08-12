@@ -114,7 +114,7 @@ public class CrudDisplayComponents
                 (p, g) -> toComponent(html->html
                         .bFormGroup()
                             .label().content(labelUtil.getPropertyLabel(p.getProperty()))
-                            .div()//.B_FORM_CONTROL()
+                            .div()
                                 .add(new CButton(this,
                                 (btn, x) -> x.showItems(() -> {
                                     Object entity = g.get();
@@ -152,7 +152,7 @@ public class CrudDisplayComponents
                                 })))
                             ._div()
                         ._bFormGroup()));
-        //@formatter:off
+        //@formatter:on
     }
 
     @Labeled
