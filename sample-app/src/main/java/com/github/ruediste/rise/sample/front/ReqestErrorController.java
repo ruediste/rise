@@ -49,7 +49,7 @@ public class ReqestErrorController extends ControllerMvc<ReqestErrorController>
     private static class View extends PageView<ReqestErrorController, Data> {
 
         @Override
-        public void renderBody(SampleCanvas html) {
+        public void renderContent(SampleCanvas html) {
             // @formatter:off
 			html.bContainer()
 			    .bRow()

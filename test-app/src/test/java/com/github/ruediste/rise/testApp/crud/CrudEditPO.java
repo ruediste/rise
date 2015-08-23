@@ -10,6 +10,7 @@ import org.openqa.selenium.WebElement;
 
 import com.github.ruediste.rise.crud.CrudControllerBase;
 import com.github.ruediste.rise.crud.DefaultCrudEditController;
+import com.github.ruediste.rise.testApp.PageObject;
 
 public class CrudEditPO extends PageObject {
 

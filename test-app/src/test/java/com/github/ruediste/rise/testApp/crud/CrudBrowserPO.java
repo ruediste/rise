@@ -9,6 +9,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import com.github.ruediste.rise.crud.CrudControllerBase;
+import com.github.ruediste.rise.testApp.PageObject;
 
 public class CrudBrowserPO extends PageObject {
 

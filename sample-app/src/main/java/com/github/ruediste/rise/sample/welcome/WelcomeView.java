@@ -15,7 +15,7 @@ public class WelcomeView extends
         PageView<WelcomeController, WelcomeController.Data> {
 
     @Override
-    public void renderBody(SampleCanvas html) {
+    public void renderContent(SampleCanvas html) {
         html.h1().content(label(this));
         html.bButtonA().HREF(go().other()).content("other");
         html.bButtonA().HREF(go(TodoController.class).index())

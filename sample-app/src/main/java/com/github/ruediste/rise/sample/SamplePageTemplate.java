@@ -60,7 +60,7 @@ public class SamplePageTemplate extends PageTemplateBase {
                         .bContainer_fluid()
                             .bRow()
                                 .bCol(x->x.xs(12));
-                                    parameters.renderBody(html);
+                                    parameters.renderContent(html);
                                 html._bCol()
                             ._bRow()
                         ._bContainer_fluid();
@@ -72,6 +72,6 @@ public class SamplePageTemplate extends PageTemplateBase {
     public interface SamplePageTemplateParameters {
         LString getTitle();
 
-        void renderBody(SampleCanvas html);
+        void renderContent(SampleCanvas html);
     }
 }

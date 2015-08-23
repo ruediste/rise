@@ -28,4 +28,6 @@
 <!-- 		level="TRACE" />  -->
 <!--   	<logger name="com.github.ruediste.rise.nonReloadable.front.reload.ClassPathScanningStarter" -->
 <!-- 		level="TRACE" />  -->
+  	<logger name="com.github.ruediste.rise.core.security"
+		level="TRACE" /> 
 </configuration>

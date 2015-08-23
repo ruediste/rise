@@ -10,11 +10,15 @@ import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.DefaultRequestErrorHandler;
 import com.github.ruediste.rise.core.front.RestartableApplicationBase;
+import com.github.ruediste.rise.core.security.Subject;
+import com.github.ruediste.rise.core.security.authentication.DefaultAuthenticationManager;
+import com.github.ruediste.rise.core.security.authentication.InMemoryAuthenticationProvider;
 import com.github.ruediste.rise.integration.DynamicIntegrationModule;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
 import com.github.ruediste.rise.testApp.TestCanvas;
 import com.github.ruediste.rise.testApp.component.CPageTemplate;
+import com.github.ruediste.rise.testApp.security.LoginController;
 import com.github.ruediste.rise.util.InitializerUtil;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
@@ -38,6 +42,9 @@ public class TestRestartableApplication extends RestartableApplicationBase {
 
     @Inject
     DefaultRequestErrorHandler errorHandler;
+
+    @Inject
+    DefaultAuthenticationManager defaultAuthenticationManager;
 
     private static class Initializer implements
             com.github.ruediste.rise.util.Initializer {
@@ -80,6 +87,12 @@ public class TestRestartableApplication extends RestartableApplicationBase {
         config.requestErrorHandler = errorHandler;
         errorHandler.initialize(util -> util.go(
                 RequestErrorHandlerController.class).index());
+        config.loginLocationFactory = (util, s) -> util.go(
+                LoginController.class).index(s);
+
+        defaultAuthenticationManager
+                .addProvider(new InMemoryAuthenticationProvider<Subject>()
+                        .with("foo", "foo", null));
     }
 
 }

@@ -8,6 +8,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 import com.github.ruediste.rise.crud.CrudControllerBase;
+import com.github.ruediste.rise.testApp.PageObject;
 
 public class CrudDisplayPO extends PageObject {
 

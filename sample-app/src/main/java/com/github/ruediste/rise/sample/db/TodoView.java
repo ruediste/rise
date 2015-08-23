@@ -15,7 +15,7 @@ public class TodoView extends PageView<TodoController, IndexData> {
     Logger log;
 
     @Override
-    public void renderBody(SampleCanvas html) {
+    public void renderContent(SampleCanvas html) {
 
         // @formatter:off
 		html.bRow()

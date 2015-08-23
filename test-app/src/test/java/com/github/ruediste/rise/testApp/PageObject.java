@@ -1,4 +1,4 @@
-package com.github.ruediste.rise.testApp.crud;
+package com.github.ruediste.rise.testApp;
 
 import org.openqa.selenium.WebDriver;
 

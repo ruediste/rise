@@ -60,6 +60,11 @@ public abstract class ViewComponentBase<TController> extends
         return label(obj.getClass());
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected TController go() {
+        return (TController) componentUtil.go((Class) controller.getClass());
+    }
+
     protected <T extends IController> T go(Class<T> cls) {
         return componentUtil.go(cls);
     }

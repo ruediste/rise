@@ -14,6 +14,7 @@ import com.github.ruediste.rise.core.ChainedRequestHandler;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.RequestMapper;
+import com.github.ruediste.rise.core.security.web.WebRequestAuthenticator;
 import com.github.ruediste.rise.core.web.ActionResultRenderer;
 
 @Singleton
@@ -85,6 +86,8 @@ public class MvcConfiguration {
          */
         public Supplier<ChainedRequestHandler> actionResultRendererSupplier;
 
+        public Supplier<ChainedRequestHandler> authenticator;
+
         /**
          * Handler managing transactions and persistence context.
          */
@@ -101,7 +104,8 @@ public class MvcConfiguration {
     public final SupplierRefs supplierRefs = new SupplierRefs();
 
     @PostConstruct
-    public void postConstruct(Provider<MvcRequestMapperImpl> mapper,
+    public void postConstruct(Provider<WebRequestAuthenticator> authenticator,
+            Provider<MvcRequestMapperImpl> mapper,
             Provider<MvcControllerInvoker> invoker,
             Provider<ActionResultRenderer> actionResultRenderer,
             Provider<MvcPersistenceHandler> persistenceHandler) {
@@ -110,6 +114,9 @@ public class MvcConfiguration {
 
         supplierRefs.actionResultRendererSupplier = actionResultRenderer::get;
         handlerSuppliers.add(supplierRefs.actionResultRendererSupplier);
+
+        supplierRefs.authenticator = authenticator::get;
+        handlerSuppliers.add(supplierRefs.authenticator);
 
         supplierRefs.persistenceHandlerSupplier = persistenceHandler::get;
         handlerSuppliers.add(supplierRefs.persistenceHandlerSupplier);

@@ -23,7 +23,7 @@ public class CPageHtmlTemplate extends ComponentTemplate<CPage> {
         template.renderOn(html, new SamplePageTemplateParameters() {
 
             @Override
-            public void renderBody(SampleCanvas html) {
+            public void renderContent(SampleCanvas html) {
                 html.renderChildren(component);
             }
 

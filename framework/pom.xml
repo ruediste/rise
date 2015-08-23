@@ -119,5 +119,16 @@
 			<artifactId>spring-security-web</artifactId>
 			<version>4.0.2.RELEASE</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-web</artifactId>
+			<version>1.2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-guice</artifactId>
+			<version>1.2.4</version>
+		</dependency>
 	</dependencies>
 </project>

@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -291,6 +292,9 @@ public class CoreConfiguration {
         return defaultLocale;
     }
 
+    /**
+     * If true, the 'data-test-name' attributes are written to the responses
+     */
     public boolean renderTestName;
 
     public boolean isRenderTestName() {
@@ -301,4 +305,15 @@ public class CoreConfiguration {
     void postContruct() {
         renderTestName = applicationStage != ApplicationStage.PRODUCTION;
     }
+
+    /**
+     * Runnable to redirect to the login page
+     */
+    public BiFunction<CoreUtil, String, ActionResult> loginLocationFactory;
+
+    public BiFunction<CoreUtil, String, ActionResult> getLoginLocationFactory() {
+        return loginLocationFactory;
+    }
+
+    public String rememberMeCookieName = "riseRememberMe";
 }
