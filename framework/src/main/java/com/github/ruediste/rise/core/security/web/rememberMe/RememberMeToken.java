@@ -1,6 +1,9 @@
 package com.github.ruediste.rise.core.security.web.rememberMe;
 
-public class RememberMeToken {
+import java.io.Serializable;
+
+public class RememberMeToken implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final long id;
     private final byte[] series;
     private final byte[] token;
@@ -13,7 +16,11 @@ public class RememberMeToken {
     }
 
     public RememberMeToken withToken(byte[] token) {
-        return new RememberMeToken(getId(), getSeries(), token);
+        return new RememberMeToken(id, series, token);
+    }
+
+    public RememberMeToken withId(long id) {
+        return new RememberMeToken(id, series, token);
     }
 
     public long getId() {

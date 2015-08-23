@@ -13,6 +13,8 @@ import com.github.ruediste.rise.core.front.RestartableApplicationBase;
 import com.github.ruediste.rise.core.security.Subject;
 import com.github.ruediste.rise.core.security.authentication.DefaultAuthenticationManager;
 import com.github.ruediste.rise.core.security.authentication.InMemoryAuthenticationProvider;
+import com.github.ruediste.rise.core.security.web.rememberMe.InMemoryRememberMeTokenDao;
+import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeAuthenticationProvider;
 import com.github.ruediste.rise.integration.DynamicIntegrationModule;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
@@ -45,6 +47,12 @@ public class TestRestartableApplication extends RestartableApplicationBase {
 
     @Inject
     DefaultAuthenticationManager defaultAuthenticationManager;
+
+    @Inject
+    RememberMeAuthenticationProvider rememberMeAuthenticationProvider;
+
+    @Inject
+    InMemoryRememberMeTokenDao rememberMeTokenDao;
 
     private static class Initializer implements
             com.github.ruediste.rise.util.Initializer {
@@ -90,9 +98,14 @@ public class TestRestartableApplication extends RestartableApplicationBase {
         config.loginLocationFactory = (util, s) -> util.go(
                 LoginController.class).index(s);
 
+        rememberMeAuthenticationProvider.setDao(rememberMeTokenDao);
+        defaultAuthenticationManager
+                .addProvider(rememberMeAuthenticationProvider);
+
         defaultAuthenticationManager
                 .addProvider(new InMemoryAuthenticationProvider<Subject>()
                         .with("foo", "foo", null));
+
     }
 
 }

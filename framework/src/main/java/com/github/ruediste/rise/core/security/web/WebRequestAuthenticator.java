@@ -85,6 +85,7 @@ public class WebRequestAuthenticator extends ChainedRequestHandler {
                                 e);
                     }
 
+                    log.debug("Redirecting to login location");
                     coreRequestInfo.setActionResult(new RedirectRenderResult(
                             util.toPathInfo(factory.apply(util, coreRequestInfo
                                     .getServletRequest().getPathInfo()))));

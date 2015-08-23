@@ -1,8 +1,11 @@
 package com.github.ruediste.rise.util;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Pair<A, B> {
+public class Pair<A, B> implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private final A a;
     private final B b;
 

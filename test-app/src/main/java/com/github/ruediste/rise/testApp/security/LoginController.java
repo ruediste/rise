@@ -2,6 +2,8 @@ package com.github.ruediste.rise.testApp.security;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+
 import com.github.ruediste.rise.api.ControllerComponent;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CButton;
@@ -23,6 +25,8 @@ import com.github.ruediste1.i18n.label.Labeled;
 import com.github.ruediste1.i18n.label.PropertiesLabeled;
 
 public class LoginController extends ControllerComponent {
+    @Inject
+    Logger log;
 
     @Labeled
     public static class LoginView extends ViewComponent<LoginController> {
@@ -88,13 +92,16 @@ public class LoginController extends ControllerComponent {
         data.pushDown();
         UsernamePasswordAuthenticationRequest request = new UsernamePasswordAuthenticationRequest(
                 data.get().getUserName(), data.get().getPassword());
+        request.setRememberMe(true);
+
+        log.debug("Attempt to log in " + request.getUserName());
         AuthenticationResult result = mgr.authenticate(request);
 
-        System.out.println(result);
         if (result.isSuccess()) {
-            System.out.println("success");
+            log.debug("Login sucessful");
             info.setSuccess(result.getSuccess());
             closePage(new RedirectRenderResult(new PathInfo(originalPathInfo)));
-        }
+        } else
+            log.debug("Login failed");
     }
 }
