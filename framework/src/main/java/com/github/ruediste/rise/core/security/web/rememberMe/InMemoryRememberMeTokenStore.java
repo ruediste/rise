@@ -28,4 +28,8 @@ public class InMemoryRememberMeTokenStore {
     public long getNextId() {
         return nextId.incrementAndGet();
     }
+
+    public void remove(long id) {
+        tokens.remove(id);
+    }
 }

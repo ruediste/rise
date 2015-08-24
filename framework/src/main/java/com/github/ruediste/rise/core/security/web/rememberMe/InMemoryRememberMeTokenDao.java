@@ -63,4 +63,9 @@ public class InMemoryRememberMeTokenDao implements RememberMeTokenDao {
         }
         return result;
     }
+
+    @Override
+    public void delete(long id) {
+        store.remove(id);
+    }
 }

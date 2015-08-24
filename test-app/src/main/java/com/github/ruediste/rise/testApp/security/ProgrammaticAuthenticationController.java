@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.ActionResult;
+import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.security.AuthenticationHolder;
 import com.github.ruediste.rise.testApp.TestCanvas;
 import com.github.ruediste.rise.testApp.TestPageTemplate;
@@ -13,6 +14,9 @@ import com.github.ruediste1.i18n.lString.LString;
 
 public class ProgrammaticAuthenticationController extends
         ControllerMvc<ProgrammaticAuthenticationController> {
+
+    @Inject
+    CoreRequestInfo info;
 
     public static class View extends
             ViewMvc<ProgrammaticAuthenticationController, String> {
@@ -50,4 +54,5 @@ public class ProgrammaticAuthenticationController extends
         subjectManager.checkAutheticationPresetn();
         return view(View.class, "success");
     }
+
 }

@@ -1,12 +1,9 @@
 package com.github.ruediste.rise.core.security.web;
 
-import java.util.function.BiFunction;
-
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
 
-import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.ChainedRequestHandler;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
@@ -15,11 +12,12 @@ import com.github.ruediste.rise.core.security.AuthenticationHolder;
 import com.github.ruediste.rise.core.security.NoAuthenticationException;
 import com.github.ruediste.rise.core.security.RememberMeNotSufficientException;
 import com.github.ruediste.rise.core.security.Subject;
+import com.github.ruediste.rise.core.security.authentication.AuthenticationFailure;
 import com.github.ruediste.rise.core.security.authentication.AuthenticationManager;
 import com.github.ruediste.rise.core.security.authentication.AuthenticationResult;
 import com.github.ruediste.rise.core.security.authentication.AuthenticationSuccess;
 import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeAuthenticationRequest;
-import com.github.ruediste.rise.core.web.RedirectRenderResult;
+import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeTokenTheftFailure;
 
 /**
  * Takes care of authenticating web requests.
@@ -61,6 +59,18 @@ public class WebRequestAuthenticator extends ChainedRequestHandler {
             if (result.isSuccess()) {
                 success = result.getSuccess();
                 info.setSuccess(success);
+            } else {
+                for (AuthenticationFailure failure : result.getFailures()) {
+                    if (failure instanceof RememberMeTokenTheftFailure) {
+                        Runnable handler = config
+                                .getRememberMeTokenTheftHandler();
+                        if (handler == null)
+                            log.error("Thoken theft detected, but no tokenThenftHandler was defined in CoreConfiguration");
+                        handler.run();
+                        if (coreRequestInfo.getActionResult() != null)
+                            return;
+                    }
+                }
             }
         }
 
@@ -77,18 +87,14 @@ public class WebRequestAuthenticator extends ChainedRequestHandler {
             while (t != null) {
                 if (t instanceof NoAuthenticationException
                         || t instanceof RememberMeNotSufficientException) {
-                    BiFunction<CoreUtil, String, ActionResult> factory = config
-                            .getLoginLocationFactory();
+                    Runnable factory = config.loginHandler();
                     if (factory == null) {
                         throw new RuntimeException(
-                                "CoreConfiguration.loginLocationFactory is not set",
-                                e);
+                                "CoreConfiguration.loginHandler is not set", e);
                     }
 
-                    log.debug("Redirecting to login location");
-                    coreRequestInfo.setActionResult(new RedirectRenderResult(
-                            util.toPathInfo(factory.apply(util, coreRequestInfo
-                                    .getServletRequest().getPathInfo()))));
+                    log.debug("running login handler");
+                    factory.run();
                     return;
                 }
                 t = t.getCause();

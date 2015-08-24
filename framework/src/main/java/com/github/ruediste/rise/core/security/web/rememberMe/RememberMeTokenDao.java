@@ -17,4 +17,6 @@ public interface RememberMeTokenDao {
 
     Subject loadSubject(long id);
 
+    void delete(long id);
+
 }

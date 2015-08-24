@@ -86,9 +86,10 @@ public class RememberMeAuthenticationProvider implements
                             .success(new RememberMeAuthenticationSuccess(
                                     subject));
                 } else {
-                    log.warn("token theft detected, subject is " + subject);
                     // series did match, but token did not. There appears to
                     // have been a token theft
+                    log.warn("token theft detected, subject is " + subject);
+                    dao.delete(token.getId());
                     return AuthenticationResult
                             .failure(new RememberMeTokenTheftFailure(subject));
                 }
@@ -133,7 +134,7 @@ public class RememberMeAuthenticationProvider implements
         return null;
     }
 
-    private RememberMeToken parseToken(String str) {
+    public static RememberMeToken parseToken(String str) {
         String[] parts = str.split(",");
         try {
             long id = Long.parseLong(parts[0]);

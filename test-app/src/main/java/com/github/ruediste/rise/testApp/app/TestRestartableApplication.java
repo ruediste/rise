@@ -95,8 +95,10 @@ public class TestRestartableApplication extends RestartableApplicationBase {
         config.requestErrorHandler = errorHandler;
         errorHandler.initialize(util -> util.go(
                 RequestErrorHandlerController.class).index());
-        config.loginLocationFactory = (util, s) -> util.go(
-                LoginController.class).index(s);
+        config.setLoginHandler((util, s) -> util.go(LoginController.class)
+                .index(s));
+        config.setRememberMeTokenTheftHandler((util, s) -> util.go(
+                LoginController.class).tokenTheftDetected(s));
 
         rememberMeAuthenticationProvider.setDao(rememberMeTokenDao);
         defaultAuthenticationManager

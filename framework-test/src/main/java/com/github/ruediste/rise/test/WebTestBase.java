@@ -116,6 +116,7 @@ public abstract class WebTestBase implements TestUtil {
                     base.evaluate();
                 } catch (Throwable t) {
                     testContainerInstance.errorOccured = true;
+                    throw t;
                 }
             }
         };

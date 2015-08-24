@@ -15,6 +15,7 @@ import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.objectweb.asm.tree.ClassNode;
@@ -31,6 +32,7 @@ import com.github.ruediste.rise.core.argumentSerializer.SerializerHelper;
 import com.github.ruediste.rise.core.argumentSerializer.StringSerializer;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.web.PathInfo;
+import com.github.ruediste.rise.core.web.RedirectRenderResult;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.integration.RiseCanvas;
 import com.github.ruediste.rise.integration.RiseCanvasBase;
@@ -309,11 +311,41 @@ public class CoreConfiguration {
     /**
      * Runnable to redirect to the login page
      */
-    public BiFunction<CoreUtil, String, ActionResult> loginLocationFactory;
+    public Runnable loginLocationFactory;
 
-    public BiFunction<CoreUtil, String, ActionResult> getLoginLocationFactory() {
+    @Inject
+    Provider<CoreRequestInfo> coreRequestInfo;
+
+    @Inject
+    Provider<CoreUtil> coreUtil;
+
+    public void setLoginHandler(
+            BiFunction<CoreUtil, String, ActionResult> factory) {
+        loginLocationFactory = createRedirector(factory);
+    }
+
+    private Runnable createRedirector(
+            BiFunction<CoreUtil, String, ActionResult> factory) {
+        return () -> coreRequestInfo.get().setActionResult(
+                new RedirectRenderResult(coreUtil.get().toPathInfo(
+                        factory.apply(coreUtil.get(), coreRequestInfo.get()
+                                .getServletRequest().getPathInfo()))));
+    }
+
+    public Runnable loginHandler() {
         return loginLocationFactory;
     }
 
     public String rememberMeCookieName = "riseRememberMe";
+
+    public Runnable rememberMeTokenTheftHandler;
+
+    public Runnable getRememberMeTokenTheftHandler() {
+        return rememberMeTokenTheftHandler;
+    }
+
+    public void setRememberMeTokenTheftHandler(
+            BiFunction<CoreUtil, String, ActionResult> factory) {
+        rememberMeTokenTheftHandler = createRedirector(factory);
+    }
 }
