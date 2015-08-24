@@ -7,6 +7,6 @@ package com.github.ruediste.rise.core.security;
  * A subject represents a user or external system interacting whith the current
  * system.
  */
-public interface Subject {
+public interface Principal {
 
 }

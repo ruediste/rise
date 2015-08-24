@@ -6,7 +6,7 @@ import javax.inject.Singleton;
 
 import com.github.ruediste.rise.core.security.Environment;
 import com.github.ruediste.rise.core.security.Operation;
-import com.github.ruediste.rise.core.security.Subject;
+import com.github.ruediste.rise.core.security.Principal;
 import com.github.ruediste.rise.util.Tripple;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
@@ -26,7 +26,7 @@ import com.google.common.reflect.TypeToken;
 @Singleton
 public class DefaultAuthorizationManager implements AuthorizationManager {
 
-    Multimap<Tripple<Class<? extends Subject>, Class<? extends Operation>, Class<? extends Environment>>, AuthorizationStrategy<?, ?, ?>> strategies = MultimapBuilder
+    Multimap<Tripple<Class<? extends Principal>, Class<? extends Operation>, Class<? extends Environment>>, AuthorizationStrategy<?, ?, ?>> strategies = MultimapBuilder
             .hashKeys().arrayListValues().build();
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -45,7 +45,7 @@ public class DefaultAuthorizationManager implements AuthorizationManager {
         register(strategy, subject, operation, environment);
     }
 
-    public <TSubject extends Subject, TOperation extends Operation, TEnvironment extends Environment> void register(
+    public <TSubject extends Principal, TOperation extends Operation, TEnvironment extends Environment> void register(
             AuthorizationStrategy<TSubject, TOperation, TEnvironment> strategy,
             Class<TSubject> subject, Class<TOperation> operation,
             Class<TEnvironment> environment) {

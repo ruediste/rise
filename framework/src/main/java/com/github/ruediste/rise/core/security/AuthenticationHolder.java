@@ -15,9 +15,9 @@ public interface AuthenticationHolder {
      * Get the current subject. Throws a {@link NoAuthenticationException} if no
      * subject is logged in.
      */
-    Subject getCurrentSubject();
+    Principal getCurrentPrincipal();
 
-    Optional<Subject> tryGetCurrentSubject();
+    Optional<Principal> tryGetCurrentPrincipal();
 
     /**
      * Get the current authentication. Throws a

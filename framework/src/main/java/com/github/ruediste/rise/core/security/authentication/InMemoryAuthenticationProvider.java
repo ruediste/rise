@@ -3,10 +3,10 @@ package com.github.ruediste.rise.core.security.authentication;
 import java.util.HashMap;
 import java.util.Objects;
 
-import com.github.ruediste.rise.core.security.Subject;
+import com.github.ruediste.rise.core.security.Principal;
 import com.github.ruediste.rise.util.Pair;
 
-public class InMemoryAuthenticationProvider<T extends Subject> implements
+public class InMemoryAuthenticationProvider<T extends Principal> implements
         AuthenticationProvider<UsernamePasswordAuthenticationRequest> {
 
     public HashMap<String, Pair<String, T>> users = new HashMap<>();

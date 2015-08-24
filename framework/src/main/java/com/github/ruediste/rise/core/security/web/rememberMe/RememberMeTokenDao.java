@@ -1,6 +1,6 @@
 package com.github.ruediste.rise.core.security.web.rememberMe;
 
-import com.github.ruediste.rise.core.security.Subject;
+import com.github.ruediste.rise.core.security.Principal;
 
 public interface RememberMeTokenDao {
     RememberMeToken loadToken(long id);
@@ -11,11 +11,11 @@ public interface RememberMeTokenDao {
      *
      * @return the updated token with the id set
      */
-    RememberMeToken newToken(RememberMeToken token, Subject subject);
+    RememberMeToken newToken(RememberMeToken token, Principal principal);
 
     void updateToken(RememberMeToken token);
 
-    Subject loadSubject(long id);
+    Principal loadPrincipal(long id);
 
     void delete(long id);
 

@@ -8,7 +8,7 @@ import com.github.ruediste.rise.core.security.authorization.AuthorizationRequest
  * 
  * <p>
  * Environments contain additional information for {@link AuthorizationRequest}s
- * which is not part of the {@link Subject} or the {@link Operation}
+ * which is not part of the {@link Principal} or the {@link Operation}
  * 
  */
 public class Environment extends AttachedPropertyBearerBase {

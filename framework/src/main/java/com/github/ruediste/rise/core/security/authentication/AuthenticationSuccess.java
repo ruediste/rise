@@ -1,16 +1,16 @@
 package com.github.ruediste.rise.core.security.authentication;
 
-import com.github.ruediste.rise.core.security.Subject;
+import com.github.ruediste.rise.core.security.Principal;
 
 public class AuthenticationSuccess {
-    final private Subject subject;
+    final private Principal principal;
 
-    public AuthenticationSuccess(Subject subject) {
-        this.subject = subject;
+    public AuthenticationSuccess(Principal principal) {
+        this.principal = principal;
     }
 
-    public Subject getSubject() {
-        return subject;
+    public Principal getPrincipal() {
+        return principal;
     }
 
 }

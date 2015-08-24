@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.github.ruediste.rise.core.security.Subject;
+import com.github.ruediste.rise.core.security.Principal;
 
 public class DefaultAuthenticationManagerTest {
 
@@ -14,9 +14,9 @@ public class DefaultAuthenticationManagerTest {
     @Before
     public void before() {
         mgr = new DefaultAuthenticationManager();
-        mgr.addProvider(new InMemoryAuthenticationProvider<Subject>().with(
+        mgr.addProvider(new InMemoryAuthenticationProvider<Principal>().with(
                 "foo", "bar", null));
-        mgr.addProvider(new InMemoryAuthenticationProvider<Subject>().with(
+        mgr.addProvider(new InMemoryAuthenticationProvider<Principal>().with(
                 "foo2", "bar2", null));
     }
 

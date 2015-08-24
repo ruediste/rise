@@ -4,13 +4,13 @@ import java.util.Optional;
 
 import com.github.ruediste.rise.core.security.Environment;
 import com.github.ruediste.rise.core.security.Operation;
-import com.github.ruediste.rise.core.security.Subject;
+import com.github.ruediste.rise.core.security.Principal;
 
 /**
  * Strategy to authorize {@link AuthorizationRequest}s, registered with the
  * {@link DefaultAuthorizationManager}.
  */
-public interface AuthorizationStrategy<TSubject extends Subject, TOperation extends Operation, TEnvironment extends Environment> {
+public interface AuthorizationStrategy<TPrincipal extends Principal, TOperation extends Operation, TEnvironment extends Environment> {
 
     /**
      * Determine if this strategy grants or denies the
@@ -19,5 +19,5 @@ public interface AuthorizationStrategy<TSubject extends Subject, TOperation exte
      * is denied.
      */
     Optional<Boolean> isGranted(
-            AuthorizationRequest<TSubject, TOperation, TEnvironment> request);
+            AuthorizationRequest<TPrincipal, TOperation, TEnvironment> request);
 }

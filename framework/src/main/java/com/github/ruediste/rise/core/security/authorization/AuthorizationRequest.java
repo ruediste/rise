@@ -2,33 +2,33 @@ package com.github.ruediste.rise.core.security.authorization;
 
 import com.github.ruediste.rise.core.security.Environment;
 import com.github.ruediste.rise.core.security.Operation;
-import com.github.ruediste.rise.core.security.Subject;
+import com.github.ruediste.rise.core.security.Principal;
 
 /**
  * Request for authorization. Can be granted or denied using the
  * {@link DefaultAuthorizationManager}
  */
-public class AuthorizationRequest<TSubject extends Subject, TOperation extends Operation, TEnvironment extends Environment> {
+public class AuthorizationRequest<TPrincipal extends Principal, TOperation extends Operation, TEnvironment extends Environment> {
 
-    private final TSubject subject;
+    private final TPrincipal principal;
     private final TOperation operation;
     private final TEnvironment environment;
 
-    AuthorizationRequest(TSubject subject, TOperation operation,
+    AuthorizationRequest(TPrincipal principal, TOperation operation,
             TEnvironment environment) {
         super();
-        this.subject = subject;
+        this.principal = principal;
         this.operation = operation;
         this.environment = environment;
     }
 
-    public static <TSubject extends Subject, TOperation extends Operation, TEnvironment extends Environment> AuthorizationRequest<TSubject, TOperation, TEnvironment> of(
-            TSubject subject, TOperation operation, TEnvironment environment) {
-        return new AuthorizationRequest<>(subject, operation, environment);
+    public static <TPrincipal extends Principal, TOperation extends Operation, TEnvironment extends Environment> AuthorizationRequest<TPrincipal, TOperation, TEnvironment> of(
+            TPrincipal principal, TOperation operation, TEnvironment environment) {
+        return new AuthorizationRequest<>(principal, operation, environment);
     }
 
-    public TSubject getSubject() {
-        return subject;
+    public TPrincipal getSubject() {
+        return principal;
     }
 
     public TOperation getOperation() {
@@ -41,6 +41,6 @@ public class AuthorizationRequest<TSubject extends Subject, TOperation extends O
 
     @Override
     public String toString() {
-        return "(" + subject + "," + operation + "," + environment + ")";
+        return "(" + principal + "," + operation + "," + environment + ")";
     }
 }

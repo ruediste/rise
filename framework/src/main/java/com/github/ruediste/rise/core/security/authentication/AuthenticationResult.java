@@ -3,7 +3,7 @@ package com.github.ruediste.rise.core.security.authentication;
 import java.util.Arrays;
 import java.util.List;
 
-import com.github.ruediste.rise.core.security.Subject;
+import com.github.ruediste.rise.core.security.Principal;
 
 public class AuthenticationResult {
     final private boolean isSuccess;
@@ -17,8 +17,8 @@ public class AuthenticationResult {
         this.failures = failures;
     }
 
-    public static AuthenticationResult success(Subject subject) {
-        return success(new AuthenticationSuccess(subject));
+    public static AuthenticationResult success(Principal principal) {
+        return success(new AuthenticationSuccess(principal));
     }
 
     public static AuthenticationResult success(AuthenticationSuccess success) {

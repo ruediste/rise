@@ -8,7 +8,7 @@ import java.io.ObjectOutputStream;
 
 import javax.inject.Inject;
 
-import com.github.ruediste.rise.core.security.Subject;
+import com.github.ruediste.rise.core.security.Principal;
 import com.github.ruediste.rise.util.Pair;
 
 public class InMemoryRememberMeTokenDao implements RememberMeTokenDao {
@@ -18,29 +18,32 @@ public class InMemoryRememberMeTokenDao implements RememberMeTokenDao {
 
     @Override
     public RememberMeToken loadToken(long id) {
-        return deSerialize(store.get(id)).getA();
+        Pair<RememberMeToken, Principal> pair = deSerialize(store.get(id));
+        if (pair == null)
+            return null;
+        return pair.getA();
     }
 
     @Override
-    public RememberMeToken newToken(RememberMeToken token, Subject subject) {
+    public RememberMeToken newToken(RememberMeToken token, Principal principal) {
         RememberMeToken result = token.withId(store.getNextId());
-        store.put(token.getId(), serialize(Pair.of(result, subject)));
+        store.put(token.getId(), serialize(Pair.of(result, principal)));
         return result;
     }
 
     @Override
     public void updateToken(RememberMeToken token) {
-        Pair<RememberMeToken, Subject> existing = deSerialize(store.get(token
+        Pair<RememberMeToken, Principal> existing = deSerialize(store.get(token
                 .getId()));
         store.put(token.getId(), serialize(Pair.of(token, existing.getB())));
     }
 
     @Override
-    public Subject loadSubject(long id) {
+    public Principal loadPrincipal(long id) {
         return deSerialize(store.get(id)).getB();
     }
 
-    private byte[] serialize(Pair<RememberMeToken, Subject> pair) {
+    private byte[] serialize(Pair<RememberMeToken, Principal> pair) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try (ObjectOutputStream oos = new ObjectOutputStream(out)) {
             oos.writeObject(pair);
@@ -51,13 +54,13 @@ public class InMemoryRememberMeTokenDao implements RememberMeTokenDao {
     }
 
     @SuppressWarnings("unchecked")
-    private Pair<RememberMeToken, Subject> deSerialize(byte[] bytes) {
+    private Pair<RememberMeToken, Principal> deSerialize(byte[] bytes) {
         if (bytes == null)
             return null;
-        Pair<RememberMeToken, Subject> result;
+        Pair<RememberMeToken, Principal> result;
         try (ObjectInputStream ois = new ObjectInputStream(
                 new ByteArrayInputStream(bytes))) {
-            result = (Pair<RememberMeToken, Subject>) ois.readObject();
+            result = (Pair<RememberMeToken, Principal>) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

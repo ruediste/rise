@@ -53,7 +53,7 @@ public class LoginController extends ControllerComponent {
         TOKEN_TEFT_DETECTED_HEADING,
 
         @Label("Someone gained access to your remember me cookie. This can be due to someone accessing your computer in person, or by malware installed on your system. "
-                + "The token has been deleted and cannot be used anymore, but in the time since the theft a third person might have accessed your account!")
+                + "The token has been invalidated and cannot be used anymore, but in the time since the theft a third person might have accessed your account!")
         TOKEN_TEFT_DETECTED_BODY
     }
 
@@ -67,13 +67,13 @@ public class LoginController extends ControllerComponent {
                             () -> controller.data(),html ->{
                                 //@formatter:off
                             if (controller.data().isTokenTheftDetected()) {
-                                html.div().CLASS("panel panel-error")
+                                html.div().CLASS("panel panel-danger")
                                     .div().CLASS("panel-heading").content(Messages.TOKEN_TEFT_DETECTED_HEADING)
                                     .div().CLASS("panel-body").content(Messages.TOKEN_TEFT_DETECTED_BODY)
                                 ._div();
                             }
                             else{
-                                List<LString> msgs=controller.data().getMessages();   
+                                List<LString> msgs=controller.data().getMessages();
                                         if (!msgs.isEmpty()) {
                                     html.div().CLASS("panel panel-warning")
                                       .div().CLASS("panel-heading").content(Messages.LOGIN_FAILED)

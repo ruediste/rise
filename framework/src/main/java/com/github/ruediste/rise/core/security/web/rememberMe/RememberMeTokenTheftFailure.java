@@ -1,18 +1,18 @@
 package com.github.ruediste.rise.core.security.web.rememberMe;
 
-import com.github.ruediste.rise.core.security.Subject;
+import com.github.ruediste.rise.core.security.Principal;
 import com.github.ruediste.rise.core.security.authentication.AuthenticationFailure;
 
 public class RememberMeTokenTheftFailure extends AuthenticationFailure {
 
-    final private Subject subject;
+    final private Principal principal;
 
-    public RememberMeTokenTheftFailure(Subject subject) {
-        this.subject = subject;
+    public RememberMeTokenTheftFailure(Principal principal) {
+        this.principal = principal;
     }
 
-    public Subject getSubject() {
-        return subject;
+    public Principal getPrincipal() {
+        return principal;
     }
 
 }

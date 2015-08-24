@@ -10,7 +10,7 @@ import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.DefaultRequestErrorHandler;
 import com.github.ruediste.rise.core.front.RestartableApplicationBase;
-import com.github.ruediste.rise.core.security.Subject;
+import com.github.ruediste.rise.core.security.Principal;
 import com.github.ruediste.rise.core.security.authentication.DefaultAuthenticationManager;
 import com.github.ruediste.rise.core.security.authentication.InMemoryAuthenticationProvider;
 import com.github.ruediste.rise.core.security.web.rememberMe.InMemoryRememberMeTokenDao;
@@ -105,7 +105,7 @@ public class TestRestartableApplication extends RestartableApplicationBase {
                 .addProvider(rememberMeAuthenticationProvider);
 
         defaultAuthenticationManager
-                .addProvider(new InMemoryAuthenticationProvider<Subject>()
+                .addProvider(new InMemoryAuthenticationProvider<Principal>()
                         .with("foo", "foo", null));
 
     }

@@ -11,7 +11,7 @@ import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.security.AuthenticationHolder;
 import com.github.ruediste.rise.core.security.NoAuthenticationException;
 import com.github.ruediste.rise.core.security.RememberMeNotSufficientException;
-import com.github.ruediste.rise.core.security.Subject;
+import com.github.ruediste.rise.core.security.Principal;
 import com.github.ruediste.rise.core.security.authentication.AuthenticationFailure;
 import com.github.ruediste.rise.core.security.authentication.AuthenticationManager;
 import com.github.ruediste.rise.core.security.authentication.AuthenticationResult;
@@ -22,7 +22,7 @@ import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeTokenThef
 /**
  * Takes care of authenticating web requests.
  * <p>
- * First the current session is checked for an already logged in {@link Subject}
+ * First the current session is checked for an already logged in {@link Principal}
  * . If there is no subject the request is checked for remember-me tokens. And
  * finally, the user is redirected to a login form.
  */

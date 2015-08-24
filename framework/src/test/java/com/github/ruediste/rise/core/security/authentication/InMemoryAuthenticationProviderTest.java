@@ -5,13 +5,13 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.github.ruediste.rise.core.security.Subject;
+import com.github.ruediste.rise.core.security.Principal;
 
 public class InMemoryAuthenticationProviderTest {
 
     @Test
     public void testTryAuthenticate() throws Exception {
-        InMemoryAuthenticationProvider<Subject> provider = new InMemoryAuthenticationProvider<>()
+        InMemoryAuthenticationProvider<Principal> provider = new InMemoryAuthenticationProvider<>()
                 .with("foo", "bar", null);
         assertTrue(provider.tryAuthenticate(
                 new UsernamePasswordAuthenticationRequest("foo", "bar"))

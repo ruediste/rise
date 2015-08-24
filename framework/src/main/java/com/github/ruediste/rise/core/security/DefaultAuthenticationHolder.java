@@ -52,13 +52,13 @@ public class DefaultAuthenticationHolder implements AuthenticationHolder {
     }
 
     @Override
-    public Subject getCurrentSubject() {
-        return getCurrentAuthentication().getSubject();
+    public Principal getCurrentPrincipal() {
+        return getCurrentAuthentication().getPrincipal();
     }
 
     @Override
-    public Optional<Subject> tryGetCurrentSubject() {
-        return tryGetCurrentAuthentication().map(x -> x.getSubject());
+    public Optional<Principal> tryGetCurrentPrincipal() {
+        return tryGetCurrentAuthentication().map(x -> x.getPrincipal());
     }
 
 }
