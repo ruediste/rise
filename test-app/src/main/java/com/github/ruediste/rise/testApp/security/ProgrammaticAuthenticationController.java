@@ -44,14 +44,14 @@ public class ProgrammaticAuthenticationController extends
     }
 
     @Inject
-    AuthenticationHolder subjectManager;
+    AuthenticationHolder authenticationHolder;
 
     public ActionResult noAuthenticationRequired() {
         return view(View.class, "success");
     }
 
     public ActionResult authenticationRequired() {
-        subjectManager.checkAutheticationPresetn();
+        authenticationHolder.checkAutheticationPresetn();
         return view(View.class, "success");
     }
 
