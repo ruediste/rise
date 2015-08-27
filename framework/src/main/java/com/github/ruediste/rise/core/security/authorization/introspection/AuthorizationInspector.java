@@ -3,6 +3,7 @@ package com.github.ruediste.rise.core.security.authorization.introspection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -20,6 +21,7 @@ import com.github.ruediste.c3java.invocationRecording.MethodInvocation;
 import com.github.ruediste.c3java.invocationRecording.MethodInvocationRecorder;
 import com.github.ruediste.rise.core.security.authorization.AuthorizationException;
 import com.github.ruediste.rise.util.Pair;
+import com.github.ruediste.salta.standard.util.MethodOverrideIndex;
 import com.google.common.collect.MapMaker;
 
 /**
@@ -28,6 +30,13 @@ import com.google.common.collect.MapMaker;
  */
 public class AuthorizationInspector {
     private static ThreadLocal<Boolean> isAuthorizing = new ThreadLocal<>();
+
+    private static void withIsAuthorizing(boolean value, Runnable run) {
+        withIsAuthorizing(value, () -> {
+            run.run();
+            return null;
+        });
+    }
 
     private static <T> T withIsAuthorizing(boolean value, Supplier<T> run) {
         Boolean old = isAuthorizing.get();
@@ -121,9 +130,25 @@ public class AuthorizationInspector {
 
     }
 
-    private static boolean callsAuthorize(Class<?> clazz, Method m) {
-        return getAuthorizeCallingMethods(clazz).contains(
-                Pair.of(m.getName(), Type.getMethodDescriptor(m)));
+    static boolean callsAuthorize(Class<?> clazz, Method method) {
+        Class<?> c = clazz;
+        while (c != null) {
+            for (Method m : c.getDeclaredMethods()) {
+                if (m.getName().equals(method.getName())
+                        && Arrays.equals(m.getParameterTypes(),
+                                method.getParameterTypes())) {
+                    if (c.equals(clazz)
+                            || MethodOverrideIndex.doesOverride(method, m)) {
+                        return getAuthorizeCallingMethods(c).contains(
+                                Pair.of(method.getName(),
+                                        Type.getMethodDescriptor(method)));
+                    }
+                }
+            }
+            c = c.getSuperclass();
+        }
+        throw new RuntimeException("No declaration of " + method + " found on "
+                + clazz + " or ancestors thereof");
     }
 
     private static ConcurrentMap<Class<?>, Set<Pair<String, String>>> cache = new MapMaker()
@@ -172,15 +197,15 @@ public class AuthorizationInspector {
             } catch (AuthorizationIntrospectionCompleted e) {
                 // swallow
             }
-            return null;
         });
 
     }
 
     static public void authorize(Runnable check) {
-        check.run();
         if (Objects.equals(true, isAuthorizing.get())) {
+            withIsAuthorizing(false, check);
             throw new AuthorizationIntrospectionCompleted();
-        }
+        } else
+            check.run();
     }
 }

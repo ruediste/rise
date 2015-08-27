@@ -3,9 +3,12 @@ package com.github.ruediste.rise.core.security.authorization.introspection;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.reflect.Method;
+
 import org.junit.Before;
 import org.junit.Test;
 
+import com.github.ruediste.c3java.invocationRecording.MethodInvocationRecorder;
 import com.github.ruediste.rise.core.security.authorization.AuthorizationException;
 
 public class AuthorizationInspectorTest {
@@ -25,14 +28,16 @@ public class AuthorizationInspectorTest {
     @Before
     public void before() {
         executed = false;
-        checkSuccessCalled = true;
+        checkSuccessCalled = false;
+        executedDelegate = false;
     }
 
-    void completingMethod() {
+    int completingMethod() {
         AuthorizationInspector.authorize(() -> {
             checkSuccess();
         });
         executed = true;
+        return 4;
     }
 
     void failingMethod() {
@@ -88,13 +93,68 @@ public class AuthorizationInspectorTest {
     static class Base {
 
         public void m() {
-
         }
     }
 
-    static class Derived {
+    static class Derived1 extends Base {
+        @Override
         public void m() {
 
+            AuthorizationInspector.authorize(() -> {
+            });
         }
+    }
+
+    static class Derived2 extends Derived1 {
+    }
+
+    @Test
+    public void authorizationCall_inheritanceTest() {
+        Method mBase = MethodInvocationRecorder.getLastInvocation(Base.class,
+                x -> x.m()).getMethod();
+        Method mDerived = MethodInvocationRecorder.getLastInvocation(
+                Derived2.class, x -> x.m()).getMethod();
+        assertFalse(AuthorizationInspector.callsAuthorize(Base.class, mBase));
+        assertTrue(AuthorizationInspector.callsAuthorize(Derived1.class, mBase));
+        assertTrue(AuthorizationInspector.callsAuthorize(Derived2.class, mBase));
+        assertFalse(AuthorizationInspector.callsAuthorize(Base.class, mDerived));
+        assertTrue(AuthorizationInspector.callsAuthorize(Derived1.class,
+                mDerived));
+        assertTrue(AuthorizationInspector.callsAuthorize(Derived2.class,
+                mDerived));
+    }
+
+    boolean executedDelegate;
+
+    void authorizeInvokingMethod() {
+        AuthorizationInspector.authorize(() -> {
+            completingMethod();
+            executedDelegate = true;
+        });
+    }
+
+    void authorizeDelegating() {
+        AuthorizationInspector.authorize(() -> {
+            AuthorizationInspector.checkAuthorized(this::completingMethod);
+            executedDelegate = true;
+        });
+    }
+
+    @Test
+    public void callFromAuthorize() {
+        assertTrue(AuthorizationInspector
+                .isAuthorized(this::authorizeInvokingMethod));
+        assertTrue(executedDelegate);
+        assertTrue(checkSuccessCalled);
+        assertTrue(executed);
+    }
+
+    @Test
+    public void delegatingFromAuthorize() {
+        assertTrue(AuthorizationInspector
+                .isAuthorized(this::authorizeDelegating));
+        assertTrue(executedDelegate);
+        assertTrue(checkSuccessCalled);
+        assertFalse(executed);
     }
 }
