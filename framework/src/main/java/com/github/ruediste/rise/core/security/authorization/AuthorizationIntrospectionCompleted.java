@@ -1,4 +1,4 @@
-package com.github.ruediste.rise.core.security.authorization.introspection;
+package com.github.ruediste.rise.core.security.authorization;
 
 /**
  * Thrown when the authorization introspection is completed, to avoid executing

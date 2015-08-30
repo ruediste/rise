@@ -1,7 +1,6 @@
 package com.github.ruediste.rise.component;
 
 import com.github.ruediste.rise.component.binding.BindingGroupCreationRule;
-import com.github.ruediste.rise.component.components.CController;
 import com.github.ruediste.rise.util.InitializerUtil;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
@@ -28,7 +27,7 @@ public class ComponentRestartableModule extends AbstractModule {
         bind(SimpleProxyScopeHandler.class).named("pageScoped").toInstance(
                 scopeHandler);
 
-        InitializerUtil.register(config(), ComponentRestartableInitializer.class);
-        requestStaticInjection(CController.class);
+        InitializerUtil.register(config(),
+                ComponentRestartableInitializer.class);
     }
 }

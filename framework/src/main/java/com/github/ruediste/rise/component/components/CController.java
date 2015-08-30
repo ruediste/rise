@@ -2,12 +2,11 @@ package com.github.ruediste.rise.component.components;
 
 import java.util.Collections;
 
-import javax.inject.Inject;
-
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
 import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.ComponentViewRepository;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
 
 /**
  * Embeds the view of a controller
@@ -15,9 +14,6 @@ import com.github.ruediste.rise.component.tree.Component;
 @DefaultTemplate(RenderChildrenTemplate.class)
 public class CController extends AttachedPropertyBearerBase implements
         Component {
-
-    @Inject
-    static ComponentViewRepository repo;
 
     private Component parent;
 
@@ -37,7 +33,10 @@ public class CController extends AttachedPropertyBearerBase implements
         if (controller == null)
             rootComponent = null;
         else {
-            ViewComponentBase<Object> view = repo.createView(controller);
+            ViewComponentBase<Object> view = InjectorsHolder
+                    .getRestartableInjector()
+                    .getInstance(ComponentViewRepository.class)
+                    .createView(controller);
             rootComponent = view.getRootComponent();
             rootComponent.parentChanged(this);
         }

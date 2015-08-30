@@ -14,11 +14,12 @@ import com.github.ruediste.salta.jsr330.Injector;
  */
 public interface RestartableApplication {
 
-    void start(Injector permanentInjector);
+    void start(Injector nonRestartableInjector);
 
     void handle(HttpServletRequest request, HttpServletResponse response,
             HttpMethod method) throws IOException, ServletException;
 
     void close();
 
+    Injector getRestartableInjector();
 }

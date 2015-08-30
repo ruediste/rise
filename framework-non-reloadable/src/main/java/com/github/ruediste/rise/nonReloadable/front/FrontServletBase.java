@@ -20,6 +20,8 @@ import com.github.ruediste.c3java.linearization.JavaC3;
 import com.github.ruediste.c3java.properties.PropertyUtil;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.CoreConfigurationNonRestartable;
+import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
+import com.github.ruediste.rise.nonReloadable.InjectorsHolder.Holder;
 import com.github.ruediste.rise.nonReloadable.front.reload.FileChangeNotifier;
 import com.github.ruediste.rise.nonReloadable.front.reload.ReloadableClassLoader;
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
@@ -279,12 +281,16 @@ public abstract class FrontServletBase extends HttpServlet {
         RestartableApplicationInfo info = currentApplicationInfo;
         if (info != null) {
             Thread currentThread = Thread.currentThread();
+            Holder oldInjectors = InjectorsHolder.setInjectors(
+                    nonRestartableInjector,
+                    info.application.getRestartableInjector());
             ClassLoader old = currentThread.getContextClassLoader();
             try {
                 currentThread.setContextClassLoader(info.classLoader);
                 info.application.handle(req, resp, method);
             } finally {
                 currentThread.setContextClassLoader(old);
+                InjectorsHolder.restoreInjectors(oldInjectors);
             }
         } else {
             log.error("current application info is null");

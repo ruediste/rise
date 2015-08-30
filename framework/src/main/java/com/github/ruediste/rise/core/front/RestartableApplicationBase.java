@@ -37,6 +37,7 @@ public abstract class RestartableApplicationBase implements
 
     @Inject
     CoreConfiguration config;
+
     @Inject
     CoreConfigurationNonRestartable configNonRestartable;
 
@@ -50,8 +51,8 @@ public abstract class RestartableApplicationBase implements
     CoreRequestInfo info;
 
     @Override
-    public final void start(Injector permanentInjector) {
-        startImpl(permanentInjector);
+    public final void start(Injector nonRestartableInjector) {
+        startImpl(nonRestartableInjector);
         InitializerUtil.runInitializers(injector);
     }
 
@@ -137,5 +138,10 @@ public abstract class RestartableApplicationBase implements
      * Called when the dynamic application is shut down
      */
     protected void closeImpl() {
+    }
+
+    @Override
+    public Injector getRestartableInjector() {
+        return injector;
     }
 }
