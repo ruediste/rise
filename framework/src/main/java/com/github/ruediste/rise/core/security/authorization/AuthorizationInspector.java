@@ -3,7 +3,6 @@ package com.github.ruediste.rise.core.security.authorization;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
@@ -15,7 +14,6 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
 import com.github.ruediste.rise.util.Pair;
-import com.github.ruediste.salta.standard.util.MethodOverrideIndex;
 import com.google.common.collect.MapMaker;
 
 /**
@@ -51,24 +49,14 @@ public class AuthorizationInspector {
     }
 
     public static boolean callsDoAuthChecks(Class<?> clazz, Method method) {
-        Class<?> c = clazz;
-        while (c != null) {
-            for (Method m : c.getDeclaredMethods()) {
-                if (m.getName().equals(method.getName())
-                        && Arrays.equals(m.getParameterTypes(),
-                                method.getParameterTypes())) {
-                    if (c.equals(clazz)
-                            || MethodOverrideIndex.doesOverride(method, m)) {
-                        return getAuthorizeCallingMethods(c).contains(
-                                Pair.of(method.getName(),
-                                        Type.getMethodDescriptor(method)));
-                    }
-                }
-            }
-            c = c.getSuperclass();
-        }
-        throw new RuntimeException("No declaration of " + method + " found on "
-                + clazz + " or ancestors thereof");
+        Method impl = MethodImplementationFinder.findImplementation(clazz,
+                method);
+        if (impl == null)
+            throw new RuntimeException("No implementation of " + method
+                    + " found on " + clazz + " or ancestors thereof");
+
+        return getAuthorizeCallingMethods(impl.getDeclaringClass()).contains(
+                Pair.of(method.getName(), Type.getMethodDescriptor(method)));
     }
 
     private static ConcurrentMap<Class<?>, Set<Pair<String, String>>> cache = new MapMaker()
