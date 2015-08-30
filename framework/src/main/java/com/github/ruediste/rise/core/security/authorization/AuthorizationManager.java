@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.core.security.authorization;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import javax.inject.Singleton;
 import net.sf.cglib.proxy.Enhancer;
 
 import com.github.ruediste.rise.core.aop.AopUtil;
+import com.github.ruediste.rise.core.security.authorization.right.MetaRequiresRight;
 import com.github.ruediste.salta.standard.config.StandardInjectorConfiguration;
 
 /**
@@ -31,6 +33,41 @@ public class AuthorizationManager {
     }
 
     private List<RuleEntry> entries = new ArrayList<>();
+
+    public AuthorizationManager() {
+        addRule(t -> true,
+                (t, m) -> {
+                    for (Annotation annotation : m.getAnnotations()) {
+                        if (annotation.annotationType().isAnnotationPresent(
+                                MetaRequiresRight.class))
+                            return true;
+                    }
+                    return false;
+                }, new AuthorizationRule() {
+
+                    @Override
+                    public void checkAuthorized(Object target, Method method,
+                            Object[] args) {
+                        for (Annotation annotation : method.getAnnotations()) {
+                            if (annotation.annotationType()
+                                    .isAnnotationPresent(
+                                            MetaRequiresRight.class)) {
+                                Method value;
+                                try {
+                                    value = annotation.annotationType()
+                                            .getMethod("value");
+                                    Object right = value.invoke(annotation);
+                                } catch (Exception e) {
+                                    throw new RuntimeException(
+                                            "error while reading value of annotation "
+                                                    + annotation
+                                                    + " on method " + method);
+                                }
+                            }
+                        }
+                    }
+                });
+    }
 
     public void addRule(Predicate<Class<?>> typeMatcher,
             BiPredicate<Class<?>, Method> methodMatcher, AuthorizationRule rule) {
