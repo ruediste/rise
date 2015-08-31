@@ -28,7 +28,7 @@ public class ProtectedMethodsController extends
 
         @Override
         protected void renderContent(TestCanvas html) {
-            html.write(data());
+            html.span().TEST_NAME("data").content(data());
         }
 
     }
@@ -37,13 +37,15 @@ public class ProtectedMethodsController extends
         return view(IndexView.class, "");
     }
 
+    @Labeled
     @RequiresRight(Right.ALLOWED)
     public ActionResult methodAllowed() {
-        return view(IndexView.class, "");
+        return view(MethodView.class, "success");
     }
 
+    @Labeled
     @RequiresRight(Right.FORBIDDEN)
     public ActionResult methodForbidden() {
-        return view(IndexView.class, "");
+        return view(MethodView.class, "success");
     }
 }

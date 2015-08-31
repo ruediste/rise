@@ -14,7 +14,8 @@ public interface BootstrapRiseCanvas<TSelf extends BootstrapRiseCanvas<TSelf>>
         extends BootstrapCanvas<TSelf>, RiseCanvas<TSelf> {
 
     public default TSelf rButtonA(ActionResult target) {
-        return rButtonA(target, a -> a.iconOnly());
+        return rButtonA(target, a -> {
+        });
     }
 
     public default TSelf rButtonA(ActionResult target,
@@ -26,25 +27,24 @@ public interface BootstrapRiseCanvas<TSelf extends BootstrapRiseCanvas<TSelf>>
 
         R_ButtonArgs buttonArgs = new R_ButtonArgs(this, true);
 
-        Object instance = internal_riseHelper().getInstance(
-                actionInvocation.methodInvocation.getInstanceClass());
-        if (!Authz.isAuthorized(instance,
-                actionInvocation.methodInvocation.getMethod(),
-                actionInvocation.methodInvocation.getArguments())) {
-            buttonArgs.disabled();
-        }
-
         TSelf result = bButtonA(() -> {
             args.accept(buttonArgs);
+            Object instance = internal_riseHelper().getInstance(
+                    actionInvocation.methodInvocation.getInstanceClass());
+            if (!Authz.isAuthorized(instance,
+                    actionInvocation.methodInvocation.getMethod(),
+                    actionInvocation.methodInvocation.getArguments())) {
+                buttonArgs.disabled();
+            }
             return buttonArgs;
         });
         if (buttonArgs.disabled)
             result.HREF("#");
         else
-            result.HREF(
-                    helper.getUtil().url(
-                            helper.getUtil().toPathInfo(actionInvocation)))
-                    .TEST_NAME(method.getName());
+            result.HREF(helper.getUtil().url(
+                    helper.getUtil().toPathInfo(actionInvocation)));
+
+        result.TEST_NAME(method.getName());
         TranslatedString label = helper.getLabelUtil().getMethodLabel(method);
         if (buttonArgs.iconOnly) {
             return result.render(helper.getIconUtil().getIcon(method)).span()

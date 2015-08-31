@@ -1,10 +1,10 @@
 package com.github.ruediste.rise.core.security.authorization;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -60,8 +60,11 @@ public class AuthorizationManager {
                                             .getMethod("value");
                                     Object right = value.invoke(annotation);
                                     if (right.getClass().isArray()) {
-                                        requiredRights.addAll(Arrays
-                                                .asList(right));
+                                        for (int i = 0; i < Array
+                                                .getLength(right); i++) {
+                                            requiredRights.add(Array.get(right,
+                                                    i));
+                                        }
                                     } else
                                         requiredRights.add(right);
                                 } catch (Exception e) {

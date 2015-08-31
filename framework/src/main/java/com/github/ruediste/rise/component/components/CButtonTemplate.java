@@ -26,10 +26,10 @@ public class CButtonTemplate extends BootstrapComponentTemplateBase<CButton> {
     @Inject
     IconUtil iconUtil;
 
-    public static AttachedProperty<CButton, Consumer<B_ButtonArgs>> args = new AttachedProperty<>(
+    public static AttachedProperty<CButton, Consumer<B_ButtonArgs<?>>> args = new AttachedProperty<>(
             "buttonCustomizer");
 
-    public static Consumer<CButton> setArgs(Consumer<B_ButtonArgs> args) {
+    public static Consumer<CButton> setArgs(Consumer<B_ButtonArgs<?>> args) {
         return button -> CButtonTemplate.args.set(button, args);
     }
 
