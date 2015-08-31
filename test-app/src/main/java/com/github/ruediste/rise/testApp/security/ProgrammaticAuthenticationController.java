@@ -8,9 +8,8 @@ import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.security.AuthenticationHolder;
 import com.github.ruediste.rise.testApp.TestCanvas;
 import com.github.ruediste.rise.testApp.TestPageTemplate;
-import com.github.ruediste.rise.testApp.TestPageTemplate.TestPageTemplateParameters;
 import com.github.ruediste.rise.testApp.ViewMvc;
-import com.github.ruediste1.i18n.lString.LString;
+import com.github.ruediste1.i18n.label.Labeled;
 
 public class ProgrammaticAuthenticationController extends
         ControllerMvc<ProgrammaticAuthenticationController> {
@@ -18,6 +17,7 @@ public class ProgrammaticAuthenticationController extends
     @Inject
     CoreRequestInfo info;
 
+    @Labeled
     public static class View extends
             ViewMvc<ProgrammaticAuthenticationController, String> {
 
@@ -25,20 +25,8 @@ public class ProgrammaticAuthenticationController extends
         TestPageTemplate template;
 
         @Override
-        protected void render(TestCanvas html) {
-            template.renderOn(html, new TestPageTemplateParameters() {
-
-                @Override
-                public void renderContent(TestCanvas html) {
-                    html.write(data());
-
-                }
-
-                @Override
-                public LString getTitle() {
-                    return locale -> "Test App";
-                }
-            });
+        protected void renderContent(TestCanvas html) {
+            html.write(data());
         }
 
     }

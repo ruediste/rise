@@ -7,17 +7,19 @@ import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.PathInfoIndex;
 import com.github.ruediste.rise.core.web.ActionPath;
 import com.github.ruediste.rise.core.web.PathInfo;
+import com.github.ruediste1.i18n.label.Labeled;
 
 public class ShowAllController extends ControllerMvc<ShowAllController> {
 
+    @Labeled
     private static class View extends ViewMvc<ShowAllController, Object> {
 
         @Inject
         PathInfoIndex idx;
 
         @Override
-        public void render(TestCanvas html) {
-            html.html().head()._head().body().h1().content("Exact").ul();
+        public void renderContent(TestCanvas html) {
+            html.h1().content("Exact").ul();
 
             for (String pathInfo : idx.getRegisteredPathInfos()) {
                 html.li().a().HREF(new PathInfo(pathInfo)).content(pathInfo)
@@ -28,7 +30,7 @@ public class ShowAllController extends ControllerMvc<ShowAllController> {
                 html.li().a().HREF(new PathInfo(pathInfo)).content(pathInfo)
                         ._li();
             }
-            html._ul()._body()._html();
+            html._ul();
         }
 
     }

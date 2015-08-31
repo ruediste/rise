@@ -14,6 +14,7 @@ import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
 import com.github.ruediste.rise.testApp.TestCanvas;
 import com.github.ruediste.rise.testApp.ViewMvc;
+import com.github.ruediste1.i18n.label.Labeled;
 import com.google.common.base.Throwables;
 
 public class RequestErrorHandlerController extends
@@ -38,15 +39,15 @@ public class RequestErrorHandlerController extends
         String message;
     }
 
+    @Labeled
     private static class View extends
             ViewMvc<RequestErrorHandlerController, Data> implements
             HttpServletResponseCustomizer {
 
         @Override
-        protected void render(TestCanvas html) {
-            html.html().head()._head().body().h1()
-                    .content("An Unexpected error occurred").pre()
-                    .content(data().message)._body()._html();
+        protected void renderContent(TestCanvas html) {
+            html.h1().content("An Unexpected error occurred").pre()
+                    .content(data().message);
         }
 
         @Override

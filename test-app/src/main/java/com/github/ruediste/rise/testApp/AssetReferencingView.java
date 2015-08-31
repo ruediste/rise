@@ -4,7 +4,9 @@ import javax.inject.Inject;
 
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
+import com.github.ruediste1.i18n.label.Labeled;
 
+@Labeled
 public class AssetReferencingView extends
         ViewMvc<AssetReferencingController, String> {
 
@@ -25,20 +27,19 @@ public class AssetReferencingView extends
     Bundle bundle;
 
     @Override
-    public void render(TestCanvas html) {
+    protected AssetBundleOutput getAssetBundleOut(TestAssetBundle bundle) {
+        return this.bundle.out;
+    }
+
+    @Override
+    public void renderContent(TestCanvas html) {
         // @formatter:off
-		html.html()
-			.head()
-				.rCssLinks(bundle.out)
-			._head()
-			.body()
-				.div().ID("data").content(data())
-				.div().ID("samePackage").content("foo")
-				.div().ID("bundleClass").content("foo")
-				.div().ID("default").content("foo")
-				.div().ID("absolute").content("foo")
-			._body()
-		._html();
+		html
+		.div().ID("data").content(data())
+		.div().ID("samePackage").content("foo")
+		.div().ID("bundleClass").content("foo")
+		.div().ID("default").content("foo")
+		.div().ID("absolute").content("foo");
 	}
 
 }

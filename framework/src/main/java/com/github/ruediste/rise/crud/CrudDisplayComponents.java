@@ -99,8 +99,7 @@ public class CrudDisplayComponents
                                           .renderIdenification(html, value))
                                         ._span()
                                         .fIf(value!=null, ()->html
-                                            .bInputGroupBtn()
-                                                .rButtonA(componentUtil.go(CrudControllerBase.class).display(value), true)
+                                        .bInputGroupBtn().rButtonA(componentUtil.go(CrudControllerBase.class).display(value), a -> a.iconOnly())
                                             ._bInputGroupBtn()
                                             ._bInputGroup()
                                         )

@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.testApp.app;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -13,11 +14,14 @@ import com.github.ruediste.rise.core.front.RestartableApplicationBase;
 import com.github.ruediste.rise.core.security.Principal;
 import com.github.ruediste.rise.core.security.authentication.DefaultAuthenticationManager;
 import com.github.ruediste.rise.core.security.authentication.InMemoryAuthenticationProvider;
+import com.github.ruediste.rise.core.security.authorization.AuthorizationException;
+import com.github.ruediste.rise.core.security.authorization.AuthorizationManager;
 import com.github.ruediste.rise.core.security.web.rememberMe.InMemoryRememberMeTokenDao;
 import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeAuthenticationProvider;
 import com.github.ruediste.rise.integration.DynamicIntegrationModule;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
+import com.github.ruediste.rise.testApp.Right;
 import com.github.ruediste.rise.testApp.TestCanvas;
 import com.github.ruediste.rise.testApp.component.CPageTemplate;
 import com.github.ruediste.rise.testApp.security.LoginController;
@@ -47,6 +51,9 @@ public class TestRestartableApplication extends RestartableApplicationBase {
 
     @Inject
     DefaultAuthenticationManager defaultAuthenticationManager;
+
+    @Inject
+    AuthorizationManager authorizationManager;
 
     @Inject
     RememberMeAuthenticationProvider rememberMeAuthenticationProvider;
@@ -79,6 +86,9 @@ public class TestRestartableApplication extends RestartableApplicationBase {
                 InitializerUtil.register(config(), Initializer.class);
                 bind(PatternStringResolver.class).to(
                         DefaultPatternStringResolver.class);
+                AuthorizationManager mgr = new AuthorizationManager();
+                mgr.register(config());
+                bind(AuthorizationManager.class).toInstance(mgr);
             }
 
             @Singleton
@@ -107,6 +117,13 @@ public class TestRestartableApplication extends RestartableApplicationBase {
         defaultAuthenticationManager
                 .addProvider(new InMemoryAuthenticationProvider<Principal>()
                         .with("foo", "foo", null));
+
+        authorizationManager.setRightChecker(rights -> {
+            for (Object right : rights) {
+                if (!Objects.equals(Right.ALLOWED, right))
+                    throw new AuthorizationException();
+            }
+        });
 
     }
 

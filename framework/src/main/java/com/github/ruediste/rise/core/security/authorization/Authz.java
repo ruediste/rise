@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.core.security.authorization;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.function.Consumer;
 
 import com.github.ruediste.c3java.invocationRecording.MethodInvocation;
@@ -37,6 +38,10 @@ public class Authz {
             MethodInvocation<Object> lastInvocation) {
         checkAuthorized(target, lastInvocation.getMethod(), lastInvocation
                 .getArguments().toArray());
+    }
+
+    static public boolean isAuthorized(Object target, Method m, List<?> args) {
+        return isAuthorized(target, m, args.toArray());
     }
 
     static public boolean isAuthorized(Object target, Method m, Object[] args) {

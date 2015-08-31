@@ -2,6 +2,7 @@ package com.github.ruediste.rise.testApp;
 
 import javax.inject.Inject;
 
+import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.integration.PageTemplateBase;
 import com.github.ruediste.rise.integration.RisePageTemplate;
 import com.github.ruediste.rise.integration.RisePageTemplate.RisePageTemplateParameters;
@@ -24,12 +25,12 @@ public class TestPageTemplate extends PageTemplateBase {
 
                     @Override
                     protected void renderJsLinks(TestCanvas html) {
-                        html.rJsLinks(bundle.out);
+                        html.rJsLinks(parameters.getAssetBundleOut(bundle));
                     }
 
                     @Override
                     protected void renderCssLinks(TestCanvas html) {
-                        html.rCssLinks(bundle.out);
+                        html.rCssLinks(parameters.getAssetBundleOut(bundle));
                     }
 
                     @Override
@@ -49,5 +50,9 @@ public class TestPageTemplate extends PageTemplateBase {
         LString getTitle();
 
         void renderContent(TestCanvas html);
+
+        default AssetBundleOutput getAssetBundleOut(TestAssetBundle bundle) {
+            return bundle.out;
+        }
     }
 }

@@ -12,18 +12,20 @@ import com.github.ruediste.rise.core.persistence.NoTransaction;
 import com.github.ruediste.rise.core.persistence.Updating;
 import com.github.ruediste.rise.testApp.TestCanvas;
 import com.github.ruediste.rise.testApp.ViewMvc;
+import com.github.ruediste1.i18n.label.Labeled;
 
 public class EntityControllerMvc extends ControllerMvc<EntityControllerMvc> {
 
+    @Labeled
     static class ListView extends
             ViewMvc<EntityControllerMvc, List<TestAppEntity>> {
 
         @Override
-        public void render(TestCanvas html) {
-            html.html().body().ul().render(x -> {
+        public void renderContent(TestCanvas html) {
+            html.ul().render(x -> {
                 for (TestAppEntity item : data())
                     x.li().content(Objects.toString(item.getId()));
-            })._ul()._body()._html();
+            })._ul();
         }
 
     }

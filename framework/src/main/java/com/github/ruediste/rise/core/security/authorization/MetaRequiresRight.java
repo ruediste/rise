@@ -1,4 +1,4 @@
-package com.github.ruediste.rise.core.security.authorization.right;
+package com.github.ruediste.rise.core.security.authorization;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,8 +10,9 @@ import java.lang.annotation.Target;
  * right to execute.
  *
  * <p>
- * The annotation needs to have a {@code value} element of an enum type. The
- * enum indicates the right required
+ * The annotation needs to have a {@code value} element, indicating the required
+ * right. If the element is of array type, each element of the array is a
+ * required right. The annotation can be repeated.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)

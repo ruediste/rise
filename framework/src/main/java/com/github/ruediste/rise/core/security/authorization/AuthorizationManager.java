@@ -4,23 +4,24 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiPredicate;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
-
-import javax.inject.Singleton;
 
 import net.sf.cglib.proxy.Enhancer;
 
 import com.github.ruediste.rise.core.aop.AopUtil;
-import com.github.ruediste.rise.core.security.authorization.right.MetaRequiresRight;
+import com.github.ruediste.salta.jsr330.JSR330InjectorConfiguration;
 import com.github.ruediste.salta.standard.config.StandardInjectorConfiguration;
 
 /**
  * Manages all authorization rules
  */
-@Singleton
 public class AuthorizationManager {
+
+    private Consumer<List<Object>> rightChecker;
 
     interface AuthorizationRule {
         void checkAuthorized(Object target, Method method, Object[] args);
@@ -37,7 +38,7 @@ public class AuthorizationManager {
     public AuthorizationManager() {
         addRule(t -> true,
                 (t, m) -> {
-                    for (Annotation annotation : m.getAnnotations()) {
+                    for (Annotation annotation : m.getDeclaredAnnotations()) {
                         if (annotation.annotationType().isAnnotationPresent(
                                 MetaRequiresRight.class))
                             return true;
@@ -48,6 +49,7 @@ public class AuthorizationManager {
                     @Override
                     public void checkAuthorized(Object target, Method method,
                             Object[] args) {
+                        ArrayList<Object> requiredRights = new ArrayList<>();
                         for (Annotation annotation : method.getAnnotations()) {
                             if (annotation.annotationType()
                                     .isAnnotationPresent(
@@ -57,6 +59,11 @@ public class AuthorizationManager {
                                     value = annotation.annotationType()
                                             .getMethod("value");
                                     Object right = value.invoke(annotation);
+                                    if (right.getClass().isArray()) {
+                                        requiredRights.addAll(Arrays
+                                                .asList(right));
+                                    } else
+                                        requiredRights.add(right);
                                 } catch (Exception e) {
                                     throw new RuntimeException(
                                             "error while reading value of annotation "
@@ -65,6 +72,7 @@ public class AuthorizationManager {
                                 }
                             }
                         }
+                        getRightChecker().accept(requiredRights);
                     }
                 });
     }
@@ -76,6 +84,10 @@ public class AuthorizationManager {
         entry.typeMatcher = typeMatcher;
         entry.rule = rule;
         entries.add(entry);
+    }
+
+    public void register(JSR330InjectorConfiguration config) {
+        register(config.standardConfig);
     }
 
     public void register(StandardInjectorConfiguration config) {
@@ -134,5 +146,13 @@ public class AuthorizationManager {
                     entry.rule.checkAuthorized(target, m, args);
             }
         }
+    }
+
+    public Consumer<List<Object>> getRightChecker() {
+        return rightChecker;
+    }
+
+    public void setRightChecker(Consumer<List<Object>> rightChecker) {
+        this.rightChecker = rightChecker;
     }
 }

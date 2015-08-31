@@ -16,6 +16,7 @@ import com.github.ruediste.rise.core.CurrentLocale;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetRequestMapper;
 import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
+import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.google.common.base.Strings;
 
@@ -26,6 +27,7 @@ public class RiseCanvasHelper {
 
     @Inject
     LabelUtil labelUtil;
+
     @Inject
     IconUtil iconUtil;
 
@@ -37,8 +39,12 @@ public class RiseCanvasHelper {
 
     @Inject
     ComponentUtil componentUtil;
+
     @Inject
     CoreConfiguration coreConfiguration;
+
+    @Inject
+    Injector injector;
 
     private ByteArrayOutputStream baos;
     private HtmlCanvasTarget target;
@@ -155,5 +161,9 @@ public class RiseCanvasHelper {
                 && !Strings.isNullOrEmpty(name)) {
             target.addAttribute("data-test-name", name);
         }
+    }
+
+    public <T> T getInstance(Class<T> instanceClass) {
+        return injector.getInstance(instanceClass);
     }
 }

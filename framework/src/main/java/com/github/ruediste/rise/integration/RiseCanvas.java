@@ -1,13 +1,17 @@
 package com.github.ruediste.rise.integration;
 
+import java.util.function.Consumer;
+
 import com.github.ruediste.rendersnakeXT.canvas.FuncCanvas;
 import com.github.ruediste.rendersnakeXT.canvas.Html5Canvas;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
+import com.github.ruediste.rise.core.security.authorization.Authz;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
+import com.github.ruediste.rise.util.MethodInvocation;
 import com.github.ruediste1.i18n.lString.LString;
 
 public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends
@@ -103,6 +107,27 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends
      */
     default TSelf TEST_NAME(String name) {
         internal_riseHelper().TEST_NAME(name);
+        return self();
+    }
+
+    default TSelf rIfAuthorized(ActionResult target,
+            Consumer<ActionResult> ifTrue) {
+        return rIfAuthorized(target, ifTrue, x -> {
+        });
+    }
+
+    default TSelf rIfAuthorized(ActionResult target,
+            Consumer<ActionResult> ifTrue, Consumer<ActionResult> ifFalse) {
+        MethodInvocation<Object> invocation = internal_riseHelper().getUtil()
+                .toActionInvocation(target).methodInvocation;
+        Object targetObj = internal_riseHelper().getInstance(
+                invocation.getInstanceClass());
+        if (Authz.isAuthorized(targetObj, invocation.getMethod(), invocation
+                .getArguments().toArray()))
+            ifTrue.accept(target);
+        else
+            ifFalse.accept(target);
+
         return self();
     }
 }
