@@ -22,6 +22,7 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
 public class CButton extends MultiChildrenComponent<CButton> {
     private Runnable handler;
     private ActionResult target;
+    private boolean isDisabled;
 
     public CButton() {
     }
@@ -126,11 +127,24 @@ public class CButton extends MultiChildrenComponent<CButton> {
         return target;
     }
 
+    /**
+     * Set the target of this button. The button will be rendered as link. No
+     * page request will be triggered.
+     */
     public CButton setTarget(ActionResult target) {
         if (target != null && handler != null)
             throw new IllegalStateException(
                     "Cannot set target if the handler is set. Clear handler first");
         this.target = target;
+        return this;
+    }
+
+    public boolean isDisabled() {
+        return isDisabled;
+    }
+
+    public CButton setDisabled(boolean isDisabled) {
+        this.isDisabled = isDisabled;
         return this;
     }
 

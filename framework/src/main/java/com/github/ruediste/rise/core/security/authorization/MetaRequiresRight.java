@@ -12,7 +12,10 @@ import java.lang.annotation.Target;
  * <p>
  * The annotation needs to have a {@code value} element, indicating the required
  * right. If the element is of array type, each element of the array is a
- * required right. The annotation can be repeated.
+ * required right.
+ * <p>
+ * The annotation can be repeated. In this case, the wrapper annotation has to
+ * be annotated with this meta annotation as well.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)

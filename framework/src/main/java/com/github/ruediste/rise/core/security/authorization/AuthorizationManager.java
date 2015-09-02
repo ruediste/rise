@@ -54,19 +54,8 @@ public class AuthorizationManager {
                             if (annotation.annotationType()
                                     .isAnnotationPresent(
                                             MetaRequiresRight.class)) {
-                                Method value;
                                 try {
-                                    value = annotation.annotationType()
-                                            .getMethod("value");
-                                    Object right = value.invoke(annotation);
-                                    if (right.getClass().isArray()) {
-                                        for (int i = 0; i < Array
-                                                .getLength(right); i++) {
-                                            requiredRights.add(Array.get(right,
-                                                    i));
-                                        }
-                                    } else
-                                        requiredRights.add(right);
+                                    extractRights(requiredRights, annotation);
                                 } catch (Exception e) {
                                     throw new RuntimeException(
                                             "error while reading value of annotation "
@@ -76,6 +65,30 @@ public class AuthorizationManager {
                             }
                         }
                         getRightChecker().accept(requiredRights);
+                    }
+
+                    private void extractRights(
+                            ArrayList<Object> requiredRights,
+                            Annotation annotation)
+                            throws NoSuchMethodException,
+                            IllegalAccessException, InvocationTargetException {
+                        Method value = annotation.annotationType().getMethod(
+                                "value");
+                        Object right = value.invoke(annotation);
+                        if (value.getReturnType().isArray()) {
+                            if (Annotation.class.isAssignableFrom(value
+                                    .getReturnType().getComponentType())) {
+                                for (int i = 0; i < Array.getLength(right); i++) {
+                                    extractRights(requiredRights,
+                                            (Annotation) Array.get(right, i));
+                                }
+
+                            } else
+                                for (int i = 0; i < Array.getLength(right); i++) {
+                                    requiredRights.add(Array.get(right, i));
+                                }
+                        } else
+                            requiredRights.add(right);
                     }
                 });
     }

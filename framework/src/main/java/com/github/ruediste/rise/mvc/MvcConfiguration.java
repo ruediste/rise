@@ -37,16 +37,6 @@ public class MvcConfiguration {
         mapper = mapperSupplier.get();
         mapper.initialize();
 
-        coreConfiguration.actionInvocationToPathInfoMappingFunctions
-                .add(invocation -> {
-                    if (IControllerMvc.class
-                            .isAssignableFrom(invocation.methodInvocation
-                                    .getInstanceClass()))
-                        return Optional.of(mapper.generate(invocation));
-                    else
-                        return Optional.empty();
-                });
-
         ChainedRequestHandler last = null;
         for (Supplier<ChainedRequestHandler> supplier : handlerSuppliers) {
             ChainedRequestHandler handler = supplier.get();
@@ -59,6 +49,19 @@ public class MvcConfiguration {
         if (last != null) {
             last.setNext(finalHandlerSupplier.get());
         }
+    }
+
+    @PostConstruct
+    void setupActionInvocationToPathInfoMappingFunction() {
+        coreConfiguration.actionInvocationToPathInfoMappingFunctions
+                .add(invocation -> {
+                    if (IControllerMvc.class
+                            .isAssignableFrom(invocation.methodInvocation
+                                    .getInstanceClass()))
+                        return Optional.of(mapper.generate(invocation));
+                    else
+                        return Optional.empty();
+                });
     }
 
     public final LinkedList<Supplier<ChainedRequestHandler>> handlerSuppliers = new LinkedList<>();

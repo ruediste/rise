@@ -46,6 +46,17 @@ public class ComponentConfiguration {
         mapper = mapperSupplier.get();
         mapper.initialize();
         viewFactory = viewFactorySupplier.get();
+
+        this.initialHandler = chainHandlers(initialHandlerSuppliers,
+                finalInitialHandlerSupplier);
+        this.reloadHandler = chainHandlers(reloadHandlerSuppliers,
+                finalReloadHandlerSupplier);
+        ajaxParser = ajaxParserSupplier.get();
+        reloadParser = reloadParserSupplier.get();
+    }
+
+    @PostConstruct
+    void setupActionInvocationToPathInfoMappingFunction() {
         coreConfiguration.actionInvocationToPathInfoMappingFunctions
                 .add(invocation -> {
                     if (IControllerComponent.class
@@ -55,13 +66,6 @@ public class ComponentConfiguration {
                     else
                         return Optional.empty();
                 });
-
-        this.initialHandler = chainHandlers(initialHandlerSuppliers,
-                finalInitialHandlerSupplier);
-        this.reloadHandler = chainHandlers(reloadHandlerSuppliers,
-                finalReloadHandlerSupplier);
-        ajaxParser = ajaxParserSupplier.get();
-        reloadParser = reloadParserSupplier.get();
     }
 
     private ChainedRequestHandler reloadHandler;

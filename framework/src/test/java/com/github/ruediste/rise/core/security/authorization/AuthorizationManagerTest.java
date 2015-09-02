@@ -68,6 +68,7 @@ public class AuthorizationManagerTest {
         Right value();
     }
 
+    @MetaRequiresRight
     @Retention(RetentionPolicy.RUNTIME)
     @interface RepeatRequiresRight {
         RequiresRight[] value();
