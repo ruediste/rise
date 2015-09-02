@@ -18,8 +18,8 @@ public class RedirectRenderResult implements HttpRenderResult {
         if ("true".equals(util.getCoreRequestInfo().getServletRequest()
                 .getHeader("rise-is-ajax"))) {
             response.setHeader("rise-redirect-target",
-                    util.httpService.url(path));
+                    util.getCoreUtil().url(path));
         } else
-            response.sendRedirect(util.getHttpService().redirectUrl(path));
+            response.sendRedirect(util.getCoreUtil().redirectUrl(path));
     }
 }

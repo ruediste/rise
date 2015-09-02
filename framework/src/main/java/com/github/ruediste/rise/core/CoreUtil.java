@@ -4,8 +4,11 @@ import java.util.Arrays;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.inject.Singleton;
+import javax.servlet.ServletConfig;
 
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
@@ -14,11 +17,13 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.httpRequest.HttpRequestImpl;
 import com.github.ruediste.rise.core.web.PathInfo;
+import com.github.ruediste.rise.nonReloadable.NonRestartable;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
 
+@Singleton
 public class CoreUtil implements ICoreUtil {
 
     @Inject
@@ -31,13 +36,20 @@ public class CoreUtil implements ICoreUtil {
     CoreConfiguration coreConfiguration;
 
     @Inject
-    HttpService httpService;
+    CoreRequestInfo coreRequestInfo;
 
     @Inject
     Provider<ActionInvocationBuilder> actionPathBuilderProvider;
 
     @Inject
     Provider<ActionInvocationBuilderKnownController<?>> actionPathBuilderKnownController;
+
+    String contextPath;
+
+    @PostConstruct
+    public void postConstruct(@NonRestartable ServletConfig servletConfig) {
+        contextPath = servletConfig.getServletContext().getContextPath();
+    }
 
     @Override
     public PathInfo toPathInfo(ActionInvocation<Object> invocation) {
@@ -85,12 +97,23 @@ public class CoreUtil implements ICoreUtil {
 
     @Override
     public String url(PathInfo path) {
-        return httpService.url(path);
+        String prefix = contextPath;
+        prefix += coreRequestInfo.getServletRequest().getServletPath();
+        return coreRequestInfo.getServletResponse().encodeURL(
+                prefix + path.getValue());
     }
 
     @Override
     public String url(ActionResult path) {
         return url(toPathInfo(path));
+    }
+
+    @Override
+    public String redirectUrl(PathInfo path) {
+        String prefix = coreRequestInfo.getServletRequest().getContextPath();
+        prefix += coreRequestInfo.getServletRequest().getServletPath();
+        return coreRequestInfo.getServletResponse().encodeRedirectURL(
+                prefix + path.getValue());
     }
 
     @Override
@@ -136,5 +159,16 @@ public class CoreUtil implements ICoreUtil {
     @Override
     public LabelUtil labelUtil() {
         return labelUtil;
+    }
+
+    @Override
+    public String refererUrl() {
+        return coreRequestInfo.getServletRequest().getHeader("Referer");
+    }
+
+    @Override
+    public String urlStatic(PathInfo path) {
+        String prefix = contextPath;
+        return prefix + path.getValue();
     }
 }

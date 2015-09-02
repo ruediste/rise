@@ -13,7 +13,6 @@ import javax.inject.Inject;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
 import com.github.ruediste.rise.core.CoreRestartableModule;
 import com.github.ruediste.rise.core.CoreUtil;
-import com.github.ruediste.rise.core.HttpService;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import com.google.common.io.ByteStreams;
@@ -36,9 +35,6 @@ public abstract class AssetBundle {
     @Inject
     CoreUtil coreUtil;
 
-    @Inject
-    HttpService httpService;
-
     AttachedPropertyBearerBase cache = new AttachedPropertyBearerBase();
 
     final List<AssetBundleOutput> outputs = new ArrayList<>();
@@ -48,7 +44,7 @@ public abstract class AssetBundle {
      * for example in CSS files
      */
     public String url(Asset asset) {
-        return httpService.urlStatic(requestMapper.getPathInfo(asset));
+        return coreUtil.urlStatic(requestMapper.getPathInfo(asset));
     }
 
     @PostConstruct

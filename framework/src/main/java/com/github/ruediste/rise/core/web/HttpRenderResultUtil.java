@@ -4,22 +4,23 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.github.ruediste.rise.core.CoreRequestInfo;
-import com.github.ruediste.rise.core.HttpService;
+import com.github.ruediste.rise.core.CoreUtil;
 
 @Singleton
 public class HttpRenderResultUtil {
+
     @Inject
-    HttpService httpService;
+    CoreUtil coreUtil;
 
     @Inject
     CoreRequestInfo coreRequestInfo;
 
-    public HttpService getHttpService() {
-        return httpService;
-    }
-
     public CoreRequestInfo getCoreRequestInfo() {
         return coreRequestInfo;
+    }
+
+    public CoreUtil getCoreUtil() {
+        return coreUtil;
     }
 
 }

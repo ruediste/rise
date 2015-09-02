@@ -9,6 +9,6 @@ public class RedirectToRefererRenderResult implements HttpRenderResult {
     @Override
     public void sendTo(HttpServletResponse response, HttpRenderResultUtil util)
             throws IOException {
-        response.sendRedirect(util.httpService.refererUrl());
+        response.sendRedirect(util.getCoreUtil().refererUrl());
     }
 }

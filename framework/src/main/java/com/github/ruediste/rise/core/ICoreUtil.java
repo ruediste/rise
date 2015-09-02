@@ -1,6 +1,5 @@
 package com.github.ruediste.rise.core;
 
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
@@ -9,7 +8,6 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKno
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste1.i18n.lString.LString;
-import com.github.ruediste1.i18n.lString.TranslatedString;
 import com.github.ruediste1.i18n.label.LabelUtil;
 
 public interface ICoreUtil {
@@ -84,4 +82,19 @@ public interface ICoreUtil {
         return getCoreUtil().toString(string);
     }
 
+    default String redirectUrl(PathInfo path) {
+        return getCoreUtil().redirectUrl(path);
+    }
+
+    default String refererUrl() {
+        return getCoreUtil().refererUrl();
+    }
+
+    /**
+     * Return the url of the pathinfo outside of a request/response. There will
+     * be no session id included.
+     */
+    default String urlStatic(PathInfo path) {
+        return getCoreUtil().urlStatic(path);
+    }
 }

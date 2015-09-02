@@ -5,13 +5,11 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import javax.transaction.TransactionManager;
 
 import com.github.ruediste.rise.api.ViewMvcBase;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreUtil;
-import com.github.ruediste.rise.core.HttpService;
 import com.github.ruediste.rise.core.ICoreUtil;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.persistence.Updating;
@@ -25,9 +23,6 @@ public class MvcUtil implements ICoreUtil {
 
     @Inject
     Provider<ActionInvocationBuilder> actionPathBuilderInstance;
-
-    @Inject
-    HttpService httpService;
 
     @Inject
     CoreUtil coreUtil;
@@ -85,4 +80,5 @@ public class MvcUtil implements ICoreUtil {
     public void forceRollback() {
         transactionControl.forceRollback();
     }
+
 }
