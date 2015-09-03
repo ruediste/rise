@@ -15,6 +15,7 @@ import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
+import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.front.RestartCountHolder;
 
@@ -128,7 +129,7 @@ public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>> extends
      *            {@link StageRibbonControllerBase#index(String)}
      */
     public Renderable<TCanvas> stageRibbon(boolean isFixed,
-            Function<String, ActionResult> urlPoducer) {
+            Function<UrlSpec, ActionResult> urlPoducer) {
         return html -> {
             html.div()
                     .CLASS("rise-ribbon"
@@ -138,7 +139,7 @@ public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>> extends
                     .a()
                     .STYLE("color: " + stage.color)
                     .HREF(urlPoducer.apply(coreRequestInfo.getRequest()
-                            .getPathInfo())).content(stage.toString())._div();
+                            .createUrlSpec())).content(stage.toString())._div();
         };
     }
 }

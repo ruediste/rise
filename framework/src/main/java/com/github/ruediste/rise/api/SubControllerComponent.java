@@ -63,6 +63,6 @@ public class SubControllerComponent {
      * </pre>
      */
     public void redirect(ActionResult destination) {
-        closePage(new RedirectRenderResult(util.toPathInfo(destination)));
+        closePage(new RedirectRenderResult(util.toUrlSpec(destination)));
     }
 }

@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
@@ -22,7 +23,11 @@ import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
+import com.github.ruediste.rise.core.actionInvocation.ActionInvocationParameter;
+import com.github.ruediste.rise.core.httpRequest.HttpRequestImpl;
 import com.github.ruediste.rise.core.web.PathInfo;
+import com.github.ruediste.rise.core.web.UrlSpec;
+import com.github.ruediste.rise.nonReloadable.UrlSignatureHelper;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndex;
 import com.github.ruediste.rise.util.AsmUtil;
 import com.github.ruediste.rise.util.AsmUtil.MethodRef;
@@ -96,15 +101,26 @@ public class RequestMapperBaseTest {
 
     ClassNode a = AsmUtil.readClass(A.class);
     ClassNode b = AsmUtil.readClass(B.class);
+    MethodRef a_a = new MethodRef(a.name, "a", "()"
+            + Type.getDescriptor(ActionResult.class));
+
+    String sessionId = "12345";
 
     @Before
     public void before() {
+
         mapper.util = util;
+        mapper.urlSignatureHelper = new UrlSignatureHelper();
+        mapper.urlSignatureHelper.postConstruct();
+
         when(index.tryGetNode(any())).thenReturn(Optional.empty());
         when(index.tryGetNode(a.name)).thenReturn(Optional.of(a));
         when(index.tryGetNode(b.name)).thenReturn(Optional.of(b));
         when(config.calculateControllerName(a)).thenReturn("a");
         when(config.calculateControllerName(b)).thenReturn("b");
+        config.dynamicClassLoader = getClass().getClassLoader();
+        config.doUrlSigning = true;
+        config.urlSignatureBytes = 20;
     }
 
     @Test
@@ -116,8 +132,7 @@ public class RequestMapperBaseTest {
         assertThat(
                 map.keySet(),
                 containsInAnyOrder(
-                        new MethodRef(a.name, "a", "()"
-                                + Type.getDescriptor(ActionResult.class)),
+                        a_a,
                         new MethodRef(a.name, "c", "(Ljava/lang/Integer;)"
                                 + Type.getDescriptor(ActionResult.class)),
                         new MethodRef(b.name, "c", "(Ljava/lang/Boolean;)"
@@ -131,10 +146,45 @@ public class RequestMapperBaseTest {
     @Test
     public void testGenerateBaseClass() throws Throwable {
         mapper.register(b);
+        ActionInvocation<String> invocation = createInvocationToA_a();
+        PathInfo pathInfo = mapper.generate(invocation, sessionId)
+                .getPathInfo();
+        assertEquals("/b.a", pathInfo.getValue());
+    }
+
+    ActionInvocationParameter testParameter = new ActionInvocationParameter(
+            "TEST");
+
+    @Test
+    public void parameterRoundtrip() throws Exception {
+        mapper.register(a);
+        ActionInvocation<String> invocation = createInvocationToA_a();
+        testParameter.set(invocation, "foo");
+        UrlSpec spec = mapper.generate(invocation, sessionId);
+        ActionInvocation<String> parsed = mapper.parse("/a.a", a, a_a,
+                new HttpRequestImpl(spec), sessionId);
+        assertEquals("foo", testParameter.get(parsed));
+    }
+
+    @Test
+    public void signatureChecked() throws Exception {
+        mapper.register(a);
+        ActionInvocation<String> invocation = createInvocationToA_a();
+        UrlSpec spec = mapper.generate(invocation, sessionId);
+        try {
+            mapper.parse("/a.a", a, a_a, new HttpRequestImpl(spec), "1234567");
+            fail();
+        } catch (RuntimeException e) {
+            if (!e.getMessage().contains("URL signature"))
+                throw e;
+        }
+    }
+
+    private ActionInvocation<String> createInvocationToA_a()
+            throws NoSuchMethodException {
         ActionInvocation<String> invocation = new ActionInvocation<>();
         invocation.methodInvocation = new MethodInvocation<>(A.class,
                 A.class.getMethod("a"));
-        PathInfo pathInfo = mapper.generate(invocation);
-        assertEquals("/b.a", pathInfo.getValue());
+        return invocation;
     }
 }

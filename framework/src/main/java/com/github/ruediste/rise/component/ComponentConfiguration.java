@@ -57,15 +57,15 @@ public class ComponentConfiguration {
 
     @PostConstruct
     void setupActionInvocationToPathInfoMappingFunction() {
-        coreConfiguration.actionInvocationToPathInfoMappingFunctions
-                .add(invocation -> {
-                    if (IControllerComponent.class
-                            .isAssignableFrom(invocation.methodInvocation
-                                    .getInstanceClass()))
-                        return Optional.of(mapper.generate(invocation));
-                    else
-                        return Optional.empty();
-                });
+        coreConfiguration.actionInvocationToUrlSpecMappingFunctions.add((
+                invocation, sessionId) -> {
+            if (IControllerComponent.class
+                    .isAssignableFrom(invocation.methodInvocation
+                            .getInstanceClass()))
+                return Optional.of(mapper.generate(invocation, sessionId));
+            else
+                return Optional.empty();
+        });
     }
 
     private ChainedRequestHandler reloadHandler;

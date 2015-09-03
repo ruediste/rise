@@ -6,9 +6,9 @@ import javax.servlet.http.HttpServletResponse;
 
 public class RedirectRenderResult implements HttpRenderResult {
 
-    private PathInfo path;
+    private UrlSpec path;
 
-    public RedirectRenderResult(PathInfo path) {
+    public RedirectRenderResult(UrlSpec path) {
         this.path = path;
     }
 

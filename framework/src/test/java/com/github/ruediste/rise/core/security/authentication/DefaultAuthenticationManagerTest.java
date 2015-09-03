@@ -30,7 +30,7 @@ public class DefaultAuthenticationManagerTest {
         AuthenticationResult result = mgr
                 .authenticate(new UsernamePasswordAuthenticationRequest(
                         "Hello", "bar"));
-        assertEquals(2, result.getFailures().size());
+        assertEquals(1, result.getFailures().size());
     }
 
     @Test

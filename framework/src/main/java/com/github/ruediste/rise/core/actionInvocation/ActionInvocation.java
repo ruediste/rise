@@ -2,6 +2,7 @@ package com.github.ruediste.rise.core.actionInvocation;
 
 import java.lang.reflect.AnnotatedType;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.function.BiFunction;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
@@ -32,7 +33,7 @@ public class ActionInvocation<T> extends AttachedPropertyBearerBase {
     /**
      * Parameters which will be sent to the client and back again
      */
-    final HashMap<ActionInvocationParameter, String> parameters = new HashMap<>();
+    final Map<String, String[]> parameters = new HashMap<>();
     public MethodInvocation<T> methodInvocation;
 
     @Override
@@ -80,9 +81,13 @@ public class ActionInvocation<T> extends AttachedPropertyBearerBase {
     public <P> ActionInvocation<P> mapWithType(
             BiFunction<AnnotatedType, ? super T, P> func) {
         ActionInvocation<P> result = new ActionInvocation<>();
-        result.parameters.putAll(parameters);
+        result.getParameters().putAll(getParameters());
         result.getAttachedPropertyMap().putAll(this);
         result.methodInvocation = methodInvocation.map(func);
         return result;
+    }
+
+    public Map<String, String[]> getParameters() {
+        return parameters;
     }
 }

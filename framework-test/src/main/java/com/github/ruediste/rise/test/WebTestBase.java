@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
 import org.junit.runners.model.Statement;
+import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 
@@ -47,7 +48,8 @@ public abstract class WebTestBase implements TestUtil {
     }
 
     protected String url(ActionResult result) {
-        return util.url(result);
+        Cookie sessionId = driver.manage().getCookieNamed("JSESSIONID");
+        return util.url(result, sessionId.getValue());
     }
 
     protected String url(PathInfo pathInfo) {

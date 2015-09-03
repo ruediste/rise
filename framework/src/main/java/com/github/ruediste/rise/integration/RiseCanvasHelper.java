@@ -56,7 +56,7 @@ public class RiseCanvasHelper {
             if (asset.getAssetType() != DefaultAssetTypes.CSS)
                 return;
             html.link().REL("stylesheet").TYPE("text/css")
-                    .HREF(mapper.getPathInfo(asset));
+                    .HREF(util.url(mapper.getPathInfo(asset)));
         });
     }
 

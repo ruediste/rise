@@ -8,7 +8,7 @@ import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.security.authorization.Authz;
-import com.github.ruediste.rise.core.web.PathInfo;
+import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
 import com.github.ruediste.rise.util.MethodInvocation;
@@ -41,7 +41,7 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends
         return HREF(internal_riseHelper().getUtil().url(destination));
     }
 
-    default TSelf HREF(PathInfo destination) {
+    default TSelf HREF(UrlSpec destination) {
         return HREF(internal_riseHelper().getUtil().url(destination));
     }
 
@@ -49,7 +49,7 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends
         return ACTION(internal_riseHelper().getUtil().url(destination));
     }
 
-    default TSelf ACTION(PathInfo destination) {
+    default TSelf ACTION(UrlSpec destination) {
         return ACTION(internal_riseHelper().getUtil().url(destination));
     }
 

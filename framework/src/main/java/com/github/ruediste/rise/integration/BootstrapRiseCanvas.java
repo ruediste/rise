@@ -40,9 +40,9 @@ public interface BootstrapRiseCanvas<TSelf extends BootstrapRiseCanvas<TSelf>>
         });
         if (buttonArgs.disabled)
             result.HREF("#");
-        else
-            result.HREF(helper.getUtil().url(
-                    helper.getUtil().toPathInfo(actionInvocation)));
+        else {
+            result.HREF(target);
+        }
 
         result.TEST_NAME(method.getName());
         TranslatedString label = helper.getLabelUtil().getMethodLabel(method);

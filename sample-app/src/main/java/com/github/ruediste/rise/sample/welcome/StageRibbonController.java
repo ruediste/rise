@@ -9,6 +9,7 @@ import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.persistence.Updating;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.core.web.RedirectRenderResult;
+import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste.rise.integration.RisePageTemplate;
 import com.github.ruediste.rise.integration.RisePageTemplate.RisePageTemplateParameters;
 import com.github.ruediste.rise.integration.StageRibbonControllerBase;
@@ -34,7 +35,7 @@ public class StageRibbonController extends
     ApplicationStage stage;
 
     private static class Data {
-        public String originPathInfo;
+        public UrlSpec returnUrl;
     }
 
     private static class View extends ViewMvc<StageRibbonController, Data> {
@@ -82,13 +83,13 @@ public class StageRibbonController extends
                     .bRow()
                         .bCol(x->x.xs(12).sm(6)).BtextCenter()
                             .a().CLASS("btn btn-primary")
-                                    .HREF(new PathInfo(data().originPathInfo))
+                                    .HREF(data().returnUrl)
                                       .span().CLASS("glyphicon glyphicon-arrow-left")._span().content("Go Back")
                         ._bCol();
                         if (stage==ApplicationStage.DEVELOPMENT)
                             html.div().CLASS("col-xs-12 col-sm-6 text-center")
                                 .a().CLASS("btn btn-danger")
-                                        .HREF(go().dropAndCreateDataBase(data().originPathInfo))
+                                        .HREF(go().dropAndCreateDataBase(data().returnUrl))
                                         .span().CLASS("glyphicon glyphicon-refresh")._span().content("Drop-and-Create Database")
                             ._div();
                     html._bRow() 
@@ -101,14 +102,14 @@ public class StageRibbonController extends
         //@formatter:on
     }
 
-    public ActionResult index(String originPathInfo) {
+    public ActionResult index(UrlSpec returnUrl) {
         Data data = new Data();
-        data.originPathInfo = originPathInfo;
+        data.returnUrl = returnUrl;
         return view(View.class, data);
     }
 
     @Updating
-    public ActionResult dropAndCreateDataBase(String originPathInfo) {
+    public ActionResult dropAndCreateDataBase(UrlSpec returnUrl) {
         if (stage == ApplicationStage.DEVELOPMENT) {
             log.info("Dropping and Creating DB schemas ...");
             registry.dropAndCreateSchemas();
@@ -116,7 +117,7 @@ public class StageRibbonController extends
         } else {
             log.error("Stage is not development");
         }
-        return new RedirectRenderResult(new PathInfo(originPathInfo));
+        return new RedirectRenderResult(returnUrl);
     }
 
 }

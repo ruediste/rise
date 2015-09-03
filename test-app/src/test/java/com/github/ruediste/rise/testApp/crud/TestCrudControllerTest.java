@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.openqa.selenium.WebElement;
 
 import com.github.ruediste.rise.core.persistence.TransactionTemplate;
+import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.testApp.WebTest;
 
 public class TestCrudControllerTest extends WebTest {
@@ -43,9 +44,12 @@ public class TestCrudControllerTest extends WebTest {
         if (b == null)
             b = factory.testCrudEntityB();
 
+        driver.navigate().to(url(new PathInfo("")));
+        System.out.println("PRE");
         driver.navigate().to(
                 url(go(TestCrudController.class).browse(TestCrudEntityA.class,
                         null)));
+        System.out.println("POST");
     }
 
     @Test

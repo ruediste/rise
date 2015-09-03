@@ -7,6 +7,7 @@ import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.PathInfoIndex;
 import com.github.ruediste.rise.core.web.ActionPath;
 import com.github.ruediste.rise.core.web.PathInfo;
+import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste1.i18n.label.Labeled;
 
 public class ShowAllController extends ControllerMvc<ShowAllController> {
@@ -22,13 +23,13 @@ public class ShowAllController extends ControllerMvc<ShowAllController> {
             html.h1().content("Exact").ul();
 
             for (String pathInfo : idx.getRegisteredPathInfos()) {
-                html.li().a().HREF(new PathInfo(pathInfo)).content(pathInfo)
-                        ._li();
+                html.li().a().HREF(new UrlSpec(new PathInfo(pathInfo)))
+                        .content(pathInfo)._li();
             }
             html._ul().h1().content("Prefixes").ul();
             for (String pathInfo : idx.getRegisteredPrefixes()) {
-                html.li().a().HREF(new PathInfo(pathInfo)).content(pathInfo)
-                        ._li();
+                html.li().a().HREF(new UrlSpec(new PathInfo(pathInfo)))
+                        .content(pathInfo)._li();
             }
             html._ul();
         }

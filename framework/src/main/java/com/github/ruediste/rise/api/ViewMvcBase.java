@@ -10,7 +10,6 @@ import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvas;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
-import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.integration.RiseCanvasBase;
 import com.github.ruediste.rise.mvc.IControllerMvc;
 import com.github.ruediste.rise.mvc.MvcUtil;
@@ -108,10 +107,6 @@ public abstract class ViewMvcBase<TController extends IControllerMvc, TData> {
     }
 
     public String url(ActionResult path) {
-        return util.url(path);
-    }
-
-    public String url(PathInfo path) {
         return util.url(path);
     }
 

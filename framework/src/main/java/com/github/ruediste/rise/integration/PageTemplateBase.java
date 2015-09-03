@@ -8,6 +8,7 @@ import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
 import com.github.ruediste.rise.core.web.PathInfo;
+import com.github.ruediste.rise.core.web.UrlSpec;
 
 /**
  * Provide utility functions for page templates
@@ -21,8 +22,12 @@ public class PageTemplateBase {
         return util.toPathInfo(invocation);
     }
 
-    protected String url(String pathInfo) {
-        return util.url(pathInfo);
+    protected String url(UrlSpec path) {
+        return util.url(path);
+    }
+
+    protected String url(String path) {
+        return util.url(path);
     }
 
     protected String url(PathInfo path) {

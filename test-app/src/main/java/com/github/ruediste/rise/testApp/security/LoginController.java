@@ -22,8 +22,8 @@ import com.github.ruediste.rise.core.security.authentication.AuthenticationResul
 import com.github.ruediste.rise.core.security.authentication.UserNameNotFoundAuthenticationFailure;
 import com.github.ruediste.rise.core.security.authentication.UsernamePasswordAuthenticationRequest;
 import com.github.ruediste.rise.core.security.web.AuthenticationSessionInfo;
-import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.core.web.RedirectRenderResult;
+import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste.rise.testApp.component.ViewComponent;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.Label;
@@ -31,7 +31,6 @@ import com.github.ruediste1.i18n.label.LabelUtil;
 import com.github.ruediste1.i18n.label.Labeled;
 import com.github.ruediste1.i18n.label.MembersLabeled;
 import com.github.ruediste1.i18n.label.PropertiesLabeled;
-import com.google.common.base.Strings;
 
 public class LoginController extends ControllerComponent {
     @Inject
@@ -150,31 +149,18 @@ public class LoginController extends ControllerComponent {
     @Inject
     AuthenticationSessionInfo info;
 
-    private String originalPathInfo;
+    private UrlSpec originalPathInfo;
 
     @Label("Login")
-    public ActionResult index() {
-        setOriginalPathInfoToReferer();
-        return null;
-    }
-
-    @Label("Login")
-    public ActionResult index(String originalPathInfo) {
+    public ActionResult index(UrlSpec originalPathInfo) {
         this.originalPathInfo = originalPathInfo;
         return null;
     }
 
-    public ActionResult tokenTheftDetected(String originalPathInfo) {
+    public ActionResult tokenTheftDetected(UrlSpec originalPathInfo) {
         this.originalPathInfo = originalPathInfo;
         data.get().setTokenTheftDetected(true);
         return null;
-    }
-
-    private void setOriginalPathInfoToReferer() {
-        String referer = requestInfo.getServletRequest().getHeader("Referer");
-        if (Strings.isNullOrEmpty(referer))
-            throw new RuntimeException("Referer is not set");
-        originalPathInfo = referer;
     }
 
     @Labeled
@@ -191,7 +177,7 @@ public class LoginController extends ControllerComponent {
         if (result.isSuccess()) {
             log.debug("Login sucessful");
             info.setSuccess(result.getSuccess());
-            closePage(new RedirectRenderResult(new PathInfo(originalPathInfo)));
+            closePage(new RedirectRenderResult(originalPathInfo));
         } else {
             log.debug("Login failed");
             List<LString> msgs = data.get().getMessages();

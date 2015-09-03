@@ -70,7 +70,7 @@ public class MvcUtil implements ICoreUtil {
     }
 
     public ActionResult redirect(ActionResult path) {
-        return new RedirectRenderResult(coreUtil.toPathInfo(path));
+        return new RedirectRenderResult(coreUtil.toUrlSpec(path));
     }
 
     /**

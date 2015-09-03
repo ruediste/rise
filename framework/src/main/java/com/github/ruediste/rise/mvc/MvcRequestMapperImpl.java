@@ -13,7 +13,7 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 /**
  * Registers the {@link ControllerMvc}s with the {@link PathInfoIndex} during
  * {@link #initialize()} and supports URL generation by providing
- * {@link #generate(ActionInvocation)}
+ * {@link #generate(ActionInvocation, String)}
  */
 public class MvcRequestMapperImpl extends RequestMapperBase {
     @Inject

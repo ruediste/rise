@@ -59,7 +59,7 @@ public class DefaultAuthenticationManager implements AuthenticationManager {
                 .resolveType(
                         AuthenticationProvider.class.getTypeParameters()[0])
                 .getRawType();
-        addProvider(type, provider);
+        addProvider(type, (AuthenticationProvider) provider);
     }
 
     public <T extends AuthenticationRequest> void addProvider(

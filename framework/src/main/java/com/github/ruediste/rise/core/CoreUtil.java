@@ -17,6 +17,7 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.httpRequest.HttpRequestImpl;
 import com.github.ruediste.rise.core.web.PathInfo;
+import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste.rise.nonReloadable.NonRestartable;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.LabelUtil;
@@ -52,13 +53,25 @@ public class CoreUtil implements ICoreUtil {
     }
 
     @Override
-    public PathInfo toPathInfo(ActionInvocation<Object> invocation) {
-        return coreConfiguration.toPathInfo(toStringInvocation(invocation));
+    public PathInfo toPathInfo(ActionInvocation<String> invocation) {
+        return toUrlSpec(invocation).getPathInfo();
+    }
+
+    @Override
+    public UrlSpec toUrlSpec(ActionResult actionResult) {
+        return toUrlSpec(toStringInvocation(actionResult));
+    }
+
+    @Override
+    public UrlSpec toUrlSpec(ActionInvocation<String> invocation) {
+        return coreConfiguration.toUrlSpec(invocation, coreRequestInfo
+                .getServletRequest().getSession().getId());
     }
 
     @Override
     public PathInfo toPathInfo(ActionResult invocation) {
-        return toPathInfo(toActionInvocation(invocation));
+        return getCoreUtil().toPathInfo(
+                toStringInvocation(toActionInvocation(invocation)));
     }
 
     @Override
@@ -78,6 +91,10 @@ public class CoreUtil implements ICoreUtil {
         return stringInvocation.mapWithType(coreConfiguration::parseArgument);
     }
 
+    public ActionInvocation<String> toStringInvocation(ActionResult actionResult) {
+        return toStringInvocation(toActionInvocation(actionResult));
+    }
+
     @Override
     public ActionInvocation<String> toStringInvocation(
             ActionInvocation<Object> invocation) {
@@ -91,34 +108,40 @@ public class CoreUtil implements ICoreUtil {
     }
 
     @Override
+    public String url(UrlSpec spec) {
+        String url = contextPath;
+        url += coreRequestInfo.getServletRequest().getServletPath();
+        url += spec.urlSuffix();
+        return coreRequestInfo.getServletResponse().encodeURL(url);
+    }
+
+    @Override
     public String url(String pathInfo) {
         return url(new PathInfo(pathInfo));
     }
 
     @Override
     public String url(PathInfo path) {
-        String prefix = contextPath;
-        prefix += coreRequestInfo.getServletRequest().getServletPath();
-        return coreRequestInfo.getServletResponse().encodeURL(
-                prefix + path.getValue());
+        return url(new UrlSpec(path));
     }
 
     @Override
     public String url(ActionResult path) {
-        return url(toPathInfo(path));
+        return url(toUrlSpec(path));
     }
 
     @Override
-    public String redirectUrl(PathInfo path) {
+    public String redirectUrl(UrlSpec path) {
         String prefix = coreRequestInfo.getServletRequest().getContextPath();
         prefix += coreRequestInfo.getServletRequest().getServletPath();
         return coreRequestInfo.getServletResponse().encodeRedirectURL(
-                prefix + path.getValue());
+                prefix + path.urlSuffix());
     }
 
     @Override
     public HttpRequest toHttpRequest(ActionInvocation<Object> invocation) {
-        return new HttpRequestImpl(toPathInfo(invocation));
+        return new HttpRequestImpl(getCoreUtil().toPathInfo(
+                toStringInvocation(invocation)));
     }
 
     @Override

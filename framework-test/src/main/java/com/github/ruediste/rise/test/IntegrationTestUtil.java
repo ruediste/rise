@@ -4,9 +4,11 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import com.github.ruediste.rise.core.ActionResult;
+import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.web.PathInfo;
+import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste.rise.mvc.MvcUtil;
 
 @Singleton
@@ -24,11 +26,20 @@ public class IntegrationTestUtil {
     @Inject
     CoreUtil coreUtil;
 
-    public String url(ActionResult result) {
-        return url(coreUtil.toPathInfo(result));
+    @Inject
+    CoreConfiguration config;
+
+    public String url(ActionResult result, String sessionId) {
+        return url(config.toUrlSpec(coreUtil.toStringInvocation(result),
+                sessionId));
+    }
+
+    public String url(UrlSpec spec) {
+        return baseUrl + spec.urlSuffix();
     }
 
     public String url(PathInfo pathInfo) {
+
         return baseUrl + pathInfo.getValue();
     }
 

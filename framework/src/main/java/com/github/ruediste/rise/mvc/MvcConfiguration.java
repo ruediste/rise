@@ -53,15 +53,15 @@ public class MvcConfiguration {
 
     @PostConstruct
     void setupActionInvocationToPathInfoMappingFunction() {
-        coreConfiguration.actionInvocationToPathInfoMappingFunctions
-                .add(invocation -> {
-                    if (IControllerMvc.class
-                            .isAssignableFrom(invocation.methodInvocation
-                                    .getInstanceClass()))
-                        return Optional.of(mapper.generate(invocation));
-                    else
-                        return Optional.empty();
-                });
+        coreConfiguration.actionInvocationToUrlSpecMappingFunctions.add((
+                invocation, sessionId) -> {
+            if (IControllerMvc.class
+                    .isAssignableFrom(invocation.methodInvocation
+                            .getInstanceClass()))
+                return Optional.of(mapper.generate(invocation, sessionId));
+            else
+                return Optional.empty();
+        });
     }
 
     public final LinkedList<Supplier<ChainedRequestHandler>> handlerSuppliers = new LinkedList<>();

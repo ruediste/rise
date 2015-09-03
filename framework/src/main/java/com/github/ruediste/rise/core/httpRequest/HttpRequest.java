@@ -4,6 +4,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.github.ruediste.rise.core.web.PathInfo;
+import com.github.ruediste.rise.core.web.UrlSpec;
+
 /**
  * A reduced view of a {@link HttpServletRequest}
  * 
@@ -48,4 +51,8 @@ public interface HttpRequest {
      * Return {@link #getPathInfo()} with the parameters appended
      */
     String getPathWithParameters();
+
+    default UrlSpec createUrlSpec() {
+        return new UrlSpec(new PathInfo(getPathInfo()), getParameterMap());
+    }
 }

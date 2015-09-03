@@ -7,6 +7,7 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.web.PathInfo;
+import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.LabelUtil;
 
@@ -20,6 +21,10 @@ public interface ICoreUtil {
 
     default String url(PathInfo path) {
         return getCoreUtil().url(path);
+    }
+
+    default String url(UrlSpec spec) {
+        return getCoreUtil().url(spec);
     }
 
     default String url(String pathInfo) {
@@ -43,10 +48,6 @@ public interface ICoreUtil {
     default ActionInvocation<Object> toObjectInvocation(
             ActionInvocation<String> stringInvocation) {
         return getCoreUtil().toObjectInvocation(stringInvocation);
-    }
-
-    default PathInfo toPathInfo(ActionInvocation<Object> invocation) {
-        return getCoreUtil().toPathInfo(invocation);
     }
 
     default PathInfo toPathInfo(ActionResult invocation) {
@@ -82,7 +83,7 @@ public interface ICoreUtil {
         return getCoreUtil().toString(string);
     }
 
-    default String redirectUrl(PathInfo path) {
+    default String redirectUrl(UrlSpec path) {
         return getCoreUtil().redirectUrl(path);
     }
 
@@ -96,5 +97,17 @@ public interface ICoreUtil {
      */
     default String urlStatic(PathInfo path) {
         return getCoreUtil().urlStatic(path);
+    }
+
+    default UrlSpec toUrlSpec(ActionInvocation<String> invocation) {
+        return getCoreUtil().toUrlSpec(invocation);
+    }
+
+    default UrlSpec toUrlSpec(ActionResult actionResult) {
+        return getCoreUtil().toUrlSpec(actionResult);
+    }
+
+    default PathInfo toPathInfo(ActionInvocation<String> invocation) {
+        return getCoreUtil().toPathInfo(invocation);
     }
 }

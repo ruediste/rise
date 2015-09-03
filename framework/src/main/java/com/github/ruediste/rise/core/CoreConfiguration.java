@@ -33,6 +33,7 @@ import com.github.ruediste.rise.core.argumentSerializer.StringSerializer;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.core.web.RedirectRenderResult;
+import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.integration.RiseCanvas;
 import com.github.ruediste.rise.integration.RiseCanvasBase;
@@ -221,15 +222,16 @@ public class CoreConfiguration {
         throw new RuntimeException("No argument serializer found for " + type);
     }
 
-    public List<Function<ActionInvocation<String>, Optional<PathInfo>>> actionInvocationToPathInfoMappingFunctions = new ArrayList<>();
+    public List<BiFunction<ActionInvocation<String>, String, Optional<UrlSpec>>> actionInvocationToUrlSpecMappingFunctions = new ArrayList<>();
 
-    public PathInfo toPathInfo(ActionInvocation<String> invocation) {
-        for (Function<ActionInvocation<String>, Optional<PathInfo>> f : actionInvocationToPathInfoMappingFunctions) {
-            Optional<PathInfo> result = f.apply(invocation);
+    public UrlSpec toUrlSpec(ActionInvocation<String> invocation,
+            String sessionId) {
+        for (BiFunction<ActionInvocation<String>, String, Optional<UrlSpec>> f : actionInvocationToUrlSpecMappingFunctions) {
+            Optional<UrlSpec> result = f.apply(invocation, sessionId);
             if (result.isPresent())
                 return result.get();
         }
-        throw new RuntimeException("No PathInfo generation function found for "
+        throw new RuntimeException("No UrlSpec generation function found for "
                 + invocation);
     }
 
@@ -319,17 +321,23 @@ public class CoreConfiguration {
     @Inject
     Provider<CoreUtil> coreUtil;
 
+    /**
+     * Set the login handler. The function will retrieve the {@link CoreUtil},
+     * the {@link UrlSpec} of the path to return to and has to return the
+     * {@link ActionResult} of calling {@link CoreUtil#go(Class)} with a
+     * controller.
+     */
     public void setLoginHandler(
-            BiFunction<CoreUtil, String, ActionResult> factory) {
+            BiFunction<CoreUtil, UrlSpec, ActionResult> factory) {
         loginLocationFactory = createRedirector(factory);
     }
 
     private Runnable createRedirector(
-            BiFunction<CoreUtil, String, ActionResult> factory) {
+            BiFunction<CoreUtil, UrlSpec, ActionResult> factory) {
         return () -> coreRequestInfo.get().setActionResult(
-                new RedirectRenderResult(coreUtil.get().toPathInfo(
+                new RedirectRenderResult(coreUtil.get().toUrlSpec(
                         factory.apply(coreUtil.get(), coreRequestInfo.get()
-                                .getServletRequest().getPathInfo()))));
+                                .getRequest().createUrlSpec()))));
     }
 
     public Runnable loginHandler() {
@@ -345,7 +353,15 @@ public class CoreConfiguration {
     }
 
     public void setRememberMeTokenTheftHandler(
-            BiFunction<CoreUtil, String, ActionResult> factory) {
+            BiFunction<CoreUtil, UrlSpec, ActionResult> factory) {
         rememberMeTokenTheftHandler = createRedirector(factory);
     }
+
+    public boolean doUrlSigning = true;
+
+    /**
+     * The number of bytes to use for the URL signature. The SIGN parameter in
+     * the URL will be about three times that long (Base64 encoding, salt, hash)
+     */
+    public int urlSignatureBytes = 20;
 }
