@@ -11,6 +11,9 @@ import java.util.Map.Entry;
 
 import javax.inject.Inject;
 
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.InvocationHandler;
+
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
@@ -33,6 +36,7 @@ import com.github.ruediste.rise.util.MethodInvocation;
 import com.github.ruediste.rise.util.Pair;
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Iterables;
@@ -72,20 +76,16 @@ public abstract class RequestMapperBase implements RequestMapper {
     CoreRequestInfo coreRequestInfo;
 
     /**
-     * Map controller methods to their prefixes. Prefixes do not include a final
-     * "." or "/". Used for {@link #generate(ActionInvocation, String)}.
+     * Map controller instance classes and methods to their prefixes. Prefixes
+     * do not include a final "." or "/". Used for
+     * {@link #generate(ActionInvocation, String)}.
      */
     final HashMap<Pair<String, MethodRef>, String> methodToPrefixMap = new HashMap<>();
 
     /**
-     * Map controller methods to prefixes. Unlike {@link #methodToPrefixMap},
-     * the instance class of the controller is not included. The entries are
-     * only used if there is exactly one prefix per {@link MethodRef}. The map
-     * allows {@link #generate(ActionInvocation, String)} to generate paths if
-     * the base class is given instead of the actual registered controller
-     * class.
+     * Map from controller classes to their implementations.
      */
-    final Multimap<MethodRef, String> baseMethodToPrefixMap = MultimapBuilder
+    final Multimap<String, String> controllerImplementationsMap = MultimapBuilder
             .hashKeys().arrayListValues().build();
 
     /**
@@ -115,17 +115,17 @@ public abstract class RequestMapperBase implements RequestMapper {
         String controllerName = coreConfig.calculateControllerName(cls);
         log.debug("found controller " + cls.name + " -> " + controllerName);
 
-        HashSet<String> subclassMethods = new HashSet<>();
+        // override descriptions for the methods already registered. Used
+        // to avoid registering overridden methods
+        HashSet<String> registeredMethods = new HashSet<>();
 
         // build method name map
         BiMap<MethodRef, String> methodNameMap = HashBiMap.create();
         actionMethodNameMap.put(cls.name, methodNameMap);
 
         ClassNode instanceCls = cls;
-        // TODO: testing
         while (cls != null) {
-            HashSet<String> addedMethods = new HashSet<>();
-
+            controllerImplementationsMap.put(cls.name, instanceCls.name);
             if (cls.methods != null)
                 for (MethodNode m : cls.methods) {
                     if (!util.isActionMethod(m)) {
@@ -135,9 +135,9 @@ public abstract class RequestMapperBase implements RequestMapper {
 
                     String overrideDesc = AsmUtil.getOverrideDesc(m.name,
                             m.desc);
-                    if (subclassMethods.contains(overrideDesc))
+                    if (registeredMethods.contains(overrideDesc))
                         continue;
-                    addedMethods.add(overrideDesc);
+                    registeredMethods.add(overrideDesc);
                     log.debug("found action method " + name);
 
                     // find unique name
@@ -167,35 +167,48 @@ public abstract class RequestMapperBase implements RequestMapper {
                             idx.registerPathInfo(prefix, new RequestParser() {
                                 @Override
                                 public RequestParseResult parse(HttpRequest req) {
-                                    return createParseResult(createInvocation(
-                                            instanceCls, methodRef));
+                                    ActionInvocation<String> invocation = createInvocation(
+                                            instanceCls, methodRef);
+                                    if (shouldDoUrlSigning(invocation.methodInvocation
+                                            .getMethod())) {
+                                        Hasher hasher = createHasher("parse");
+                                        byte[] hash = prepareParseUrlSignatureHasher(
+                                                hasher, prefix, req,
+                                                coreRequestInfo
+                                                        .getServletRequest()
+                                                        .getSession().getId());
+                                        if (!urlSignatureHelper.slowEquals(
+                                                hash,
+                                                Arrays.copyOfRange(
+                                                        hasher.hash().asBytes(),
+                                                        0,
+                                                        coreConfig.urlSignatureBytes))) {
+                                            throw new RuntimeException(
+                                                    "URL signature did not match");
+                                        }
+                                    }
+                                    return createParseResult(invocation);
                                 }
 
                                 @Override
                                 public String toString() {
-                                    return "MvcRequestParser[" + methodRef
-                                            + "]";
+                                    return "RequestParser[" + methodRef + "]";
                                 };
                             });
                         }
                     } else {
                         // there are parameters
                         for (String prefix : pathInfos.pathInfos) {
-                            String s = prefix + "/";
-
                             idx.registerPrefix(
-                                    s,
-                                    req -> createParseResult(parse(s,
+                                    prefix + "/",
+                                    req -> createParseResult(parse(prefix,
                                             instanceCls, methodRef, req)));
                         }
                     }
 
                     methodToPrefixMap.put(Pair.of(instanceCls.name, methodRef),
                             pathInfos.primaryPathInfo);
-                    baseMethodToPrefixMap.put(methodRef,
-                            pathInfos.primaryPathInfo);
                 }
-            subclassMethods.addAll(addedMethods);
             cls = cache.tryGetNode(cls.superName).orElse(null);
         }
 
@@ -207,7 +220,7 @@ public abstract class RequestMapperBase implements RequestMapper {
     /**
      * Parse a request. The prefix must include the method name and the first
      * "/". The remaining pathInfo has the form
-     * 
+     *
      * <pre>
      * ({argument}("/"{argument})*)?
      * </pre>
@@ -236,19 +249,9 @@ public abstract class RequestMapperBase implements RequestMapper {
         Hasher hasher = null;
         byte[] hash = null;
         if (urlSign) {
-            byte[] signature = Base64.getUrlDecoder().decode(
-                    request.getParameter(SIGNATURE_PARAMETER_NAME));
-            System.out.println("parsed sign: " + Arrays.toString(signature));
-            hash = Arrays.copyOfRange(signature, coreConfig.urlSignatureBytes,
-                    signature.length);
-
-            hasher = Hashing.sha256().newHasher();
-            urlSignatureHelper.hashSecret(hasher);
-            hasher.putString(sessionId, Charsets.UTF_8);
-            byte[] salt = Arrays.copyOfRange(signature, 0,
-                    coreConfig.urlSignatureBytes);
-            hasher.putBytes(salt);
-            hasher.putString(prefix, Charsets.UTF_8);
+            hasher = createHasher("parse");
+            hash = prepareParseUrlSignatureHasher(hasher, prefix, request,
+                    sessionId);
         }
 
         String remaining = request.getPathInfo().substring(prefix.length(),
@@ -257,7 +260,8 @@ public abstract class RequestMapperBase implements RequestMapper {
         // collect arguments
         if (!remaining.isEmpty()) {
             int i = 0;
-            for (String arg : Splitter.on('/').splitToList(remaining)) {
+            for (String arg : Splitter.on('/').splitToList(
+                    remaining.substring(1))) {
                 invocation.methodInvocation.getArguments().add(arg);
                 if (urlSign
                         && !method.getParameters()[i]
@@ -284,6 +288,30 @@ public abstract class RequestMapperBase implements RequestMapper {
         }
         return invocation;
 
+    }
+
+    private byte[] prepareParseUrlSignatureHasher(Hasher hasher, String prefix,
+            HttpRequest request, String sessionId) {
+        byte[] hash;
+        String signatureStr = request.getParameter(SIGNATURE_PARAMETER_NAME);
+        if (Strings.isNullOrEmpty(signatureStr))
+            throw new RuntimeException("Missing URL signature");
+        byte[] signature = Base64.getUrlDecoder().decode(signatureStr);
+        hash = Arrays.copyOfRange(signature, coreConfig.urlSignatureBytes,
+                signature.length);
+        byte[] salt = Arrays.copyOfRange(signature, 0,
+                coreConfig.urlSignatureBytes);
+
+        prepareUrlSignatureHasher(hasher, prefix, sessionId, salt);
+        return hash;
+    }
+
+    private void prepareUrlSignatureHasher(Hasher hasher, String prefix,
+            String sessionId, byte[] salt) {
+        urlSignatureHelper.hashSecret(hasher);
+        hasher.putString(sessionId, Charsets.UTF_8);
+        hasher.putBytes(salt);
+        hasher.putString(prefix, Charsets.UTF_8);
     }
 
     /**
@@ -314,36 +342,32 @@ public abstract class RequestMapperBase implements RequestMapper {
         Method method = path.methodInvocation.getMethod();
         boolean urlSign = shouldDoUrlSigning(method);
 
+        StringBuilder sb = new StringBuilder();
+        MethodRef ref = MethodRef.of(method);
+
+        String prefix;
+        {
+            String controllerInternalName = Type
+                    .getInternalName(path.methodInvocation.getInstanceClass());
+
+            String controllerImplementationName = getControllerImplementation(controllerInternalName);
+            prefix = methodToPrefixMap.get(Pair.of(
+                    controllerImplementationName, ref));
+
+            if (prefix == null)
+                throw new RuntimeException("Unable to find prefix for\n" + ref
+                        + "\nfor instance class "
+                        + path.methodInvocation.getInstanceClass().getName());
+        }
+
+        sb.append(prefix);
+
         Hasher hasher = null;
         byte[] salt = null;
         if (urlSign) {
-            hasher = Hashing.sha256().newHasher();
-            urlSignatureHelper.hashSecret(hasher);
-            hasher.putString(sessionId, Charsets.UTF_8);
+            hasher = createHasher("generate");
             salt = urlSignatureHelper.createSalt(coreConfig.urlSignatureBytes);
-            hasher.putBytes(salt);
-        }
-
-        StringBuilder sb = new StringBuilder();
-        MethodRef ref = MethodRef.of(method);
-        String prefix = methodToPrefixMap.get(Pair.of(
-                Type.getInternalName(path.methodInvocation.getInstanceClass()),
-                ref));
-
-        // try the base map
-        if (prefix == null) {
-            Collection<String> prefixes = baseMethodToPrefixMap.get(ref);
-            if (prefixes.size() == 1)
-                prefix = Iterables.getOnlyElement(prefixes);
-        }
-
-        if (prefix == null)
-            throw new RuntimeException("Unable to find prefix for\n" + ref
-                    + "\nfor instance class "
-                    + path.methodInvocation.getInstanceClass().getName());
-        sb.append(prefix);
-        if (urlSign) {
-            hasher.putString(prefix, Charsets.UTF_8);
+            prepareUrlSignatureHasher(hasher, prefix, sessionId, salt);
         }
 
         // add arguments
@@ -371,12 +395,58 @@ public abstract class RequestMapperBase implements RequestMapper {
             byte[] signature = new byte[length * 2];
             System.arraycopy(salt, 0, signature, 0, length);
             System.arraycopy(hash, 0, signature, length, length);
-            System.out.println("gen sign: " + Arrays.toString(signature));
             parameters.add(Pair.of(SIGNATURE_PARAMETER_NAME, Base64
                     .getUrlEncoder().encodeToString(signature)));
         }
         return new UrlSpec(new PathInfo(sb.toString()), parameters);
 
+    }
+
+    @Override
+    public Class<?> getControllerImplementationClass(
+            Class<?> controllerBaseClass) {
+        String controllerImplementation = getControllerImplementation(Type
+                .getInternalName(controllerBaseClass));
+        return AsmUtil.loadClass(Type.getObjectType(controllerImplementation),
+                coreConfig.dynamicClassLoader);
+    }
+
+    /**
+     * Return the internal name of the class implementing the given controller
+     * class
+     */
+    private String getControllerImplementation(String controllerInternalName) {
+        Collection<String> implementations = controllerImplementationsMap
+                .get(controllerInternalName);
+        if (implementations.size() == 0)
+            throw new RuntimeException("No implementation for "
+                    + controllerInternalName + " found");
+
+        if (implementations.size() > 1)
+            throw new RuntimeException("Multiple implementations for "
+                    + controllerInternalName + " found");
+
+        String controllerImplementationName = Iterables
+                .getOnlyElement(implementations);
+        return controllerImplementationName;
+    }
+
+    private Hasher createHasher(String name) {
+        Hasher result = Hashing.sha256().newHasher();
+        if (log.isTraceEnabled()) {
+            return (Hasher) Enhancer.create(Hasher.class,
+                    new InvocationHandler() {
+
+                        @Override
+                        public Object invoke(Object proxy, Method method,
+                                Object[] args) throws Throwable {
+                            log.trace(name + "." + method.getName() + " "
+                                    + Arrays.toString(args));
+                            return method.invoke(result, args);
+                        }
+                    });
+        } else
+            return result;
     }
 
     private boolean shouldDoUrlSigning(Method method) {

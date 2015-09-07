@@ -222,17 +222,17 @@ public class CoreConfiguration {
         throw new RuntimeException("No argument serializer found for " + type);
     }
 
-    public List<BiFunction<ActionInvocation<String>, String, Optional<UrlSpec>>> actionInvocationToUrlSpecMappingFunctions = new ArrayList<>();
+    public List<Function<Class<?>, Optional<RequestMapper>>> requestMapperProviders = new ArrayList<>();
 
-    public UrlSpec toUrlSpec(ActionInvocation<String> invocation,
-            String sessionId) {
-        for (BiFunction<ActionInvocation<String>, String, Optional<UrlSpec>> f : actionInvocationToUrlSpecMappingFunctions) {
-            Optional<UrlSpec> result = f.apply(invocation, sessionId);
-            if (result.isPresent())
-                return result.get();
+    public RequestMapper getRequestMapper(Class<?> controllerClass) {
+        for (Function<Class<?>, Optional<RequestMapper>> provider : requestMapperProviders) {
+            Optional<RequestMapper> mapper = provider.apply(controllerClass);
+            if (mapper.isPresent())
+                return mapper.get();
         }
-        throw new RuntimeException("No UrlSpec generation function found for "
-                + invocation);
+        throw new RuntimeException(
+                "No request mapper found for controller class "
+                        + controllerClass.getName());
     }
 
     public PathInfo restartQueryPathInfo = new PathInfo("/~riseRestartQuery");

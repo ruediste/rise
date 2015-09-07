@@ -16,8 +16,9 @@ public class CrudDeletePO extends PageObject {
     }
 
     public CrudBrowserPO delete() {
-        clickAndWaitForRefresh(driver.findElement(byDataTestName(
-                DefaultCrudDeleteController.class, x -> x.delete())));
+        driver.findElement(
+                byDataTestName(DefaultCrudDeleteController.class,
+                        x -> x.delete())).click();
         return new CrudBrowserPO(driver);
     }
 }

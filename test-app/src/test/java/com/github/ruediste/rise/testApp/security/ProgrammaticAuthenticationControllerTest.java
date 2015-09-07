@@ -9,6 +9,7 @@ import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.security.web.rememberMe.InMemoryRememberMeTokenDao;
 import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeAuthenticationProvider;
 import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeToken;
+import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.testApp.WebTest;
 
 public class ProgrammaticAuthenticationControllerTest extends WebTest {
@@ -30,7 +31,7 @@ public class ProgrammaticAuthenticationControllerTest extends WebTest {
 
     @Test
     public void testAuthenticationRequired() throws Exception {
-        driver.manage().deleteAllCookies();
+        deleteAllCookies();
         loadAuthRequired();
         new LoginPO(driver).defaultLogin();
         assertPage(ProgrammaticAuthenticationController.class,
@@ -39,8 +40,7 @@ public class ProgrammaticAuthenticationControllerTest extends WebTest {
 
     @Test
     public void testAuthenticationRequired_tokenTheft() throws Exception {
-        // login
-        driver.manage().deleteAllCookies();
+        deleteAllCookies();
         loadAuthRequired();
         new LoginPO(driver).defaultLogin();
 
@@ -65,7 +65,7 @@ public class ProgrammaticAuthenticationControllerTest extends WebTest {
     @Test
     public void testAuthenticationRequired_useRememberMe() throws Exception {
         // perform normal login
-        driver.manage().deleteAllCookies();
+        deleteAllCookies();
         loadAuthRequired();
         new LoginPO(driver).defaultLogin();
         assertPage(ProgrammaticAuthenticationController.class,
@@ -77,10 +77,14 @@ public class ProgrammaticAuthenticationControllerTest extends WebTest {
         assertPage(ProgrammaticAuthenticationController.class,
                 x -> x.authenticationRequired());
 
-        // clear all cookies, will result in new login required
-        driver.manage().deleteAllCookies();
+        deleteAllCookies();
         loadAuthRequired();
         new LoginPO(driver);
+    }
+
+    private void deleteAllCookies() {
+        driver.manage().deleteAllCookies();
+        driver.get(url(new PathInfo("")));
     }
 
     private void clearSession() {

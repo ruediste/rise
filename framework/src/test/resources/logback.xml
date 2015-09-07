@@ -10,10 +10,10 @@
     </encoder>
   </appender>
 
-  <root level="INFO">          
+  <root level="INFO">
     <appender-ref ref="STDOUT" />
   </root>
-  
+
 <!--   <logger name="chapters.configuration" level="INFO"/> -->
 <!--   <logger name="bitronix.tm.resource.common.XAPool" level="DEBUG"/> -->
 

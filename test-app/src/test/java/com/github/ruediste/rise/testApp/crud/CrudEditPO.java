@@ -16,6 +16,7 @@ public class CrudEditPO extends PageObject {
 
     protected CrudEditPO(WebDriver driver) {
         super(driver);
+        assertPage(CrudControllerBase.class, x -> x.edit(null));
     }
 
     public String getPropertyText(String propertyName) {

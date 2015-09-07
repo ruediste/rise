@@ -12,10 +12,10 @@
 
 <!--   <logger name="chapters.configuration" level="INFO"/> -->
 
-  <root level="INFO">          
+  <root level="INFO">
     <appender-ref ref="STDOUT" />
-  </root>  
-   
+  </root>
+
 <!--   	<logger name="com.github.ruediste.rise.core.RequestMapperBase" -->
 <!-- 		level="DEBUG" />  -->
 <!--   	<logger name="com.github.ruediste.rise.core.PathInfoIndexBase" -->
@@ -28,6 +28,7 @@
 <!-- 		level="TRACE" />  -->
 <!--   	<logger name="com.github.ruediste.rise.nonReloadable.front.reload.ClassPathScanningStarter" -->
 <!-- 		level="TRACE" />  -->
-  	<logger name="com.github.ruediste.rise.core.security"
-		level="TRACE" /> 
+	<!-- <logger name="com.github.ruediste.rise.core.security" -->
+	<!-- level="TRACE" /> -->
+		  <logger name="com.github.ruediste.rise.core.RequestMapperBase" level="TRACE"/>
 </configuration>

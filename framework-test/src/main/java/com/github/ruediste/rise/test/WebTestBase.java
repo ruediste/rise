@@ -1,5 +1,7 @@
 package com.github.ruediste.rise.test;
 
+import static org.junit.Assert.assertNotNull;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.servlet.Servlet;
@@ -49,6 +51,9 @@ public abstract class WebTestBase implements TestUtil {
 
     protected String url(ActionResult result) {
         Cookie sessionId = driver.manage().getCookieNamed("JSESSIONID");
+        assertNotNull(
+                "No session present. Access page before using the driver",
+                sessionId);
         return util.url(result, sessionId.getValue());
     }
 
@@ -91,6 +96,7 @@ public abstract class WebTestBase implements TestUtil {
             testContainerInstance.injector = injector;
             testContainerInstance.isStarted = true;
             testContainerInstance.driver = createDriver();
+            testContainerInstance.driver.navigate().to(url(new PathInfo("")));
             Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
                 @Override
                 public void run() {

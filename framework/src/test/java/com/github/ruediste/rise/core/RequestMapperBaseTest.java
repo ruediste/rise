@@ -103,6 +103,8 @@ public class RequestMapperBaseTest {
     ClassNode b = AsmUtil.readClass(B.class);
     MethodRef a_a = new MethodRef(a.name, "a", "()"
             + Type.getDescriptor(ActionResult.class));
+    MethodRef a_c = new MethodRef(a.name, "c", "(Ljava/lang/Integer;)"
+            + Type.getDescriptor(ActionResult.class));
 
     String sessionId = "12345";
 
@@ -178,6 +180,20 @@ public class RequestMapperBaseTest {
             if (!e.getMessage().contains("URL signature"))
                 throw e;
         }
+    }
+
+    @Test
+    public void roundtripWithArg() throws Exception {
+        mapper.register(a);
+        ActionInvocation<String> invocation = new ActionInvocation<>();
+        invocation.methodInvocation = new MethodInvocation<>(A.class,
+                A.class.getMethod("c", Integer.class));
+        invocation.methodInvocation.getArguments().add("1");
+
+        UrlSpec spec = mapper.generate(invocation, sessionId);
+        ActionInvocation<String> parsed = mapper.parse("/a.c", a, a_c,
+                new HttpRequestImpl(spec), sessionId);
+        assertNotNull(parsed);
     }
 
     private ActionInvocation<String> createInvocationToA_a()

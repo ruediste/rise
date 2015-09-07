@@ -11,8 +11,10 @@ import java.util.function.Consumer;
 import junit.framework.AssertionFailedError;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.github.ruediste.c3java.invocationRecording.MethodInvocation;
@@ -30,8 +32,9 @@ public interface TestUtil {
         return new WebDriverWait(internal_getDriver(), defaultWaitSeconds);
     }
 
-    default WebDriverWait doWait(long timeOutInSeconds) {
-        return new WebDriverWait(internal_getDriver(), timeOutInSeconds);
+    default FluentWait<WebDriver> doWait(long timeOutInSeconds) {
+        return new WebDriverWait(internal_getDriver(), timeOutInSeconds)
+                .ignoring(StaleElementReferenceException.class);
     }
 
     default <T> void assertPage(Class<T> cls, Consumer<T> methodAccessor) {

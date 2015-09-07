@@ -11,6 +11,8 @@ public interface RequestMapper {
      */
     UrlSpec generate(ActionInvocation<String> invocation, String sessionId);
 
+    Class<?> getControllerImplementationClass(Class<?> controllerBaseClass);
+
     /**
      * Prepare this mapper for use
      */

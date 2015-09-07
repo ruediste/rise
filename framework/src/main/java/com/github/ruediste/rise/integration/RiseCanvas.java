@@ -120,7 +120,7 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends
             Consumer<ActionResult> ifTrue, Consumer<ActionResult> ifFalse) {
         MethodInvocation<Object> invocation = internal_riseHelper().getUtil()
                 .toActionInvocation(target).methodInvocation;
-        Object targetObj = internal_riseHelper().getInstance(
+        Object targetObj = internal_riseHelper().getControllerAuthzInstance(
                 invocation.getInstanceClass());
         if (Authz.isAuthorized(targetObj, invocation.getMethod(), invocation
                 .getArguments().toArray()))

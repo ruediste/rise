@@ -30,7 +30,7 @@ public class IntegrationTestUtil {
     CoreConfiguration config;
 
     public String url(ActionResult result, String sessionId) {
-        return url(config.toUrlSpec(coreUtil.toStringInvocation(result),
+        return url(coreUtil.toUrlSpec(coreUtil.toStringInvocation(result),
                 sessionId));
     }
 

@@ -5,6 +5,7 @@ import javax.inject.Inject;
 import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.PathInfoIndex;
+import com.github.ruediste.rise.core.security.urlSigning.UrlUnsigned;
 import com.github.ruediste.rise.core.web.ActionPath;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.core.web.UrlSpec;
@@ -21,11 +22,11 @@ public class ShowAllController extends ControllerMvc<ShowAllController> {
         @Override
         public void renderContent(TestCanvas html) {
             html.h1().content("Exact").ul();
-
             for (String pathInfo : idx.getRegisteredPathInfos()) {
                 html.li().a().HREF(new UrlSpec(new PathInfo(pathInfo)))
                         .content(pathInfo)._li();
             }
+
             html._ul().h1().content("Prefixes").ul();
             for (String pathInfo : idx.getRegisteredPrefixes()) {
                 html.li().a().HREF(new UrlSpec(new PathInfo(pathInfo)))
@@ -36,6 +37,7 @@ public class ShowAllController extends ControllerMvc<ShowAllController> {
 
     }
 
+    @UrlUnsigned
     @ActionPath(value = "/", primary = true)
     public ActionResult index() {
         return view(View.class, null);

@@ -6,6 +6,7 @@ import javax.persistence.EntityManager;
 import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.persistence.Updating;
+import com.github.ruediste.rise.core.security.urlSigning.UrlUnsigned;
 
 public class CrudInvocationController extends
         ControllerMvc<CrudInvocationController> {
@@ -13,6 +14,7 @@ public class CrudInvocationController extends
     @Inject
     EntityManager em;
 
+    @UrlUnsigned
     @Updating
     public ActionResult browseTestEnties() {
         TestCrudEntityA e = new TestCrudEntityA();

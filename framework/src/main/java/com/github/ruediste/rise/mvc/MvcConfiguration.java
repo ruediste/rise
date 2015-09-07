@@ -53,13 +53,10 @@ public class MvcConfiguration {
 
     @PostConstruct
     void setupActionInvocationToPathInfoMappingFunction() {
-        coreConfiguration.actionInvocationToUrlSpecMappingFunctions.add((
-                invocation, sessionId) -> {
-            if (IControllerMvc.class
-                    .isAssignableFrom(invocation.methodInvocation
-                            .getInstanceClass()))
-                return Optional.of(mapper.generate(invocation, sessionId));
-            else
+        coreConfiguration.requestMapperProviders.add(controllerClass -> {
+            if (IControllerMvc.class.isAssignableFrom(controllerClass)) {
+                return Optional.of(mapper);
+            } else
                 return Optional.empty();
         });
     }

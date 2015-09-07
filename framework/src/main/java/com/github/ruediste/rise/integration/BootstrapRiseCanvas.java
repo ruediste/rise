@@ -29,7 +29,7 @@ public interface BootstrapRiseCanvas<TSelf extends BootstrapRiseCanvas<TSelf>>
 
         TSelf result = bButtonA(() -> {
             args.accept(buttonArgs);
-            Object instance = internal_riseHelper().getInstance(
+            Object instance = internal_riseHelper().getControllerAuthzInstance(
                     actionInvocation.methodInvocation.getInstanceClass());
             if (!Authz.isAuthorized(instance,
                     actionInvocation.methodInvocation.getMethod(),

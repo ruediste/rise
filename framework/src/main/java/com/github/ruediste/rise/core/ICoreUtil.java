@@ -103,6 +103,11 @@ public interface ICoreUtil {
         return getCoreUtil().toUrlSpec(invocation);
     }
 
+    default UrlSpec toUrlSpec(ActionInvocation<String> invocation,
+            String sessionId) {
+        return getCoreUtil().toUrlSpec(invocation, sessionId);
+    }
+
     default UrlSpec toUrlSpec(ActionResult actionResult) {
         return getCoreUtil().toUrlSpec(actionResult);
     }

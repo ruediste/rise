@@ -72,10 +72,9 @@ public class CButtonTemplate extends BootstrapComponentTemplateBase<CButton> {
                     .CLASS("rise_button_link")
                     .CLASS(button.CLASS())
                     .TEST_NAME(button.TEST_NAME())
-                    .fIf(button.isDisabled(),
-                            () -> html.HREF(button.getTarget()),
-                            () -> html.HREF("#")).renderChildren(button)
-                    ._bButtonA();
+                    .fIf(button.isDisabled(), () -> html.HREF("#"),
+                            () -> html.HREF(button.getTarget()))
+                    .renderChildren(button)._bButtonA();
         } else {
             html.bButton(argSupplier)
                     .CLASS("rise_button")

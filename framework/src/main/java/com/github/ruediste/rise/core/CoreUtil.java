@@ -63,9 +63,17 @@ public class CoreUtil implements ICoreUtil {
     }
 
     @Override
+    public UrlSpec toUrlSpec(ActionInvocation<String> invocation,
+            String sessionId) {
+        return coreConfiguration.getRequestMapper(
+                invocation.methodInvocation.getInstanceClass()).generate(
+                invocation, sessionId);
+    }
+
+    @Override
     public UrlSpec toUrlSpec(ActionInvocation<String> invocation) {
-        return coreConfiguration.toUrlSpec(invocation, coreRequestInfo
-                .getServletRequest().getSession().getId());
+        return toUrlSpec(invocation, coreRequestInfo.getServletRequest()
+                .getSession().getId());
     }
 
     @Override

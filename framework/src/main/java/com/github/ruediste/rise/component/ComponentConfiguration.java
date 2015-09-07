@@ -57,13 +57,10 @@ public class ComponentConfiguration {
 
     @PostConstruct
     void setupActionInvocationToPathInfoMappingFunction() {
-        coreConfiguration.actionInvocationToUrlSpecMappingFunctions.add((
-                invocation, sessionId) -> {
-            if (IControllerComponent.class
-                    .isAssignableFrom(invocation.methodInvocation
-                            .getInstanceClass()))
-                return Optional.of(mapper.generate(invocation, sessionId));
-            else
+        coreConfiguration.requestMapperProviders.add(controllerClass -> {
+            if (IControllerComponent.class.isAssignableFrom(controllerClass)) {
+                return Optional.of(mapper);
+            } else
                 return Optional.empty();
         });
     }

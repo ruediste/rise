@@ -9,6 +9,7 @@ import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
+import com.github.ruediste.rise.core.security.urlSigning.UrlUnsigned;
 import com.github.ruediste.rise.core.web.HttpServletResponseCustomizer;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
@@ -57,6 +58,7 @@ public class RequestErrorHandlerController extends
 
     }
 
+    @UrlUnsigned
     public ActionResult index() {
         Data data = new Data();
         data.stage = stage;
