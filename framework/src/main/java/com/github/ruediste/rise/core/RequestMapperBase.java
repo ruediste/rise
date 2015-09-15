@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 
+import javax.crypto.Mac;
 import javax.inject.Inject;
 
 import net.sf.cglib.proxy.Enhancer;
@@ -42,8 +43,6 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
-import com.google.common.hash.Hasher;
-import com.google.common.hash.Hashing;
 
 /**
  * Registers the {@link ControllerMvc}s with the {@link PathInfoIndex} during
@@ -246,12 +245,15 @@ public abstract class RequestMapperBase implements RequestMapper {
         Method method = invocation.methodInvocation.getMethod();
         boolean urlSign = shouldDoUrlSigning(method);
 
-        Hasher hasher = null;
-        byte[] hash = null;
+        Mac mac = null;
+        byte[] signature = null;
         if (urlSign) {
-            hasher = createHasher("parse");
+            signature = Base64.getUrlDecoder().decode(
             hash = prepareParseUrlSignatureHasher(hasher, prefix, request,
-                    sessionId);
+
+            mac = urlSignatureHelper.createUrlHasher();
+            mac.update(sessionId.getBytes(Charsets.UTF_8));
+            mac.update(prefix.getBytes(Charsets.UTF_8));
         }
 
         String remaining = request.getPathInfo().substring(prefix.length(),
@@ -266,7 +268,7 @@ public abstract class RequestMapperBase implements RequestMapper {
                 if (urlSign
                         && !method.getParameters()[i]
                                 .isAnnotationPresent(UrlUnsigned.class)) {
-                    hasher.putString("/" + arg, Charsets.UTF_8);
+                    mac.update(("/" + arg).getBytes(Charsets.UTF_8));
                 }
                 i++;
             }
@@ -274,9 +276,9 @@ public abstract class RequestMapperBase implements RequestMapper {
 
         // check url signature
         if (urlSign) {
-            byte[] calculatedHash = Arrays.copyOfRange(hasher.hash().asBytes(),
-                    0, coreConfig.urlSignatureBytes);
-            if (!urlSignatureHelper.slowEquals(hash, calculatedHash)) {
+            byte[] calculatedSignature = Arrays.copyOfRange(mac.doFinal(), 0,
+                    coreConfig.urlSignatureBytes);
+            if (!urlSignatureHelper.slowEquals(signature, calculatedSignature)) {
                 throw new RuntimeException("URL signature does not match");
             }
         }
@@ -342,6 +344,13 @@ public abstract class RequestMapperBase implements RequestMapper {
         Method method = path.methodInvocation.getMethod();
         boolean urlSign = shouldDoUrlSigning(method);
 
+        Mac mac = null;
+        byte[] salt = null;
+        if (urlSign) {
+            mac = urlSignatureHelper.createUrlHasher();
+            mac.update(sessionId.getBytes(Charsets.UTF_8));
+        }
+
         StringBuilder sb = new StringBuilder();
         MethodRef ref = MethodRef.of(method);
 
@@ -365,7 +374,7 @@ public abstract class RequestMapperBase implements RequestMapper {
         Hasher hasher = null;
         byte[] salt = null;
         if (urlSign) {
-            hasher = createHasher("generate");
+            mac.update(prefix.getBytes(Charsets.UTF_8));
             salt = urlSignatureHelper.createSalt(coreConfig.urlSignatureBytes);
             prepareUrlSignatureHasher(hasher, prefix, sessionId, salt);
         }
@@ -378,7 +387,7 @@ public abstract class RequestMapperBase implements RequestMapper {
             if (urlSign
                     && !method.getParameters()[i]
                             .isAnnotationPresent(UrlUnsigned.class)) {
-                hasher.putString(argument, Charsets.UTF_8);
+                mac.update(argument.getBytes(Charsets.UTF_8));
             }
         }
 
@@ -391,12 +400,11 @@ public abstract class RequestMapperBase implements RequestMapper {
 
         if (urlSign) {
             int length = coreConfig.urlSignatureBytes;
-            byte[] hash = hasher.hash().asBytes();
-            byte[] signature = new byte[length * 2];
-            System.arraycopy(salt, 0, signature, 0, length);
-            System.arraycopy(hash, 0, signature, length, length);
-            parameters.add(Pair.of(SIGNATURE_PARAMETER_NAME, Base64
-                    .getUrlEncoder().encodeToString(signature)));
+            byte[] signature = mac.doFinal();
+            parameters.add(Pair.of(
+                    SIGNATURE_PARAMETER_NAME,
+                    Base64.getUrlEncoder().encodeToString(
+                            Arrays.copyOfRange(signature, 0, length))));
         }
         return new UrlSpec(new PathInfo(sb.toString()), parameters);
 

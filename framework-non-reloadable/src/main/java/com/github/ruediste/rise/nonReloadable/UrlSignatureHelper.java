@@ -1,11 +1,13 @@
 package com.github.ruediste.rise.nonReloadable;
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 import javax.annotation.PostConstruct;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Singleton;
-
-import com.google.common.hash.Hasher;
 
 @NonRestartable
 @Singleton
@@ -32,26 +34,21 @@ public class UrlSignatureHelper {
         mainRandom.nextBytes(secret);
     }
 
-    private SecureRandom getRandom() {
+    public SecureRandom getRandom() {
         return threadLocalRandom.get();
     }
 
-    public byte[] createSalt() {
-        return createSalt(32);
-    }
+    public Mac createUrlHasher() {
+        try {
+            String algorithm = "HmacSHA256";
+            final SecretKeySpec keySpec = new SecretKeySpec(secret, algorithm);
+            final Mac mac = Mac.getInstance(algorithm);
+            mac.init(keySpec);
 
-    public byte[] createSalt(int size) {
-        byte[] result = new byte[size];
-        getRandom().nextBytes(result);
-        return result;
-    }
-
-    /**
-     * Hash the secret. The secret is generated once per server start (non
-     * restartable)
-     */
-    public void hashSecret(Hasher hasher) {
-        hasher.putBytes(secret);
+            return mac;
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
