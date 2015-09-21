@@ -21,6 +21,7 @@ import com.github.ruediste.rise.core.security.authentication.AuthenticationManag
 import com.github.ruediste.rise.core.security.authentication.AuthenticationResult;
 import com.github.ruediste.rise.core.security.authentication.UserNameNotFoundAuthenticationFailure;
 import com.github.ruediste.rise.core.security.authentication.UsernamePasswordAuthenticationRequest;
+import com.github.ruediste.rise.core.security.urlSigning.UrlUnsigned;
 import com.github.ruediste.rise.core.security.web.AuthenticationSessionInfo;
 import com.github.ruediste.rise.core.web.RedirectRenderResult;
 import com.github.ruediste.rise.core.web.UrlSpec;
@@ -152,8 +153,9 @@ public class LoginController extends ControllerComponent {
     private UrlSpec originalPathInfo;
 
     @Label("Login")
-    public ActionResult index(UrlSpec originalPathInfo) {
-        this.originalPathInfo = originalPathInfo;
+    @UrlUnsigned
+    public ActionResult index(UrlSpec originalUrl) {
+        this.originalPathInfo = originalUrl;
         return null;
     }
 

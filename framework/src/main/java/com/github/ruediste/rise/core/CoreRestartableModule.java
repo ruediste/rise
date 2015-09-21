@@ -44,6 +44,7 @@ public class CoreRestartableModule extends AbstractModule {
     @Override
     protected void configure() throws Exception {
         InitializerUtil.register(config(), CoreRestartableInitializer.class);
+        InitializerUtil.register(config(), RemotUnitTestInitializer.class);
         installHttpScopeModule();
         installPersistenceDynamicModule();
         registerPermanentRule();

@@ -41,6 +41,7 @@ import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.CoreConfigurationNonRestartable;
 import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste.salta.jsr330.Injector;
+import com.github.ruediste.salta.standard.Stage;
 
 /**
  * Defines the default configuration of the framework.
@@ -364,4 +365,17 @@ public class CoreConfiguration {
      * the URL will be about three times that long (Base64 encoding, salt, hash)
      */
     public int urlSignatureBytes = 20;
+
+    /**
+     * Path info used to run unit tests within the server. Set to null or the
+     * empty string to disable this feature. By default set to '/~unitTest' in
+     * all stages except production.
+     */
+    public String unitTestCodeRunnerPathInfo;
+
+    @PostConstruct
+    private void setupUnitTestCodeRunnerPathInfo(Stage stage) {
+        if (stage != Stage.PRODUCTION)
+            unitTestCodeRunnerPathInfo = "/~unitTest";
+    }
 }
