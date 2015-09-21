@@ -12,7 +12,7 @@ import com.github.ruediste.rise.testApp.PageObject;
 
 public class CrudDisplayPO extends PageObject {
 
-    protected CrudDisplayPO(WebDriver driver) {
+    public CrudDisplayPO(WebDriver driver) {
         super(driver);
         assertPage(CrudControllerBase.class, x -> x.display(null));
     }

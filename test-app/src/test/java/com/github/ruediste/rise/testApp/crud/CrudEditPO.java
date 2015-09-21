@@ -43,10 +43,10 @@ public class CrudEditPO extends PageObject {
     }
 
     public CrudPickerPO pick(String propertyTestName) {
-        clickAndWaitForRefresh(driver
-                .findElement(By
-                        .cssSelector(dataTestSelector("properties")
-                                + ".form-control[data-test-name]~*[data-test-name=\"pick\"]")));
+        clickAndWaitForRefresh(driver.findElement(By
+                .cssSelector(dataTestSelector("properties")
+                        + ".form-control[data-test-name=\"" + propertyTestName
+                        + "\"]~* [data-test-name=\"pick\"]")));
         return new CrudPickerPO(driver);
     }
 
@@ -58,12 +58,13 @@ public class CrudEditPO extends PageObject {
         return new CrudBrowserPO(driver);
     }
 
-    public CrudBrowserPO save() {
-        clickAndWaitForRefresh(driver.findElement(By
-                .cssSelector(dataTestSelector("buttons")
+    public CrudDisplayPO save() {
+
+        driver.findElement(
+                By.cssSelector(dataTestSelector("buttons")
                         + dataTestSelector(DefaultCrudEditController.class,
-                                x -> x.save()))));
-        return new CrudBrowserPO(driver);
+                                x -> x.save()))).click();
+        return new CrudDisplayPO(driver);
     }
 
     public CrudEditPO setProperty(String dataTestName, String value) {

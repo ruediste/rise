@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.github.ruediste.rise.crud.annotations.CrudBrowserColumn;
 import com.github.ruediste1.i18n.label.Labeled;
 import com.github.ruediste1.i18n.label.PropertiesLabeled;
 
@@ -18,6 +19,9 @@ public class TestCrudEntityB {
     @GeneratedValue
     @Id
     private long id;
+
+    @CrudBrowserColumn
+    private String value;
 
     @OneToMany(mappedBy = "entityB")
     private List<TestCrudEntityA> entityAs = new ArrayList<TestCrudEntityA>();
@@ -36,6 +40,14 @@ public class TestCrudEntityB {
 
     public void setEntityAs(List<TestCrudEntityA> entityAs) {
         this.entityAs = entityAs;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
 }

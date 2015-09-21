@@ -40,7 +40,8 @@ public interface TestUtil {
     default <T> void assertPage(Class<T> cls, Consumer<T> methodAccessor) {
         Method method = MethodInvocationRecorder.getLastInvocation(cls,
                 methodAccessor).getMethod();
-        doWait().ignoring(AssertionFailedError.class).until(
+        doWait().ignoring(AssertionFailedError.class,
+                StaleElementReferenceException.class).until(
                 new Predicate<WebDriver>() {
                     @Override
                     public boolean apply(WebDriver x) {
@@ -105,14 +106,21 @@ public interface TestUtil {
         WebElement body = internal_getDriver().findElement(By.tagName("body"));
         String initialReloadCount = body.getAttribute("data-rise-reload-count");
         action.accept(element);
-        doWait(timeoutSeconds).until(new Predicate<WebDriver>() {
-            @Override
-            public boolean apply(WebDriver d) {
-                String currentReloadCount = body
-                        .getAttribute("data-rise-reload-count");
-                return !Objects.equals(initialReloadCount, currentReloadCount);
-            }
-        });
+        doWait(timeoutSeconds).ignoring(StaleElementReferenceException.class)
+                .until(new Predicate<WebDriver>() {
+                    @Override
+                    public boolean apply(WebDriver d) {
+                        String currentReloadCount = body
+                                .getAttribute("data-rise-reload-count");
+                        return !Objects.equals(initialReloadCount,
+                                currentReloadCount);
+                    }
+
+                    @Override
+                    public String toString() {
+                        return "reload";
+                    }
+                });
     }
 
     default <T extends WebElement> WebElement getContainingReloadElement(

@@ -12,9 +12,6 @@ import java.util.Map.Entry;
 import javax.crypto.Mac;
 import javax.inject.Inject;
 
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.InvocationHandler;
-
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
@@ -37,7 +34,6 @@ import com.github.ruediste.rise.util.MethodInvocation;
 import com.github.ruediste.rise.util.Pair;
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Iterables;
@@ -170,18 +166,24 @@ public abstract class RequestMapperBase implements RequestMapper {
                                             instanceCls, methodRef);
                                     if (shouldDoUrlSigning(invocation.methodInvocation
                                             .getMethod())) {
-                                        Hasher hasher = createHasher("parse");
-                                        byte[] hash = prepareParseUrlSignatureHasher(
-                                                hasher, prefix, req,
-                                                coreRequestInfo
-                                                        .getServletRequest()
-                                                        .getSession().getId());
+                                        Mac mac = null;
+                                        mac = urlSignatureHelper
+                                                .createUrlHasher();
+                                        mac.update(coreRequestInfo
+                                                .getServletRequest()
+                                                .getSession().getId()
+                                                .getBytes(Charsets.UTF_8));
+                                        mac.update(prefix
+                                                .getBytes(Charsets.UTF_8));
+
+                                        byte[] calculatedSignature = Arrays.copyOfRange(
+                                                mac.doFinal(), 0,
+                                                coreConfig.urlSignatureBytes);
                                         if (!urlSignatureHelper.slowEquals(
-                                                hash,
-                                                Arrays.copyOfRange(
-                                                        hasher.hash().asBytes(),
-                                                        0,
-                                                        coreConfig.urlSignatureBytes))) {
+                                                calculatedSignature,
+                                                Base64.getUrlDecoder()
+                                                        .decode(req
+                                                                .getParameter(SIGNATURE_PARAMETER_NAME)))) {
                                             throw new RuntimeException(
                                                     "URL signature did not match");
                                         }
@@ -246,11 +248,7 @@ public abstract class RequestMapperBase implements RequestMapper {
         boolean urlSign = shouldDoUrlSigning(method);
 
         Mac mac = null;
-        byte[] signature = null;
         if (urlSign) {
-            signature = Base64.getUrlDecoder().decode(
-            hash = prepareParseUrlSignatureHasher(hasher, prefix, request,
-
             mac = urlSignatureHelper.createUrlHasher();
             mac.update(sessionId.getBytes(Charsets.UTF_8));
             mac.update(prefix.getBytes(Charsets.UTF_8));
@@ -276,6 +274,8 @@ public abstract class RequestMapperBase implements RequestMapper {
 
         // check url signature
         if (urlSign) {
+            byte[] signature = Base64.getUrlDecoder().decode(
+                    request.getParameter(SIGNATURE_PARAMETER_NAME));
             byte[] calculatedSignature = Arrays.copyOfRange(mac.doFinal(), 0,
                     coreConfig.urlSignatureBytes);
             if (!urlSignatureHelper.slowEquals(signature, calculatedSignature)) {
@@ -290,30 +290,6 @@ public abstract class RequestMapperBase implements RequestMapper {
         }
         return invocation;
 
-    }
-
-    private byte[] prepareParseUrlSignatureHasher(Hasher hasher, String prefix,
-            HttpRequest request, String sessionId) {
-        byte[] hash;
-        String signatureStr = request.getParameter(SIGNATURE_PARAMETER_NAME);
-        if (Strings.isNullOrEmpty(signatureStr))
-            throw new RuntimeException("Missing URL signature");
-        byte[] signature = Base64.getUrlDecoder().decode(signatureStr);
-        hash = Arrays.copyOfRange(signature, coreConfig.urlSignatureBytes,
-                signature.length);
-        byte[] salt = Arrays.copyOfRange(signature, 0,
-                coreConfig.urlSignatureBytes);
-
-        prepareUrlSignatureHasher(hasher, prefix, sessionId, salt);
-        return hash;
-    }
-
-    private void prepareUrlSignatureHasher(Hasher hasher, String prefix,
-            String sessionId, byte[] salt) {
-        urlSignatureHelper.hashSecret(hasher);
-        hasher.putString(sessionId, Charsets.UTF_8);
-        hasher.putBytes(salt);
-        hasher.putString(prefix, Charsets.UTF_8);
     }
 
     /**
@@ -371,12 +347,8 @@ public abstract class RequestMapperBase implements RequestMapper {
 
         sb.append(prefix);
 
-        Hasher hasher = null;
-        byte[] salt = null;
         if (urlSign) {
             mac.update(prefix.getBytes(Charsets.UTF_8));
-            salt = urlSignatureHelper.createSalt(coreConfig.urlSignatureBytes);
-            prepareUrlSignatureHasher(hasher, prefix, sessionId, salt);
         }
 
         // add arguments
@@ -399,12 +371,11 @@ public abstract class RequestMapperBase implements RequestMapper {
         }
 
         if (urlSign) {
-            int length = coreConfig.urlSignatureBytes;
             byte[] signature = mac.doFinal();
             parameters.add(Pair.of(
                     SIGNATURE_PARAMETER_NAME,
                     Base64.getUrlEncoder().encodeToString(
-                            Arrays.copyOfRange(signature, 0, length))));
+                            Arrays.copyOfRange(signature, 0, coreConfig.urlSignatureBytes))));
         }
         return new UrlSpec(new PathInfo(sb.toString()), parameters);
 
@@ -437,24 +408,6 @@ public abstract class RequestMapperBase implements RequestMapper {
         String controllerImplementationName = Iterables
                 .getOnlyElement(implementations);
         return controllerImplementationName;
-    }
-
-    private Hasher createHasher(String name) {
-        Hasher result = Hashing.sha256().newHasher();
-        if (log.isTraceEnabled()) {
-            return (Hasher) Enhancer.create(Hasher.class,
-                    new InvocationHandler() {
-
-                        @Override
-                        public Object invoke(Object proxy, Method method,
-                                Object[] args) throws Throwable {
-                            log.trace(name + "." + method.getName() + " "
-                                    + Arrays.toString(args));
-                            return method.invoke(result, args);
-                        }
-                    });
-        } else
-            return result;
     }
 
     private boolean shouldDoUrlSigning(Method method) {
