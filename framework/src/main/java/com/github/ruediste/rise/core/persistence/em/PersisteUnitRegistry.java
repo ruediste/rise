@@ -29,11 +29,13 @@ public class PersisteUnitRegistry {
 
     public Optional<EntityManagerFactory> getUnit(
             Class<? extends Annotation> qualifier) {
-        return factories.computeIfAbsent(
-                qualifier == null ? NullQualifier.class : qualifier,
-                q -> Optional.ofNullable(registry.getLink(qualifier)).map(
-                        link -> link.getPersistenceUnitManager()
-                                .getEntityManagerFactory()));
+        return factories
+                .computeIfAbsent(
+                        qualifier == null ? NullQualifier.class
+                                : qualifier,
+                        q -> Optional.ofNullable(registry.getLink(qualifier))
+                                .map(link -> link.getPersistenceUnitManager()
+                                        .getEntityManagerFactory()));
 
     }
 
@@ -43,24 +45,18 @@ public class PersisteUnitRegistry {
      */
     public Optional<Map<Class<?>, ManagedType<?>>> getManagedTypeMap(
             Class<? extends Annotation> qualifier) {
-        return managedTypeMaps
-                .computeIfAbsent(
-                        qualifier == null ? NullQualifier.class : qualifier,
-                        q -> getUnit(qualifier)
-                                .map(new Function<EntityManagerFactory, Map<Class<?>, ManagedType<?>>>() {
-                                    @Override
-                                    public Map<Class<?>, ManagedType<?>> apply(
-                                            EntityManagerFactory unit) {
-                                        return unit
-                                                .getMetamodel()
-                                                .getManagedTypes()
-                                                .stream()
-                                                .collect(
-                                                        toMap(t -> t
-                                                                .getJavaType(),
-                                                                t -> t));
-                                    }
-                                }));
+        return managedTypeMaps.computeIfAbsent(
+                qualifier == null ? NullQualifier.class : qualifier,
+                q -> getUnit(qualifier).map(
+                        new Function<EntityManagerFactory, Map<Class<?>, ManagedType<?>>>() {
+                            @Override
+                            public Map<Class<?>, ManagedType<?>> apply(
+                                    EntityManagerFactory unit) {
+                                return unit.getMetamodel().getManagedTypes()
+                                        .stream().collect(toMap(
+                                                t -> t.getJavaType(), t -> t));
+                            }
+                        }));
 
     }
 

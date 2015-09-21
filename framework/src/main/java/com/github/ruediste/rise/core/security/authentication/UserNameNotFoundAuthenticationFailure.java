@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.core.security.authentication;
 
-public class UserNameNotFoundAuthenticationFailure extends AuthenticationFailure {
+public class UserNameNotFoundAuthenticationFailure
+        extends AuthenticationFailure {
 
     final private String userName;
 

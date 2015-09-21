@@ -33,7 +33,8 @@ public class NavigationRenderer {
             return brandRenderer;
         }
 
-        public NavigationRendererOptions setBrandRenderer(Runnable brandRenderer) {
+        public NavigationRendererOptions setBrandRenderer(
+                Runnable brandRenderer) {
             this.brandRenderer = Optional.of(brandRenderer);
             return this;
         }

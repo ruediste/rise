@@ -36,8 +36,8 @@ public class AuthorizationManagerTest {
             protected void configure() throws Exception {
                 AuthorizationManager authorizationManager = new AuthorizationManager();
                 authorizationManager.register(config());
-                bind(AuthorizationManager.class).toInstance(
-                        authorizationManager);
+                bind(AuthorizationManager.class)
+                        .toInstance(authorizationManager);
             }
         });
         injector.injectMembers(this);
@@ -71,7 +71,7 @@ public class AuthorizationManagerTest {
     @MetaRequiresRight
     @Retention(RetentionPolicy.RUNTIME)
     @interface RepeatRequiresRight {
-        RequiresRight[] value();
+        RequiresRight[]value();
     }
 
     static class Service {
@@ -125,9 +125,11 @@ public class AuthorizationManagerTest {
 
     @Test
     public void protectedMultiple() {
-        System.out.println(Arrays.toString(MethodInvocationRecorder
-                .getLastInvocation(Service.class, x -> x.protectedMultiple())
-                .getMethod().getAnnotations()));
+        System.out
+                .println(Arrays.toString(MethodInvocationRecorder
+                        .getLastInvocation(Service.class,
+                                x -> x.protectedMultiple())
+                        .getMethod().getAnnotations()));
         assertFalse(Authz.isAuthorized(service, x -> x.protectedMultiple()));
         allowedRights.add(Right.TEST_RIGHT);
         assertFalse(Authz.isAuthorized(service, x -> x.protectedMultiple()));

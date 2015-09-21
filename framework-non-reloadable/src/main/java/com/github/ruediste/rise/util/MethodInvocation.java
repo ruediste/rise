@@ -56,8 +56,7 @@ public class MethodInvocation<T> {
         return isCallToSameMethod(other, Objects::equals);
     }
 
-    public <O> boolean isCallToSameMethod(
-            MethodInvocation<O> other,
+    public <O> boolean isCallToSameMethod(MethodInvocation<O> other,
             MethodInvocation.ParameterValueEquality<? super T, ? super O> equality) {
         if (!Objects.equals(method, other.method)) {
             return false;
@@ -94,8 +93,8 @@ public class MethodInvocation<T> {
     public <R> MethodInvocation<R> map(
             BiFunction<AnnotatedType, ? super T, R> func) {
         MethodInvocation<R> invocation = new MethodInvocation<>(this);
-        Iterator<AnnotatedType> pit = Arrays.asList(
-                getMethod().getAnnotatedParameterTypes()).iterator();
+        Iterator<AnnotatedType> pit = Arrays
+                .asList(getMethod().getAnnotatedParameterTypes()).iterator();
         Iterator<T> ait = getArguments().iterator();
         while (pit.hasNext() && ait.hasNext()) {
             invocation.getArguments().add(func.apply(pit.next(), ait.next()));

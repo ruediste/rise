@@ -11,15 +11,15 @@ import com.github.ruediste.rise.testApp.TestPageTemplate;
 import com.github.ruediste.rise.testApp.ViewMvc;
 import com.github.ruediste1.i18n.label.Labeled;
 
-public class ProgrammaticAuthenticationController extends
-        ControllerMvc<ProgrammaticAuthenticationController> {
+public class ProgrammaticAuthenticationController
+        extends ControllerMvc<ProgrammaticAuthenticationController> {
 
     @Inject
     CoreRequestInfo info;
 
     @Labeled
-    public static class View extends
-            ViewMvc<ProgrammaticAuthenticationController, String> {
+    public static class View
+            extends ViewMvc<ProgrammaticAuthenticationController, String> {
 
         @Inject
         TestPageTemplate template;

@@ -53,8 +53,9 @@ public abstract class CrudControllerBase extends ControllerComponent {
     @Labeled
     @GlyphiconIcon(Glyphicon.eye_open)
     public ActionResult display(Object entity) {
-        data.get().setSubController(
-                crudUtil.getStrategy(DisplayFactory.class, entity.getClass())
+        data.get()
+                .setSubController(crudUtil
+                        .getStrategy(DisplayFactory.class, entity.getClass())
                         .createDisplay(entity));
         return null;
     }
@@ -62,8 +63,9 @@ public abstract class CrudControllerBase extends ControllerComponent {
     @Labeled
     @GlyphiconIcon(Glyphicon.edit)
     public ActionResult edit(Object entity) {
-        data.get().setSubController(
-                crudUtil.getStrategy(EditFactory.class, entity.getClass())
+        data.get()
+                .setSubController(crudUtil
+                        .getStrategy(EditFactory.class, entity.getClass())
                         .createEdit(entity));
         return null;
     }
@@ -81,8 +83,9 @@ public abstract class CrudControllerBase extends ControllerComponent {
     @Labeled
     @GlyphiconIcon(Glyphicon.remove_sign)
     public ActionResult delete(Object entity) {
-        data.get().setSubController(
-                crudUtil.getStrategy(DeleteFactory.class, entity.getClass())
+        data.get()
+                .setSubController(crudUtil
+                        .getStrategy(DeleteFactory.class, entity.getClass())
                         .createDelete(entity));
         return null;
     }

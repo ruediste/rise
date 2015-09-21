@@ -12,8 +12,8 @@ import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.LabelUtil;
 
 public abstract class PageView<TController extends IControllerMvc, TData>
-        extends ViewMvc<TController, TData> implements
-        SamplePageTemplateParameters {
+        extends ViewMvc<TController, TData>
+        implements SamplePageTemplateParameters {
 
     @Inject
     SampleBundle bundle;

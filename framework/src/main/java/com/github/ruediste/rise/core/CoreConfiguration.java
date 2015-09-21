@@ -102,8 +102,8 @@ public class CoreConfiguration {
     @PostConstruct
     private void setupRequestParsers(PathInfoIndex pathInfoIndex) {
         pathInfoIndexRequestParser = request -> {
-            RequestParser parser = pathInfoIndex.getHandler(request
-                    .getPathInfo());
+            RequestParser parser = pathInfoIndex
+                    .getHandler(request.getPathInfo());
             if (parser != null) {
                 return parser.parse(request);
             }
@@ -167,7 +167,8 @@ public class CoreConfiguration {
     private java.util.List<ArgumentSerializer> argumentSerializers;
 
     public String generateArgument(AnnotatedType type, Object value) {
-        List<ArgumentSerializer> matchingFilters = getMatchingArgumentSerializers(type);
+        List<ArgumentSerializer> matchingFilters = getMatchingArgumentSerializers(
+                type);
 
         if (matchingFilters.size() == 1) {
             Optional<String> result = matchingFilters.get(0).generate(type,
@@ -211,7 +212,8 @@ public class CoreConfiguration {
     }
 
     public Supplier<Object> parseArgument(AnnotatedType type, String urlPart) {
-        List<ArgumentSerializer> matchingFilters = getMatchingArgumentSerializers(type);
+        List<ArgumentSerializer> matchingFilters = getMatchingArgumentSerializers(
+                type);
         if (matchingFilters.size() == 1)
             return matchingFilters.get(0).parse(type, urlPart);
         else if (matchingFilters.size() > 1) {
@@ -270,22 +272,19 @@ public class CoreConfiguration {
             .empty();
 
     public RiseCanvasBase<?> createApplicationCanvas() {
-        return applicationCanvasFactory
-                .map(f -> f.get())
-                .orElseThrow(
-                        () -> new RuntimeException(
-                                "Initialize applicationCanvasFactory from your restartable application"));
+        return applicationCanvasFactory.map(f -> f.get())
+                .orElseThrow(() -> new RuntimeException(
+                        "Initialize applicationCanvasFactory from your restartable application"));
     }
 
     public Optional<Function<HtmlCanvasTarget, BootstrapRiseCanvas<?>>> bootstrapCanvasFactory = Optional
             .empty();
 
-    public BootstrapRiseCanvas<?> createBootstrapCanvas(HtmlCanvasTarget target) {
-        return bootstrapCanvasFactory
-                .map(f -> f.apply(target))
-                .orElseThrow(
-                        () -> new RuntimeException(
-                                "Initialize bootstrapCanvasFactory from your restartable application"));
+    public BootstrapRiseCanvas<?> createBootstrapCanvas(
+            HtmlCanvasTarget target) {
+        return bootstrapCanvasFactory.map(f -> f.apply(target))
+                .orElseThrow(() -> new RuntimeException(
+                        "Initialize bootstrapCanvasFactory from your restartable application"));
     }
 
     /**
@@ -336,9 +335,9 @@ public class CoreConfiguration {
     private Runnable createRedirector(
             BiFunction<CoreUtil, UrlSpec, ActionResult> factory) {
         return () -> coreRequestInfo.get().setActionResult(
-                new RedirectRenderResult(coreUtil.get().toUrlSpec(
-                        factory.apply(coreUtil.get(), coreRequestInfo.get()
-                                .getRequest().createUrlSpec()))));
+                new RedirectRenderResult(coreUtil.get().toUrlSpec(factory.apply(
+                        coreUtil.get(),
+                        coreRequestInfo.get().getRequest().createUrlSpec()))));
     }
 
     public Runnable loginHandler() {

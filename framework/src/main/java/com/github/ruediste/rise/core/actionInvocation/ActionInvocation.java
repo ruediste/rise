@@ -61,8 +61,7 @@ public class ActionInvocation<T> extends AttachedPropertyBearerBase {
      * Determine if this and the other path represent calls to the same action
      * method. The Parameters are compared by the provided
      */
-    public <O> boolean isCallToSameActionMethod(
-            ActionInvocation<O> other,
+    public <O> boolean isCallToSameActionMethod(ActionInvocation<O> other,
             MethodInvocation.ParameterValueEquality<? super T, ? super O> comparator) {
 
         return methodInvocation.isCallToSameMethod(other.methodInvocation,

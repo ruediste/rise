@@ -14,7 +14,8 @@ public class PersistentProperty {
     private final PropertyInfo property;
     private final Attribute<?, ?> attribute;
 
-    public PersistentProperty(PropertyInfo property, Attribute<?, ?> attribute) {
+    public PersistentProperty(PropertyInfo property,
+            Attribute<?, ?> attribute) {
         Preconditions.checkNotNull(property);
         Preconditions.checkNotNull(attribute);
         this.property = property;
@@ -29,7 +30,8 @@ public class PersistentProperty {
             try {
                 return field.get(entity);
             } catch (IllegalArgumentException | IllegalAccessException e) {
-                throw new RuntimeException("Error while getting field " + field);
+                throw new RuntimeException(
+                        "Error while getting field " + field);
             }
         } else
             throw new RuntimeException("Unknown member type " + member);
@@ -43,7 +45,8 @@ public class PersistentProperty {
             try {
                 field.set(entity, value);
             } catch (IllegalArgumentException | IllegalAccessException e) {
-                throw new RuntimeException("Error while setting field " + field);
+                throw new RuntimeException(
+                        "Error while setting field " + field);
             }
         } else
             throw new RuntimeException("Unknown member type " + member);

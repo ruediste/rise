@@ -125,8 +125,8 @@ public class TransactionTemplate implements TransactionExecutor {
                         throw new RuntimeException(
                                 "Entered block with MANDATORY transaction, but no transaction was active");
                     }
-                    return executeWithNewEntityManagerSetIfForcedOrNonePresent(() -> action
-                            .doInTransaction());
+                    return executeWithNewEntityManagerSetIfForcedOrNonePresent(
+                            () -> action.doInTransaction());
                 case NEVER:
                     // make sure no transaction is in porgress
                     if (txm.getStatus() != Status.STATUS_NO_TRANSACTION) {
@@ -134,14 +134,14 @@ public class TransactionTemplate implements TransactionExecutor {
                                 "Entered block with NEVER transaction, but transaction was active");
                     }
                     if (forceNewEntityManagerSet) {
-                        return holder.withNewEntityManagerSet(() -> action
-                                .doInTransaction());
+                        return holder.withNewEntityManagerSet(
+                                () -> action.doInTransaction());
                     } else {
                         return action.doInTransaction();
                     }
                 case REQUIRED: {
-                    Supplier<T> supplier = () -> executeWithNewEntityManagerSetIfForcedOrNonePresent(() -> action
-                            .doInTransaction());
+                    Supplier<T> supplier = () -> executeWithNewEntityManagerSetIfForcedOrNonePresent(
+                            () -> action.doInTransaction());
                     if (txm.getStatus() == Status.STATUS_NO_TRANSACTION)
                         return executeInNewTransaction(supplier);
                     else
@@ -172,8 +172,8 @@ public class TransactionTemplate implements TransactionExecutor {
 
                 if (isolationLevel == null
                         || isolationLevel == IsolationLevel.DEFAULT)
-                    transactionProperties
-                            .setDefaultIsolationLevel(updating ? IsolationLevel.SERIALIZABLE
+                    transactionProperties.setDefaultIsolationLevel(
+                            updating ? IsolationLevel.SERIALIZABLE
                                     : IsolationLevel.REPEATABLE_READ);
                 else
                     transactionProperties
@@ -208,7 +208,8 @@ public class TransactionTemplate implements TransactionExecutor {
                             | SystemException e) {
                         log.error(
                                 "Error during transaction rollback. Status was "
-                                        + status, e);
+                                        + status,
+                                e);
                     }
                 } catch (SystemException e) {
                     log.error("Unable to get transaction status", e);

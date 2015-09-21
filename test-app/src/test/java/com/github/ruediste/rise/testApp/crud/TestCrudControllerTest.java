@@ -43,9 +43,8 @@ public class TestCrudControllerTest extends WebTestRemote {
         if (b == null)
             b = factory.testCrudEntityB();
 
-        driver.navigate().to(
-                url(go(TestCrudController.class).browse(TestCrudEntityA.class,
-                        null)));
+        driver.navigate().to(url(go(TestCrudController.class)
+                .browse(TestCrudEntityA.class, null)));
     }
 
     @Test
@@ -78,8 +77,9 @@ public class TestCrudControllerTest extends WebTestRemote {
         CrudDisplayPO display = browser.display(0);
 
         // check that right entity is shown
-        assertThat(display.getPropertyText(dataTestName(TestCrudEntityA.class,
-                x -> x.getStringValue())), equalTo(a.getStringValue()));
+        assertThat(display.getPropertyText(
+                dataTestName(TestCrudEntityA.class, x -> x.getStringValue())),
+                equalTo(a.getStringValue()));
 
     }
 
@@ -90,9 +90,9 @@ public class TestCrudControllerTest extends WebTestRemote {
         CrudEditPO edit = browser.edit(0);
 
         // check that right entity is shown
-        assertThat(
-                edit.getPropertyText(dataTestName(TestCrudEntityA.class,
-                        x -> x.getStringValue())), equalTo(a.getStringValue()));
+        assertThat(edit.getPropertyText(
+                dataTestName(TestCrudEntityA.class, x -> x.getStringValue())),
+                equalTo(a.getStringValue()));
 
     }
 
@@ -123,9 +123,9 @@ public class TestCrudControllerTest extends WebTestRemote {
     public void displayEdit() {
         CrudEditPO edit = searchEntity().display(0).edit();
 
-        assertThat(
-                edit.getPropertyText(dataTestName(TestCrudEntityA.class,
-                        x -> x.getStringValue())), equalTo(a.getStringValue()));
+        assertThat(edit.getPropertyText(
+                dataTestName(TestCrudEntityA.class, x -> x.getStringValue())),
+                equalTo(a.getStringValue()));
     }
 
     @Test
@@ -171,11 +171,9 @@ public class TestCrudControllerTest extends WebTestRemote {
 
     @Test
     public void editSave() {
-        searchEntity()
-                .edit(0)
-                .setProperty(
-                        dataTestName(TestCrudEntityA.class,
-                                x -> x.getStringValue()), "foo").save();
+        searchEntity().edit(0).setProperty(
+                dataTestName(TestCrudEntityA.class, x -> x.getStringValue()),
+                "foo").save();
         trx.execute(() -> {
             assertEquals("foo", loadA().getStringValue());
         });

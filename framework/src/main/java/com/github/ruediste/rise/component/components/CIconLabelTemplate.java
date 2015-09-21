@@ -11,8 +11,8 @@ import com.github.ruediste.rise.integration.IconUtil;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.LabelUtil;
 
-public class CIconLabelTemplate extends
-        BootstrapComponentTemplateBase<CIconLabel> {
+public class CIconLabelTemplate
+        extends BootstrapComponentTemplateBase<CIconLabel> {
 
     @Inject
     LabelUtil labelUtil;
@@ -38,10 +38,9 @@ public class CIconLabelTemplate extends
             icon = iconUtil.tryGetIcon(component.getMethod());
 
         if (component.isShowIconOnly()) {
-            html.render(
-                    icon.orElseThrow(() -> new RuntimeException(
-                            "Icon is not defined"))).span().BsrOnly()
-                    .content(label);
+            html.render(icon.orElseThrow(
+                    () -> new RuntimeException("Icon is not defined"))).span()
+                    .BsrOnly().content(label);
         } else {
             html.fIfPresent(icon, html::render).write(label);
         }

@@ -47,16 +47,13 @@ public class EntityArgumentSerializer implements ArgumentSerializer {
     private BiMap<Class<?>, Integer> getTypeNrMap(
             Class<? extends Annotation> qualifier) {
         return typeNrMap.computeIfAbsent(
-                qualifier == null ? DefaultQualifier.class : qualifier,
-                q -> {
+                qualifier == null ? DefaultQualifier.class : qualifier, q -> {
                     BiMap<Class<?>, Integer> result = HashBiMap.create();
-                    List<Class<?>> types = util
-                            .getManagedTypeMap(qualifier)
-                            .get()
-                            .keySet()
-                            .stream()
-                            .sorted(Ordering.natural().onResultOf(
-                                    x -> x.getName())).collect(toList());
+                    List<Class<?>> types = util.getManagedTypeMap(qualifier)
+                            .get().keySet().stream()
+                            .sorted(Ordering.natural()
+                                    .onResultOf(x -> x.getName()))
+                            .collect(toList());
                     for (int i = 0; i < types.size(); i++) {
                         result.put(types.get(i), i);
                     }
@@ -64,11 +61,13 @@ public class EntityArgumentSerializer implements ArgumentSerializer {
                 });
     }
 
-    private int getTypeNr(Class<? extends Annotation> qualifier, Class<?> type) {
+    private int getTypeNr(Class<? extends Annotation> qualifier,
+            Class<?> type) {
         return getTypeNrMap(qualifier).get(type);
     }
 
-    private Class<?> getType(Class<? extends Annotation> qualifier, int typeNr) {
+    private Class<?> getType(Class<? extends Annotation> qualifier,
+            int typeNr) {
         return getTypeNrMap(qualifier).inverse().get(typeNr);
     }
 
@@ -82,13 +81,15 @@ public class EntityArgumentSerializer implements ArgumentSerializer {
     }
 
     @Override
-    public Optional<String> generate(AnnotatedType parameterType, Object value) {
+    public Optional<String> generate(AnnotatedType parameterType,
+            Object value) {
         if (value == null)
             return Optional.of(SerializerHelper.generatePrefix(
                     Optional.of("null"),
                     SerializerHelper.generatePrefix(Optional.empty(), "")));
 
-        Class<? extends Annotation> defaultQualifier = getRequiredQualifier(parameterType);
+        Class<? extends Annotation> defaultQualifier = getRequiredQualifier(
+                parameterType);
 
         // try to find entity manager for the value
         Entry<Class<? extends Annotation>, EntityManager> entry;
@@ -117,18 +118,19 @@ public class EntityArgumentSerializer implements ArgumentSerializer {
             result = SerializerHelper.generatePrefix(Optional.empty(),
                     serializedIdentifier);
         } else
-            result = SerializerHelper.generatePrefix(Optional.of(String
-                    .valueOf(util.getQualifierNr(acutalQualifier))),
+            result = SerializerHelper.generatePrefix(
+                    Optional.of(String
+                            .valueOf(util.getQualifierNr(acutalQualifier))),
                     serializedIdentifier);
 
         // include the type of the value in the result if necessary
-        ManagedType<?> parameterManagedType = util.getManagedType(
-                acutalQualifier, parameterType.getType());
-        if (parameterManagedType == null
-                || !parameterManagedType.getJavaType().isAssignableFrom(
-                        value.getClass()))
-            result = SerializerHelper.generatePrefix(Optional.of(Integer
-                    .toString(getTypeNr(acutalQualifier, value.getClass()))),
+        ManagedType<?> parameterManagedType = util
+                .getManagedType(acutalQualifier, parameterType.getType());
+        if (parameterManagedType == null || !parameterManagedType.getJavaType()
+                .isAssignableFrom(value.getClass()))
+            result = SerializerHelper.generatePrefix(
+                    Optional.of(Integer.toString(
+                            getTypeNr(acutalQualifier, value.getClass()))),
                     result);
         else
             result = SerializerHelper.generatePrefix(Optional.empty(), result);
@@ -159,9 +161,9 @@ public class EntityArgumentSerializer implements ArgumentSerializer {
                         s -> util.getQualifierByNr(Integer.parseInt(s)))
                 .orElseGet(() -> getRequiredQualifier(type));
 
-        Class<?> cls = typeNrStr.<Class<?>> map(
-                s -> getType(qualifier, Integer.parseInt(s))).orElseGet(
-                () -> TypeToken.of(type.getType()).getRawType());
+        Class<?> cls = typeNrStr
+                .<Class<?>> map(s -> getType(qualifier, Integer.parseInt(s)))
+                .orElseGet(() -> TypeToken.of(type.getType()).getRawType());
 
         AnnotatedType idType = AnnotatedTypes
                 .of(util.getIdType(qualifier, cls));
@@ -172,12 +174,13 @@ public class EntityArgumentSerializer implements ArgumentSerializer {
                 idSupplier.get());
     }
 
-    private Class<? extends Annotation> getRequiredQualifier(AnnotatedType type) {
+    private Class<? extends Annotation> getRequiredQualifier(
+            AnnotatedType type) {
         Annotation qualifierAnnotation = injector.getDelegate().getConfig()
                 .getRequiredQualifier(type, type);
 
-        Class<? extends Annotation> qualifier = qualifierAnnotation == null ? null
-                : qualifierAnnotation.annotationType();
+        Class<? extends Annotation> qualifier = qualifierAnnotation == null
+                ? null : qualifierAnnotation.annotationType();
         return qualifier;
     }
 

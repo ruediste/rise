@@ -17,15 +17,15 @@ public class ControllerReflectionUtil {
     ClassHierarchyIndex cache;
 
     public boolean isActionMethod(Method method) {
-        return Modifier.isPublic(method.getModifiers())
-                && (ActionResult.class.isAssignableFrom(method.getReturnType()));
+        return Modifier.isPublic(method.getModifiers()) && (ActionResult.class
+                .isAssignableFrom(method.getReturnType()));
     }
 
     public boolean isActionMethod(MethodNode method) {
         boolean isPub = (Opcodes.ACC_PUBLIC & method.access) != 0;
         Type returnType = Type.getReturnType(method.desc);
-        boolean returnsActionResult = Type.getType(ActionResult.class).equals(
-                returnType);
+        boolean returnsActionResult = Type.getType(ActionResult.class)
+                .equals(returnType);
 
         return isPub && (returnsActionResult);
     }

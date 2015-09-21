@@ -149,13 +149,13 @@ public abstract class FrontServletBase extends HttpServlet {
             // it.
             // Primarily used for Unit Testing
             currentApplicationInfo = new RestartableApplicationInfo(
-                    fixedDynamicApplicationInstance, Thread.currentThread()
-                            .getContextClassLoader());
+                    fixedDynamicApplicationInstance,
+                    Thread.currentThread().getContextClassLoader());
             fixedDynamicApplicationInstance.start(nonRestartableInjector);
-            StartupTimeLogger
-                    .stopAndLog("Total Startup Time", startupStopwatch);
-            StartupTimeLogger
-                    .writeTimesToLog("Startup with fixed application instance times");
+            StartupTimeLogger.stopAndLog("Total Startup Time",
+                    startupStopwatch);
+            StartupTimeLogger.writeTimesToLog(
+                    "Startup with fixed application instance times");
         } else {
             // application gets started through the initial file change
             // transaction
@@ -207,12 +207,10 @@ public abstract class FrontServletBase extends HttpServlet {
             }
             restartCountHolder.increment();
             startupError = null;
-            StartupTimeLogger.stopAndLog(
-                    isInitialStartup ? "Total Startup Time"
-                            : "Total Reload Time", startupStopwatch);
-            StartupTimeLogger
-                    .writeTimesToLog(isInitialStartup ? "Initial Startup Times"
-                            : "Reload Times");
+            StartupTimeLogger.stopAndLog(isInitialStartup ? "Total Startup Time"
+                    : "Total Reload Time", startupStopwatch);
+            StartupTimeLogger.writeTimesToLog(isInitialStartup
+                    ? "Initial Startup Times" : "Reload Times");
             isInitialStartup = false;
         } catch (Throwable t) {
             log.warn("Error loading application instance", t);
@@ -236,23 +234,23 @@ public abstract class FrontServletBase extends HttpServlet {
             // loggerContext.reset();
             // ci.configureByResource(url);
             try {
-                Class<?> cContextInitializer = Class
-                        .forName("ch.qos.logback.classic.util.ContextInitializer");
+                Class<?> cContextInitializer = Class.forName(
+                        "ch.qos.logback.classic.util.ContextInitializer");
                 Class<?> cLoggerContext = Class
                         .forName("ch.qos.logback.classic.LoggerContext");
                 Object loggerContext = iLoggerFactory;
 
                 Object ci = cContextInitializer.getConstructor(cLoggerContext)
                         .newInstance(loggerContext);
-                Object url1 = cContextInitializer.getMethod(
-                        "findURLOfDefaultConfigurationFile", boolean.class)
+                Object url1 = cContextInitializer
+                        .getMethod("findURLOfDefaultConfigurationFile",
+                                boolean.class)
                         .invoke(ci, true);
                 cLoggerContext.getMethod("reset").invoke(loggerContext);
                 cContextInitializer.getMethod("configureByResource", URL.class)
                         .invoke(ci, url1);
             } catch (Throwable t) {
-                log.error(
-                        "Error updating logback configuration, continuing...",
+                log.error("Error updating logback configuration, continuing...",
                         t);
             }
         }

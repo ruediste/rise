@@ -5,8 +5,8 @@ import javax.inject.Inject;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 
-public class CTextFieldTemplate extends
-        BootstrapComponentTemplateBase<CTextField> {
+public class CTextFieldTemplate
+        extends BootstrapComponentTemplateBase<CTextField> {
     @Inject
     ComponentUtil util;
 

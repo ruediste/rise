@@ -71,7 +71,7 @@ public class DataBaseLinkRegistry {
     }
 
     public void closePersistenceUnitManagers() {
-        linkMap.values().forEach(
-                link -> link.getPersistenceUnitManager().close());
+        linkMap.values()
+                .forEach(link -> link.getPersistenceUnitManager().close());
     }
 }

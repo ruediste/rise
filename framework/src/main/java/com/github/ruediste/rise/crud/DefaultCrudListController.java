@@ -35,8 +35,8 @@ import com.github.ruediste1.i18n.label.Labeled;
 import com.github.ruediste1.i18n.label.MembersLabeled;
 import com.google.common.base.Preconditions;
 
-public class DefaultCrudListController extends SubControllerComponent implements
-        CrudList {
+public class DefaultCrudListController extends SubControllerComponent
+        implements CrudList {
     @Inject
     CrudReflectionUtil crudReflectionUtil;
 
@@ -50,8 +50,8 @@ public class DefaultCrudListController extends SubControllerComponent implements
     CrudUtil crudUtil;
 
     @SuppressWarnings("unused")
-    private static class DefaultCrudBrowserView extends
-            DefaultCrudViewComponent<DefaultCrudListController> {
+    private static class DefaultCrudBrowserView
+            extends DefaultCrudViewComponent<DefaultCrudListController> {
 
         @MembersLabeled
         enum Labels {
@@ -71,15 +71,21 @@ public class DefaultCrudListController extends SubControllerComponent implements
             ArrayList<Column<Object>> columns = new ArrayList<>();
             for (PersistentProperty p : controller.columnProperties) {
                 PropertyInfo property = p.getProperty();
-                columns.add(new Column<>(() -> new CDataGrid.Cell(labelUtil
-                        .getPropertyLabel(property)), item -> new Cell(
-                        new CText(Objects.toString(property.getValue(item)))))
-                        .TEST_NAME(property.getName()));
+                columns.add(
+                        new Column<>(
+                                () -> new CDataGrid.Cell(labelUtil
+                                        .getPropertyLabel(property)),
+                        item -> new Cell(new CText(
+                                Objects.toString(property.getValue(item)))))
+                                        .TEST_NAME(property.getName()));
             }
             if (controller.getItemActionsFactory() != null)
-                columns.add(new Column<Object>(() -> new Cell(new CText(
-                        label(Labels.ACTIONS))), controller
-                        .getItemActionsFactory()).TEST_NAME("actions"));
+                columns.add(
+                        new Column<Object>(
+                                () -> new Cell(
+                                        new CText(label(Labels.ACTIONS))),
+                                controller.getItemActionsFactory())
+                                        .TEST_NAME("actions"));
 
             // @formatter:off
             return toComponent(html -> html
@@ -157,14 +163,13 @@ public class DefaultCrudListController extends SubControllerComponent implements
     @Labeled
     @GlyphiconIcon(Glyphicon.search)
     public void search() {
-        TypedQuery<Object> q = crudUtil.queryWithFilters(type, getEm(),
-                ctx -> {
-                    if (constantFilter != null)
-                        constantFilter.accept(ctx);
-                    for (CrudPropertyFilter filter : filterList) {
-                        filter.applyFilter(ctx);
-                    }
-                });
+        TypedQuery<Object> q = crudUtil.queryWithFilters(type, getEm(), ctx -> {
+            if (constantFilter != null)
+                constantFilter.accept(ctx);
+            for (CrudPropertyFilter filter : filterList) {
+                filter.applyFilter(ctx);
+            }
+        });
 
         data.get().setItems(q.getResultList());
         data.pullUp();

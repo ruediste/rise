@@ -33,12 +33,12 @@ public class IntegrationClassLoader extends ClassLoader {
                 notDelegatedClasses.length + 1);
         tmp[tmp.length - 1] = implementationClass;
 
-        IntegrationClassLoader cl = new IntegrationClassLoader(Thread
-                .currentThread().getContextClassLoader(), prefix, tmp);
+        IntegrationClassLoader cl = new IntegrationClassLoader(
+                Thread.currentThread().getContextClassLoader(), prefix, tmp);
 
         try {
-            return interfaceClass.cast(cl.loadClass(
-                    implementationClass.getName()).newInstance());
+            return interfaceClass.cast(
+                    cl.loadClass(implementationClass.getName()).newInstance());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

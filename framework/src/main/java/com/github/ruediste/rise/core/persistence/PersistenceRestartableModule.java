@@ -48,28 +48,25 @@ public class PersistenceRestartableModule extends AbstractModule {
         for (DataBaseLink link : registry.getLinks()) {
             Class<? extends Annotation> requiredQualifier = link.getQualifier();
             // bind data source
-            bind(DataSource.class)
-                    .annotatedWith(requiredQualifier)
+            bind(DataSource.class).annotatedWith(requiredQualifier)
                     .toProvider(
                             () -> link.getDataSourceManager().getDataSource())
                     .in(Singleton.class);
 
             // bind EMF to registry
             {
-                bind(EntityManagerFactory.class).annotatedWith(
-                        link.getQualifier()).toProvider(
-                        new Provider<EntityManagerFactory>() {
+                bind(EntityManagerFactory.class)
+                        .annotatedWith(link.getQualifier())
+                        .toProvider(new Provider<EntityManagerFactory>() {
                             @Inject
                             PersisteUnitRegistry registry;
 
                             @Override
                             public EntityManagerFactory get() {
-                                return registry
-                                        .getUnit(requiredQualifier)
-                                        .orElseThrow(
-                                                () -> new RuntimeException(
-                                                        "no persistence unit registered for "
-                                                                + requiredQualifier));
+                                return registry.getUnit(requiredQualifier)
+                                        .orElseThrow(() -> new RuntimeException(
+                                                "no persistence unit registered for "
+                                                        + requiredQualifier));
                             }
                         });
             }
@@ -85,13 +82,12 @@ public class PersistenceRestartableModule extends AbstractModule {
                             return (EntityManager) Enhancer.create(
                                     EntityManager.class, new Dispatcher() {
 
-                                        @Override
-                                        public Object loadObject()
-                                                throws Exception {
-                                            return holder
-                                                    .getEntityManager(requiredQualifier);
-                                        }
-                                    });
+                                @Override
+                                public Object loadObject() throws Exception {
+                                    return holder.getEntityManager(
+                                            requiredQualifier);
+                                }
+                            });
 
                         }
                     }).in(Singleton.class);
@@ -123,9 +119,11 @@ public class PersistenceRestartableModule extends AbstractModule {
 
         requestInjection(advice);
         // register OwnEntityManagers advice
-        AopUtil.registerSubclass(config().standardConfig, t -> t.getRawType()
-                .isAnnotationPresent(OwnEntityManagers.class), (t, m) -> !m
-                .isAnnotationPresent(SkipOfOwnEntityManagers.class), advice);
+        AopUtil.registerSubclass(config().standardConfig,
+                t -> t.getRawType()
+                        .isAnnotationPresent(OwnEntityManagers.class),
+                (t, m) -> !m.isAnnotationPresent(SkipOfOwnEntityManagers.class),
+                advice);
     }
 
     @Provides

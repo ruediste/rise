@@ -39,9 +39,8 @@ public class PersistentPropertyTest extends DbTestBase {
     public void before() {
         util.persistenceUtil = persistenceUtil;
         when(index.orderMembers(any(Class.class), any(Collection.class)))
-                .thenAnswer(
-                        invocation -> new ArrayList<>((Collection) invocation
-                                .getArguments()[1]));
+                .thenAnswer(invocation -> new ArrayList<>(
+                        (Collection) invocation.getArguments()[1]));
     }
 
     @Test

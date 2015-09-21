@@ -17,8 +17,8 @@ public class InMemoryAuthenticationProvider<T extends Principal> implements
         Pair<String, T> pair = users.get(request.getUserName());
         if (pair == null)
             return AuthenticationResult
-                    .failure(new UserNameNotFoundAuthenticationFailure(request
-                            .getUserName()));
+                    .failure(new UserNameNotFoundAuthenticationFailure(
+                            request.getUserName()));
 
         if (Objects.equals(request.getPassword(), pair.getA())) {
             return AuthenticationResult.success(pair.getB());

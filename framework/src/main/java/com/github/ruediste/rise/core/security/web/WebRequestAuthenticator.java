@@ -22,9 +22,9 @@ import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeTokenThef
 /**
  * Takes care of authenticating web requests.
  * <p>
- * First the current session is checked for an already logged in {@link Principal}
- * . If there is no subject the request is checked for remember-me tokens. And
- * finally, the user is redirected to a login form.
+ * First the current session is checked for an already logged in
+ * {@link Principal} . If there is no subject the request is checked for
+ * remember-me tokens. And finally, the user is redirected to a login form.
  */
 public class WebRequestAuthenticator extends ChainedRequestHandler {
 
@@ -65,7 +65,8 @@ public class WebRequestAuthenticator extends ChainedRequestHandler {
                         Runnable handler = config
                                 .getRememberMeTokenTheftHandler();
                         if (handler == null)
-                            log.error("Thoken theft detected, but no tokenThenftHandler was defined in CoreConfiguration");
+                            log.error(
+                                    "Thoken theft detected, but no tokenThenftHandler was defined in CoreConfiguration");
                         handler.run();
                         if (coreRequestInfo.getActionResult() != null)
                             return;

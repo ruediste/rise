@@ -38,20 +38,19 @@ public interface TestUtil {
     }
 
     default <T> void assertPage(Class<T> cls, Consumer<T> methodAccessor) {
-        Method method = MethodInvocationRecorder.getLastInvocation(cls,
-                methodAccessor).getMethod();
+        Method method = MethodInvocationRecorder
+                .getLastInvocation(cls, methodAccessor).getMethod();
         doWait().ignoring(AssertionFailedError.class,
-                StaleElementReferenceException.class).until(
-                new Predicate<WebDriver>() {
+                StaleElementReferenceException.class)
+                .until(new Predicate<WebDriver>() {
                     @Override
                     public boolean apply(WebDriver x) {
                         assertThat(
-                                internal_getDriver().findElement(
-                                        By.tagName("body")).getAttribute(
-                                        "data-test-name"), equalTo(method
-                                        .getDeclaringClass().getName()
-                                        + "."
-                                        + method.getName()));
+                                internal_getDriver()
+                                        .findElement(By.tagName("body"))
+                                        .getAttribute("data-test-name"),
+                                equalTo(method.getDeclaringClass().getName()
+                                        + "." + method.getName()));
                         return true;
                     }
                 });
@@ -78,8 +77,8 @@ public interface TestUtil {
                 .getLastInvocation(cls, accessor);
         Optional<PropertyInfo> property = PropertyUtil
                 .tryGetAccessedProperty(invocation);
-        return property.map(p -> p.getName()).orElseGet(
-                () -> invocation.getMethod().getName());
+        return property.map(p -> p.getName())
+                .orElseGet(() -> invocation.getMethod().getName());
     }
 
     /**
@@ -125,8 +124,8 @@ public interface TestUtil {
 
     default <T extends WebElement> WebElement getContainingReloadElement(
             T element) {
-        WebElement reload = element.findElement(By
-                .xpath("ancestor::*[contains(@class,'rise_reload')]"));
+        WebElement reload = element.findElement(
+                By.xpath("ancestor::*[contains(@class,'rise_reload')]"));
         return reload;
     }
 }

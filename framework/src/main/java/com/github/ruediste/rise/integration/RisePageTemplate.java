@@ -19,8 +19,8 @@ import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.front.RestartCountHolder;
 
-public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>> extends
-        PageTemplateBase {
+public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>>
+        extends PageTemplateBase {
 
     @Inject
     RestartCountHolder holder;
@@ -136,10 +136,10 @@ public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>> extends
                             + (isFixed ? " rise-ribbon-fixed" : ""))
                     .STYLE("background: " + stage.backgroundColor)
 
-                    .a()
-                    .STYLE("color: " + stage.color)
-                    .HREF(urlPoducer.apply(coreRequestInfo.getRequest()
-                            .createUrlSpec())).content(stage.toString())._div();
+            .a().STYLE("color: " + stage.color)
+                    .HREF(urlPoducer.apply(
+                            coreRequestInfo.getRequest().createUrlSpec()))
+                    .content(stage.toString())._div();
         };
     }
 }

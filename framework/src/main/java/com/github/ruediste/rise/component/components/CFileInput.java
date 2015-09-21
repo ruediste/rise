@@ -35,8 +35,9 @@ public class CFileInput extends RelationsComponent<CFileInput> {
             try {
                 return ByteStreams.toByteArray(getInputStream());
             } catch (IOException e) {
-                throw new RuntimeException("Unable to load data of file "
-                        + getSubmittedFileName(), e);
+                throw new RuntimeException(
+                        "Unable to load data of file " + getSubmittedFileName(),
+                        e);
             }
         }
     }

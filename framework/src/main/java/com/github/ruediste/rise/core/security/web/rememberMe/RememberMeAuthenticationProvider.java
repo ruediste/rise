@@ -22,8 +22,8 @@ import com.github.ruediste.rise.core.security.authentication.AuthenticationResul
 import com.github.ruediste.rise.core.security.authentication.RememberMeAwareAuthenticationRequest;
 import com.google.common.base.Strings;
 
-public class RememberMeAuthenticationProvider implements
-        AuthenticationProvider<RememberMeAuthenticationRequest> {
+public class RememberMeAuthenticationProvider
+        implements AuthenticationProvider<RememberMeAuthenticationRequest> {
 
     @Inject
     Logger log;
@@ -40,24 +40,22 @@ public class RememberMeAuthenticationProvider implements
 
     @PostConstruct
     public void postConstruct(AuthenticationManager authenticationManager) {
-        authenticationManager
-                .postAuthenticationEvent()
-                .addListener(
-                        pair -> {
-                            AuthenticationRequest req = pair.getA();
-                            AuthenticationResult res = pair.getB();
-                            if (req instanceof RememberMeAwareAuthenticationRequest
-                                    && ((RememberMeAwareAuthenticationRequest) req)
-                                            .isRememberMe() && res.isSuccess()) {
-                                // set the remember me token with a new series
-                                log.debug("Successful login with remember me set to true, adding cookie to the response");
-                                RememberMeToken token = createToken();
-                                dao.newToken(token, res.getSuccess()
-                                        .getPrincipal());
-                                info.getServletResponse().addCookie(
-                                        createRememberMeCookie(token));
-                            }
-                        });
+        authenticationManager.postAuthenticationEvent().addListener(pair -> {
+            AuthenticationRequest req = pair.getA();
+            AuthenticationResult res = pair.getB();
+            if (req instanceof RememberMeAwareAuthenticationRequest
+                    && ((RememberMeAwareAuthenticationRequest) req)
+                            .isRememberMe()
+                    && res.isSuccess()) {
+                // set the remember me token with a new series
+                log.debug(
+                        "Successful login with remember me set to true, adding cookie to the response");
+                RememberMeToken token = createToken();
+                dao.newToken(token, res.getSuccess().getPrincipal());
+                info.getServletResponse()
+                        .addCookie(createRememberMeCookie(token));
+            }
+        });
     }
 
     @Override
@@ -92,7 +90,8 @@ public class RememberMeAuthenticationProvider implements
 
         // compare series
         if (!Arrays.equals(storedToken.getSeries(), token.getSeries())) {
-            log.warn("Series of remember me token did not match series in token. Is someone attacking?");
+            log.warn(
+                    "Series of remember me token did not match series in token. Is someone attacking?");
             return failure;
         }
 
@@ -105,8 +104,8 @@ public class RememberMeAuthenticationProvider implements
             random.nextBytes(tmp);
             RememberMeToken updatedToken = token.withToken(tmp);
             dao.updateToken(updatedToken);
-            info.getServletResponse().addCookie(
-                    createRememberMeCookie(updatedToken));
+            info.getServletResponse()
+                    .addCookie(createRememberMeCookie(updatedToken));
             return AuthenticationResult
                     .success(new RememberMeAuthenticationSuccess(principal));
         } else {
@@ -160,9 +159,8 @@ public class RememberMeAuthenticationProvider implements
             byte[] token = Base64.getDecoder().decode(parts[2]);
             return new RememberMeToken(id, series, token);
         } catch (Exception e) {
-            throw new RuntimeException(
-                    "Error while decoding remember me token "
-                            + Arrays.toString(parts), e);
+            throw new RuntimeException("Error while decoding remember me token "
+                    + Arrays.toString(parts), e);
         }
     }
 

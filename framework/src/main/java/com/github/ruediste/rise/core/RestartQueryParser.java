@@ -24,8 +24,8 @@ public final class RestartQueryParser implements RequestParser {
 
             @Override
             public void handle() {
-                boolean doReload = holder.waitForRestart(Long.parseLong(request
-                        .getParameter("nr")));
+                boolean doReload = holder.waitForRestart(
+                        Long.parseLong(request.getParameter("nr")));
                 HttpServletResponse response = info.getServletResponse();
 
                 response.setContentType("text/plain;charset=utf-8");

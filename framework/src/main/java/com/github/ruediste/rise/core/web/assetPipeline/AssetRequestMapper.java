@@ -36,8 +36,8 @@ public class AssetRequestMapper {
     @Inject
     Logger log;
 
-    private final static class AssetRequestParseResult implements
-            RequestParseResult {
+    private final static class AssetRequestParseResult
+            implements RequestParseResult {
         @Inject
         CoreRequestInfo info;
 
@@ -149,10 +149,10 @@ public class AssetRequestMapper {
             // all assets mapping to this path have the same data. Just pick the
             // first
             Asset asset = first.getB();
-            index.registerPathInfo(entry.getKey(), x -> resultProvider.get()
-                    .initialize(asset));
-            log.debug("Registered {} -> {}", first.getA().getClass()
-                    .getSimpleName(), entry.getKey());
+            index.registerPathInfo(entry.getKey(),
+                    x -> resultProvider.get().initialize(asset));
+            log.debug("Registered {} -> {}",
+                    first.getA().getClass().getSimpleName(), entry.getKey());
         }
     }
 

@@ -108,7 +108,8 @@ public class MemberOrderIndexTest {
         checkOrder(Base.class, new String[] { "foobar", "foo" }, false);
     }
 
-    private void checkOrder(Class<?> cls, String[] names, boolean checkNoOrder) {
+    private void checkOrder(Class<?> cls, String[] names,
+            boolean checkNoOrder) {
         checkOrder(cls, names, checkNoOrder, Arrays.asList(cls.getMethods()));
         checkOrder(cls, names, checkNoOrder, Arrays.asList(cls.getFields()));
     }

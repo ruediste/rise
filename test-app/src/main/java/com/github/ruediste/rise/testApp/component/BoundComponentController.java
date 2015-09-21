@@ -20,21 +20,19 @@ public class BoundComponentController extends ControllerComponent {
         @Override
         protected Component createComponents() {
             return new CPage(label(this)).add(toComponent(html -> html
-                    .add(toComponentBound(
-                            () -> controller.data(),
-                            x -> x.span().ID("bound")
-                                    .content(controller.data().getValue())))
+                    .add(toComponentBound(() -> controller.data(), x -> x.span()
+                            .ID("bound").content(controller.data().getValue())))
 
-                    .add(toComponentDirect(x -> x.span().ID("direct")
-                            .content(controller.data().getValue())))
+            .add(toComponentDirect(x -> x.span().ID("direct")
+                    .content(controller.data().getValue())))
 
-                    .add(new CFormGroup(new CTextField().CLASS("textField")
-                            .bindText(() -> controller.data().getValue())))
+            .add(new CFormGroup(new CTextField().CLASS("textField")
+                    .bindText(() -> controller.data().getValue())))
 
-                    .add(new CButton("pushDown").CLASS("pushDown").setHandler(
-                            () -> controller.pushDown()))
-                    .add(new CButton("pullUp").CLASS("pullUp").setHandler(
-                            () -> controller.pullUp()))
+            .add(new CButton("pushDown").CLASS("pushDown")
+                    .setHandler(() -> controller.pushDown()))
+                    .add(new CButton("pullUp").CLASS("pullUp")
+                            .setHandler(() -> controller.pullUp()))
 
             ));
         }

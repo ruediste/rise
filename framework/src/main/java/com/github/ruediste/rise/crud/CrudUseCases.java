@@ -21,11 +21,11 @@ public interface CrudUseCases {
     }
 
     @interface Covers {
-        Class<?> value();
+        Class<?>value();
     }
 
     @interface Implements {
-        Class<?> value();
+        Class<?>value();
     }
 
     @Covers(BrowseTypes.class)

@@ -61,8 +61,8 @@ public class TestRestartableApplication extends RestartableApplicationBase {
     @Inject
     InMemoryRememberMeTokenDao rememberMeTokenDao;
 
-    private static class Initializer implements
-            com.github.ruediste.rise.util.Initializer {
+    private static class Initializer
+            implements com.github.ruediste.rise.util.Initializer {
 
         @Inject
         DataBaseLinkRegistry registry;
@@ -84,8 +84,8 @@ public class TestRestartableApplication extends RestartableApplicationBase {
             @Override
             protected void configure() throws Exception {
                 InitializerUtil.register(config(), Initializer.class);
-                bind(PatternStringResolver.class).to(
-                        DefaultPatternStringResolver.class);
+                bind(PatternStringResolver.class)
+                        .to(DefaultPatternStringResolver.class);
                 AuthorizationManager mgr = new AuthorizationManager();
                 mgr.register(config());
                 bind(AuthorizationManager.class).toInstance(mgr);
@@ -98,17 +98,17 @@ public class TestRestartableApplication extends RestartableApplicationBase {
                 resolver.initialize("translations/translations");
                 return resolver;
             }
-        }, new DynamicIntegrationModule(nonRestartableInjector)).injectMembers(
-                this);
+        }, new DynamicIntegrationModule(nonRestartableInjector))
+                .injectMembers(this);
         index.registerTemplate(CPage.class, CPageTemplate.class);
         config.applicationCanvasFactory = Optional.of(canvasProvider::get);
         config.requestErrorHandler = errorHandler;
-        errorHandler.initialize(util -> util.go(
-                RequestErrorHandlerController.class).index());
-        config.setLoginHandler((util, s) -> util.go(LoginController.class)
-                .index(s));
-        config.setRememberMeTokenTheftHandler((util, s) -> util.go(
-                LoginController.class).tokenTheftDetected(s));
+        errorHandler.initialize(
+                util -> util.go(RequestErrorHandlerController.class).index());
+        config.setLoginHandler(
+                (util, s) -> util.go(LoginController.class).index(s));
+        config.setRememberMeTokenTheftHandler((util, s) -> util
+                .go(LoginController.class).tokenTheftDetected(s));
 
         rememberMeAuthenticationProvider.setDao(rememberMeTokenDao);
         defaultAuthenticationManager

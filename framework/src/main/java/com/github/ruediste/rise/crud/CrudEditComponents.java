@@ -46,8 +46,7 @@ import com.github.ruediste1.i18n.label.Labeled;
  * waiting for the binding to be triggered.
  */
 @Singleton
-public class CrudEditComponents
-        extends
+public class CrudEditComponents extends
         FactoryCollectionNew<PersistentProperty, CrudEditComponents.CrudEditComponentFactory> {
     @Inject
     ComponentFactoryUtil util;
@@ -88,42 +87,44 @@ public class CrudEditComponents
     public void initialize() {
         addFactory(
                 decl -> String.class.equals(decl.getAttribute().getJavaType()),
-                (decl, entityType, group) -> new CFormGroup(new CTextField()
-                        .setLabel(
-                                labelUtil.getPropertyLabel(decl.getProperty()))
-                        .bindText(
-                                () -> (String) decl.getProperty().getValue(
-                                        group.proxy()))));
+                (decl, entityType,
+                        group) -> new CFormGroup(new CTextField()
+                                .setLabel(labelUtil
+                                        .getPropertyLabel(decl.getProperty()))
+                                .bindText(() -> (String) decl.getProperty()
+                                        .getValue(group.proxy()))));
 
         addFactory(
                 decl -> Long.TYPE.equals(decl.getAttribute().getJavaType())
                         || Long.class.equals(decl.getAttribute().getJavaType()),
                 (decl, entityType, group) -> {
-                    CInput input = new CInput(InputType.number).setLabel(
-                            labelUtil.getPropertyLabel(decl.getProperty()))
+                    CInput input = new CInput(InputType.number)
+                            .setLabel(labelUtil
+                                    .getPropertyLabel(decl.getProperty()))
                             .TEST_NAME(decl.getAttribute().getName());
 
-                    BindingUtil.bind(
-                            input,
-                            group,
-                            entity -> input.setValue(String.valueOf(decl
-                                    .getProperty().getValue(entity))),
+                    BindingUtil
+                            .bind(input, group,
+                                    entity -> input.setValue(String.valueOf(decl
+                                            .getProperty().getValue(entity))),
                             entity -> decl.getProperty().setValue(entity,
                                     Long.parseLong(input.getValue())));
                     return new CFormGroup(input);
                 });
 
         addFactory(
-                decl -> decl.getAttribute().getPersistentAttributeType() == PersistentAttributeType.MANY_TO_ONE,
+                decl -> decl.getAttribute()
+                        .getPersistentAttributeType() == PersistentAttributeType.MANY_TO_ONE,
                 (decl, entityType, group) -> {
                     Class<?> cls = decl.getAttribute().getJavaType();
 
                     CValue<Object> cValue = new CValue<>(
-                            v -> toComponent(html -> crudUtil.getStrategy(
-                                    IdentificationRenderer.class, cls)
+                            v -> toComponent(html -> crudUtil
+                                    .getStrategy(IdentificationRenderer.class,
+                                            cls)
                                     .renderIdenification(html, v)))
-                            .bindValue(() -> decl.getProperty().getValue(
-                                    group.proxy()));
+                                            .bindValue(() -> decl.getProperty()
+                                                    .getValue(group.proxy()));
 
                     //@formatter:off
                     return toComponent(html -> html

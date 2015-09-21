@@ -28,8 +28,8 @@ import com.google.common.primitives.Primitives;
 
 @Singleton
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class CrudPropertyFilters extends
-        FactoryCollection<PersistentProperty, CrudPropertyFilter> {
+public class CrudPropertyFilters
+        extends FactoryCollection<PersistentProperty, CrudPropertyFilter> {
 
     @Inject
     LabelUtil labelUtil;
@@ -57,8 +57,8 @@ public class CrudPropertyFilters extends
     Messages messages;
 
     {
-        getFactories().add(
-                new Function<PersistentProperty, CrudPropertyFilter>() {
+        getFactories()
+                .add(new Function<PersistentProperty, CrudPropertyFilter>() {
 
                     @Override
                     public CrudPropertyFilter apply(PersistentProperty decl) {
@@ -68,12 +68,10 @@ public class CrudPropertyFilters extends
                         PropertyInfo property = decl.getProperty();
 
                         if (String.class.equals(cls)) {
-                            CTextField textField = new CTextField()
-                                    .setText("")
+                            CTextField textField = new CTextField().setText("")
                                     .TEST_NAME(property.getName())
-                                    .setLabel(
-                                            labelUtil
-                                                    .getPropertyLabel(property));
+                                    .setLabel(labelUtil
+                                            .getPropertyLabel(property));
                             CFormGroup component = new CFormGroup(textField);
                             return new CrudPropertyFilter() {
 
@@ -86,14 +84,12 @@ public class CrudPropertyFilters extends
                                 public void applyFilter(
                                         PersistenceFilterContext ctx) {
                                     CriteriaBuilder cb = ctx.cb();
-                                    Path<String> path = ctx.root().get(
-                                            (SingularAttribute) decl
+                                    Path<String> path = ctx.root()
+                                            .get((SingularAttribute) decl
                                                     .getAttribute());
-                                    ctx.addWhere(cb.or(
-                                            path.isNull(),
-                                            cb.like(path,
-                                                    "%" + textField.getText()
-                                                            + "%")));
+                                    ctx.addWhere(cb.or(path.isNull(), cb.like(
+                                            path,
+                                            "%" + textField.getText() + "%")));
                                 }
                             };
                         }
@@ -137,10 +133,10 @@ public class CrudPropertyFilters extends
                                 @Override
                                 public void applyFilter(
                                         PersistenceFilterContext ctx) {
-                                    if (!Strings.isNullOrEmpty(min.getValue())) {
-                                        ctx.addWhere(ctx
-                                                .cb()
-                                                .greaterThanOrEqualTo(
+                                    if (!Strings
+                                            .isNullOrEmpty(min.getValue())) {
+                                        ctx.addWhere(
+                                                ctx.cb().greaterThanOrEqualTo(
                                                         ctx.root()
                                                                 .get(decl
                                                                         .getProperty()
@@ -149,16 +145,14 @@ public class CrudPropertyFilters extends
                                                                 .getValue())));
 
                                     }
-                                    if (!Strings.isNullOrEmpty(max.getValue())) {
-                                        ctx.addWhere(ctx
-                                                .cb()
-                                                .lessThanOrEqualTo(
-                                                        ctx.root()
-                                                                .get(decl
-                                                                        .getProperty()
-                                                                        .getName()),
-                                                        Long.parseLong(max
-                                                                .getValue())));
+                                    if (!Strings
+                                            .isNullOrEmpty(max.getValue())) {
+                                        ctx.addWhere(ctx.cb().lessThanOrEqualTo(
+                                                ctx.root()
+                                                        .get(decl.getProperty()
+                                                                .getName()),
+                                                Long.parseLong(
+                                                        max.getValue())));
 
                                     }
 

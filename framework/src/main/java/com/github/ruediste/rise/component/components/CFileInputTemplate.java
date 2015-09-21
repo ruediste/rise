@@ -13,8 +13,8 @@ import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.web.HttpRenderResult;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 
-public class CFileInputTemplate extends
-        BootstrapComponentTemplateBase<CFileInput> {
+public class CFileInputTemplate
+        extends BootstrapComponentTemplateBase<CFileInput> {
 
     @Inject
     CoreRequestInfo coreRequestInfo;
@@ -29,8 +29,8 @@ public class CFileInputTemplate extends
                 .CLASS("rise_fileinput").MULTIPLE("multiple")
                 .DATA("upload-url", getAjaxUrl(component) + "/upload")
                 .DATA("delete-url", getAjaxUrl(component) + "/delete")
-        // .DATA("show-upload", "false")
-        ;
+                // .DATA("show-upload", "false")
+                ;
         if (!component.getUploadedFiles().isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (UploadedFile file : component.getUploadedFiles())

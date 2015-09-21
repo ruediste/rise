@@ -32,12 +32,10 @@ public class UrlSpec implements Serializable {
 
     public UrlSpec(PathInfo pathInfo, Map<String, String[]> parameterMap) {
         this.pathInfo = pathInfo;
-        this.parameters = parameterMap
-                .entrySet()
-                .stream()
-                .<Pair<String, String>> flatMap(
-                        e -> Arrays.stream(e.getValue()).map(
-                                v -> Pair.of(e.getKey(), v))).collect(toList());
+        this.parameters = parameterMap.entrySet()
+                .stream().<Pair<String, String>> flatMap(e -> Arrays
+                        .stream(e.getValue()).map(v -> Pair.of(e.getKey(), v)))
+                .collect(toList());
     }
 
     public PathInfo getPathInfo() {

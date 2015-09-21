@@ -36,10 +36,10 @@ import com.google.common.reflect.TypeToken;
  *
  * <p>
  * The component classes have a
- * {@link RelationsComponent#bind(java.util.function.Consumer)} method which accepts
- * a lambda expression. The lambda expression has the component as parameter and
- * sets a property of the component to some value retrieved via a binding group
- * exposed by the controller.
+ * {@link RelationsComponent#bind(java.util.function.Consumer)} method which
+ * accepts a lambda expression. The lambda expression has the component as
+ * parameter and sets a property of the component to some value retrieved via a
+ * binding group exposed by the controller.
  * </p>
  *
  * <p>
@@ -64,9 +64,9 @@ import com.google.common.reflect.TypeToken;
  *
  * <p>
  * <strong> One Way Bindings </strong><br/>
- * Using {@link RelationsComponent#bindOneWay(java.util.function.Consumer)} the check
- * if a binding could be two way is suppressed and the binding always takes the
- * direction as specified by the lambda expression.
+ * Using {@link RelationsComponent#bindOneWay(java.util.function.Consumer)} the
+ * check if a binding could be two way is suppressed and the binding always
+ * takes the direction as specified by the lambda expression.
  * </p>
  *
  * <p>
@@ -123,16 +123,16 @@ public class BindingGroup<T> implements Serializable {
      * Pull the data of all bindings up from the model to the view
      */
     public void pullUp() {
-        getBindings().filter(b -> b.getPullUp() != null).forEach(
-                b -> b.getPullUp().accept(data));
+        getBindings().filter(b -> b.getPullUp() != null)
+                .forEach(b -> b.getPullUp().accept(data));
     }
 
     /**
      * Push the data of all bindings down from the view to the model
      */
     public void pushDown() {
-        getBindings().filter(b -> b.getPushDown() != null).forEach(
-                b -> b.getPushDown().accept(data));
+        getBindings().filter(b -> b.getPushDown() != null)
+                .forEach(b -> b.getPushDown().accept(data));
     }
 
     /**
@@ -165,8 +165,8 @@ public class BindingGroup<T> implements Serializable {
 
     @SuppressWarnings("unchecked")
     private <TModel> TModel createModelProxy(Class<?> modelClass) {
-        return (TModel) BindingExpressionExecutionRecorder.getCurrentLog().modelRecorder
-                .getProxy(modelClass);
+        return (TModel) BindingExpressionExecutionRecorder
+                .getCurrentLog().modelRecorder.getProxy(modelClass);
 
     }
 

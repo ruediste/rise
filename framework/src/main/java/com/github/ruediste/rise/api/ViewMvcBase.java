@@ -63,7 +63,8 @@ public abstract class ViewMvcBase<TController extends IControllerMvc, TData> {
                 .getRawType();
     }
 
-    public void setControllerClass(Class<? extends TController> controllerClass) {
+    public void setControllerClass(
+            Class<? extends TController> controllerClass) {
         this.controllerClass = controllerClass;
     }
 

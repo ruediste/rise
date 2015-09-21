@@ -51,8 +51,7 @@ public abstract class WebTestBase implements TestUtil {
 
     protected String url(ActionResult result) {
         Cookie sessionId = driver.manage().getCookieNamed("JSESSIONID");
-        assertNotNull(
-                "No session present. Access page before using the driver",
+        assertNotNull("No session present. Access page before using the driver",
                 sessionId);
         return util.url(result, sessionId.getValue());
     }
@@ -86,8 +85,8 @@ public abstract class WebTestBase implements TestUtil {
         } else {
             Servlet frontServlet = createServlet(this);
 
-            baseUrl = new StandaloneLafApplication().startForTesting(
-                    frontServlet, 0);
+            baseUrl = new StandaloneLafApplication()
+                    .startForTesting(frontServlet, 0);
 
             // util can be null if initialization failed
             if (util != null)

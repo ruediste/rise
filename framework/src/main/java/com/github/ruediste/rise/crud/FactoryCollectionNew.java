@@ -22,12 +22,9 @@ public class FactoryCollectionNew<TKey, TFactory> {
     }
 
     public TFactory getFactory(TKey key) {
-        return factories
-                .stream()
-                .filter(x -> x.getA().test(key))
-                .findFirst()
-                .orElseThrow(
-                        () -> new RuntimeException("No factory found for "
-                                + key)).getB();
+        return factories.stream().filter(x -> x.getA().test(key)).findFirst()
+                .orElseThrow(() -> new RuntimeException(
+                        "No factory found for " + key))
+                .getB();
     }
 }

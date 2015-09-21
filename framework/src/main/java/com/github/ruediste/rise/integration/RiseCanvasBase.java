@@ -18,7 +18,7 @@ import com.google.common.base.Charsets;
  * always written to a
  */
 public abstract class RiseCanvasBase<TSelf extends RiseCanvasBase<TSelf>>
-        extends HtmlCanvasBase<TSelf> implements RiseCanvas<TSelf> {
+        extends HtmlCanvasBase<TSelf>implements RiseCanvas<TSelf> {
 
     @Inject
     RiseCanvasHelper helper;

@@ -29,47 +29,30 @@ public class FileUploadController extends ControllerComponent {
         @Override
         protected Component createComponents() {
             return new CPage(label(this))
-                    .add(new CSwitch<Mode>()
-                            .put(Mode.LIST,
-                                    () -> {
-                                        return toComponent(html -> html
-                                                .bRow()
-                                                .fForEach(
-                                                        controller.data().files,
-                                                        f -> html
-                                                                .bCol(x -> x
-                                                                        .sm(6)
-                                                                        .md(4))
-                                                                .div()
-                                                                .CLASS("thumbnail")
-                                                                .add(new CImg()
-                                                                        .setSource(f::getBytes))
-                                                                .add(new CViewerJS()
-                                                                        .setSource(f
-                                                                                .getBytes()))
-                                                                .h2()
-                                                                .content(
-                                                                        f.getSubmittedFileName())
-                                                                ._div()._bCol())
-                                                ._bRow()
+                    .add(new CSwitch<Mode>().put(Mode.LIST, () -> {
+                        return toComponent(
+                                html -> html.bRow()
+                                        .fForEach(controller.data().files,
+                                                f -> html
+                                                        .bCol(x -> x.sm(6)
+                                                                .md(4))
+                                                        .div().CLASS(
+                                                                "thumbnail")
+                                        .add(new CImg().setSource(f::getBytes))
+                                        .add(new CViewerJS()
+                                                .setSource(f.getBytes())).h2()
+                                        .content(f.getSubmittedFileName())
+                                        ._div()._bCol())._bRow()
 
-                                                .add(new CButton(controller,
-                                                        c -> c.upload())));
-                                    })
-                            .put(Mode.UPLOAD,
-                                    () -> {
-                                        CFileInput fileInput = new CFileInput();
-                                        return toComponent(html -> html
-                                                .h1()
-                                                .content(label(MainView.class))
-                                                .add(fileInput)
-                                                .add(new CButton(
-                                                        controller,
-                                                        c -> {
-                                                            c.done(fileInput
-                                                                    .getUploadedFiles());
-                                                        })));
-                                    }).bind(() -> controller.data().getMode()));
+                .add(new CButton(controller, c -> c.upload())));
+                    }).put(Mode.UPLOAD, () -> {
+                        CFileInput fileInput = new CFileInput();
+                        return toComponent(html -> html.h1()
+                                .content(label(MainView.class)).add(fileInput)
+                                .add(new CButton(controller, c -> {
+                            c.done(fileInput.getUploadedFiles());
+                        })));
+                    }).bind(() -> controller.data().getMode()));
         }
     }
 

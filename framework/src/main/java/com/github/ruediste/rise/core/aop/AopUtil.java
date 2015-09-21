@@ -57,8 +57,8 @@ public class AopUtil {
 
     }
 
-    private static class SubclassRule implements
-            FixedConstructorInstantiationRule {
+    private static class SubclassRule
+            implements FixedConstructorInstantiationRule {
 
         private HashMap<TypeToken<?>, Optional<RecipeInstantiator>> cache = new HashMap<>();
         private ArrayList<AdviceEntry> advices = new ArrayList<>();
@@ -87,82 +87,69 @@ public class AopUtil {
                     .stream().map(ctx.getCompiler()::compileSupplier)
                     .toArray(size -> new CompiledSupplier[size]);
 
-            return Optional
-                    .of(new RecipeInstantiatorImpl(
-                            () -> {
-                                AttachedPropertyBearerBase bearer = new AttachedPropertyBearerBase();
-                                Enhancer e = new Enhancer();
-                                e.setSuperclass(typeToken.getRawType());
-                                e.setCallback(new MethodInterceptor() {
+            return Optional.of(new RecipeInstantiatorImpl(() -> {
+                AttachedPropertyBearerBase bearer = new AttachedPropertyBearerBase();
+                Enhancer e = new Enhancer();
+                e.setSuperclass(typeToken.getRawType());
+                e.setCallback(new MethodInterceptor() {
 
-                                    @Override
-                                    public Object intercept(Object obj,
-                                            Method method, Object[] args,
-                                            MethodProxy proxy) throws Throwable {
-                                        return enhance(adviceMap.get(method)
-                                                .iterator(), obj, method, args,
-                                                proxy);
-                                    }
+                    @Override
+                    public Object intercept(Object obj, Method method,
+                            Object[] args, MethodProxy proxy) throws Throwable {
+                        return enhance(adviceMap.get(method).iterator(), obj,
+                                method, args, proxy);
+                    }
 
-                                    private Object enhance(
-                                            Iterator<AroundAdvice> iterator,
-                                            Object obj, Method method,
-                                            Object[] args, MethodProxy proxy)
-                                            throws Throwable {
-                                        if (!iterator.hasNext())
-                                            return proxy.invokeSuper(obj, args);
-                                        return iterator.next().intercept(
-                                                new InterceptedInvocation() {
+                    private Object enhance(Iterator<AroundAdvice> iterator,
+                            Object obj, Method method, Object[] args,
+                            MethodProxy proxy) throws Throwable {
+                        if (!iterator.hasNext())
+                            return proxy.invokeSuper(obj, args);
+                        return iterator.next()
+                                .intercept(new InterceptedInvocation() {
 
-                                                    @Override
-                                                    public Object proceed(
-                                                            Object... args)
-                                                            throws Throwable {
-                                                        return enhance(
-                                                                iterator, obj,
-                                                                method, args,
-                                                                proxy);
-                                                    }
+                            @Override
+                            public Object proceed(Object... args)
+                                    throws Throwable {
+                                return enhance(iterator, obj, method, args,
+                                        proxy);
+                            }
 
-                                                    @Override
-                                                    public Object getTarget() {
-                                                        return obj;
-                                                    }
+                            @Override
+                            public Object getTarget() {
+                                return obj;
+                            }
 
-                                                    @Override
-                                                    public Method getMethod() {
-                                                        return method;
-                                                    }
+                            @Override
+                            public Method getMethod() {
+                                return method;
+                            }
 
-                                                    @Override
-                                                    public Object[] getArguments() {
-                                                        return args;
-                                                    }
+                            @Override
+                            public Object[] getArguments() {
+                                return args;
+                            }
 
-                                                    @Override
-                                                    public Object proceed()
-                                                            throws Throwable {
-                                                        return enhance(
-                                                                iterator, obj,
-                                                                method, args,
-                                                                proxy);
-                                                    }
+                            @Override
+                            public Object proceed() throws Throwable {
+                                return enhance(iterator, obj, method, args,
+                                        proxy);
+                            }
 
-                                                    @Override
-                                                    public AttachedPropertyBearer getPropertyBearer() {
-                                                        return bearer;
-                                                    }
-                                                });
-                                    }
-                                });
+                            @Override
+                            public AttachedPropertyBearer getPropertyBearer() {
+                                return bearer;
+                            }
+                        });
+                    }
+                });
 
-                                Object[] args = new Object[argSuppliers.length];
-                                for (int i = 0; i < args.length; i++) {
-                                    args[i] = argSuppliers[i].getNoThrow();
-                                }
-                                return e.create(
-                                        constructor.getParameterTypes(), args);
-                            }));
+                Object[] args = new Object[argSuppliers.length];
+                for (int i = 0; i < args.length; i++) {
+                    args[i] = argSuppliers[i].getNoThrow();
+                }
+                return e.create(constructor.getParameterTypes(), args);
+            }));
         }
 
         public void addAdvice(AdviceEntry advice) {
@@ -206,43 +193,43 @@ public class AopUtil {
                             MethodProxy proxy) throws Throwable {
                         if (!iterator.hasNext())
                             return proxy.invoke(delegate, args);
-                        return iterator.next().intercept(
-                                new InterceptedInvocation() {
+                        return iterator.next()
+                                .intercept(new InterceptedInvocation() {
 
-                                    @Override
-                                    public Object proceed(Object... args)
-                                            throws Throwable {
-                                        return enhance(iterator, obj, method,
-                                                args, proxy);
-                                    }
+                            @Override
+                            public Object proceed(Object... args)
+                                    throws Throwable {
+                                return enhance(iterator, obj, method, args,
+                                        proxy);
+                            }
 
-                                    @Override
-                                    public Object getTarget() {
-                                        return obj;
-                                    }
+                            @Override
+                            public Object getTarget() {
+                                return obj;
+                            }
 
-                                    @Override
-                                    public Method getMethod() {
-                                        return method;
-                                    }
+                            @Override
+                            public Method getMethod() {
+                                return method;
+                            }
 
-                                    @Override
-                                    public Object[] getArguments() {
-                                        return args;
-                                    }
+                            @Override
+                            public Object[] getArguments() {
+                                return args;
+                            }
 
-                                    @Override
-                                    public Object proceed() throws Throwable {
-                                        return enhance(iterator, obj, method,
-                                                args, proxy);
-                                    }
+                            @Override
+                            public Object proceed() throws Throwable {
+                                return enhance(iterator, obj, method, args,
+                                        proxy);
+                            }
 
-                                    @Override
-                                    public AttachedPropertyBearer getPropertyBearer() {
-                                        throw new UnsupportedOperationException(
-                                                "Not implemented for proxy enhancement");
-                                    }
-                                });
+                            @Override
+                            public AttachedPropertyBearer getPropertyBearer() {
+                                throw new UnsupportedOperationException(
+                                        "Not implemented for proxy enhancement");
+                            }
+                        });
                     }
                 });
 
@@ -290,7 +277,8 @@ public class AopUtil {
      */
     public static void registerSubclass(StandardInjectorConfiguration config,
             Predicate<TypeToken<?>> typeMatcher,
-            BiPredicate<TypeToken<?>, Method> methodMatcher, AroundAdvice advice) {
+            BiPredicate<TypeToken<?>, Method> methodMatcher,
+            AroundAdvice advice) {
         SubclassRule rule = subclassRuleProperty.setIfAbsent(config, () -> {
             SubclassRule tmp = new SubclassRule(config);
             config.fixedConstructorInstantiatorFactoryRules.add(0, tmp);
@@ -309,7 +297,8 @@ public class AopUtil {
      */
     public static void registerProxy(StandardInjectorConfiguration config,
             Predicate<TypeToken<?>> typeMatcher,
-            BiPredicate<TypeToken<?>, Method> methodMatcher, AroundAdvice advice) {
+            BiPredicate<TypeToken<?>, Method> methodMatcher,
+            AroundAdvice advice) {
         ProxyRule rule = proxyRuleProperty.setIfAbsent(config, () -> {
             ProxyRule tmp = new ProxyRule();
             config.config.enhancerFactories.add(0, tmp);

@@ -28,23 +28,23 @@ public class CrudEditPO extends PageObject {
     }
 
     public WebElement getPropertyElement(String propertyName) {
-        WebElement element = driver.findElement(By
-                .cssSelector(dataTestSelector("properties")
+        WebElement element = driver
+                .findElement(By.cssSelector(dataTestSelector("properties")
                         + dataTestSelector(propertyName)));
         return element;
     }
 
     public List<String> getPropertyTestNames() {
         return driver
-                .findElements(
-                        By.cssSelector(dataTestSelector("properties")
-                                + ".form-control[data-test-name]")).stream()
-                .map(x -> x.getAttribute("data-test-name")).collect(toList());
+                .findElements(By.cssSelector(dataTestSelector("properties")
+                        + ".form-control[data-test-name]"))
+                .stream().map(x -> x.getAttribute("data-test-name"))
+                .collect(toList());
     }
 
     public CrudPickerPO pick(String propertyTestName) {
-        clickAndWaitForRefresh(driver.findElement(By
-                .cssSelector(dataTestSelector("properties")
+        clickAndWaitForRefresh(
+                driver.findElement(By.cssSelector(dataTestSelector("properties")
                         + ".form-control[data-test-name=\"" + propertyTestName
                         + "\"]~* [data-test-name=\"pick\"]")));
         return new CrudPickerPO(driver);
@@ -52,18 +52,18 @@ public class CrudEditPO extends PageObject {
 
     public CrudBrowserPO browse() {
         driver.findElement(
-                By.cssSelector(dataTestSelector("buttons")
-                        + dataTestSelector(CrudControllerBase.class,
-                                x -> x.browse(null, null)))).click();
+                By.cssSelector(dataTestSelector("buttons") + dataTestSelector(
+                        CrudControllerBase.class, x -> x.browse(null, null))))
+                .click();
         return new CrudBrowserPO(driver);
     }
 
     public CrudDisplayPO save() {
 
         driver.findElement(
-                By.cssSelector(dataTestSelector("buttons")
-                        + dataTestSelector(DefaultCrudEditController.class,
-                                x -> x.save()))).click();
+                By.cssSelector(dataTestSelector("buttons") + dataTestSelector(
+                        DefaultCrudEditController.class, x -> x.save())))
+                .click();
         return new CrudDisplayPO(driver);
     }
 

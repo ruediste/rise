@@ -30,8 +30,8 @@ public class CoreNonRestartableModule extends AbstractModule {
     @Provides
     ReloadableClassLoader spaceAwareClassLoaderDynamic(
             ReloadableClassesIndex cache) {
-        return new ReloadableClassLoader(Thread.currentThread()
-                .getContextClassLoader(), cache);
+        return new ReloadableClassLoader(
+                Thread.currentThread().getContextClassLoader(), cache);
     }
 
     @Provides

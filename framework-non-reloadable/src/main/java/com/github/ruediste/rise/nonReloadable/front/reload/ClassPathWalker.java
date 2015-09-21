@@ -137,8 +137,8 @@ public class ClassPathWalker {
                 try {
                     scan(entry.getKey(), entry.getValue(), visitor);
                 } catch (IOException e) {
-                    failures.add(new RuntimeException("Error while scanning "
-                            + entry.getKey(), e));
+                    failures.add(new RuntimeException(
+                            "Error while scanning " + entry.getKey(), e));
                 }
             });
         // executor.shutdown();
@@ -199,7 +199,8 @@ public class ClassPathWalker {
 
     private void scanDirectory(File directory, ClassLoader classloader,
             ClassPathVisitor visitor) throws IOException {
-        if (visitor.visitRootDirectory(directory.toPath(), classloader) == ClassPathVisitResult.CONTINUE)
+        if (visitor.visitRootDirectory(directory.toPath(),
+                classloader) == ClassPathVisitResult.CONTINUE)
             scanDirectory(directory, classloader, "", ImmutableSet.<File> of(),
                     visitor);
     }
@@ -254,11 +255,13 @@ public class ClassPathWalker {
             return;
         }
 
-        if (visitor.visitJarFile(file.toPath(), jarFile, classloader) == ClassPathVisitResult.SKIP_CONTENTS)
+        if (visitor.visitJarFile(file.toPath(), jarFile,
+                classloader) == ClassPathVisitResult.SKIP_CONTENTS)
             return;
 
         try {
-            for (URI uri : getClassPathFromManifest(file, jarFile.getManifest())) {
+            for (URI uri : getClassPathFromManifest(file,
+                    jarFile.getManifest())) {
                 executor.submit(() -> {
                     try {
                         scan(uri, classloader, visitor);
@@ -297,8 +300,8 @@ public class ClassPathWalker {
     }
 
     /** Separator for the Class-Path manifest attribute value in jar files. */
-    private static final Splitter CLASS_PATH_ATTRIBUTE_SEPARATOR = Splitter.on(
-            " ").omitEmptyStrings();
+    private static final Splitter CLASS_PATH_ATTRIBUTE_SEPARATOR = Splitter
+            .on(" ").omitEmptyStrings();
 
     /**
      * Returns the class path URIs specified by the {@code Class-Path} manifest
@@ -308,13 +311,14 @@ public class ClassPathWalker {
      * jar file has no manifest, and an empty set will be returned.
      */
     @VisibleForTesting
-    ImmutableSet<URI> getClassPathFromManifest(File jarFile, Manifest manifest) {
+    ImmutableSet<URI> getClassPathFromManifest(File jarFile,
+            Manifest manifest) {
         if (manifest == null) {
             return ImmutableSet.of();
         }
         ImmutableSet.Builder<URI> builder = ImmutableSet.builder();
-        String classpathAttribute = manifest.getMainAttributes().getValue(
-                Attributes.Name.CLASS_PATH.toString());
+        String classpathAttribute = manifest.getMainAttributes()
+                .getValue(Attributes.Name.CLASS_PATH.toString());
         if (classpathAttribute != null) {
             for (String path : CLASS_PATH_ATTRIBUTE_SEPARATOR
                     .split(classpathAttribute)) {
@@ -333,8 +337,8 @@ public class ClassPathWalker {
     }
 
     /**
-     * Returns the absolute uri of the Class-Path entry value as specified in <a
-     * href=
+     * Returns the absolute uri of the Class-Path entry value as specified in
+     * <a href=
      * "http://docs.oracle.com/javase/6/docs/technotes/guides/jar/jar.html#Main%20Attributes"
      * > JAR File Specification</a>. Even though the specification only talks
      * about relative urls, absolute urls are actually supported too (for
@@ -347,8 +351,8 @@ public class ClassPathWalker {
         if (uri.isAbsolute()) {
             return uri;
         } else {
-            return new File(jarFile.getParentFile(), path.replace('/',
-                    File.separatorChar)).toURI();
+            return new File(jarFile.getParentFile(),
+                    path.replace('/', File.separatorChar)).toURI();
         }
     }
 

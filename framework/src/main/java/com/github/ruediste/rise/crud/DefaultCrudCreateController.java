@@ -23,8 +23,8 @@ public class DefaultCrudCreateController extends SubControllerComponent {
     @Inject
     CrudReflectionUtil reflectionUtil;
 
-    static class View extends
-            DefaultCrudViewComponent<DefaultCrudCreateController> {
+    static class View
+            extends DefaultCrudViewComponent<DefaultCrudCreateController> {
         @Inject
         CrudReflectionUtil util;
 

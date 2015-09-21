@@ -13,9 +13,9 @@ import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.salta.jsr330.Injector;
 
 /**
- * Index storing the {@link ComponentTemplate}s associated with a {@link Component}.
- * The index typically looks up templates using the {@link DefaultTemplate}
- * annotation.
+ * Index storing the {@link ComponentTemplate}s associated with a
+ * {@link Component}. The index typically looks up templates using the
+ * {@link DefaultTemplate} annotation.
  */
 @Singleton
 public class ComponentTemplateIndex {
@@ -34,21 +34,20 @@ public class ComponentTemplateIndex {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Component> ComponentTemplate<T> getTemplate(Class<T> component) {
-        return (ComponentTemplate<T>) templates
-                .computeIfAbsent(
-                        component,
-                        cls -> {
-                            DefaultTemplate defaultTemplate = component
-                                    .getAnnotation(DefaultTemplate.class);
-                            if (defaultTemplate == null) {
-                                throw new RuntimeException(
-                                        "No template has been registered explicitely for "
-                                                + component.getName()
-                                                + " and no @DefaultTemplate annotation is present");
-                            }
-                            return injector.getInstance(defaultTemplate.value());
-                        });
+    public <T extends Component> ComponentTemplate<T> getTemplate(
+            Class<T> component) {
+        return (ComponentTemplate<T>) templates.computeIfAbsent(component,
+                cls -> {
+                    DefaultTemplate defaultTemplate = component
+                            .getAnnotation(DefaultTemplate.class);
+                    if (defaultTemplate == null) {
+                        throw new RuntimeException(
+                                "No template has been registered explicitely for "
+                                        + component.getName()
+                                        + " and no @DefaultTemplate annotation is present");
+                    }
+                    return injector.getInstance(defaultTemplate.value());
+                });
     }
 
     public <T extends Component> void registerTemplate(Class<T> component,

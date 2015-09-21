@@ -71,7 +71,8 @@ public interface ICoreUtil {
         return getCoreUtil().path();
     }
 
-    default ActionInvocation<Object> toActionInvocation(ActionResult invocation) {
+    default ActionInvocation<Object> toActionInvocation(
+            ActionResult invocation) {
         return getCoreUtil().toActionInvocation(invocation);
     }
 

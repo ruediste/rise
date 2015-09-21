@@ -32,8 +32,8 @@ public class AssetDirRequestMapper {
     @Inject
     Logger log;
 
-    private final static class AssetDirRequestParseResult implements
-            RequestParseResult {
+    private final static class AssetDirRequestParseResult
+            implements RequestParseResult {
         @Inject
         CoreConfiguration coreConfiguration;
 
@@ -72,8 +72,8 @@ public class AssetDirRequestMapper {
                     .getResourceAsStream(fullLocation);
 
             if (in == null) {
-                throw new RuntimeException("Asset " + fullLocation
-                        + " not found");
+                throw new RuntimeException(
+                        "Asset " + fullLocation + " not found");
             }
 
             HttpServletResponse response = info.getServletResponse();
@@ -153,10 +153,10 @@ public class AssetDirRequestMapper {
 
             dir.pathInfoPrefix = pathInfoPrefix;
 
-            index.registerPrefix(pathInfoPrefix, request -> resultProvider
-                    .get().initialize(absoluteLocation, pathInfoPrefix));
-            log.debug("Registered asset directory {} ({} -> {})", dir
-                    .getClass().getSimpleName(), absoluteLocation,
+            index.registerPrefix(pathInfoPrefix, request -> resultProvider.get()
+                    .initialize(absoluteLocation, pathInfoPrefix));
+            log.debug("Registered asset directory {} ({} -> {})",
+                    dir.getClass().getSimpleName(), absoluteLocation,
                     pathInfoPrefix);
         }
     }

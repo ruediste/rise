@@ -22,7 +22,7 @@ public class SubViewControllerTest extends WebTest {
     }
 
     private void checkText(String expected) {
-        assertEquals(expected, driver.findElement(By.cssSelector(".subText"))
-                .getText());
+        assertEquals(expected,
+                driver.findElement(By.cssSelector(".subText")).getText());
     }
 }

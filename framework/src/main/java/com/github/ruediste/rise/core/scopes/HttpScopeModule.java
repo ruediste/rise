@@ -83,9 +83,8 @@ public class HttpScopeModule extends AbstractModule {
                         @Override
                         public Object loadObject() throws Exception {
                             State state = currentState.get();
-                            Preconditions
-                                    .checkState(state != null,
-                                            "Access to session scoped proxy without active session scope");
+                            Preconditions.checkState(state != null,
+                                    "Access to session scoped proxy without active session scope");
                             return state.getSessionDataMap().computeIfAbsent(
                                     binding, b -> supplier.get());
                         }
@@ -133,10 +132,10 @@ public class HttpScopeModule extends AbstractModule {
         bind(HttpScopeManager.class).toInstance(scopeManager);
 
         // bind scopes
-        bindScope(SessionScoped.class, new ScopeImpl(
-                scopeManager.sessionScopeHandler));
-        bindScope(RequestScoped.class, new ScopeImpl(
-                scopeManager.requestScopeHandler));
+        bindScope(SessionScoped.class,
+                new ScopeImpl(scopeManager.sessionScopeHandler));
+        bindScope(RequestScoped.class,
+                new ScopeImpl(scopeManager.requestScopeHandler));
     }
 
 }

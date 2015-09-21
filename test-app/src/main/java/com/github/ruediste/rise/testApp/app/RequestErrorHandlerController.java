@@ -18,8 +18,8 @@ import com.github.ruediste.rise.testApp.ViewMvc;
 import com.github.ruediste1.i18n.label.Labeled;
 import com.google.common.base.Throwables;
 
-public class RequestErrorHandlerController extends
-        ControllerMvc<RequestErrorHandlerController> {
+public class RequestErrorHandlerController
+        extends ControllerMvc<RequestErrorHandlerController> {
     @Inject
     Logger log;
 
@@ -41,9 +41,9 @@ public class RequestErrorHandlerController extends
     }
 
     @Labeled
-    private static class View extends
-            ViewMvc<RequestErrorHandlerController, Data> implements
-            HttpServletResponseCustomizer {
+    private static class View
+            extends ViewMvc<RequestErrorHandlerController, Data>
+            implements HttpServletResponseCustomizer {
 
         @Override
         protected void renderContent(TestCanvas html) {

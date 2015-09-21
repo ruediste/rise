@@ -90,8 +90,8 @@ public class CSwitch<T> extends ComponentBase<CSwitch<T>> {
         this.option = option;
         this.currentCase = cases.get(option);
         if (currentCase == null)
-            throw new RuntimeException("No case for option " + option
-                    + " registered");
+            throw new RuntimeException(
+                    "No case for option " + option + " registered");
         currentCase.onEnter();
     }
 

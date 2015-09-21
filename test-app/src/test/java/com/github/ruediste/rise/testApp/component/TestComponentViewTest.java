@@ -18,8 +18,7 @@ public class TestComponentViewTest extends WebTest {
     public void viewForSampleControllerFound() {
         assertEquals(TestComponentView.class,
                 repo.createView(new TestComponentController()).getClass());
-        assertEquals(
-                TestComponentViewAlternative.class,
+        assertEquals(TestComponentViewAlternative.class,
                 repo.createView(new TestComponentController(),
                         TestViewQualifier.class).getClass());
     }

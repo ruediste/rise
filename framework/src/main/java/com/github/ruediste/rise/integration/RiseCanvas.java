@@ -14,8 +14,8 @@ import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
 import com.github.ruediste.rise.util.MethodInvocation;
 import com.github.ruediste1.i18n.lString.LString;
 
-public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends
-        Html5Canvas<TSelf>, FuncCanvas<TSelf> {
+public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
+        extends Html5Canvas<TSelf>, FuncCanvas<TSelf> {
 
     RiseCanvasHelper internal_riseHelper();
 
@@ -76,8 +76,8 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends
     }
 
     default TSelf content(Enum<?> value) {
-        return content(internal_riseHelper().getLabelUtil().getEnumMemberLabel(
-                value));
+        return content(
+                internal_riseHelper().getLabelUtil().getEnumMemberLabel(value));
     }
 
     default TSelf write(LString value) {
@@ -120,10 +120,10 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends
             Consumer<ActionResult> ifTrue, Consumer<ActionResult> ifFalse) {
         MethodInvocation<Object> invocation = internal_riseHelper().getUtil()
                 .toActionInvocation(target).methodInvocation;
-        Object targetObj = internal_riseHelper().getControllerAuthzInstance(
-                invocation.getInstanceClass());
-        if (Authz.isAuthorized(targetObj, invocation.getMethod(), invocation
-                .getArguments().toArray()))
+        Object targetObj = internal_riseHelper()
+                .getControllerAuthzInstance(invocation.getInstanceClass());
+        if (Authz.isAuthorized(targetObj, invocation.getMethod(),
+                invocation.getArguments().toArray()))
             ifTrue.accept(target);
         else
             ifFalse.accept(target);

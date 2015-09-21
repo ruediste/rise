@@ -29,8 +29,8 @@ public class CTextField extends CInputBase<CTextField> {
      * </pre>
      */
     public CTextField bindText(Supplier<String> binder) {
-        setLabelProperty(BindingUtil.bind(this,
-                view -> view.setText(binder.get())).getB());
+        setLabelProperty(BindingUtil
+                .bind(this, view -> view.setText(binder.get())).getB());
         return self();
     }
 }

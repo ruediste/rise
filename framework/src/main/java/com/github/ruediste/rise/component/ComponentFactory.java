@@ -50,8 +50,8 @@ public interface ComponentFactory<TCanvas extends HtmlCanvas<?>> {
      */
     default Component toComponentBound(Supplier<?> bindingAccessor,
             Renderable<TCanvas> renderable) {
-        return internal_componentFactoryUtil().toComponentBound(
-                bindingAccessor, renderable);
+        return internal_componentFactoryUtil().toComponentBound(bindingAccessor,
+                renderable);
     }
 
     default Component toSubView(ViewComponentBase<?> view) {

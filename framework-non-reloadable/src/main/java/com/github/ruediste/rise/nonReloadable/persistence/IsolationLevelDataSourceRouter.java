@@ -58,8 +58,8 @@ public class IsolationLevelDataSourceRouter extends DelegatingDataSource {
                 }
             }
         } catch (SystemException e) {
-            throw new RuntimeException(
-                    "Error while getting transaction status", e);
+            throw new RuntimeException("Error while getting transaction status",
+                    e);
         }
         return result;
     }

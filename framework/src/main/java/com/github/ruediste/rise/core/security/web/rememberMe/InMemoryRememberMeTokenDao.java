@@ -25,7 +25,8 @@ public class InMemoryRememberMeTokenDao implements RememberMeTokenDao {
     }
 
     @Override
-    public RememberMeToken newToken(RememberMeToken token, Principal principal) {
+    public RememberMeToken newToken(RememberMeToken token,
+            Principal principal) {
         RememberMeToken result = token.withId(store.getNextId());
         store.put(token.getId(), serialize(Pair.of(result, principal)));
         return result;
@@ -33,8 +34,8 @@ public class InMemoryRememberMeTokenDao implements RememberMeTokenDao {
 
     @Override
     public void updateToken(RememberMeToken token) {
-        Pair<RememberMeToken, Principal> existing = deSerialize(store.get(token
-                .getId()));
+        Pair<RememberMeToken, Principal> existing = deSerialize(
+                store.get(token.getId()));
         store.put(token.getId(), serialize(Pair.of(token, existing.getB())));
     }
 

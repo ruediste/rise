@@ -25,15 +25,13 @@ public class InitialPagePersistenceHandler extends ChainedRequestHandler {
 
     @Override
     public void run(Runnable next) {
-        template.updating()
-                .isolation(IsolationLevel.REPEATABLE_READ)
-                .execute(
-                        () -> {
-                            holder.withNewEntityManagerSet(() -> {
-                                pageInfo.setEntityManagerSet(holder
-                                        .getCurrentEntityManagerSet());
-                                next.run();
-                            });
-                        });
+        template.updating().isolation(IsolationLevel.REPEATABLE_READ)
+                .execute(() -> {
+                    holder.withNewEntityManagerSet(() -> {
+                        pageInfo.setEntityManagerSet(
+                                holder.getCurrentEntityManagerSet());
+                        next.run();
+                    });
+                });
     }
 }

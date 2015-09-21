@@ -47,15 +47,15 @@ public class SampleApp extends RestartableApplicationBase {
 
     @Override
     protected void startImpl(Injector permanentInjector) {
-        Salta.createInjector(
-                permanentInjector.getInstance(ApplicationStage.class)
-                        .getSaltaStage(), new AbstractModule() {
+        Salta.createInjector(permanentInjector
+                .getInstance(ApplicationStage.class).getSaltaStage(),
+                new AbstractModule() {
 
                     @Override
                     protected void configure() throws Exception {
-                        bind(PatternStringResolver.class).to(
-                                DefaultPatternStringResolver.class).in(
-                                Singleton.class);
+                        bind(PatternStringResolver.class)
+                                .to(DefaultPatternStringResolver.class)
+                                .in(Singleton.class);
 
                     }
 
@@ -70,8 +70,8 @@ public class SampleApp extends RestartableApplicationBase {
                 }, new RestartableApplicationModule(permanentInjector))
                 .injectMembers(this);
 
-        errorHandler.initialize(util -> util.go(ReqestErrorController.class)
-                .index());
+        errorHandler.initialize(
+                util -> util.go(ReqestErrorController.class).index());
         config.requestErrorHandler = errorHandler;
 
         config.applicationCanvasFactory = Optional.of(canvasProvider::get);

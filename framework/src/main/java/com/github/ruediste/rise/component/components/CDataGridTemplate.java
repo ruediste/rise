@@ -2,15 +2,16 @@ package com.github.ruediste.rise.component.components;
 
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 
-public class CDataGridTemplate extends
-        BootstrapComponentTemplateBase<CDataGrid<?>> {
+public class CDataGridTemplate
+        extends BootstrapComponentTemplateBase<CDataGrid<?>> {
 
     @Override
     public void doRender(CDataGrid<?> grid, BootstrapRiseCanvas<?> html) {
         innerRender(grid, html);
     }
 
-    private <T> void innerRender(CDataGrid<T> grid, BootstrapRiseCanvas<?> html) {
+    private <T> void innerRender(CDataGrid<T> grid,
+            BootstrapRiseCanvas<?> html) {
         // @formatter:off
         html.bTable().TEST_NAME(grid.TEST_NAME())
           .thead()

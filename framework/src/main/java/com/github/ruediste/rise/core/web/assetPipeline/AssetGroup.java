@@ -51,8 +51,8 @@ public class AssetGroup {
      * Map all assets of the group
      */
     public AssetGroup map(Function<Asset, Asset> processor) {
-        return new AssetGroup(bundle, assets.stream().map(processor)
-                .collect(Collectors.toList()));
+        return new AssetGroup(bundle,
+                assets.stream().map(processor).collect(Collectors.toList()));
     }
 
     /**
@@ -147,7 +147,8 @@ public class AssetGroup {
             return this;
     }
 
-    public AssetGroup if_(AssetMode mode, Function<AssetGroup, AssetGroup> func) {
+    public AssetGroup if_(AssetMode mode,
+            Function<AssetGroup, AssetGroup> func) {
         return if_(bundle.getAssetMode() == mode, func);
     }
 
@@ -163,7 +164,8 @@ public class AssetGroup {
      * Map with the given processor if a condition is true. Otherwise leave
      * group unchanged
      */
-    public AssetGroup mapIf(boolean condition, Function<Asset, Asset> processor) {
+    public AssetGroup mapIf(boolean condition,
+            Function<Asset, Asset> processor) {
         if (condition)
             return map(processor);
         else
@@ -273,24 +275,30 @@ public class AssetGroup {
             String placeholder = m.group("placeholder");
             switch (placeholder) {
             case "hash":
-                sb.append(Hashing.sha256().hashBytes(asset.getData())
-                        .toString());
+                sb.append(
+                        Hashing.sha256().hashBytes(asset.getData()).toString());
                 break;
             case "name": {
                 String[] parts = name.split("/");
                 parts = parts[parts.length - 1].split("\\.");
 
-                sb.append(Arrays.asList(parts)
-                        .subList(0, parts.length == 1 ? 1 : parts.length - 1)
-                        .stream().collect(Collectors.joining(".")));
+                sb.append(
+                        Arrays.asList(parts)
+                                .subList(0,
+                                        parts.length == 1 ? 1
+                                                : parts.length - 1)
+                                .stream().collect(Collectors.joining(".")));
             }
                 break;
             case "qname": {
                 String[] parts = name.split("\\.");
 
-                sb.append(Arrays.asList(parts)
-                        .subList(0, parts.length == 1 ? 1 : parts.length - 1)
-                        .stream().collect(Collectors.joining(".")));
+                sb.append(
+                        Arrays.asList(parts)
+                                .subList(0,
+                                        parts.length == 1 ? 1
+                                                : parts.length - 1)
+                                .stream().collect(Collectors.joining(".")));
             }
                 break;
             case "ext": {
@@ -299,8 +307,8 @@ public class AssetGroup {
             }
                 break;
             case "extT": {
-                sb.append(bundle.getPipelineConfiguration().getExtension(
-                        asset.getAssetType()));
+                sb.append(bundle.getPipelineConfiguration()
+                        .getExtension(asset.getAssetType()));
             }
                 break;
             default:
@@ -340,8 +348,8 @@ public class AssetGroup {
      * @see AssetGroup#eager()
      */
     public AssetGroup cache() {
-        return new AssetGroup(bundle, assets.stream().<Asset> map(
-                r -> new CachingAsset(r, bundle)));
+        return new AssetGroup(bundle,
+                assets.stream().<Asset> map(r -> new CachingAsset(r, bundle)));
     }
 
     /**
@@ -406,12 +414,10 @@ public class AssetGroup {
             map.put(Pair.of(asset.getAssetType(), asset.getContentType()),
                     asset);
         }
-        return new AssetGroup(bundle, map
-                .asMap()
-                .entrySet()
-                .stream()
-                .map(entry -> new CombineAsset(entry.getValue(), entry.getKey()
-                        .getA(), entry.getKey().getB())));
+        return new AssetGroup(bundle,
+                map.asMap().entrySet().stream()
+                        .map(entry -> new CombineAsset(entry.getValue(),
+                                entry.getKey().getA(), entry.getKey().getB())));
 
     }
 
@@ -472,7 +478,8 @@ public class AssetGroup {
         return replace(target, replacement, Charsets.UTF_8);
     }
 
-    public AssetGroup replace(String target, String replacement, Charset charset) {
+    public AssetGroup replace(String target, String replacement,
+            Charset charset) {
         return mapData(new Function<String, String>() {
             @Override
             public String apply(String s) {

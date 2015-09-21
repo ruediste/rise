@@ -52,10 +52,8 @@ public class DefaultClassNameMapping implements Function<ClassNode, String> {
         // lowercamelize the class name
         List<String> parts = new ArrayList<>();
         Iterables.addAll(parts, Splitter.on('.').split(name));
-        parts.set(
-                parts.size() - 1,
-                CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL,
-                        parts.get(parts.size() - 1)));
+        parts.set(parts.size() - 1, CaseFormat.UPPER_CAMEL
+                .to(CaseFormat.LOWER_CAMEL, parts.get(parts.size() - 1)));
         name = Joiner.on('/').join(parts);
         return name;
     }

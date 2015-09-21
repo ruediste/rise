@@ -145,17 +145,13 @@ public class AssetPipelineConfiguration {
 
     @PostConstruct
     void initializeProcessors(Provider<ProcessorWrapper> processorSupplier) {
-        defaultProcessors
-                .put(DefaultAssetTypes.LESS,
-                        processorSupplier.get().initialize(
-                                DefaultAssetTypes.CSS,
-                                () -> new Less4jProcessor()));
-        defaultProcessors.put(
-                DefaultAssetTypes.SASS,
+        defaultProcessors.put(DefaultAssetTypes.LESS,
+                processorSupplier.get().initialize(DefaultAssetTypes.CSS,
+                        () -> new Less4jProcessor()));
+        defaultProcessors.put(DefaultAssetTypes.SASS,
                 processorSupplier.get().initialize(DefaultAssetTypes.CSS,
                         () -> new SassCssProcessor()));
-        defaultMinifiers.put(
-                DefaultAssetTypes.CSS,
+        defaultMinifiers.put(DefaultAssetTypes.CSS,
                 processorSupplier.get().initialize(DefaultAssetTypes.CSS,
                         () -> new YUICssCompressorProcessor()));
         defaultMinifiers.put(DefaultAssetTypes.JS, processorSupplier.get()

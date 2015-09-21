@@ -50,8 +50,8 @@ public class ComponentViewRepository {
     @PostConstruct
     public void initialize() {
         // iterate over all views
-        for (ClassNode view : index.getAllChildren(Type
-                .getInternalName(ViewComponentBase.class))) {
+        for (ClassNode view : index.getAllChildren(
+                Type.getInternalName(ViewComponentBase.class))) {
             // check if it is a concrete class
             if ((view.access & Opcodes.ACC_ABSTRACT) != 0) {
                 continue;
@@ -74,8 +74,8 @@ public class ComponentViewRepository {
                         .getInternalName();
             }
 
-            ViewEntry existing = viewMap.put(
-                    Pair.of(controllerClass, qualifier), entry);
+            ViewEntry existing = viewMap
+                    .put(Pair.of(controllerClass, qualifier), entry);
 
             if (existing != null) {
                 throw new RuntimeException("Two views found for controller "
@@ -84,8 +84,8 @@ public class ComponentViewRepository {
                         + entry.viewClassInternalName + ", "
                         + existing.viewClassInternalName);
             }
-            log.debug("found view " + view.name + " with qualifier "
-                    + qualifier + " for controller " + controllerClass);
+            log.debug("found view " + view.name + " with qualifier " + qualifier
+                    + " for controller " + controllerClass);
         }
     }
 
@@ -109,8 +109,8 @@ public class ComponentViewRepository {
         ViewEntry entry = null;
         {
             Class<? extends Object> controllerClass = controller.getClass();
-            String qualifierName = qualifier == null ? null : Type
-                    .getInternalName(qualifier);
+            String qualifierName = qualifier == null ? null
+                    : Type.getInternalName(qualifier);
             while (controllerClass != null && entry == null) {
                 entry = viewMap.get(Pair.create(
                         Type.getInternalName(controllerClass), qualifierName));

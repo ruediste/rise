@@ -24,13 +24,11 @@ public class SwitchableTargetProxyFactoryTest {
 
     @Test
     public void withTarget() {
-        assertEquals(
-                "x",
+        assertEquals("x",
                 MethodInvocationRecorder
-                        .getLastInvocation(
-                                A.class,
-                                a -> SwitchableTargetProxyFactory.withTarget(
-                                        proxy, a, () -> proxy.x())).getMethod()
-                        .getName());
+                        .getLastInvocation(A.class,
+                                a -> SwitchableTargetProxyFactory
+                                        .withTarget(proxy, a, () -> proxy.x()))
+                        .getMethod().getName());
     }
 }

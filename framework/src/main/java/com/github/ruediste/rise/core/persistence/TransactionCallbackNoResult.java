@@ -3,8 +3,8 @@ package com.github.ruediste.rise.core.persistence;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerSet;
 
 /**
- * Callback for transactional code. Typically used as argument to {@link
- * TransactionTemplate#do}
+ * Callback for transactional code. Typically used as argument to
+ * {@link TransactionTemplate#do}
  */
 public interface TransactionCallbackNoResult {
 

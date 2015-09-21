@@ -31,7 +31,8 @@ public class AsmUtil {
         return Array.newInstance(componentType, 0).getClass();
     }
 
-    public static Class<?> getArrayType(Class<?> componentType, int dimensions) {
+    public static Class<?> getArrayType(Class<?> componentType,
+            int dimensions) {
         return Array.newInstance(componentType, new int[dimensions]).getClass();
     }
 
@@ -102,9 +103,9 @@ public class AsmUtil {
         }
 
         public static MethodRef of(Method method) {
-            return new MethodRef(Type.getInternalName(method
-                    .getDeclaringClass()), method.getName(),
-                    Type.getMethodDescriptor(method));
+            return new MethodRef(
+                    Type.getInternalName(method.getDeclaringClass()),
+                    method.getName(), Type.getMethodDescriptor(method));
         }
 
         @Override
@@ -126,9 +127,9 @@ public class AsmUtil {
      */
     public static Method loadMethod(String declaringClassInternalName,
             String methodName, String desc, ClassLoader loader)
-            throws ReflectiveOperationException {
-        Class<?> cls = loadClass(
-                Type.getObjectType(declaringClassInternalName), loader);
+                    throws ReflectiveOperationException {
+        Class<?> cls = loadClass(Type.getObjectType(declaringClassInternalName),
+                loader);
         Type[] argTypes = Type.getArgumentTypes(desc);
         Class<?>[] argClasses = new Class<?>[argTypes.length];
         for (int i = 0; i < argTypes.length; i++) {
@@ -175,9 +176,8 @@ public class AsmUtil {
             Class<? extends Annotation> annotation) {
         Repeatable repeatable = annotation.getAnnotation(Repeatable.class);
         return getAnnotationsByType(annotations,
-                Type.getInternalName(annotation),
-                repeatable != null ? Type.getInternalName(repeatable.value())
-                        : null);
+                Type.getInternalName(annotation), repeatable != null
+                        ? Type.getInternalName(repeatable.value()) : null);
     }
 
     /**
@@ -197,13 +197,14 @@ public class AsmUtil {
     }
 
     public static AnnotationNode getAnnotationByType(
-            List<AnnotationNode> annotations, String annotationTypeInternalName) {
+            List<AnnotationNode> annotations,
+            String annotationTypeInternalName) {
         if (annotations != null)
             for (AnnotationNode node : annotations) {
                 String nodeInternalName = Type.getType(node.desc)
                         .getInternalName();
-                if (Objects
-                        .equals(nodeInternalName, annotationTypeInternalName)) {
+                if (Objects.equals(nodeInternalName,
+                        annotationTypeInternalName)) {
                     return node;
                 }
 
@@ -219,8 +220,8 @@ public class AsmUtil {
      *            name of the repeat annoation. May be null
      */
     public static List<AnnotationNode> getAnnotationsByType(
-            List<AnnotationNode> annotations,
-            String annotationTypeInternalName, String repeatedTypeInternalName) {
+            List<AnnotationNode> annotations, String annotationTypeInternalName,
+            String repeatedTypeInternalName) {
         if (annotations == null)
             return Collections.emptyList();
         ArrayList<AnnotationNode> result = new ArrayList<>();
@@ -228,11 +229,12 @@ public class AsmUtil {
             for (AnnotationNode node : annotations) {
                 String nodeInternalName = Type.getType(node.desc)
                         .getInternalName();
-                if (Objects
-                        .equals(nodeInternalName, annotationTypeInternalName)) {
+                if (Objects.equals(nodeInternalName,
+                        annotationTypeInternalName)) {
                     result.add(node);
                 }
-                if (Objects.equals(nodeInternalName, repeatedTypeInternalName)) {
+                if (Objects.equals(nodeInternalName,
+                        repeatedTypeInternalName)) {
                     if (node.values != null)
                         for (int i = 0; i < node.values.size() - 1; i += 2) {
                             if (Objects.equals("value", node.values.get(i)))
@@ -250,18 +252,19 @@ public class AsmUtil {
                 if (Objects.equals(attributeName, node.values.get(i)))
                     return (String) node.values.get(i + 1);
             }
-        throw new RuntimeException("Attribute " + attributeName
-                + " not found on " + node.desc);
+        throw new RuntimeException(
+                "Attribute " + attributeName + " not found on " + node.desc);
     }
 
-    public static boolean getBoolean(AnnotationNode node, String attributeName) {
+    public static boolean getBoolean(AnnotationNode node,
+            String attributeName) {
         if (node.values != null)
             for (int i = 0; i < node.values.size() - 1; i += 2) {
                 if (Objects.equals(attributeName, node.values.get(i)))
                     return (Boolean) node.values.get(i + 1);
             }
-        throw new RuntimeException("Attribute " + attributeName
-                + " not found on " + node.desc);
+        throw new RuntimeException(
+                "Attribute " + attributeName + " not found on " + node.desc);
     }
 
     public static Type getType(AnnotationNode node, String attributeName) {
@@ -270,8 +273,8 @@ public class AsmUtil {
                 if (Objects.equals(attributeName, node.values.get(i)))
                     return (Type) node.values.get(i + 1);
             }
-        throw new RuntimeException("Attribute " + attributeName
-                + " not found on " + node.desc);
+        throw new RuntimeException(
+                "Attribute " + attributeName + " not found on " + node.desc);
     }
 
     public static ClassNode readClass(Class<?> cls) {

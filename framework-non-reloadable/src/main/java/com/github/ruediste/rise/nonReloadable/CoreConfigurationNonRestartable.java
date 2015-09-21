@@ -83,8 +83,8 @@ public class CoreConfigurationNonRestartable {
             if (stackTraceFilter == null)
                 if (stage == Stage.DEVELOPMENT)
                     stackTraceFilter = new DefaultStrackTraceFilter(
-                            e -> e.getClassName() == null
-                                    || e.getClassName().startsWith(basePackage));
+                            e -> e.getClassName() == null || e.getClassName()
+                                    .startsWith(basePackage));
                 else
                     stackTraceFilter = e -> {
                     };
@@ -95,6 +95,7 @@ public class CoreConfigurationNonRestartable {
     public long restartQueryTimeout = 30000;
 
     public final TreeSet<String> scannedPrefixes = new TreeSet<String>();
+
     {
         scannedPrefixes.add("com.github.ruediste.rise.");
     }

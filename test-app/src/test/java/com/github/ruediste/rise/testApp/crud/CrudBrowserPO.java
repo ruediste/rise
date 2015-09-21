@@ -42,8 +42,8 @@ public class CrudBrowserPO extends PageObject {
     }
 
     public List<WebElement> getRows() {
-        return driver.findElement(byDataTestName("resultList")).findElements(
-                By.cssSelector("tbody tr"));
+        return driver.findElement(byDataTestName("resultList"))
+                .findElements(By.cssSelector("tbody tr"));
     }
 
     /**
@@ -57,8 +57,8 @@ public class CrudBrowserPO extends PageObject {
     }
 
     public WebElement getActions(int rowIndex) {
-        return getRows().get(rowIndex).findElement(
-                By.cssSelector("td:last-child"));
+        return getRows().get(rowIndex)
+                .findElement(By.cssSelector("td:last-child"));
     }
 
     public CrudEditPO edit(int rowIndex) {

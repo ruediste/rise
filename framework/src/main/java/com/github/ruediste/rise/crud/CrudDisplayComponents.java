@@ -30,8 +30,7 @@ import com.github.ruediste1.i18n.label.Labeled;
 import com.google.common.primitives.Primitives;
 
 @Singleton
-public class CrudDisplayComponents
-        extends
+public class CrudDisplayComponents extends
         FactoryCollectionNew<PersistentProperty, CrudDisplayComponents.CrudDisplayComponentFactory> {
 
     @Inject
@@ -62,18 +61,20 @@ public class CrudDisplayComponents
         Component create(PersistentProperty property, BindingGroup<?> group);
     }
 
-    public Component create(PersistentProperty property, BindingGroup<?> group) {
+    public Component create(PersistentProperty property,
+            BindingGroup<?> group) {
         return getFactory(property).create(property, group);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public CrudDisplayComponents() {
         addFactory(
-                p -> Long.class.equals(Primitives.wrap(p.getAttribute()
-                        .getJavaType()))
+                p -> Long.class
+                        .equals(Primitives.wrap(p.getAttribute().getJavaType()))
                         || String.class.equals(p.getAttribute().getJavaType()),
                 (property, group) -> {
-                    return toComponentBound(()->group.proxy(),html -> html
+                    return toComponentBound(() -> group.proxy(),
+                            html -> html
                         //@formatter:off
                         .bFormGroup()
                           .label().content(labelUtil.getPropertyLabel(property.getProperty()))
@@ -84,7 +85,8 @@ public class CrudDisplayComponents
                 });
 
         addFactory(
-                p -> p.getAttribute().getPersistentAttributeType() == PersistentAttributeType.MANY_TO_ONE,
+                p -> p.getAttribute()
+                        .getPersistentAttributeType() == PersistentAttributeType.MANY_TO_ONE,
                 (p, g) -> {
                     //@formatter:off
                     return toComponentBound(

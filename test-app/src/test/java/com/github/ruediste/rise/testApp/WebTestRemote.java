@@ -26,9 +26,8 @@ public class WebTestRemote extends WebTestBaseRemote {
 
     @Before
     final public void beforeWebTestRemote() {
-        driver.navigate().to(
-                url(go(LoginController.class).index(
-                        new UrlSpec(new PathInfo("/")))));
+        driver.navigate().to(url(go(LoginController.class)
+                .index(new UrlSpec(new PathInfo("/")))));
         new LoginPO(driver).defaultLogin();
     }
 

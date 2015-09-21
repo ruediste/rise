@@ -52,8 +52,8 @@ public class ProcessorWrapper implements Function<Asset, Asset> {
         try {
             getProcessor().process(new StringReader(input), output);
         } catch (IOException e) {
-            throw new RuntimeException("Error while processing asset "
-                    + t.getName(), e);
+            throw new RuntimeException(
+                    "Error while processing asset " + t.getName(), e);
         }
         return new Asset() {
 

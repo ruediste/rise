@@ -217,8 +217,8 @@ public class CrudUtil {
         void renderIdenification(BootstrapRiseCanvas<?> html, Object entity);
     }
 
-    private static class DefaultIdentificationRenderer implements
-            IdentificationRenderer {
+    private static class DefaultIdentificationRenderer
+            implements IdentificationRenderer {
 
         @Inject
         CrudReflectionUtil util;
@@ -230,13 +230,12 @@ public class CrudUtil {
                 html.write("<null>");
             else {
                 PersistentType type = util.getPersistentType(entity);
-                html.write(util
-                        .getIdentificationProperties(type)
-                        .stream()
-                        .map(p -> p.getProperty().getName()
-                                + ":"
-                                + String.valueOf(p.getProperty().getValue(
-                                        entity))).collect(joining(" ")));
+                html.write(
+                        util.getIdentificationProperties(type).stream()
+                                .map(p -> p.getProperty().getName() + ":"
+                                        + String.valueOf(p.getProperty()
+                                                .getValue(entity)))
+                        .collect(joining(" ")));
             }
         }
     }

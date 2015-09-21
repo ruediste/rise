@@ -51,8 +51,8 @@ public class EntityControllerMvcTest extends WebTest {
     @Test
     public void testIndexNoTransaction() throws Exception {
 
-        driver.navigate().to(
-                url(go(EntityControllerMvc.class).indexNoTransaction()));
+        driver.navigate()
+                .to(url(go(EntityControllerMvc.class).indexNoTransaction()));
 
         assertThat(driver.getPageSource(),
                 containsString("No EntityManagerSet is currently set"));

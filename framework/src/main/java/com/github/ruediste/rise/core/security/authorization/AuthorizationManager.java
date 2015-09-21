@@ -36,65 +36,61 @@ public class AuthorizationManager {
     private List<RuleEntry> entries = new ArrayList<>();
 
     public AuthorizationManager() {
-        addRule(t -> true,
-                (t, m) -> {
-                    for (Annotation annotation : m.getDeclaredAnnotations()) {
-                        if (annotation.annotationType().isAnnotationPresent(
-                                MetaRequiresRight.class))
-                            return true;
-                    }
-                    return false;
-                }, new AuthorizationRule() {
+        addRule(t -> true, (t, m) -> {
+            for (Annotation annotation : m.getDeclaredAnnotations()) {
+                if (annotation.annotationType()
+                        .isAnnotationPresent(MetaRequiresRight.class))
+                    return true;
+            }
+            return false;
+        } , new AuthorizationRule() {
 
-                    @Override
-                    public void checkAuthorized(Object target, Method method,
-                            Object[] args) {
-                        ArrayList<Object> requiredRights = new ArrayList<>();
-                        for (Annotation annotation : method.getAnnotations()) {
-                            if (annotation.annotationType()
-                                    .isAnnotationPresent(
-                                            MetaRequiresRight.class)) {
-                                try {
-                                    extractRights(requiredRights, annotation);
-                                } catch (Exception e) {
-                                    throw new RuntimeException(
-                                            "error while reading value of annotation "
-                                                    + annotation
-                                                    + " on method " + method);
-                                }
-                            }
+            @Override
+            public void checkAuthorized(Object target, Method method,
+                    Object[] args) {
+                ArrayList<Object> requiredRights = new ArrayList<>();
+                for (Annotation annotation : method.getAnnotations()) {
+                    if (annotation.annotationType()
+                            .isAnnotationPresent(MetaRequiresRight.class)) {
+                        try {
+                            extractRights(requiredRights, annotation);
+                        } catch (Exception e) {
+                            throw new RuntimeException(
+                                    "error while reading value of annotation "
+                                            + annotation + " on method "
+                                            + method);
                         }
-                        getRightChecker().accept(requiredRights);
                     }
+                }
+                getRightChecker().accept(requiredRights);
+            }
 
-                    private void extractRights(
-                            ArrayList<Object> requiredRights,
-                            Annotation annotation)
-                            throws NoSuchMethodException,
+            private void extractRights(ArrayList<Object> requiredRights,
+                    Annotation annotation) throws NoSuchMethodException,
                             IllegalAccessException, InvocationTargetException {
-                        Method value = annotation.annotationType().getMethod(
-                                "value");
-                        Object right = value.invoke(annotation);
-                        if (value.getReturnType().isArray()) {
-                            if (Annotation.class.isAssignableFrom(value
-                                    .getReturnType().getComponentType())) {
-                                for (int i = 0; i < Array.getLength(right); i++) {
-                                    extractRights(requiredRights,
-                                            (Annotation) Array.get(right, i));
-                                }
+                Method value = annotation.annotationType().getMethod("value");
+                Object right = value.invoke(annotation);
+                if (value.getReturnType().isArray()) {
+                    if (Annotation.class.isAssignableFrom(
+                            value.getReturnType().getComponentType())) {
+                        for (int i = 0; i < Array.getLength(right); i++) {
+                            extractRights(requiredRights,
+                                    (Annotation) Array.get(right, i));
+                        }
 
-                            } else
-                                for (int i = 0; i < Array.getLength(right); i++) {
-                                    requiredRights.add(Array.get(right, i));
-                                }
-                        } else
-                            requiredRights.add(right);
-                    }
-                });
+                    } else
+                        for (int i = 0; i < Array.getLength(right); i++) {
+                            requiredRights.add(Array.get(right, i));
+                        }
+                } else
+                    requiredRights.add(right);
+            }
+        });
     }
 
     public void addRule(Predicate<Class<?>> typeMatcher,
-            BiPredicate<Class<?>, Method> methodMatcher, AuthorizationRule rule) {
+            BiPredicate<Class<?>, Method> methodMatcher,
+            AuthorizationRule rule) {
         RuleEntry entry = new RuleEntry();
         entry.methodMatcher = methodMatcher;
         entry.typeMatcher = typeMatcher;
@@ -110,15 +106,15 @@ public class AuthorizationManager {
         AopUtil.registerSubclass(config, t -> {
             Class<?> cls = t.getRawType();
             return entries.stream().anyMatch(e -> e.typeMatcher.test(cls));
-        }, (t, m) -> entries.stream().anyMatch(e -> {
+        } , (t, m) -> entries.stream().anyMatch(e -> {
             Class<?> cls = t.getRawType();
             return e.methodMatcher.test(cls, m);
         }), i -> {
             Object target = i.getTarget();
             Method method = i.getMethod();
             Object[] arguments = i.getArguments();
-            entries.forEach(r -> r.rule.checkAuthorized(target, method,
-                    arguments));
+            entries.forEach(
+                    r -> r.rule.checkAuthorized(target, method, arguments));
             return i.proceed();
         });
     }

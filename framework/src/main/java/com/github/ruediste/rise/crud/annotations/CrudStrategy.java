@@ -24,10 +24,10 @@ public @interface CrudStrategy {
     /**
      * The type of the strategy to set, for example {@link BrowserFactory}
      */
-    Class<?> type();
+    Class<?>type();
 
     /**
      * The class implementing the {@link #type()}
      */
-    Class<?> implementation();
+    Class<?>implementation();
 }

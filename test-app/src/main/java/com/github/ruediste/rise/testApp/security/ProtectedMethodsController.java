@@ -8,12 +8,12 @@ import com.github.ruediste.rise.testApp.TestCanvas;
 import com.github.ruediste.rise.testApp.ViewMvc;
 import com.github.ruediste1.i18n.label.Labeled;
 
-public class ProtectedMethodsController extends
-        ControllerMvc<ProtectedMethodsController> {
+public class ProtectedMethodsController
+        extends ControllerMvc<ProtectedMethodsController> {
 
     @Labeled
-    public static class IndexView extends
-            ViewMvc<ProtectedMethodsController, String> {
+    public static class IndexView
+            extends ViewMvc<ProtectedMethodsController, String> {
 
         @Override
         protected void renderContent(TestCanvas html) {
@@ -23,8 +23,8 @@ public class ProtectedMethodsController extends
     }
 
     @Labeled
-    public static class MethodView extends
-            ViewMvc<ProtectedMethodsController, String> {
+    public static class MethodView
+            extends ViewMvc<ProtectedMethodsController, String> {
 
         @Override
         protected void renderContent(TestCanvas html) {

@@ -12,12 +12,8 @@ public class FactoryCollection<TKey, TFactory> {
     }
 
     public TFactory getFactory(TKey key) {
-        return factories
-                .stream()
-                .map(x -> x.apply(key))
-                .filter(x -> x != null)
-                .findFirst()
-                .orElseThrow(
+        return factories.stream().map(x -> x.apply(key)).filter(x -> x != null)
+                .findFirst().orElseThrow(
                         () -> new RuntimeException(getClass().getSimpleName()
                                 + ": No factory found for " + key));
     }

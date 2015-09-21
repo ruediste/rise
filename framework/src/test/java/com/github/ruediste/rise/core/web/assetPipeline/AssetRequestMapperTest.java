@@ -70,7 +70,8 @@ public class AssetRequestMapperTest {
 
     @Test(expected = RuntimeException.class)
     public void testRegisterAssetsTwoDifferent() throws Exception {
-        A a = new A(new TestAsset("/foo", "bar"), new TestAsset("/foo", "barr"));
+        A a = new A(new TestAsset("/foo", "bar"),
+                new TestAsset("/foo", "barr"));
         a.initialize();
         mapper.registerAssets(Arrays.asList(a));
         fail();

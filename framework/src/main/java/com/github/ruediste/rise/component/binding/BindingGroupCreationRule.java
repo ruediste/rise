@@ -9,8 +9,7 @@ public class BindingGroupCreationRule extends CreationRuleImpl {
     public BindingGroupCreationRule() {
         super(CoreDependencyKey.rawTypeMatcher(BindingGroup.class),
                 key -> () -> {
-                    Class<?> dataType = key
-                            .getType()
+                    Class<?> dataType = key.getType()
                             .resolveType(
                                     BindingGroup.class.getTypeParameters()[0])
                             .getRawType();

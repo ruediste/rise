@@ -25,8 +25,8 @@ import com.github.ruediste.salta.jsr330.MembersInjector;
 /**
  * Tests a startup error after injecting the non-restartable application
  */
-public class StartupErrorAfterNonRestartableInjectionTest extends
-        StartupErrorTest {
+public class StartupErrorAfterNonRestartableInjectionTest
+        extends StartupErrorTest {
     @Override
     protected final Servlet createServlet(Object testCase) {
         TestRestartableApplication app = new TestRestartableApplication() {
@@ -45,8 +45,8 @@ public class StartupErrorAfterNonRestartableInjectionTest extends
             @Override
             protected void initImpl() throws Exception {
                 super.initImpl();
-                membersInjector
-                        .injectMembers(StartupErrorAfterNonRestartableInjectionTest.this);
+                membersInjector.injectMembers(
+                        StartupErrorAfterNonRestartableInjectionTest.this);
                 throw new RuntimeException("My Error");
             }
         };

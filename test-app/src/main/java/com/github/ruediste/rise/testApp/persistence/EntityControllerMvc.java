@@ -17,8 +17,8 @@ import com.github.ruediste1.i18n.label.Labeled;
 public class EntityControllerMvc extends ControllerMvc<EntityControllerMvc> {
 
     @Labeled
-    static class ListView extends
-            ViewMvc<EntityControllerMvc, List<TestAppEntity>> {
+    static class ListView
+            extends ViewMvc<EntityControllerMvc, List<TestAppEntity>> {
 
         @Override
         public void renderContent(TestCanvas html) {

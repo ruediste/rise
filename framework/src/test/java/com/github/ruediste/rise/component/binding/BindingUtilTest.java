@@ -130,8 +130,8 @@ public class BindingUtilTest {
         groupB.set(b);
 
         // establish binding
-        BindingUtil.bind(a, x -> x.setValueString(Transformers
-                .dateToString(groupB.proxy().getValueDate())));
+        BindingUtil.bind(a, x -> x.setValueString(
+                Transformers.dateToString(groupB.proxy().getValueDate())));
 
         // pull up
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -212,8 +212,8 @@ public class BindingUtilTest {
         groupB.set(b);
 
         // establish binding
-        BindingUtil
-                .bind(a, x -> x.setValueA(groupB.proxy().getC().getValueC()));
+        BindingUtil.bind(a,
+                x -> x.setValueA(groupB.proxy().getC().getValueC()));
 
         // pull up
         c.valueC = 2;

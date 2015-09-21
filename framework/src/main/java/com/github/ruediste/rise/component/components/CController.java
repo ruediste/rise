@@ -12,8 +12,8 @@ import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
  * Embeds the view of a controller
  */
 @DefaultTemplate(RenderChildrenTemplate.class)
-public class CController extends AttachedPropertyBearerBase implements
-        Component {
+public class CController extends AttachedPropertyBearerBase
+        implements Component {
 
     private Component parent;
 

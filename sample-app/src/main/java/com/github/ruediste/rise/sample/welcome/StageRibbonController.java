@@ -19,8 +19,8 @@ import com.github.ruediste.rise.sample.SampleBundle;
 import com.github.ruediste.rise.sample.SampleCanvas;
 import com.github.ruediste.rise.sample.ViewMvc;
 
-public class StageRibbonController extends
-        StageRibbonControllerBase<StageRibbonController> {
+public class StageRibbonController
+        extends StageRibbonControllerBase<StageRibbonController> {
 
     @Inject
     Logger log;

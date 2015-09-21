@@ -15,5 +15,5 @@ import com.github.ruediste.rise.component.tree.Component;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface DefaultTemplate {
-    Class<? extends ComponentTemplate<?>> value();
+    Class<? extends ComponentTemplate<?>>value();
 }

@@ -13,19 +13,22 @@ public class InMemoryAuthenticationProviderTest {
     public void testTryAuthenticate() throws Exception {
         InMemoryAuthenticationProvider<Principal> provider = new InMemoryAuthenticationProvider<>()
                 .with("foo", "bar", null);
-        assertTrue(provider.tryAuthenticate(
-                new UsernamePasswordAuthenticationRequest("foo", "bar"))
+        assertTrue(provider
+                .tryAuthenticate(
+                        new UsernamePasswordAuthenticationRequest("foo", "bar"))
                 .isSuccess());
         assertFalse(provider.tryAuthenticate(
                 new UsernamePasswordAuthenticationRequest("foo", "world"))
                 .isSuccess());
         assertTrue(provider
-                .tryAuthenticate(
-                        new UsernamePasswordAuthenticationRequest("foo",
-                                "world")).getFailures().get(0) instanceof PasswordMismatchAuthenticationFailure);
+                .tryAuthenticate(new UsernamePasswordAuthenticationRequest(
+                        "foo", "world"))
+                .getFailures()
+                .get(0) instanceof PasswordMismatchAuthenticationFailure);
         assertTrue(provider
-                .tryAuthenticate(
-                        new UsernamePasswordAuthenticationRequest("hello",
-                                "foo")).getFailures().get(0) instanceof UserNameNotFoundAuthenticationFailure);
+                .tryAuthenticate(new UsernamePasswordAuthenticationRequest(
+                        "hello", "foo"))
+                .getFailures()
+                .get(0) instanceof UserNameNotFoundAuthenticationFailure);
     }
 }

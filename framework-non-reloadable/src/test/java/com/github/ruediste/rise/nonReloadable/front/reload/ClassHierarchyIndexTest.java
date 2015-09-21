@@ -106,8 +106,7 @@ public class ClassHierarchyIndexTest {
 
     @Test
     public void testResolve() {
-        assertEquals(
-                "java/lang/String",
+        assertEquals("java/lang/String",
                 cache.resolve(Type.getInternalName(Derived2.class),
                         Type.getInternalName(Base.class), "T"));
         assertNull(cache.resolve(Type.getInternalName(Derived1.class),

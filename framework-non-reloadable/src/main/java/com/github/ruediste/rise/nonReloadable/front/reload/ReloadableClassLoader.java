@@ -35,7 +35,8 @@ public class ReloadableClassLoader extends ClassLoader {
                     Class<?> result = findLoadedClass(name);
                     if (result == null) {
                         String resouceName = name.replace('.', '/') + ".class";
-                        try (InputStream in = getResourceAsStream(resouceName)) {
+                        try (InputStream in = getResourceAsStream(
+                                resouceName)) {
                             if (in == null)
                                 throw new ClassNotFoundException(
                                         "Unable to locate resource "
@@ -46,8 +47,8 @@ public class ReloadableClassLoader extends ClassLoader {
                         } catch (ClassNotFoundException e) {
                             throw e;
                         } catch (Exception e) {
-                            throw new RuntimeException("Error while loading "
-                                    + resouceName, e);
+                            throw new RuntimeException(
+                                    "Error while loading " + resouceName, e);
                         }
                     }
                     if (resolve) {

@@ -23,8 +23,8 @@ import com.google.common.base.Stopwatch;
 /**
  * Manages a persistence unit using EclipseLink
  */
-public class EclipseLinkPersistenceUnitManager implements
-        PersistenceUnitManager {
+public class EclipseLinkPersistenceUnitManager
+        implements PersistenceUnitManager {
 
     @Inject
     TransactionManager txm;
@@ -63,8 +63,8 @@ public class EclipseLinkPersistenceUnitManager implements
             customizeSchemaGenerationProperties(props);
         });
         close();
-        StartupTimeLogger.stopAndLog("Dropping and creatin schema of "
-                + qualifierName(), watch);
+        StartupTimeLogger.stopAndLog(
+                "Dropping and creatin schema of " + qualifierName(), watch);
         log.info("Dropping and creating schema of " + qualifierName()
                 + " completed. Time: " + watch);
     }
@@ -108,7 +108,8 @@ public class EclipseLinkPersistenceUnitManager implements
         bean.setJtaDataSource(dataSourceManager.getDataSource());
         bean.setPersistenceProviderClass(PersistenceProvider.class);
 
-        HashMap<String, Object> properties = createProperties(propertiesCustomizer);
+        HashMap<String, Object> properties = createProperties(
+                propertiesCustomizer);
         bean.setJpaPropertyMap(properties);
 
         customizeFactoryBean(bean);
@@ -125,7 +126,8 @@ public class EclipseLinkPersistenceUnitManager implements
         } catch (Exception e) {
             throw new RuntimeException(
                     "Error while creating EntityManagerFactory for "
-                            + qualifierName(), e);
+                            + qualifierName(),
+                    e);
         } finally {
             if (manageTx)
                 try {
@@ -137,16 +139,16 @@ public class EclipseLinkPersistenceUnitManager implements
 
         }
         log.debug("initialized provider for " + qualifier);
-        StartupTimeLogger.stopAndLog("Eclipselink Startup of "
-                + qualifierName(), watch);
+        StartupTimeLogger
+                .stopAndLog("Eclipselink Startup of " + qualifierName(), watch);
         return properties;
     }
 
     protected HashMap<String, Object> createProperties(
             Consumer<Map<String, Object>> propertiesCustomizer) {
         HashMap<String, Object> props = new HashMap<>();
-        props.put(PersistenceUnitProperties.CLASSLOADER, Thread.currentThread()
-                .getContextClassLoader());
+        props.put(PersistenceUnitProperties.CLASSLOADER,
+                Thread.currentThread().getContextClassLoader());
         props.put(PersistenceUnitProperties.LOGGING_LEVEL, getLogLevel());
         props.put(PersistenceUnitProperties.WEAVING, "false");
         props.put(PersistenceUnitProperties.TRANSACTION_TYPE, "JTA");
@@ -187,7 +189,8 @@ public class EclipseLinkPersistenceUnitManager implements
     /**
      * Hook to modify the properties used to generate the database schema
      */
-    protected void customizeSchemaGenerationProperties(Map<String, Object> props) {
+    protected void customizeSchemaGenerationProperties(
+            Map<String, Object> props) {
 
     }
 

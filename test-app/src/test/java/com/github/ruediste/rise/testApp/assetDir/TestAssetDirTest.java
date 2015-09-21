@@ -35,8 +35,8 @@ public class TestAssetDirTest extends WebTest {
         check("function testJavascript(){}", "test.js");
 
         CloseableHttpClient client = HttpClients.createDefault();
-        HttpResponse response = client.execute(new HttpGet(url(mapper
-                .getPathInfo(dir, ""))));
+        HttpResponse response = client
+                .execute(new HttpGet(url(mapper.getPathInfo(dir, ""))));
         assertEquals(404, response.getStatusLine().getStatusCode());
         client.close();
     }

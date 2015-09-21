@@ -23,8 +23,8 @@ import com.github.ruediste1.i18n.lString.LString;
 public class CDataGrid<T> extends ComponentBase<CDataGrid<T>> {
 
     public enum HAlign {
-        LEFT("left"), RIGHT("right"), CENTER("center"), JUSTIFY("justify"), JUSTIFY_ALL(
-                "justify-all");
+        LEFT("left"), RIGHT("right"), CENTER("center"), JUSTIFY(
+                "justify"), JUSTIFY_ALL("justify-all");
 
         private final String cssClass;
 
@@ -88,7 +88,8 @@ public class CDataGrid<T> extends ComponentBase<CDataGrid<T>> {
 
         private String testName;
 
-        public Column(Supplier<Cell> headSupplier, Function<T, Cell> cellFactory) {
+        public Column(Supplier<Cell> headSupplier,
+                Function<T, Cell> cellFactory) {
             super();
             this.headSupplier = headSupplier;
             this.cellFactory = cellFactory;
@@ -198,8 +199,7 @@ public class CDataGrid<T> extends ComponentBase<CDataGrid<T>> {
     @Override
     public Iterable<Component> getChildren() {
         updateCells();
-        return Stream
-                .concat(headers.values().stream(), cells.values().stream())
+        return Stream.concat(headers.values().stream(), cells.values().stream())
                 .filter(x -> x.component.isPresent())
                 .map(x -> x.component.get()).collect(toList());
     }

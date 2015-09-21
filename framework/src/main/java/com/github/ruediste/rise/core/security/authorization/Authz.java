@@ -14,30 +14,26 @@ import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
 public class Authz {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     static public <T> boolean isAuthorized(T target, Consumer<T> invoker) {
-        return isAuthorized(
-                target,
-                MethodInvocationRecorder.getLastInvocation(
-                        (Class) target.getClass(), invoker));
+        return isAuthorized(target, MethodInvocationRecorder
+                .getLastInvocation((Class) target.getClass(), invoker));
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     static public <T> void checkAuthorized(T target, Consumer<T> invoker) {
-        checkAuthorized(
-                target,
-                MethodInvocationRecorder.getLastInvocation(
-                        (Class) target.getClass(), invoker));
+        checkAuthorized(target, MethodInvocationRecorder
+                .getLastInvocation((Class) target.getClass(), invoker));
     }
 
     public static boolean isAuthorized(Object target,
             MethodInvocation<Object> lastInvocation) {
-        return isAuthorized(target, lastInvocation.getMethod(), lastInvocation
-                .getArguments().toArray());
+        return isAuthorized(target, lastInvocation.getMethod(),
+                lastInvocation.getArguments().toArray());
     }
 
     public static void checkAuthorized(Object target,
             MethodInvocation<Object> lastInvocation) {
-        checkAuthorized(target, lastInvocation.getMethod(), lastInvocation
-                .getArguments().toArray());
+        checkAuthorized(target, lastInvocation.getMethod(),
+                lastInvocation.getArguments().toArray());
     }
 
     static public boolean isAuthorized(Object target, Method m, List<?> args) {

@@ -73,18 +73,18 @@ public class ReloadHandler implements Runnable {
         // check if a destination has been defined
         if (componentRequestInfo.getClosePageResult() != null) {
             componentSessionInfo.removePageHandle(page.getPageId());
-            coreRequestInfo.setActionResult(componentRequestInfo
-                    .getClosePageResult());
+            coreRequestInfo
+                    .setActionResult(componentRequestInfo.getClosePageResult());
         } else {
             // render result
-            coreRequestInfo.setActionResult(new ContentRenderResult(util
-                    .renderComponents(view, reloadComponent), r -> {
-                r.setContentType(coreConfiguration.htmlContentType);
-                if (view instanceof HttpServletResponseCustomizer) {
-                    ((HttpServletResponseCustomizer) view)
-                            .customizeServletResponse(r);
-                }
-            }));
+            coreRequestInfo.setActionResult(new ContentRenderResult(
+                    util.renderComponents(view, reloadComponent), r -> {
+                        r.setContentType(coreConfiguration.htmlContentType);
+                        if (view instanceof HttpServletResponseCustomizer) {
+                            ((HttpServletResponseCustomizer) view)
+                                    .customizeServletResponse(r);
+                        }
+                    }));
         }
     }
 }

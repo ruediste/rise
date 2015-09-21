@@ -18,15 +18,14 @@ public class CrudDisplayPO extends PageObject {
     }
 
     public String getPropertyText(String name) {
-        return driver.findElement(
-                By.cssSelector(dataTestSelector("properties")
-                        + dataTestSelector(name))).getText();
+        return driver.findElement(By.cssSelector(
+                dataTestSelector("properties") + dataTestSelector(name)))
+                .getText();
     }
 
     public CrudBrowserPO browse() {
-        driver.findElement(
-                byDataTestName(CrudControllerBase.class,
-                        x -> x.browse(null, null))).click();
+        driver.findElement(byDataTestName(CrudControllerBase.class,
+                x -> x.browse(null, null))).click();
         return new CrudBrowserPO(driver);
     }
 
@@ -46,9 +45,9 @@ public class CrudDisplayPO extends PageObject {
 
     public List<String> getPropertyTestNames() {
         return driver
-                .findElements(
-                        By.cssSelector(dataTestSelector("properties")
-                                + "*[data-test-name]")).stream()
-                .map(x -> x.getAttribute("data-test-name")).collect(toList());
+                .findElements(By.cssSelector(
+                        dataTestSelector("properties") + "*[data-test-name]"))
+                .stream().map(x -> x.getAttribute("data-test-name"))
+                .collect(toList());
     }
 }

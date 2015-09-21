@@ -60,8 +60,8 @@ public class DataSourceManager {
 
         DataSource repeatableRead = dataSourceFactory.createDataSource(
                 IsolationLevel.REPEATABLE_READ, qualifier, closeables::add);
-        dataSource
-                .setDataSource(IsolationLevel.REPEATABLE_READ, repeatableRead);
+        dataSource.setDataSource(IsolationLevel.REPEATABLE_READ,
+                repeatableRead);
 
     }
 

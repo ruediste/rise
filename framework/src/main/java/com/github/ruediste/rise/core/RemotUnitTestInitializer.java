@@ -40,13 +40,10 @@ public class RemotUnitTestInitializer implements Initializer {
         if (!Strings.isNullOrEmpty(config.unitTestCodeRunnerPathInfo)) {
             ExecutorService pool = Executors.newCachedThreadPool();
             CodeRunnerRequestHandler handler = new CodeRunnerRequestHandler(
-                    config.dynamicClassLoader,
-                    r -> pool.execute(() -> {
+                    config.dynamicClassLoader, r -> pool.execute(() -> {
                         Thread thread = Thread.currentThread();
-                        ClassLoader oldCl = thread
-                                .getContextClassLoader();
-                        thread.setContextClassLoader(
-                                config.dynamicClassLoader);
+                        ClassLoader oldCl = thread.getContextClassLoader();
+                        thread.setContextClassLoader(config.dynamicClassLoader);
                         try {
                             InjectorsHolder.withInjectors(
                                     nonRestartableInjector, injector, r);
@@ -63,12 +60,11 @@ public class RemotUnitTestInitializer implements Initializer {
                             try {
                                 Response response = handler.handle(info
                                         .getServletRequest().getInputStream());
-                                try (OutputStream os = info
-                                        .getServletResponse().getOutputStream()) {
-                                    ByteStreams.copy(
-                                            new ByteArrayInputStream(
-                                                    CodeRunnerRequestHandler
-                                                            .toByteArray(response)),
+                                try (OutputStream os = info.getServletResponse()
+                                        .getOutputStream()) {
+                                    ByteStreams.copy(new ByteArrayInputStream(
+                                            CodeRunnerRequestHandler
+                                                    .toByteArray(response)),
                                             os);
                                 }
                             } catch (IOException e) {

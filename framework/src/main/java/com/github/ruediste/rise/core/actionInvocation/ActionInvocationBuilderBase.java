@@ -85,8 +85,7 @@ public class ActionInvocationBuilderBase<TSelf extends ActionInvocationBuilderBa
                         }
                     }
                     throw new RuntimeException(
-                            "The method "
-                                    + thisMethod.getName()
+                            "The method " + thisMethod.getName()
                                     + " wich is no action method has been called on a controller of type "
                                     + controllerClass.getName()
                                     + " while generating an ActionPath. Available Methods:\n"

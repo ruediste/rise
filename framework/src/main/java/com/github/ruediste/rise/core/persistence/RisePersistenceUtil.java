@@ -42,8 +42,8 @@ public class RisePersistenceUtil {
     @SuppressWarnings("unchecked")
     public <T> ManagedType<T> getManagedType(
             Class<? extends Annotation> qualifier, TypeToken<T> type) {
-        return (ManagedType<T>) getManagedTypeMap(qualifier).get().get(
-                type.getRawType());
+        return (ManagedType<T>) getManagedTypeMap(qualifier).get()
+                .get(type.getRawType());
     }
 
     /**
@@ -101,7 +101,8 @@ public class RisePersistenceUtil {
     }
 
     public Object getIdentifier(Object entity) {
-        return getIdentifier(holder.getEmEntry(entity).get().getValue(), entity);
+        return getIdentifier(holder.getEmEntry(entity).get().getValue(),
+                entity);
     }
 
     /**
@@ -123,8 +124,8 @@ public class RisePersistenceUtil {
     }
 
     public Class<? extends Annotation> getEmQualifier(Object entity) {
-        return getEmEntry(entity).orElseThrow(
-                () -> new RuntimeException(
+        return getEmEntry(entity)
+                .orElseThrow(() -> new RuntimeException(
                         "No EntityManager qualifier found for " + entity))
                 .getKey();
     }
@@ -134,7 +135,8 @@ public class RisePersistenceUtil {
         return holder.getEmEntry(entity);
     }
 
-    public EntityManager getEntityManager(Class<? extends Annotation> qualifier) {
+    public EntityManager getEntityManager(
+            Class<? extends Annotation> qualifier) {
         return holder.getEntityManager(qualifier);
     }
 }

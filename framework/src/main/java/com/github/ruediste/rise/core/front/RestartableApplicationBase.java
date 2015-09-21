@@ -26,8 +26,8 @@ import com.github.ruediste.salta.standard.Stage;
  * Instance of an application. Will be reloaded when the application is changed.
  */
 @Reloadable
-public abstract class RestartableApplicationBase implements
-        RestartableApplication {
+public abstract class RestartableApplicationBase
+        implements RestartableApplication {
 
     @Inject
     Logger log;
@@ -74,7 +74,7 @@ public abstract class RestartableApplicationBase implements
     @Override
     public final void handle(HttpServletRequest request,
             HttpServletResponse response, HttpMethod method)
-            throws IOException, ServletException {
+                    throws IOException, ServletException {
         try {
             scopeManager.enter(request, response);
             DelegatingHttpRequest httpRequest = new DelegatingHttpRequest(
@@ -97,9 +97,8 @@ public abstract class RestartableApplicationBase implements
                 configNonRestartable.getStackTraceFilter().filter(t);
 
                 if (!(t instanceof NoLoggingRequestException))
-                    log.error(
-                            "Error while handling request to "
-                                    + request.getRequestURL(), t);
+                    log.error("Error while handling request to "
+                            + request.getRequestURL(), t);
                 info.setRequestError(t);
                 try {
                     config.handleRequestError(t);
@@ -109,7 +108,8 @@ public abstract class RestartableApplicationBase implements
                     log.error("Error in RequestErrorHandler", t1);
                     if (stage == Stage.PRODUCTION)
                         // no information revealed in production
-                        response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                        response.sendError(
+                                HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                     else {
                         // just throw the exception and let the container
                         // generate a page for it

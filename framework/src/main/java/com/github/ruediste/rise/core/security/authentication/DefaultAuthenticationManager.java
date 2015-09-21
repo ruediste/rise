@@ -54,8 +54,7 @@ public class DefaultAuthenticationManager implements AuthenticationManager {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void addProvider(
             AuthenticationProvider<? extends AuthenticationRequest> provider) {
-        Class type = TypeToken
-                .of(provider.getClass())
+        Class type = TypeToken.of(provider.getClass())
                 .resolveType(
                         AuthenticationProvider.class.getTypeParameters()[0])
                 .getRawType();

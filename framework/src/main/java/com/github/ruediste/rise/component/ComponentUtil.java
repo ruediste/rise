@@ -128,8 +128,8 @@ public class ComponentUtil implements ICoreUtil {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void render(Component component, RiseCanvas<?> canvas) {
-        ((ComponentTemplate) componentTemplateIndex.getTemplate(component
-                .getClass())).doRender(component, canvas);
+        ((ComponentTemplate) componentTemplateIndex
+                .getTemplate(component.getClass())).doRender(component, canvas);
     }
 
     /**
@@ -142,7 +142,8 @@ public class ComponentUtil implements ICoreUtil {
     /**
      * Create a renderable rendering a component (including children)
      */
-    public Renderable<RiseCanvas<?>> components(Iterable<Component> components) {
+    public Renderable<RiseCanvas<?>> components(
+            Iterable<Component> components) {
         return html -> components.forEach(c -> render(c, html));
     }
 
@@ -154,8 +155,8 @@ public class ComponentUtil implements ICoreUtil {
     }
 
     public String getReloadUrl() {
-        return coreUtil.url(componentConfiguration.getReloadPath() + "/"
-                + pageId());
+        return coreUtil
+                .url(componentConfiguration.getReloadPath() + "/" + pageId());
     }
 
     public String getAjaxUrl(Component component) {
@@ -169,8 +170,8 @@ public class ComponentUtil implements ICoreUtil {
     }
 
     public Optional<String> getParameterValue(Component component, String key) {
-        return Optional.ofNullable(coreRequestInfo.getRequest().getParameter(
-                getKey(component, key)));
+        return Optional.ofNullable(coreRequestInfo.getRequest()
+                .getParameter(getKey(component, key)));
     }
 
     public boolean isParameterDefined(Component component, String key) {

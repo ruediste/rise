@@ -18,8 +18,8 @@ import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.google.common.collect.Iterables;
 
-public class CFormGroupTemplate extends
-        BootstrapComponentTemplateBase<CFormGroup> {
+public class CFormGroupTemplate
+        extends BootstrapComponentTemplateBase<CFormGroup> {
 
     @Inject
     LabelUtil labelUtil;
@@ -52,7 +52,8 @@ public class CFormGroupTemplate extends
         html.bFormGroup().CLASS(component.CLASS());
 
         if (violationStatus != null) {
-            if (violationStatus.getValidationState() == ValidationState.SUCCESS) {
+            if (violationStatus
+                    .getValidationState() == ValidationState.SUCCESS) {
                 html.BhasSuccess();
             }
 
@@ -69,11 +70,8 @@ public class CFormGroupTemplate extends
 
         if (constraintViolations != null && !constraintViolations.isEmpty()) {
             if (constraintViolations.size() == 1) {
-                html.span()
-                        .BhelpBlock()
-                        .content(
-                                Iterables.getOnlyElement(constraintViolations)
-                                        .getMessage());
+                html.span().BhelpBlock().content(Iterables
+                        .getOnlyElement(constraintViolations).getMessage());
             }
             if (constraintViolations.size() > 1) {
                 html.ul().BhelpBlock();

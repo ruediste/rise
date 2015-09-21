@@ -22,9 +22,8 @@ public class ProgrammaticAuthenticationControllerTest extends WebTestRemote {
 
     @Test
     public void testNoAuthenticationRequired() throws Exception {
-        driver.navigate().to(
-                url(go(ProgrammaticAuthenticationController.class)
-                        .noAuthenticationRequired()));
+        driver.navigate().to(url(go(ProgrammaticAuthenticationController.class)
+                .noAuthenticationRequired()));
         assertPage(ProgrammaticAuthenticationController.class,
                 x -> x.noAuthenticationRequired());
     }
@@ -45,8 +44,8 @@ public class ProgrammaticAuthenticationControllerTest extends WebTestRemote {
         new LoginPO(driver).defaultLogin();
 
         // modify stored token
-        Cookie cookie = driver.manage().getCookieNamed(
-                config.rememberMeCookieName);
+        Cookie cookie = driver.manage()
+                .getCookieNamed(config.rememberMeCookieName);
         String value = cookie.getValue();
         if (value.startsWith("\""))
             value = value.substring(1);
@@ -92,9 +91,8 @@ public class ProgrammaticAuthenticationControllerTest extends WebTestRemote {
     }
 
     private void loadAuthRequired() {
-        driver.navigate().to(
-                url(go(ProgrammaticAuthenticationController.class)
-                        .authenticationRequired()));
+        driver.navigate().to(url(go(ProgrammaticAuthenticationController.class)
+                .authenticationRequired()));
     }
 
 }

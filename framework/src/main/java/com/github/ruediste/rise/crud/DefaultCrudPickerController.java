@@ -28,8 +28,8 @@ public class DefaultCrudPickerController extends SubControllerComponent
 
     private CrudList ctrl;
 
-    public static class View extends
-            DefaultCrudViewComponent<DefaultCrudPickerController> {
+    public static class View
+            extends DefaultCrudViewComponent<DefaultCrudPickerController> {
 
         @TMessages
         public interface Messages {
@@ -43,11 +43,10 @@ public class DefaultCrudPickerController extends SubControllerComponent
 
         @Override
         protected Component createComponents() {
-            return toComponent(html -> html
-                    .h1()
-                    .content(
-                            messages.pickerFor(label(controller.ctrl.getType()
-                                    .getEntityClass())))
+            return toComponent(
+                    html -> html.h1()
+                            .content(messages.pickerFor(label(controller.ctrl
+                                    .getType().getEntityClass())))
                     .add(new CController(controller.ctrl)));
         }
 
@@ -77,9 +76,9 @@ public class DefaultCrudPickerController extends SubControllerComponent
         ctrl = util.getStrategy(CrudUtil.CrudListFactory.class, entityClass)
                 .createList(emQualifier, entityClass, null);
         ctrl.setBottomActions(new CButton(this, c -> c.cancel()));
-        ctrl.setItemActionsFactory(item -> new Cell(new CButton(this, c -> c
-                .pick(item), true).apply(CButtonTemplate.setArgs(x -> x
-                .primary()))));
+        ctrl.setItemActionsFactory(
+                item -> new Cell(new CButton(this, c -> c.pick(item), true)
+                        .apply(CButtonTemplate.setArgs(x -> x.primary()))));
         return this;
     }
 

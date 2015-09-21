@@ -64,8 +64,8 @@ public class AjaxRequestParser implements RequestParser {
         public void handle() {
             componentRequestInfo.setComponentRequest(true);
             try {
-                String suffix = req.getPathInfo().substring(
-                        config.getAjaxPath().length());
+                String suffix = req.getPathInfo()
+                        .substring(config.getAjaxPath().length());
                 if (suffix.startsWith("/"))
                     suffix = suffix.substring(1);
                 long pageNr;
@@ -93,8 +93,8 @@ public class AjaxRequestParser implements RequestParser {
                 synchronized (page.lock) {
                     pageScopeHandler.enter(page.instances);
                     try {
-                        component = componentUtil.getComponent(
-                                pageInfo.getView(), componentNr);
+                        component = componentUtil
+                                .getComponent(pageInfo.getView(), componentNr);
                         template = componentTemplateIndex
                                 .getTemplate(component);
                     } finally {
@@ -102,8 +102,8 @@ public class AjaxRequestParser implements RequestParser {
                     }
                 }
                 try {
-                    HttpRenderResult renderResult = template.handleAjaxRequest(
-                            component, suffix);
+                    HttpRenderResult renderResult = template
+                            .handleAjaxRequest(component, suffix);
                     if (renderResult != null)
                         renderResult.sendTo(
                                 coreRequestInfo.getServletResponse(),

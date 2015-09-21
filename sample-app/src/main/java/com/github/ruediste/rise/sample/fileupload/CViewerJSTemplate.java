@@ -20,8 +20,9 @@ public class CViewerJSTemplate extends ComponentTemplate<CViewerJS> {
     public void doRender(CViewerJS component, SampleCanvas html) {
         html.iframe()
                 .SRC(mapper.getPathInfoString(dir, "") + "index.html#"
-                        + getAjaxUrl(component) + "/content.pdf").WIDTH("566")
-                .HEIGHT("800").ALLOWFULLSCREEN("allowfullscreen")._iframe();
+                        + getAjaxUrl(component) + "/content.pdf")
+                .WIDTH("566").HEIGHT("800").ALLOWFULLSCREEN("allowfullscreen")
+                ._iframe();
     }
 
     // <iframe src = "/ViewerJS/#../demo/ohm2013.odp" width='400' height='300'
@@ -33,8 +34,8 @@ public class CViewerJSTemplate extends ComponentTemplate<CViewerJS> {
     // width='297' height='210'
 
     @Override
-    public HttpRenderResult handleAjaxRequest(CViewerJS component, String suffix)
-            throws Throwable {
+    public HttpRenderResult handleAjaxRequest(CViewerJS component,
+            String suffix) throws Throwable {
         return new ContentRenderResult(component.getSource(), r -> {
         });
     }

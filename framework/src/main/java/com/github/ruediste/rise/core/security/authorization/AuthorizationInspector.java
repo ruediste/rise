@@ -39,8 +39,8 @@ public class AuthorizationInspector {
                 public void visitMethodInsn(int opcode, String owner,
                         String name, String desc, boolean itf) {
                     if (OWNER.equals(owner) && NAME.equals(name)) {
-                        authorizeCallingMethods.add(Pair.of(methodName,
-                                methodDesc));
+                        authorizeCallingMethods
+                                .add(Pair.of(methodName, methodDesc));
                     }
                 }
             };
@@ -64,26 +64,19 @@ public class AuthorizationInspector {
 
     private static Set<Pair<String, String>> getAuthorizeCallingMethods(
             Class<?> clazz) {
-        return cache
-                .computeIfAbsent(
-                        clazz,
-                        x -> {
-                            AuthorizeCallsVisitor cv;
-                            try (InputStream is = clazz.getClassLoader()
-                                    .getResourceAsStream(
-                                            Type.getInternalName(clazz)
-                                                    + ".class")) {
-                                ClassReader cr = new ClassReader(is);
-                                cv = new AuthorizeCallsVisitor();
-                                cr.accept(cv, ClassReader.SKIP_DEBUG
-                                        + ClassReader.SKIP_FRAMES);
-                            } catch (IOException e) {
-                                throw new RuntimeException(
-                                        "error while reading class "
-                                                + clazz.getName());
-                            }
-                            Set<Pair<String, String>> authorizeCallingMethods = cv.authorizeCallingMethods;
-                            return authorizeCallingMethods;
-                        });
+        return cache.computeIfAbsent(clazz, x -> {
+            AuthorizeCallsVisitor cv;
+            try (InputStream is = clazz.getClassLoader().getResourceAsStream(
+                    Type.getInternalName(clazz) + ".class")) {
+                ClassReader cr = new ClassReader(is);
+                cv = new AuthorizeCallsVisitor();
+                cr.accept(cv, ClassReader.SKIP_DEBUG + ClassReader.SKIP_FRAMES);
+            } catch (IOException e) {
+                throw new RuntimeException(
+                        "error while reading class " + clazz.getName());
+            }
+            Set<Pair<String, String>> authorizeCallingMethods = cv.authorizeCallingMethods;
+            return authorizeCallingMethods;
+        });
     }
 }

@@ -37,8 +37,8 @@ public class BitronixModule extends AbstractModule {
     @Provides
     @Singleton
     TransactionManager transactionManager() {
-        return withStartupTimeLogging(() -> TransactionManagerServices
-                .getTransactionManager());
+        return withStartupTimeLogging(
+                () -> TransactionManagerServices.getTransactionManager());
     }
 
     @Provides

@@ -36,8 +36,7 @@ public class ViewRenderer extends ChainedRequestHandler {
         pi.setView(config.createView(pi.getController()));
         ViewComponentBase<?> view = pi.getView();
         coreRequestInfo.setActionResult(new ContentRenderResult(
-                util.renderComponents(view, view
-                        .getRootComponent()), r -> {
+                util.renderComponents(view, view.getRootComponent()), r -> {
                     r.setContentType(coreConfiguration.htmlContentType);
                     if (view instanceof HttpServletResponseCustomizer) {
                         ((HttpServletResponseCustomizer) view)

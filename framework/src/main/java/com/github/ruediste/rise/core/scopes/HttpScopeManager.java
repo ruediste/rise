@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * Manager for {@link RequestScoped @RequestScoped} and {@link SessionScoped
+ * 
  * @SessionScoped}. Inject this interface to control the scopes
  */
 public interface HttpScopeManager {

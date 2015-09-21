@@ -44,17 +44,14 @@ public class LoginController extends ControllerComponent {
     enum Messages {
         LOGIN_FAILED,
 
-        @Label("Username/Password did not match")
-        USERNAME_PASSWORD_INCORRECT,
+        @Label("Username/Password did not match") USERNAME_PASSWORD_INCORRECT,
 
         AUTHENTICATION_FAILED,
 
-        @Label("Your Remember Me Token Has been Stolen")
-        TOKEN_TEFT_DETECTED_HEADING,
+        @Label("Your Remember Me Token Has been Stolen") TOKEN_TEFT_DETECTED_HEADING,
 
         @Label("Someone gained access to your remember me cookie. This can be due to someone accessing your computer in person, or by malware installed on your system. "
-                + "The token has been invalidated and cannot be used anymore, but in the time since the theft a third person might have accessed your account!")
-        TOKEN_TEFT_DETECTED_BODY
+                + "The token has been invalidated and cannot be used anymore, but in the time since the theft a third person might have accessed your account!") TOKEN_TEFT_DETECTED_BODY
     }
 
     @Labeled
@@ -63,9 +60,8 @@ public class LoginController extends ControllerComponent {
         @Override
         protected Component createComponents() {
             return new CPage()
-                    .add(toComponentBound(
-                            () -> controller.data(),html ->{
-                                //@formatter:off
+                    .add(toComponentBound(() -> controller.data(), html -> {
+                        //@formatter:off
                             if (controller.data().isTokenTheftDetected()) {
                                 html.div().CLASS("panel panel-danger")
                                     .div().CLASS("panel-heading").content(Messages.TOKEN_TEFT_DETECTED_HEADING)
@@ -86,7 +82,7 @@ public class LoginController extends ControllerComponent {
                                     }
                                 }
                             //@formatter:on
-                            }))
+                    }))
                     .add(new CFormGroup(new CTextField()
                             .bindText(() -> controller.data().getUserName())))
                     .add(new CFormGroup(new CTextField()
@@ -186,11 +182,11 @@ public class LoginController extends ControllerComponent {
             msgs.clear();
             for (AuthenticationFailure failure : result.getFailures()) {
                 if (failure instanceof UserNameNotFoundAuthenticationFailure)
-                    msgs.add(labelUtil
-                            .getEnumMemberLabel(Messages.USERNAME_PASSWORD_INCORRECT));
+                    msgs.add(labelUtil.getEnumMemberLabel(
+                            Messages.USERNAME_PASSWORD_INCORRECT));
                 else
-                    msgs.add(labelUtil
-                            .getEnumMemberLabel(Messages.AUTHENTICATION_FAILED));
+                    msgs.add(labelUtil.getEnumMemberLabel(
+                            Messages.AUTHENTICATION_FAILED));
             }
             data.pullUp();
         }

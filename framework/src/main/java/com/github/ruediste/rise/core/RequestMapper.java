@@ -7,7 +7,9 @@ public interface RequestMapper {
 
     /**
      * Generate a HttpRequest for a given action invocation
-     * @param sessionId TODO
+     * 
+     * @param sessionId
+     *            TODO
      */
     UrlSpec generate(ActionInvocation<String> invocation, String sessionId);
 

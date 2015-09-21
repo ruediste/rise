@@ -31,35 +31,31 @@ public class SampleFrontServlet extends FrontServletBase {
     @Override
     protected void initImpl() throws Exception {
         setStage(ApplicationStage.DEVELOPMENT);
-        Salta.createInjector(
-                getStage().getSaltaStage(),
-                new AbstractModule() {
+        Salta.createInjector(getStage().getSaltaStage(), new AbstractModule() {
+
+            @Override
+            protected void configure() throws Exception {
+                PersistenceModuleUtil.bindDataSource(binder(), null,
+                        new EclipseLinkPersistenceUnitManager("sampleApp"),
+                        new BitronixDataSourceFactory(
+                                new H2DatabaseIntegrationInfo()) {
 
                     @Override
-                    protected void configure() throws Exception {
-                        PersistenceModuleUtil.bindDataSource(binder(), null,
-                                new EclipseLinkPersistenceUnitManager(
-                                        "sampleApp"),
-                                new BitronixDataSourceFactory(
-                                        new H2DatabaseIntegrationInfo()) {
-
-                                    @Override
-                                    protected void initializeProperties(
-                                            Properties props) {
-                                        props.setProperty("URL",
-                                                "jdbc:h2:file:~/sampleApp;DB_CLOSE_DELAY=-1;MVCC=false");
-                                        props.setProperty("user", "sa");
-                                        props.setProperty("password", "sa");
-                                    }
-                                });
+                    protected void initializeProperties(Properties props) {
+                        props.setProperty("URL",
+                                "jdbc:h2:file:~/sampleApp;DB_CLOSE_DELAY=-1;MVCC=false");
+                        props.setProperty("user", "sa");
+                        props.setProperty("password", "sa");
                     }
+                });
+            }
 
-                    @Provides
-                    ApplicationStage stage() {
-                        // get the stage from the super class
-                        return getStage();
-                    }
-                }, new BitronixModule(),
+            @Provides
+            ApplicationStage stage() {
+                // get the stage from the super class
+                return getStage();
+            }
+        }, new BitronixModule(),
                 new IntegrationModuleNonRestartable(getServletConfig()))
                 .injectMembers(this);
         config.setBasePackage(SamplePackage.class);

@@ -12,8 +12,8 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
 import com.github.ruediste.rise.core.web.HttpRenderResult;
 
-public abstract class ComponentTemplateBase<T extends Component> implements
-        ComponentTemplate<T> {
+public abstract class ComponentTemplateBase<T extends Component>
+        implements ComponentTemplate<T> {
 
     @Inject
     protected ComponentUtil util;

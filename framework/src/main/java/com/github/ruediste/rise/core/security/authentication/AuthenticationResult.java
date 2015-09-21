@@ -11,7 +11,8 @@ public class AuthenticationResult {
     final private List<AuthenticationFailure> failures;
 
     protected AuthenticationResult(boolean isSuccess,
-            AuthenticationSuccess success, List<AuthenticationFailure> failures) {
+            AuthenticationSuccess success,
+            List<AuthenticationFailure> failures) {
         this.isSuccess = isSuccess;
         this.success = success;
         this.failures = failures;

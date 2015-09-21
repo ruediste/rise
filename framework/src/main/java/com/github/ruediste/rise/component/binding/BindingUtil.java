@@ -30,9 +30,9 @@ public class BindingUtil {
             boolean oneWay) {
         BindingExpressionExecutionRecord info = BindingExpressionExecutionRecorder
                 .collectBindingExpressionLog(() -> {
-                    expression.accept(BindingUtil
-                            .<TComponent> createComponentProxy(component
-                                    .getClass()));
+                    expression.accept(
+                            BindingUtil.<TComponent> createComponentProxy(
+                                    component.getClass()));
                 });
 
         if (info.getInvolvedBindingGroup() == null) {
@@ -46,8 +46,9 @@ public class BindingUtil {
         binding.componentPath = PropertyUtil.toPath(info.componentRecorder);
         binding.modelPath = PropertyUtil.toPath(info.modelRecorder);
 
-        boolean isModelRead = PropertyUtil.getAccessor(
-                info.modelRecorder.getLastInvocation().getMethod()).getType() == AccessorType.GETTER;
+        boolean isModelRead = PropertyUtil
+                .getAccessor(info.modelRecorder.getLastInvocation().getMethod())
+                .getType() == AccessorType.GETTER;
 
         boolean doPullUp;
         boolean doPushDown;
@@ -60,8 +61,7 @@ public class BindingUtil {
             doPushDown = binding.componentPath.getAccessedProperty()
                     .isReadable()
                     && binding.modelPath.getAccessedProperty().isWriteable();
-            doPullUp = binding.componentPath.getAccessedProperty()
-                    .isWriteable()
+            doPullUp = binding.componentPath.getAccessedProperty().isWriteable()
                     && binding.modelPath.getAccessedProperty().isReadable();
         }
         // set push down lambda if possible
@@ -111,8 +111,8 @@ public class BindingUtil {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private static <TView> TView createComponentProxy(Class<?> viewClass) {
-        return (TView) BindingExpressionExecutionRecorder.getCurrentLog().componentRecorder
-                .getProxy((Class) viewClass);
+        return (TView) BindingExpressionExecutionRecorder
+                .getCurrentLog().componentRecorder.getProxy((Class) viewClass);
     }
 
     /**

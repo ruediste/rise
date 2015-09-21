@@ -97,9 +97,8 @@ public class ClassChangeNotifier {
     }
 
     void changeOccurred(FileChangeTransaction trx) {
-        Preconditions
-                .checkState(isInitialized,
-                        "FileChangeNotifier started before initializing the ClassChangeNotifier");
+        Preconditions.checkState(isInitialized,
+                "FileChangeNotifier started before initializing the ClassChangeNotifier");
         ClassChangeTransaction classTrx = new ClassChangeTransaction();
         classTrx.isInitial = trx.isInitial;
 
@@ -115,13 +114,10 @@ public class ClassChangeNotifier {
             }
         }
 
-        trx.addedFiles
-                .stream()
-                .parallel()
+        trx.addedFiles.stream().parallel()
                 .filter(file -> file.getFileName().toString()
                         .endsWith(".class"))
-                .map(file -> Pair.of(file, readClass(file)))
-                .sequential()
+                .map(file -> Pair.of(file, readClass(file))).sequential()
                 .filter(pair -> config.shouldBeScanned(org.objectweb.asm.Type
                         .getObjectType(pair.getB().getA().name).getClassName()))
                 .forEach(pair -> {
@@ -149,8 +145,8 @@ public class ClassChangeNotifier {
             sb.append(classTrx.addedClasses.stream().map(n -> n.name)
                     .collect(joining("\n", "  ", "")));
             sb.append("Removed:\n");
-            sb.append(classTrx.removedClasses.stream().collect(
-                    joining("\n", "  ", "")));
+            sb.append(classTrx.removedClasses.stream()
+                    .collect(joining("\n", "  ", "")));
             sb.append("Modified:\n");
             sb.append(classTrx.modifiedClasses.stream().map(n -> n.name)
                     .collect(joining("\n", "  ", "")));

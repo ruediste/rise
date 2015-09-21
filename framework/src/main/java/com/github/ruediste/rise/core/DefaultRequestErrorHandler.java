@@ -29,8 +29,8 @@ public class DefaultRequestErrorHandler implements RequestErrorHandler {
 
     @Override
     public void handle() {
-        PathInfo errorHandlerPath = util.toPathInfo(errorHandlerPathGenerator
-                .apply(util));
+        PathInfo errorHandlerPath = util
+                .toPathInfo(errorHandlerPathGenerator.apply(util));
         DelegatingHttpRequest errorHandlerRequest = new DelegatingHttpRequest(
                 info.getServletRequest()) {
             @Override

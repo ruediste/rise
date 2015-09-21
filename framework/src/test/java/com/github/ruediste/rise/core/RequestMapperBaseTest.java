@@ -101,10 +101,10 @@ public class RequestMapperBaseTest {
 
     ClassNode a = AsmUtil.readClass(A.class);
     ClassNode b = AsmUtil.readClass(B.class);
-    MethodRef a_a = new MethodRef(a.name, "a", "()"
-            + Type.getDescriptor(ActionResult.class));
-    MethodRef a_c = new MethodRef(a.name, "c", "(Ljava/lang/Integer;)"
-            + Type.getDescriptor(ActionResult.class));
+    MethodRef a_a = new MethodRef(a.name, "a",
+            "()" + Type.getDescriptor(ActionResult.class));
+    MethodRef a_c = new MethodRef(a.name, "c",
+            "(Ljava/lang/Integer;)" + Type.getDescriptor(ActionResult.class));
 
     String sessionId = "12345";
 
@@ -131,18 +131,18 @@ public class RequestMapperBaseTest {
         assertThat(mapper.actionMethodNameMap.keySet(), not(contains(a.name)));
         BiMap<MethodRef, String> map = mapper.actionMethodNameMap.get(b.name);
         assertNotNull(map);
-        assertThat(
-                map.keySet(),
-                containsInAnyOrder(
-                        a_a,
-                        new MethodRef(a.name, "c", "(Ljava/lang/Integer;)"
-                                + Type.getDescriptor(ActionResult.class)),
-                        new MethodRef(b.name, "c", "(Ljava/lang/Boolean;)"
-                                + Type.getDescriptor(ActionResult.class)),
-                        new MethodRef(b.name, "ab", "()"
-                                + Type.getDescriptor(ActionResult.class)),
-                        new MethodRef(b.name, "b", "()"
-                                + Type.getDescriptor(ActionResult.class))));
+        assertThat(map.keySet(),
+                containsInAnyOrder(a_a,
+                        new MethodRef(a.name, "c",
+                                "(Ljava/lang/Integer;)" + Type
+                                        .getDescriptor(ActionResult.class)),
+                        new MethodRef(b.name, "c",
+                                "(Ljava/lang/Boolean;)" + Type
+                                        .getDescriptor(ActionResult.class)),
+                new MethodRef(b.name, "ab",
+                        "()" + Type.getDescriptor(ActionResult.class)),
+                new MethodRef(b.name, "b",
+                        "()" + Type.getDescriptor(ActionResult.class))));
     }
 
     @Test

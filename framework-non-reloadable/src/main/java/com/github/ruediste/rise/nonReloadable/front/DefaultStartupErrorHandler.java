@@ -98,7 +98,8 @@ public class DefaultStartupErrorHandler implements StartupErrorHandler {
     protected void dropAndCreateDb(HttpServletRequest request,
             HttpServletResponse response) {
         if (registry == null) {
-            log.error("Cannot drop-and-create the database since the NonRestartable Application could not be started");
+            log.error(
+                    "Cannot drop-and-create the database since the NonRestartable Application could not be started");
         }
         log.info("Dropping and Creating DB schemas ...");
         registry.dropAndCreateSchemas();

@@ -34,31 +34,31 @@ public class IconUtil {
 
     public <T> Renderable<Html5Canvas<?>> getIcon(Class<T> cls,
             Consumer<T> accessor) {
-        Method method = MethodInvocationRecorder.getLastInvocation(cls,
-                accessor).getMethod();
+        Method method = MethodInvocationRecorder
+                .getLastInvocation(cls, accessor).getMethod();
         return getIcon(method);
     }
 
     public Renderable<Html5Canvas<?>> getIcon(Method method) {
-        return tryGetIcon(method).orElseThrow(
-                () -> new RuntimeException("No icon annotation found for "
-                        + method));
+        return tryGetIcon(method).orElseThrow(() -> new RuntimeException(
+                "No icon annotation found for " + method));
     }
 
     public <T> Optional<Renderable<Html5Canvas<?>>> tryGetIcon(Class<T> cls,
             Consumer<T> accessor) {
-        return tryGetIcon(MethodInvocationRecorder.getLastInvocation(cls,
-                accessor).getMethod());
+        return tryGetIcon(MethodInvocationRecorder
+                .getLastInvocation(cls, accessor).getMethod());
     }
 
     @SuppressWarnings({ "unchecked" })
     public Optional<Renderable<Html5Canvas<?>>> tryGetIcon(Method method) {
         for (Method m : MethodUtil.getDeclarations(method)) {
             for (Annotation a : m.getDeclaredAnnotations()) {
-                if (!a.annotationType().isAnnotationPresent(
-                        IconAnnotation.class))
+                if (!a.annotationType()
+                        .isAnnotationPresent(IconAnnotation.class))
                     continue;
-                for (Method attribute : a.annotationType().getDeclaredMethods()) {
+                for (Method attribute : a.annotationType()
+                        .getDeclaredMethods()) {
                     Renderable<Html5Canvas<?>> value;
                     try {
                         value = (Renderable<Html5Canvas<?>>) attribute
@@ -69,8 +69,8 @@ public class IconUtil {
                                 "Error while reading icon annotation value", e);
                     }
                     if (value != null) {
-                        return Optional.of(iconResolver.resolve(method, m, a,
-                                value));
+                        return Optional
+                                .of(iconResolver.resolve(method, m, a, value));
                     }
                 }
             }

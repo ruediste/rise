@@ -23,8 +23,8 @@ public class DefaultCrudBrowserController extends SubControllerComponent {
 
     private CrudList ctrl;
 
-    public static class View extends
-            DefaultCrudViewComponent<DefaultCrudBrowserController> {
+    public static class View
+            extends DefaultCrudViewComponent<DefaultCrudBrowserController> {
 
         @TMessages
         public interface Messages {
@@ -39,11 +39,10 @@ public class DefaultCrudBrowserController extends SubControllerComponent {
 
         @Override
         protected Component createComponents() {
-            return toComponent(html -> html
-                    .h1()
-                    .content(
-                            messages.browserFor(label(controller.ctrl.getType()
-                                    .getEntityClass())))
+            return toComponent(
+                    html -> html.h1()
+                            .content(messages.browserFor(label(controller.ctrl
+                                    .getType().getEntityClass())))
                     .add(new CController(controller.ctrl)));
         }
 
@@ -61,10 +60,11 @@ public class DefaultCrudBrowserController extends SubControllerComponent {
                         .apply(CButtonTemplate.setArgs(x -> {
                         })))
                 .add(new CButton(go(CrudControllerBase.class).delete(item),
-                        true).apply(CButtonTemplate.setArgs(x -> x.danger())))));
+                        true).apply(
+                                CButtonTemplate.setArgs(x -> x.danger())))));
 
-        ctrl.setBottomActions(new CButton(go(CrudControllerBase.class).create(
-                entityClass, emQualifier)));
+        ctrl.setBottomActions(new CButton(
+                go(CrudControllerBase.class).create(entityClass, emQualifier)));
 
         return this;
     }

@@ -1,6 +1,5 @@
 package com.github.ruediste.rise.component.components;
 
-
 /**
  * Component representing a partial page reload context
  */

@@ -16,8 +16,8 @@ public class BoundComponentControllerTest extends WebTest {
 
     @Test
     public void test() {
-        driver.navigate().to(
-                url(util.go(BoundComponentController.class).index()));
+        driver.navigate()
+                .to(url(util.go(BoundComponentController.class).index()));
         check("", "");
         driver.findElement(By.cssSelector(".textField input")).sendKeys("foo");
         driver.findElement(By.cssSelector(".pushDown")).click();
@@ -27,9 +27,9 @@ public class BoundComponentControllerTest extends WebTest {
     }
 
     void check(String bound, String direct) {
-        assertEquals(bound, driver.findElement(By.cssSelector("#bound"))
-                .getText());
-        assertEquals(direct, driver.findElement(By.cssSelector("#direct"))
-                .getText());
+        assertEquals(bound,
+                driver.findElement(By.cssSelector("#bound")).getText());
+        assertEquals(direct,
+                driver.findElement(By.cssSelector("#direct")).getText());
     }
 }

@@ -50,7 +50,7 @@ public class ComponentFactoryUtil {
         CComponentContainer container = new CComponentContainer();
         BindingUtil.bind(container, bindingAccessor, x -> {
             container.child.setChild(renderToCanvas(renderable));
-        }, x -> {
+        } , x -> {
         });
         return container;
     }

@@ -28,8 +28,8 @@ public abstract class WebTestBaseRemote implements TestUtil {
     @Inject
     IntegrationTestUtil util;
 
-    static class ServerParentClassLoaderSupplier implements
-            ParentClassLoaderSupplier {
+    static class ServerParentClassLoaderSupplier
+            implements ParentClassLoaderSupplier {
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -43,8 +43,8 @@ public abstract class WebTestBaseRemote implements TestUtil {
     protected String url(ActionResult result) {
         Cookie sessionId = driver.manage().getCookieNamed("JSESSIONID");
         System.out.println(sessionId);
-        return util
-                .url(result, sessionId == null ? null : sessionId.getValue());
+        return util.url(result,
+                sessionId == null ? null : sessionId.getValue());
     }
 
     protected String url(PathInfo pathInfo) {

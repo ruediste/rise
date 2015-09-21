@@ -27,7 +27,8 @@ public class MvcRequestMapperImpl extends RequestMapperBase {
     }
 
     @Override
-    protected RequestParseResult createParseResult(ActionInvocation<String> path) {
+    protected RequestParseResult createParseResult(
+            ActionInvocation<String> path) {
         return new RequestParseResultImpl(path, actionInvocation -> {
             requestInfo.setStringActionInvocation(actionInvocation);
             mvcWebConfig.handleRequest();

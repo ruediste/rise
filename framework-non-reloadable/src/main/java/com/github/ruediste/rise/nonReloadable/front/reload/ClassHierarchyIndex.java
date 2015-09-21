@@ -91,8 +91,7 @@ public class ClassHierarchyIndex {
                 + " removed:" + trx.removedClasses.size() + " modified:"
                 + trx.modifiedClasses.size());
         Stream.concat(trx.removedClasses.stream(),
-                trx.modifiedClasses.stream().map(n -> n.name)).forEach(
-                name -> {
+                trx.modifiedClasses.stream().map(n -> n.name)).forEach(name -> {
                     ClassNode cls = classMap.remove(name);
                     if (cls != null) {
                         if (cls.superName != null) {
@@ -140,8 +139,8 @@ public class ClassHierarchyIndex {
     public ClassNode getNode(String internalName) {
         ClassNode result = classMap.get(internalName);
         if (result == null)
-            throw new RuntimeException("Class " + internalName
-                    + " not in index");
+            throw new RuntimeException(
+                    "Class " + internalName + " not in index");
         return result;
     }
 
@@ -188,7 +187,8 @@ public class ClassHierarchyIndex {
 
     private boolean isAssignableFrom(String internalNameParent,
             String internalName, HashSet<String> seen) {
-        log.trace("isAssignableFrom " + internalNameParent + " " + internalName);
+        log.trace(
+                "isAssignableFrom " + internalNameParent + " " + internalName);
         if (Objects.equals(internalName, internalNameParent))
             return true;
 
@@ -234,7 +234,8 @@ public class ClassHierarchyIndex {
      * Resolve the given type variable in the base class, as it is parameterized
      * by the childClass
      */
-    public String resolve(ClassNode child, String baseClass, String typeVariable) {
+    public String resolve(ClassNode child, String baseClass,
+            String typeVariable) {
         ArrayList<String> parameterValues = new ArrayList<>();
 
         while (true) {

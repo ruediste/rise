@@ -1,7 +1,7 @@
 package com.github.ruediste.rise.core.security.authentication;
 
-public class UsernamePasswordAuthenticationRequest implements
-        AuthenticationRequest, RememberMeAwareAuthenticationRequest {
+public class UsernamePasswordAuthenticationRequest
+        implements AuthenticationRequest, RememberMeAwareAuthenticationRequest {
 
     private String userName;
     private String password;

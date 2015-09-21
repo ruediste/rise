@@ -64,33 +64,29 @@ public class CoreRestartableModule extends AbstractModule {
                             .of(TMessageUtil.class);
                     String typeName = Type.getDescriptor(key.getRawType());
 
-                    return Optional
-                            .of(new Function<RecipeCreationContext, SupplierRecipe>() {
-                                @Override
-                                public SupplierRecipe apply(
-                                        RecipeCreationContext ctx) {
-                                    SupplierRecipe utilRecipe = ctx
-                                            .getRecipe(utilKey);
-                                    return new SupplierRecipe() {
+                    return Optional.of(
+                            new Function<RecipeCreationContext, SupplierRecipe>() {
+                        @Override
+                        public SupplierRecipe apply(RecipeCreationContext ctx) {
+                            SupplierRecipe utilRecipe = ctx.getRecipe(utilKey);
+                            return new SupplierRecipe() {
 
-                                        @Override
-                                        protected Class<?> compileImpl(
-                                                GeneratorAdapter mv,
-                                                MethodCompilationContext ctx) {
-                                            utilRecipe.compile(ctx);
-                                            mv.visitLdcInsn(Type
-                                                    .getType(typeName));
-                                            mv.visitMethodInsn(
-                                                    INVOKEVIRTUAL,
-                                                    "com/github/ruediste1/i18n/message/TMessageUtil",
-                                                    "getMessageInterfaceInstance",
-                                                    "(Ljava/lang/Class;)Ljava/lang/Object;",
-                                                    false);
-                                            return Object.class;
-                                        }
-                                    };
+                                @Override
+                                protected Class<?> compileImpl(
+                                        GeneratorAdapter mv,
+                                        MethodCompilationContext ctx) {
+                                    utilRecipe.compile(ctx);
+                                    mv.visitLdcInsn(Type.getType(typeName));
+                                    mv.visitMethodInsn(INVOKEVIRTUAL,
+                                            "com/github/ruediste1/i18n/message/TMessageUtil",
+                                            "getMessageInterfaceInstance",
+                                            "(Ljava/lang/Class;)Ljava/lang/Object;",
+                                            false);
+                                    return Object.class;
                                 }
-                            });
+                            };
+                        }
+                    });
                 }
                 return Optional.empty();
             }
@@ -108,7 +104,8 @@ public class CoreRestartableModule extends AbstractModule {
             @Override
             public Scope getScope(TypeToken<?> type) {
                 if (TypeToken.of(AssetBundle.class).isAssignableFrom(type)
-                        || TypeToken.of(AssetDir.class).isAssignableFrom(type)) {
+                        || TypeToken.of(AssetDir.class)
+                                .isAssignableFrom(type)) {
                     return standardConfig.singletonScope;
                 }
                 return null;
@@ -117,15 +114,15 @@ public class CoreRestartableModule extends AbstractModule {
     }
 
     protected void registerPermanentRule() {
-        config().standardConfig.creationPipeline.coreCreationRuleSuppliers.add(
-                0, () -> new CreationRule() {
+        config().standardConfig.creationPipeline.coreCreationRuleSuppliers
+                .add(0, () -> new CreationRule() {
 
                     @Override
                     public Optional<Function<RecipeCreationContext, SupplierRecipe>> apply(
                             CoreDependencyKey<?> key, CoreInjector injector) {
                         boolean applies = false;
-                        if (key.getRawType().isAnnotationPresent(
-                                NonRestartable.class))
+                        if (key.getRawType()
+                                .isAnnotationPresent(NonRestartable.class))
                             applies = true;
                         else if (key instanceof InjectionPoint<?>) {
                             if (key.getAnnotatedElement().isAnnotationPresent(

@@ -38,10 +38,9 @@ public abstract class ControllerInvokerBase implements Runnable {
         // invoke controller
         try {
             ActionResult result = (ActionResult) objectInvocation.methodInvocation
-                    .getMethod().invoke(
-                            controller,
-                            objectInvocation.methodInvocation.getArguments()
-                                    .toArray());
+                    .getMethod()
+                    .invoke(controller, objectInvocation.methodInvocation
+                            .getArguments().toArray());
             coreInfo.setActionResult((HttpRenderResult) result);
         } catch (IllegalAccessException | IllegalArgumentException e) {
             throw new RuntimeException("Error calling action method "

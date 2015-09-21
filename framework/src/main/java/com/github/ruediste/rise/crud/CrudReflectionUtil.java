@@ -44,8 +44,8 @@ public class CrudReflectionUtil {
 
     public Map<String, PersistentProperty> getAllPropertiesMap(
             PersistentType type) {
-        return getAllProperties(type).stream().collect(
-                toMap(x -> x.getAttribute().getName(), x -> x));
+        return getAllProperties(type).stream()
+                .collect(toMap(x -> x.getAttribute().getName(), x -> x));
     }
 
     public List<PersistentProperty> getAllProperties(PersistentType type) {
@@ -102,8 +102,9 @@ public class CrudReflectionUtil {
     }
 
     public PersistentProperty toPersistentProperty(Attribute<?, ?> attribute) {
-        PropertyInfo property = PropertyUtil.getPropertyInfo(attribute
-                .getDeclaringType().getJavaType(), attribute.getName());
+        PropertyInfo property = PropertyUtil.getPropertyInfo(
+                attribute.getDeclaringType().getJavaType(),
+                attribute.getName());
 
         return new PersistentProperty(property, attribute);
     }

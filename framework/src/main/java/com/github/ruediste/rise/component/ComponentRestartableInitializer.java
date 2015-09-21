@@ -16,7 +16,8 @@ public class ComponentRestartableInitializer implements Initializer {
     @Override
     public void initialize() {
         config.initialize();
-        index.registerPathInfo(config.getReloadPath(), config.getReloadParser());
+        index.registerPathInfo(config.getReloadPath(),
+                config.getReloadParser());
         index.registerPrefix(config.getAjaxPath(), config.getAjaxParser());
     }
 }

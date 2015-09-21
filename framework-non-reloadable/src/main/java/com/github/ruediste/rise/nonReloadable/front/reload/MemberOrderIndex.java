@@ -44,8 +44,8 @@ public class MemberOrderIndex {
                 + " removed:" + trx.removedClasses.size() + " modified:"
                 + trx.modifiedClasses.size());
         Stream.concat(trx.removedClasses.stream(),
-                trx.modifiedClasses.stream().map(n -> n.name)).forEach(
-                classes::remove);
+                trx.modifiedClasses.stream().map(n -> n.name))
+                .forEach(classes::remove);
 
         for (Entry<String, List<String>> entry : Iterables.concat(
                 trx.modifiedClassesMembers.entrySet(),
@@ -84,24 +84,22 @@ public class MemberOrderIndex {
     public List<Member> orderMembers(Class<?> declaringClass,
             Collection<? extends Member> members) {
 
-        Map<String, Integer> map = classes.get(Type
-                .getInternalName(declaringClass));
+        Map<String, Integer> map = classes
+                .get(Type.getInternalName(declaringClass));
         if (map == null)
             throw new RuntimeException("Unknown class " + declaringClass);
-        return members
-                .stream()
-                .sorted((a, b) -> {
-                    Integer idxA = map.get(memberString(a));
-                    if (idxA == null) {
-                        throw new RuntimeException("Member " + a
-                                + "is not declared in " + declaringClass);
-                    }
-                    Integer idxB = map.get(memberString(b));
-                    if (idxB == null) {
-                        throw new RuntimeException("Member " + b
-                                + "is not declared in " + declaringClass);
-                    }
-                    return idxA.compareTo(idxB);
-                }).collect(toList());
+        return members.stream().sorted((a, b) -> {
+            Integer idxA = map.get(memberString(a));
+            if (idxA == null) {
+                throw new RuntimeException(
+                        "Member " + a + "is not declared in " + declaringClass);
+            }
+            Integer idxB = map.get(memberString(b));
+            if (idxB == null) {
+                throw new RuntimeException(
+                        "Member " + b + "is not declared in " + declaringClass);
+            }
+            return idxA.compareTo(idxB);
+        }).collect(toList());
     }
 }

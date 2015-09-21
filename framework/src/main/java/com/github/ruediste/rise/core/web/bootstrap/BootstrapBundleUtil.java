@@ -36,8 +36,8 @@ public class BootstrapBundleUtil extends AssetBundle {
      * Load the necessary assets to use bootstrap, including jquery
      */
     public BootstrapAssetGroups loadAssets() {
-        return loadAssets((group, ext) -> group.ifProd(g -> g.name("{hash}."
-                + ext)));
+        return loadAssets(
+                (group, ext) -> group.ifProd(g -> g.name("{hash}." + ext)));
     }
 
     /**
@@ -76,8 +76,9 @@ public class BootstrapBundleUtil extends AssetBundle {
                 for (String ext : fontExts) {
                     result = result.replace(
                             "../fonts/glyphicons-halflings-regular." + ext,
-                            url(loadFont(fontCustomizer, ext).fork(
-                                    g -> g.forEach(fonts::add)).single()));
+                            url(loadFont(fontCustomizer, ext)
+                                    .fork(g -> g.forEach(fonts::add))
+                                    .single()));
                 }
                 return result;
             }
@@ -96,9 +97,9 @@ public class BootstrapBundleUtil extends AssetBundle {
     private AssetGroup loadFont(
             BiFunction<AssetGroup, String, AssetGroup> fontCustomizer,
             String ext) {
-        return fontCustomizer
-                .apply(locations("./fonts/glyphicons-halflings-regular." + ext)
-                        .load(), ext);
+        return fontCustomizer.apply(
+                locations("./fonts/glyphicons-halflings-regular." + ext).load(),
+                ext);
     }
 
     @Override

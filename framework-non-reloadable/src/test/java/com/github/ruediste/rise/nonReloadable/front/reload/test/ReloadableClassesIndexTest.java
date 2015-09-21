@@ -39,8 +39,8 @@ public class ReloadableClassesIndexTest {
         tst = new Object() {
         };
         ClassChangeTransaction trx = new ClassChangeNotifier.ClassChangeTransaction();
-        trx.addedClasses.add(AsmUtil
-                .readClass(ReloadableClassesIndexTest.class));
+        trx.addedClasses
+                .add(AsmUtil.readClass(ReloadableClassesIndexTest.class));
         trx.addedClasses.add(AsmUtil.readClass(A.class));
         trx.addedClasses.add(AsmUtil.readClass(tst.getClass()));
         ReloadableClassesIndexTestHelper.callOnChange(cache, trx);

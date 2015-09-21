@@ -30,36 +30,34 @@ public class PersistenceTestHelper {
 
     public void before() {
         initializationCount++;
-        Injector nonRestartableInjector = Salta.createInjector(
-                new AbstractModule() {
+        Injector nonRestartableInjector = Salta
+                .createInjector(new AbstractModule() {
 
                     @Override
                     protected void configure() throws Exception {
-                        bind(ApplicationStage.class).toInstance(
-                                ApplicationStage.DEVELOPMENT);
+                        bind(ApplicationStage.class)
+                                .toInstance(ApplicationStage.DEVELOPMENT);
                         PersistenceModuleUtil.bindDataSource(binder(), null,
                                 new EclipseLinkPersistenceUnitManager(
                                         "frameworkTest"),
                                 new BitronixDataSourceFactory(
                                         new H2DatabaseIntegrationInfo()) {
 
-                                    @Override
-                                    protected void initializeProperties(
-                                            Properties props) {
-                                        props.setProperty("URL",
-                                                "jdbc:h2:mem:test"
-                                                        + initializationCount
-                                                        + ";MVCC=false");
-                                        props.setProperty("user", "sa");
-                                        props.setProperty("password", "sa");
-                                    }
+                            @Override
+                            protected void initializeProperties(
+                                    Properties props) {
+                                props.setProperty("URL", "jdbc:h2:mem:test"
+                                        + initializationCount + ";MVCC=false");
+                                props.setProperty("user", "sa");
+                                props.setProperty("password", "sa");
+                            }
 
-                                    @Override
-                                    protected void customizeDataSource(
-                                            PoolingDataSource btmDataSource) {
-                                        btmDataSource.setMinPoolSize(1);
-                                    }
-                                });
+                            @Override
+                            protected void customizeDataSource(
+                                    PoolingDataSource btmDataSource) {
+                                btmDataSource.setMinPoolSize(1);
+                            }
+                        });
                         PersistenceModuleUtil.bindDataSource(binder(),
                                 Unit1.class,
                                 new EclipseLinkPersistenceUnitManager(
@@ -67,23 +65,21 @@ public class PersistenceTestHelper {
                                 new BitronixDataSourceFactory(
                                         new H2DatabaseIntegrationInfo()) {
 
-                                    @Override
-                                    protected void initializeProperties(
-                                            Properties props) {
-                                        props.setProperty("URL",
-                                                "jdbc:h2:mem:test1"
-                                                        + initializationCount
-                                                        + ";MVCC=false");
-                                        props.setProperty("user", "sa");
-                                        props.setProperty("password", "sa");
-                                    }
+                            @Override
+                            protected void initializeProperties(
+                                    Properties props) {
+                                props.setProperty("URL", "jdbc:h2:mem:test1"
+                                        + initializationCount + ";MVCC=false");
+                                props.setProperty("user", "sa");
+                                props.setProperty("password", "sa");
+                            }
 
-                                    @Override
-                                    protected void customizeDataSource(
-                                            PoolingDataSource btmDataSource) {
-                                        btmDataSource.setMinPoolSize(1);
-                                    }
-                                });
+                            @Override
+                            protected void customizeDataSource(
+                                    PoolingDataSource btmDataSource) {
+                                btmDataSource.setMinPoolSize(1);
+                            }
+                        });
                     }
                 }, new BitronixModule(), new LoggerModule());
 

@@ -152,8 +152,8 @@ public abstract class RequestMapperBase implements RequestMapper {
 
                     // determine the path infos to register under
                     MethodPathInfos pathInfos = ActionPathAnnotationUtil
-                            .getPathInfos(m, () -> "/" + controllerName + "."
-                                    + m.name);
+                            .getPathInfos(m,
+                                    () -> "/" + controllerName + "." + m.name);
 
                     // add the path infos for the method to the respective maps
                     if (Type.getArgumentTypes(m.desc).length == 0) {
@@ -161,11 +161,13 @@ public abstract class RequestMapperBase implements RequestMapper {
                         for (String prefix : pathInfos.pathInfos) {
                             idx.registerPathInfo(prefix, new RequestParser() {
                                 @Override
-                                public RequestParseResult parse(HttpRequest req) {
+                                public RequestParseResult parse(
+                                        HttpRequest req) {
                                     ActionInvocation<String> invocation = createInvocation(
                                             instanceCls, methodRef);
-                                    if (shouldDoUrlSigning(invocation.methodInvocation
-                                            .getMethod())) {
+                                    if (shouldDoUrlSigning(
+                                            invocation.methodInvocation
+                                                    .getMethod())) {
                                         Mac mac = null;
                                         mac = urlSignatureHelper
                                                 .createUrlHasher();
@@ -176,14 +178,14 @@ public abstract class RequestMapperBase implements RequestMapper {
                                         mac.update(prefix
                                                 .getBytes(Charsets.UTF_8));
 
-                                        byte[] calculatedSignature = Arrays.copyOfRange(
-                                                mac.doFinal(), 0,
-                                                coreConfig.urlSignatureBytes);
+                                        byte[] calculatedSignature = Arrays
+                                                .copyOfRange(mac.doFinal(), 0,
+                                                        coreConfig.urlSignatureBytes);
                                         if (!urlSignatureHelper.slowEquals(
                                                 calculatedSignature,
-                                                Base64.getUrlDecoder()
-                                                        .decode(req
-                                                                .getParameter(SIGNATURE_PARAMETER_NAME)))) {
+                                                Base64.getUrlDecoder().decode(
+                                                        req.getParameter(
+                                                                SIGNATURE_PARAMETER_NAME)))) {
                                             throw new RuntimeException(
                                                     "URL signature did not match");
                                         }
@@ -200,8 +202,7 @@ public abstract class RequestMapperBase implements RequestMapper {
                     } else {
                         // there are parameters
                         for (String prefix : pathInfos.pathInfos) {
-                            idx.registerPrefix(
-                                    prefix + "/",
+                            idx.registerPrefix(prefix + "/",
                                     req -> createParseResult(parse(prefix,
                                             instanceCls, methodRef, req)));
                         }
@@ -233,16 +234,16 @@ public abstract class RequestMapperBase implements RequestMapper {
                 coreRequestInfo.getServletRequest().getSession().getId());
     }
 
-    ActionInvocation<String> parse(String prefix,
-            ClassNode controllerClassNode, MethodRef methodRef,
-            HttpRequest request, String sessionId) {
+    ActionInvocation<String> parse(String prefix, ClassNode controllerClassNode,
+            MethodRef methodRef, HttpRequest request, String sessionId) {
         ActionInvocation<String> invocation;
         try {
             invocation = createInvocation(controllerClassNode, methodRef);
         } catch (Exception e) {
-            throw new RuntimeException("Error while loading "
-                    + controllerClassNode.name + "." + methodRef.methodName
-                    + "(" + methodRef.desc + ")", e);
+            throw new RuntimeException(
+                    "Error while loading " + controllerClassNode.name + "."
+                            + methodRef.methodName + "(" + methodRef.desc + ")",
+                    e);
         }
         Method method = invocation.methodInvocation.getMethod();
         boolean urlSign = shouldDoUrlSigning(method);
@@ -260,12 +261,11 @@ public abstract class RequestMapperBase implements RequestMapper {
         // collect arguments
         if (!remaining.isEmpty()) {
             int i = 0;
-            for (String arg : Splitter.on('/').splitToList(
-                    remaining.substring(1))) {
+            for (String arg : Splitter.on('/')
+                    .splitToList(remaining.substring(1))) {
                 invocation.methodInvocation.getArguments().add(arg);
-                if (urlSign
-                        && !method.getParameters()[i]
-                                .isAnnotationPresent(UrlUnsigned.class)) {
+                if (urlSign && !method.getParameters()[i]
+                        .isAnnotationPresent(UrlUnsigned.class)) {
                     mac.update(("/" + arg).getBytes(Charsets.UTF_8));
                 }
                 i++;
@@ -274,11 +274,12 @@ public abstract class RequestMapperBase implements RequestMapper {
 
         // check url signature
         if (urlSign) {
-            byte[] signature = Base64.getUrlDecoder().decode(
-                    request.getParameter(SIGNATURE_PARAMETER_NAME));
+            byte[] signature = Base64.getUrlDecoder()
+                    .decode(request.getParameter(SIGNATURE_PARAMETER_NAME));
             byte[] calculatedSignature = Arrays.copyOfRange(mac.doFinal(), 0,
                     coreConfig.urlSignatureBytes);
-            if (!urlSignatureHelper.slowEquals(signature, calculatedSignature)) {
+            if (!urlSignatureHelper.slowEquals(signature,
+                    calculatedSignature)) {
                 throw new RuntimeException("URL signature does not match");
             }
         }
@@ -335,9 +336,10 @@ public abstract class RequestMapperBase implements RequestMapper {
             String controllerInternalName = Type
                     .getInternalName(path.methodInvocation.getInstanceClass());
 
-            String controllerImplementationName = getControllerImplementation(controllerInternalName);
-            prefix = methodToPrefixMap.get(Pair.of(
-                    controllerImplementationName, ref));
+            String controllerImplementationName = getControllerImplementation(
+                    controllerInternalName);
+            prefix = methodToPrefixMap
+                    .get(Pair.of(controllerImplementationName, ref));
 
             if (prefix == null)
                 throw new RuntimeException("Unable to find prefix for\n" + ref
@@ -356,9 +358,8 @@ public abstract class RequestMapperBase implements RequestMapper {
             String argument = "/" + path.methodInvocation.getArguments().get(i);
             sb.append(argument);
 
-            if (urlSign
-                    && !method.getParameters()[i]
-                            .isAnnotationPresent(UrlUnsigned.class)) {
+            if (urlSign && !method.getParameters()[i]
+                    .isAnnotationPresent(UrlUnsigned.class)) {
                 mac.update(argument.getBytes(Charsets.UTF_8));
             }
         }
@@ -372,10 +373,12 @@ public abstract class RequestMapperBase implements RequestMapper {
 
         if (urlSign) {
             byte[] signature = mac.doFinal();
-            parameters.add(Pair.of(
-                    SIGNATURE_PARAMETER_NAME,
-                    Base64.getUrlEncoder().encodeToString(
-                            Arrays.copyOfRange(signature, 0, coreConfig.urlSignatureBytes))));
+            parameters
+                    .add(Pair.of(SIGNATURE_PARAMETER_NAME,
+                            Base64.getUrlEncoder()
+                                    .encodeToString(Arrays.copyOfRange(
+                                            signature, 0,
+                                            coreConfig.urlSignatureBytes))));
         }
         return new UrlSpec(new PathInfo(sb.toString()), parameters);
 
@@ -384,8 +387,8 @@ public abstract class RequestMapperBase implements RequestMapper {
     @Override
     public Class<?> getControllerImplementationClass(
             Class<?> controllerBaseClass) {
-        String controllerImplementation = getControllerImplementation(Type
-                .getInternalName(controllerBaseClass));
+        String controllerImplementation = getControllerImplementation(
+                Type.getInternalName(controllerBaseClass));
         return AsmUtil.loadClass(Type.getObjectType(controllerImplementation),
                 coreConfig.dynamicClassLoader);
     }

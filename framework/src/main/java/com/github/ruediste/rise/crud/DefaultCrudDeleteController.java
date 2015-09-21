@@ -39,8 +39,8 @@ public class DefaultCrudDeleteController extends SubControllerComponent {
         REALLY_DELETE
     }
 
-    static class View extends
-            DefaultCrudViewComponent<DefaultCrudDeleteController> {
+    static class View
+            extends DefaultCrudViewComponent<DefaultCrudDeleteController> {
         @Inject
         Messages messages;
         @Inject
@@ -55,8 +55,8 @@ public class DefaultCrudDeleteController extends SubControllerComponent {
                 html.div().BbgDanger().h1().content(Labels.REALLY_DELETE);
                 html.span().TEST_NAME("identification");
                 crudUtil.getStrategy(CrudUtil.IdentificationRenderer.class,
-                        controller.type.getClass()).renderIdenification(html,
-                        controller.entity);
+                        controller.type.getClass())
+                        .renderIdenification(html, controller.entity);
                 html._span()._div();
 
                 html.add(new CButton(controller, c -> c.delete())
@@ -64,8 +64,8 @@ public class DefaultCrudDeleteController extends SubControllerComponent {
                 html.rButtonA(go(CrudControllerBase.class).browse(
                         controller.type.getEntityClass(),
                         controller.type.getEmQualifier()));
-                html.rButtonA(go(CrudControllerBase.class).display(
-                        controller.entity));
+                html.rButtonA(go(CrudControllerBase.class)
+                        .display(controller.entity));
 
             });
         }

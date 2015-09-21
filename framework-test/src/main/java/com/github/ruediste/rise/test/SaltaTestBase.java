@@ -31,12 +31,12 @@ public abstract class SaltaTestBase {
         initialize();
         InitializerUtil.runInitializers(permanentInjector);
 
-        Injector instanceInjector = Salta
-                .createInjector(new RestartableApplicationModule(
-                        permanentInjector));
+        Injector instanceInjector = Salta.createInjector(
+                new RestartableApplicationModule(permanentInjector));
 
-        instanceInjector.getInstance(CoreConfiguration.class).dynamicClassLoader = Thread
-                .currentThread().getContextClassLoader();
+        instanceInjector.getInstance(
+                CoreConfiguration.class).dynamicClassLoader = Thread
+                        .currentThread().getContextClassLoader();
 
         InitializerUtil.runInitializers(instanceInjector);
         instanceInjector.injectMembers(this);

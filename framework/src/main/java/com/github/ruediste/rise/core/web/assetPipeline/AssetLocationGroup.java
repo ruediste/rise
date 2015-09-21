@@ -68,16 +68,16 @@ public class AssetLocationGroup {
      * Modify all paths in this group
      */
     public AssetLocationGroup map(Function<String, String> mapper) {
-        return new AssetLocationGroup(bundle, getLocations().stream().map(
-                mapper));
+        return new AssetLocationGroup(bundle,
+                getLocations().stream().map(mapper));
     }
 
     /**
      * Only keep the paths matching the filter in the location group.
      */
     public AssetLocationGroup filter(Predicate<String> filter) {
-        return new AssetLocationGroup(bundle, getLocations().stream().filter(
-                filter));
+        return new AssetLocationGroup(bundle,
+                getLocations().stream().filter(filter));
     }
 
     String insertMin(String location) {
@@ -86,8 +86,8 @@ public class AssetLocationGroup {
             return location;
         } else {
             return Arrays.asList(parts).subList(0, parts.length - 1).stream()
-                    .collect(Collectors.joining("."))
-                    + ".min." + parts[parts.length - 1];
+                    .collect(Collectors.joining(".")) + ".min."
+                    + parts[parts.length - 1];
         }
     }
 

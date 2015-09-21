@@ -57,14 +57,13 @@ public class MvcUtil implements ICoreUtil {
             throw new RuntimeException("Error while rendering view", e);
 
         }
-        return new ContentRenderResult(stream.toByteArray(),
-                r -> {
-                    r.setContentType(coreConfiguration.htmlContentType);
-                    if (view instanceof HttpServletResponseCustomizer) {
-                        ((HttpServletResponseCustomizer) view)
-                                .customizeServletResponse(r);
-                    }
-                }
+        return new ContentRenderResult(stream.toByteArray(), r -> {
+            r.setContentType(coreConfiguration.htmlContentType);
+            if (view instanceof HttpServletResponseCustomizer) {
+                ((HttpServletResponseCustomizer) view)
+                        .customizeServletResponse(r);
+            }
+        }
 
         );
     }

@@ -58,15 +58,15 @@ public class StandaloneLafApplication {
     public String startForTesting(Servlet frontServlet, int port) {
 
         try {
-            return startImpl(frontServlet.getClass(), new ServletHolder(
-                    "testFrontServlet", frontServlet), port);
+            return startImpl(frontServlet.getClass(),
+                    new ServletHolder("testFrontServlet", frontServlet), port);
         } catch (Exception e) {
             throw new RuntimeException("Error starting Jetty", e);
         }
     }
 
-    protected String startImpl(Class<?> frontServletClass,
-            ServletHolder holder, int port) throws Exception {
+    protected String startImpl(Class<?> frontServletClass, ServletHolder holder,
+            int port) throws Exception {
         holder.setInitOrder(0);
 
         {
@@ -77,8 +77,8 @@ public class StandaloneLafApplication {
                 holder.getRegistration().setMultipartConfig(
                         new MultipartConfigElement(multipartConfig));
             else
-                holder.getRegistration().setMultipartConfig(
-                        new MultipartConfigElement(""));
+                holder.getRegistration()
+                        .setMultipartConfig(new MultipartConfigElement(""));
         }
 
         ServletContextHandler ctx = new ServletContextHandler(

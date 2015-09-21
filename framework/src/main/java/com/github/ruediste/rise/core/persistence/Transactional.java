@@ -72,7 +72,7 @@ public @interface Transactional {
      * This is the preferred way to construct a rollback rule, matching the
      * exception class and subclasses.
      */
-    Class<? extends Throwable>[] rollbackFor() default {};
+    Class<? extends Throwable>[]rollbackFor() default {};
 
     /**
      * Defines zero (0) or more exception {@link Class Classes}, which must be a
@@ -83,7 +83,7 @@ public @interface Transactional {
      * This is the preferred way to construct a rollback rule, matching the
      * exception class and subclasses.
      */
-    Class<? extends Throwable>[] noRollbackFor() default {};
+    Class<? extends Throwable>[]noRollbackFor() default {};
 
     /**
      * If set to true, a new entity manager set will be used in any case (even

@@ -11,10 +11,10 @@ public class DefaultStrackTraceFilterTest {
 
     @Before
     public void before() {
-        filter = new DefaultStrackTraceFilter(e -> e.getClassName().startsWith(
-                "com.github.ruediste.rise")
-                && !(e.getMethodName().startsWith("t") && e.getMethodName()
-                        .length() == 2));
+        filter = new DefaultStrackTraceFilter(
+                e -> e.getClassName().startsWith("com.github.ruediste.rise")
+                        && !(e.getMethodName().startsWith("t")
+                                && e.getMethodName().length() == 2));
     }
 
     @Test

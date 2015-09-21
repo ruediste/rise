@@ -38,7 +38,9 @@ public class SerializerHelper {
         if (idx < 0)
             return Pair.of(Optional.empty(), value);
         else
-            return Pair.of(Optional.ofNullable(Strings.emptyToNull(value
-                    .substring(0, idx))), value.substring(idx + 1));
+            return Pair.of(
+                    Optional.ofNullable(
+                            Strings.emptyToNull(value.substring(0, idx))),
+                    value.substring(idx + 1));
     }
 }

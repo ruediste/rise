@@ -29,38 +29,29 @@ public class TestAppFrontServlet extends FrontServletBase {
     @Override
     protected void initImpl() throws Exception {
         setStage(ApplicationStage.DEVELOPMENT);
-        Salta.createInjector(
-                getStage().getSaltaStage(),
-                new AbstractModule() {
+        Salta.createInjector(getStage().getSaltaStage(), new AbstractModule() {
+
+            @Override
+            protected void configure() throws Exception {
+                bind(ApplicationStage.class).toInstance(getStage());
+                bind(LabelUtil.class).toInstance(
+                        new LabelUtil((str, locale) -> str.getFallback()));
+                PersistenceModuleUtil.bindDataSource(binder(), null,
+                        new EclipseLinkPersistenceUnitManager("testApp"),
+                        new BitronixDataSourceFactory(
+                                new H2DatabaseIntegrationInfo()) {
 
                     @Override
-                    protected void configure() throws Exception {
-                        bind(ApplicationStage.class).toInstance(getStage());
-                        bind(LabelUtil.class).toInstance(
-                                new LabelUtil((str, locale) -> str
-                                        .getFallback()));
-                        PersistenceModuleUtil
-                                .bindDataSource(
-                                        binder(),
-                                        null,
-                                        new EclipseLinkPersistenceUnitManager(
-                                                "testApp"),
-                                        new BitronixDataSourceFactory(
-                                                new H2DatabaseIntegrationInfo()) {
-
-                                            @Override
-                                            protected void initializeProperties(
-                                                    Properties props) {
-                                                props.setProperty("URL",
-                                                        "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MVCC=false");
-                                                props.setProperty("user", "sa");
-                                                props.setProperty("password",
-                                                        "sa");
-                                            }
-                                        });
+                    protected void initializeProperties(Properties props) {
+                        props.setProperty("URL",
+                                "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MVCC=false");
+                        props.setProperty("user", "sa");
+                        props.setProperty("password", "sa");
                     }
+                });
+            }
 
-                }, new BitronixModule(),
+        }, new BitronixModule(),
                 new IntegrationModuleNonRestartable(getServletConfig()))
                 .injectMembers(this);
     }

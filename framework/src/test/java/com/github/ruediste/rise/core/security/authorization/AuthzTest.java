@@ -52,13 +52,13 @@ public class AuthzTest {
                         (t, m) -> m.isAnnotationPresent(RequireRight.class),
                         new AuthorizationRule() {
 
-                            @Override
-                            public void checkAuthorized(Object target,
-                                    Method method, Object[] args) {
-                                if (!rightPresent)
-                                    throw new AuthorizationException();
-                            }
-                        });
+                    @Override
+                    public void checkAuthorized(Object target, Method method,
+                            Object[] args) {
+                        if (!rightPresent)
+                            throw new AuthorizationException();
+                    }
+                });
                 bind(AuthorizationManager.class).toInstance(mgr);
             }
         });
@@ -151,17 +151,18 @@ public class AuthzTest {
 
     @Test
     public void authorizationCall_inheritanceTest() {
-        Method mBase = MethodInvocationRecorder.getLastInvocation(Base.class,
-                x -> x.m()).getMethod();
-        Method mDerived = MethodInvocationRecorder.getLastInvocation(
-                Derived2.class, x -> x.m()).getMethod();
-        assertFalse(AuthorizationInspector.callsDoAuthChecks(Base.class, mBase));
+        Method mBase = MethodInvocationRecorder
+                .getLastInvocation(Base.class, x -> x.m()).getMethod();
+        Method mDerived = MethodInvocationRecorder
+                .getLastInvocation(Derived2.class, x -> x.m()).getMethod();
+        assertFalse(
+                AuthorizationInspector.callsDoAuthChecks(Base.class, mBase));
         assertTrue(AuthorizationInspector.callsDoAuthChecks(Derived1.class,
                 mBase));
         assertTrue(AuthorizationInspector.callsDoAuthChecks(Derived2.class,
                 mBase));
-        assertFalse(AuthorizationInspector.callsDoAuthChecks(Base.class,
-                mDerived));
+        assertFalse(
+                AuthorizationInspector.callsDoAuthChecks(Base.class, mDerived));
         assertTrue(AuthorizationInspector.callsDoAuthChecks(Derived1.class,
                 mDerived));
         assertTrue(AuthorizationInspector.callsDoAuthChecks(Derived2.class,

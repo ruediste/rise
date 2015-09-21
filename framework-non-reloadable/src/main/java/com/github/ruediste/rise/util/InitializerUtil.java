@@ -41,8 +41,8 @@ public class InitializerUtil {
      */
     public static void register(JSR330InjectorConfiguration config,
             Class<? extends Initializer> initializer) {
-        Set<Class<? extends Initializer>> set = initializers.setIfAbsent(
-                config, () -> new LinkedHashSet<>());
+        Set<Class<? extends Initializer>> set = initializers.setIfAbsent(config,
+                () -> new LinkedHashSet<>());
         set.remove(initializer);
         set.add(initializer);
     }
@@ -57,8 +57,8 @@ public class InitializerUtil {
         if (set == null) {
             return;
         }
-        for (Class<? extends Initializer> cls : Lists.reverse(new ArrayList<>(
-                set))) {
+        for (Class<? extends Initializer> cls : Lists
+                .reverse(new ArrayList<>(set))) {
             injector.getInstance(cls).initialize();
         }
     }

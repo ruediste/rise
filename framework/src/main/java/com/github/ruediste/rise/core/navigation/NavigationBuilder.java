@@ -17,8 +17,8 @@ import com.github.ruediste1.i18n.label.LabelUtil;
 
 public class NavigationBuilder {
 
-    private final class SameActionInvocationPredicate implements
-            Predicate<ActionInvocation<Object>> {
+    private final class SameActionInvocationPredicate
+            implements Predicate<ActionInvocation<Object>> {
         private ActionInvocation<?> referenceInvocation;
 
         public SameActionInvocationPredicate(
@@ -28,8 +28,8 @@ public class NavigationBuilder {
 
         @Override
         public boolean test(ActionInvocation<Object> x) {
-            return x.methodInvocation.getMethod().equals(
-                    referenceInvocation.methodInvocation.getMethod());
+            return x.methodInvocation.getMethod()
+                    .equals(referenceInvocation.methodInvocation.getMethod());
         }
     }
 

@@ -8,8 +8,8 @@ import com.github.ruediste.rise.mvc.IControllerMvc;
 import com.github.ruediste.rise.mvc.MvcUtil;
 import com.google.common.reflect.TypeToken;
 
-public class ControllerMvc<TSelf extends ControllerMvc<TSelf>> implements
-        IControllerMvc {
+public class ControllerMvc<TSelf extends ControllerMvc<TSelf>>
+        implements IControllerMvc {
 
     @Inject
     MvcUtil util;

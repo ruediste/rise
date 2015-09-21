@@ -11,5 +11,5 @@ import com.github.ruediste.rise.core.security.authorization.MetaRequiresRight;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface RequiresRight {
-    Right[] value();
+    Right[]value();
 }

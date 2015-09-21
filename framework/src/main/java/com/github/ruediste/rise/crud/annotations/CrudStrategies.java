@@ -13,5 +13,5 @@ import java.lang.annotation.Target;
 @Documented
 public @interface CrudStrategies {
 
-    CrudStrategy[] value();
+    CrudStrategy[]value();
 }

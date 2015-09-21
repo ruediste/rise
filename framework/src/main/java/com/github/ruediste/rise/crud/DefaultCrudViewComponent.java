@@ -7,9 +7,9 @@ import com.github.ruediste.rise.component.ComponentFactory;
 import com.github.ruediste.rise.component.ComponentFactoryUtil;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 
-public abstract class DefaultCrudViewComponent<TController> extends
-        ViewComponentBase<TController> implements
-        ComponentFactory<BootstrapRiseCanvas<?>> {
+public abstract class DefaultCrudViewComponent<TController>
+        extends ViewComponentBase<TController>
+        implements ComponentFactory<BootstrapRiseCanvas<?>> {
 
     @Inject
     ComponentFactoryUtil util;

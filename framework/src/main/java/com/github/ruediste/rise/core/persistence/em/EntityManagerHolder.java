@@ -24,7 +24,8 @@ public class EntityManagerHolder {
 
     private final ThreadLocal<EntityManagerSet> currentSet = new ThreadLocal<>();
 
-    public EntityManager getEntityManager(Class<? extends Annotation> qualifier) {
+    public EntityManager getEntityManager(
+            Class<? extends Annotation> qualifier) {
         EntityManagerSet set = getCurrentEntityManagerSet();
         if (set == null) {
             throw new RuntimeException("No EntityManagerSet is currently set");
@@ -39,7 +40,8 @@ public class EntityManagerHolder {
         });
     }
 
-    public <T> T withEntityManagerSet(EntityManagerSet set, Supplier<T> supplier) {
+    public <T> T withEntityManagerSet(EntityManagerSet set,
+            Supplier<T> supplier) {
         EntityManagerSet old = getCurrentEntityManagerSet();
         try {
             setCurrentEntityManagerSet(set);

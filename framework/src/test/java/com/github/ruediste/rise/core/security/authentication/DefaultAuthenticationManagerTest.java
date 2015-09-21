@@ -14,28 +14,28 @@ public class DefaultAuthenticationManagerTest {
     @Before
     public void before() {
         mgr = new DefaultAuthenticationManager();
-        mgr.addProvider(new InMemoryAuthenticationProvider<Principal>().with(
-                "foo", "bar", null));
-        mgr.addProvider(new InMemoryAuthenticationProvider<Principal>().with(
-                "foo2", "bar2", null));
+        mgr.addProvider(new InMemoryAuthenticationProvider<Principal>()
+                .with("foo", "bar", null));
+        mgr.addProvider(new InMemoryAuthenticationProvider<Principal>()
+                .with("foo2", "bar2", null));
     }
 
     @Test
     public void testAuthenticate() throws Exception {
-        mgr.authenticate(new UsernamePasswordAuthenticationRequest("foo", "bar"));
+        mgr.authenticate(
+                new UsernamePasswordAuthenticationRequest("foo", "bar"));
     }
 
     @Test
     public void testAuthenticateUserNotFound() throws Exception {
-        AuthenticationResult result = mgr
-                .authenticate(new UsernamePasswordAuthenticationRequest(
-                        "Hello", "bar"));
+        AuthenticationResult result = mgr.authenticate(
+                new UsernamePasswordAuthenticationRequest("Hello", "bar"));
         assertEquals(1, result.getFailures().size());
     }
 
     @Test
     public void testAuthenticate2nd() throws Exception {
-        mgr.authenticate(new UsernamePasswordAuthenticationRequest("foo2",
-                "bar2"));
+        mgr.authenticate(
+                new UsernamePasswordAuthenticationRequest("foo2", "bar2"));
     }
 }

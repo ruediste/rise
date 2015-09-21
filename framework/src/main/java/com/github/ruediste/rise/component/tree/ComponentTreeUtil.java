@@ -136,8 +136,8 @@ public class ComponentTreeUtil {
             Component component, Consumer<T> listener, boolean handlesToo) {
         List<EventRegistration> listeners = getEventListeners(component);
         synchronized (listeners) {
-            listeners
-                    .add(new EventRegistration(listener, eventType, handlesToo));
+            listeners.add(
+                    new EventRegistration(listener, eventType, handlesToo));
         }
     }
 }

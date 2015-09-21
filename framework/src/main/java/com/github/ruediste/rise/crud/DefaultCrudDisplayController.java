@@ -16,8 +16,8 @@ public class DefaultCrudDisplayController extends SubControllerComponent {
     @Inject
     CrudReflectionUtil reflectionUtil;
 
-    static class View extends
-            DefaultCrudViewComponent<DefaultCrudDisplayController> {
+    static class View
+            extends DefaultCrudViewComponent<DefaultCrudDisplayController> {
         @Inject
         CrudReflectionUtil util;
 
@@ -32,18 +32,14 @@ public class DefaultCrudDisplayController extends SubControllerComponent {
                         .getDisplayProperties(controller.type)) {
                     html.add(displayComponents.create(p, controller.data));
                 }
-                html._div()
-                        .div()
-                        .TEST_NAME("buttons")
-                        .rButtonA(
-                                go(CrudControllerBase.class).browse(
-                                        controller.type.getEntityClass(),
-                                        controller.type.getEmQualifier()));
-                html.rButtonA(go(CrudControllerBase.class).edit(
-                        controller.data.get()));
-                html.rButtonA(
-                        go(CrudControllerBase.class).delete(
-                                controller.data.get()), x -> x.danger());
+                html._div().div().TEST_NAME("buttons")
+                        .rButtonA(go(CrudControllerBase.class).browse(
+                                controller.type.getEntityClass(),
+                                controller.type.getEmQualifier()));
+                html.rButtonA(go(CrudControllerBase.class)
+                        .edit(controller.data.get()));
+                html.rButtonA(go(CrudControllerBase.class)
+                        .delete(controller.data.get()), x -> x.danger());
                 html._div();
 
             });

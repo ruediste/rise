@@ -88,8 +88,8 @@ public class CButton extends MultiChildrenComponent<CButton> {
         Method invokedMethod = ((ActionInvocationResult) target).methodInvocation
                 .getMethod();
         TEST_NAME(invokedMethod.getName());
-        add(new CIconLabel().setMethod(invokedMethod).setShowIconOnly(
-                showIconOnly));
+        add(new CIconLabel().setMethod(invokedMethod)
+                .setShowIconOnly(showIconOnly));
     }
 
     /**
@@ -102,12 +102,13 @@ public class CButton extends MultiChildrenComponent<CButton> {
     public <T> CButton(T target, BiConsumer<CButton, T> handler,
             boolean showIconOnly) {
         this.handler = () -> handler.accept(this, target);
-        Method invokedMethod = MethodInvocationRecorder.getLastInvocation(
-                (Class<T>) target.getClass(), t -> handler.accept(this, t))
+        Method invokedMethod = MethodInvocationRecorder
+                .getLastInvocation((Class<T>) target.getClass(),
+                        t -> handler.accept(this, t))
                 .getMethod();
         TEST_NAME(invokedMethod.getName());
-        add(new CIconLabel().setMethod(invokedMethod).setShowIconOnly(
-                showIconOnly));
+        add(new CIconLabel().setMethod(invokedMethod)
+                .setShowIconOnly(showIconOnly));
     }
 
     public CButton setHandler(Runnable handler) {

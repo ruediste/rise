@@ -11,8 +11,8 @@ import com.github.ruediste1.i18n.label.Labeled;
 
 @Labeled
 @Label("Welcomee")
-public class WelcomeView extends
-        PageView<WelcomeController, WelcomeController.Data> {
+public class WelcomeView
+        extends PageView<WelcomeController, WelcomeController.Data> {
 
     @Override
     public void renderContent(SampleCanvas html) {

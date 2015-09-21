@@ -25,7 +25,8 @@ public class MethodImplementationFinder {
         Method method;
         Set<Method> overriddenMethods = new HashSet<>();
 
-        public MethodImplementation(Method method, Set<Method> overriddenMethods) {
+        public MethodImplementation(Method method,
+                Set<Method> overriddenMethods) {
             super();
             this.method = method;
             this.overriddenMethods = overriddenMethods;
@@ -48,7 +49,8 @@ public class MethodImplementationFinder {
         Method declaredMethod = getDeclaredMethod(cls, m);
         if (!cls.isInterface()) {
             if (declaredMethod != null)
-                return new MethodImplementation(declaredMethod, new HashSet<>());
+                return new MethodImplementation(declaredMethod,
+                        new HashSet<>());
             MethodImplementation result = getImpl(cls.getSuperclass(), m);
             if (result != null)
                 return result;
@@ -69,13 +71,14 @@ public class MethodImplementationFinder {
         }
         if (methods.size() == 0) {
             if (declaredMethod != null)
-                return new MethodImplementation(declaredMethod, new HashSet<>());
+                return new MethodImplementation(declaredMethod,
+                        new HashSet<>());
             else
                 return null;
         }
         if (methods.size() == 1) {
-            Entry<Method, Set<Method>> entry = Iterables.getOnlyElement(methods
-                    .entrySet());
+            Entry<Method, Set<Method>> entry = Iterables
+                    .getOnlyElement(methods.entrySet());
             if (declaredMethod != null) {
                 entry.getValue().add(entry.getKey());
                 return new MethodImplementation(declaredMethod,

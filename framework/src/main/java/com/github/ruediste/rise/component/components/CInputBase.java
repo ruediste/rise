@@ -13,9 +13,9 @@ import com.github.ruediste1.i18n.label.LabelUtil;
 /**
  * 
  */
-public class CInputBase<T extends RelationsComponent<T>> extends
-        RelationsComponent<T> implements ViolationStatusBearer,
-        LabeledComponent {
+public class CInputBase<T extends RelationsComponent<T>>
+        extends RelationsComponent<T>
+        implements ViolationStatusBearer, LabeledComponent {
 
     private LString label;
 

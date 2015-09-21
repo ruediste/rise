@@ -50,8 +50,8 @@ public class FileChangeNotifierTest {
 
             @Override
             protected void configure() throws Exception {
-                bind(FileChangeNotifier.class).named("classPath").in(
-                        Singleton.class);
+                bind(FileChangeNotifier.class).named("classPath")
+                        .in(Singleton.class);
             }
 
         }, new LoggerModule()).injectMembers(this);

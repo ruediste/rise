@@ -90,8 +90,8 @@ public class ClassPathWalkerTest {
                     @Override
                     public ClassPathVisitResult visitRootDirectory(
                             Path rootDirectory, ClassLoader classloader) {
-                        if (rootDirectory.toString().contains(
-                                "rise/framework-non-reloadable/")) {
+                        if (rootDirectory.toString()
+                                .contains("rise/framework-non-reloadable/")) {
                             return ClassPathVisitResult.SKIP_CONTENTS;
                         } else
                             return ClassPathVisitResult.CONTINUE;

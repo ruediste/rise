@@ -68,17 +68,13 @@ public class CButtonTemplate extends BootstrapComponentTemplateBase<CButton> {
         };
 
         if (isLink) {
-            html.bButtonA(argSupplier)
-                    .CLASS("rise_button_link")
-                    .CLASS(button.CLASS())
-                    .TEST_NAME(button.TEST_NAME())
+            html.bButtonA(argSupplier).CLASS("rise_button_link")
+                    .CLASS(button.CLASS()).TEST_NAME(button.TEST_NAME())
                     .fIf(button.isDisabled(), () -> html.HREF("#"),
                             () -> html.HREF(button.getTarget()))
                     .renderChildren(button)._bButtonA();
         } else {
-            html.bButton(argSupplier)
-                    .CLASS("rise_button")
-                    .CLASS(button.CLASS())
+            html.bButton(argSupplier).CLASS("rise_button").CLASS(button.CLASS())
                     .TEST_NAME(button.TEST_NAME())
                     .DATA(CoreAssetBundle.componentAttributeNr,
                             String.valueOf(util.getComponentNr(button)))

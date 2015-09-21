@@ -65,25 +65,27 @@ public class CoreUtil implements ICoreUtil {
     @Override
     public UrlSpec toUrlSpec(ActionInvocation<String> invocation,
             String sessionId) {
-        return coreConfiguration.getRequestMapper(
-                invocation.methodInvocation.getInstanceClass()).generate(
-                invocation, sessionId);
+        return coreConfiguration
+                .getRequestMapper(
+                        invocation.methodInvocation.getInstanceClass())
+                .generate(invocation, sessionId);
     }
 
     @Override
     public UrlSpec toUrlSpec(ActionInvocation<String> invocation) {
-        return toUrlSpec(invocation, coreRequestInfo.getServletRequest()
-                .getSession().getId());
+        return toUrlSpec(invocation,
+                coreRequestInfo.getServletRequest().getSession().getId());
     }
 
     @Override
     public PathInfo toPathInfo(ActionResult invocation) {
-        return getCoreUtil().toPathInfo(
-                toStringInvocation(toActionInvocation(invocation)));
+        return getCoreUtil()
+                .toPathInfo(toStringInvocation(toActionInvocation(invocation)));
     }
 
     @Override
-    public ActionInvocation<Object> toActionInvocation(ActionResult invocation) {
+    public ActionInvocation<Object> toActionInvocation(
+            ActionResult invocation) {
         return ((ActionInvocationResult) invocation);
     }
 
@@ -99,7 +101,8 @@ public class CoreUtil implements ICoreUtil {
         return stringInvocation.mapWithType(coreConfiguration::parseArgument);
     }
 
-    public ActionInvocation<String> toStringInvocation(ActionResult actionResult) {
+    public ActionInvocation<String> toStringInvocation(
+            ActionResult actionResult) {
         return toStringInvocation(toActionInvocation(actionResult));
     }
 
@@ -110,8 +113,8 @@ public class CoreUtil implements ICoreUtil {
         try {
             return invocation.mapWithType(coreConfiguration::generateArgument);
         } catch (Throwable t) {
-            throw new RuntimeException("Error while generating arguments of "
-                    + invocation, t);
+            throw new RuntimeException(
+                    "Error while generating arguments of " + invocation, t);
         }
     }
 
@@ -142,14 +145,14 @@ public class CoreUtil implements ICoreUtil {
     public String redirectUrl(UrlSpec path) {
         String prefix = coreRequestInfo.getServletRequest().getContextPath();
         prefix += coreRequestInfo.getServletRequest().getServletPath();
-        return coreRequestInfo.getServletResponse().encodeRedirectURL(
-                prefix + path.urlSuffix());
+        return coreRequestInfo.getServletResponse()
+                .encodeRedirectURL(prefix + path.urlSuffix());
     }
 
     @Override
     public HttpRequest toHttpRequest(ActionInvocation<Object> invocation) {
-        return new HttpRequestImpl(getCoreUtil().toPathInfo(
-                toStringInvocation(invocation)));
+        return new HttpRequestImpl(
+                getCoreUtil().toPathInfo(toStringInvocation(invocation)));
     }
 
     @Override
@@ -173,8 +176,8 @@ public class CoreUtil implements ICoreUtil {
     @Override
     public <T extends IController> ActionInvocationBuilderKnownController<T> path(
             Class<T> controllerClass) {
-        return actionPathBuilderKnownController.get().initialize(
-                controllerClass);
+        return actionPathBuilderKnownController.get()
+                .initialize(controllerClass);
     }
 
     @Override

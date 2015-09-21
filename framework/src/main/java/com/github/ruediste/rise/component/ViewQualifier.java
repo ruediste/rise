@@ -12,5 +12,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface ViewQualifier {
-    Class<? extends IViewQualifier> value();
+    Class<? extends IViewQualifier>value();
 }
