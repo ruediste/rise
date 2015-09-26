@@ -20,6 +20,10 @@ public class InjectorsHolder {
     private InjectorsHolder() {
     }
 
+    public static boolean injectorsPresent() {
+        return holder.get() != null;
+    }
+
     public static Injector getRestartableInjector() {
         return holder.get().restartableInjector;
     }

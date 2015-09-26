@@ -18,6 +18,7 @@ import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
+import com.github.ruediste.salta.jsr330.Injector;
 
 @RunWith(RemoteTestRunner.class)
 @Remote(endpoint = "http://localhost:8080/~unitTest")
@@ -59,11 +60,34 @@ public abstract class WebTestBaseRemote implements TestUtil {
 
     protected abstract String getBaseUrl();
 
+    private static Boolean isRunningLocally;
+    private static Object lock = new Object();
+
     @Before
     public final void beforeWebTestBase() {
-        InjectorsHolder.getRestartableInjector().injectMembers(this);
+        synchronized (lock) {
+            if (isRunningLocally == null) {
+                if (InjectorsHolder.injectorsPresent()) {
+                    // we are running remotely
+                    InjectorsHolder.getRestartableInjector()
+                            .injectMembers(this);
+                    isRunningLocally = false;
+                } else {
+                    // standalone execution, start server
+                    startServer().injectMembers(this);
+                    isRunningLocally = true;
+                }
+            }
+        }
+
         util.initialize(getBaseUrl());
     }
+
+    /**
+     * In case the remote server is not reachable, start the server and return
+     * the restartable injector
+     */
+    protected abstract Injector startServer();
 
     @Rule
     public final TestRule closeDriverOnSuccess() {

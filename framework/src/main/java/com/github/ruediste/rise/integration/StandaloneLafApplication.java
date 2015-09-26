@@ -6,7 +6,6 @@ import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.MultipartConfigElement;
-import javax.servlet.Servlet;
 import javax.servlet.annotation.MultipartConfig;
 
 import org.eclipse.jetty.server.Connector;
@@ -22,51 +21,72 @@ import com.github.ruediste.rise.nonReloadable.front.FrontServletBase;
 
 public class StandaloneLafApplication {
 
+    @SuppressWarnings("unused")
     private static final Logger log = LoggerFactory
             .getLogger(StandaloneLafApplication.class);
 
     private Server server;
 
+    private Class<? extends FrontServletBase> frontServletClass;
+    private FrontServletBase servlet;
+
     /**
      * Start the server on port 8080
+     * 
+     * @return url the server can be reached with
      */
-    public void start(Class<? extends FrontServletBase> frontServletClass) {
-
-        start(frontServletClass, 8080);
+    public String start(Class<? extends FrontServletBase> frontServletClass) {
+        return start(frontServletClass, 8080);
     }
 
-    public void start(Class<? extends FrontServletBase> frontServletClass,
+    /**
+     * Start the server on the given port
+     * 
+     * @return Url the server can be reached with
+     */
+    public String start(Class<? extends FrontServletBase> frontServletClass,
             int port) {
+        this.frontServletClass = frontServletClass;
         if (Modifier.isAbstract(frontServletClass.getModifiers()))
             throw new RuntimeException(
                     "Front servlet class may not be abstact: "
                             + frontServletClass.getName());
         try {
-            startImpl(frontServletClass, new ServletHolder(frontServletClass),
-                    port);
-            server.join();
+            return startImpl(new ServletHolder(frontServletClass), port);
         } catch (Exception e) {
-            log.error("Error starting Jetty", e);
+            throw new RuntimeException("Error starting Jetty", e);
         }
     }
 
     /**
+     * Wait until the server is {@link #stop() stopped}.
+     */
+    public void join() {
+        try {
+            server.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * @param frontServlet
      * @param port
      *            port to start server on, 0 for random port
-     * @param frontServlet
      */
-    public String startForTesting(Servlet frontServlet, int port) {
-
+    @Deprecated
+    public String start(FrontServletBase frontServlet, int port) {
+        frontServletClass = frontServlet.getClass();
         try {
-            return startImpl(frontServlet.getClass(),
+            return startImpl(
                     new ServletHolder("testFrontServlet", frontServlet), port);
         } catch (Exception e) {
             throw new RuntimeException("Error starting Jetty", e);
         }
     }
 
-    protected String startImpl(Class<?> frontServletClass, ServletHolder holder,
-            int port) throws Exception {
+    protected String startImpl(ServletHolder holder, int port)
+            throws Exception {
         holder.setInitOrder(0);
 
         {
@@ -98,6 +118,8 @@ public class StandaloneLafApplication {
         server.setHandler(ctx);
         server.start();
 
+        this.servlet = (FrontServletBase) holder.getServlet();
+
         String host = connector.getHost();
         if (host == null) {
             host = "localhost";
@@ -111,6 +133,14 @@ public class StandaloneLafApplication {
         } catch (Exception e) {
             throw new RuntimeException("Error while stopping server", e);
         }
+    }
+
+    public FrontServletBase getServlet() {
+        return servlet;
+    }
+
+    public Class<? extends FrontServletBase> getFrontServletClass() {
+        return frontServletClass;
     }
 
 }

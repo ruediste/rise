@@ -8,7 +8,6 @@ import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
-import com.github.ruediste.remoteJUnit.codeRunner.CodeRunnerCommon.Response;
 import com.github.ruediste.remoteJUnit.codeRunner.CodeRunnerRequestHandler;
 import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
 import com.github.ruediste.rise.nonReloadable.NonRestartable;
@@ -58,13 +57,12 @@ public class RemotUnitTestInitializer implements Initializer {
                         @Override
                         public void handle() {
                             try {
-                                Response response = handler.handle(info
+                                byte[] response = handler.handle(info
                                         .getServletRequest().getInputStream());
                                 try (OutputStream os = info.getServletResponse()
                                         .getOutputStream()) {
-                                    ByteStreams.copy(new ByteArrayInputStream(
-                                            CodeRunnerRequestHandler
-                                                    .toByteArray(response)),
+                                    ByteStreams.copy(
+                                            new ByteArrayInputStream(response),
                                             os);
                                 }
                             } catch (IOException e) {

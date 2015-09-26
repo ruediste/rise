@@ -4,7 +4,6 @@ import static org.junit.Assert.assertNotNull;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.servlet.Servlet;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -18,6 +17,7 @@ import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.integration.StandaloneLafApplication;
+import com.github.ruediste.rise.nonReloadable.front.FrontServletBase;
 import com.github.ruediste.salta.jsr330.Injector;
 
 public abstract class WebTestBase implements TestUtil {
@@ -83,10 +83,9 @@ public abstract class WebTestBase implements TestUtil {
             if (!isInjected)
                 testContainerInstance.injector.injectMembers(this);
         } else {
-            Servlet frontServlet = createServlet(this);
+            FrontServletBase frontServlet = createServlet(this);
 
-            baseUrl = new StandaloneLafApplication()
-                    .startForTesting(frontServlet, 0);
+            baseUrl = new StandaloneLafApplication().start(frontServlet, 0);
 
             // util can be null if initialization failed
             if (util != null)
@@ -133,7 +132,7 @@ public abstract class WebTestBase implements TestUtil {
      * Create the servlet for the integration tests. The members of the provided
      * test case have to be injected using the restartable injector.
      */
-    protected abstract Servlet createServlet(Object testCase);
+    protected abstract FrontServletBase createServlet(Object testCase);
 
     protected abstract WebDriver createDriver();
 
