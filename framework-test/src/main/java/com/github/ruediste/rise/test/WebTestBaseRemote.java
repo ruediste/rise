@@ -61,6 +61,7 @@ public abstract class WebTestBaseRemote implements TestUtil {
 
     private static Boolean isRunningLocally;
     private static Object lock = new Object();
+    private static Injector injector;
 
     @Before
     public final void beforeWebTestBase() {
@@ -72,13 +73,15 @@ public abstract class WebTestBaseRemote implements TestUtil {
                             .injectMembers(this);
                     isRunningLocally = false;
                 } else {
-                    // standalone execution, start server
-                    startServer().injectMembers(this);
+                    injector = startServer();
                     isRunningLocally = true;
                 }
             }
         }
 
+        if (util == null) {
+            injector.injectMembers(this);
+        }
         util.initialize(getBaseUrl());
     }
 

@@ -6,9 +6,10 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.core.web.UrlSpec;
-import com.github.ruediste.rise.integration.StandaloneLafApplication;
+import com.github.ruediste.rise.integration.RiseServer;
 import com.github.ruediste.rise.test.WebTestBaseRemote;
 import com.github.ruediste.rise.testApp.app.TestAppFrontServlet;
+import com.github.ruediste.rise.testApp.app.TestRestartableApplication;
 import com.github.ruediste.rise.testApp.security.LoginController;
 import com.github.ruediste.rise.testApp.security.LoginPO;
 import com.github.ruediste.salta.jsr330.Injector;
@@ -36,10 +37,10 @@ public class WebTestRemote extends WebTestBaseRemote {
 
     @Override
     protected Injector startServer() {
-        StandaloneLafApplication app = new StandaloneLafApplication();
-        app.start(new TestAppFrontServlet(), 8080);
-        return app.getServlet().currentApplicationInfo.application
-                .getRestartableInjector();
+        RiseServer server = new RiseServer();
+        TestRestartableApplication app = new TestRestartableApplication();
+        server.start(new TestAppFrontServlet(app), 8080);
+        return app.getRestartableInjector();
     }
 
 }

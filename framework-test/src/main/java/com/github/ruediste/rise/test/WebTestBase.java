@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.web.PathInfo;
-import com.github.ruediste.rise.integration.StandaloneLafApplication;
+import com.github.ruediste.rise.integration.RiseServer;
 import com.github.ruediste.rise.nonReloadable.front.FrontServletBase;
 import com.github.ruediste.salta.jsr330.Injector;
 
@@ -85,7 +85,7 @@ public abstract class WebTestBase implements TestUtil {
         } else {
             FrontServletBase frontServlet = createServlet(this);
 
-            baseUrl = new StandaloneLafApplication().start(frontServlet, 0);
+            baseUrl = new RiseServer().start(frontServlet, 0);
 
             // util can be null if initialization failed
             if (util != null)

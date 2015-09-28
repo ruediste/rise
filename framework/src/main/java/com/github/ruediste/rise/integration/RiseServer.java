@@ -19,11 +19,11 @@ import org.slf4j.LoggerFactory;
 
 import com.github.ruediste.rise.nonReloadable.front.FrontServletBase;
 
-public class StandaloneLafApplication {
+public class RiseServer {
 
     @SuppressWarnings("unused")
     private static final Logger log = LoggerFactory
-            .getLogger(StandaloneLafApplication.class);
+            .getLogger(RiseServer.class);
 
     private Server server;
 
@@ -59,22 +59,10 @@ public class StandaloneLafApplication {
     }
 
     /**
-     * Wait until the server is {@link #stop() stopped}.
-     */
-    public void join() {
-        try {
-            server.join();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
      * @param frontServlet
      * @param port
      *            port to start server on, 0 for random port
      */
-    @Deprecated
     public String start(FrontServletBase frontServlet, int port) {
         frontServletClass = frontServlet.getClass();
         try {
@@ -82,6 +70,17 @@ public class StandaloneLafApplication {
                     new ServletHolder("testFrontServlet", frontServlet), port);
         } catch (Exception e) {
             throw new RuntimeException("Error starting Jetty", e);
+        }
+    }
+
+    /**
+     * Wait until the server is {@link #stop() stopped}.
+     */
+    public void join() {
+        try {
+            server.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
