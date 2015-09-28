@@ -1,59 +1,51 @@
 package com.github.ruediste.rise.test;
 
-import static org.junit.Assert.assertNotNull;
-
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
+import org.junit.runner.RunWith;
 import org.junit.runners.model.Statement;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 
+import com.github.ruediste.remoteJUnit.client.Remote;
+import com.github.ruediste.remoteJUnit.client.RemoteTestRunner;
+import com.github.ruediste.remoteJUnit.codeRunner.ParentClassLoaderSupplier;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.integration.RiseServer;
-import com.github.ruediste.rise.nonReloadable.front.FrontServletBase;
+import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
 import com.github.ruediste.salta.jsr330.Injector;
 
+@RunWith(RemoteTestRunner.class)
+@Remote(endpoint = "http://localhost:8080/~unitTest")
 public abstract class WebTestBase implements TestUtil {
     @Inject
     Logger log;
 
-    protected static class TestContainerInstance {
-        public TestContainerInstance() {
-        }
-
-        boolean isStarted;
-        Injector injector;
-
-        WebDriver driver;
-        boolean errorOccured;
-
-    }
-
     @Inject
     IntegrationTestUtil util;
 
-    @Inject
-    Injector injector;
+    static class ServerParentClassLoaderSupplier
+            implements ParentClassLoaderSupplier {
+        private static final long serialVersionUID = 1L;
 
-    private boolean isInjected;
+        @Override
+        public ClassLoader getParentClassLoader() {
+            // TODO Auto-generated method stub
+            return null;
+        }
 
-    @PostConstruct
-    public void setInjected() {
-        isInjected = true;
     }
 
     protected String url(ActionResult result) {
         Cookie sessionId = driver.manage().getCookieNamed("JSESSIONID");
-        assertNotNull("No session present. Access page before using the driver",
-                sessionId);
-        return util.url(result, sessionId.getValue());
+        return util.url(result,
+                sessionId == null ? null : sessionId.getValue());
     }
 
     protected String url(PathInfo pathInfo) {
@@ -64,53 +56,60 @@ public abstract class WebTestBase implements TestUtil {
         return util.go(controllerClass);
     }
 
-    private String baseUrl;
-
     protected WebDriver driver;
 
-    private TestContainerInstance testContainerInstance;
+    protected abstract String getBaseUrl();
 
-    protected String getBaseUrl() {
-        return baseUrl;
-    }
-
-    protected abstract TestContainerInstance getTestContainerInstance();
+    private static Boolean isRunningLocally;
+    private static Object lock = new Object();
+    private static Injector injector;
+    private static RiseServer server;
 
     @Before
     public final void beforeWebTestBase() {
-        testContainerInstance = getTestContainerInstance();
-        if (testContainerInstance.isStarted) {
-            if (!isInjected)
-                testContainerInstance.injector.injectMembers(this);
-        } else {
-            FrontServletBase frontServlet = createServlet(this);
-
-            baseUrl = new RiseServer().start(frontServlet, 0);
-
-            // util can be null if initialization failed
-            if (util != null)
-                util.initialize(baseUrl);
-
-            testContainerInstance.injector = injector;
-            testContainerInstance.isStarted = true;
-            testContainerInstance.driver = createDriver();
-            testContainerInstance.driver.navigate().to(url(new PathInfo("")));
-            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    if (!testContainerInstance.errorOccured) {
-                        testContainerInstance.driver.close();
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                            // swallow
-                        }
-                    }
-                }
-            }));
+        if (shouldRestartServer()) {
+            if (server != null)
+                server.stop();
+            server = null;
+            isRunningLocally = null;
         }
-        driver = testContainerInstance.driver;
+
+        synchronized (lock) {
+            if (isRunningLocally == null) {
+                if (InjectorsHolder.injectorsPresent()) {
+                    // we are running remotely
+                    injector = InjectorsHolder.getRestartableInjector();
+                    isRunningLocally = false;
+                } else {
+                    server = startServer();
+
+                    injector = server.getServlet()
+                            .getCurrentRestartableInjector();
+                    isRunningLocally = true;
+                }
+            }
+        }
+
+        if (util == null) {
+            injector.injectMembers(this);
+            util.initialize(getBaseUrl());
+        }
     }
+
+    /**
+     * If true is returned, the server is restarted for this test class. Only
+     * makes sense when annotating the test case with
+     * {@link Remote#endpoint() @Remote(endpoint="-")}
+     */
+    protected boolean shouldRestartServer() {
+        return false;
+    }
+
+    /**
+     * In case the remote server is not reachable, start the server and return
+     * the restartable injector
+     */
+    protected abstract RiseServer startServer();
 
     @Rule
     public final TestRule closeDriverOnSuccess() {
@@ -118,21 +117,12 @@ public abstract class WebTestBase implements TestUtil {
 
             @Override
             public void evaluate() throws Throwable {
-                try {
-                    base.evaluate();
-                } catch (Throwable t) {
-                    testContainerInstance.errorOccured = true;
-                    throw t;
-                }
+                driver = createDriver();
+                base.evaluate();
+                driver.close();
             }
         };
     }
-
-    /**
-     * Create the servlet for the integration tests. The members of the provided
-     * test case have to be injected using the restartable injector.
-     */
-    protected abstract FrontServletBase createServlet(Object testCase);
 
     protected abstract WebDriver createDriver();
 

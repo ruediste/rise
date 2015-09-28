@@ -1,43 +1,45 @@
 package com.github.ruediste.rise.testApp;
 
+import org.junit.Before;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
-import com.github.ruediste.rise.nonReloadable.front.FrontServletBase;
+import com.github.ruediste.rise.core.web.PathInfo;
+import com.github.ruediste.rise.core.web.UrlSpec;
+import com.github.ruediste.rise.integration.RiseServer;
 import com.github.ruediste.rise.test.WebTestBase;
 import com.github.ruediste.rise.testApp.app.TestAppFrontServlet;
 import com.github.ruediste.rise.testApp.app.TestRestartableApplication;
-import com.github.ruediste.salta.jsr330.Injector;
+import com.github.ruediste.rise.testApp.security.LoginController;
+import com.github.ruediste.rise.testApp.security.LoginPO;
 
 public class WebTest extends WebTestBase {
 
-    private static TestContainerInstance containerInstance = new TestContainerInstance();
-
-    @Override
-    protected TestContainerInstance getTestContainerInstance() {
-        return containerInstance;
-    }
-
-    @Override
-    protected final FrontServletBase createServlet(Object testCase) {
-        TestRestartableApplication app = new TestRestartableApplication() {
-
-            @Override
-            protected void startImpl(Injector permanentInjector) {
-                super.startImpl(permanentInjector);
-                injectMembers(testCase);
-            }
-        };
-
-        FrontServletBase frontServlet = new TestAppFrontServlet(app);
-
-        return frontServlet;
-    }
-
     @Override
     protected WebDriver createDriver() {
-        // HtmlUnitDriver driver = new HtmlUnitDriver(true);
-        FirefoxDriver driver = new FirefoxDriver();
-        return driver;
+        // return new HtmlUnitDriver(true);
+        return new FirefoxDriver();
+        // return new ChromeDriver();
     }
+
+    @Override
+    protected String getBaseUrl() {
+        return "http://localhost:8080";
+    }
+
+    @Before
+    final public void beforeWebTestRemote() {
+        driver.navigate().to(url(go(LoginController.class)
+                .index(new UrlSpec(new PathInfo("/")))));
+        new LoginPO(driver).defaultLogin();
+    }
+
+    @Override
+    protected RiseServer startServer() {
+        RiseServer server = new RiseServer();
+        server.start(new TestAppFrontServlet(new TestRestartableApplication()),
+                8080);
+        return server;
+    }
+
 }

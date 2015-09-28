@@ -64,9 +64,9 @@ public abstract class FrontServletBase extends HttpServlet {
 
     public volatile RestartableApplicationInfo currentApplicationInfo;
 
-    private RestartableApplication fixedDynamicApplicationInstance;
+    private RestartableApplication fixedRestartableApplicationInstance;
 
-    private Class<? extends RestartableApplication> dynamicApplicationInstanceClass;
+    private Class<? extends RestartableApplication> restartableApplicationInstanceClass;
 
     private String applicationInstanceClassName;
 
@@ -85,7 +85,7 @@ public abstract class FrontServletBase extends HttpServlet {
     public FrontServletBase(
             Class<? extends RestartableApplication> dynamicApplicationInstanceClass) {
         Preconditions.checkNotNull(dynamicApplicationInstanceClass);
-        this.dynamicApplicationInstanceClass = dynamicApplicationInstanceClass;
+        this.restartableApplicationInstanceClass = dynamicApplicationInstanceClass;
     }
 
     /**
@@ -93,7 +93,7 @@ public abstract class FrontServletBase extends HttpServlet {
      */
     public FrontServletBase(RestartableApplication fixedApplicationInstance) {
         Preconditions.checkNotNull(fixedApplicationInstance);
-        this.fixedDynamicApplicationInstance = fixedApplicationInstance;
+        this.fixedRestartableApplicationInstance = fixedApplicationInstance;
     }
 
     @Override
@@ -134,8 +134,8 @@ public abstract class FrontServletBase extends HttpServlet {
 
     private void initInAET() {
         // setup application reloading
-        if (fixedDynamicApplicationInstance == null) {
-            applicationInstanceClassName = dynamicApplicationInstanceClass
+        if (fixedRestartableApplicationInstance == null) {
+            applicationInstanceClassName = restartableApplicationInstanceClass
                     .getName();
             notifier.addListener(trx -> reloadApplicationInstance());
         }
@@ -143,15 +143,15 @@ public abstract class FrontServletBase extends HttpServlet {
         // run initializers
         InitializerUtil.runInitializers(nonRestartableInjector);
 
-        if (fixedDynamicApplicationInstance != null) {
+        if (fixedRestartableApplicationInstance != null) {
             notifier.close();
             // we are started with a fixed application instance, just use
             // it.
             // Primarily used for Unit Testing
             currentApplicationInfo = new RestartableApplicationInfo(
-                    fixedDynamicApplicationInstance,
+                    fixedRestartableApplicationInstance,
                     Thread.currentThread().getContextClassLoader());
-            fixedDynamicApplicationInstance.start(nonRestartableInjector);
+            fixedRestartableApplicationInstance.start(nonRestartableInjector);
             StartupTimeLogger.stopAndLog("Total Startup Time",
                     startupStopwatch);
             StartupTimeLogger.writeTimesToLog(
@@ -326,6 +326,14 @@ public abstract class FrontServletBase extends HttpServlet {
 
     public ApplicationStage getStage() {
         return stage;
+    }
+
+    public Injector getCurrentRestartableInjector() {
+        RestartableApplicationInfo info = currentApplicationInfo;
+        if (info != null)
+            return info.application.getRestartableInjector();
+        else
+            return fixedRestartableApplicationInstance.getRestartableInjector();
     }
 
     @PostConstruct

@@ -20,9 +20,9 @@ import org.junit.Test;
 import org.openqa.selenium.WebElement;
 
 import com.github.ruediste.rise.core.persistence.TransactionTemplate;
-import com.github.ruediste.rise.testApp.WebTestRemote;
+import com.github.ruediste.rise.testApp.WebTest;
 
-public class TestCrudControllerTest extends WebTestRemote {
+public class TestCrudControllerTest extends WebTest {
 
     @Inject
     TestEntityFactory factory;

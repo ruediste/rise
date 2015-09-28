@@ -10,9 +10,9 @@ import com.github.ruediste.rise.core.security.web.rememberMe.InMemoryRememberMeT
 import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeAuthenticationProvider;
 import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeToken;
 import com.github.ruediste.rise.core.web.PathInfo;
-import com.github.ruediste.rise.testApp.WebTestRemote;
+import com.github.ruediste.rise.testApp.WebTest;
 
-public class ProgrammaticAuthenticationControllerTest extends WebTestRemote {
+public class ProgrammaticAuthenticationControllerTest extends WebTest {
 
     @Inject
     InMemoryRememberMeTokenDao dao;

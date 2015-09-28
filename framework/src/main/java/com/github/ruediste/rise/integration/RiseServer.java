@@ -22,8 +22,7 @@ import com.github.ruediste.rise.nonReloadable.front.FrontServletBase;
 public class RiseServer {
 
     @SuppressWarnings("unused")
-    private static final Logger log = LoggerFactory
-            .getLogger(RiseServer.class);
+    private static final Logger log = LoggerFactory.getLogger(RiseServer.class);
 
     private Server server;
 
