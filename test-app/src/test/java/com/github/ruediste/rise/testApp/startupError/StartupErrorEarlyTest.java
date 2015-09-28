@@ -3,10 +3,9 @@ package com.github.ruediste.rise.testApp.startupError;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import javax.servlet.Servlet;
-
 import org.junit.Test;
 
+import com.github.ruediste.rise.nonReloadable.front.FrontServletBase;
 import com.github.ruediste.rise.testApp.app.TestAppFrontServlet;
 import com.github.ruediste.rise.testApp.app.TestRestartableApplication;
 import com.github.ruediste.salta.jsr330.Injector;
@@ -16,7 +15,7 @@ import com.github.ruediste.salta.jsr330.Injector;
  */
 public class StartupErrorEarlyTest extends StartupErrorTest {
     @Override
-    protected final Servlet createServlet(Object testCase) {
+    protected final FrontServletBase createServlet(Object testCase) {
         TestRestartableApplication app = new TestRestartableApplication() {
 
             @Override
@@ -24,7 +23,7 @@ public class StartupErrorEarlyTest extends StartupErrorTest {
             }
         };
 
-        Servlet frontServlet = new TestAppFrontServlet(app) {
+        FrontServletBase frontServlet = new TestAppFrontServlet(app) {
             private static final long serialVersionUID = 1L;
 
             @Override

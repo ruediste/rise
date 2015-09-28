@@ -43,7 +43,6 @@ public abstract class WebTestBaseRemote implements TestUtil {
 
     protected String url(ActionResult result) {
         Cookie sessionId = driver.manage().getCookieNamed("JSESSIONID");
-        System.out.println(sessionId);
         return util.url(result,
                 sessionId == null ? null : sessionId.getValue());
     }

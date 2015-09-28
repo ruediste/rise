@@ -21,7 +21,6 @@ import javax.inject.Singleton;
 import org.objectweb.asm.tree.ClassNode;
 
 import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasTarget;
-import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.rise.core.argumentSerializer.ArgumentSerializer;
 import com.github.ruediste.rise.core.argumentSerializer.ClassArgumentSerializer;
 import com.github.ruediste.rise.core.argumentSerializer.EntityArgumentSerializer;
@@ -48,6 +47,10 @@ import com.github.ruediste.salta.standard.Stage;
  */
 @Singleton
 public class CoreConfiguration {
+
+    public CoreConfiguration() {
+        // TODO Auto-generated constructor stub
+    }
 
     @Inject
     Injector injector;

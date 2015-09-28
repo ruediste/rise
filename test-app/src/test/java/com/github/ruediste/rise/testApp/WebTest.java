@@ -1,10 +1,9 @@
 package com.github.ruediste.rise.testApp;
 
-import javax.servlet.Servlet;
-
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
+import com.github.ruediste.rise.nonReloadable.front.FrontServletBase;
 import com.github.ruediste.rise.test.WebTestBase;
 import com.github.ruediste.rise.testApp.app.TestAppFrontServlet;
 import com.github.ruediste.rise.testApp.app.TestRestartableApplication;
@@ -20,7 +19,7 @@ public class WebTest extends WebTestBase {
     }
 
     @Override
-    protected final Servlet createServlet(Object testCase) {
+    protected final FrontServletBase createServlet(Object testCase) {
         TestRestartableApplication app = new TestRestartableApplication() {
 
             @Override
@@ -30,7 +29,7 @@ public class WebTest extends WebTestBase {
             }
         };
 
-        Servlet frontServlet = new TestAppFrontServlet(app);
+        FrontServletBase frontServlet = new TestAppFrontServlet(app);
 
         return frontServlet;
     }

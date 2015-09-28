@@ -37,7 +37,7 @@ public class WebTestRemote extends WebTestBaseRemote {
     @Override
     protected Injector startServer() {
         StandaloneLafApplication app = new StandaloneLafApplication();
-        app.start(TestAppFrontServlet.class);
+        app.start(new TestAppFrontServlet(), 8080);
         return app.getServlet().currentApplicationInfo.application
                 .getRestartableInjector();
     }

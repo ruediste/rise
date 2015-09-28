@@ -6,7 +6,6 @@ import static org.junit.Assert.fail;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.servlet.Servlet;
 import javax.transaction.TransactionManager;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -14,6 +13,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 
+import com.github.ruediste.rise.nonReloadable.front.FrontServletBase;
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLink;
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
 import com.github.ruediste.rise.testApp.app.TestAppFrontServlet;
@@ -28,7 +28,7 @@ import com.github.ruediste.salta.jsr330.MembersInjector;
 public class StartupErrorAfterNonRestartableInjectionTest
         extends StartupErrorTest {
     @Override
-    protected final Servlet createServlet(Object testCase) {
+    protected final FrontServletBase createServlet(Object testCase) {
         TestRestartableApplication app = new TestRestartableApplication() {
 
             @Override
@@ -36,7 +36,7 @@ public class StartupErrorAfterNonRestartableInjectionTest
             }
         };
 
-        Servlet frontServlet = new TestAppFrontServlet(app) {
+        FrontServletBase frontServlet = new TestAppFrontServlet(app) {
             private static final long serialVersionUID = 1L;
 
             @Inject
