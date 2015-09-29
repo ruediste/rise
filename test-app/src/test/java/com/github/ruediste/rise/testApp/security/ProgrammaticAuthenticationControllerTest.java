@@ -91,6 +91,7 @@ public class ProgrammaticAuthenticationControllerTest extends WebTest {
     }
 
     private void loadAuthRequired() {
+        startSession();
         driver.navigate().to(url(go(ProgrammaticAuthenticationController.class)
                 .authenticationRequired()));
     }

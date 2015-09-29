@@ -24,6 +24,7 @@ public class TestEntityFactory {
 
     public TestCrudEntityB testCrudEntityB() {
         TestCrudEntityB result = new TestCrudEntityB();
+        result.setValue(randomString());
         return save(result);
     }
 

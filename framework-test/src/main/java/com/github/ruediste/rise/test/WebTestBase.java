@@ -44,8 +44,9 @@ public abstract class WebTestBase implements TestUtil {
 
     protected String url(ActionResult result) {
         Cookie sessionId = driver.manage().getCookieNamed("JSESSIONID");
-        return util.url(result,
-                sessionId == null ? null : sessionId.getValue());
+        return util.url(result, sessionId == null ? () -> {
+            throw new RuntimeException("no session present");
+        } : () -> sessionId.getValue());
     }
 
     protected String url(PathInfo pathInfo) {

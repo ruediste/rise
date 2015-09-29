@@ -1,5 +1,7 @@
 package com.github.ruediste.rise.test;
 
+import java.util.function.Supplier;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -29,12 +31,12 @@ public class IntegrationTestUtil {
     @Inject
     CoreConfiguration config;
 
-    public String url(ActionResult result, String sessionId) {
+    public String url(ActionResult result, Supplier<String> sessionId) {
         return url(
                 coreUtil.toUrlSpec(
                         coreUtil.toStringInvocation(
                                 coreUtil.toActionInvocation(result)),
-                        () -> sessionId));
+                        sessionId));
     }
 
     public String url(UrlSpec spec) {

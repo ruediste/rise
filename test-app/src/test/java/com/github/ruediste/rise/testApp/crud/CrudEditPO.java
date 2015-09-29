@@ -42,6 +42,9 @@ public class CrudEditPO extends PageObject {
                 .collect(toList());
     }
 
+    /**
+     * Trigger the pick action on the given property
+     */
     public CrudPickerPO pick(String propertyTestName) {
         clickAndWaitForRefresh(
                 driver.findElement(By.cssSelector(dataTestSelector("properties")

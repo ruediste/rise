@@ -49,7 +49,8 @@ public class TestComponentControllerTest extends WebTest {
         // modify entity in ctrl A
         driver.findElement(By.cssSelector("#a input")).clear();
         driver.findElement(By.cssSelector("#a input")).sendKeys("bar");
-        driver.findElement(By.cssSelector("#a button.save")).click();
+        clickAndWaitForRefresh(
+                driver.findElement(By.cssSelector("#a button.save")));
 
         // check
         compare(driver, "foo", "bar", "foo");

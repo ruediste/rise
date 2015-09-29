@@ -19,6 +19,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import com.github.ruediste.rise.api.ControllerComponent;
+import com.github.ruediste.rise.component.IControllerComponent;
 import com.github.ruediste.rise.component.components.CDataGrid.Cell;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.persistence.PersistentType;
@@ -272,7 +274,10 @@ public class CrudUtil {
 
     }
 
-    public interface CrudList {
+    /**
+     * {@link ControllerComponent} displaying a list of entities
+     */
+    public interface CrudList extends IControllerComponent {
 
         PersistentType getType();
 
@@ -285,6 +290,16 @@ public class CrudUtil {
 
     @ImplementedBy(DefaultCrudListFactory.class)
     public interface CrudListFactory {
+        /**
+         * Create a {@link CrudList} controller for the given entities.
+         * 
+         * @param emQualifier
+         *            persistence unit to use
+         * @param entityClass
+         *            entity class to display
+         * @param constantFilter
+         *            filter to use regardless of the filter entered by the user
+         */
         CrudList createList(Class<? extends Annotation> emQualifier,
                 Class<?> entityClass,
                 Consumer<PersistenceFilterContext<?>> constantFilter);

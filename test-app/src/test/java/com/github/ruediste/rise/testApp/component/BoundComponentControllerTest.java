@@ -19,7 +19,7 @@ public class BoundComponentControllerTest extends WebTest {
         driver.navigate()
                 .to(url(util.go(BoundComponentController.class).index()));
         check("", "");
-        driver.findElement(By.cssSelector(".textField input")).sendKeys("foo");
+        driver.findElement(byDataTestName("value")).sendKeys("foo");
         driver.findElement(By.cssSelector(".pushDown")).click();
         check("", "foo");
         driver.findElement(By.cssSelector(".pullUp")).click();

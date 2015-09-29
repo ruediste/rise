@@ -27,10 +27,14 @@ public class WebTest extends WebTestBase {
         return "http://localhost:8080";
     }
 
-    @Before
-    final public void beforeWebTestRemote() {
+    protected void startSession() {
         driver.navigate().to(url(go(LoginController.class)
                 .index(new UrlSpec(new PathInfo("/")))));
+    }
+
+    @Before
+    final public void beforeWebTest() {
+        startSession();
         new LoginPO(driver).defaultLogin();
     }
 

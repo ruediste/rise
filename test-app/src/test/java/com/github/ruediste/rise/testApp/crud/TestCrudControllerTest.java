@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -61,6 +60,9 @@ public class TestCrudControllerTest extends WebTest {
         assertThat(rows.size(), is(equalTo(1)));
     }
 
+    /**
+     * Search for all {@link TestCrudEntityA}s
+     */
     private CrudBrowserPO searchEntity() {
         CrudBrowserPO browser = new CrudBrowserPO(driver);
         browser.setFilter(
@@ -160,8 +162,23 @@ public class TestCrudControllerTest extends WebTest {
 
     @Test
     public void editPick() {
-        searchEntity().edit(0).pick("entityB");
-        fail();
+
+        CrudEditPO edit = searchEntity().edit(0).pick("entityB")
+                .setFilter(
+                        dataTestName(TestCrudEntityB.class, x -> x.getValue()),
+                        b.getValue())
+                .search().choose(0);
+
+        assertThat(edit.getPropertyText(
+                dataTestName(TestCrudEntityA.class, x -> x.getEntityB())),
+                containsString(b.getValue()));
+
+        edit.save();
+
+        trx.execute(() -> {
+            assertEquals(b.getId(), em.find(TestCrudEntityA.class, a.getId())
+                    .getEntityB().getId());
+        });
     }
 
     @Test
