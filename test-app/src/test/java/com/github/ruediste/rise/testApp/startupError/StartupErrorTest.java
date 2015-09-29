@@ -31,7 +31,7 @@ public abstract class StartupErrorTest extends WebTestBase {
     }
 
     @Override
-    protected boolean shouldRestartServer() {
+    protected boolean runWithSeparateServer() {
         return true;
     }
 

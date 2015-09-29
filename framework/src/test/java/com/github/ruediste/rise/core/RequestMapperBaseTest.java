@@ -149,7 +149,7 @@ public class RequestMapperBaseTest {
     public void testGenerateBaseClass() throws Throwable {
         mapper.register(b);
         ActionInvocation<String> invocation = createInvocationToA_a();
-        PathInfo pathInfo = mapper.generate(invocation, sessionId)
+        PathInfo pathInfo = mapper.generate(invocation, () -> sessionId)
                 .getPathInfo();
         assertEquals("/b.a", pathInfo.getValue());
     }
@@ -162,9 +162,9 @@ public class RequestMapperBaseTest {
         mapper.register(a);
         ActionInvocation<String> invocation = createInvocationToA_a();
         testParameter.set(invocation, "foo");
-        UrlSpec spec = mapper.generate(invocation, sessionId);
+        UrlSpec spec = mapper.generate(invocation, () -> sessionId);
         ActionInvocation<String> parsed = mapper.parse("/a.a", a, a_a,
-                new HttpRequestImpl(spec), sessionId);
+                new HttpRequestImpl(spec), () -> sessionId);
         assertEquals("foo", testParameter.get(parsed));
     }
 
@@ -172,9 +172,10 @@ public class RequestMapperBaseTest {
     public void signatureChecked() throws Exception {
         mapper.register(a);
         ActionInvocation<String> invocation = createInvocationToA_a();
-        UrlSpec spec = mapper.generate(invocation, sessionId);
+        UrlSpec spec = mapper.generate(invocation, () -> sessionId);
         try {
-            mapper.parse("/a.a", a, a_a, new HttpRequestImpl(spec), "1234567");
+            mapper.parse("/a.a", a, a_a, new HttpRequestImpl(spec),
+                    () -> "1234567");
             fail();
         } catch (RuntimeException e) {
             if (!e.getMessage().contains("URL signature"))
@@ -190,9 +191,9 @@ public class RequestMapperBaseTest {
                 A.class.getMethod("c", Integer.class));
         invocation.methodInvocation.getArguments().add("1");
 
-        UrlSpec spec = mapper.generate(invocation, sessionId);
+        UrlSpec spec = mapper.generate(invocation, () -> sessionId);
         ActionInvocation<String> parsed = mapper.parse("/a.c", a, a_c,
-                new HttpRequestImpl(spec), sessionId);
+                new HttpRequestImpl(spec), () -> sessionId);
         assertNotNull(parsed);
     }
 

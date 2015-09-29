@@ -105,7 +105,7 @@ public interface ICoreUtil {
     }
 
     default UrlSpec toUrlSpec(ActionInvocation<String> invocation,
-            String sessionId) {
+            Supplier<String> sessionId) {
         return getCoreUtil().toUrlSpec(invocation, sessionId);
     }
 

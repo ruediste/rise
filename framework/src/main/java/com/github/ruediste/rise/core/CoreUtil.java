@@ -59,12 +59,12 @@ public class CoreUtil implements ICoreUtil {
 
     @Override
     public UrlSpec toUrlSpec(ActionResult actionResult) {
-        return toUrlSpec(toStringInvocation(actionResult));
+        return toUrlSpec(toStringInvocation(toActionInvocation(actionResult)));
     }
 
     @Override
     public UrlSpec toUrlSpec(ActionInvocation<String> invocation,
-            String sessionId) {
+            Supplier<String> sessionId) {
         return coreConfiguration
                 .getRequestMapper(
                         invocation.methodInvocation.getInstanceClass())
@@ -74,7 +74,7 @@ public class CoreUtil implements ICoreUtil {
     @Override
     public UrlSpec toUrlSpec(ActionInvocation<String> invocation) {
         return toUrlSpec(invocation,
-                coreRequestInfo.getServletRequest().getSession().getId());
+                () -> coreRequestInfo.getServletRequest().getSession().getId());
     }
 
     @Override
@@ -99,11 +99,6 @@ public class CoreUtil implements ICoreUtil {
     public ActionInvocation<Supplier<Object>> toSupplierInvocation(
             ActionInvocation<String> stringInvocation) {
         return stringInvocation.mapWithType(coreConfiguration::parseArgument);
-    }
-
-    public ActionInvocation<String> toStringInvocation(
-            ActionResult actionResult) {
-        return toStringInvocation(toActionInvocation(actionResult));
     }
 
     @Override

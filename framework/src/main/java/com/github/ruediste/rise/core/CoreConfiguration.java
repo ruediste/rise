@@ -199,7 +199,7 @@ public class CoreConfiguration {
         loop: for (ArgumentSerializer s : argumentSerializers) {
             switch (s.canHandle(type)) {
             case CANNOT_HANDLE:
-                break;
+                continue loop;
             case MIGHT_HANDLE:
                 result.add(s);
                 break;

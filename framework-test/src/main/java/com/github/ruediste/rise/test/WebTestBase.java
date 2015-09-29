@@ -61,31 +61,52 @@ public abstract class WebTestBase implements TestUtil {
     protected abstract String getBaseUrl();
 
     private static Boolean isRunningLocally;
-    private static Object lock = new Object();
+    private static final Object lock = new Object();
     private static Injector injector;
     private static RiseServer server;
 
+    /**
+     * If {@link #runWithSeparateServer()} returns true, this variable is
+     * initialized to the current test case. If this variable is not null the
+     * server was created for a specific test instance.
+     */
+    private static Object serverTestCase;
+
     @Before
     public final void beforeWebTestBase() {
-        if (shouldRestartServer()) {
-            if (server != null)
-                server.stop();
-            server = null;
-            isRunningLocally = null;
-        }
+        boolean runWithSeparateServer = runWithSeparateServer();
 
         synchronized (lock) {
+            // stop the server if necessary
+            if (
+            // server was started for a different test with separate server
+            (serverTestCase != null && serverTestCase != this) ||
+                    // request separate test case
+                    (runWithSeparateServer && serverTestCase != this)) {
+                if (server != null)
+                    server.stop();
+                server = null;
+                isRunningLocally = null;
+            }
+
             if (isRunningLocally == null) {
                 if (InjectorsHolder.injectorsPresent()) {
                     // we are running remotely
                     injector = InjectorsHolder.getRestartableInjector();
                     isRunningLocally = false;
+                    if (runWithSeparateServer)
+                        throw new RuntimeException(
+                                "Cannot run server remotely when runWithSeparateServer() returns true");
                 } else {
                     server = startServer();
 
                     injector = server.getServlet()
                             .getCurrentRestartableInjector();
                     isRunningLocally = true;
+                    if (runWithSeparateServer)
+                        serverTestCase = this;
+                    else
+                        serverTestCase = null;
                 }
             }
         }
@@ -101,7 +122,7 @@ public abstract class WebTestBase implements TestUtil {
      * makes sense when annotating the test case with
      * {@link Remote#endpoint() @Remote(endpoint="-")}
      */
-    protected boolean shouldRestartServer() {
+    protected boolean runWithSeparateServer() {
         return false;
     }
 
@@ -118,8 +139,11 @@ public abstract class WebTestBase implements TestUtil {
             @Override
             public void evaluate() throws Throwable {
                 driver = createDriver();
-                base.evaluate();
-                driver.close();
+                try {
+                    base.evaluate();
+                } finally {
+                    driver.close();
+                }
             }
         };
     }

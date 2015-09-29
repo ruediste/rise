@@ -9,17 +9,17 @@ import javax.inject.Provider;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreUtil;
-import com.github.ruediste.rise.core.RequestParseResultImpl;
 import com.github.ruediste.rise.core.PathInfoIndex;
+import com.github.ruediste.rise.core.RequestParseResultImpl;
 import com.github.ruediste.rise.core.RequestParser;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.mvc.MvcConfiguration;
 import com.github.ruediste.rise.testApp.WebTest;
+import com.github.ruediste.rise.testApp.mvc.TestMvcController;
 
 public class MvcRequestMapperImplTest extends WebTest {
 
@@ -34,25 +34,6 @@ public class MvcRequestMapperImplTest extends WebTest {
 
     @Inject
     CoreUtil coreUtil;
-
-    static class A extends ControllerMvc<A> {
-
-        public ActionResult noArgs() {
-            return null;
-        }
-
-        public ActionResult withInt(int i) {
-            return null;
-        }
-
-        public ActionResult withIntLong(int i, Long l) {
-            return null;
-        }
-
-        public ActionResult withString(String s) {
-            return null;
-        }
-    }
 
     @Before
     public void setup() {
@@ -73,8 +54,8 @@ public class MvcRequestMapperImplTest extends WebTest {
         check(ctrl().withString("%/+-*"));
     }
 
-    private A ctrl() {
-        return builder.get().go(A.class);
+    private TestMvcController ctrl() {
+        return builder.get().go(TestMvcController.class);
     }
 
     private void check(ActionResult actionResult) {

@@ -36,7 +36,7 @@ public class EntityControllerMvcTest extends WebTest {
         entity.setValue("Hello World");
 
         template.updating().execute(() -> {
-            em.createQuery("delete from TestEntity").executeUpdate();
+            em.createQuery("delete from TestAppEntity").executeUpdate();
             em.persist(entity);
         });
 
@@ -73,7 +73,10 @@ public class EntityControllerMvcTest extends WebTest {
         });
 
         // delete
-        driver.navigate().to(url(go(EntityControllerMvc.class).delete(entity)));
+        template.executor().execute(() -> {
+            driver.navigate().to(url(
+                    go(EntityControllerMvc.class).delete(em.merge(entity))));
+        });
 
         // check entity has been deleted
         template.executor().execute(() -> {

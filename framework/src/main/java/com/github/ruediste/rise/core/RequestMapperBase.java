@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.function.Supplier;
 
 import javax.crypto.Mac;
 import javax.inject.Inject;
@@ -43,7 +44,7 @@ import com.google.common.collect.MultimapBuilder;
 /**
  * Registers the {@link ControllerMvc}s with the {@link PathInfoIndex} during
  * {@link #initialize()} and supports URL generation by providing
- * {@link #generate(ActionInvocation, String)}
+ * {@link #generate(ActionInvocation, Supplier)}
  */
 public abstract class RequestMapperBase implements RequestMapper {
 
@@ -73,7 +74,7 @@ public abstract class RequestMapperBase implements RequestMapper {
     /**
      * Map controller instance classes and methods to their prefixes. Prefixes
      * do not include a final "." or "/". Used for
-     * {@link #generate(ActionInvocation, String)}.
+     * {@link #generate(ActionInvocation, Supplier)}.
      */
     final HashMap<Pair<String, MethodRef>, String> methodToPrefixMap = new HashMap<>();
 
@@ -231,11 +232,12 @@ public abstract class RequestMapperBase implements RequestMapper {
             ClassNode controllerClassNode, MethodRef methodRef,
             HttpRequest request) {
         return parse(prefix, controllerClassNode, methodRef, request,
-                coreRequestInfo.getServletRequest().getSession().getId());
+                () -> coreRequestInfo.getServletRequest().getSession().getId());
     }
 
     ActionInvocation<String> parse(String prefix, ClassNode controllerClassNode,
-            MethodRef methodRef, HttpRequest request, String sessionId) {
+            MethodRef methodRef, HttpRequest request,
+            Supplier<String> sessionIdSupplier) {
         ActionInvocation<String> invocation;
         try {
             invocation = createInvocation(controllerClassNode, methodRef);
@@ -251,7 +253,7 @@ public abstract class RequestMapperBase implements RequestMapper {
         Mac mac = null;
         if (urlSign) {
             mac = urlSignatureHelper.createUrlHasher();
-            mac.update(sessionId.getBytes(Charsets.UTF_8));
+            mac.update(sessionIdSupplier.get().getBytes(Charsets.UTF_8));
             mac.update(prefix.getBytes(Charsets.UTF_8));
         }
 
@@ -317,7 +319,8 @@ public abstract class RequestMapperBase implements RequestMapper {
     }
 
     @Override
-    public UrlSpec generate(ActionInvocation<String> path, String sessionId) {
+    public UrlSpec generate(ActionInvocation<String> path,
+            Supplier<String> sessionIdSupplier) {
         Method method = path.methodInvocation.getMethod();
         boolean urlSign = shouldDoUrlSigning(method);
 
@@ -325,7 +328,7 @@ public abstract class RequestMapperBase implements RequestMapper {
         byte[] salt = null;
         if (urlSign) {
             mac = urlSignatureHelper.createUrlHasher();
-            mac.update(sessionId.getBytes(Charsets.UTF_8));
+            mac.update(sessionIdSupplier.get().getBytes(Charsets.UTF_8));
         }
 
         StringBuilder sb = new StringBuilder();
