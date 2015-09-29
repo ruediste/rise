@@ -52,8 +52,7 @@ public class BootstrapBundleUtil extends AssetBundle {
     public BootstrapAssetGroups loadAssets(
             BiFunction<AssetGroup, String, AssetGroup> fontCustomizer) {
         BootstrapAssetGroups result = new BootstrapAssetGroups();
-        AssetGroup js = locations("./js/jquery-2.1.3.js", "./js/bootstrap.js")
-                .load();
+        AssetGroup js = locations("./js/bootstrap.js").load();
         ArrayList<Asset> fonts = new ArrayList<>();
         AssetGroup css = replaceFonts(fonts, fontCustomizer,
                 locations("./css/bootstrap.css").insertMinInProd().load(),

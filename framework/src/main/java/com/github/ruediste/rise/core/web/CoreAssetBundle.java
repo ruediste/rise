@@ -17,9 +17,9 @@ public class CoreAssetBundle extends AssetBundle {
     public static final String componentAttributeNr = "rise-component-nr";
 
     /**
-     * Contains the necessary assets to use Rise. Note that these assets will
-     * not be picked up by the {@link AssetRequestMapper}. You need to send them
-     * to an {@link AssetBundleOutput}.
+     * Contains the necessary assets to use Rise, besides JQuery. Note that
+     * these assets will not be picked up by the {@link AssetRequestMapper}. You
+     * need to send them to an {@link AssetBundleOutput}.
      */
     public AssetGroup out;
 

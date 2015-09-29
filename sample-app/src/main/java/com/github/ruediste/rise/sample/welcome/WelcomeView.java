@@ -10,7 +10,7 @@ import com.github.ruediste1.i18n.label.Label;
 import com.github.ruediste1.i18n.label.Labeled;
 
 @Labeled
-@Label("Welcomee")
+@Label("Welcome")
 public class WelcomeView
         extends PageView<WelcomeController, WelcomeController.Data> {
 
@@ -27,5 +27,6 @@ public class WelcomeView
         html.rButtonA(go(SampleComponentController.class).index(), a -> {
         });
 
+        html.input().TYPE("text").CLASS("rise_autocomplete");
     }
 }

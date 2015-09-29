@@ -10,6 +10,7 @@ import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.persistence.Updating;
+import com.github.ruediste.rise.core.security.urlSigning.UrlUnsigned;
 import com.github.ruediste.rise.core.web.HttpServletResponseCustomizer;
 import com.github.ruediste.rise.core.web.RedirectToRefererRenderResult;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
@@ -102,6 +103,7 @@ public class ReqestErrorController extends ControllerMvc<ReqestErrorController>
         }
     }
 
+    @UrlUnsigned
     public ActionResult index() {
         Data data = new Data();
         data.stage = stage;

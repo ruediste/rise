@@ -169,6 +169,12 @@ public abstract class RequestMapperBase implements RequestMapper {
                                     if (shouldDoUrlSigning(
                                             invocation.methodInvocation
                                                     .getMethod())) {
+                                        String requestSignature = req
+                                                .getParameter(
+                                                        SIGNATURE_PARAMETER_NAME);
+                                        if (requestSignature == null)
+                                            throw new RuntimeException(
+                                                    "No Signature found in request");
                                         Mac mac = null;
                                         mac = urlSignatureHelper
                                                 .createUrlHasher();
@@ -182,11 +188,11 @@ public abstract class RequestMapperBase implements RequestMapper {
                                         byte[] calculatedSignature = Arrays
                                                 .copyOfRange(mac.doFinal(), 0,
                                                         coreConfig.urlSignatureBytes);
+
                                         if (!urlSignatureHelper.slowEquals(
                                                 calculatedSignature,
                                                 Base64.getUrlDecoder().decode(
-                                                        req.getParameter(
-                                                                SIGNATURE_PARAMETER_NAME)))) {
+                                                        requestSignature))) {
                                             throw new RuntimeException(
                                                     "URL signature did not match");
                                         }

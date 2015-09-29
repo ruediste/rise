@@ -8,10 +8,18 @@ import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.bootstrap.BootstrapBundleUtil;
 import com.github.ruediste.rise.core.web.bootstrap.BootstrapBundleUtil.BootstrapAssetGroups;
 import com.github.ruediste.rise.core.web.fileinput.FileinputAssetBundle;
+import com.github.ruediste.rise.core.web.jQuery.JQueryAssetBundle;
+import com.github.ruediste.rise.core.web.jQueryUi.JQueryUiAssetBundle;
 
 public class SampleBundle extends AssetBundle {
 
     public AssetBundleOutput out = new AssetBundleOutput(this);
+
+    @Inject
+    JQueryAssetBundle jQueryAssetBundle;
+
+    @Inject
+    JQueryUiAssetBundle jQueryUiAssetBundle;
 
     @Inject
     BootstrapBundleUtil bootstrapUtil;
@@ -24,6 +32,8 @@ public class SampleBundle extends AssetBundle {
 
     @Override
     public void initialize() {
+        jQueryAssetBundle.out.send(out);
+        jQueryUiAssetBundle.out.send(out);
         BootstrapAssetGroups bootstrap = bootstrapUtil.loadAssets();
         bootstrap.fonts.send(out);
         //@formatter:off
