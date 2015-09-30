@@ -27,6 +27,5 @@ public class WelcomeView
         html.rButtonA(go(SampleComponentController.class).index(), a -> {
         });
 
-        html.input().TYPE("text").CLASS("rise_autocomplete");
     }
 }

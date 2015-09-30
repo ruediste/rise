@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.sample.front;
 
+import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 
 import com.github.ruediste.rise.integration.RiseServer;
@@ -10,7 +11,7 @@ public class SampleMain {
 
         NodeBuilder builder = NodeBuilder.nodeBuilder().local(true);
         builder.settings().put("path.home", "./elastic");
-        builder.build();
+        Node node = builder.build();
 
         RiseServer app = new RiseServer();
         app.start(SampleFrontServlet.class);
