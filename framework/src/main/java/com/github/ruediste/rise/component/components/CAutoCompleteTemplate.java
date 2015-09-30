@@ -17,15 +17,33 @@ public class CAutoCompleteTemplate
     @Override
     public void doRender(CAutoComplete<?> component,
             BootstrapRiseCanvas<?> html) {
+        doRenderImpl(component, html);
+    }
+
+    public <T> void doRenderImpl(CAutoComplete<T> component,
+            BootstrapRiseCanvas<?> html) {
+        String value;
+        if (component.isItemChosen()) {
+            value = component.getValueFunction()
+                    .apply(component.getChosenItem());
+        } else {
+            value = component.getText();
+        }
         html.input().TYPE("text").BformControl().CLASS("rise_autocomplete")
-                .VALUE(component.getText()).TEST_NAME(component.TEST_NAME())
-                .NAME(util.getKey(component, "value"))
+                .VALUE(value).TEST_NAME(component.TEST_NAME())
+                .NAME(util.getKey(component, "text"))
                 .ID(util.getComponentId(component));
+
+        if (component.isItemChosen()) {
+            html.input().TYPE("text").STYLE("display: none;").VALUE(":")
+                    .NAME(util.getKey(component, "chosenItem"));
+        }
+
     }
 
     @Override
     public void applyValues(CAutoComplete<?> component) {
-        getParameterValue(component, "value").ifPresent(component::setText);
+        getParameterValue(component, "text").ifPresent(component::setText);
     }
 
     @Inject
@@ -39,7 +57,6 @@ public class CAutoCompleteTemplate
         private String value;
 
         Entry(String label, String value) {
-            super();
             this.label = label;
             this.value = value;
         }
