@@ -1,9 +1,13 @@
 package com.github.ruediste.rise.component.reload;
 
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 
 import com.github.ruediste.rise.api.ViewComponentBase;
@@ -18,6 +22,9 @@ import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.web.ContentRenderResult;
 import com.github.ruediste.rise.core.web.HttpServletResponseCustomizer;
+import com.google.common.base.Charsets;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 
 /**
  * Handler applying values, raising events and rendering the reloaded component
@@ -48,6 +55,7 @@ public class ReloadHandler implements Runnable {
     @Inject
     CoreConfiguration coreConfiguration;
 
+    @SuppressWarnings("unchecked")
     @Override
     public void run() {
 
@@ -57,6 +65,24 @@ public class ReloadHandler implements Runnable {
 
         Component reloadComponent = util.getComponent(view,
                 request.getComponentNr());
+
+        // parse the data
+        List<Map<String, Object>> rawData;
+        try (Reader in = new InputStreamReader(
+                coreRequestInfo.getServletRequest().getInputStream(),
+                Charsets.UTF_8)) {
+            rawData = (List<Map<String, Object>>) new JSONParser().parse(in);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while parsing request data", e);
+        }
+
+        Multimap<String, Object> data = MultimapBuilder.hashKeys()
+                .arrayListValues().build();
+        for (Map<String, Object> entry : rawData) {
+            data.put((String) entry.get("name"), entry.get("value"));
+        }
+
+        request.setParameterData(data);
 
         // apply request values
         List<Component> components = ComponentTreeUtil.subTree(reloadComponent);

@@ -1,7 +1,9 @@
 package com.github.ruediste.rise.component;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -16,6 +18,7 @@ import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.components.IComponentTemplate;
+import com.github.ruediste.rise.component.reload.PageReloadRequest;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ComponentTreeUtil;
 import com.github.ruediste.rise.core.CoreConfiguration;
@@ -63,6 +66,9 @@ public class ComponentUtil implements ICoreUtil {
     @Inject
     @Named("pageScoped")
     SimpleProxyScopeHandler pageScopeHandler;
+
+    @Inject
+    PageReloadRequest reloadRequest;
 
     public long pageId() {
         return pageInfo.getPageId();
@@ -169,14 +175,34 @@ public class ComponentUtil implements ICoreUtil {
         return coreUtil;
     }
 
-    public Optional<String> getParameterValue(Component component, String key) {
-        return Optional.ofNullable(coreRequestInfo.getRequest()
-                .getParameter(getKey(component, key)));
+    public Optional<Object> getParameterObject(Component component,
+            String key) {
+        return reloadRequest.getParameterObject(getKey(component, key));
     }
 
+    /**
+     * Return the value of a parameter belonging to a certain component during a
+     * page reload request.
+     */
+    public Optional<String> getParameterValue(Component component, String key) {
+        return reloadRequest.getParameterValue(getKey(component, key));
+    }
+
+    public Collection<Object> getParameterObjects(Component component,
+            String key) {
+        return reloadRequest.getParameterObjects(getKey(component, key));
+    }
+
+    public List<String> getParameterValues(Component component, String key) {
+        return reloadRequest.getParameterValues(getKey(component, key));
+    }
+
+    /**
+     * Test if a parameter is defined for a certain component during a page
+     * reload request.
+     */
     public boolean isParameterDefined(Component component, String key) {
-        return coreRequestInfo.getRequest().getParameterMap()
-                .containsKey(getKey(component, key));
+        return reloadRequest.isParameterDefined(getKey(component, key));
     }
 
     public void commit() {

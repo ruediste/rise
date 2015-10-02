@@ -2,7 +2,9 @@ package com.github.ruediste.rise.component.components;
 
 import static java.util.stream.Collectors.toList;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -81,10 +83,12 @@ public class CAutoCompleteTemplate
     private <T> HttpRenderResult search(CAutoComplete<T> component) {
         List<T> items = component.getSearchFunction()
                 .apply(info.getRequest().getParameter("term"));
-        return resultFactory.jsonRenderResult(items.stream()
-                .map(i -> new Entry(component.getSuggestionFunction().apply(i),
-                        component.getValueFunction().apply(i)))
-                .collect(toList()));
+        return resultFactory.jsonRenderResult(items.stream().map(i -> {
+            Map<String, Object> result = new HashMap<>();
+            result.put("label", component.getSuggestionFunction().apply(i));
+            result.put("value", component.getValueFunction().apply(i));
+            return result;
+        }).collect(toList()));
     };
 
     @Override

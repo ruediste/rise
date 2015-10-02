@@ -2,8 +2,10 @@ package com.github.ruediste.rise.core.web;
 
 import javax.inject.Inject;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import org.json.simple.JSONValue;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Charsets;
 
 public class JsonRenderResultFactory {
 
@@ -11,12 +13,9 @@ public class JsonRenderResultFactory {
     ObjectMapper objectMapper;
 
     public HttpRenderResult jsonRenderResult(Object result) {
-        try {
-            return new ContentRenderResult(
-                    objectMapper.writeValueAsBytes(result), "text/json");
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("error while rendering json result", e);
-        }
+        return new ContentRenderResult(
+                JSONValue.toJSONString(result).getBytes(Charsets.UTF_8),
+                "text/json; charset=UTF-8");
 
     }
 }
