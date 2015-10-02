@@ -27,7 +27,7 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocationParameter;
 import com.github.ruediste.rise.core.httpRequest.HttpRequestImpl;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.core.web.UrlSpec;
-import com.github.ruediste.rise.nonReloadable.UrlSignatureHelper;
+import com.github.ruediste.rise.nonReloadable.SignatureHelper;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndex;
 import com.github.ruediste.rise.util.AsmUtil;
 import com.github.ruediste.rise.util.AsmUtil.MethodRef;
@@ -112,7 +112,7 @@ public class RequestMapperBaseTest {
     public void before() {
 
         mapper.util = util;
-        mapper.urlSignatureHelper = new UrlSignatureHelper();
+        mapper.urlSignatureHelper = new SignatureHelper();
         mapper.urlSignatureHelper.postConstruct();
 
         when(index.tryGetNode(any())).thenReturn(Optional.empty());

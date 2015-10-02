@@ -27,7 +27,7 @@ import com.github.ruediste.rise.core.web.ActionPathAnnotationUtil;
 import com.github.ruediste.rise.core.web.ActionPathAnnotationUtil.MethodPathInfos;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.core.web.UrlSpec;
-import com.github.ruediste.rise.nonReloadable.UrlSignatureHelper;
+import com.github.ruediste.rise.nonReloadable.SignatureHelper;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndex;
 import com.github.ruediste.rise.util.AsmUtil;
 import com.github.ruediste.rise.util.AsmUtil.MethodRef;
@@ -66,7 +66,7 @@ public abstract class RequestMapperBase implements RequestMapper {
     ControllerReflectionUtil util;
 
     @Inject
-    UrlSignatureHelper urlSignatureHelper;
+    SignatureHelper urlSignatureHelper;
 
     @Inject
     CoreRequestInfo coreRequestInfo;
@@ -176,8 +176,7 @@ public abstract class RequestMapperBase implements RequestMapper {
                                             throw new RuntimeException(
                                                     "No Signature found in request");
                                         Mac mac = null;
-                                        mac = urlSignatureHelper
-                                                .createUrlHasher();
+                                        mac = urlSignatureHelper.createHasher();
                                         mac.update(coreRequestInfo
                                                 .getServletRequest()
                                                 .getSession().getId()
@@ -258,7 +257,7 @@ public abstract class RequestMapperBase implements RequestMapper {
 
         Mac mac = null;
         if (urlSign) {
-            mac = urlSignatureHelper.createUrlHasher();
+            mac = urlSignatureHelper.createHasher();
             mac.update(sessionIdSupplier.get().getBytes(Charsets.UTF_8));
             mac.update(prefix.getBytes(Charsets.UTF_8));
         }
@@ -333,7 +332,7 @@ public abstract class RequestMapperBase implements RequestMapper {
         Mac mac = null;
         byte[] salt = null;
         if (urlSign) {
-            mac = urlSignatureHelper.createUrlHasher();
+            mac = urlSignatureHelper.createHasher();
             mac.update(sessionIdSupplier.get().getBytes(Charsets.UTF_8));
         }
 

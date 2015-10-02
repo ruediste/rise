@@ -5,16 +5,28 @@ import static java.util.stream.Collectors.toList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Consumer;
 
+import javax.crypto.Mac;
 import javax.inject.Inject;
 
+import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.web.HttpRenderResult;
 import com.github.ruediste.rise.core.web.JsonRenderResultFactory;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
+import com.github.ruediste.rise.nonReloadable.SignatureHelper;
+import com.google.common.base.Charsets;
 
 public class CAutoCompleteTemplate
         extends BootstrapComponentTemplateBase<CAutoComplete<?>> {
+
+    @Inject
+    SignatureHelper signatureHelper;
+
+    @Inject
+    CoreRequestInfo info;
 
     @Override
     public void doRender(CAutoComplete<?> component,
@@ -22,12 +34,26 @@ public class CAutoCompleteTemplate
         doRenderImpl(component, html);
     }
 
+    private Consumer<Mac> hashContext(Component component) {
+        return mac -> {
+            mac.update(info.getSessionId().getBytes(Charsets.UTF_8));
+            mac.update(getComponentId(component).getBytes(Charsets.UTF_8));
+        };
+    }
+
     public <T> void doRenderImpl(CAutoComplete<T> component,
             BootstrapRiseCanvas<?> html) {
         String value;
+        Optional<String> itemStr = Optional.empty();
         if (component.isItemChosen()) {
-            value = component.getValueFunction()
-                    .apply(component.getChosenItem());
+            T item = component.getChosenItem();
+            value = component.getValueFunction().apply(item);
+            Consumer<Mac> contextHasher = mac -> {
+                mac.update(info.getSessionId().getBytes(Charsets.UTF_8));
+                mac.update(getComponentId(component).getBytes(Charsets.UTF_8));
+            };
+            signatureHelper.serializeSigned(item, hashContext(component));
+
         } else {
             value = component.getText();
         }
@@ -47,9 +73,6 @@ public class CAutoCompleteTemplate
     public void applyValues(CAutoComplete<?> component) {
         getParameterValue(component, "text").ifPresent(component::setText);
     }
-
-    @Inject
-    CoreRequestInfo info;
 
     @Inject
     JsonRenderResultFactory resultFactory;

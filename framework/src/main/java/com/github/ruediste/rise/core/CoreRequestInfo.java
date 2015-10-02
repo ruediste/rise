@@ -94,4 +94,7 @@ public class CoreRequestInfo {
         this.objectActionInvocation = objectActionInvocation;
     }
 
+    public String getSessionId() {
+        return getServletRequest().getSession().getId();
+    }
 }

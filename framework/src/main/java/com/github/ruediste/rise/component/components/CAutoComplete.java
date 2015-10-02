@@ -44,11 +44,6 @@ public class CAutoComplete<T> extends CInputBase<CAutoComplete<T>> {
      */
     private Function<T, String> valueFunction;
 
-    private List<T> oldSuggestions;
-    private List<T> currentSuggestions;
-
-    private int currentSuggestionListNr;
-
     public Function<String, List<T>> getSearchFunction() {
         return searchFunction;
     }
@@ -105,27 +100,4 @@ public class CAutoComplete<T> extends CInputBase<CAutoComplete<T>> {
         return this;
     }
 
-    public List<T> getOldSuggestions() {
-        return oldSuggestions;
-    }
-
-    public void setOldSuggestions(List<T> oldSuggestions) {
-        this.oldSuggestions = oldSuggestions;
-    }
-
-    public List<T> getCurrentSuggestions() {
-        return currentSuggestions;
-    }
-
-    public void setCurrentSuggestions(List<T> currentSuggestions) {
-        this.currentSuggestions = currentSuggestions;
-    }
-
-    public int getCurrentSuggestionListNr() {
-        return currentSuggestionListNr;
-    }
-
-    public void setCurrentSuggestionListNr(int currentSuggestionListNr) {
-        this.currentSuggestionListNr = currentSuggestionListNr;
-    }
 }
