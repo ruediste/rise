@@ -21,7 +21,7 @@ import com.github.ruediste.rise.integration.RiseCanvas;
  * only once.
  * </p>
  */
-public interface ComponentTemplate<T extends Component> {
+public interface IComponentTemplate<T extends Component> {
 
     void doRender(T component, RiseCanvas<?> html);
 

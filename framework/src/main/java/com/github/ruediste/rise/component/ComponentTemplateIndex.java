@@ -7,13 +7,13 @@ import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 
-import com.github.ruediste.rise.component.components.ComponentTemplate;
+import com.github.ruediste.rise.component.components.IComponentTemplate;
 import com.github.ruediste.rise.component.components.DefaultTemplate;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.salta.jsr330.Injector;
 
 /**
- * Index storing the {@link ComponentTemplate}s associated with a
+ * Index storing the {@link IComponentTemplate}s associated with a
  * {@link Component}. The index typically looks up templates using the
  * {@link DefaultTemplate} annotation.
  */
@@ -26,17 +26,17 @@ public class ComponentTemplateIndex {
     @Inject
     Injector injector;
 
-    private ConcurrentHashMap<Class<?>, ComponentTemplate<?>> templates = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Class<?>, IComponentTemplate<?>> templates = new ConcurrentHashMap<>();
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <T extends Component> ComponentTemplate<T> getTemplate(T component) {
+    public <T extends Component> IComponentTemplate<T> getTemplate(T component) {
         return getTemplate((Class) component.getClass());
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Component> ComponentTemplate<T> getTemplate(
+    public <T extends Component> IComponentTemplate<T> getTemplate(
             Class<T> component) {
-        return (ComponentTemplate<T>) templates.computeIfAbsent(component,
+        return (IComponentTemplate<T>) templates.computeIfAbsent(component,
                 cls -> {
                     DefaultTemplate defaultTemplate = component
                             .getAnnotation(DefaultTemplate.class);
@@ -51,12 +51,12 @@ public class ComponentTemplateIndex {
     }
 
     public <T extends Component> void registerTemplate(Class<T> component,
-            ComponentTemplate<T> template) {
+            IComponentTemplate<T> template) {
         templates.put(component, template);
     }
 
     public <T extends Component> void registerTemplate(Class<T> component,
-            Class<? extends ComponentTemplate<T>> template) {
+            Class<? extends IComponentTemplate<T>> template) {
         templates.put(component, injector.getInstance(template));
     }
 }

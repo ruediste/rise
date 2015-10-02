@@ -5,7 +5,7 @@ import javax.inject.Named;
 
 import org.slf4j.Logger;
 
-import com.github.ruediste.rise.component.components.ComponentTemplate;
+import com.github.ruediste.rise.component.components.IComponentTemplate;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.RequestParseResult;
@@ -88,7 +88,7 @@ public class AjaxRequestParser implements RequestParser {
 
                 // get the component
                 PageHandle page = sessionInfo.getPageHandle(pageNr);
-                ComponentTemplate<Component> template;
+                IComponentTemplate<Component> template;
                 Component component;
                 synchronized (page.lock) {
                     pageScopeHandler.enter(page.instances);

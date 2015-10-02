@@ -13,7 +13,7 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKno
 import com.github.ruediste.rise.core.web.HttpRenderResult;
 
 public abstract class ComponentTemplateBase<T extends Component>
-        implements ComponentTemplate<T> {
+        implements IComponentTemplate<T> {
 
     @Inject
     protected ComponentUtil util;
