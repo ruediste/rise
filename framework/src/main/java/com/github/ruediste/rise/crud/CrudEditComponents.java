@@ -2,6 +2,7 @@ package com.github.ruediste.rise.crud;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.Collection;
+import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -40,6 +41,7 @@ import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.github.ruediste1.i18n.label.Labeled;
+import com.google.common.primitives.Primitives;
 
 /**
  * Please not that components can operate directly on the entity instead of
@@ -94,23 +96,8 @@ public class CrudEditComponents extends
                                 .bindText(() -> (String) decl.getProperty()
                                         .getValue(group.proxy()))));
 
-        addFactory(
-                decl -> Long.TYPE.equals(decl.getAttribute().getJavaType())
-                        || Long.class.equals(decl.getAttribute().getJavaType()),
-                (decl, entityType, group) -> {
-                    CInput input = new CInput(InputType.number)
-                            .setLabel(labelUtil
-                                    .getPropertyLabel(decl.getProperty()))
-                            .TEST_NAME(decl.getAttribute().getName());
-
-                    BindingUtil
-                            .bind(input, group,
-                                    entity -> input.setValue(String.valueOf(decl
-                                            .getProperty().getValue(entity))),
-                            entity -> decl.getProperty().setValue(entity,
-                                    Long.parseLong(input.getValue())));
-                    return new CFormGroup(input);
-                });
+        addNumberFactory(Long.class, Long::parseLong);
+        addNumberFactory(Integer.class, Integer::parseInt);
 
         addFactory(
                 decl -> decl.getAttribute()
@@ -220,6 +207,27 @@ public class CrudEditComponents extends
                         ._bFormGroup()));
         //@formatter:on
 
+    }
+
+    private <T> void addNumberFactory(Class<T> boxCls,
+            Function<String, T> parse) {
+        addFactory(
+                decl -> boxCls.equals(
+                        Primitives.wrap(decl.getAttribute().getJavaType())),
+                (decl, entityType, group) -> {
+                    CInput input = new CInput(InputType.number)
+                            .setLabel(labelUtil
+                                    .getPropertyLabel(decl.getProperty()))
+                            .TEST_NAME(decl.getAttribute().getName());
+
+                    BindingUtil
+                            .bind(input, group,
+                                    entity -> input.setValue(String.valueOf(decl
+                                            .getProperty().getValue(entity))),
+                            entity -> decl.getProperty().setValue(entity,
+                                    parse.apply(input.getValue())));
+                    return new CFormGroup(input);
+                });
     }
 
     @Labeled

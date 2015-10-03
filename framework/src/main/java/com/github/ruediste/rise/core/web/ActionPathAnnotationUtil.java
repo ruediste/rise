@@ -29,7 +29,7 @@ public class ActionPathAnnotationUtil {
                     m.visibleAnnotations, ActionPath.class)) {
                 String pathValue = AsmUtil.getString(path, "value");
                 result.pathInfos.add(pathValue);
-                if (AsmUtil.getBoolean(path, "primary")) {
+                if (AsmUtil.tryGetBoolean(path, "primary").orElse(false)) {
                     if (primaryPath != null) {
                         throw new RuntimeException(
                                 "Multiple ActionPath annotations with primary=true found on method "

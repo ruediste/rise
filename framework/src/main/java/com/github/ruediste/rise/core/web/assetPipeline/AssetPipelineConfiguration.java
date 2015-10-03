@@ -10,13 +10,13 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.servlet.ServletConfig;
 
+import com.github.ruediste.rise.nonReloadable.NonRestartable;
+import com.github.ruediste.salta.standard.Stage;
+
 import ro.isdc.wro.extensions.processor.css.Less4jProcessor;
 import ro.isdc.wro.extensions.processor.css.SassCssProcessor;
 import ro.isdc.wro.extensions.processor.css.YUICssCompressorProcessor;
 import ro.isdc.wro.model.resource.processor.impl.js.JSMinProcessor;
-
-import com.github.ruediste.rise.nonReloadable.NonRestartable;
-import com.github.ruediste.salta.standard.Stage;
 
 @Singleton
 public class AssetPipelineConfiguration {
@@ -79,7 +79,8 @@ public class AssetPipelineConfiguration {
     public final Map<String, String> contentTypeMap = new HashMap<>();
 
     {
-
+        contentTypeMap.put("png", "image/png");
+        contentTypeMap.put("html", "text/html");
     }
 
     /**

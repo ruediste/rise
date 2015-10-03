@@ -43,10 +43,10 @@ public class CrudPropertyFilters
     @TMessages
     public interface Messages {
         @TMessage("Minimum of {property}")
-        PatternString minLong(LString property);
+        PatternString minNumber(LString property);
 
         @TMessage("Maximum of {property}")
-        PatternString maxLong(LString property);
+        PatternString maxNumber(LString property);
 
         TranslatedString min();
 
@@ -94,74 +94,78 @@ public class CrudPropertyFilters
                             };
                         }
 
-                        if (Long.class.equals(Primitives.wrap(cls))) {
-                            LString propertyLabel = labelUtil
-                                    .getPropertyLabel(property);
-                            CInput min = new CInput(InputType.number)
-                                    .setLabel(messages.minLong(propertyLabel))
-                                    .setValue("").setRenderFormGroup(false);
-
-                            CInput max = new CInput(InputType.number)
-                                    .setLabel(messages.maxLong(propertyLabel))
-                                    .setValue("").setRenderFormGroup(false);
-
-                            // @formatter:off
-                            Component component = componentFactoryUtil.toComponent((BootstrapRiseCanvas<?> html) ->
-                              html
-                              .bFormGroup()
-                                .label().content(labelUtil.getPropertyLabel(property))
-                                  .div().BformInline()
-                                    .bInputGroup().CLASS(x->x.sm(6))
-                                      .span().BinputGroupAddon().content(messages.min())
-                                      .add(min)
-                                    ._bInputGroup()
-                                    .bInputGroup().CLASS(x->x.sm(6))
-                                      .span().BinputGroupAddon().content(messages.max())
-                                      .add(max)
-                                    ._bInputGroup()
-                                ._div()
-                              ._bFormGroup());
-                            // @formatter:on
-
-                            return new CrudPropertyFilter() {
-
-                                @Override
-                                public Component getComponent() {
-                                    return component;
-                                }
-
-                                @Override
-                                public void applyFilter(
-                                        PersistenceFilterContext ctx) {
-                                    if (!Strings
-                                            .isNullOrEmpty(min.getValue())) {
-                                        ctx.addWhere(
-                                                ctx.cb().greaterThanOrEqualTo(
-                                                        ctx.root()
-                                                                .get(decl
-                                                                        .getProperty()
-                                                                        .getName()),
-                                                        Long.parseLong(min
-                                                                .getValue())));
-
-                                    }
-                                    if (!Strings
-                                            .isNullOrEmpty(max.getValue())) {
-                                        ctx.addWhere(ctx.cb().lessThanOrEqualTo(
-                                                ctx.root()
-                                                        .get(decl.getProperty()
-                                                                .getName()),
-                                                Long.parseLong(
-                                                        max.getValue())));
-
-                                    }
-
-                                }
-                            };
-                        }
+                        CrudPropertyFilter result = checkNumber(decl, cls,
+                                property, Long.class, Long::parseLong);
+                        if (result != null)
+                            return result;
+                        result = checkNumber(decl, cls, property, Integer.class,
+                                Integer::parseInt);
+                        if (result != null)
+                            return result;
                         return null;
                     }
+
                 });
+
+    }
+
+    private <T extends Comparable> CrudPropertyFilter checkNumber(
+            PersistentProperty decl, Class<?> cls, PropertyInfo property,
+            Class<T> boxCls, Function<String, T> parse) {
+        if (!boxCls.equals(Primitives.wrap(cls)))
+            return null;
+
+        LString propertyLabel = labelUtil.getPropertyLabel(property);
+        CInput min = new CInput(InputType.number)
+                .setLabel(messages.minNumber(propertyLabel)).setValue("")
+                .setRenderFormGroup(false);
+
+        CInput max = new CInput(InputType.number)
+                .setLabel(messages.maxNumber(propertyLabel)).setValue("")
+                .setRenderFormGroup(false);
+
+        // @formatter:off
+            Component component = componentFactoryUtil.toComponent((BootstrapRiseCanvas<?> html) ->
+              html
+              .bFormGroup()
+                .label().content(labelUtil.getPropertyLabel(property))
+                  .div().BformInline()
+                    .bInputGroup().CLASS(x->x.sm(6))
+                      .span().BinputGroupAddon().content(messages.min())
+                      .add(min)
+                    ._bInputGroup()
+                    .bInputGroup().CLASS(x->x.sm(6))
+                      .span().BinputGroupAddon().content(messages.max())
+                      .add(max)
+                    ._bInputGroup()
+                ._div()
+              ._bFormGroup());
+            // @formatter:on
+
+        return new CrudPropertyFilter() {
+
+            @Override
+            public Component getComponent() {
+                return component;
+            }
+
+            @Override
+            public void applyFilter(PersistenceFilterContext ctx) {
+                if (!Strings.isNullOrEmpty(min.getValue())) {
+                    ctx.addWhere(ctx.cb().greaterThanOrEqualTo(
+                            ctx.root().get(decl.getProperty().getName()),
+                            parse.apply(min.getValue())));
+
+                }
+                if (!Strings.isNullOrEmpty(max.getValue())) {
+                    ctx.addWhere(ctx.cb().lessThanOrEqualTo(
+                            ctx.root().get(decl.getProperty().getName()),
+                            parse.apply(max.getValue())));
+
+                }
+
+            }
+        };
     }
 
 }

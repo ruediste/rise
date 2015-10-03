@@ -22,8 +22,18 @@ public abstract class AssetDir {
      * name of the final directory. If null is returned (the default), the
      * absolute location is used. The final {@link PathInfo} will be prefixed
      * with {@link AssetPipelineConfiguration#assetPathInfoPrefix}.
+     * 
+     * <p>
+     * can be overridden by {@link #getPathInfoPrefix()}
      */
     protected String getName() {
+        return null;
+    }
+
+    /**
+     * Path info prefix to use. This overrides {@link #getName()}
+     */
+    protected String getPathInfoPrefix() {
         return null;
     }
 

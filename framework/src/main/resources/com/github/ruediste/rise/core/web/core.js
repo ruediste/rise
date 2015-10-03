@@ -108,7 +108,7 @@ var rise = (function() {
 				});
 
 		// start polling for application restart
-		pollForApplicationRestart();
+		 pollForApplicationRestart();
 
 		// trigger an initial reload
 		onReload.fire($(document));

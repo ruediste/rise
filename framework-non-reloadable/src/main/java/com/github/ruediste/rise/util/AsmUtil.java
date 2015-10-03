@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
@@ -256,15 +257,21 @@ public class AsmUtil {
                 "Attribute " + attributeName + " not found on " + node.desc);
     }
 
-    public static boolean getBoolean(AnnotationNode node,
+    public static Optional<Boolean> tryGetBoolean(AnnotationNode node,
             String attributeName) {
         if (node.values != null)
             for (int i = 0; i < node.values.size() - 1; i += 2) {
                 if (Objects.equals(attributeName, node.values.get(i)))
-                    return (Boolean) node.values.get(i + 1);
+                    return Optional.of((Boolean) node.values.get(i + 1));
             }
-        throw new RuntimeException(
-                "Attribute " + attributeName + " not found on " + node.desc);
+        return Optional.empty();
+    }
+
+    public static boolean getBoolean(AnnotationNode node,
+            String attributeName) {
+        return tryGetBoolean(node, attributeName)
+                .orElseThrow(() -> new RuntimeException("Attribute "
+                        + attributeName + " not found on " + node.desc));
     }
 
     public static Type getType(AnnotationNode node, String attributeName) {

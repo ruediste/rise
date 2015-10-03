@@ -71,7 +71,9 @@ public class CrudDisplayComponents extends
         addFactory(
                 p -> Long.class
                         .equals(Primitives.wrap(p.getAttribute().getJavaType()))
-                        || String.class.equals(p.getAttribute().getJavaType()),
+                        || Integer.class.equals(
+                                Primitives.wrap(p.getAttribute().getJavaType()))
+                || String.class.equals(p.getAttribute().getJavaType()),
                 (property, group) -> {
                     return toComponentBound(() -> group.proxy(),
                             html -> html
