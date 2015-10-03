@@ -154,7 +154,9 @@ public abstract class RequestMapperBase implements RequestMapper {
                     // determine the path infos to register under
                     MethodPathInfos pathInfos = ActionPathAnnotationUtil
                             .getPathInfos(m,
-                                    () -> "/" + controllerName + "." + m.name);
+                                    () -> "/" + controllerName
+                                            + ("index".equals(m.name) ? ""
+                                                    : "." + m.name));
 
                     // add the path infos for the method to the respective maps
                     if (Type.getArgumentTypes(m.desc).length == 0) {
