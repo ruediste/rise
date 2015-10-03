@@ -1,9 +1,11 @@
 package com.github.ruediste.rise.nonReloadable.front.reload;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,6 +26,7 @@ import com.github.ruediste.rise.nonReloadable.CoreConfigurationNonRestartable;
 import com.github.ruediste.rise.nonReloadable.front.StartupTimeLogger;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassPathWalker.ClassPathVisitResult;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassPathWalker.ClassPathVisitor;
+import com.github.ruediste.rise.util.Pair;
 import com.google.common.base.Stopwatch;
 import com.google.common.io.ByteStreams;
 
@@ -48,7 +51,7 @@ public class ClassPathScanningStarter {
     public void start() {
         log.debug("Start Classpath scanning ...");
         Stopwatch watch = Stopwatch.createStarted();
-        ConcurrentHashMap<String, ClassNode> classes = new ConcurrentHashMap<>();
+        ConcurrentHashMap<String, Pair<ClassNode, List<String>>> classes = new ConcurrentHashMap<>();
         Set<Path> rootDirs = Collections
                 .newSetFromMap(new ConcurrentHashMap<>());
 
@@ -87,9 +90,10 @@ public class ClassPathScanningStarter {
                             log.trace("not scanning {}", className);
                             return;
                         }
-                        log.trace("scanning class {}", className);
+                        String internalClassName = className.replace('.', '/');
+                        log.trace("scanning class {}", internalClassName);
 
-                        if (classes.containsKey(className))
+                        if (classes.containsKey(internalClassName))
                             return;
 
                         byte[] bb = null;
@@ -101,10 +105,10 @@ public class ClassPathScanningStarter {
                         if (bb != null) {
                             final byte[] b = bb;
                             executor.execute(() -> {
-                                if (classes.containsKey(className))
+                                if (classes.containsKey(internalClassName))
                                     return;
-                                ClassNode cls = readClass(b);
-                                classes.putIfAbsent(className, cls);
+                                classes.putIfAbsent(internalClassName,
+                                        readClass(b));
                             });
                         }
 
@@ -112,8 +116,13 @@ public class ClassPathScanningStarter {
                 });
 
         classChangeNotifier.initialize(trx -> {
-            if (trx.isInitial)
-                trx.addedClasses.addAll(classes.values());
+            if (trx.isInitial) {
+                classes.entrySet().forEach(e -> {
+                    trx.addedClasses.add(e.getValue().getA());
+                    trx.addedClassesMembers.put(e.getKey(),
+                            e.getValue().getB());
+                });
+            }
         });
 
         StartupTimeLogger.stopAndLog("Classpath Scanning", watch);
@@ -123,19 +132,19 @@ public class ClassPathScanningStarter {
         fileChangeNotifier.start(rootDirs, config.fileChangeSettleDelayMs);
     }
 
-    protected ClassNode readClass(byte[] bb) {
-        ClassNode node = new ClassNode();
-        new ClassReader(bb).accept(node, config.classScanningFlags);
-        return node;
+    protected Pair<ClassNode, List<String>> readClass(byte[] bb) {
+        return readClass(() -> new ByteArrayInputStream(bb));
     }
 
-    protected ClassNode readClass(Supplier<InputStream> inputStreamSupplier) {
+    protected Pair<ClassNode, List<String>> readClass(
+            Supplier<InputStream> inputStreamSupplier) {
         ClassNode node = new ClassNode();
+        MemberOrderVisitor orderVisitor = new MemberOrderVisitor(node);
         try (InputStream in = inputStreamSupplier.get()) {
-            new ClassReader(in).accept(node, config.classScanningFlags);
+            new ClassReader(in).accept(orderVisitor, config.classScanningFlags);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return node;
+        return Pair.of(node, orderVisitor.getMembers());
     }
 }

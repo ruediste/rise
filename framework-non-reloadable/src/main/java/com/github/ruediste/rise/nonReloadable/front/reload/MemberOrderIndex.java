@@ -40,9 +40,9 @@ public class MemberOrderIndex {
     Map<String, Map<String, Integer>> classes = new HashMap<>();
 
     void onChange(ClassChangeTransaction trx) {
-        log.info("change occurred. added:" + trx.addedClasses.size()
+        log.info("change occurred. added:" + trx.addedClassesMembers.size()
                 + " removed:" + trx.removedClasses.size() + " modified:"
-                + trx.modifiedClasses.size());
+                + trx.modifiedClassesMembers.size());
         Stream.concat(trx.removedClasses.stream(),
                 trx.modifiedClasses.stream().map(n -> n.name))
                 .forEach(classes::remove);
