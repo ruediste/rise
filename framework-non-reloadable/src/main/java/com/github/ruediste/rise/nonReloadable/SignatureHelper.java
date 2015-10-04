@@ -48,6 +48,10 @@ public class SignatureHelper {
     }
 
     public Mac createHasher() {
+        return createHasher(secret);
+    }
+
+    public Mac createHasher(byte[] secret) {
         try {
             String algorithm = "HmacSHA256";
             final SecretKeySpec keySpec = new SecretKeySpec(secret, algorithm);
