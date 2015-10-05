@@ -37,14 +37,16 @@ var rise = (function() {
 	var onReload = $.Callbacks();
 
 	var extractData = function(data, element) {
-		var send = element.data("rise-send");
+		var send = element.data("riseSend");
 		if (send !== undefined) {
 			send.split(" ").forEach(function(e) {
-				data.push(generateKey(element,e), element.data(e));
+				var value=element.data(e);
+				if (value)
+					data.push({name:generateKey(element,e), value: value});
 			});
 		}
 
-		element.children().each(function(e) {
+		element.children().each(function(idx, e) {
 			extractData(data, $(e));
 		});
 	}
@@ -98,11 +100,8 @@ var rise = (function() {
 				"click",
 				".rise_button",
 				function() {
-					// add the button id as hidden input
-					$(this).after(
-							"<input type=\"text\" style=\"display: none;\" name=\""
-									+ generateKey($(this), "clicked")
-									+ "\" />");
+					$(this).data("riseSend","riseIntClicked");
+					$(this).data("riseIntClicked","clicked");
 					$(this).trigger("rise_viewReload");
 					return false;
 				});
@@ -123,18 +122,17 @@ var rise = (function() {
 
 // register autocomplete
 rise.onReload.add(function() {
-	var tags = [ "c++", "java", "php", "coldfusion", "javascript", "asp",
-			"ruby" ];
-	$(".rise_autocomplete")
-			.autocomplete(
+	$(".rise_autocomplete").each(function(idx,element){
+			element=$(element);
+			element.autocomplete(
 					{
-						source : function(request, response) {
-							var matcher = new RegExp("^"
-									+ $.ui.autocomplete
-											.escapeRegex(request.term), "i");
-							response($.grep(tags, function(item) {
-								return matcher.test(item);
-							}));
+						source : element.data("riseIntSource"),
+						change: function(event, ui){
+							if (ui.item)
+								element.data("riseIntChosenItem",ui.item.id);
+							else
+								element.removeData("riseIntChosenItem");
 						}
 					});
+	});
 });

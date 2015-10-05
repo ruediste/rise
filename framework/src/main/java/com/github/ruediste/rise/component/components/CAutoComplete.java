@@ -1,7 +1,6 @@
 package com.github.ruediste.rise.component.components;
 
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * Text Field with support for autocompletion.
@@ -11,93 +10,118 @@ import java.util.function.Function;
  * 
  */
 @DefaultTemplate(CAutoCompleteTemplate.class)
-public class CAutoComplete<T> extends CInputBase<CAutoComplete<T>> {
+public class CAutoComplete<Titem, Tid>
+        extends CInputBase<CAutoComplete<Titem, Tid>> {
 
-    /**
-     * Item which was chosen from the suggestions. Will be null if the user
-     * edited the value afterwards
-     */
-    private T chosenItem;
+    public interface CAutoCompleteParameters<Titem, Tid> {
+        /**
+         * Function to search items for a search term
+         */
+        List<Titem> search(String term);
 
-    /**
-     * Text the user entered. Null if an item was chosen
-     */
+        /**
+         * Function to extract the suggested text from an item
+         */
+        String getSuggestion(Titem item);
+
+        /**
+         * Function to extract the value to set the text field to from an item
+         */
+        String getValue(Titem item);
+
+        /**
+         * Get the serializable form of an item, which will be signed and sent
+         * to the client.
+         */
+        Tid getId(Titem item);
+
+        /**
+         * Load the item for a an id.
+         */
+        Titem load(Tid id);
+    }
+
+    private Titem chosenItem;
+
     private String text;
 
-    /**
-     * If set to true, an item has been chosen and the text is null.
-     */
     private boolean itemChosen;
 
+    private final CAutoCompleteParameters<Titem, Tid> parameters;
+
+    CAutoComplete() {
+        parameters = null;
+    }
+
+    public CAutoComplete(CAutoCompleteParameters<Titem, Tid> parameters) {
+        this.parameters = parameters;
+    }
+
     /**
-     * Function to search items for a search term
+     * If true, an item has been chosen and the text is null.
      */
-    private Function<String, List<T>> searchFunction;
-
-    /**
-     * Function to extract the suggested text from an item
-     */
-    private Function<T, String> suggestionFunction;
-
-    /**
-     * Function to extract the value to set the text field to from an item
-     */
-    private Function<T, String> valueFunction;
-
-    public Function<String, List<T>> getSearchFunction() {
-        return searchFunction;
-    }
-
-    public CAutoComplete<T> setSearchFunction(
-            Function<String, List<T>> searchFunction) {
-        this.searchFunction = searchFunction;
-        return this;
-    }
-
-    public Function<T, String> getSuggestionFunction() {
-        return suggestionFunction;
-    }
-
-    public CAutoComplete<T> setSuggestionFunction(
-            Function<T, String> suggestionFunction) {
-        this.suggestionFunction = suggestionFunction;
-        return this;
-    }
-
-    public Function<T, String> getValueFunction() {
-        return valueFunction;
-    }
-
-    public CAutoComplete<T> setValueFunction(
-            Function<T, String> valueFunction) {
-        this.valueFunction = valueFunction;
-        return this;
-    }
-
     public boolean isItemChosen() {
         return itemChosen;
     }
 
-    public T getChosenItem() {
+    /**
+     * The current item of the auto complete. If the user did not choose an
+     * item, but edited the text before calling this method, a search is
+     * triggered. If only a single element is found it is returned. Otherwise
+     * (user chose an item), the chosen item is returned
+     */
+    public Titem getItem() {
+        if (isItemChosen())
+            return chosenItem;
+        List<Titem> items = getParameters().search(getText());
+        if (items.size() == 1)
+            return items.get(0);
+        return null;
+    }
+
+    /**
+     * Set the currently chosen item. Equivalent to
+     * {@link #setChosenItem(Object)}
+     */
+    public CAutoComplete<Titem, Tid> setItem(Titem item) {
+        return setChosenItem(item);
+    }
+
+    /**
+     * Item which was chosen from the suggestions. Will be null if the user
+     * edited the value text afterwards.
+     * 
+     * @see #getText()
+     */
+    public Titem getChosenItem() {
         return chosenItem;
     }
 
-    public CAutoComplete<T> setChosenItem(T chosenItem) {
+    public CAutoComplete<Titem, Tid> setChosenItem(Titem chosenItem) {
         this.chosenItem = chosenItem;
         this.text = null;
         itemChosen = true;
         return this;
     }
 
+    /**
+     * Text the user entered. Null if an item was chosen
+     * 
+     * @see #getChosenItem()
+     */
     public String getText() {
         return text;
     }
 
-    public CAutoComplete<T> setText(String text) {
+    public CAutoComplete<Titem, Tid> setText(String text) {
         this.text = text;
         this.chosenItem = null;
         itemChosen = false;
         return this;
+    }
+
+    public CAutoCompleteParameters<Titem, Tid> getParameters() {
+        return parameters;
     }
 
 }

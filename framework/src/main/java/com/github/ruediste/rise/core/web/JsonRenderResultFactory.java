@@ -15,7 +15,7 @@ public class JsonRenderResultFactory {
     public HttpRenderResult jsonRenderResult(Object result) {
         return new ContentRenderResult(
                 JSONValue.toJSONString(result).getBytes(Charsets.UTF_8),
-                "text/json; charset=UTF-8");
+                "application/json; charset=UTF-8");
 
     }
 }

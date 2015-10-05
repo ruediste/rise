@@ -63,6 +63,7 @@ public class AjaxRequestParser implements RequestParser {
         @Override
         public void handle() {
             componentRequestInfo.setComponentRequest(true);
+            componentRequestInfo.setAjaxRequest(true);
             try {
                 String suffix = req.getPathInfo()
                         .substring(config.getAjaxPath().length());
@@ -88,6 +89,7 @@ public class AjaxRequestParser implements RequestParser {
 
                 // get the component
                 PageHandle page = sessionInfo.getPageHandle(pageNr);
+                componentRequestInfo.setPageHandle(page);
                 IComponentTemplate<Component> template;
                 Component component;
                 synchronized (page.lock) {

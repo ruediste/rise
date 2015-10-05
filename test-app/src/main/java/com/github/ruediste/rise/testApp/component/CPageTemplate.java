@@ -10,6 +10,7 @@ import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.bootstrap.BootstrapBundleUtil;
 import com.github.ruediste.rise.core.web.jQuery.JQueryAssetBundle;
+import com.github.ruediste.rise.core.web.jQueryUi.JQueryUiAssetBundle;
 import com.github.ruediste.rise.integration.RiseCanvas;
 import com.github.ruediste.rise.integration.RisePageTemplate;
 import com.github.ruediste.rise.integration.RisePageTemplate.RisePageTemplateParameters;
@@ -27,11 +28,15 @@ public class CPageTemplate extends ComponentTemplateBase<CPage> {
         @Inject
         JQueryAssetBundle jQueryAssetBundle;
 
+        @Inject
+        JQueryUiAssetBundle jQueryUiAssetBundle;
+
         AssetBundleOutput out = new AssetBundleOutput(this);
 
         @Override
         public void initialize() {
             jQueryAssetBundle.out.send(out);
+            jQueryUiAssetBundle.out.send(out);
             bootstrapBundleUtil.loadAssets().all().send(out);
             coreBundle.out.send(out);
         }

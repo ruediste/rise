@@ -14,6 +14,8 @@ public class ComponentRequestInfo {
 
     private boolean isReloadRequest;
 
+    private boolean isAjaxRequest;
+
     public HttpRenderResult getClosePageResult() {
         return closePageResult;
     }
@@ -44,5 +46,13 @@ public class ComponentRequestInfo {
 
     public void setReloadRequest(boolean isReloadRequest) {
         this.isReloadRequest = isReloadRequest;
+    }
+
+    public boolean isAjaxRequest() {
+        return isAjaxRequest;
+    }
+
+    public void setAjaxRequest(boolean isAjaxRequest) {
+        this.isAjaxRequest = isAjaxRequest;
     }
 }
