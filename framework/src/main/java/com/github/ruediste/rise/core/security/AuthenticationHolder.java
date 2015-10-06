@@ -33,7 +33,13 @@ public interface AuthenticationHolder {
      */
     void checkAutheticationPresetn();
 
+    /**
+     * Run code with a given subject
+     */
     void withAuthentication(AuthenticationSuccess subject, Runnable action);
 
+    /**
+     * Run code with a given subject
+     */
     <T> T withAuthentication(AuthenticationSuccess subject, Supplier<T> action);
 }

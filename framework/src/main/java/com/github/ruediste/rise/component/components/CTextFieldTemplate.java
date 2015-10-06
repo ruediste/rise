@@ -17,7 +17,8 @@ public class CTextFieldTemplate
 
     @Override
     public void doRender(CTextField component, BootstrapRiseCanvas<?> html) {
-        html.input().TYPE("text").BformControl().VALUE(component.getText())
+        html.input().TYPE(component.isPassword() ? "password" : "text")
+                .BformControl().VALUE(component.getText())
                 .TEST_NAME(component.TEST_NAME())
                 .NAME(util.getKey(component, "value"))
                 .ID(util.getComponentId(component));

@@ -110,6 +110,7 @@ public class TestRestartableApplication extends RestartableApplicationBase {
         config.setRememberMeTokenTheftHandler((util, s) -> util
                 .go(LoginController.class).tokenTheftDetected(s));
 
+        // security
         rememberMeAuthenticationProvider.setDao(rememberMeTokenDao);
         defaultAuthenticationManager
                 .addProvider(rememberMeAuthenticationProvider);

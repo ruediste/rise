@@ -26,6 +26,7 @@ import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.RequestMapper;
 import com.github.ruediste.rise.core.RequestParser;
+import com.github.ruediste.rise.core.security.web.WebRequestAuthenticator;
 import com.github.ruediste.rise.core.web.ActionResultRenderer;
 
 @Singleton
@@ -101,6 +102,8 @@ public class ComponentConfiguration {
          */
         public Supplier<ChainedRequestHandler> actionResultRendererSupplier;
 
+        public Supplier<ChainedRequestHandler> authenticator;
+
         /**
          * Handler creating the page, including the controller and the view
          */
@@ -126,6 +129,7 @@ public class ComponentConfiguration {
             Provider<ComponentRequestMapperImpl> mapper,
             Provider<ComponentControllerInvoker> invoker,
             Provider<ActionResultRenderer> actionResultRenderer,
+            Provider<WebRequestAuthenticator> authenticator,
             Provider<PageCreationHandler> pageCreationHandler,
             Provider<InitialPagePersistenceHandler> initialPagePersistenceHandler,
             Provider<ViewRenderer> viewRenderer) {
@@ -134,6 +138,9 @@ public class ComponentConfiguration {
 
         initialChain.actionResultRendererSupplier = actionResultRenderer::get;
         initialHandlerSuppliers.add(initialChain.actionResultRendererSupplier);
+
+        initialChain.authenticator = authenticator::get;
+        initialHandlerSuppliers.add(initialChain.authenticator);
 
         initialChain.pageCreationHandler = pageCreationHandler::get;
         initialHandlerSuppliers.add(initialChain.pageCreationHandler);

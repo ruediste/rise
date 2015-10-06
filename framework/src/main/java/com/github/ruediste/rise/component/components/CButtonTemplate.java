@@ -86,7 +86,7 @@ public class CButtonTemplate extends BootstrapComponentTemplateBase<CButton> {
     public void raiseEvents(CButton component) {
         if (component.isDisabled())
             return;
-        if (util.isParameterDefined(component, "clicked")
+        if (util.isParameterDefined(component, "riseIntClicked")
                 && component.getHandler() != null) {
             component.getHandler().run();
         }

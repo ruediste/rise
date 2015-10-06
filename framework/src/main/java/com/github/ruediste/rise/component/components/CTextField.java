@@ -7,6 +7,7 @@ import com.google.common.base.Supplier;
 public class CTextField extends CInputBase<CTextField> {
 
     private String text;
+    private boolean isPassword;
 
     public String getText() {
         return text;
@@ -33,4 +34,14 @@ public class CTextField extends CInputBase<CTextField> {
                 .bind(this, view -> view.setText(binder.get())).getB());
         return self();
     }
+
+    public CTextField toPassword() {
+        isPassword = true;
+        return this;
+    }
+
+    public boolean isPassword() {
+        return isPassword;
+    }
+
 }
