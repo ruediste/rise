@@ -10,6 +10,7 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 
 import com.github.ruediste.rise.core.persistence.PersistenceRestartableModule;
 import com.github.ruediste.rise.core.scopes.HttpScopeModule;
+import com.github.ruediste.rise.core.security.authorization.MethodAuthorizationManager;
 import com.github.ruediste.rise.core.web.assetDir.AssetDir;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.nonReloadable.NonRestartable;
@@ -50,7 +51,7 @@ public class CoreRestartableModule extends AbstractModule {
         registerPermanentRule();
         registerAssetBundleScopeRule();
         registerMessagesRule();
-
+        new MethodAuthorizationManager().register(binder());
     }
 
     private void registerMessagesRule() {

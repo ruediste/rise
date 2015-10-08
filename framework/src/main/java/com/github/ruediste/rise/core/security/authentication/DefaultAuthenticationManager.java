@@ -10,6 +10,10 @@ import com.github.ruediste.rise.util.GenericEvent;
 import com.github.ruediste.rise.util.Pair;
 import com.google.common.reflect.TypeToken;
 
+/**
+ * {@link AuthenticationManager} implementation using
+ * {@link AuthenticationProvider}s to perform the actual authentications.
+ */
 @Singleton
 public class DefaultAuthenticationManager implements AuthenticationManager {
 

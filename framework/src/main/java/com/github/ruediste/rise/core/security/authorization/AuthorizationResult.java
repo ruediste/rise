@@ -2,8 +2,16 @@ package com.github.ruediste.rise.core.security.authorization;
 
 import java.util.List;
 
+import com.github.ruediste.rise.core.security.authentication.AuthenticationSuccess;
+
+/**
+ * The outcome of checking if an {@link AuthenticationSuccess} implies a set of
+ * rights
+ */
 public class AuthorizationResult {
 
+    final private static AuthorizationResult authorized = new AuthorizationResult(
+            true, null);
     final private boolean isAuthorized;
     final private List<AuthorizationFailure> authorizationFailures;
 
@@ -14,7 +22,7 @@ public class AuthorizationResult {
     }
 
     public static AuthorizationResult authorized() {
-        return new AuthorizationResult(true, null);
+        return authorized;
     }
 
     public static AuthorizationResult failure(
@@ -28,6 +36,11 @@ public class AuthorizationResult {
 
     public List<AuthorizationFailure> getAuthorizationFailures() {
         return authorizationFailures;
+    }
+
+    public void checkAuthorized() {
+        if (!isAuthorized)
+            throw new AuthorizationException(authorizationFailures);
     }
 
 }

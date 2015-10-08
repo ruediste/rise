@@ -1,10 +1,13 @@
 package com.github.ruediste.rise.component.components;
 
+import java.util.function.Consumer;
+
 import com.github.ruediste.c3java.properties.NoPropertyAccessor;
 import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.github.ruediste.rise.component.ViolationStatus;
 import com.github.ruediste.rise.component.ViolationStatusBearer;
 import com.github.ruediste.rise.component.binding.Binding;
+import com.github.ruediste.rise.component.binding.BindingUtil;
 import com.github.ruediste.rise.component.tree.RelationsComponent;
 import com.github.ruediste1.i18n.lString.FixedLString;
 import com.github.ruediste1.i18n.lString.LString;
@@ -59,6 +62,12 @@ public class CInputBase<T extends RelationsComponent<T>>
     @NoPropertyAccessor
     public void setLabelProperty(Binding<?> binding) {
         setLabelProperty(binding.modelPath.getAccessedProperty());
+    }
+
+    public T bindLabelProperty(Consumer<T> accessor) {
+        T self = self();
+        setLabelProperty(BindingUtil.bind(self, accessor).getB());
+        return self;
     }
 
     public boolean isRenderFormGroup() {

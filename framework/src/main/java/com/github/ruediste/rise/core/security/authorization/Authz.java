@@ -13,6 +13,13 @@ import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
  */
 public class Authz {
     @SuppressWarnings({ "unchecked", "rawtypes" })
+    static public <T> AuthorizationResult performAuthorization(T target,
+            Consumer<T> invoker) {
+        return performAuthorization(target, MethodInvocationRecorder
+                .getLastInvocation((Class) target.getClass(), invoker));
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     static public <T> boolean isAuthorized(T target, Consumer<T> invoker) {
         return isAuthorized(target, MethodInvocationRecorder
                 .getLastInvocation((Class) target.getClass(), invoker));
@@ -36,8 +43,24 @@ public class Authz {
                 lastInvocation.getArguments().toArray());
     }
 
+    public static AuthorizationResult performAuthorization(Object target,
+            MethodInvocation<Object> lastInvocation) {
+        return performAuthorization(target, lastInvocation.getMethod(),
+                lastInvocation.getArguments().toArray());
+    }
+
     static public boolean isAuthorized(Object target, Method m, List<?> args) {
         return isAuthorized(target, m, args.toArray());
+    }
+
+    static public AuthorizationResult performAuthorization(Object target,
+            Method m, Object[] args) {
+        try {
+            checkAuthorized(target, m, args);
+        } catch (AuthorizationException e) {
+            return e.toAuthorizationResult();
+        }
+        return AuthorizationResult.authorized();
     }
 
     static public boolean isAuthorized(Object target, Method m, Object[] args) {
@@ -51,7 +74,7 @@ public class Authz {
 
     static public void checkAuthorized(Object target, Method m, Object[] args) {
         InjectorsHolder.getRestartableInjector()
-                .getInstance(AuthorizationManager.class)
+                .getInstance(MethodAuthorizationManager.class)
                 .checkAuthorized(target, m, args);
     }
 

@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.component.components;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Text Field with support for autocompletion.
@@ -84,7 +85,10 @@ public class CAutoComplete<Titem, Tid>
      * {@link #setChosenItem(Object)}
      */
     public CAutoComplete<Titem, Tid> setItem(Titem item) {
-        return setChosenItem(item);
+        if (item == null)
+            return setText("");
+        else
+            return setChosenItem(item);
     }
 
     /**
@@ -122,6 +126,10 @@ public class CAutoComplete<Titem, Tid>
 
     public CAutoCompleteParameters<Titem, Tid> getParameters() {
         return parameters;
+    }
+
+    public CAutoComplete<Titem, Tid> bindItem(Supplier<Titem> itemAccessor) {
+        return bindLabelProperty(c -> c.setItem(itemAccessor.get()));
     }
 
 }

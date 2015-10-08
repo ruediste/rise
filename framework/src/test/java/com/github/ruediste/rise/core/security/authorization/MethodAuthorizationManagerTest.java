@@ -22,7 +22,7 @@ import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste.salta.jsr330.Salta;
 
-public class AuthorizationManagerTest {
+public class MethodAuthorizationManagerTest {
 
     @Inject
     AuthorizationManager mgr;
@@ -34,18 +34,18 @@ public class AuthorizationManagerTest {
 
             @Override
             protected void configure() throws Exception {
-                AuthorizationManager authorizationManager = new AuthorizationManager();
-                authorizationManager.register(config());
-                bind(AuthorizationManager.class)
-                        .toInstance(authorizationManager);
+                new MethodAuthorizationManager().register(binder());
             }
         });
         injector.injectMembers(this);
-        mgr.setRightChecker(rights -> {
+        mgr.setRightsChecker((rights, auth) -> {
+            AuthorizationResultBuilder builder = new AuthorizationResultBuilder();
             for (Object right : rights) {
                 if (!allowedRights.contains(right))
-                    throw new AuthorizationException();
+                    builder.add(new AuthorizationFailure(
+                            "Right " + right + " not allowed"));
             }
+            return builder.build();
         });
         InjectorsHolder.setInjectors(null, injector);
     }

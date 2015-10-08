@@ -43,8 +43,6 @@ public class TestAutoCompleteController extends ControllerComponent {
 
                         @Override
                         public String getValue(Entry item) {
-                            if (item == null)
-                                return "";
                             return item.getValue();
                         }
 
@@ -57,17 +55,13 @@ public class TestAutoCompleteController extends ControllerComponent {
                         public Entry load(Integer id) {
                             return controller.getEntryById(id);
                         }
-                    }).bind(c -> c.setItem(controller.data().getEntry())))
+                    }).bindItem(() -> controller.data().getEntry()))
                     .add(new CButton(controller, x -> x.pushPull()))
-                    .add(toComponentBound(() -> controller.data(),
-                            html -> html.write("Chosen Item: "
-                                    + controller.data().getEntry())));
+                    .add(new CButton(controller, x -> x.push()))
+                    .add(toComponentDirect(html -> html.write("Chosen Entry: ")
+                            .span().TEST_NAME("chosenEntry").content(String
+                                    .valueOf(controller.data().getEntry()))));
 
-            // .setValueFunction(Entry::getValue)
-            // .setSuggestionFunction(Entry::getValue)
-            // .setSearchFunction(controller::search)
-            // .bind(x -> x.setChosenItem(
-            // controller.data().getEntry()));
         }
 
     }
@@ -125,6 +119,11 @@ public class TestAutoCompleteController extends ControllerComponent {
     public void pushPull() {
         data.pushDown();
         data.pullUp();
+    }
+
+    @Labeled
+    public void push() {
+        data.pushDown();
     }
 
     public List<Entry> search(String term) {

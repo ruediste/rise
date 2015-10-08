@@ -15,7 +15,7 @@ import com.github.ruediste.rise.core.security.Principal;
 import com.github.ruediste.rise.core.security.authentication.DefaultAuthenticationManager;
 import com.github.ruediste.rise.core.security.authentication.InMemoryAuthenticationProvider;
 import com.github.ruediste.rise.core.security.authorization.AuthorizationException;
-import com.github.ruediste.rise.core.security.authorization.AuthorizationManager;
+import com.github.ruediste.rise.core.security.authorization.MethodAuthorizationManager;
 import com.github.ruediste.rise.core.security.web.rememberMe.InMemoryRememberMeTokenDao;
 import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeAuthenticationProvider;
 import com.github.ruediste.rise.integration.DynamicIntegrationModule;
@@ -53,7 +53,7 @@ public class TestRestartableApplication extends RestartableApplicationBase {
     DefaultAuthenticationManager defaultAuthenticationManager;
 
     @Inject
-    AuthorizationManager authorizationManager;
+    MethodAuthorizationManager authorizationManager;
 
     @Inject
     RememberMeAuthenticationProvider rememberMeAuthenticationProvider;
@@ -86,9 +86,6 @@ public class TestRestartableApplication extends RestartableApplicationBase {
                 InitializerUtil.register(config(), Initializer.class);
                 bind(PatternStringResolver.class)
                         .to(DefaultPatternStringResolver.class);
-                AuthorizationManager mgr = new AuthorizationManager();
-                mgr.register(config());
-                bind(AuthorizationManager.class).toInstance(mgr);
             }
 
             @Singleton

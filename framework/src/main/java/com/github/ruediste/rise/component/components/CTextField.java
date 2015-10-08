@@ -1,6 +1,5 @@
 package com.github.ruediste.rise.component.components;
 
-import com.github.ruediste.rise.component.binding.BindingUtil;
 import com.google.common.base.Supplier;
 
 @DefaultTemplate(CTextFieldTemplate.class)
@@ -30,9 +29,7 @@ public class CTextField extends CInputBase<CTextField> {
      * </pre>
      */
     public CTextField bindText(Supplier<String> binder) {
-        setLabelProperty(BindingUtil
-                .bind(this, view -> view.setText(binder.get())).getB());
-        return self();
+        return bindLabelProperty(view -> view.setText(binder.get()));
     }
 
     public CTextField toPassword() {

@@ -1,10 +1,10 @@
 package com.github.ruediste.rise.core.security;
 
 /**
- * Marker interface for subjects.
+ * Marker interface for principals.
  * 
  * <p>
- * A subject represents a user or external system interacting whith the current
+ * A principal represents a user or external system interacting with the current
  * system.
  */
 public interface Principal {

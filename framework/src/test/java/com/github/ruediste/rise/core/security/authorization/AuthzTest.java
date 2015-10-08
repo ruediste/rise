@@ -14,7 +14,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.github.ruediste.c3java.invocationRecording.MethodInvocationRecorder;
-import com.github.ruediste.rise.core.security.authorization.AuthorizationManager.AuthorizationRule;
+import com.github.ruediste.rise.core.aop.AopUtil;
+import com.github.ruediste.rise.core.security.authorization.MethodAuthorizationManager.MethodAuthorizationRule;
 import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
@@ -38,7 +39,7 @@ public class AuthzTest {
     Service service;
 
     @Inject
-    AuthorizationManager mgr;
+    MethodAuthorizationManager mgr;
 
     @Before
     public void before() {
@@ -46,20 +47,33 @@ public class AuthzTest {
 
             @Override
             protected void configure() throws Exception {
-                AuthorizationManager mgr = new AuthorizationManager();
-                mgr.register(config().standardConfig);
+                MethodAuthorizationManager mgr = new MethodAuthorizationManager();
+                AopUtil.registerSubclass(config().standardConfig, t1 -> {
+                    Class<?> cls = t1.getRawType();
+                    return mgr.entries.stream().anyMatch(e -> e.typeMatcher.test(cls));
+                } , (t2, m1) -> mgr.entries.stream().anyMatch(e -> {
+                    Class<?> cls = t2.getRawType();
+                    return e.methodMatcher.test(cls, m1);
+                }), i -> {
+                    Object target1 = i.getTarget();
+                    Method method1 = i.getMethod();
+                    Object[] arguments = i.getArguments();
+                    mgr.entries.forEach(
+                            r -> r.rule.getRequiredRights(target1, method1, arguments));
+                    return i.proceed();
+                });
                 mgr.addRule(t -> true,
                         (t, m) -> m.isAnnotationPresent(RequireRight.class),
-                        new AuthorizationRule() {
+                        new MethodAuthorizationRule() {
 
                     @Override
-                    public void checkAuthorized(Object target, Method method,
+                    public void getRequiredRights(Object target, Method method,
                             Object[] args) {
                         if (!rightPresent)
                             throw new AuthorizationException();
                     }
                 });
-                bind(AuthorizationManager.class).toInstance(mgr);
+                bind(MethodAuthorizationManager.class).toInstance(mgr);
             }
         });
         injector.injectMembers(this);

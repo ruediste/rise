@@ -1,7 +1,24 @@
 package com.github.ruediste.rise.core.security.authorization;
 
-public class AuthorizationException extends RuntimeException {
+import java.util.List;
 
+public class AuthorizationException extends RuntimeException {
     private static final long serialVersionUID = 1L;
+
+    private final List<AuthorizationFailure> authorizationFailures;
+
+    public AuthorizationException(
+            List<AuthorizationFailure> authorizationFailures) {
+        this.authorizationFailures = authorizationFailures;
+    }
+
+    @Override
+    public String getMessage() {
+        return getClass().getSimpleName() + "(" + authorizationFailures + ")";
+    }
+
+    public AuthorizationResult toAuthorizationResult() {
+        return AuthorizationResult.failure(authorizationFailures);
+    }
 
 }

@@ -1,6 +1,6 @@
 var rise = (function() {
 	/**
-	 * generate a key by using 
+	 * generate a key by using
 	 */
 	var generateKey = function(element, key) {
 		return "c_" + element.data("rise-component-nr") + "_" + key;
@@ -40,9 +40,12 @@ var rise = (function() {
 		var send = element.data("riseSend");
 		if (send !== undefined) {
 			send.split(" ").forEach(function(e) {
-				var value=element.data(e);
+				var value = element.data(e);
 				if (value)
-					data.push({name:generateKey(element,e), value: value});
+					data.push({
+						name : generateKey(element, e),
+						value : value
+					});
 			});
 		}
 
@@ -65,8 +68,8 @@ var rise = (function() {
 					+ $("body").data("rise-page-nr") + "&nr="
 					+ receiver.data("rise-component-nr"),
 			data : JSON.stringify(data),
-			contentType: "text/json; charset=UTF-8",
-			processData: false,
+			contentType : "text/json; charset=UTF-8",
+			processData : false,
 			success : function(data, status, jqXHR) {
 				var redirectTarget = jqXHR
 						.getResponseHeader("rise-redirect-target");
@@ -96,18 +99,15 @@ var rise = (function() {
 		});
 
 		// clicks on rise_buttons trigger a view reload
-		$(document).on(
-				"click",
-				".rise_button",
-				function() {
-					$(this).data("riseSend","riseIntClicked");
-					$(this).data("riseIntClicked","clicked");
-					$(this).trigger("rise_viewReload");
-					return false;
-				});
+		$(document).on("click", ".rise_button", function() {
+			$(this).data("riseSend", "riseIntClicked");
+			$(this).data("riseIntClicked", "clicked");
+			$(this).trigger("rise_viewReload");
+			return false;
+		});
 
 		// start polling for application restart
-		 pollForApplicationRestart();
+		pollForApplicationRestart();
 
 		// trigger an initial reload
 		onReload.fire($(document));
@@ -115,24 +115,23 @@ var rise = (function() {
 
 	return {
 		onReload : onReload,
-		generateKey: generateKey
+		generateKey : generateKey
 	};
 
 })();
 
 // register autocomplete
 rise.onReload.add(function() {
-	$(".rise_autocomplete").each(function(idx,element){
-			element=$(element);
-			element.autocomplete(
-					{
-						source : element.data("riseIntSource"),
-						change: function(event, ui){
-							if (ui.item)
-								element.data("riseIntChosenItem",ui.item.id);
-							else
-								element.removeData("riseIntChosenItem");
-						}
-					});
+	$(".rise_autocomplete").each(function(idx, element) {
+		element = $(element);
+		element.autocomplete({
+			source : element.data("riseIntSource"),
+			change : function(event, ui) {
+				if (ui.item)
+					element.data("riseIntChosenItem", ui.item.id);
+				else
+					element.data("riseIntChosenItem", null);
+			}
+		});
 	});
 });
