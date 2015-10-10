@@ -5,6 +5,12 @@ import java.util.List;
 
 import com.github.ruediste.rise.core.security.Principal;
 
+/**
+ * Result of an authentication attempt.
+ * <p>
+ * Can be a success or a failure. In case of failure, the
+ * {@link AuthenticationFailure failures} are reported.
+ */
 public class AuthenticationResult {
     final private boolean isSuccess;
     final private AuthenticationSuccess success;

@@ -93,6 +93,10 @@ public class Authz {
             check.run();
     }
 
+    /**
+     * Determine if the caller is currently performing an authorization check,
+     * or really executing.
+     */
     public static boolean isAuthorizing() {
         return AuthzHelper.isAuthorizing();
     }

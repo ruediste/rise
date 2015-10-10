@@ -14,9 +14,9 @@ import com.github.ruediste.rise.core.security.authentication.AuthenticationSucce
  * rights.
  * 
  * <p>
- * This is mainly a holder for a {@link RightsChecker}, providing some
+ * This is mainly a holder for a {@link AuthorizationPerformer}, providing some
  * convenience methods. Since the combination of different authorization
- * mechanisms is very application dependent, only a single {@link RightsChecker}
+ * mechanisms is very application dependent, only a single {@link AuthorizationPerformer}
  * is referenced. Create a custom implementation to combine different sources.
  */
 @Singleton
@@ -26,7 +26,7 @@ public class AuthorizationManager {
     AuthenticationHolder authenticationHolder;
 
     @FunctionalInterface
-    public interface RightsChecker {
+    public interface AuthorizationPerformer {
         /**
          * Check if the provided authentication implies all specified rights.
          * 
@@ -39,7 +39,7 @@ public class AuthorizationManager {
                 Optional<AuthenticationSuccess> authentication);
     }
 
-    private RightsChecker rightsChecker;
+    private AuthorizationPerformer authorizationPerformer;
 
     public void checkAuthorization(Set<? extends Object> rights,
             Optional<AuthenticationSuccess> authentication) {
@@ -57,7 +57,7 @@ public class AuthorizationManager {
     public AuthorizationResult performAuthorization(
             Set<? extends Object> rights,
             Optional<AuthenticationSuccess> authentication) {
-        return rightsChecker.performAuthorization(rights, authentication);
+        return authorizationPerformer.performAuthorization(rights, authentication);
     }
 
     public void checkAuthorization(Set<? extends Object> rights) {
@@ -73,11 +73,11 @@ public class AuthorizationManager {
                 authenticationHolder.tryGetCurrentAuthentication());
     }
 
-    public RightsChecker getRightsChecker() {
-        return rightsChecker;
+    public AuthorizationPerformer getAuthorizationPerformer() {
+        return authorizationPerformer;
     }
 
-    public void setRightsChecker(RightsChecker rightsChecker) {
-        this.rightsChecker = rightsChecker;
+    public void setRightsChecker(AuthorizationPerformer rightsChecker) {
+        this.authorizationPerformer = rightsChecker;
     }
 }

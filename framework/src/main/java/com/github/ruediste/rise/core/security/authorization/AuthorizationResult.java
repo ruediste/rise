@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.core.security.authorization;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.github.ruediste.rise.core.security.authentication.AuthenticationSuccess;
@@ -23,6 +24,11 @@ public class AuthorizationResult {
 
     public static AuthorizationResult authorized() {
         return authorized;
+    }
+
+    public static AuthorizationResult failure(
+            AuthorizationFailure... failures) {
+        return failure(Arrays.asList(failures));
     }
 
     public static AuthorizationResult failure(

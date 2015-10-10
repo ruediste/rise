@@ -10,8 +10,8 @@ import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.security.AuthenticationHolder;
 import com.github.ruediste.rise.core.security.NoAuthenticationException;
-import com.github.ruediste.rise.core.security.RememberMeNotSufficientException;
 import com.github.ruediste.rise.core.security.Principal;
+import com.github.ruediste.rise.core.security.RememberMeNotSufficientException;
 import com.github.ruediste.rise.core.security.authentication.AuthenticationFailure;
 import com.github.ruediste.rise.core.security.authentication.AuthenticationManager;
 import com.github.ruediste.rise.core.security.authentication.AuthenticationResult;
@@ -25,6 +25,9 @@ import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeTokenThef
  * First the current session is checked for an already logged in
  * {@link Principal} . If there is no subject the request is checked for
  * remember-me tokens. And finally, the user is redirected to a login form.
+ * 
+ * <p>
+ * 
  */
 public class WebRequestAuthenticator extends ChainedRequestHandler {
 
@@ -88,14 +91,14 @@ public class WebRequestAuthenticator extends ChainedRequestHandler {
             while (t != null) {
                 if (t instanceof NoAuthenticationException
                         || t instanceof RememberMeNotSufficientException) {
-                    Runnable factory = config.loginHandler();
-                    if (factory == null) {
+                    Runnable loginHandler = config.loginHandler();
+                    if (loginHandler == null) {
                         throw new RuntimeException(
                                 "CoreConfiguration.loginHandler is not set", e);
                     }
 
                     log.debug("running login handler");
-                    factory.run();
+                    loginHandler.run();
                     return;
                 }
                 t = t.getCause();
