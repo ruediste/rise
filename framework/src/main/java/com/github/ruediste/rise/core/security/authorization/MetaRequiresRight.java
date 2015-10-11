@@ -16,6 +16,18 @@ import java.lang.annotation.Target;
  * <p>
  * The annotation can be repeated. In this case, the wrapper annotation has to
  * be annotated with this meta annotation as well.
+ * 
+ * <p>
+ * Sample:
+ * 
+ * <pre>
+ * &#64;MetaRequiresRight
+ * &#64;Retention(RetentionPolicy.RUNTIME)
+ * &#64;Target(ElementType.METHOD)
+ * public &#64;interface RequiresRight {
+ *     Rights value();
+ * }
+ * </pre>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)

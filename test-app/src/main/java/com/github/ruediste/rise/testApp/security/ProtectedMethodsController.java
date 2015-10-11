@@ -3,7 +3,7 @@ package com.github.ruediste.rise.testApp.security;
 import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.testApp.RequiresRight;
-import com.github.ruediste.rise.testApp.Right;
+import com.github.ruediste.rise.testApp.Rights;
 import com.github.ruediste.rise.testApp.TestCanvas;
 import com.github.ruediste.rise.testApp.ViewMvc;
 import com.github.ruediste1.i18n.label.Labeled;
@@ -38,13 +38,13 @@ public class ProtectedMethodsController
     }
 
     @Labeled
-    @RequiresRight(Right.ALLOWED)
+    @RequiresRight(Rights.ALLOWED)
     public ActionResult methodAllowed() {
         return view(MethodView.class, "success");
     }
 
     @Labeled
-    @RequiresRight(Right.FORBIDDEN)
+    @RequiresRight(Rights.FORBIDDEN)
     public ActionResult methodForbidden() {
         return view(MethodView.class, "success");
     }

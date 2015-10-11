@@ -38,12 +38,17 @@ public class MethodAuthorizationManagerTest {
             }
         });
         injector.injectMembers(this);
-        mgr.setRightsChecker((rights, auth) -> {
+        mgr.setAuthorizationPerformer((rights, auth) -> {
             AuthorizationResultBuilder builder = new AuthorizationResultBuilder();
-            for (Object right : rights) {
-                if (!allowedRights.contains(right))
-                    builder.add(new AuthorizationFailure(
-                            "Right " + right + " not allowed"));
+            for (com.github.ruediste.rise.core.security.authorization.Right right : rights) {
+                if (right instanceof RequiresRightAnnotationRight) {
+                    Object value = ((RequiresRightAnnotationRight) right)
+                            .getValue();
+                    if (allowedRights.contains(value))
+                        continue;
+                }
+                builder.add(new AuthorizationFailure(
+                        "Right " + right + " not allowed"));
             }
             return builder.build();
         });
@@ -57,7 +62,7 @@ public class MethodAuthorizationManagerTest {
 
     Set<Object> allowedRights;
 
-    enum Right {
+    enum TestRightRight {
         TEST_RIGHT, OTHER_RIGHT
     }
 
@@ -65,7 +70,7 @@ public class MethodAuthorizationManagerTest {
     @Retention(RetentionPolicy.RUNTIME)
     @Repeatable(RepeatRequiresRight.class)
     @interface RequiresRight {
-        Right value();
+        TestRightRight value();
     }
 
     @MetaRequiresRight
@@ -77,7 +82,7 @@ public class MethodAuthorizationManagerTest {
     static class Service {
         boolean executed;
 
-        @RequiresRight(Right.TEST_RIGHT)
+        @RequiresRight(TestRightRight.TEST_RIGHT)
         void protectedMethod() {
             executed = true;
         }
@@ -87,8 +92,8 @@ public class MethodAuthorizationManagerTest {
 
         }
 
-        @RequiresRight(Right.TEST_RIGHT)
-        @RequiresRight(Right.OTHER_RIGHT)
+        @RequiresRight(TestRightRight.TEST_RIGHT)
+        @RequiresRight(TestRightRight.OTHER_RIGHT)
         void protectedMultiple() {
 
         }
@@ -101,14 +106,14 @@ public class MethodAuthorizationManagerTest {
     public void protectedMethod_isAuthorized() {
         assertFalse(Authz.isAuthorized(service, x -> x.protectedMethod()));
         assertFalse(service.executed);
-        allowedRights.add(Right.TEST_RIGHT);
+        allowedRights.add(TestRightRight.TEST_RIGHT);
         assertTrue(Authz.isAuthorized(service, x -> x.protectedMethod()));
         assertFalse(service.executed);
     }
 
     @Test
     public void protectedMethod_checkAuthorized_passes() {
-        allowedRights.add(Right.TEST_RIGHT);
+        allowedRights.add(TestRightRight.TEST_RIGHT);
         Authz.checkAuthorized(service, x -> x.protectedMethod());
         assertFalse(service.executed);
     }
@@ -131,16 +136,16 @@ public class MethodAuthorizationManagerTest {
                                 x -> x.protectedMultiple())
                         .getMethod().getAnnotations()));
         assertFalse(Authz.isAuthorized(service, x -> x.protectedMultiple()));
-        allowedRights.add(Right.TEST_RIGHT);
+        allowedRights.add(TestRightRight.TEST_RIGHT);
         assertFalse(Authz.isAuthorized(service, x -> x.protectedMultiple()));
-        allowedRights.add(Right.OTHER_RIGHT);
+        allowedRights.add(TestRightRight.OTHER_RIGHT);
         assertTrue(Authz.isAuthorized(service, x -> x.protectedMultiple()));
 
     }
 
     @Test
     public void protectedMethod_invocation_authorized() {
-        allowedRights.add(Right.TEST_RIGHT);
+        allowedRights.add(TestRightRight.TEST_RIGHT);
         service.protectedMethod();
         assertTrue(service.executed);
     }

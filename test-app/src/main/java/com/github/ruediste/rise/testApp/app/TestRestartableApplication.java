@@ -2,6 +2,7 @@ package com.github.ruediste.rise.testApp.app;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -12,19 +13,21 @@ import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.DefaultRequestErrorHandler;
 import com.github.ruediste.rise.core.front.RestartableApplicationBase;
 import com.github.ruediste.rise.core.security.Principal;
+import com.github.ruediste.rise.core.security.authentication.AuthenticationSuccess;
 import com.github.ruediste.rise.core.security.authentication.DefaultAuthenticationManager;
 import com.github.ruediste.rise.core.security.authentication.InMemoryAuthenticationProvider;
-import com.github.ruediste.rise.core.security.authorization.AuthorizationException;
-import com.github.ruediste.rise.core.security.authorization.MethodAuthorizationManager;
+import com.github.ruediste.rise.core.security.authorization.AuthorizationFailure;
+import com.github.ruediste.rise.core.security.authorization.AuthorizationManager;
+import com.github.ruediste.rise.core.security.authorization.AuthorizationManager.AuthorizationPerformer;
+import com.github.ruediste.rise.core.security.authorization.AuthorizationResult;
 import com.github.ruediste.rise.core.security.web.rememberMe.InMemoryRememberMeTokenDao;
 import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeAuthenticationProvider;
 import com.github.ruediste.rise.integration.DynamicIntegrationModule;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
-import com.github.ruediste.rise.testApp.Right;
+import com.github.ruediste.rise.testApp.Rights;
 import com.github.ruediste.rise.testApp.TestCanvas;
 import com.github.ruediste.rise.testApp.component.CPageTemplate;
-import com.github.ruediste.rise.testApp.security.LoginController;
 import com.github.ruediste.rise.util.InitializerUtil;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
@@ -53,7 +56,7 @@ public class TestRestartableApplication extends RestartableApplicationBase {
     DefaultAuthenticationManager defaultAuthenticationManager;
 
     @Inject
-    MethodAuthorizationManager authorizationManager;
+    AuthorizationManager authorizationManager;
 
     @Inject
     RememberMeAuthenticationProvider rememberMeAuthenticationProvider;
@@ -102,10 +105,6 @@ public class TestRestartableApplication extends RestartableApplicationBase {
         config.requestErrorHandler = errorHandler;
         errorHandler.initialize(
                 util -> util.go(RequestErrorHandlerController.class).index());
-        config.setLoginHandler(
-                (util, s) -> util.go(LoginController.class).index(s));
-        config.setRememberMeTokenTheftHandler((util, s) -> util
-                .go(LoginController.class).tokenTheftDetected(s));
 
         // security
         rememberMeAuthenticationProvider.setDao(rememberMeTokenDao);
@@ -116,12 +115,22 @@ public class TestRestartableApplication extends RestartableApplicationBase {
                 .addProvider(new InMemoryAuthenticationProvider<Principal>()
                         .with("foo", "foo", null));
 
-        authorizationManager.setRightChecker(rights -> {
-            for (Object right : rights) {
-                if (!Objects.equals(Right.ALLOWED, right))
-                    throw new AuthorizationException();
-            }
-        });
+        authorizationManager
+                .setAuthorizationPerformer(new AuthorizationPerformer() {
+
+                    @Override
+                    public AuthorizationResult performAuthorization(
+                            Set<? extends com.github.ruediste.rise.core.security.authorization.Right> rights,
+                            Optional<AuthenticationSuccess> authentication) {
+                        for (Object right : rights) {
+                            if (!Objects.equals(Rights.ALLOWED, right))
+                                return AuthorizationResult
+                                        .failure(new AuthorizationFailure(
+                                                "right was not ALLOWED"));
+                        }
+                        return AuthorizationResult.authorized();
+                    }
+                });
 
     }
 

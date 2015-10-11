@@ -13,4 +13,9 @@ public class AuthorizationFailure {
     public String getMessage() {
         return message;
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + message + ")";
+    }
 }

@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import com.github.ruediste.rendersnakeXT.canvas.Glyphicon;
 import com.github.ruediste.rise.api.SubControllerComponent;
+import com.github.ruediste.rise.component.FrameworkViewComponent;
 import com.github.ruediste.rise.component.components.CButton;
 import com.github.ruediste.rise.component.components.CButtonTemplate;
 import com.github.ruediste.rise.component.components.CController;
@@ -29,7 +30,7 @@ public class DefaultCrudPickerController extends SubControllerComponent
     private CrudList ctrl;
 
     public static class View
-            extends DefaultCrudViewComponent<DefaultCrudPickerController> {
+            extends FrameworkViewComponent<DefaultCrudPickerController> {
 
         @TMessages
         public interface Messages {

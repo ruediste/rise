@@ -5,6 +5,7 @@ import java.lang.annotation.Annotation;
 import javax.inject.Inject;
 
 import com.github.ruediste.rise.api.SubControllerComponent;
+import com.github.ruediste.rise.component.FrameworkViewComponent;
 import com.github.ruediste.rise.component.components.CButton;
 import com.github.ruediste.rise.component.components.CButtonTemplate;
 import com.github.ruediste.rise.component.components.CController;
@@ -24,7 +25,7 @@ public class DefaultCrudBrowserController extends SubControllerComponent {
     private CrudList ctrl;
 
     public static class View
-            extends DefaultCrudViewComponent<DefaultCrudBrowserController> {
+            extends FrameworkViewComponent<DefaultCrudBrowserController> {
 
         @TMessages
         public interface Messages {

@@ -56,12 +56,12 @@ public class AsmUtilTest {
 
     @Test
     public void testGetOverrideDesc() throws Exception {
-        assertEquals(AsmUtil.getOverrideDesc("foo", "()I"),
-                AsmUtil.getOverrideDesc("foo", "()J"));
-        assertNotEquals(AsmUtil.getOverrideDesc("foo", "()I"),
-                AsmUtil.getOverrideDesc("bar", "()I"));
+        assertEquals(AsmUtil.getOverrideDesc("foo", "()I").getDesc(),
+                AsmUtil.getOverrideDesc("foo", "()J").getDesc());
+        assertNotEquals(AsmUtil.getOverrideDesc("foo", "()I").getDesc(),
+                AsmUtil.getOverrideDesc("bar", "()I").getDesc());
         assertNotEquals(
-                AsmUtil.getOverrideDesc("foo", "(Ljava/lang/Integer;)V"),
-                AsmUtil.getOverrideDesc("foo", "(Ljava/lang/Boolean;)V"));
+                AsmUtil.getOverrideDesc("foo", "(Ljava/lang/Integer;)V").getDesc(),
+                AsmUtil.getOverrideDesc("foo", "(Ljava/lang/Boolean;)V").getDesc());
     }
 }

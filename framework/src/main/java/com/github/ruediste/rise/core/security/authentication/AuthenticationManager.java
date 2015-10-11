@@ -5,7 +5,7 @@ import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste.salta.jsr330.ImplementedBy;
 
 /**
- * Manages the authentication of {@link AuthenticationRequest}s
+ * Manages the authentication of {@link AuthenticationRequest}s.
  */
 @ImplementedBy(DefaultAuthenticationManager.class)
 public interface AuthenticationManager {
@@ -18,8 +18,14 @@ public interface AuthenticationManager {
      */
     AuthenticationResult authenticate(AuthenticationRequest request);
 
+    /**
+     * Raised before an authentication is attempted
+     */
     GenericEvent<AuthenticationRequest> preAuthenticationEvent();
 
+    /**
+     * Raised after an authentication
+     */
     GenericEvent<Pair<AuthenticationRequest, AuthenticationResult>> postAuthenticationEvent();
 
 }

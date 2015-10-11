@@ -17,6 +17,7 @@ import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.github.ruediste.rendersnakeXT.canvas.Glyphicon;
 import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.component.ComponentUtil;
+import com.github.ruediste.rise.component.FrameworkViewComponent;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CButton;
 import com.github.ruediste.rise.component.components.CButtonTemplate;
@@ -51,7 +52,7 @@ public class DefaultCrudListController extends SubControllerComponent
 
     @SuppressWarnings("unused")
     private static class DefaultCrudBrowserView
-            extends DefaultCrudViewComponent<DefaultCrudListController> {
+            extends FrameworkViewComponent<DefaultCrudListController> {
 
         @MembersLabeled
         enum Labels {

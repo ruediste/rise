@@ -6,6 +6,10 @@ import static org.junit.Assert.assertTrue;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -15,6 +19,8 @@ import org.junit.Test;
 
 import com.github.ruediste.c3java.invocationRecording.MethodInvocationRecorder;
 import com.github.ruediste.rise.core.aop.AopUtil;
+import com.github.ruediste.rise.core.security.authentication.AuthenticationSuccess;
+import com.github.ruediste.rise.core.security.authorization.AuthorizationManager.AuthorizationPerformer;
 import com.github.ruediste.rise.core.security.authorization.MethodAuthorizationManager.MethodAuthorizationRule;
 import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
 import com.github.ruediste.salta.jsr330.AbstractModule;
@@ -30,7 +36,8 @@ public class AuthzTest {
     }
 
     private void checkFail() {
-        throw new AuthorizationException();
+        throw new AuthorizationException(
+                Arrays.asList(new AuthorizationFailure("failed")));
     }
 
     boolean executed;
@@ -41,6 +48,9 @@ public class AuthzTest {
     @Inject
     MethodAuthorizationManager mgr;
 
+    @Inject
+    AuthorizationManager authManager;
+
     @Before
     public void before() {
         Injector injector = Salta.createInjector(new AbstractModule() {
@@ -50,7 +60,8 @@ public class AuthzTest {
                 MethodAuthorizationManager mgr = new MethodAuthorizationManager();
                 AopUtil.registerSubclass(config().standardConfig, t1 -> {
                     Class<?> cls = t1.getRawType();
-                    return mgr.entries.stream().anyMatch(e -> e.typeMatcher.test(cls));
+                    return mgr.entries.stream()
+                            .anyMatch(e -> e.typeMatcher.test(cls));
                 } , (t2, m1) -> mgr.entries.stream().anyMatch(e -> {
                     Class<?> cls = t2.getRawType();
                     return e.methodMatcher.test(cls, m1);
@@ -58,8 +69,8 @@ public class AuthzTest {
                     Object target1 = i.getTarget();
                     Method method1 = i.getMethod();
                     Object[] arguments = i.getArguments();
-                    mgr.entries.forEach(
-                            r -> r.rule.getRequiredRights(target1, method1, arguments));
+                    mgr.entries.forEach(r -> r.rule.getRequiredRights(target1,
+                            method1, arguments));
                     return i.proceed();
                 });
                 mgr.addRule(t -> true,
@@ -67,10 +78,12 @@ public class AuthzTest {
                         new MethodAuthorizationRule() {
 
                     @Override
-                    public void getRequiredRights(Object target, Method method,
-                            Object[] args) {
+                    public Set<? extends Right> getRequiredRights(Object target,
+                            Method method, Object[] args) {
                         if (!rightPresent)
-                            throw new AuthorizationException();
+                            return Collections.singleton(new Right() {
+                            });
+                        return Collections.emptySet();
                     }
                 });
                 bind(MethodAuthorizationManager.class).toInstance(mgr);
@@ -82,6 +95,18 @@ public class AuthzTest {
         checkSuccessCalled = false;
         executedDelegate = false;
         rightPresent = false;
+        authManager.setAuthorizationPerformer(new AuthorizationPerformer() {
+
+            @Override
+            public AuthorizationResult performAuthorization(
+                    Set<? extends Right> rights,
+                    Optional<AuthenticationSuccess> authentication) {
+                if (!rights.isEmpty() && !rightPresent)
+                    return AuthorizationResult.failure(
+                            new AuthorizationFailure("rightPresent is false"));
+                return AuthorizationResult.authorized();
+            }
+        });
     }
 
     @After

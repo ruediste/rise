@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import com.github.ruediste.rendersnakeXT.canvas.Glyphicon;
 import com.github.ruediste.rise.api.SubControllerComponent;
+import com.github.ruediste.rise.component.FrameworkViewComponent;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CButton;
 import com.github.ruediste.rise.component.tree.Component;
@@ -24,7 +25,7 @@ public class DefaultCrudCreateController extends SubControllerComponent {
     CrudReflectionUtil reflectionUtil;
 
     static class View
-            extends DefaultCrudViewComponent<DefaultCrudCreateController> {
+            extends FrameworkViewComponent<DefaultCrudCreateController> {
         @Inject
         CrudReflectionUtil util;
 

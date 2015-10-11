@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 
@@ -31,6 +30,7 @@ import com.github.ruediste.rise.nonReloadable.SignatureHelper;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndex;
 import com.github.ruediste.rise.util.AsmUtil;
 import com.github.ruediste.rise.util.AsmUtil.MethodRef;
+import com.github.ruediste.rise.util.AsmUtil.OverrideDesc;
 import com.github.ruediste.rise.util.MethodInvocation;
 import com.github.ruediste.rise.util.Pair;
 import com.google.common.base.Charsets;
@@ -76,7 +76,7 @@ public abstract class RequestMapperBase implements RequestMapper {
      * do not include a final "." or "/". Used for
      * {@link #generate(ActionInvocation, Supplier)}.
      */
-    final HashMap<Pair<String, MethodRef>, String> methodToPrefixMap = new HashMap<>();
+    final HashMap<Pair<String, OverrideDesc>, String> methodToPrefixMap = new HashMap<>();
 
     /**
      * Map from controller classes to their implementations.
@@ -87,7 +87,7 @@ public abstract class RequestMapperBase implements RequestMapper {
     /**
      * Map between methods and their action method names, grouped by class
      */
-    final HashMap<String, BiMap<MethodRef, String>> actionMethodNameMap = new HashMap<>();
+    final HashMap<String, BiMap<OverrideDesc, String>> actionMethodNameMap = new HashMap<>();
 
     private Class<?> controllerInterface;
 
@@ -111,12 +111,8 @@ public abstract class RequestMapperBase implements RequestMapper {
         String controllerName = coreConfig.calculateControllerName(cls);
         log.debug("found controller " + cls.name + " -> " + controllerName);
 
-        // override descriptions for the methods already registered. Used
-        // to avoid registering overridden methods
-        HashSet<String> registeredMethods = new HashSet<>();
-
         // build method name map
-        BiMap<MethodRef, String> methodNameMap = HashBiMap.create();
+        BiMap<OverrideDesc, String> methodNameMap = HashBiMap.create();
         actionMethodNameMap.put(cls.name, methodNameMap);
 
         ClassNode instanceCls = cls;
@@ -129,11 +125,11 @@ public abstract class RequestMapperBase implements RequestMapper {
                     }
                     String name = m.name;
 
-                    String overrideDesc = AsmUtil.getOverrideDesc(m.name,
+                    OverrideDesc overrideDesc = AsmUtil.getOverrideDesc(m.name,
                             m.desc);
-                    if (registeredMethods.contains(overrideDesc))
+
+                    if (methodNameMap.containsKey(overrideDesc))
                         continue;
-                    registeredMethods.add(overrideDesc);
                     log.debug("found action method " + name);
 
                     // find unique name
@@ -149,7 +145,7 @@ public abstract class RequestMapperBase implements RequestMapper {
 
                     MethodRef methodRef = new MethodRef(cls.name, m.name,
                             m.desc);
-                    methodNameMap.put(methodRef, name);
+                    methodNameMap.put(overrideDesc, name);
 
                     // determine the path infos to register under
                     MethodPathInfos pathInfos = ActionPathAnnotationUtil
@@ -216,7 +212,8 @@ public abstract class RequestMapperBase implements RequestMapper {
                         }
                     }
 
-                    methodToPrefixMap.put(Pair.of(instanceCls.name, methodRef),
+                    methodToPrefixMap.put(
+                            Pair.of(instanceCls.name, overrideDesc),
                             pathInfos.primaryPathInfo);
                 }
             cls = cache.tryGetNode(cls.superName).orElse(null);
@@ -332,7 +329,6 @@ public abstract class RequestMapperBase implements RequestMapper {
         boolean urlSign = shouldDoUrlSigning(method);
 
         Mac mac = null;
-        byte[] salt = null;
         if (urlSign) {
             mac = urlSignatureHelper.createHasher();
             mac.update(sessionIdSupplier.get().getBytes(Charsets.UTF_8));
@@ -340,6 +336,7 @@ public abstract class RequestMapperBase implements RequestMapper {
 
         StringBuilder sb = new StringBuilder();
         MethodRef ref = MethodRef.of(method);
+        OverrideDesc overrideDesc = AsmUtil.getOverrideDesc(method);
 
         String prefix;
         {
@@ -349,7 +346,7 @@ public abstract class RequestMapperBase implements RequestMapper {
             String controllerImplementationName = getControllerImplementation(
                     controllerInternalName);
             prefix = methodToPrefixMap
-                    .get(Pair.of(controllerImplementationName, ref));
+                    .get(Pair.of(controllerImplementationName, overrideDesc));
 
             if (prefix == null)
                 throw new RuntimeException("Unable to find prefix for\n" + ref

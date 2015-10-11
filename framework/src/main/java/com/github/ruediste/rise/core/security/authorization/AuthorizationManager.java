@@ -16,8 +16,9 @@ import com.github.ruediste.rise.core.security.authentication.AuthenticationSucce
  * <p>
  * This is mainly a holder for a {@link AuthorizationPerformer}, providing some
  * convenience methods. Since the combination of different authorization
- * mechanisms is very application dependent, only a single {@link AuthorizationPerformer}
- * is referenced. Create a custom implementation to combine different sources.
+ * mechanisms is very application dependent, only a single
+ * {@link AuthorizationPerformer} is referenced. Create a custom implementation
+ * to combine different sources.
  */
 @Singleton
 public class AuthorizationManager {
@@ -35,13 +36,13 @@ public class AuthorizationManager {
          *            {@link Optional#empty()} if no authentication is present
          *            (anonymous user, guest)
          */
-        AuthorizationResult performAuthorization(Set<? extends Object> rights,
+        AuthorizationResult performAuthorization(Set<? extends Right> rights,
                 Optional<AuthenticationSuccess> authentication);
     }
 
     private AuthorizationPerformer authorizationPerformer;
 
-    public void checkAuthorization(Set<? extends Object> rights,
+    public void checkAuthorization(Set<? extends Right> rights,
             Optional<AuthenticationSuccess> authentication) {
         performAuthorization(rights, authentication).checkAuthorized();
     }
@@ -54,13 +55,15 @@ public class AuthorizationManager {
      *            {@link Optional#empty()} if no authentication is present
      *            (anonymous user, guest)
      */
-    public AuthorizationResult performAuthorization(
-            Set<? extends Object> rights,
+    public AuthorizationResult performAuthorization(Set<? extends Right> rights,
             Optional<AuthenticationSuccess> authentication) {
-        return authorizationPerformer.performAuthorization(rights, authentication);
+        if (authorizationPerformer == null)
+            return AuthorizationResult.authorized();
+        return authorizationPerformer.performAuthorization(rights,
+                authentication);
     }
 
-    public void checkAuthorization(Set<? extends Object> rights) {
+    public void checkAuthorization(Set<? extends Right> rights) {
         performAuthorization(rights).checkAuthorized();
     }
 
@@ -68,7 +71,7 @@ public class AuthorizationManager {
      * Check if the current authentication implies all specified rights
      */
     public AuthorizationResult performAuthorization(
-            Set<? extends Object> rights) {
+            Set<? extends Right> rights) {
         return performAuthorization(rights,
                 authenticationHolder.tryGetCurrentAuthentication());
     }
@@ -77,7 +80,7 @@ public class AuthorizationManager {
         return authorizationPerformer;
     }
 
-    public void setRightsChecker(AuthorizationPerformer rightsChecker) {
+    public void setAuthorizationPerformer(AuthorizationPerformer rightsChecker) {
         this.authorizationPerformer = rightsChecker;
     }
 }

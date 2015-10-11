@@ -20,6 +20,7 @@ import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
 import com.github.ruediste.rise.core.CoreRestartableModule;
 import com.github.ruediste.rise.core.aop.AopUtil;
 import com.github.ruediste.salta.jsr330.binder.Binder;
+import com.google.common.annotations.VisibleForTesting;
 
 import net.sf.cglib.proxy.Enhancer;
 
@@ -32,18 +33,20 @@ public class MethodAuthorizationManager {
     AuthorizationManager authorizationManager;
 
     interface MethodAuthorizationRule {
-        Set<? extends Object> getRequiredRights(Object target, Method method,
+        Set<? extends Right> getRequiredRights(Object target, Method method,
                 Object[] args);
     }
 
-    private static class RuleEntry {
+    @VisibleForTesting
+    static class RuleEntry {
         MethodAuthorizationRule rule;
         Predicate<Class<?>> typeMatcher;
         BiPredicate<Class<?>, Method> methodMatcher;
 
     }
 
-    private List<RuleEntry> entries = new ArrayList<>();
+    @VisibleForTesting
+    List<RuleEntry> entries = new ArrayList<>();
     private boolean defaultRuleDisabled;
 
     public MethodAuthorizationManager() {
@@ -61,14 +64,15 @@ public class MethodAuthorizationManager {
         } , new MethodAuthorizationRule() {
 
             @Override
-            public Set<? extends Object> getRequiredRights(Object target,
+            public Set<? extends Right> getRequiredRights(Object target,
                     Method method, Object[] args) {
-                Set<Object> requiredRights = new HashSet<>();
+                Set<Right> requiredRights = new HashSet<>();
                 for (Annotation annotation : method.getAnnotations()) {
                     if (annotation.annotationType()
                             .isAnnotationPresent(MetaRequiresRight.class)) {
                         try {
-                            extractRights(requiredRights, annotation);
+                            extractRights(requiredRights, annotation, target,
+                                    method);
                         } catch (Exception e) {
                             throw new RuntimeException(
                                     "error while reading value of annotation "
@@ -80,25 +84,31 @@ public class MethodAuthorizationManager {
                 return requiredRights;
             }
 
-            private void extractRights(Set<Object> requiredRights,
-                    Annotation annotation) throws NoSuchMethodException,
+            private void extractRights(Set<Right> requiredRights,
+                    Annotation annotation, Object target, Method method)
+                            throws NoSuchMethodException,
                             IllegalAccessException, InvocationTargetException {
-                Method value = annotation.annotationType().getMethod("value");
-                Object right = value.invoke(annotation);
-                if (value.getReturnType().isArray()) {
+                Method valueMethod = annotation.annotationType()
+                        .getMethod("value");
+                Object value = valueMethod.invoke(annotation);
+                if (valueMethod.getReturnType().isArray()) {
                     if (Annotation.class.isAssignableFrom(
-                            value.getReturnType().getComponentType())) {
-                        for (int i = 0; i < Array.getLength(right); i++) {
+                            valueMethod.getReturnType().getComponentType())) {
+                        for (int i = 0; i < Array.getLength(value); i++) {
                             extractRights(requiredRights,
-                                    (Annotation) Array.get(right, i));
+                                    (Annotation) Array.get(value, i), target,
+                                    method);
                         }
 
                     } else
-                        for (int i = 0; i < Array.getLength(right); i++) {
-                            requiredRights.add(Array.get(right, i));
+                        for (int i = 0; i < Array.getLength(value); i++) {
+                            Object right = Array.get(value, i);
+                            requiredRights.add(new RequiresRightAnnotationRight(
+                                    right, method, annotation));
                         }
                 } else
-                    requiredRights.add(right);
+                    requiredRights.add(new RequiresRightAnnotationRight(value,
+                            method, annotation));
             }
         });
     }
@@ -152,7 +162,7 @@ public class MethodAuthorizationManager {
                 Class<? extends Object> targetClass = target.getClass();
                 Method method = i.getMethod();
                 Object[] arguments = i.getArguments();
-                Set<? extends Object> requiredRights = entries.stream()
+                Set<? extends Right> requiredRights = entries.stream()
                         .filter(e -> {
                     return e.typeMatcher.test(targetClass)
                             && e.methodMatcher.test(targetClass, method);
@@ -201,7 +211,7 @@ public class MethodAuthorizationManager {
             // no authorization in the method, just evaluate the authorization
             // rules
             Class<? extends Object> clsFinal = cls;
-            Set<? extends Object> requiredRights = entries.stream()
+            Set<? extends Right> requiredRights = entries.stream()
                     .filter(e -> e.typeMatcher.test(clsFinal)
                             && e.methodMatcher.test(clsFinal, m))
                     .flatMap(e -> e.rule.getRequiredRights(target, m, args)

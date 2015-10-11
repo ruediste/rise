@@ -1,13 +1,15 @@
-package com.github.ruediste.rise.crud;
+package com.github.ruediste.rise.component;
 
 import javax.inject.Inject;
 
 import com.github.ruediste.rise.api.ViewComponentBase;
-import com.github.ruediste.rise.component.ComponentFactory;
-import com.github.ruediste.rise.component.ComponentFactoryUtil;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 
-public abstract class DefaultCrudViewComponent<TController>
+/**
+ * {@link ViewComponentBase} implementation used for component views provided by
+ * the framework.
+ */
+public abstract class FrameworkViewComponent<TController>
         extends ViewComponentBase<TController>
         implements ComponentFactory<BootstrapRiseCanvas<?>> {
 

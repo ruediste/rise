@@ -20,10 +20,15 @@ import com.github.ruediste.rise.core.security.authentication.AuthenticationProvi
 import com.github.ruediste.rise.core.security.authentication.AuthenticationRequest;
 import com.github.ruediste.rise.core.security.authentication.AuthenticationResult;
 import com.github.ruediste.rise.core.security.authentication.RememberMeAwareAuthenticationRequest;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 
-public class RememberMeAuthenticationProvider
-        implements AuthenticationProvider<RememberMeAuthenticationRequest> {
+/**
+ * Perform authentication based on a remember me cookie contained in the web
+ * request.
+ */
+public class RememberMeAuthenticationProvider implements
+        AuthenticationProvider<RememberMeCookieAuthenticationRequest> {
 
     @Inject
     Logger log;
@@ -60,7 +65,7 @@ public class RememberMeAuthenticationProvider
 
     @Override
     public AuthenticationResult tryAuthenticate(
-            RememberMeAuthenticationRequest request) {
+            RememberMeCookieAuthenticationRequest request) {
         AuthenticationResult failure = AuthenticationResult
                 .failure(new NoRememberMeTokenFoundAuthenticationFailure());
 
@@ -151,6 +156,7 @@ public class RememberMeAuthenticationProvider
         return null;
     }
 
+    @VisibleForTesting
     public static RememberMeToken parseToken(String str) {
         String[] parts = str.split("~");
         try {

@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -31,8 +30,6 @@ import com.github.ruediste.rise.core.argumentSerializer.SerializerHelper;
 import com.github.ruediste.rise.core.argumentSerializer.StringSerializer;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.web.PathInfo;
-import com.github.ruediste.rise.core.web.RedirectRenderResult;
-import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.integration.RiseCanvas;
 import com.github.ruediste.rise.integration.RiseCanvasBase;
@@ -313,52 +310,13 @@ public class CoreConfiguration {
         renderTestName = applicationStage != ApplicationStage.PRODUCTION;
     }
 
-    /**
-     * Runnable to redirect to the login page
-     */
-    public Runnable loginLocationFactory;
-
     @Inject
     Provider<CoreRequestInfo> coreRequestInfo;
 
     @Inject
     Provider<CoreUtil> coreUtil;
 
-    /**
-     * Set the login handler. The function will retrieve the {@link CoreUtil},
-     * the {@link UrlSpec} of the path to return to and has to return the
-     * {@link ActionResult} of calling {@link CoreUtil#go(Class)} with a
-     * controller.
-     */
-    public void setLoginHandler(
-            BiFunction<CoreUtil, UrlSpec, ActionResult> factory) {
-        loginLocationFactory = createRedirector(factory);
-    }
-
-    private Runnable createRedirector(
-            BiFunction<CoreUtil, UrlSpec, ActionResult> factory) {
-        return () -> coreRequestInfo.get().setActionResult(
-                new RedirectRenderResult(coreUtil.get().toUrlSpec(factory.apply(
-                        coreUtil.get(),
-                        coreRequestInfo.get().getRequest().createUrlSpec()))));
-    }
-
-    public Runnable loginHandler() {
-        return loginLocationFactory;
-    }
-
     public String rememberMeCookieName = "riseRememberMe";
-
-    public Runnable rememberMeTokenTheftHandler;
-
-    public Runnable getRememberMeTokenTheftHandler() {
-        return rememberMeTokenTheftHandler;
-    }
-
-    public void setRememberMeTokenTheftHandler(
-            BiFunction<CoreUtil, UrlSpec, ActionResult> factory) {
-        rememberMeTokenTheftHandler = createRedirector(factory);
-    }
 
     public boolean doUrlSigning = true;
 

@@ -301,11 +301,51 @@ public class AsmUtil {
         }
     }
 
+    public static class OverrideDesc {
+        private final String desc;
+
+        public OverrideDesc(String desc) {
+            this.desc = desc;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null)
+                return false;
+            if (!(obj instanceof OverrideDesc))
+                return false;
+            return Objects.equals(getDesc(), ((OverrideDesc) obj).getDesc());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(getDesc());
+        }
+
+        public String getDesc() {
+            return desc;
+        }
+
+        @Override
+        public String toString() {
+            return "OverrideDesc(" + desc + ")";
+        }
+    }
+
     /**
      * Get a descriptor suitable for override checks of a method. Works for
      * public methods, visiblity is not taken into account
      */
-    public static String getOverrideDesc(String methodName,
+    public static OverrideDesc getOverrideDesc(Method method) {
+        return getOverrideDesc(method.getName(),
+                Type.getMethodDescriptor(method));
+    }
+
+    /**
+     * Get a descriptor suitable for override checks of a method. Works for
+     * public methods, visiblity is not taken into account
+     */
+    public static OverrideDesc getOverrideDesc(String methodName,
             String methodDescriptor) {
         StringBuilder sb = new StringBuilder();
         sb.append(methodName);
@@ -314,6 +354,6 @@ public class AsmUtil {
             sb.append(t.getDescriptor());
         }
         sb.append(")");
-        return sb.toString();
+        return new OverrideDesc(sb.toString());
     }
 }

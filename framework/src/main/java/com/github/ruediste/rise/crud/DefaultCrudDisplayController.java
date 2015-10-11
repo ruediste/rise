@@ -3,6 +3,7 @@ package com.github.ruediste.rise.crud;
 import javax.inject.Inject;
 
 import com.github.ruediste.rise.api.SubControllerComponent;
+import com.github.ruediste.rise.component.FrameworkViewComponent;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.persistence.PersistentType;
@@ -17,7 +18,7 @@ public class DefaultCrudDisplayController extends SubControllerComponent {
     CrudReflectionUtil reflectionUtil;
 
     static class View
-            extends DefaultCrudViewComponent<DefaultCrudDisplayController> {
+            extends FrameworkViewComponent<DefaultCrudDisplayController> {
         @Inject
         CrudReflectionUtil util;
 

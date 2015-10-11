@@ -1,5 +1,5 @@
 package com.github.ruediste.rise.testApp;
 
-public enum Right {
+public enum Rights {
     ALLOWED, FORBIDDEN
 }

@@ -5,7 +5,6 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 
 import com.github.ruediste.rise.core.ChainedRequestHandler;
-import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.security.AuthenticationHolder;
@@ -16,15 +15,19 @@ import com.github.ruediste.rise.core.security.authentication.AuthenticationFailu
 import com.github.ruediste.rise.core.security.authentication.AuthenticationManager;
 import com.github.ruediste.rise.core.security.authentication.AuthenticationResult;
 import com.github.ruediste.rise.core.security.authentication.AuthenticationSuccess;
-import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeAuthenticationRequest;
+import com.github.ruediste.rise.core.security.authorization.AuthorizationException;
+import com.github.ruediste.rise.core.security.login.LoginController;
+import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeCookieAuthenticationRequest;
 import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeTokenTheftFailure;
+import com.github.ruediste.rise.core.web.RedirectRenderResult;
 
 /**
  * Takes care of authenticating web requests.
  * <p>
  * First the current session is checked for an already logged in
  * {@link Principal} . If there is no subject the request is checked for
- * remember-me tokens. And finally, the user is redirected to a login form.
+ * remember-me tokens. If there is still no principal found, the user is
+ * redirected to a login form.
  * 
  * <p>
  * 
@@ -47,9 +50,6 @@ public class WebRequestAuthenticator extends ChainedRequestHandler {
     AuthenticationSessionInfo info;
 
     @Inject
-    CoreConfiguration config;
-
-    @Inject
     CoreUtil util;
 
     @Override
@@ -58,19 +58,19 @@ public class WebRequestAuthenticator extends ChainedRequestHandler {
 
         if (success == null) {
             AuthenticationResult result = authenticationManager
-                    .authenticate(new RememberMeAuthenticationRequest());
+                    .authenticate(new RememberMeCookieAuthenticationRequest());
             if (result.isSuccess()) {
                 success = result.getSuccess();
                 info.setSuccess(success);
             } else {
                 for (AuthenticationFailure failure : result.getFailures()) {
                     if (failure instanceof RememberMeTokenTheftFailure) {
-                        Runnable handler = config
-                                .getRememberMeTokenTheftHandler();
-                        if (handler == null)
-                            log.error(
-                                    "Thoken theft detected, but no tokenThenftHandler was defined in CoreConfiguration");
-                        handler.run();
+                        coreRequestInfo.setActionResult(
+                                new RedirectRenderResult(util.toUrlSpec(util
+                                        .go(LoginController.class)
+                                        .tokenTheftDetected(
+                                                coreRequestInfo.getRequest()
+                                                        .createUrlSpec()))));
                         if (coreRequestInfo.getActionResult() != null)
                             return;
                     }
@@ -90,18 +90,19 @@ public class WebRequestAuthenticator extends ChainedRequestHandler {
             Throwable t = e;
             while (t != null) {
                 if (t instanceof NoAuthenticationException
-                        || t instanceof RememberMeNotSufficientException) {
-                    Runnable loginHandler = config.loginHandler();
-                    if (loginHandler == null) {
-                        throw new RuntimeException(
-                                "CoreConfiguration.loginHandler is not set", e);
-                    }
-
-                    log.debug("running login handler");
-                    loginHandler.run();
+                        || t instanceof RememberMeNotSufficientException
+                        || (success == null
+                                && t instanceof AuthorizationException)) {
+                    coreRequestInfo.setActionResult(new RedirectRenderResult(
+                            util.toUrlSpec(util.go(LoginController.class)
+                                    .index(coreRequestInfo.getRequest()
+                                            .createUrlSpec()))));
                     return;
                 }
-                t = t.getCause();
+                Throwable cause = t.getCause();
+                if (t == cause)
+                    break;
+                t = cause;
             }
             throw e;
         }

@@ -224,12 +224,13 @@ request: run login handler</panel_attributes>
   <element>
     <id>UMLUseCase</id>
     <coordinates>
-      <x>1100</x>
-      <y>360</y>
-      <w>110</w>
-      <h>60</h>
+      <x>1030</x>
+      <y>350</y>
+      <w>170</w>
+      <h>70</h>
     </coordinates>
-    <panel_attributes>application 
+    <panel_attributes>implementation
+application 
 provided
 bg=yellow
 lt=.</panel_attributes>

@@ -31,6 +31,7 @@ import com.github.ruediste.rise.nonReloadable.SignatureHelper;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndex;
 import com.github.ruediste.rise.util.AsmUtil;
 import com.github.ruediste.rise.util.AsmUtil.MethodRef;
+import com.github.ruediste.rise.util.AsmUtil.OverrideDesc;
 import com.github.ruediste.rise.util.MethodInvocation;
 import com.google.common.collect.BiMap;
 
@@ -129,20 +130,14 @@ public class RequestMapperBaseTest {
     public void testHierarchy() {
         mapper.register(b);
         assertThat(mapper.actionMethodNameMap.keySet(), not(contains(a.name)));
-        BiMap<MethodRef, String> map = mapper.actionMethodNameMap.get(b.name);
+        BiMap<OverrideDesc, String> map = mapper.actionMethodNameMap
+                .get(b.name);
         assertNotNull(map);
         assertThat(map.keySet(),
-                containsInAnyOrder(a_a,
-                        new MethodRef(a.name, "c",
-                                "(Ljava/lang/Integer;)" + Type
-                                        .getDescriptor(ActionResult.class)),
-                        new MethodRef(b.name, "c",
-                                "(Ljava/lang/Boolean;)" + Type
-                                        .getDescriptor(ActionResult.class)),
-                new MethodRef(b.name, "ab",
-                        "()" + Type.getDescriptor(ActionResult.class)),
-                new MethodRef(b.name, "b",
-                        "()" + Type.getDescriptor(ActionResult.class))));
+                containsInAnyOrder(new OverrideDesc("a()"),
+                        new OverrideDesc("c(Ljava/lang/Integer;)"),
+                        new OverrideDesc("c(Ljava/lang/Boolean;)"),
+                        new OverrideDesc("ab()"), new OverrideDesc("b()")));
     }
 
     @Test
