@@ -1,8 +1,7 @@
 package com.github.ruediste.rise.core.web.assetPipeline;
 
-import com.github.ruediste.rise.core.web.assetPipeline.Asset;
-import com.github.ruediste.rise.core.web.assetPipeline.AssetType;
-import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
+import java.util.function.Function;
+
 import com.google.common.base.Charsets;
 
 class TestAsset implements Asset {
@@ -38,5 +37,15 @@ class TestAsset implements Asset {
     @Override
     public String toString() {
         return "testAsset(" + name + "," + data + ")";
+    }
+
+    @Override
+    public String getLocation() {
+        return null;
+    }
+
+    @Override
+    public Function<String, Asset> getLoader() {
+        return null;
     }
 }

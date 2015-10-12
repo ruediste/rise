@@ -400,6 +400,16 @@ public class AssetGroup {
         public String toString() {
             return delegate + ".cache()";
         }
+
+        @Override
+        public String getLocation() {
+            return delegate.getLocation();
+        }
+
+        @Override
+        public Function<String, Asset> getLoader() {
+            return delegate.getLoader();
+        }
     }
 
     /**
@@ -467,6 +477,16 @@ public class AssetGroup {
         @Override
         public String toString() {
             return "combine" + assets;
+        }
+
+        @Override
+        public String getLocation() {
+            return null;
+        }
+
+        @Override
+        public Function<String, Asset> getLoader() {
+            return null;
         }
     }
 

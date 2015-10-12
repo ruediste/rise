@@ -9,9 +9,9 @@ import java.util.function.Supplier;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
-import ro.isdc.wro.model.resource.processor.ResourcePostProcessor;
-
 import com.google.common.base.Charsets;
+
+import ro.isdc.wro.model.resource.processor.ResourcePostProcessor;
 
 public class ProcessorWrapper implements Function<Asset, Asset> {
     @Inject
@@ -81,6 +81,16 @@ public class ProcessorWrapper implements Function<Asset, Asset> {
             public String toString() {
                 return t + "." + getProcessor().getClass().getSimpleName()
                         + "()";
+            }
+
+            @Override
+            public String getLocation() {
+                return t.getLocation();
+            }
+
+            @Override
+            public Function<String, Asset> getLoader() {
+                return t.getLoader();
             }
         };
     }

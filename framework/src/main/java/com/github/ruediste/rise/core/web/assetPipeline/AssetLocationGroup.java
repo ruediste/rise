@@ -61,7 +61,11 @@ public class AssetLocationGroup {
      * Load the resources from the classpath
      */
     public AssetGroup load() {
-        return bundle.classPath().apply(this);
+        return load(bundle.classPath());
+    }
+
+    public AssetGroup load(Function<String, Asset> loader) {
+        return new AssetGroup(bundle, locations.stream().map(loader));
     }
 
     /**

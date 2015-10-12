@@ -39,6 +39,8 @@ public abstract class AssetBundle {
 
     final List<AssetBundleOutput> outputs = new ArrayList<>();
 
+    private final Function<String, Asset> classPathFunc = this::loadAssetFromClasspath;
+
     /**
      * Generate the URL for an asset. This can be used to replace urls enclosed
      * for example in CSS files
@@ -112,10 +114,11 @@ public abstract class AssetBundle {
         return basePath + location;
     }
 
-    Function<AssetLocationGroup, AssetGroup> classPath() {
-
-        return group -> new AssetGroup(this, group.getLocations().stream()
-                .map(this::loadAssetFromClasspath));
+    /**
+     * Loader to load assets from the classPath
+     */
+    public Function<String, Asset> classPath() {
+        return classPathFunc;
     }
 
     private Asset loadAssetFromClasspath(String path) {
@@ -155,6 +158,16 @@ public abstract class AssetBundle {
             @Override
             public String toString() {
                 return "classpath(" + fullPath + ")";
+            }
+
+            @Override
+            public String getLocation() {
+                return path;
+            }
+
+            @Override
+            public Function<String, Asset> getLoader() {
+                return classPath();
             }
         };
     }
