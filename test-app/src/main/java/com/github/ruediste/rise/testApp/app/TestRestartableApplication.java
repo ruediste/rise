@@ -18,8 +18,8 @@ import com.github.ruediste.rise.core.security.authentication.DefaultAuthenticati
 import com.github.ruediste.rise.core.security.authentication.InMemoryAuthenticationProvider;
 import com.github.ruediste.rise.core.security.authorization.AuthorizationFailure;
 import com.github.ruediste.rise.core.security.authorization.AuthorizationManager;
-import com.github.ruediste.rise.core.security.authorization.AuthorizationManager.AuthorizationPerformer;
 import com.github.ruediste.rise.core.security.authorization.AuthorizationResult;
+import com.github.ruediste.rise.core.security.authorization.Right;
 import com.github.ruediste.rise.core.security.web.rememberMe.InMemoryRememberMeTokenDao;
 import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeAuthenticationProvider;
 import com.github.ruediste.rise.integration.DynamicIntegrationModule;
@@ -116,20 +116,15 @@ public class TestRestartableApplication extends RestartableApplicationBase {
                         .with("foo", "foo", null));
 
         authorizationManager
-                .setAuthorizationPerformer(new AuthorizationPerformer() {
-
-                    @Override
-                    public AuthorizationResult performAuthorization(
-                            Set<? extends com.github.ruediste.rise.core.security.authorization.Right> rights,
-                            Optional<AuthenticationSuccess> authentication) {
-                        for (Object right : rights) {
-                            if (!Objects.equals(Rights.ALLOWED, right))
-                                return AuthorizationResult
-                                        .failure(new AuthorizationFailure(
-                                                "right was not ALLOWED"));
-                        }
-                        return AuthorizationResult.authorized();
+                .setAuthorizationPerformer((Set<? extends Right> rights,
+                        Optional<AuthenticationSuccess> authentication) -> {
+                    for (Object right : rights) {
+                        if (!Objects.equals(Rights.ALLOWED, right))
+                            return AuthorizationResult
+                                    .failure(new AuthorizationFailure(
+                                            "right was not ALLOWED"));
                     }
+                    return AuthorizationResult.authorized();
                 });
 
     }

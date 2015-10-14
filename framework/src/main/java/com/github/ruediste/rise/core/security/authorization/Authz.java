@@ -86,7 +86,7 @@ public class Authz {
      * method can be executed without actually executing it.
      */
     static public void doAuthChecks(Runnable check) {
-        if (Authz.isAuthorizing()) {
+        if (AuthzHelper.isAuthorizing()) {
             AuthzHelper.withIsAuthorizing(false, check);
             throw new AuthorizationIntrospectionCompleted();
         } else

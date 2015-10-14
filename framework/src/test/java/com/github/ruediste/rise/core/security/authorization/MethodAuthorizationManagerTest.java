@@ -3,9 +3,11 @@ package com.github.ruediste.rise.core.security.authorization;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -69,12 +71,14 @@ public class MethodAuthorizationManagerTest {
     @MetaRequiresRight
     @Retention(RetentionPolicy.RUNTIME)
     @Repeatable(RepeatRequiresRight.class)
+    @Target(ElementType.METHOD)
     @interface RequiresRight {
         TestRightRight value();
     }
 
     @MetaRequiresRight
     @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
     @interface RepeatRequiresRight {
         RequiresRight[]value();
     }

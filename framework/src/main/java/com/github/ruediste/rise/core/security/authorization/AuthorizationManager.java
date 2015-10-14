@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.core.security.authorization;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
@@ -42,9 +43,20 @@ public class AuthorizationManager {
 
     private AuthorizationPerformer authorizationPerformer;
 
+    public void checkAuthorization(Right right,
+            Optional<AuthenticationSuccess> authentication) {
+        checkAuthorization(Collections.singleton(right), authentication);
+    }
+
     public void checkAuthorization(Set<? extends Right> rights,
             Optional<AuthenticationSuccess> authentication) {
         performAuthorization(rights, authentication).checkAuthorized();
+    }
+
+    public AuthorizationResult performAuthorization(Right right,
+            Optional<AuthenticationSuccess> authentication) {
+        return performAuthorization(Collections.singleton(right),
+                authentication);
     }
 
     /**
@@ -63,8 +75,16 @@ public class AuthorizationManager {
                 authentication);
     }
 
+    public void checkAuthorization(Right right) {
+        checkAuthorization(Collections.singleton(right));
+    }
+
     public void checkAuthorization(Set<? extends Right> rights) {
         performAuthorization(rights).checkAuthorized();
+    }
+
+    public AuthorizationResult performAuthorization(Right right) {
+        return performAuthorization(Collections.singleton(right));
     }
 
     /**
@@ -80,7 +100,8 @@ public class AuthorizationManager {
         return authorizationPerformer;
     }
 
-    public void setAuthorizationPerformer(AuthorizationPerformer rightsChecker) {
+    public void setAuthorizationPerformer(
+            AuthorizationPerformer rightsChecker) {
         this.authorizationPerformer = rightsChecker;
     }
 }
