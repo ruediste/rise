@@ -1,23 +1,13 @@
 package com.github.ruediste.rise.core.web.assetPipeline;
 
-import java.io.IOException;
-import java.util.Arrays;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.runners.MockitoJUnitRunner;
 
-import org.junit.Before;
-import org.junit.Test;
-
+@RunWith(MockitoJUnitRunner.class)
 public class CssProcessorTest {
-    private CssProcessor processor;
 
-    @Before
-    public void before() {
-        processor = new CssProcessor();
-    }
+    @InjectMocks
+    CssProcessor processor;
 
-    @Test
-    public void testImportSimple() throws IOException {
-
-        Asset combined = processor.combineStyleSheets(Arrays
-                .asList(new TestAsset("main.css", "@import \"test.css\";")));
-    }
 }

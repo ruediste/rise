@@ -45,20 +45,20 @@ public class AssetGroupResolveNameTemplateTest {
 
     @Test
     public void testResolveNameTemplate() throws Exception {
-        assertEquals("foo.js", group.resolveNameTemplate(resource, "foo.js"));
+        assertEquals("foo.js", group.bundle.helper.resolveNameTemplate(resource, "foo.js"));
         assertEquals(resourceHash + ".js",
-                group.resolveNameTemplate(resource, "{hash}.js"));
+                group.bundle.helper.resolveNameTemplate(resource, "{hash}.js"));
         assertEquals("test/" + resourceHash + ".js",
-                group.resolveNameTemplate(resource, "test/{hash}.js"));
+                group.bundle.helper.resolveNameTemplate(resource, "test/{hash}.js"));
         assertEquals("foo/test.css",
-                group.resolveNameTemplate(resource, "foo/{name}.css"));
+                group.bundle.helper.resolveNameTemplate(resource, "foo/{name}.css"));
         resource = new TestAsset("foo.bar.sass", "Hello");
         assertEquals("foo/foo.bar.css",
-                group.resolveNameTemplate(resource, "foo/{name}.css"));
+                group.bundle.helper.resolveNameTemplate(resource, "foo/{name}.css"));
         assertEquals("hell{o}",
-                group.resolveNameTemplate(resource, "hell\\{o}"));
+                group.bundle.helper.resolveNameTemplate(resource, "hell\\{o}"));
         assertEquals("hell\\o",
-                group.resolveNameTemplate(resource, "hell\\\\o"));
+                group.bundle.helper.resolveNameTemplate(resource, "hell\\\\o"));
 
     }
 
@@ -66,7 +66,7 @@ public class AssetGroupResolveNameTemplateTest {
     public void testResolveNameTemplateQualifiedName() {
         resource = new TestAsset("foo/bar.css", "Hello");
         assertEquals("static/foo/bar.js",
-                group.resolveNameTemplate(resource, "static/{qname}.js"));
+                group.bundle.helper.resolveNameTemplate(resource, "static/{qname}.js"));
 
     }
 
@@ -74,7 +74,7 @@ public class AssetGroupResolveNameTemplateTest {
     public void testResolveNameTemplateExt() {
         resource = new TestAsset("foo/bar.css", "Hello");
         assertEquals("yeah.css",
-                group.resolveNameTemplate(resource, "yeah.{ext}"));
+                group.bundle.helper.resolveNameTemplate(resource, "yeah.{ext}"));
 
     }
 
@@ -83,7 +83,7 @@ public class AssetGroupResolveNameTemplateTest {
         resource = new TestAsset("foo/bar.js", "Hello");
         when(config.getExtension(DefaultAssetTypes.CSS)).thenReturn("css");
         assertEquals("yeah.css",
-                group.resolveNameTemplate(resource, "yeah.{extT}"));
+                group.bundle.helper.resolveNameTemplate(resource, "yeah.{extT}"));
 
     }
 
@@ -93,7 +93,7 @@ public class AssetGroupResolveNameTemplateTest {
         when(config.getExtension(DefaultAssetTypes.CSS)).thenReturn("css");
         assertEquals(
                 "185f8db32271fe25f561a6fc938b2e264306ec304eda518007d1764826381969.css",
-                group.resolveNameTemplate(resource, "{hash}.{extT}"));
+                group.bundle.helper.resolveNameTemplate(resource, "{hash}.{extT}"));
 
     }
 }

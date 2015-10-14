@@ -1,7 +1,5 @@
 package com.github.ruediste.rise.core.web.assetPipeline;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,9 +11,6 @@ import javax.inject.Inject;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
 import com.github.ruediste.rise.core.CoreRestartableModule;
 import com.github.ruediste.rise.core.CoreUtil;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
-import com.google.common.io.ByteStreams;
 
 /**
  * Defines a set of {@link AssetBundleOutput}s and how {@link Asset}s are loaded
@@ -35,6 +30,12 @@ public abstract class AssetBundle {
     @Inject
     CoreUtil coreUtil;
 
+    @Inject
+    AssetHelper helper;
+
+    @Inject
+    CssProcessor cssProcessor;
+
     AttachedPropertyBearerBase cache = new AttachedPropertyBearerBase();
 
     final List<AssetBundleOutput> outputs = new ArrayList<>();
@@ -46,7 +47,7 @@ public abstract class AssetBundle {
      * for example in CSS files
      */
     public String url(Asset asset) {
-        return coreUtil.urlStatic(requestMapper.getPathInfo(asset));
+        return helper.url(asset);
     }
 
     @PostConstruct
@@ -77,99 +78,17 @@ public abstract class AssetBundle {
         outputs.add(assetBundleOutput);
     }
 
-    private String getExtension(String path) {
-        return Iterables.getLast(Splitter.on('.').split(path));
-    }
-
-    private static String getPackageName(Class<?> cls) {
-        String classname = cls.getName();
-        int index = classname.lastIndexOf('.');
-        if (index != -1)
-            return classname.substring(0, index);
-        return "";
-    }
-
     /**
      * Map the path of an asset to the full resouce path to be used to load the
      * asset from the classpath. Rules see {@link #locations(String...)}
      */
     String calculateAbsoluteLocation(String location) {
-        return calculateAbsoluteLocation(location,
+        return AssetHelper.calculateAbsoluteLocation(location,
                 pipelineConfiguration.assetBasePath, getClass());
     }
 
-    /**
-     * Map the path of an asset to the full resouce path to be used to load the
-     * asset from the classpath. Rules see {@link #locations(String...)}
-     */
-    public static String calculateAbsoluteLocation(String location,
-            String basePath, Class<?> cls) {
-        if (location.startsWith("/"))
-            return location.substring(1);
-        if (location.startsWith("./"))
-            return getPackageName(cls).replace('.', '/')
-                    + location.substring(1);
-        if (location.startsWith("."))
-            return cls.getName().replace('.', '/') + location.substring(1);
-        return basePath + location;
-    }
-
-    /**
-     * Loader to load assets from the classPath
-     */
-    public Function<String, Asset> classPath() {
-        return classPathFunc;
-    }
-
-    private Asset loadAssetFromClasspath(String path) {
-        AssetType type = pipelineConfiguration
-                .getDefaultAssetType(getExtension(path));
-        String fullPath = calculateAbsoluteLocation(path);
-        return new Asset() {
-
-            @Override
-            public String getName() {
-                return fullPath;
-            }
-
-            @Override
-            public byte[] getData() {
-                InputStream in = getClass().getClassLoader()
-                        .getResourceAsStream(fullPath);
-                if (in == null) {
-                    throw new RuntimeException(
-                            "Unable to find resource on classpath: " + fullPath
-                                    + ", reference from "
-                                    + AssetBundle.this.getClass().getName());
-                }
-                return toByteArray(in);
-            }
-
-            @Override
-            public AssetType getAssetType() {
-                return type;
-            }
-
-            @Override
-            public String getContentType() {
-                return pipelineConfiguration.getDefaultContentType(type);
-            }
-
-            @Override
-            public String toString() {
-                return "classpath(" + fullPath + ")";
-            }
-
-            @Override
-            public String getLocation() {
-                return path;
-            }
-
-            @Override
-            public Function<String, Asset> getLoader() {
-                return classPath();
-            }
-        };
+    Asset loadAssetFromClasspath(String path) {
+        return helper.loadAssetFromClasspath(path, getClass());
     }
 
     /**
@@ -191,24 +110,6 @@ public abstract class AssetBundle {
      */
     public AssetLocationGroup locations(String... locations) {
         return new AssetLocationGroup(this, Arrays.stream(locations));
-    }
-
-    private byte[] toByteArray(InputStream in) {
-        try {
-            byte[] bb = ByteStreams.toByteArray(in);
-            in = null;
-            return bb;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (in != null)
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    throw new RuntimeException(
-                            "unable to close stream used to load asset", e);
-                }
-        }
     }
 
     /**

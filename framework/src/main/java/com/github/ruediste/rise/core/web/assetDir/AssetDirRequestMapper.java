@@ -3,7 +3,6 @@ package com.github.ruediste.rise.core.web.assetDir;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -19,7 +18,7 @@ import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.web.ClasspathResourceRenderResultFactory;
 import com.github.ruediste.rise.core.web.HttpRenderResultUtil;
 import com.github.ruediste.rise.core.web.PathInfo;
-import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
+import com.github.ruediste.rise.core.web.assetPipeline.AssetHelper;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetPipelineConfiguration;
 import com.github.ruediste.rise.nonReloadable.front.StartupTimeLogger;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndex;
@@ -108,22 +107,26 @@ public class AssetDirRequestMapper {
 
         for (AssetDir dir : dirs) {
             String location = dir.getLocation();
-            String absoluteLocation = AssetBundle.calculateAbsoluteLocation(
+            String absoluteLocation = AssetHelper.calculateAbsoluteLocation(
                     location, pipelineConfiguration.assetBasePath,
                     dir.getClass());
 
-            String pathInfoPrefix = Optional.ofNullable(dir.getPathInfoPrefix())
-                    .orElseGet(() -> {
-                        String name = dir.getName();
-                        if (name == null)
-                            name = absoluteLocation;
-                        return pipelineConfiguration.assetPathInfoPrefix + name;
-                    });
+            String pathInfoPrefix = dir.getName();
+            if (pathInfoPrefix == null)
+                pathInfoPrefix = absoluteLocation;
+            else {
+                if (!pathInfoPrefix.startsWith("/"))
+                    pathInfoPrefix = pipelineConfiguration.assetPathInfoPrefix
+                            + pathInfoPrefix;
+
+            }
+
+            String pathInfoPrefixFinal = pathInfoPrefix;
 
             dir.pathInfoPrefix = pathInfoPrefix;
 
             index.registerPrefix(pathInfoPrefix, request -> resultProvider.get()
-                    .initialize(absoluteLocation, pathInfoPrefix));
+                    .initialize(absoluteLocation, pathInfoPrefixFinal));
             log.debug("Registered asset directory {} ({} -> {})",
                     dir.getClass().getSimpleName(), absoluteLocation,
                     pathInfoPrefix);

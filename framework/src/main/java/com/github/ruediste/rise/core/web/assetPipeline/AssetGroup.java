@@ -6,7 +6,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
@@ -24,7 +23,6 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.hash.Hashing;
 
 /**
  * Manages a group of {@link Asset}s
@@ -223,7 +221,7 @@ public class AssetGroup {
      * <ul>
      * <li><b>hash:</b> hash code of the underlying data
      * <li><b>name:</b> name of the underlying asset, without extension or path
-     * <li><b>qname:</b> name of the underlying asset, includint the path, but
+     * <li><b>qname:</b> name of the underlying asset, including the path, but
      * without extension
      * <li><b>ext:</b> extenstion from the name of the underlying asset
      * <li><b>extT:</b> extension from the {@link AssetType} of the underlying
@@ -247,7 +245,7 @@ public class AssetGroup {
 
             @Override
             public String getName() {
-                return resolveNameTemplate(asset, template);
+                return bundle.helper.resolveNameTemplate(asset, template);
             }
 
             @Override
@@ -259,65 +257,6 @@ public class AssetGroup {
         // cache again to avoid calculating the name multiple time
         // when hashing is used
         return usesHash ? result.cache() : result;
-    }
-
-    String resolveNameTemplate(Asset asset, String template) {
-        String name = asset.getName();
-        Pattern p = Pattern
-                .compile("(\\A|[^\\\\])\\{(?<placeholder>[^\\}]*)\\}");
-        Matcher m = p.matcher(template);
-        StringBuilder sb = new StringBuilder();
-        int lastEnd = 0;
-        while (m.find()) {
-            sb.append(template.substring(lastEnd,
-                    m.start() == 0 ? 0 : m.start() + 1));
-            lastEnd = m.end();
-            String placeholder = m.group("placeholder");
-            switch (placeholder) {
-            case "hash":
-                sb.append(
-                        Hashing.sha256().hashBytes(asset.getData()).toString());
-                break;
-            case "name": {
-                String[] parts = name.split("/");
-                parts = parts[parts.length - 1].split("\\.");
-
-                sb.append(
-                        Arrays.asList(parts)
-                                .subList(0,
-                                        parts.length == 1 ? 1
-                                                : parts.length - 1)
-                                .stream().collect(Collectors.joining(".")));
-            }
-                break;
-            case "qname": {
-                String[] parts = name.split("\\.");
-
-                sb.append(
-                        Arrays.asList(parts)
-                                .subList(0,
-                                        parts.length == 1 ? 1
-                                                : parts.length - 1)
-                                .stream().collect(Collectors.joining(".")));
-            }
-                break;
-            case "ext": {
-                String[] parts = name.split("\\.");
-                sb.append(parts[parts.length - 1]);
-            }
-                break;
-            case "extT": {
-                sb.append(bundle.getPipelineConfiguration()
-                        .getExtension(asset.getAssetType()));
-            }
-                break;
-            default:
-                throw new RuntimeException("Unknown placeholder " + placeholder
-                        + " in name template " + template);
-            }
-        }
-        sb.append(template.substring(lastEnd, template.length()));
-        return sb.toString().replace("\\{", "{").replace("\\\\", "\\");
     }
 
     public AssetGroup filterName(Predicate<String> predicate) {
@@ -401,15 +340,6 @@ public class AssetGroup {
             return delegate + ".cache()";
         }
 
-        @Override
-        public String getLocation() {
-            return delegate.getLocation();
-        }
-
-        @Override
-        public Function<String, Asset> getLoader() {
-            return delegate.getLoader();
-        }
     }
 
     /**
@@ -479,15 +409,6 @@ public class AssetGroup {
             return "combine" + assets;
         }
 
-        @Override
-        public String getLocation() {
-            return null;
-        }
-
-        @Override
-        public Function<String, Asset> getLoader() {
-            return null;
-        }
     }
 
     public void forEach(Consumer<? super Asset> action) {

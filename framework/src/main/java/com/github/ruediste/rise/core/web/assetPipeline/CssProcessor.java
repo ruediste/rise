@@ -1,205 +1,304 @@
 package com.github.ruediste.rise.core.web.assetPipeline;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
-import org.w3c.css.sac.CSSException;
-import org.w3c.css.sac.DocumentHandler;
-import org.w3c.css.sac.InputSource;
-import org.w3c.css.sac.LexicalUnit;
-import org.w3c.css.sac.SACMediaList;
-import org.w3c.css.sac.SelectorList;
-import org.w3c.dom.css.CSSImportRule;
-import org.w3c.dom.css.CSSRule;
-import org.w3c.dom.css.CSSRuleList;
-import org.w3c.dom.css.CSSStyleDeclaration;
-import org.w3c.dom.css.CSSStyleRule;
-import org.w3c.dom.css.CSSStyleSheet;
-import org.w3c.dom.stylesheets.MediaList;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-import com.github.ruediste.rise.util.Pair;
+import com.github.ruediste.rise.core.web.assetPipeline.CssAnalyzer.CssProcessorHandler;
+import com.github.ruediste.rise.util.RiseUtil;
 import com.google.common.base.Charsets;
-import com.steadystate.css.parser.CSSOMParser;
-import com.steadystate.css.parser.SACParserCSS3;
 
 /**
  * Processor to extract css image URLs and imports
  */
+@Singleton
 public class CssProcessor {
 
-    private final class DocumentHandlerImplementation
-            implements DocumentHandler {
-        public DocumentHandlerImplementation(Asset asset, Ctx ctx) {
-            // TODO Auto-generated constructor stub
-        }
+    @Inject
+    AssetPipelineConfiguration config;
 
-        @Override
-        public void startSelector(SelectorList selectors) throws CSSException {
-            // TODO Auto-generated method stub
+    @Inject
+    CssAnalyzer analyzer;
 
-        }
-
-        @Override
-        public void startPage(String name, String pseudo_page)
-                throws CSSException {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void startMedia(SACMediaList media) throws CSSException {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void startFontFace() throws CSSException {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void startDocument(InputSource source) throws CSSException {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void property(String name, LexicalUnit value, boolean important)
-                throws CSSException {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void namespaceDeclaration(String prefix, String uri)
-                throws CSSException {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void importStyle(String uri, SACMediaList media,
-                String defaultNamespaceURI) throws CSSException {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void ignorableAtRule(String atRule) throws CSSException {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void endSelector(SelectorList selectors) throws CSSException {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void endPage(String name, String pseudo_page)
-                throws CSSException {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void endMedia(SACMediaList media) throws CSSException {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void endFontFace() throws CSSException {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void endDocument(InputSource source) throws CSSException {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void comment(String text) throws CSSException {
-            // TODO Auto-generated method stub
-
-        }
-    }
+    @Inject
+    AssetHelper helper;
 
     private static class Ctx {
-        Set<Pair<Object, String>> loadedAssets = new HashSet<>();
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        Set<String> media;
+        Set<String> startedAssets = new HashSet<>();
+        ArrayList<Asset> result = new ArrayList<>();
+        Map<String, Asset> processedAssets = new HashMap<>();
+        Function<Asset, Asset> referencedAssetProcessor;
+        public String nameTemplate;
     }
 
-    public Asset combineStyleSheets(List<Asset> assets) {
-        return combineStyleSheets(assets, Collections.emptySet());
-    }
+    /**
+     * Relocate the given style sheets without inlining imports
+     * 
+     * @param styleSheets
+     *            the style sheets to relocate
+     * @param namePattern
+     *            pattern to use as style sheet name (see
+     *            {@link AssetGroup#name(String)})
+     * @param refencedAssetProcessor
+     *            processor for the referenced assets. The assets will be
+     *            included in the returned assets. The same classpath location
+     *            will only be processed once.
+     */
+    public List<Asset> relocateStyleSheets(List<Asset> styleSheets,
+            String namePattern, Function<Asset, Asset> refencedAssetProcessor) {
 
-    public Asset combineStyleSheets(List<Asset> assets, Set<String> media) {
         Ctx ctx = new Ctx();
-        ctx.media = media;
+        ctx.referencedAssetProcessor = refencedAssetProcessor;
+        ctx.nameTemplate = namePattern;
 
-        assets.forEach(a -> {
-            try {
-                process(a, ctx);
-            } catch (Exception e) {
-                e.printStackTrace();
+        for (Asset style : styleSheets) {
+            String content = new String(style.getData(), Charsets.UTF_8);
+            String styleLocation = style.getName();
+            relocateStyleSheetImpl(ctx, content, styleLocation);
+        }
+        return ctx.result;
+    }
+
+    private Asset relocateStyleSheetImpl(Ctx ctx, String content,
+            String styleLocation) {
+        Map<String, Asset> processedAssets = ctx.processedAssets;
+
+        // check if the style sheet has already been processed
+        {
+            Asset result = processedAssets.get(styleLocation);
+            if (result != null)
+                return result;
+        }
+
+        // break endless loops
+        if (!ctx.startedAssets.add(styleLocation)) {
+            throw new RuntimeException(
+                    "Import loop detected. Involved style sheets: "
+                            + ctx.startedAssets);
+        }
+
+        // determine final name
+        String targetStyleLocation = getTargetStyleLocation(ctx.nameTemplate,
+                styleLocation);
+        StringBuffer sb = new StringBuffer();
+        analyzer.process(content, sb, new CssProcessorHandler() {
+
+            @Override
+            public boolean shouldInline(String ref, String media) {
+                return false;
+            }
+
+            @Override
+            public String replaceRef(String ref) {
+                String location = RiseUtil.resolvePath(styleLocation, ref);
+                Asset asset = processedAssets.get(location);
+                if (asset == null) {
+                    asset = helper.loadAssetFromClasspath(location,
+                            () -> "style sheet " + styleLocation);
+                    asset = ctx.referencedAssetProcessor.apply(asset);
+                    processedAssets.put(location, asset);
+                }
+                return RiseUtil.getShortestPath(targetStyleLocation,
+                        asset.getName());
+            }
+
+            @Override
+            public String replaceImportRef(String ref) {
+                String location = RiseUtil.resolvePath(styleLocation, ref);
+                Asset asset = processedAssets.get(location);
+                if (asset == null) {
+                    byte[] refData = RiseUtil.readFromClasspath(location,
+                            getClass().getClassLoader());
+                    if (refData == null) {
+                        throw new RuntimeException(
+                                "Style sheet " + location + " imported from "
+                                        + styleLocation + " not found");
+                    }
+                    asset = relocateStyleSheetImpl(ctx,
+                            new String(refData, Charsets.UTF_8), location);
+                    processedAssets.put(location, asset);
+                }
+                return RiseUtil.getShortestPath(targetStyleLocation,
+                        asset.getName());
+            }
+
+            @Override
+            public void performInline(StringBuffer sb, String ref,
+                    String media) {
+                throw new UnsupportedOperationException();
             }
         });
-        return null;
+        ctx.startedAssets.remove(styleLocation);
+
+        byte[] data = sb.toString().getBytes(Charsets.UTF_8);
+        Asset result = createCssAsset(targetStyleLocation, data);
+        processedAssets.put(styleLocation, result);
+        ctx.result.add(result);
+        return result;
     }
 
-    private void process(Asset asset, Ctx ctx) throws IOException {
-        SACParserCSS3 parser = new SACParserCSS3();
-        parser.setDocumentHandler(new DocumentHandlerImplementation(asset, ctx));
-        
-        InputSource src = new InputSource();
-        src.setByteStream(new ByteArrayInputStream(asset.getData()));
-        src.setEncoding(Charsets.UTF_8.name());
-         parser.parseStyleSheet(src);
-        
-        CSSRuleList rules = sheet.getCssRules();
-        ruleLoop: for (int i = 0; i < rules.getLength(); i++) {
-            CSSRule rule = rules.item(i);
-            System.out.println(rule);
+    private static class InlineCtx {
+        Set<String> startedAssets = new HashSet<>();
+        ArrayList<Asset> result = new ArrayList<>();
+        Map<String, Asset> processedAssets = new HashMap<>();
+        Function<Asset, Asset> referencedAssetProcessor;
+        String nameTemplate;
+        StringBuffer sb;
+    }
 
-            if (rule.getType() == CSSRule.IMPORT_RULE) {
-                CSSImportRule importRule = (CSSImportRule) rule;
+    /**
+     * Relocate the given style sheets without inlining imports
+     * 
+     * @param styleSheets
+     *            the style sheets to relocate
+     * @param nameTemplate
+     *            pattern to use as style sheet name (see
+     *            {@link AssetGroup#name(String)})
+     * @param refencedAssetProcessor
+     *            processor for the referenced assets. The assets will be
+     *            included in the returned assets. The same classpath location
+     *            will only be processed once.
+     */
+    public List<Asset> inlineStyleSheets(List<Asset> styleSheets,
+            String nameTemplate,
+            Function<Asset, Asset> refencedAssetProcessor) {
 
-                // check if the import should be included based on the media
-                if (!ctx.media.isEmpty()) {
-                    MediaList media = importRule.getMedia();
-                    boolean keep = false;
-                    for (int p = 0; p < media.getLength(); p++) {
-                        if (ctx.media.contains(media.item(p))) {
-                            keep = true;
-                            break;
-                        }
-                    }
-                    if (!keep)
-                        continue ruleLoop;
-                }
-                String href = importRule.getHref();
-                if (!(href.startsWith("http://") || href.startsWith("https://")
-                        || href.startsWith("ftp://"))) {
-                    System.out.println(href);
-                }
-            } else if (rule.getType() == CSSRule.STYLE_RULE) {
-                CSSStyleRule styleRule=(CSSStyleRule) rule;
-                CSSStyleDeclaration style = styleRule.getStyle();
-                for (int p=0;p<style.getLength(); p++){
-                }
-                style.getLength()
-            }
+        InlineCtx ctx = new InlineCtx();
+        ctx.referencedAssetProcessor = refencedAssetProcessor;
+        ctx.nameTemplate = nameTemplate;
+
+        for (Asset style : styleSheets) {
+            ctx.sb = new StringBuffer();
+            String content = new String(style.getData(), Charsets.UTF_8);
+            String styleLocation = style.getName();
+            String targetStyleLocation = getTargetStyleLocation(
+                    ctx.nameTemplate, styleLocation);
+            inlineStyleSheetImpl(ctx, content, styleLocation,
+                    targetStyleLocation);
+
+            byte[] data = ctx.sb.toString().getBytes(Charsets.UTF_8);
+            Asset result = createCssAsset(targetStyleLocation, data);
+            ctx.processedAssets.put(styleLocation, result);
+            ctx.result.add(result);
         }
+        return ctx.result;
     }
+
+    private Asset createCssAsset(String name, byte[] data) {
+        return new Asset() {
+
+            @Override
+            public String getName() {
+                return name;
+            }
+
+            @Override
+            public byte[] getData() {
+                return data;
+            }
+
+            @Override
+            public String getContentType() {
+                return config.getDefaultContentType(DefaultAssetTypes.CSS);
+            }
+
+            @Override
+            public AssetType getAssetType() {
+                return DefaultAssetTypes.CSS;
+            }
+        };
+    }
+
+    private void inlineStyleSheetImpl(InlineCtx ctx, String content,
+            String styleLocation, String targetStyleLocation) {
+        Map<String, Asset> processedAssets = ctx.processedAssets;
+
+        // break endless loops
+        if (!ctx.startedAssets.add(styleLocation)) {
+            throw new RuntimeException(
+                    "Import loop detected. Involved style sheets: "
+                            + ctx.startedAssets);
+        }
+
+        // determine final name
+
+        analyzer.process(content, ctx.sb, new CssProcessorHandler() {
+
+            @Override
+            public boolean shouldInline(String ref, String media) {
+                return true;
+            }
+
+            @Override
+            public String replaceRef(String ref) {
+                String location = RiseUtil.resolvePath(styleLocation, ref);
+                Asset asset = processedAssets.get(location);
+                if (asset == null) {
+                    asset = helper.loadAssetFromClasspath(location,
+                            () -> "style sheet " + styleLocation);
+                    asset = ctx.referencedAssetProcessor.apply(asset);
+                    processedAssets.put(location, asset);
+                }
+                return RiseUtil.getShortestPath(targetStyleLocation,
+                        asset.getName());
+            }
+
+            @Override
+            public String replaceImportRef(String ref) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void performInline(StringBuffer sb, String ref,
+                    String media) {
+                String location = RiseUtil.resolvePath(styleLocation, ref);
+                byte[] refData = RiseUtil.readFromClasspath(location,
+                        getClass().getClassLoader());
+                if (refData == null) {
+                    throw new RuntimeException("Style sheet " + location
+                            + " imported from " + styleLocation + " not found");
+                }
+                inlineStyleSheetImpl(ctx, new String(refData, Charsets.UTF_8),
+                        location, targetStyleLocation);
+
+            }
+        });
+        ctx.startedAssets.remove(styleLocation);
+
+    }
+
+    private String getTargetStyleLocation(String nameTemplate,
+            String styleLocation) {
+        String targetStyleLocation = helper.resolveNameTemplate(new Asset() {
+
+            @Override
+            public String getName() {
+                return styleLocation;
+            }
+
+            @Override
+            public byte[] getData() {
+                return new byte[] {};
+            }
+
+            @Override
+            public String getContentType() {
+                return config.getDefaultContentType(getAssetType());
+            }
+
+            @Override
+            public AssetType getAssetType() {
+                return DefaultAssetTypes.CSS;
+            }
+        }, nameTemplate);
+        return targetStyleLocation;
+    }
+
 }

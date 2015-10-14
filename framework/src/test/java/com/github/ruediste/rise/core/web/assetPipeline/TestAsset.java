@@ -1,7 +1,5 @@
 package com.github.ruediste.rise.core.web.assetPipeline;
 
-import java.util.function.Function;
-
 import com.google.common.base.Charsets;
 
 class TestAsset implements Asset {
@@ -39,13 +37,4 @@ class TestAsset implements Asset {
         return "testAsset(" + name + "," + data + ")";
     }
 
-    @Override
-    public String getLocation() {
-        return null;
-    }
-
-    @Override
-    public Function<String, Asset> getLoader() {
-        return null;
-    }
 }

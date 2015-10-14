@@ -83,15 +83,6 @@ public class ProcessorWrapper implements Function<Asset, Asset> {
                         + "()";
             }
 
-            @Override
-            public String getLocation() {
-                return t.getLocation();
-            }
-
-            @Override
-            public Function<String, Asset> getLoader() {
-                return t.getLoader();
-            }
         };
     }
 
