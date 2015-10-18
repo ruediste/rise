@@ -13,6 +13,7 @@ import com.github.ruediste.rise.util.RiseUtil;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import com.google.common.hash.Hashing;
+import com.google.common.io.BaseEncoding;
 
 public class AssetHelper {
     @Inject
@@ -124,20 +125,23 @@ public class AssetHelper {
 
     public String resolveNameTemplate(Asset asset, String template) {
         String name = asset.getName();
-        Pattern p = Pattern
-                .compile("(\\A|[^\\\\])\\{(?<placeholder>[^\\}]*)\\}");
+        Pattern p = Pattern.compile(
+                "(?<context>\\A|[^\\\\]|\\G)\\{(?<placeholder>[^\\}]*)\\}");
         Matcher m = p.matcher(template);
         StringBuilder sb = new StringBuilder();
         int lastEnd = 0;
         while (m.find()) {
-            sb.append(template.substring(lastEnd,
-                    m.start() == 0 ? 0 : m.start() + 1));
+            sb.append(template.substring(lastEnd, m.end("context")));
+
             lastEnd = m.end();
             String placeholder = m.group("placeholder");
             switch (placeholder) {
-            case "hash":
-                sb.append(
-                        Hashing.sha256().hashBytes(asset.getData()).toString());
+            case "hash": {
+                String hash = BaseEncoding.base64Url().encode(
+                        Hashing.sha256().hashBytes(asset.getData()).asBytes());
+                sb.append(hash.substring(0, Integer.min(hash.length(),
+                        pipelineConfiguration.defaultHashLength)));
+            }
                 break;
             case "name": {
                 String[] parts = name.split("/");

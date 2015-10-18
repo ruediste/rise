@@ -8,7 +8,7 @@ import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
-import com.github.ruediste.rise.core.web.bootstrap.BootstrapBundleUtil;
+import com.github.ruediste.rise.core.web.bootstrap.BootstrapBundle;
 import com.github.ruediste.rise.core.web.jQuery.JQueryAssetBundle;
 import com.github.ruediste.rise.core.web.jQueryUi.JQueryUiAssetBundle;
 import com.github.ruediste.rise.integration.RiseCanvas;
@@ -23,7 +23,7 @@ public class CPageTemplate extends ComponentTemplateBase<CPage> {
         CoreAssetBundle coreBundle;
 
         @Inject
-        BootstrapBundleUtil bootstrapBundleUtil;
+        BootstrapBundle bootstrapBundle;
 
         @Inject
         JQueryAssetBundle jQueryAssetBundle;
@@ -37,7 +37,7 @@ public class CPageTemplate extends ComponentTemplateBase<CPage> {
         public void initialize() {
             jQueryAssetBundle.out.send(out);
             jQueryUiAssetBundle.out.send(out);
-            bootstrapBundleUtil.loadAssets().all().send(out);
+            bootstrapBundle.out.send(out);
             coreBundle.out.send(out);
         }
 

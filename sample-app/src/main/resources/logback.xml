@@ -19,8 +19,8 @@
 <!-- 		level="DEBUG"/> -->
 <!-- 	<logger name="com.github.ruediste.rise.nonReloadable.front.FrontServletBase"  -->
 <!-- 		level="DEBUG"/> -->
-<!-- 	 <logger name="com.github.ruediste.rise.core.web.assetPipeline.AssetRequestMapper"  -->
-<!-- 		level="DEBUG"/>  -->
+	 <logger name="com.github.ruediste.rise.core.web.assetPipeline.AssetRequestMapper" 
+		level="DEBUG"/> 
 <!-- 	<logger name="com.github.ruediste.rise.core.PathInfoIndexBase" -->
 <!-- 		level="DEBUG" /> -->
 <!-- 	<logger name="com.github.ruediste.rise.core.RequestMapperBase" -->

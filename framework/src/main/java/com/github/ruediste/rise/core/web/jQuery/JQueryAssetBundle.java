@@ -9,6 +9,6 @@ public class JQueryAssetBundle extends AssetBundle {
 
     @Override
     protected void initialize() {
-        out = locations("./jquery-2.1.3.js").load();
+        out = webJar("jquery", "jquery.js").insertMinInProd().load();
     }
 }

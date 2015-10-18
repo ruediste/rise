@@ -5,8 +5,10 @@ import javax.inject.Inject;
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
-import com.github.ruediste.rise.core.web.bootstrap.BootstrapBundleUtil;
-import com.github.ruediste.rise.core.web.bootstrap.BootstrapBundleUtil.BootstrapAssetGroups;
+import com.github.ruediste.rise.core.web.assetPipeline.AssetGroup;
+import com.github.ruediste.rise.core.web.assetPipeline.CssProcessor;
+import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
+import com.github.ruediste.rise.core.web.bootstrap.BootstrapBundle;
 import com.github.ruediste.rise.core.web.fileinput.FileinputAssetBundle;
 import com.github.ruediste.rise.core.web.jQuery.JQueryAssetBundle;
 import com.github.ruediste.rise.core.web.jQueryUi.JQueryUiAssetBundle;
@@ -22,7 +24,7 @@ public class SampleBundle extends AssetBundle {
     JQueryUiAssetBundle jQueryUiAssetBundle;
 
     @Inject
-    BootstrapBundleUtil bootstrapUtil;
+    BootstrapBundle bootstrap;
 
     @Inject
     CoreAssetBundle core;
@@ -30,17 +32,23 @@ public class SampleBundle extends AssetBundle {
     @Inject
     FileinputAssetBundle fileinputAssetBundle;
 
+    @Inject
+    CssProcessor css;
+
     @Override
     public void initialize() {
-        jQueryAssetBundle.out.send(out);
-        jQueryUiAssetBundle.out.send(out);
-        BootstrapAssetGroups bootstrap = bootstrapUtil.loadAssets();
-        bootstrap.fonts.send(out);
-        //@formatter:off
-        bootstrap.withoutFonts()
-                .join(core.out, fileinputAssetBundle.out)
-                .join(locations("/assets/welcome.css", "/assets/welcome.js").load())
-                .ifProd(g -> g.combine().min().name("{hash}.{extT}"))
+        AssetGroup assets = join(jQueryAssetBundle.out, jQueryUiAssetBundle.out,
+                bootstrap.out, core.out, fileinputAssetBundle.out,
+                locations("/assets/welcome.css", "/assets/welcome.js").load()
+                        .ifProd(g -> g.min()));
+
+        assets.select(DefaultAssetTypes.CSS)
+                .split(css.process("{name}{hash}.{extT}",
+                        a -> a.name("{ext}/{name}-{hash}.{ext}")))
+                .ifProd(g -> g
+                        .select(DefaultAssetTypes.CSS, DefaultAssetTypes.JS)
+                        .split(g1 -> g1.combine().min()
+                                .name("all-{hash}.{extT}")))
                 .send(out);
     }
 }

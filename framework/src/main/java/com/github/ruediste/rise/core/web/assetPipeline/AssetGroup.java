@@ -6,8 +6,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -23,6 +25,8 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+
+import jersey.repackaged.com.google.common.collect.Iterables;
 
 /**
  * Manages a group of {@link Asset}s
@@ -40,36 +44,30 @@ public class AssetGroup {
         this(bundle, resources.collect(Collectors.toList()));
     }
 
+    public static Function<Asset, Asset> toSingleAssetFunction(
+            AssetBundle bundle, Function<AssetGroup, AssetGroup> func) {
+        return a -> Iterables.getOnlyElement(
+                func.apply(new AssetGroup(bundle, Arrays.asList(a))).assets);
+    }
+
     @Override
     public String toString() {
         return "AssetGroup" + assets;
     }
 
     /**
+     * Map all assets of the group in one go
+     */
+    public AssetGroup map(Function<AssetGroup, AssetGroup> processor) {
+        return processor.apply(this);
+    }
+
+    /**
      * Map all assets of the group
      */
-    public AssetGroup map(Function<Asset, Asset> processor) {
+    public AssetGroup mapAssets(Function<Asset, Asset> processor) {
         return new AssetGroup(bundle,
                 assets.stream().map(processor).collect(Collectors.toList()));
-    }
-
-    /**
-     * Apply a filter to the assets. If it matches, map it with a processor
-     */
-    public AssetGroup filterMap(Predicate<? super Asset> filter,
-            Function<Asset, Asset> matchProcessor) {
-        return map(a -> filter.test(a) ? matchProcessor.apply(a) : a);
-    }
-
-    /**
-     * Apply a filter to the assets. If it matches, map it with one processor,
-     * otherwise with another processor
-     */
-    public AssetGroup filterMap(Predicate<? super Asset> filter,
-            Function<Asset, Asset> matchProcessor,
-            Function<Asset, Asset> noMatchPocessor) {
-        return map(a -> filter.test(a) ? matchProcessor.apply(a)
-                : noMatchPocessor.apply(a));
     }
 
     /**
@@ -78,12 +76,19 @@ public class AssetGroup {
      * this group
      */
     public AssetGroup min() {
-        return map(asset -> {
+        return mapAssets(asset -> {
             Function<Asset, Asset> minifier = bundle.getPipelineConfiguration()
                     .getDefaultMinifier(asset.getAssetType());
-            if (minifier != null)
-                return minifier.apply(asset);
-            else
+            if (minifier != null) {
+                try {
+                    return minifier.apply(asset);
+                } catch (Exception e) {
+                    throw new RuntimeException(
+                            "Error while minifying " + asset.getAssetType()
+                                    + " <" + asset.getName() + ">",
+                            e);
+                }
+            } else
                 return asset;
         });
     }
@@ -91,32 +96,20 @@ public class AssetGroup {
     /**
      * Apply the default processor (
      * {@link AssetPipelineConfiguration#defaultProcessors}) to the assets of
-     * this group
+     * this group. The processors are used to convert for example less to css.
      */
     public AssetGroup process() {
-        return map(asset -> {
-            Function<Asset, Asset> minifier = bundle.getPipelineConfiguration()
+        return mapAssets(asset -> {
+            Function<Asset, Asset> processor = bundle.getPipelineConfiguration()
                     .getDefaultProcessor(asset.getAssetType());
-            if (minifier != null)
-                return minifier.apply(asset);
+            if (processor != null)
+                return processor.apply(asset);
             return asset;
         });
     }
 
     public void send(Consumer<Asset> consumer) {
         assets.forEach(consumer);
-    }
-
-    /**
-     * Run each consumer with the asset group
-     */
-    @SafeVarargs
-    final public AssetGroup fork(final Consumer<AssetGroup>... consumers) {
-        for (Consumer<AssetGroup> consumer : consumers) {
-            consumer.accept(this);
-        }
-
-        return this;
     }
 
     /**
@@ -159,36 +152,15 @@ public class AssetGroup {
     }
 
     /**
-     * Map with the given processor if a condition is true. Otherwise leave
-     * group unchanged
+     * Run each consumer with the asset group
      */
-    public AssetGroup mapIf(boolean condition,
-            Function<Asset, Asset> processor) {
-        if (condition)
-            return map(processor);
-        else
-            return this;
-    }
+    @SafeVarargs
+    final public AssetGroup fork(final Consumer<AssetGroup>... consumers) {
+        for (Consumer<AssetGroup> consumer : consumers) {
+            consumer.accept(this);
+        }
 
-    /**
-     * Map with a processor if we are running in the given {@link AssetMode}
-     */
-    public AssetGroup mapIn(AssetMode mode, Function<Asset, Asset> processor) {
-        return mapIf(bundle.getAssetMode() == mode, processor);
-    }
-
-    /**
-     * Map with a processor if we are running in production mode
-     */
-    public AssetGroup mapInProd(Function<Asset, Asset> processor) {
-        return mapIn(AssetMode.PRODUCTION, processor);
-    }
-
-    /**
-     * Map with a processor if we are running in development mode
-     */
-    public AssetGroup mapInDev(Function<Asset, Asset> processor) {
-        return mapIn(AssetMode.DEVELOPMENT, processor);
+        return this;
     }
 
     /**
@@ -241,34 +213,73 @@ public class AssetGroup {
         // data multiple times if hashing is used
         AssetGroup underlying = usesHash ? cache() : this;
 
-        AssetGroup result = underlying.map(asset -> new DelegatingAsset(asset) {
+        AssetGroup result = underlying
+                .mapAssets(asset -> new DelegatingAsset(asset) {
 
-            @Override
-            public String getName() {
-                return bundle.helper.resolveNameTemplate(asset, template);
-            }
+                    @Override
+                    public String getName() {
+                        return bundle.helper.resolveNameTemplate(asset,
+                                template);
+                    }
 
-            @Override
-            public String toString() {
-                return asset + ".name(" + template + ")";
-            };
-        });
+                    @Override
+                    public String toString() {
+                        return asset + ".name(" + template + ")";
+                    };
+                });
 
         // cache again to avoid calculating the name multiple time
         // when hashing is used
         return usesHash ? result.cache() : result;
     }
 
-    public AssetGroup filterName(Predicate<String> predicate) {
-        Predicate<? super Asset> tmp = r -> predicate.test(r.getName());
-        return filter(tmp);
+    public class FluentSelect {
+        private Predicate<? super Asset> test;
+
+        private FluentSelect(Predicate<? super Asset> test) {
+            this.test = test;
+        }
+
+        public AssetGroup split(Function<AssetGroup, AssetGroup> match) {
+            return split(match, x -> x);
+        }
+
+        public AssetGroup split(Function<AssetGroup, AssetGroup> match,
+                Function<AssetGroup, AssetGroup> noMatch) {
+            ArrayList<Asset> matching = new ArrayList<>();
+            ArrayList<Asset> nonMatching = new ArrayList<>();
+            for (Asset asset : assets) {
+                if (test.test(asset))
+                    matching.add(asset);
+                else
+                    nonMatching.add(asset);
+            }
+            return match.apply(new AssetGroup(bundle, matching))
+                    .join(noMatch.apply(new AssetGroup(bundle, nonMatching)));
+
+        }
+
+        public AssetGroup filter() {
+            return new AssetGroup(bundle, assets.stream().filter(test));
+        }
     }
 
-    /**
-     * keep only the assets that match the given predicate
-     */
-    public AssetGroup filter(Predicate<? super Asset> predicate) {
-        return new AssetGroup(bundle, assets.stream().filter(predicate));
+    public FluentSelect select(Predicate<? super Asset> test) {
+        return new FluentSelect(test);
+    }
+
+    public FluentSelect select(AssetType... types) {
+        return new FluentSelect(a -> {
+            for (AssetType t : types)
+                if (Objects.equals(a.getAssetType(), t))
+                    return true;
+            return false;
+        });
+    }
+
+    public FluentSelect selectName(Predicate<String> predicate) {
+        return select(
+                (Predicate<? super Asset>) r -> predicate.test(r.getName()));
     }
 
     /**
@@ -277,8 +288,8 @@ public class AssetGroup {
      * @param extension
      *            extension to filter for, without leading period. Example: "js"
      */
-    public AssetGroup filterExtension(String extension) {
-        return filterName(name -> name.endsWith("." + extension));
+    public FluentSelect selectExtension(String extension) {
+        return selectName(name -> name.endsWith("." + extension));
     }
 
     /**
@@ -356,7 +367,7 @@ public class AssetGroup {
         }
         return new AssetGroup(bundle,
                 map.asMap().entrySet().stream()
-                        .map(entry -> new CombineAsset(entry.getValue(),
+                        .map(entry -> new ConcatAsset(entry.getValue(),
                                 entry.getKey().getA(), entry.getKey().getB())));
 
     }
@@ -364,12 +375,12 @@ public class AssetGroup {
     /**
      * Asset merging multiple assets into a single one
      */
-    private final static class CombineAsset implements Asset {
+    private final static class ConcatAsset implements Asset {
         private Collection<Asset> assets;
         private AssetType assetType;
         private String contentType;
 
-        public CombineAsset(Collection<Asset> assets, AssetType assetType,
+        public ConcatAsset(Collection<Asset> assets, AssetType assetType,
                 String contentType) {
             this.assets = assets;
             this.assetType = assetType;
@@ -387,6 +398,7 @@ public class AssetGroup {
             try {
                 for (Asset res : assets) {
                     baos.write(res.getData());
+                    baos.write("\n".getBytes(Charsets.UTF_8));
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -415,10 +427,18 @@ public class AssetGroup {
         assets.stream().forEach(action);
     }
 
+    /**
+     * Replace each occurence of target with replacement in the data of the
+     * assets.
+     */
     public AssetGroup replace(String target, String replacement) {
         return replace(target, replacement, Charsets.UTF_8);
     }
 
+    /**
+     * Replace each occurence of target with replacement in the data of the
+     * assets.
+     */
     public AssetGroup replace(String target, String replacement,
             Charset charset) {
         return mapData(new Function<String, String>() {
@@ -439,7 +459,7 @@ public class AssetGroup {
     }
 
     public AssetGroup mapData(Function<String, String> func, Charset charset) {
-        return map(asset -> {
+        return mapAssets(asset -> {
             return new DelegatingAsset(asset) {
                 @Override
                 public byte[] getData() {

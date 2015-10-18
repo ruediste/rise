@@ -61,7 +61,6 @@ public class CssAnalyzer {
             }
         }
         sb.append(content.substring(appendPos, content.length()));
-        System.out.println(sb.toString());
     }
 
     private String trimQuotes(String ref) {

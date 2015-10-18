@@ -15,7 +15,7 @@ import com.github.ruediste.salta.standard.Stage;
 
 import ro.isdc.wro.extensions.processor.css.Less4jProcessor;
 import ro.isdc.wro.extensions.processor.css.SassCssProcessor;
-import ro.isdc.wro.extensions.processor.css.YUICssCompressorProcessor;
+import ro.isdc.wro.model.resource.processor.impl.css.CssCompressorProcessor;
 import ro.isdc.wro.model.resource.processor.impl.js.JSMinProcessor;
 
 @Singleton
@@ -140,6 +140,8 @@ public class AssetPipelineConfiguration {
 
     public final Map<AssetType, Function<Asset, Asset>> defaultMinifiers = new HashMap<>();
 
+    public int defaultHashLength = 10;
+
     public Function<Asset, Asset> getDefaultMinifier(AssetType type) {
         return defaultMinifiers.get(type);
     }
@@ -154,7 +156,7 @@ public class AssetPipelineConfiguration {
                         () -> new SassCssProcessor()));
         defaultMinifiers.put(DefaultAssetTypes.CSS,
                 processorSupplier.get().initialize(DefaultAssetTypes.CSS,
-                        () -> new YUICssCompressorProcessor()));
+                        () -> new CssCompressorProcessor()));
         defaultMinifiers.put(DefaultAssetTypes.JS, processorSupplier.get()
                 .initialize(DefaultAssetTypes.JS, () -> new JSMinProcessor()));
     }

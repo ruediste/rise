@@ -16,7 +16,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.google.common.hash.Hashing;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AssetGroupResolveNameTemplateTest {
+public class AssetHelperTest {
 
     Asset resource;
 
@@ -26,6 +26,9 @@ public class AssetGroupResolveNameTemplateTest {
 
     @Mock
     AssetPipelineConfiguration config;
+
+    @InjectMocks
+    AssetHelper helper;
 
     @InjectMocks
     AssetBundle bundle = new AssetBundle() {
@@ -41,24 +44,25 @@ public class AssetGroupResolveNameTemplateTest {
         resourceHash = Hashing.sha256().hashBytes(resource.getData())
                 .toString();
         group = new AssetGroup(bundle, (List<Asset>) null);
+        when(config.getExtension(DefaultAssetTypes.CSS)).thenReturn("css");
     }
 
     @Test
     public void testResolveNameTemplate() throws Exception {
-        assertEquals("foo.js", group.bundle.helper.resolveNameTemplate(resource, "foo.js"));
+        assertEquals("foo.js", helper.resolveNameTemplate(resource, "foo.js"));
         assertEquals(resourceHash + ".js",
-                group.bundle.helper.resolveNameTemplate(resource, "{hash}.js"));
+                helper.resolveNameTemplate(resource, "{hash}.js"));
         assertEquals("test/" + resourceHash + ".js",
-                group.bundle.helper.resolveNameTemplate(resource, "test/{hash}.js"));
+                helper.resolveNameTemplate(resource, "test/{hash}.js"));
         assertEquals("foo/test.css",
-                group.bundle.helper.resolveNameTemplate(resource, "foo/{name}.css"));
+                helper.resolveNameTemplate(resource, "foo/{name}.css"));
         resource = new TestAsset("foo.bar.sass", "Hello");
         assertEquals("foo/foo.bar.css",
-                group.bundle.helper.resolveNameTemplate(resource, "foo/{name}.css"));
+                helper.resolveNameTemplate(resource, "foo/{name}.css"));
         assertEquals("hell{o}",
-                group.bundle.helper.resolveNameTemplate(resource, "hell\\{o}"));
+                helper.resolveNameTemplate(resource, "hell\\{o}"));
         assertEquals("hell\\o",
-                group.bundle.helper.resolveNameTemplate(resource, "hell\\\\o"));
+                helper.resolveNameTemplate(resource, "hell\\\\o"));
 
     }
 
@@ -66,7 +70,7 @@ public class AssetGroupResolveNameTemplateTest {
     public void testResolveNameTemplateQualifiedName() {
         resource = new TestAsset("foo/bar.css", "Hello");
         assertEquals("static/foo/bar.js",
-                group.bundle.helper.resolveNameTemplate(resource, "static/{qname}.js"));
+                helper.resolveNameTemplate(resource, "static/{qname}.js"));
 
     }
 
@@ -74,26 +78,27 @@ public class AssetGroupResolveNameTemplateTest {
     public void testResolveNameTemplateExt() {
         resource = new TestAsset("foo/bar.css", "Hello");
         assertEquals("yeah.css",
-                group.bundle.helper.resolveNameTemplate(resource, "yeah.{ext}"));
+                helper.resolveNameTemplate(resource, "yeah.{ext}"));
 
     }
 
     @Test
     public void testResolveNameTemplateTypeExt() {
         resource = new TestAsset("foo/bar.js", "Hello");
-        when(config.getExtension(DefaultAssetTypes.CSS)).thenReturn("css");
         assertEquals("yeah.css",
-                group.bundle.helper.resolveNameTemplate(resource, "yeah.{extT}"));
+                helper.resolveNameTemplate(resource, "yeah.{extT}"));
 
     }
 
     @Test
     public void testResolveNameTemplateHash() {
         resource = new TestAsset("foo/bar.js", "Hello");
-        when(config.getExtension(DefaultAssetTypes.CSS)).thenReturn("css");
         assertEquals(
                 "185f8db32271fe25f561a6fc938b2e264306ec304eda518007d1764826381969.css",
-                group.bundle.helper.resolveNameTemplate(resource, "{hash}.{extT}"));
+                helper.resolveNameTemplate(resource, "{hash}.{extT}"));
+        assertEquals(
+                "bar185f8db32271fe25f561a6fc938b2e264306ec304eda518007d1764826381969.css",
+                helper.resolveNameTemplate(resource, "{name}{hash}.{extT}"));
 
     }
 }

@@ -1,8 +1,11 @@
 package com.github.ruediste.rise.core.web.assetPipeline;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 import java.util.function.Function;
 
 import javax.annotation.PostConstruct;
@@ -112,6 +115,29 @@ public abstract class AssetBundle {
         return new AssetLocationGroup(this, Arrays.stream(locations));
     }
 
+    public AssetLocationGroup webJar(String name, String... locations) {
+        String pomPropsLocation = "META-INF/maven/org.webjars/" + name
+                + "/pom.properties";
+        Properties pomProps = new Properties();
+        InputStream in = getClass().getClassLoader()
+                .getResourceAsStream(pomPropsLocation);
+        if (in == null) {
+            throw new RuntimeException(
+                    "unable to find " + pomPropsLocation + " on classpath");
+        }
+        try {
+            pomProps.load(in);
+        } catch (IOException e) {
+            throw new RuntimeException("error while loading " + pomPropsLocation
+                    + " from classpath", e);
+        }
+        String version = pomProps.getProperty("version");
+        String prefix = "/META-INF/resources/webjars/" + name + "/" + version
+                + "/";
+        return new AssetLocationGroup(this,
+                Arrays.stream(locations).map(x -> prefix + x));
+    }
+
     /**
      * true if the current {@link AssetMode} is development
      */
@@ -130,4 +156,8 @@ public abstract class AssetBundle {
         return getAssetMode() == AssetMode.PRODUCTION;
     }
 
+    public AssetGroup join(AssetGroup... groups) {
+        return new AssetGroup(this,
+                Arrays.stream(groups).flatMap(g -> g.assets.stream()));
+    }
 }
