@@ -32,11 +32,6 @@
 			<version>1.4.7</version>
 		</dependency>
 
-		<dependency>
-			<groupId>net.sourceforge.cssparser</groupId>
-			<artifactId>cssparser</artifactId>
-			<version>0.9.17</version>
-		</dependency>
 		
 		<!-- === Various === -->
 		<dependency>
