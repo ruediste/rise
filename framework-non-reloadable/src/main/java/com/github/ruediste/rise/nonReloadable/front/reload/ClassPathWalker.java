@@ -82,11 +82,14 @@ public class ClassPathWalker {
         /**
          * Visit a class.
          * 
+         * @param resourceName
+         *            TODO
          * @param inputStreamSupplier
          *            provides access to the class bytecode. Not valid after the
          *            method returns.
          */
-        void visitClass(String className, ClassLoader classLoader,
+        void visitClass(String resourceName, String className,
+                ClassLoader classLoader,
                 Supplier<InputStream> inputStreamSupplier);
 
     }
@@ -111,7 +114,8 @@ public class ClassPathWalker {
         }
 
         @Override
-        public void visitClass(String className, ClassLoader classLoader,
+        public void visitClass(String resourceName, String className,
+                ClassLoader classLoader,
                 Supplier<InputStream> inputStreamSupplier) {
         }
 
@@ -231,8 +235,9 @@ public class ClassPathWalker {
                 String resourceName = packagePrefix + name;
                 if (!resourceName.equals(JarFile.MANIFEST_NAME)) {
                     if (resourceName.endsWith(CLASS_FILE_NAME_EXTENSION))
-                        visitor.visitClass(getClassName(resourceName),
-                                classloader, () -> classloader
+                        visitor.visitClass(resourceName,
+                                getClassName(resourceName), classloader,
+                                () -> classloader
                                         .getResourceAsStream(resourceName));
                     else
                         visitor.visitResource(resourceName, classloader,
@@ -285,8 +290,9 @@ public class ClassPathWalker {
                     }
                 };
                 if (entry.getName().endsWith(CLASS_FILE_NAME_EXTENSION)) {
-                    visitor.visitClass(getClassName(entry.getName()),
-                            classloader, inputStreamSupplier);
+                    visitor.visitClass(entry.getName(),
+                            getClassName(entry.getName()), classloader,
+                            inputStreamSupplier);
                 } else
                     visitor.visitResource(entry.getName(), classloader,
                             inputStreamSupplier);

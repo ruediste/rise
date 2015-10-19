@@ -188,6 +188,21 @@ public class AssetGroup {
     }
 
     /**
+     * Create a new asset for each template.
+     * 
+     * @see AssetGroup#name
+     */
+    public AssetGroup names(String... templates) {
+        @SuppressWarnings("unchecked")
+        Function<AssetGroup, AssetGroup>[] branches = new Function[templates.length];
+        for (int i = 0; i < templates.length; i++) {
+            int idx = i;
+            branches[i] = a -> a.name(templates[idx]);
+        }
+        return cache().forkJoin(branches);
+    }
+
+    /**
      * Set the names of the {@link Asset}s in this group based on a template.
      * The following placeholders are supported:
      * <ul>

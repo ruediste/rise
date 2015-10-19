@@ -22,8 +22,8 @@ import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.CoreConfigurationNonRestartable;
 import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
 import com.github.ruediste.rise.nonReloadable.InjectorsHolder.Holder;
-import com.github.ruediste.rise.nonReloadable.front.reload.FileChangeNotifier;
 import com.github.ruediste.rise.nonReloadable.front.reload.ReloadableClassLoader;
+import com.github.ruediste.rise.nonReloadable.front.reload.ResourceChangeNotifier;
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
 import com.github.ruediste.rise.util.InitializerUtil;
 import com.github.ruediste.salta.jsr330.Injector;
@@ -38,10 +38,6 @@ public abstract class FrontServletBase extends HttpServlet {
      * available without injection
      */
     private static Logger log = LoggerFactory.getLogger(FrontServletBase.class);
-
-    @Inject
-    @Named("classPath")
-    FileChangeNotifier notifier;
 
     @Inject
     @Named("dynamic")
@@ -61,6 +57,9 @@ public abstract class FrontServletBase extends HttpServlet {
 
     @Inject
     ApplicationEventQueue queue;
+
+    @Inject
+    ResourceChangeNotifier notifier;
 
     public volatile RestartableApplicationInfo currentApplicationInfo;
 

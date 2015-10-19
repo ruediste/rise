@@ -2,22 +2,18 @@ package com.github.ruediste.rise.nonReloadable.front.reload;
 
 import static java.util.stream.Collectors.joining;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.objectweb.asm.ClassReader;
@@ -26,9 +22,8 @@ import org.slf4j.Logger;
 
 import com.github.ruediste.rise.nonReloadable.CoreConfigurationNonRestartable;
 import com.github.ruediste.rise.nonReloadable.front.ApplicationEventQueue;
-import com.github.ruediste.rise.nonReloadable.front.reload.FileChangeNotifier.FileChangeTransaction;
+import com.github.ruediste.rise.nonReloadable.front.reload.ResourceChangeNotifier.ResourceChangeTransaction;
 import com.github.ruediste.rise.util.Pair;
-import com.google.common.base.Preconditions;
 
 @Singleton
 public class ClassChangeNotifier {
@@ -40,13 +35,12 @@ public class ClassChangeNotifier {
     CoreConfigurationNonRestartable config;
 
     @Inject
-    @Named("classPath")
-    FileChangeNotifier notifier;
+    ResourceChangeNotifier notifier;
 
     @Inject
     ApplicationEventQueue queue;
 
-    private Map<Path, String> classNameMap = new HashMap<>();
+    private Map<String, String> classNameMap = new HashMap<>();
 
     public static class ClassChangeTransaction {
         public Set<String> removedClasses = new HashSet<>();
@@ -59,10 +53,6 @@ public class ClassChangeNotifier {
 
     private LinkedHashSet<Consumer<ClassChangeTransaction>> preListeners = new LinkedHashSet<>();
     private LinkedHashSet<Consumer<ClassChangeTransaction>> listeners = new LinkedHashSet<>();
-
-    private Consumer<ClassChangeTransaction> trxPostProcessor;
-
-    private boolean isInitialized;
 
     /**
      * Add a listener which will be notified before those registered with
@@ -91,19 +81,12 @@ public class ClassChangeNotifier {
         notifier.addListener(this::changeOccurred);
     }
 
-    public void initialize(Consumer<ClassChangeTransaction> trxPostProcessor) {
-        isInitialized = true;
-        this.trxPostProcessor = trxPostProcessor;
-    }
-
-    void changeOccurred(FileChangeTransaction trx) {
-        Preconditions.checkState(isInitialized,
-                "FileChangeNotifier started before initializing the ClassChangeNotifier");
+    void changeOccurred(ResourceChangeTransaction trx) {
         ClassChangeTransaction classTrx = new ClassChangeTransaction();
         classTrx.isInitial = trx.isInitial;
 
-        for (Path file : trx.removedFiles) {
-            if (!file.getFileName().toString().endsWith(".class")) {
+        for (String file : trx.removedResources) {
+            if (!file.endsWith(".class")) {
                 continue;
             }
 
@@ -114,29 +97,25 @@ public class ClassChangeNotifier {
             }
         }
 
-        trx.addedFiles.stream().parallel()
-                .filter(file -> file.getFileName().toString()
-                        .endsWith(".class"))
-                .map(file -> Pair.of(file, readClass(file))).sequential()
-                .filter(pair -> config.shouldBeScanned(org.objectweb.asm.Type
-                        .getObjectType(pair.getB().getA().name).getClassName()))
-                .forEach(pair -> {
+        trx.addedResources.entrySet().stream().parallel()
+                .filter(pair -> pair.getKey().endsWith(".class"))
+                .map(entry -> Pair.of(entry.getKey(),
+                        readClass(entry.getValue())))
+                .sequential().forEach(pair -> {
                     String name = pair.getB().getA().name;
                     classNameMap.put(pair.getA(), name);
                     classTrx.addedClasses.add(pair.getB().getA());
                     classTrx.addedClassesMembers.put(name, pair.getB().getB());
                 });
 
-        for (Path file : trx.modifiedFiles) {
-            if (!file.getFileName().toString().endsWith(".class")) {
+        for (Entry<String, byte[]> entry : trx.modifiedResources.entrySet()) {
+            if (!entry.getKey().endsWith(".class")) {
                 continue;
             }
-            Pair<ClassNode, List<String>> pair = readClass(file);
+            Pair<ClassNode, List<String>> pair = readClass(entry.getValue());
             classTrx.modifiedClasses.add(pair.getA());
             classTrx.modifiedClassesMembers.put(pair.getA().name, pair.getB());
         }
-
-        trxPostProcessor.accept(classTrx);
 
         if (log.isTraceEnabled()) {
             StringBuilder sb = new StringBuilder();
@@ -162,15 +141,11 @@ public class ClassChangeNotifier {
         }
     }
 
-    Pair<ClassNode, List<String>> readClass(Path file) {
+    Pair<ClassNode, List<String>> readClass(byte[] bs) {
         ClassNode node = new ClassNode();
 
         MemberOrderVisitor orderVisitor = new MemberOrderVisitor(node);
-        try (InputStream in = Files.newInputStream(file)) {
-            new ClassReader(in).accept(orderVisitor, config.classScanningFlags);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        new ClassReader(bs).accept(orderVisitor, config.classScanningFlags);
         return Pair.of(node, orderVisitor.getMembers());
     }
 }

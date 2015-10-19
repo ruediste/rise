@@ -1,10 +1,8 @@
 package com.github.ruediste.rise.nonReloadable;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 import javax.servlet.ServletConfig;
 
-import com.github.ruediste.rise.nonReloadable.front.reload.FileChangeNotifier;
 import com.github.ruediste.rise.nonReloadable.front.reload.ReloadableClassLoader;
 import com.github.ruediste.rise.nonReloadable.front.reload.ReloadableClassesIndex;
 import com.github.ruediste.rise.util.InitializerUtil;
@@ -22,7 +20,6 @@ public class CoreNonRestartableModule extends AbstractModule {
     @Override
     protected void configure() throws Exception {
         InitializerUtil.register(config(), CoreNonRestartableInitializer.class);
-        bind(FileChangeNotifier.class).named("classPath").in(Singleton.class);
         bind(ReloadableClassesIndex.class).asEagerSingleton();
     }
 

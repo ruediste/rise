@@ -31,9 +31,9 @@ public class ClassPathWalkerTest {
         ClassPathWalker.scan(ClassPathWalkerTest.class.getClassLoader(),
                 new SimpleClassPathVisitor() {
                     @Override
-                    public void visitClass(String className,
-                            ClassLoader classLoader,
-                            Supplier<InputStream> inputStreamSupplier) {
+                    public void visitClass(String resourceName,
+                            String className,
+                            ClassLoader classLoader, Supplier<InputStream> inputStreamSupplier) {
                         if (Inject.class.getName().equals(className))
                             found = true;
                     }
@@ -57,9 +57,9 @@ public class ClassPathWalkerTest {
                     }
 
                     @Override
-                    public void visitClass(String className,
-                            ClassLoader classLoader,
-                            Supplier<InputStream> inputStreamSupplier) {
+                    public void visitClass(String resourceName,
+                            String className,
+                            ClassLoader classLoader, Supplier<InputStream> inputStreamSupplier) {
                         if (Inject.class.getName().equals(className))
                             found = true;
                     }
@@ -72,9 +72,9 @@ public class ClassPathWalkerTest {
         ClassPathWalker.scan(ClassPathWalkerTest.class.getClassLoader(),
                 new SimpleClassPathVisitor() {
                     @Override
-                    public void visitClass(String className,
-                            ClassLoader classLoader,
-                            Supplier<InputStream> inputStreamSupplier) {
+                    public void visitClass(String resourceName,
+                            String className,
+                            ClassLoader classLoader, Supplier<InputStream> inputStreamSupplier) {
                         if (ClassPathWalker.class.getName().equals(className))
                             found = true;
                     }
@@ -98,9 +98,9 @@ public class ClassPathWalkerTest {
                     }
 
                     @Override
-                    public void visitClass(String className,
-                            ClassLoader classLoader,
-                            Supplier<InputStream> inputStreamSupplier) {
+                    public void visitClass(String resourceName,
+                            String className,
+                            ClassLoader classLoader, Supplier<InputStream> inputStreamSupplier) {
                         if (ClassPathWalker.class.getName().equals(className))
                             found = true;
                     }

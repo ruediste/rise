@@ -97,12 +97,12 @@ public class CoreConfigurationNonRestartable {
     public final TreeSet<String> scannedPrefixes = new TreeSet<String>();
 
     {
-        scannedPrefixes.add("com.github.ruediste.rise.");
+        scannedPrefixes.add("com/github/ruediste/rise/");
     }
 
-    public boolean shouldBeScanned(String className) {
-        String prefix = scannedPrefixes.floor(className);
-        return prefix != null && className.startsWith(prefix);
+    public boolean shouldClasspathResourceBeScanned(String resourceName) {
+        String prefix = scannedPrefixes.floor(resourceName);
+        return prefix != null && resourceName.startsWith(prefix);
     }
 
     public String basePackage = "";
@@ -113,13 +113,14 @@ public class CoreConfigurationNonRestartable {
 
     public void setBasePackage(String basePackage) {
         this.basePackage = basePackage;
+        scannedPrefixes.add(basePackage.replace('.', '/'));
     }
 
     /**
      * set {@link #basePackage} to the package of the given class
      */
     public void setBasePackage(Class<?> clazz) {
-        basePackage = Reflection.getPackageName(clazz);
+        setBasePackage(Reflection.getPackageName(clazz));
     }
 
     /**
@@ -140,4 +141,5 @@ public class CoreConfigurationNonRestartable {
             };
         return stackTraceFilter;
     }
+
 }
