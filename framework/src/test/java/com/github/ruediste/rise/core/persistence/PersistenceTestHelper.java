@@ -2,8 +2,6 @@ package com.github.ruediste.rise.core.persistence;
 
 import java.util.Properties;
 
-import bitronix.tm.resource.jdbc.PoolingDataSource;
-
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRestartableModule;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
@@ -17,6 +15,9 @@ import com.github.ruediste.rise.nonReloadable.persistence.PersistenceModuleUtil;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste.salta.jsr330.Salta;
+import com.github.ruediste.salta.jsr330.SaltaModule;
+
+import bitronix.tm.resource.jdbc.PoolingDataSource;
 
 public class PersistenceTestHelper {
     private static int initializationCount = 0;
@@ -27,6 +28,14 @@ public class PersistenceTestHelper {
         this.testCase = testCase;
 
     }
+
+    private SaltaModule additionalRestartableModule = new AbstractModule() {
+
+        @Override
+        protected void configure() throws Exception {
+
+        }
+    };
 
     public void before() {
         initializationCount++;
@@ -87,6 +96,7 @@ public class PersistenceTestHelper {
                 .getInstance(DataBaseLinkRegistry.class);
         dbLinkRegistry.dropAndCreateSchemas();
         Injector restartableInjector = Salta.createInjector(
+                additionalRestartableModule,
                 new CoreRestartableModule(nonRestartableInjector),
                 new LoggerModule(), new AbstractModule() {
                     @Override
@@ -99,5 +109,10 @@ public class PersistenceTestHelper {
 
     public void after() {
         dbLinkRegistry.close();
+    }
+
+    public void setAdditionalRestartableModule(
+            SaltaModule additionalRestartableModule) {
+        this.additionalRestartableModule = additionalRestartableModule;
     }
 }

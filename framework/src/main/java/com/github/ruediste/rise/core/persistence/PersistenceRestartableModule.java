@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.core.persistence;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -10,9 +11,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import javax.transaction.TransactionManager;
 import javax.transaction.TransactionSynchronizationRegistry;
-
-import net.sf.cglib.proxy.Dispatcher;
-import net.sf.cglib.proxy.Enhancer;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
@@ -28,6 +26,9 @@ import com.github.ruediste.rise.nonReloadable.persistence.TransactionProperties;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste.salta.jsr330.Provides;
+
+import net.sf.cglib.proxy.Dispatcher;
+import net.sf.cglib.proxy.Enhancer;
 
 public class PersistenceRestartableModule extends AbstractModule {
     private static AttachedProperty<AttachedPropertyBearer, EntityManagerSet> ownEntityManagerSetProperty = new AttachedProperty<>(
@@ -94,7 +95,65 @@ public class PersistenceRestartableModule extends AbstractModule {
         }
 
         registerOwnEntityManagersAdvice();
+        registerTransactionalAdvice();
 
+    }
+
+    private void registerTransactionalAdvice() {
+        AroundAdvice advice = new AroundAdvice() {
+            @Inject
+            TransactionTemplate trx;
+
+            @Override
+            public Object intercept(InterceptedInvocation invocation)
+                    throws Throwable {
+                Transactional transactional = findTransactional(
+                        invocation.getMethod());
+                if (transactional == null)
+                    throw new RuntimeException(
+                            "No @Transactional annotation found on "
+                                    + invocation.getMethod()
+                                    + ". This code should not have been reached");
+                TransactionExecutor trxe = trx.executor()
+                        .propagation(transactional.propagation())
+                        .isolation(transactional.isolation())
+                        .timeout(transactional.timeout())
+                        .updating(transactional.updating())
+                        .rollbackFor(transactional.rollbackFor())
+                        .noRollbackFor(transactional.noRollbackFor());
+
+                if (transactional.forceNewEntityManagerSet())
+                    trxe = trxe.forceNewEntityManagerSet();
+
+                return trxe.execute(() -> {
+                    try {
+                        return invocation.proceed();
+                    } catch (Throwable e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
+            }
+        };
+
+        requestInjection(advice);
+
+        AopUtil.registerSubclass(config().standardConfig, t -> true,
+                (t, m) -> findTransactional(m) != null, advice);
+    }
+
+    private Transactional findTransactional(Method m) {
+        Transactional result = m.getDeclaredAnnotation(Transactional.class);
+        if (result != null)
+            return result;
+        Class<?> cls = m.getDeclaringClass();
+        while (cls != null) {
+            result = cls.getDeclaredAnnotation(Transactional.class);
+            if (result != null)
+                return result;
+            cls = cls.getSuperclass();
+        }
+        return null;
     }
 
     protected void registerOwnEntityManagersAdvice() {
@@ -124,6 +183,7 @@ public class PersistenceRestartableModule extends AbstractModule {
                         .isAnnotationPresent(OwnEntityManagers.class),
                 (t, m) -> !m.isAnnotationPresent(SkipOfOwnEntityManagers.class),
                 advice);
+
     }
 
     @Provides

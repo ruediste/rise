@@ -27,6 +27,11 @@ public interface TransactionExecutor {
 
     TransactionExecutor updating(boolean value);
 
+    /**
+     * Create an updating transaction which can be commited. The default
+     * isolation level is set to {@link IsolationLevel#SERIALIZABLE}, but can be
+     * overrridden using {@link #isolation(IsolationLevel)}
+     */
     TransactionExecutor updating();
 
     /**

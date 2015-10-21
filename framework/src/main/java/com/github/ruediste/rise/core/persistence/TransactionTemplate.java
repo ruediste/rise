@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.function.Supplier;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
@@ -19,6 +20,7 @@ import com.github.ruediste.rise.mvc.TransactionException;
 import com.github.ruediste.rise.nonReloadable.persistence.IsolationLevel;
 import com.github.ruediste.rise.nonReloadable.persistence.TransactionProperties;
 
+@Singleton
 public class TransactionTemplate implements TransactionExecutor {
 
     @Inject
