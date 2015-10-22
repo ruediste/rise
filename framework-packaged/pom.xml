@@ -34,8 +34,19 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>com.bazaarvoice.maven.plugins</groupId>
+				<artifactId>s3-upload-maven-plugin</artifactId>
+				<version>1.3</version>
+				<configuration>
+					<endpoint>s3-eu-west-1.amazonaws.com</endpoint>
+					<bucketName>rise1.ruediste.github.com</bucketName>
+					<source>${project.build.directory}/${project.build.finalName}.jar</source>
+					<destination>snapshot/${project.build.finalName}.jar</destination>
+					<accessKey>${s3.accessKey}</accessKey>
+					<secretKey>${s3.secretKey}</secretKey>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
-
-
 </project>
