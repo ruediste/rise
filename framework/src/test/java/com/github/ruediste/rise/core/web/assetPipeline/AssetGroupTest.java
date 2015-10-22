@@ -38,6 +38,8 @@ public class AssetGroupTest {
 
         };
 
+        bundle.helper = new AssetHelper();
+        bundle.helper.pipelineConfiguration = new AssetPipelineConfiguration();
         asset = spy(new TestAsset("foo", "Hello"));
         group = new AssetGroup(bundle, Arrays.asList(asset));
     }
@@ -85,7 +87,6 @@ public class AssetGroupTest {
 
         checkAccessCount(0);
         name.assets.forEach(this::access);
-
         checkAccessCount(1);
         name.assets.forEach(this::access);
         checkAccessCount(1);
@@ -120,7 +121,7 @@ public class AssetGroupTest {
                 collect.toString());
         assertEquals(1, collect.assets.size());
         Asset r = Iterables.getOnlyElement(collect.assets);
-        assertArrayEquals(byteArray("bar1bar2"), r.getData());
+        assertArrayEquals(byteArray("bar1\nbar2\n"), r.getData());
     }
 
     @Test

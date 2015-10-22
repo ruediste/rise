@@ -3,6 +3,7 @@ package com.github.ruediste.rise.nonReloadable;
 import javax.inject.Named;
 import javax.servlet.ServletConfig;
 
+import com.github.ruediste.rise.nonReloadable.front.reload.ClasspathResourceIndex;
 import com.github.ruediste.rise.nonReloadable.front.reload.ReloadableClassLoader;
 import com.github.ruediste.rise.nonReloadable.front.reload.ReloadableClassesIndex;
 import com.github.ruediste.rise.util.InitializerUtil;
@@ -21,6 +22,7 @@ public class CoreNonRestartableModule extends AbstractModule {
     protected void configure() throws Exception {
         InitializerUtil.register(config(), CoreNonRestartableInitializer.class);
         bind(ReloadableClassesIndex.class).asEagerSingleton();
+        bind(ClasspathResourceIndex.class).asEagerSingleton();
     }
 
     @Named("dynamic")

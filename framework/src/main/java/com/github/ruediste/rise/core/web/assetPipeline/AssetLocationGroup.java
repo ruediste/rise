@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * A group of locations of {@link Asset}s. Does NOT specify where the assets are
- * loaded from (class path, file system ...)
+ * A group of classpath locations of {@link Asset}s. All locations are absolute
+ * and do not contain wildcards.
  */
 public class AssetLocationGroup {
     private final AssetBundle bundle;

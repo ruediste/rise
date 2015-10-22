@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.util.RiseUtil;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.hash.Hashing;
 import com.google.common.io.BaseEncoding;
@@ -30,7 +31,7 @@ public class AssetHelper {
      * for example in CSS files
      */
     public String url(Asset asset) {
-        return coreUtil.urlStatic(requestMapper.getPathInfo(asset));
+        return coreUtil.urlStatic(requestMapper.helper.getPathInfo(asset));
     }
 
     private String getExtension(String path) {
@@ -43,13 +44,12 @@ public class AssetHelper {
      */
     public String calculateAbsoluteLocation(String location,
             Class<?> bundleClass) {
-        return AssetHelper.calculateAbsoluteLocation(location,
+        return calculateAbsoluteLocation(location,
                 pipelineConfiguration.assetBasePath, bundleClass);
     }
 
     public Asset loadAssetFromClasspath(String path, Class<?> bundleClass) {
-        String fullPath = calculateAbsoluteLocation(path, bundleClass);
-        return loadAssetFromClasspath(fullPath, () -> bundleClass.getName());
+        return loadAssetFromClasspath(path, () -> bundleClass.getName());
     }
 
     /**
@@ -64,11 +64,6 @@ public class AssetHelper {
         AssetType type = pipelineConfiguration
                 .getDefaultAssetType(getExtension(fullPath));
         return new Asset() {
-
-            @Override
-            public String getName() {
-                return fullPath;
-            }
 
             @Override
             public byte[] getData() {
@@ -95,6 +90,20 @@ public class AssetHelper {
             @Override
             public String toString() {
                 return "classpath(" + fullPath + ")";
+            }
+
+            @Override
+            public String getClasspathLocation() {
+                return fullPath;
+            }
+
+            @Override
+            public String getName() {
+                String basePath = pipelineConfiguration.assetBasePath;
+                if (!Strings.isNullOrEmpty(fullPath)
+                        && fullPath.startsWith(basePath))
+                    return fullPath.substring(basePath.length());
+                return fullPath;
             }
         };
     }
@@ -123,7 +132,7 @@ public class AssetHelper {
         return basePath + location;
     }
 
-    public String resolveNameTemplate(Asset asset, String template) {
+    public String resolvePathInfoTemplate(Asset asset, String template) {
         String name = asset.getName();
         Pattern p = Pattern.compile(
                 "(?<context>\\A|[^\\\\]|\\G)\\{(?<placeholder>[^\\}]*)\\}");

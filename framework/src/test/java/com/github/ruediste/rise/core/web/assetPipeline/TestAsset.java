@@ -4,17 +4,22 @@ import com.google.common.base.Charsets;
 
 class TestAsset implements Asset {
 
-    private String name;
+    private String pathInfo;
     private String data;
 
-    public TestAsset(String name, String data) {
-        this.name = name;
+    public TestAsset(String pathInfo, String data) {
+        this.pathInfo = pathInfo;
         this.data = data;
     }
 
     @Override
     public String getName() {
-        return name;
+        return pathInfo;
+    }
+
+    @Override
+    public String getClasspathLocation() {
+        return "foo.css";
     }
 
     @Override
@@ -34,7 +39,7 @@ class TestAsset implements Asset {
 
     @Override
     public String toString() {
-        return "testAsset(" + name + "," + data + ")";
+        return "testAsset(" + pathInfo + "," + data + ")";
     }
 
 }

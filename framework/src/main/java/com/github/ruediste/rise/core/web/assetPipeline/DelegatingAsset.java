@@ -13,11 +13,6 @@ public class DelegatingAsset implements Asset {
     }
 
     @Override
-    public String getName() {
-        return delegate.getName();
-    }
-
-    @Override
     public AssetType getAssetType() {
         return delegate.getAssetType();
     }
@@ -30,5 +25,15 @@ public class DelegatingAsset implements Asset {
     @Override
     public byte[] getData() {
         return delegate.getData();
+    }
+
+    @Override
+    public String getClasspathLocation() {
+        return delegate.getClasspathLocation();
+    }
+
+    @Override
+    public String getName() {
+        return delegate.getName();
     }
 }

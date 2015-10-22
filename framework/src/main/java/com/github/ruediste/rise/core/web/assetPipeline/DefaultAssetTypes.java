@@ -5,8 +5,6 @@ package com.github.ruediste.rise.core.web.assetPipeline;
  */
 public enum DefaultAssetTypes implements AssetType {
 
-    CSS, LESS, SASS,
-
-    JS
+    CSS, LESS, SASS, JS, HTML
 
 }

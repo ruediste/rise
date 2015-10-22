@@ -52,10 +52,14 @@ public class ProcessorWrapper implements Function<Asset, Asset> {
         try {
             getProcessor().process(new StringReader(input), output);
         } catch (IOException e) {
-            throw new RuntimeException(
-                    "Error while processing asset " + t.getName(), e);
+            throw new RuntimeException("Error while processing asset " + t, e);
         }
         return new Asset() {
+
+            @Override
+            public String getClasspathLocation() {
+                return t.getClasspathLocation();
+            }
 
             @Override
             public String getName() {

@@ -23,6 +23,7 @@ import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
 import com.github.ruediste.rise.util.Pair;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -62,6 +63,53 @@ public class AssetGroup {
         return processor.apply(this);
     }
 
+    public AssetGroup removePathInfoPrefix(String prefix) {
+        return mapAssets(new Function<Asset, Asset>() {
+            @Override
+            public Asset apply(Asset asset) {
+                return new DelegatingAsset(asset) {
+                    @Override
+                    public String getName() {
+                        String pathInfo = asset.getName();
+                        if (!Strings.isNullOrEmpty(pathInfo)
+                                && pathInfo.startsWith(prefix)) {
+                            return pathInfo.substring(prefix.length());
+                        } else
+                            return pathInfo;
+                    }
+
+                    @Override
+                    public String toString() {
+                        return asset.toString() + ".removePathInfoPrefix("
+                                + prefix + ")";
+                    }
+
+                };
+            }
+        });
+    }
+
+    public AssetGroup addPathInfoPrefix(String prefix) {
+        return mapAssets(new Function<Asset, Asset>() {
+            @Override
+            public Asset apply(Asset asset) {
+                return new DelegatingAsset(asset) {
+                    @Override
+                    public String getName() {
+                        return prefix + asset.getName();
+                    }
+
+                    @Override
+                    public String toString() {
+                        return asset.toString() + ".addPathInfoPrefix(" + prefix
+                                + ")";
+                    }
+
+                };
+            }
+        });
+    }
+
     /**
      * Map all assets of the group
      */
@@ -85,7 +133,8 @@ public class AssetGroup {
                 } catch (Exception e) {
                     throw new RuntimeException(
                             "Error while minifying " + asset.getAssetType()
-                                    + " <" + asset.getName() + ">",
+                                    + " <" + asset.getClasspathLocation() + "=>"
+                                    + asset.getName() + ">",
                             e);
                 }
             } else
@@ -122,7 +171,7 @@ public class AssetGroup {
         if (assets.size() > 1)
             throw new RuntimeException(
                     "Asset group contains more than a single asset: "
-                            + assets.stream().map(Asset::getName)
+                            + assets.stream().map(Object::toString)
                                     .collect(joining(", ")));
         return assets.get(0);
     }
@@ -203,8 +252,8 @@ public class AssetGroup {
     }
 
     /**
-     * Set the names of the {@link Asset}s in this group based on a template.
-     * The following placeholders are supported:
+     * Set name of the {@link Asset}s in this group based on a template. The
+     * following placeholders are supported:
      * <ul>
      * <li><b>hash:</b> hash code of the underlying data
      * <li><b>name:</b> name of the underlying asset, without extension or path
@@ -233,7 +282,7 @@ public class AssetGroup {
 
                     @Override
                     public String getName() {
-                        return bundle.helper.resolveNameTemplate(asset,
+                        return bundle.helper.resolvePathInfoTemplate(asset,
                                 template);
                     }
 
@@ -292,7 +341,7 @@ public class AssetGroup {
         });
     }
 
-    public FluentSelect selectName(Predicate<String> predicate) {
+    public FluentSelect selectPathInfo(Predicate<String> predicate) {
         return select(
                 (Predicate<? super Asset>) r -> predicate.test(r.getName()));
     }
@@ -304,7 +353,7 @@ public class AssetGroup {
      *            extension to filter for, without leading period. Example: "js"
      */
     public FluentSelect selectExtension(String extension) {
-        return selectName(name -> name.endsWith("." + extension));
+        return selectPathInfo(name -> name.endsWith("." + extension));
     }
 
     /**
@@ -321,7 +370,9 @@ public class AssetGroup {
      * Asset caching the results of a delegate
      */
     private static class CachingAsset implements Asset {
-        AttachedProperty<AttachedPropertyBearer, String> name = new AttachedProperty<>(
+        AttachedProperty<AttachedPropertyBearer, String> pathInfo = new AttachedProperty<>(
+                "name");
+        AttachedProperty<AttachedPropertyBearer, String> location = new AttachedProperty<>(
                 "name");
         AttachedProperty<AttachedPropertyBearer, String> contentType = new AttachedProperty<>(
                 "contentType");
@@ -342,11 +393,6 @@ public class AssetGroup {
         }
 
         @Override
-        public String getName() {
-            return name.setIfAbsent(cache, delegate::getName);
-        }
-
-        @Override
         public AssetType getAssetType() {
             return assetType.setIfAbsent(cache, delegate::getAssetType);
         }
@@ -364,6 +410,16 @@ public class AssetGroup {
         @Override
         public String toString() {
             return delegate + ".cache()";
+        }
+
+        @Override
+        public String getClasspathLocation() {
+            return location.setIfAbsent(cache, delegate::getClasspathLocation);
+        }
+
+        @Override
+        public String getName() {
+            return pathInfo.setIfAbsent(cache, delegate::getName);
         }
 
     }
@@ -403,11 +459,6 @@ public class AssetGroup {
         }
 
         @Override
-        public String getName() {
-            return "";
-        }
-
-        @Override
         public byte[] getData() {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             try {
@@ -434,6 +485,16 @@ public class AssetGroup {
         @Override
         public String toString() {
             return "combine" + assets;
+        }
+
+        @Override
+        public String getClasspathLocation() {
+            return null;
+        }
+
+        @Override
+        public String getName() {
+            return "";
         }
 
     }

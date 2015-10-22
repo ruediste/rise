@@ -20,7 +20,6 @@ import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.PathInfoIndex;
 import com.github.ruediste.rise.core.RequestParseResult;
-import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.nonReloadable.front.StartupTimeLogger;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndex;
 import com.github.ruediste.rise.nonReloadable.front.reload.DirectoryChangeWatcher;
@@ -113,7 +112,7 @@ public class AssetRequestMapper {
         for (AssetBundle bundle : bundles) {
             for (AssetBundleOutput output : bundle.outputs) {
                 for (Asset asset : output.getAssets()) {
-                    String pathInfo = getPathInfoString(asset);
+                    String pathInfo = helper.getAssetPathInfo(asset.getName());
                     assets.put(pathInfo, Pair.of(bundle, asset));
 
                 }
@@ -156,18 +155,8 @@ public class AssetRequestMapper {
         }
     }
 
-    public String getPathInfoString(Asset asset) {
-
-        String name = asset.getName();
-        if (name.startsWith("/"))
-            return name;
-        else
-            return pipelineConfiguration.assetPathInfoPrefix + name;
-    }
-
-    public PathInfo getPathInfo(Asset asset) {
-        return new PathInfo(getPathInfoString(asset));
-    }
+    @Inject
+    AssetPipelineHelper helper;
 
     void registerChildBundles(String internalName) {
         for (ClassNode child : cache.getChildren(internalName)) {

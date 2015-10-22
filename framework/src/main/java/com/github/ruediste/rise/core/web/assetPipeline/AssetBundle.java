@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -14,6 +15,9 @@ import javax.inject.Inject;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
 import com.github.ruediste.rise.core.CoreRestartableModule;
 import com.github.ruediste.rise.core.CoreUtil;
+import com.github.ruediste.rise.nonReloadable.front.reload.ClasspathResourceIndex;
+import com.github.ruediste.rise.util.Pair;
+import com.github.ruediste.rise.util.RiseUtil;
 
 /**
  * Defines a set of {@link AssetBundleOutput}s and how {@link Asset}s are loaded
@@ -38,6 +42,9 @@ public abstract class AssetBundle {
 
     @Inject
     CssProcessor cssProcessor;
+
+    @Inject
+    ClasspathResourceIndex resourceIndex;
 
     AttachedPropertyBearerBase cache = new AttachedPropertyBearerBase();
 
@@ -108,11 +115,23 @@ public abstract class AssetBundle {
      * <li>otherwise, the asset location is interpreted relative to the asset
      * base path configured in `AssetPipelineConfiguration#assetBasePath`. By
      * default, this is `/assets/`.</li>
-     * 
      * </ul>
+     * 
+     * The location can be a a glob. See
+     * {@link RiseUtil#toPrefixAndRegex(String)}
      */
     public AssetLocationGroup locations(String... locations) {
-        return new AssetLocationGroup(this, Arrays.stream(locations));
+        return new AssetLocationGroup(this,
+                Arrays.stream(locations).flatMap(l -> {
+                    String location = helper.calculateAbsoluteLocation(l,
+                            getClass());
+                    Pair<String, String> prefixAndRegex = RiseUtil
+                            .toPrefixAndRegex(l);
+                    if (prefixAndRegex.getB().isEmpty())
+                        return Stream.of(location);
+                    return resourceIndex.getResourcesByGlob(prefixAndRegex)
+                            .stream();
+                }));
     }
 
     public AssetLocationGroup webJar(String name, String... locations) {

@@ -101,8 +101,8 @@ public class CssProcessor {
 
             for (Asset style : group.assets) {
                 String content = new String(style.getData(), Charsets.UTF_8);
-                String styleLocation = style.getName();
-                relocateStyleSheetImpl(ctx, content, styleLocation);
+                relocateStyleSheetImpl(ctx, content,
+                        style.getClasspathLocation());
             }
             return new AssetGroup(group.bundle, ctx.result);
         };
@@ -187,7 +187,7 @@ public class CssProcessor {
         ctx.startedAssets.remove(styleLocation);
 
         byte[] data = sb.toString().getBytes(Charsets.UTF_8);
-        Asset result = createCssAsset(targetStyleLocation, data);
+        Asset result = createCssAsset(styleLocation, targetStyleLocation, data);
         processedAssets.put(styleLocation, result);
         ctx.result.add(result);
         return result;
@@ -250,7 +250,8 @@ public class CssProcessor {
                         targetStyleLocation);
 
                 byte[] data = ctx.sb.toString().getBytes(Charsets.UTF_8);
-                Asset result = createCssAsset(targetStyleLocation, data);
+                Asset result = createCssAsset(style.getClasspathLocation(),
+                        targetStyleLocation, data);
                 ctx.processedAssets.put(styleLocation, result);
                 ctx.result.add(result);
             }
@@ -258,8 +259,14 @@ public class CssProcessor {
         };
     }
 
-    private Asset createCssAsset(String name, byte[] data) {
+    private Asset createCssAsset(String classpathLocation, String name,
+            byte[] data) {
         return new Asset() {
+
+            @Override
+            public String getClasspathLocation() {
+                return classpathLocation;
+            }
 
             @Override
             public String getName() {
@@ -279,6 +286,11 @@ public class CssProcessor {
             @Override
             public AssetType getAssetType() {
                 return DefaultAssetTypes.CSS;
+            }
+
+            @Override
+            public String toString() {
+                return classpathLocation + ".css()";
             }
         };
     }
@@ -350,28 +362,34 @@ public class CssProcessor {
 
     private String getTargetStyleLocation(String nameTemplate,
             String styleLocation) {
-        String targetStyleLocation = helper.resolveNameTemplate(new Asset() {
+        String targetStyleLocation = helper
+                .resolvePathInfoTemplate(new Asset() {
 
-            @Override
-            public String getName() {
-                return styleLocation;
-            }
+                    @Override
+                    public String getName() {
+                        return styleLocation;
+                    }
 
-            @Override
-            public byte[] getData() {
-                return new byte[] {};
-            }
+                    @Override
+                    public byte[] getData() {
+                        return new byte[] {};
+                    }
 
-            @Override
-            public String getContentType() {
-                return config.getDefaultContentType(getAssetType());
-            }
+                    @Override
+                    public String getContentType() {
+                        return config.getDefaultContentType(getAssetType());
+                    }
 
-            @Override
-            public AssetType getAssetType() {
-                return DefaultAssetTypes.CSS;
-            }
-        }, nameTemplate);
+                    @Override
+                    public AssetType getAssetType() {
+                        return DefaultAssetTypes.CSS;
+                    }
+
+                    @Override
+                    public String getClasspathLocation() {
+                        return null;
+                    }
+                }, nameTemplate);
         return targetStyleLocation;
     }
 

@@ -1,8 +1,14 @@
 package com.github.ruediste.rise.util;
 
+import static java.util.stream.Collectors.joining;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.regex.Pattern;
 
+import com.github.ruediste1.lambdaPegParser.DefaultParser;
+import com.github.ruediste1.lambdaPegParser.DefaultParsingContext;
+import com.github.ruediste1.lambdaPegParser.ParserFactory;
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
 
@@ -121,4 +127,42 @@ public class RiseUtil {
         return sb.toString();
     }
 
+    public static String toRegex(String glob) {
+        Pair<String, String> prefixAndRegex = toPrefixAndRegex(glob);
+        return toRegex(prefixAndRegex);
+    }
+
+    public static String toRegex(Pair<String, String> prefixAndRegex) {
+        return "^" + Pattern.quote(prefixAndRegex.getA())
+                + prefixAndRegex.getB() + "$";
+    }
+
+    public static Pair<String, String> toPrefixAndRegex(String glob) {
+        return ParserFactory.create(GlobParser.class, glob).glob();
+    }
+
+    static class GlobParser extends DefaultParser {
+
+        public GlobParser(DefaultParsingContext ctx) {
+            super(ctx);
+        }
+
+        public Pair<String, String> glob() {
+            String prefix = ZeroOrMoreChars(x -> x != '*', "non *");
+            String pattern = ZeroOrMore(() -> FirstOf(() -> {
+                String("**/");
+                return ".*";
+            } , () -> {
+                String("**");
+                return ".*";
+            } , () -> {
+                String("*");
+                return "[^/]*";
+            } , () -> {
+                return Pattern.quote(OneOrMoreChars(x -> x != '*', "non *"));
+            })).stream().collect(joining(""));
+            EOI();
+            return Pair.of(prefix, pattern);
+        }
+    }
 }

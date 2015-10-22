@@ -63,9 +63,7 @@ public class MvcUtil implements ICoreUtil {
                 ((HttpServletResponseCustomizer) view)
                         .customizeServletResponse(r);
             }
-        }
-
-        );
+        });
     }
 
     public ActionResult redirect(ActionResult path) {

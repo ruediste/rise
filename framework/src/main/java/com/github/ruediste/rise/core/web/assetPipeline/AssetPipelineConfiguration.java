@@ -56,7 +56,7 @@ public class AssetPipelineConfiguration {
         assetTypeToExtensionMap.put(assetType, primaryExtension);
         extensionToAssetTypeMap.put(primaryExtension, assetType);
         for (String extension : otherExtensions) {
-            assetTypeToExtensionMap.put(assetType, extension);
+            extensionToAssetTypeMap.put(extension, assetType);
         }
     }
 
@@ -70,7 +70,8 @@ public class AssetPipelineConfiguration {
                 "text/css; ; charset=UTF-8");
 
         registerExtension(DefaultAssetTypes.LESS, "less");
-        registerExtension(DefaultAssetTypes.SASS, "sass");
+        registerExtension(DefaultAssetTypes.SASS, "sass", "scss");
+        registerExtension(DefaultAssetTypes.HTML, "html", "htm");
     }
 
     /**
@@ -115,7 +116,8 @@ public class AssetPipelineConfiguration {
     }
 
     /**
-     * Prefix of the path info for assets (in the URL)
+     * Prefix of the path info for assets (in the URL). Must start and end with
+     * a forward slash (/)
      */
     public String assetPathInfoPrefix = "/assets/";
 
@@ -124,7 +126,8 @@ public class AssetPipelineConfiguration {
     ServletConfig servletConfig;
 
     /**
-     * Prefix when loading assets from the classpath
+     * Prefix when loading assets from the classpath. Can be null or empty. Must
+     * end with a forward slash
      */
     public String assetBasePath = "assets/";
 
@@ -154,6 +157,7 @@ public class AssetPipelineConfiguration {
         defaultProcessors.put(DefaultAssetTypes.SASS,
                 processorSupplier.get().initialize(DefaultAssetTypes.CSS,
                         () -> new SassCssProcessor()));
+        // () -> new RubySassCssProcessor()));
         defaultMinifiers.put(DefaultAssetTypes.CSS,
                 processorSupplier.get().initialize(DefaultAssetTypes.CSS,
                         () -> new CssCompressorProcessor()));

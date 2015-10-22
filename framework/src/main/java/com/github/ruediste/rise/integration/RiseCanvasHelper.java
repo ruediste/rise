@@ -14,6 +14,7 @@ import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.CurrentLocale;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
+import com.github.ruediste.rise.core.web.assetPipeline.AssetPipelineHelper;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetRequestMapper;
 import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
 import com.github.ruediste.salta.jsr330.Injector;
@@ -46,6 +47,8 @@ public class RiseCanvasHelper {
     @Inject
     Injector injector;
 
+    @Inject
+    AssetPipelineHelper assetPipelineHelper;
     private ByteArrayOutputStream baos;
     private HtmlCanvasTarget target;
     private boolean isComponent;
@@ -56,7 +59,7 @@ public class RiseCanvasHelper {
             if (asset.getAssetType() != DefaultAssetTypes.CSS)
                 return;
             html.link().REL("stylesheet").TYPE("text/css")
-                    .HREF(util.url(mapper.getPathInfo(asset)));
+                    .HREF(assetPipelineHelper.getUrl(asset));
         });
     }
 
@@ -64,7 +67,7 @@ public class RiseCanvasHelper {
         output.forEach(asset -> {
             if (asset.getAssetType() != DefaultAssetTypes.JS)
                 return;
-            html.script().SRC(util.url(mapper.getPathInfo(asset)))._script();
+            html.script().SRC(assetPipelineHelper.getUrl(asset))._script();
         });
     }
 
