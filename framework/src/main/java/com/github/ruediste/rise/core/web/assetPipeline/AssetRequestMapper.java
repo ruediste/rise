@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.TreeSet;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -119,6 +120,8 @@ public class AssetRequestMapper {
             }
         }
 
+        TreeSet<String> logMessages = new TreeSet<>();
+
         for (Entry<String, Collection<Pair<AssetBundle, Asset>>> entry : assets
                 .asMap().entrySet()) {
 
@@ -150,9 +153,13 @@ public class AssetRequestMapper {
             Asset asset = first.getB();
             index.registerPathInfo(entry.getKey(),
                     x -> resultProvider.get().initialize(asset));
-            log.debug("Registered {} -> {}",
-                    first.getA().getClass().getSimpleName(), entry.getKey());
+            if (log.isDebugEnabled())
+                logMessages.add(String.format("Registered %s -> %s",
+                        first.getA().getClass().getSimpleName(),
+                        entry.getKey()));
         }
+        if (log.isDebugEnabled())
+            logMessages.forEach(x -> log.debug(x));
     }
 
     @Inject

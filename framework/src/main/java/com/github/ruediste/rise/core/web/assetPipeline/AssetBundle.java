@@ -151,7 +151,7 @@ public abstract class AssetBundle {
                     + " from classpath", e);
         }
         String version = pomProps.getProperty("version");
-        String prefix = "/META-INF/resources/webjars/" + name + "/" + version
+        String prefix = "META-INF/resources/webjars/" + name + "/" + version
                 + "/";
         return new AssetLocationGroup(this,
                 Arrays.stream(locations).map(x -> prefix + x));

@@ -26,13 +26,8 @@
 			<version>1.11.4</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.webjars</groupId>
-			<artifactId>angularjs</artifactId>
-			<version>1.4.7</version>
-		</dependency>
 
-		
+
 		<!-- === Various === -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -45,7 +40,12 @@
 		<!-- <artifactId>lesscss-engine</artifactId> -->
 		<!-- <version>1.3.0</version> -->
 		<!-- </dependency> -->
-
+		<dependency>
+			<groupId>io.bit3</groupId>
+			<artifactId>jsass</artifactId>
+			<version>3.3.1</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>ro.isdc.wro4j</groupId>
 			<artifactId>wro4j-extensions</artifactId>

@@ -70,7 +70,8 @@ public class AssetPipelineConfiguration {
                 "text/css; ; charset=UTF-8");
 
         registerExtension(DefaultAssetTypes.LESS, "less");
-        registerExtension(DefaultAssetTypes.SASS, "sass", "scss");
+        registerExtension(DefaultAssetTypes.SASS, "sass");
+        registerExtension(DefaultAssetTypes.SCSS, "scss");
         registerExtension(DefaultAssetTypes.HTML, "html", "htm");
     }
 
@@ -157,6 +158,7 @@ public class AssetPipelineConfiguration {
         defaultProcessors.put(DefaultAssetTypes.SASS,
                 processorSupplier.get().initialize(DefaultAssetTypes.CSS,
                         () -> new SassCssProcessor()));
+        defaultProcessors.put(DefaultAssetTypes.SCSS, new SassCompiler());
         // () -> new RubySassCssProcessor()));
         defaultMinifiers.put(DefaultAssetTypes.CSS,
                 processorSupplier.get().initialize(DefaultAssetTypes.CSS,
