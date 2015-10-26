@@ -98,6 +98,7 @@ public class CoreConfigurationNonRestartable {
 
     {
         scannedPrefixes.add("com/github/ruediste/rise/");
+        scannedPrefixes.add("assets/");
     }
 
     public boolean shouldClasspathResourceBeScanned(String resourceName) {

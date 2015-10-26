@@ -3,14 +3,14 @@ package com.github.ruediste.rise.core.security.authorization;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+import javax.inject.Singleton;
+
+@Singleton
 public class AuthzHelper {
 
-    public static ThreadLocal<Boolean> isAuthorizing = new ThreadLocal<>();
+    public ThreadLocal<Boolean> isAuthorizing = new ThreadLocal<>();
 
-    private AuthzHelper() {
-    }
-
-    public static <T> T withIsAuthorizing(boolean value, Supplier<T> run) {
+    public <T> T withIsAuthorizing(boolean value, Supplier<T> run) {
         Boolean old = isAuthorizing.get();
         try {
             isAuthorizing.set(value);
@@ -23,14 +23,14 @@ public class AuthzHelper {
         }
     }
 
-    public static void withIsAuthorizing(boolean value, Runnable run) {
+    public void withIsAuthorizing(boolean value, Runnable run) {
         withIsAuthorizing(value, () -> {
             run.run();
             return null;
         });
     }
 
-    public static boolean isAuthorizing() {
-        return Objects.equals(true, AuthzHelper.isAuthorizing.get());
+    public boolean isAuthorizing() {
+        return Objects.equals(true, isAuthorizing.get());
     }
 }

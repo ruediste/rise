@@ -51,6 +51,9 @@ public class AuthzTest {
     @Inject
     AuthorizationManager authManager;
 
+    @Inject
+    Authz authz;
+
     @Before
     public void before() {
         Injector injector = Salta.createInjector(new AbstractModule() {
@@ -115,7 +118,7 @@ public class AuthzTest {
     }
 
     int completingMethod() {
-        Authz.doAuthChecks(() -> {
+        authz.doAuthChecks(() -> {
             checkSuccess();
         });
         executed = true;
@@ -123,7 +126,7 @@ public class AuthzTest {
     }
 
     void failingMethod() {
-        Authz.doAuthChecks(() -> {
+        authz.doAuthChecks(() -> {
             checkFail();
         });
         executed = true;
@@ -142,7 +145,7 @@ public class AuthzTest {
 
     @Test
     public void normalAuthorization() {
-        assertTrue(Authz.isAuthorized(this, x -> x.completingMethod()));
+        assertTrue(authz.isAuthorized(this, x -> x.completingMethod()));
         assertTrue(checkSuccessCalled);
         assertFalse(executed);
     }
@@ -154,7 +157,7 @@ public class AuthzTest {
 
     @Test
     public void failingAuthorization() {
-        assertFalse(Authz.isAuthorized(this, x -> x.failingMethod()));
+        assertFalse(authz.isAuthorized(this, x -> x.failingMethod()));
         assertFalse(executed);
     }
 
@@ -166,7 +169,7 @@ public class AuthzTest {
 
     @Test
     public void noAuthorizationAuthorization() {
-        assertTrue(Authz.isAuthorized(this, x -> x.noAuthorization()));
+        assertTrue(authz.isAuthorized(this, x -> x.noAuthorization()));
         assertFalse(executed);
     }
 
@@ -177,10 +180,13 @@ public class AuthzTest {
     }
 
     static class Derived1 extends Base {
+        @Inject
+        Authz authz;
+
         @Override
         public void m() {
 
-            Authz.doAuthChecks(() -> {
+            authz.doAuthChecks(() -> {
             });
         }
     }
@@ -211,22 +217,22 @@ public class AuthzTest {
     boolean executedDelegate;
 
     void authorizeInvokingMethod() {
-        Authz.doAuthChecks(() -> {
+        authz.doAuthChecks(() -> {
             completingMethod();
             executedDelegate = true;
         });
     }
 
     void authorizeDelegating() {
-        Authz.doAuthChecks(() -> {
-            Authz.checkAuthorized(this, x -> x.completingMethod());
+        authz.doAuthChecks(() -> {
+            authz.checkAuthorized(this, x -> x.completingMethod());
             executedDelegate = true;
         });
     }
 
     @Test
     public void callFromAuthorize() {
-        assertTrue(Authz.isAuthorized(this, x -> x.authorizeInvokingMethod()));
+        assertTrue(authz.isAuthorized(this, x -> x.authorizeInvokingMethod()));
         assertTrue(executedDelegate);
         assertTrue(checkSuccessCalled);
         assertTrue(executed);
@@ -234,7 +240,7 @@ public class AuthzTest {
 
     @Test
     public void delegatingFromAuthorize() {
-        assertTrue(Authz.isAuthorized(this, x -> x.authorizeDelegating()));
+        assertTrue(authz.isAuthorized(this, x -> x.authorizeDelegating()));
         assertTrue(executedDelegate);
         assertTrue(checkSuccessCalled);
         assertFalse(executed);
@@ -265,8 +271,8 @@ public class AuthzTest {
 
     @Test
     public void isAuthorized_rightIsRespected() {
-        assertFalse(Authz.isAuthorized(service, x -> x.checkRightOnly()));
+        assertFalse(authz.isAuthorized(service, x -> x.checkRightOnly()));
         rightPresent = true;
-        assertTrue(Authz.isAuthorized(service, x -> x.checkRightOnly()));
+        assertTrue(authz.isAuthorized(service, x -> x.checkRightOnly()));
     }
 }

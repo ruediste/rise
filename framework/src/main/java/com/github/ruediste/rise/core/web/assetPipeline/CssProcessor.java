@@ -363,7 +363,7 @@ public class CssProcessor {
     private String getTargetStyleLocation(String nameTemplate,
             String styleLocation) {
         String targetStyleLocation = helper
-                .resolvePathInfoTemplate(new Asset() {
+                .resolveNameTemplate(new Asset() {
 
                     @Override
                     public String getName() {

@@ -88,6 +88,9 @@ public class AssetRequestMapper {
     @Inject
     javax.inject.Provider<AssetRequestParseResult> resultProvider;
 
+    @Inject
+    AssetHelper helper;
+
     private List<AssetBundle> bundles = new ArrayList<>();
 
     public void initialize() {
@@ -161,9 +164,6 @@ public class AssetRequestMapper {
         if (log.isDebugEnabled())
             logMessages.forEach(x -> log.debug(x));
     }
-
-    @Inject
-    AssetPipelineHelper helper;
 
     void registerChildBundles(String internalName) {
         for (ClassNode child : cache.getChildren(internalName)) {

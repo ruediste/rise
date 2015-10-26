@@ -7,7 +7,6 @@ import com.github.ruediste.rendersnakeXT.canvas.BootstrapCanvas;
 import com.github.ruediste.rendersnakeXT.canvas.BootstrapCanvasCss;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
-import com.github.ruediste.rise.core.security.authorization.Authz;
 import com.github.ruediste1.i18n.lString.TranslatedString;
 
 public interface BootstrapRiseCanvas<TSelf extends BootstrapRiseCanvas<TSelf>>
@@ -31,7 +30,7 @@ public interface BootstrapRiseCanvas<TSelf extends BootstrapRiseCanvas<TSelf>>
             args.accept(buttonArgs);
             Object instance = internal_riseHelper().getControllerAuthzInstance(
                     actionInvocation.methodInvocation.getInstanceClass());
-            if (!Authz.isAuthorized(instance,
+            if (!helper.getAuthz().isAuthorized(instance,
                     actionInvocation.methodInvocation.getMethod(),
                     actionInvocation.methodInvocation.getArguments())) {
                 buttonArgs.disabled();

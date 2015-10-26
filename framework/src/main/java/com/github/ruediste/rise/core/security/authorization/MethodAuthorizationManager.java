@@ -14,6 +14,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
@@ -27,10 +28,14 @@ import net.sf.cglib.proxy.Enhancer;
 /**
  * Manages rules determining the rights are reqired to call a method.
  */
+@Singleton
 public class MethodAuthorizationManager {
 
     @Inject
     AuthorizationManager authorizationManager;
+
+    @Inject
+    AuthzHelper authzHelper;
 
     interface MethodAuthorizationRule {
         Set<? extends Right> getRequiredRights(Object target, Method method,
@@ -186,7 +191,7 @@ public class MethodAuthorizationManager {
             // invoke the method, which will cause the authorization advices to
             // be run, followed
             // the the authorization of the method
-            AuthzHelper.withIsAuthorizing(true, () -> {
+            authzHelper.withIsAuthorizing(true, () -> {
                 try {
                     try {
                         m.setAccessible(true);

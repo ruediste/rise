@@ -9,11 +9,13 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.github.ruediste.rise.nonReloadable.NonRestartable;
 import com.github.ruediste.rise.nonReloadable.front.reload.ResourceChangeNotifier.ResourceChangeTransaction;
 import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste.rise.util.RiseUtil;
 
 @Singleton
+@NonRestartable
 public class ClasspathResourceIndex {
 
     @Inject

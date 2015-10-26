@@ -150,6 +150,9 @@ public class AssetPipelineConfiguration {
         return defaultMinifiers.get(type);
     }
 
+    @Inject
+    Provider<SassCompiler> sassCompiler;
+
     @PostConstruct
     void initializeProcessors(Provider<ProcessorWrapper> processorSupplier) {
         defaultProcessors.put(DefaultAssetTypes.LESS,
@@ -158,7 +161,8 @@ public class AssetPipelineConfiguration {
         defaultProcessors.put(DefaultAssetTypes.SASS,
                 processorSupplier.get().initialize(DefaultAssetTypes.CSS,
                         () -> new SassCssProcessor()));
-        defaultProcessors.put(DefaultAssetTypes.SCSS, new SassCompiler());
+        defaultProcessors.put(DefaultAssetTypes.SCSS,
+                a -> sassCompiler.get().create("").apply(a));
         // () -> new RubySassCssProcessor()));
         defaultMinifiers.put(DefaultAssetTypes.CSS,
                 processorSupplier.get().initialize(DefaultAssetTypes.CSS,

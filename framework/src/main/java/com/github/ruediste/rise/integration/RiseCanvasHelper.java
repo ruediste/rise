@@ -13,8 +13,9 @@ import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.CurrentLocale;
+import com.github.ruediste.rise.core.security.authorization.Authz;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
-import com.github.ruediste.rise.core.web.assetPipeline.AssetPipelineHelper;
+import com.github.ruediste.rise.core.web.assetPipeline.AssetHelper;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetRequestMapper;
 import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
 import com.github.ruediste.salta.jsr330.Injector;
@@ -48,7 +49,11 @@ public class RiseCanvasHelper {
     Injector injector;
 
     @Inject
-    AssetPipelineHelper assetPipelineHelper;
+    AssetHelper assetPipelineHelper;
+
+    @Inject
+    Authz authz;
+
     private ByteArrayOutputStream baos;
     private HtmlCanvasTarget target;
     private boolean isComponent;
@@ -59,7 +64,7 @@ public class RiseCanvasHelper {
             if (asset.getAssetType() != DefaultAssetTypes.CSS)
                 return;
             html.link().REL("stylesheet").TYPE("text/css")
-                    .HREF(assetPipelineHelper.getUrl(asset));
+                    .HREF(assetPipelineHelper.url(asset));
         });
     }
 
@@ -67,7 +72,7 @@ public class RiseCanvasHelper {
         output.forEach(asset -> {
             if (asset.getAssetType() != DefaultAssetTypes.JS)
                 return;
-            html.script().SRC(assetPipelineHelper.getUrl(asset))._script();
+            html.script().SRC(assetPipelineHelper.url(asset))._script();
         });
     }
 
@@ -171,5 +176,9 @@ public class RiseCanvasHelper {
         Class<?> implClass = coreConfiguration.getRequestMapper(instanceClass)
                 .getControllerImplementationClass(instanceClass);
         return (T) injector.getInstance(implClass);
+    }
+
+    public Authz getAuthz() {
+        return authz;
     }
 }

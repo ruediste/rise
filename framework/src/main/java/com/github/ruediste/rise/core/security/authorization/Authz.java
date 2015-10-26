@@ -4,57 +4,68 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.function.Consumer;
 
+import javax.inject.Inject;
+
 import com.github.ruediste.c3java.invocationRecording.MethodInvocation;
 import com.github.ruediste.c3java.invocationRecording.MethodInvocationRecorder;
 import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
 
 /**
- * Static methods for authorization.
+ * Facade for the authorization and authorization introspection subsystem.
  */
 public class Authz {
+    @Inject
+    AuthorizationManager authorizationManager;
+
+    @Inject
+    public MethodAuthorizationManager methodAuthorizationManager;
+
+    @Inject
+    AuthzHelper helper;
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    static public <T> AuthorizationResult performAuthorization(T target,
+    public <T> AuthorizationResult performAuthorization(T target,
             Consumer<T> invoker) {
         return performAuthorization(target, MethodInvocationRecorder
                 .getLastInvocation((Class) target.getClass(), invoker));
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    static public <T> boolean isAuthorized(T target, Consumer<T> invoker) {
+    public <T> boolean isAuthorized(T target, Consumer<T> invoker) {
         return isAuthorized(target, MethodInvocationRecorder
                 .getLastInvocation((Class) target.getClass(), invoker));
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    static public <T> void checkAuthorized(T target, Consumer<T> invoker) {
+    public <T> void checkAuthorized(T target, Consumer<T> invoker) {
         checkAuthorized(target, MethodInvocationRecorder
                 .getLastInvocation((Class) target.getClass(), invoker));
     }
 
-    public static boolean isAuthorized(Object target,
+    public boolean isAuthorized(Object target,
             MethodInvocation<Object> lastInvocation) {
         return isAuthorized(target, lastInvocation.getMethod(),
                 lastInvocation.getArguments().toArray());
     }
 
-    public static void checkAuthorized(Object target,
+    public void checkAuthorized(Object target,
             MethodInvocation<Object> lastInvocation) {
         checkAuthorized(target, lastInvocation.getMethod(),
                 lastInvocation.getArguments().toArray());
     }
 
-    public static AuthorizationResult performAuthorization(Object target,
+    public AuthorizationResult performAuthorization(Object target,
             MethodInvocation<Object> lastInvocation) {
         return performAuthorization(target, lastInvocation.getMethod(),
                 lastInvocation.getArguments().toArray());
     }
 
-    static public boolean isAuthorized(Object target, Method m, List<?> args) {
+    public boolean isAuthorized(Object target, Method m, List<?> args) {
         return isAuthorized(target, m, args.toArray());
     }
 
-    static public AuthorizationResult performAuthorization(Object target,
-            Method m, Object[] args) {
+    public AuthorizationResult performAuthorization(Object target, Method m,
+            Object[] args) {
         try {
             checkAuthorized(target, m, args);
         } catch (AuthorizationException e) {
@@ -63,7 +74,7 @@ public class Authz {
         return AuthorizationResult.authorized();
     }
 
-    static public boolean isAuthorized(Object target, Method m, Object[] args) {
+    public boolean isAuthorized(Object target, Method m, Object[] args) {
         try {
             checkAuthorized(target, m, args);
         } catch (AuthorizationException e) {
@@ -72,7 +83,7 @@ public class Authz {
         return true;
     }
 
-    static public void checkAuthorized(Object target, Method m, Object[] args) {
+    public void checkAuthorized(Object target, Method m, Object[] args) {
         InjectorsHolder.getRestartableInjector()
                 .getInstance(MethodAuthorizationManager.class)
                 .checkAuthorized(target, m, args);
@@ -85,9 +96,9 @@ public class Authz {
      * authorization logic from the execution logic, and thus do determine if a
      * method can be executed without actually executing it.
      */
-    static public void doAuthChecks(Runnable check) {
-        if (AuthzHelper.isAuthorizing()) {
-            AuthzHelper.withIsAuthorizing(false, check);
+    public void doAuthChecks(Runnable check) {
+        if (helper.isAuthorizing()) {
+            helper.withIsAuthorizing(false, check);
             throw new AuthorizationIntrospectionCompleted();
         } else
             check.run();
@@ -97,7 +108,7 @@ public class Authz {
      * Determine if the caller is currently performing an authorization check,
      * or really executing.
      */
-    public static boolean isAuthorizing() {
-        return AuthzHelper.isAuthorizing();
+    public boolean isAuthorizing() {
+        return helper.isAuthorizing();
     }
 }

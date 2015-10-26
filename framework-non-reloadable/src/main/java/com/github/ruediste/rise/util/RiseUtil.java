@@ -19,8 +19,10 @@ public class RiseUtil {
 
     public static String readFromClasspathAsString(String fullPath,
             ClassLoader classLoader) {
-        return new String(readFromClasspath(fullPath, classLoader),
-                Charsets.UTF_8);
+        byte[] data = readFromClasspath(fullPath, classLoader);
+        if (data == null)
+            return null;
+        return new String(data, Charsets.UTF_8);
     }
 
     public static byte[] readFromClasspath(String fullPath,

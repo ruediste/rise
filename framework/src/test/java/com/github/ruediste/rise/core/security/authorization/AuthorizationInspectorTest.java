@@ -9,13 +9,20 @@ import com.github.ruediste.c3java.invocationRecording.MethodInvocationRecorder;
 public class AuthorizationInspectorTest {
 
     interface IA {
+        Authz getAuthz();
+
         default void ia() {
-            Authz.doAuthChecks(() -> {
+            getAuthz().doAuthChecks(() -> {
             });
         }
     }
 
     class A implements IA {
+
+        @Override
+        public Authz getAuthz() {
+            return null;
+        }
     }
 
     @Test

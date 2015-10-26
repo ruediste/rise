@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import com.github.ruediste.rise.core.CoreUtil;
+import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.util.RiseUtil;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -21,9 +22,6 @@ public class AssetHelper {
     AssetPipelineConfiguration pipelineConfiguration;
 
     @Inject
-    AssetRequestMapper requestMapper;
-
-    @Inject
     CoreUtil coreUtil;
 
     /**
@@ -31,7 +29,7 @@ public class AssetHelper {
      * for example in CSS files
      */
     public String url(Asset asset) {
-        return coreUtil.urlStatic(requestMapper.helper.getPathInfo(asset));
+        return coreUtil.urlStatic(getPathInfo(asset));
     }
 
     private String getExtension(String path) {
@@ -132,7 +130,7 @@ public class AssetHelper {
         return basePath + location;
     }
 
-    public String resolvePathInfoTemplate(Asset asset, String template) {
+    public String resolveNameTemplate(Asset asset, String template) {
         String name = asset.getName();
         Pattern p = Pattern.compile(
                 "(?<context>\\A|[^\\\\]|\\G)\\{(?<placeholder>[^\\}]*)\\}");
@@ -194,4 +192,14 @@ public class AssetHelper {
         return sb.toString().replace("\\{", "{").replace("\\\\", "\\");
     }
 
+    public PathInfo getPathInfo(Asset asset) {
+        return new PathInfo(getAssetPathInfo(asset.getName()));
+    }
+
+    public String getAssetPathInfo(String name) {
+        if (name.startsWith("/"))
+            return name;
+        else
+            return pipelineConfiguration.assetPathInfoPrefix + name;
+    }
 }

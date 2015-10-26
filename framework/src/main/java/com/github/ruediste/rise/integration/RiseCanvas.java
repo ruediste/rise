@@ -7,7 +7,6 @@ import com.github.ruediste.rendersnakeXT.canvas.Html5Canvas;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
-import com.github.ruediste.rise.core.security.authorization.Authz;
 import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
@@ -122,8 +121,8 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
                 .toActionInvocation(target).methodInvocation;
         Object targetObj = internal_riseHelper()
                 .getControllerAuthzInstance(invocation.getInstanceClass());
-        if (Authz.isAuthorized(targetObj, invocation.getMethod(),
-                invocation.getArguments().toArray()))
+        if (internal_riseHelper().getAuthz().isAuthorized(targetObj,
+                invocation.getMethod(), invocation.getArguments().toArray()))
             ifTrue.accept(target);
         else
             ifFalse.accept(target);

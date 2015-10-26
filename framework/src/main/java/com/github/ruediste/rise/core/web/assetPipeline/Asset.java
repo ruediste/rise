@@ -1,5 +1,7 @@
 package com.github.ruediste.rise.core.web.assetPipeline;
 
+import com.google.common.base.Charsets;
+
 /**
  * Represents an asset of a web page (css, js, font ...)
  */
@@ -42,4 +44,10 @@ public interface Asset {
      */
     byte[] getData();
 
+    /**
+     * Get {@link #getData()} as String using {@link Charsets#UTF_8}.
+     */
+    default String getDataString() {
+        return new String(getData(), Charsets.UTF_8);
+    }
 }

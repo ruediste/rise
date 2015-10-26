@@ -282,7 +282,7 @@ public class AssetGroup {
 
                     @Override
                     public String getName() {
-                        return bundle.helper.resolvePathInfoTemplate(asset,
+                        return bundle.helper.resolveNameTemplate(asset,
                                 template);
                     }
 

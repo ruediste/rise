@@ -7,8 +7,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import com.github.ruediste.rise.util.RiseUtil;
 
 /**
  * A group of classpath locations of {@link Asset}s. All locations are absolute
@@ -90,6 +93,14 @@ public class AssetLocationGroup {
                     .collect(Collectors.joining(".")) + ".min."
                     + parts[parts.length - 1];
         }
+    }
+
+    public AssetLocationGroup remove(String glob) {
+        String l = bundle.helper.calculateAbsoluteLocation(glob,
+                bundle.getClass());
+        Pattern pattern = Pattern.compile(RiseUtil.toRegex(l));
+        return new AssetLocationGroup(bundle, locations.stream()
+                .filter(loc -> !pattern.matcher(loc).matches()));
     }
 
 }

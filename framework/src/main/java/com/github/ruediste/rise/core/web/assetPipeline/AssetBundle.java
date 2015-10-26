@@ -126,7 +126,7 @@ public abstract class AssetBundle {
                     String location = helper.calculateAbsoluteLocation(l,
                             getClass());
                     Pair<String, String> prefixAndRegex = RiseUtil
-                            .toPrefixAndRegex(l);
+                            .toPrefixAndRegex(location);
                     if (prefixAndRegex.getB().isEmpty())
                         return Stream.of(location);
                     return resourceIndex.getResourcesByGlob(prefixAndRegex)

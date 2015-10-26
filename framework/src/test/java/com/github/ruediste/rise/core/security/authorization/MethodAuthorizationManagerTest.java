@@ -29,6 +29,9 @@ public class MethodAuthorizationManagerTest {
     @Inject
     AuthorizationManager mgr;
 
+    @Inject
+    Authz authz;
+
     @Before
     public void before() {
         allowedRights = new HashSet<>();
@@ -108,23 +111,23 @@ public class MethodAuthorizationManagerTest {
 
     @Test
     public void protectedMethod_isAuthorized() {
-        assertFalse(Authz.isAuthorized(service, x -> x.protectedMethod()));
+        assertFalse(authz.isAuthorized(service, x -> x.protectedMethod()));
         assertFalse(service.executed);
         allowedRights.add(TestRightRight.TEST_RIGHT);
-        assertTrue(Authz.isAuthorized(service, x -> x.protectedMethod()));
+        assertTrue(authz.isAuthorized(service, x -> x.protectedMethod()));
         assertFalse(service.executed);
     }
 
     @Test
     public void protectedMethod_checkAuthorized_passes() {
         allowedRights.add(TestRightRight.TEST_RIGHT);
-        Authz.checkAuthorized(service, x -> x.protectedMethod());
+        authz.checkAuthorized(service, x -> x.protectedMethod());
         assertFalse(service.executed);
     }
 
     @Test(expected = AuthorizationException.class)
     public void protectedMethod_checkAuthorized_notAuthorized() {
-        Authz.checkAuthorized(service, x -> x.protectedMethod());
+        authz.checkAuthorized(service, x -> x.protectedMethod());
     }
 
     @Test(expected = AuthorizationException.class)
@@ -139,11 +142,11 @@ public class MethodAuthorizationManagerTest {
                         .getLastInvocation(Service.class,
                                 x -> x.protectedMultiple())
                         .getMethod().getAnnotations()));
-        assertFalse(Authz.isAuthorized(service, x -> x.protectedMultiple()));
+        assertFalse(authz.isAuthorized(service, x -> x.protectedMultiple()));
         allowedRights.add(TestRightRight.TEST_RIGHT);
-        assertFalse(Authz.isAuthorized(service, x -> x.protectedMultiple()));
+        assertFalse(authz.isAuthorized(service, x -> x.protectedMultiple()));
         allowedRights.add(TestRightRight.OTHER_RIGHT);
-        assertTrue(Authz.isAuthorized(service, x -> x.protectedMultiple()));
+        assertTrue(authz.isAuthorized(service, x -> x.protectedMultiple()));
 
     }
 
@@ -156,9 +159,9 @@ public class MethodAuthorizationManagerTest {
 
     @Test
     public void testNonProtectedMethod() {
-        assertTrue(Authz.isAuthorized(service, x -> x.nonProtectedMethod()));
+        assertTrue(authz.isAuthorized(service, x -> x.nonProtectedMethod()));
         assertFalse(service.executed);
-        Authz.checkAuthorized(service, x -> x.nonProtectedMethod());
+        authz.checkAuthorized(service, x -> x.nonProtectedMethod());
         assertFalse(service.executed);
         service.nonProtectedMethod();
         assertTrue(service.executed);
