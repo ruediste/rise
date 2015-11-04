@@ -11,11 +11,11 @@ import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 
 import com.github.ruediste.rise.api.ViewComponentBase;
+import com.github.ruediste.rise.component.ComponentPage;
+import com.github.ruediste.rise.component.ComponentPageHandleRepository;
 import com.github.ruediste.rise.component.ComponentRequestInfo;
-import com.github.ruediste.rise.component.ComponentSessionInfo;
 import com.github.ruediste.rise.component.ComponentTemplateIndex;
 import com.github.ruediste.rise.component.ComponentUtil;
-import com.github.ruediste.rise.component.PageInfo;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ComponentTreeUtil;
 import com.github.ruediste.rise.core.CoreConfiguration;
@@ -34,7 +34,7 @@ public class ReloadHandler implements Runnable {
     Logger log;
 
     @Inject
-    PageInfo page;
+    ComponentPage page;
 
     @Inject
     ComponentUtil util;
@@ -47,11 +47,13 @@ public class ReloadHandler implements Runnable {
 
     @Inject
     CoreRequestInfo coreRequestInfo;
+
     @Inject
     ComponentRequestInfo componentRequestInfo;
 
     @Inject
-    ComponentSessionInfo componentSessionInfo;
+    ComponentPageHandleRepository componentSessionInfo;
+
     @Inject
     CoreConfiguration coreConfiguration;
 
@@ -98,10 +100,10 @@ public class ReloadHandler implements Runnable {
 
         // check if a destination has been defined
         if (componentRequestInfo.getClosePageResult() != null) {
-            componentSessionInfo.removePageHandle(page.getPageId());
+            componentSessionInfo.destroyCurrentPage();
             coreRequestInfo
                     .setActionResult(componentRequestInfo.getClosePageResult());
-        } else {
+        } else if (coreRequestInfo.getActionResult() == null) {
             // render result
             coreRequestInfo.setActionResult(new ContentRenderResult(
                     util.renderComponents(view, reloadComponent), r -> {

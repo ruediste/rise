@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.integration;
 
 import java.lang.reflect.Method;
+import java.util.Objects;
 import java.util.function.Function;
 
 import javax.inject.Inject;
@@ -9,7 +10,7 @@ import com.github.ruediste.rendersnakeXT.canvas.Html5Canvas;
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.component.ComponentConfiguration;
 import com.github.ruediste.rise.component.ComponentRequestInfo;
-import com.github.ruediste.rise.component.PageInfo;
+import com.github.ruediste.rise.component.ComponentPage;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
@@ -38,7 +39,7 @@ public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>>
     ComponentRequestInfo componentRequestInfo;
 
     @Inject
-    PageInfo pageInfo;
+    ComponentPage pageInfo;
 
     @Inject
     ApplicationStage stage;
@@ -69,6 +70,8 @@ public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>>
 	        if (componentRequestInfo.isComponentRequest()) {
 	            html.DATA(CoreAssetBundle.bodyAttributePageNr,Long.toString(pageInfo.getPageId()))
                     .DATA(CoreAssetBundle.bodyAttributeReloadUrl,url(componentConfig.getReloadPath()))
+                    .DATA(CoreAssetBundle.bodyAttributeHeartbeatUrl,url(componentConfig.getHeartbeatPath()))
+                    .DATA(CoreAssetBundle.bodyAttributeHeartbeatInterval, Objects.toString(componentConfig.getHeartbeatInterval()))
                     .DATA(CoreAssetBundle.bodyAttributeAjaxUrl,url(componentConfig.getAjaxPath()))
                     .DATA(CoreAssetBundle.bodyAttributeReloadNr,"0");
 	        }

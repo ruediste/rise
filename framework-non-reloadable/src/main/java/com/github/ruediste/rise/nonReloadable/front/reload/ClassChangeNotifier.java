@@ -25,6 +25,11 @@ import com.github.ruediste.rise.nonReloadable.front.ApplicationEventQueue;
 import com.github.ruediste.rise.nonReloadable.front.reload.ResourceChangeNotifier.ResourceChangeTransaction;
 import com.github.ruediste.rise.util.Pair;
 
+/**
+ * Notify listeners of changes to classes. Changes of multiple classes are
+ * bundled into a transaction. The nogifications are based on the
+ * {@link ResourceChangeNotifier}
+ */
 @Singleton
 public class ClassChangeNotifier {
 

@@ -2,6 +2,8 @@ package com.github.ruediste.rise.core;
 
 import javax.inject.Inject;
 
+import com.github.ruediste.rise.core.scopes.HttpScopeManager;
+import com.github.ruediste.rise.core.scopes.SessionScopeEvents;
 import com.github.ruediste.rise.core.web.assetDir.AssetDirRequestMapper;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetPipelineConfiguration;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetRequestMapper;
@@ -26,6 +28,12 @@ public class CoreRestartableInitializer implements Initializer {
 
     @Inject
     RestartQueryParser restartQueryParser;
+
+    @Inject
+    HttpScopeManager httpScopeManager;
+
+    @Inject
+    SessionScopeEvents sessionScopeEvents;
 
     @Override
     public void initialize() {

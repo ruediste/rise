@@ -1,11 +1,14 @@
 var rise = (function() {
-	/**
-	 * generate a key by using
-	 */
+	var getComponentNr = function(element){
+		return  element.data("rise-component-nr");
+	}
 	var generateKey = function(element, key) {
-		return "c_" + element.data("rise-component-nr") + "_" + key;
+		return "c_" +getComponentNr(element) + "_" + key;
 	};
 
+	var getPageNr = function(){
+		return $("body").data("rise-page-nr");
+	}
 	/**
 	 * Enters an endless loop polling for an application restart
 	 */
@@ -30,6 +33,26 @@ var rise = (function() {
 					window.setTimeout(pollForApplicationRestart, 2000);
 				}
 
+			});
+		}
+	};
+	/**
+	 * Enters an endless loop sending the heart beat to the server
+	 */
+	var sendHearbeats = function() {
+		var url = $("body").data("rise-heartbeat-url");
+		if (!url) {
+			// end the heartbeat loop
+		} else {
+			$.ajax({
+				url : url,
+				method : "POST",
+				data : {
+					"nr" : getPageNr()
+				},
+				complete : function() {
+					window.setTimeout(sendHearbeats, $("body").data("rise-heartbeat-interval"));
+				}
 			});
 		}
 	};
@@ -65,8 +88,8 @@ var rise = (function() {
 		$.ajax({
 			method : "POST",
 			url : $("body").data("rise-reload-url") + "?page="
-					+ $("body").data("rise-page-nr") + "&nr="
-					+ receiver.data("rise-component-nr"),
+					+ getPageNr() + "&nr="
+					+ getComponentNr(receiver),
 			data : JSON.stringify(data),
 			contentType : "text/json; charset=UTF-8",
 			processData : false,
@@ -113,6 +136,8 @@ var rise = (function() {
 		onReload.fire($(document));
 	});
 
+	
+	
 	return {
 		onReload : onReload,
 		generateKey : generateKey

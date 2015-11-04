@@ -9,11 +9,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 
+import com.github.ruediste.rise.component.ComponentPage;
+import com.github.ruediste.rise.component.ComponentPageHandleRepository;
+import com.github.ruediste.rise.component.PageHandle;
+import com.github.ruediste.rise.component.PageScopeCleaner;
+import com.github.ruediste.rise.component.PageScopeManager;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.RequestParseResult;
 import com.github.ruediste.rise.core.httpRequest.DelegatingHttpRequest;
 import com.github.ruediste.rise.core.scopes.HttpScopeManager;
+import com.github.ruediste.rise.core.scopes.RequestScopeEvents;
 import com.github.ruediste.rise.nonReloadable.CoreConfigurationNonRestartable;
 import com.github.ruediste.rise.nonReloadable.front.HttpMethod;
 import com.github.ruediste.rise.nonReloadable.front.RestartableApplication;
@@ -50,10 +56,29 @@ public abstract class RestartableApplicationBase
     @Inject
     CoreRequestInfo info;
 
+    @Inject
+    RequestScopeEvents requestScopeEvents;
+
+    @Inject
+    PageScopeCleaner pageScopeCleaner;
+
+    @Inject
+    PageScopeManager pageScopeManager;
+
+    @Inject
+    ComponentPageHandleRepository componentPageHandleRepository;
+
+    @Inject
+    HttpScopeManager httpScopeManager;
+
+    @Inject
+    ComponentPage page;
+
     @Override
     public final void start(Injector nonRestartableInjector) {
         startImpl(nonRestartableInjector);
         InitializerUtil.runInitializers(injector);
+        pageScopeCleaner.start();
     }
 
     /**
@@ -103,7 +128,7 @@ public abstract class RestartableApplicationBase
                 try {
                     config.handleRequestError(t);
                 }
-                // handler for errors comming fom handling a request error
+                // handler for errors thrown while handling a request error
                 catch (Throwable t1) {
                     log.error("Error in RequestErrorHandler", t1);
                     if (stage == Stage.PRODUCTION)
@@ -118,12 +143,26 @@ public abstract class RestartableApplicationBase
                 }
             }
         } finally {
-            scopeManager.exit();
+            try {
+                requestScopeEvents.fireDestroyed();
+            } finally {
+                scopeManager.exit();
+            }
         }
     }
 
     @Override
     public final void close() {
+        pageScopeCleaner.stop();
+        // destroy all page scopes
+        httpScopeManager.runInEachSessionScope(() -> {
+            for (PageHandle handle : componentPageHandleRepository
+                    .getPageHandles()) {
+                pageScopeManager.inScopeDo(handle.pageScopeState, () -> {
+                    page.fireDestroy();
+                });
+            }
+        });
         closeImpl();
     }
 

@@ -43,6 +43,11 @@ public class GenericEvent<T> {
         return listeningConsumers.remove(listener);
     }
 
+    public synchronized void clearListeners() {
+        listeningRunnables.clear();
+        listeningConsumers.clear();
+    }
+
     /**
      * fire the event
      */

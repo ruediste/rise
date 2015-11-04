@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.testApp.app;
 
+import java.time.Duration;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -7,6 +8,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.github.ruediste.rise.component.ComponentConfiguration;
 import com.github.ruediste.rise.component.ComponentTemplateIndex;
 import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.core.CoreConfiguration;
@@ -64,6 +66,9 @@ public class TestRestartableApplication extends RestartableApplicationBase {
     @Inject
     InMemoryRememberMeTokenDao rememberMeTokenDao;
 
+    @Inject
+    ComponentConfiguration componentConfiguration;
+
     private static class Initializer
             implements com.github.ruediste.rise.util.Initializer {
 
@@ -105,6 +110,8 @@ public class TestRestartableApplication extends RestartableApplicationBase {
         config.requestErrorHandler = errorHandler;
         errorHandler.initialize(
                 util -> util.go(RequestErrorHandlerController.class).index());
+        componentConfiguration.heartbeatInterval = Duration.ofSeconds(1);
+        componentConfiguration.heartbeatInterval = Duration.ofSeconds(3);
 
         // security
         rememberMeAuthenticationProvider.setDao(rememberMeTokenDao);

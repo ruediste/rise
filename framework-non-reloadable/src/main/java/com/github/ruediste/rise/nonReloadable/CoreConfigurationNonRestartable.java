@@ -1,6 +1,8 @@
 package com.github.ruediste.rise.nonReloadable;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Supplier;
 
@@ -94,7 +96,7 @@ public class CoreConfigurationNonRestartable {
 
     public long restartQueryTimeout = 30000;
 
-    public final TreeSet<String> scannedPrefixes = new TreeSet<String>();
+    public final Set<String> scannedPrefixes = new HashSet<String>();
 
     {
         scannedPrefixes.add("com/github/ruediste/rise/");
@@ -102,8 +104,8 @@ public class CoreConfigurationNonRestartable {
     }
 
     public boolean shouldClasspathResourceBeScanned(String resourceName) {
-        String prefix = scannedPrefixes.floor(resourceName);
-        return prefix != null && resourceName.startsWith(prefix);
+        return scannedPrefixes.stream()
+                .anyMatch(prefix -> resourceName.startsWith(prefix));
     }
 
     public String basePackage = "";

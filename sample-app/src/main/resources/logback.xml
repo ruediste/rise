@@ -15,6 +15,12 @@
 		<appender-ref ref="STDOUT" />
 	</root>
 
+	<logger name="com.github.ruediste.rise.nonReloadable.front.reload.ResourceChangeNotifier" 
+		level="DEBUG"/>
+<!-- 	<logger name="com.github.ruediste.rise.nonReloadable.front.reload.ReloadableClassesIndex"  -->
+<!-- 		level="DEBUG"/> -->
+<!-- 	<logger name="com.github.ruediste.rise.nonReloadable.front.reload.ReloadableClassLoader"  -->
+<!-- 		level="DEBUG"/> -->
 <!-- 	<logger name="bitronix.tm.BitronixTransactionManager"  -->
 <!-- 		level="DEBUG"/> -->
 <!-- 	<logger name="com.github.ruediste.rise.nonReloadable.front.FrontServletBase"  -->

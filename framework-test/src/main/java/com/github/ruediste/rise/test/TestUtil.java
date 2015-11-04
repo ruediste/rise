@@ -8,8 +8,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import junit.framework.AssertionFailedError;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
@@ -22,6 +20,8 @@ import com.github.ruediste.c3java.invocationRecording.MethodInvocationRecorder;
 import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.github.ruediste.c3java.properties.PropertyUtil;
 import com.google.common.base.Predicate;
+
+import junit.framework.AssertionFailedError;
 
 public interface TestUtil {
     public static int defaultWaitSeconds = 1;
@@ -40,8 +40,11 @@ public interface TestUtil {
     default <T> void assertPage(Class<T> cls, Consumer<T> methodAccessor) {
         Method method = MethodInvocationRecorder
                 .getLastInvocation(cls, methodAccessor).getMethod();
+        String expectedPageName = method.getDeclaringClass().getName() + "."
+                + method.getName();
         doWait().ignoring(AssertionFailedError.class,
                 StaleElementReferenceException.class)
+                .ignoring(AssertionError.class)
                 .until(new Predicate<WebDriver>() {
                     @Override
                     public boolean apply(WebDriver x) {
@@ -49,9 +52,13 @@ public interface TestUtil {
                                 internal_getDriver()
                                         .findElement(By.tagName("body"))
                                         .getAttribute("data-test-name"),
-                                equalTo(method.getDeclaringClass().getName()
-                                        + "." + method.getName()));
+                                equalTo(expectedPageName));
                         return true;
+                    }
+
+                    @Override
+                    public String toString() {
+                        return "page name is " + expectedPageName;
                     }
                 });
     }
@@ -100,6 +107,9 @@ public interface TestUtil {
         waitForRefresh(element, defaultWaitSeconds, action);
     }
 
+    /**
+     * Perform the given action and wait for the next page reload.
+     */
     default <T extends WebElement> void waitForRefresh(T element,
             int timeoutSeconds, Consumer<T> action) {
         WebElement body = internal_getDriver().findElement(By.tagName("body"));

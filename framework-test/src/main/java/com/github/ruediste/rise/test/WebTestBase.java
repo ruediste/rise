@@ -143,7 +143,11 @@ public abstract class WebTestBase implements TestUtil {
                 try {
                     base.evaluate();
                 } finally {
-                    driver.close();
+                    try {
+                        driver.close();
+                    } catch (Throwable t) {
+                        // swallow
+                    }
                 }
             }
         };
@@ -155,5 +159,4 @@ public abstract class WebTestBase implements TestUtil {
     public WebDriver internal_getDriver() {
         return driver;
     }
-
 }

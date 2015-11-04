@@ -165,14 +165,11 @@ public abstract class FrontServletBase extends HttpServlet {
         if (!isInitialStartup) {
             StartupTimeLogger.clear();
             startupStopwatch = Stopwatch.createStarted();
+            log.info("Reloading application instance ...");
+        } else {
+            log.info("Loading application instance ...");
         }
-        log.info("Reloading application instance ...");
         try {
-
-            // avoid classloader leaks by clearing the caches
-            JavaC3.clearCache();
-            PropertyUtil.clearCache();
-
             // close old application instance
             if (currentApplicationInfo != null) {
                 currentApplicationInfo.application.close();
@@ -182,6 +179,10 @@ public abstract class FrontServletBase extends HttpServlet {
                 // reload configuration for logback, if available
                 reloadLogback();
             }
+
+            // avoid classloader leaks by clearing the caches
+            JavaC3.clearCache();
+            PropertyUtil.clearCache();
 
             // create application instance
             RestartableApplication instance;

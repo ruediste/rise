@@ -1,7 +1,6 @@
 package com.github.ruediste.rise.component;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import org.slf4j.Logger;
 
@@ -13,7 +12,7 @@ import com.github.ruediste.rise.core.RequestParser;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.web.HttpRenderResult;
 import com.github.ruediste.rise.core.web.HttpRenderResultUtil;
-import com.github.ruediste.salta.standard.util.SimpleProxyScopeHandler;
+import com.github.ruediste.salta.standard.util.SimpleScopeManagerBase.ScopeState;
 
 /**
  * Request handling ajax update requests form client side components to the
@@ -31,20 +30,19 @@ public class AjaxRequestParser implements RequestParser {
     ComponentRequestInfo componentRequestInfo;
 
     @Inject
-    ComponentSessionInfo sessionInfo;
+    ComponentPageHandleRepository sessionInfo;
 
     @Inject
     ComponentUtil componentUtil;
 
     @Inject
-    PageInfo pageInfo;
+    ComponentPage pageInfo;
 
     @Inject
     ComponentTemplateIndex componentTemplateIndex;
 
     @Inject
-    @Named("pageScoped")
-    SimpleProxyScopeHandler pageScopeHandler;
+    PageScopeManager pageScopeHandler;
 
     @Inject
     HttpRenderResultUtil httpRenderResultUtil;
@@ -93,14 +91,15 @@ public class AjaxRequestParser implements RequestParser {
                 IComponentTemplate<Component> template;
                 Component component;
                 synchronized (page.lock) {
-                    pageScopeHandler.enter(page.instances);
+                    ScopeState old = pageScopeHandler
+                            .setState(page.pageScopeState);
                     try {
                         component = componentUtil
                                 .getComponent(pageInfo.getView(), componentNr);
                         template = componentTemplateIndex
                                 .getTemplate(component);
                     } finally {
-                        pageScopeHandler.exit();
+                        pageScopeHandler.setState(old);
                     }
                 }
                 try {

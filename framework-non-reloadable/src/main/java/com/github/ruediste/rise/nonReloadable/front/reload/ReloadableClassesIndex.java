@@ -12,6 +12,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.InnerClassNode;
+import org.slf4j.Logger;
 
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassChangeNotifier.ClassChangeTransaction;
 
@@ -20,6 +21,9 @@ import com.github.ruediste.rise.nonReloadable.front.reload.ClassChangeNotifier.C
  */
 @Singleton
 public class ReloadableClassesIndex {
+    @Inject
+    Logger log;
+
     @Inject
     ClassChangeNotifier notifier;
 
@@ -48,6 +52,7 @@ public class ReloadableClassesIndex {
     }
 
     void updateMap(ClassNode cls) {
+        log.debug("processing {}", cls.name);
         if (cls.outerClass != null) {
             outerClassNames.put(cls.name, cls.outerClass);
         }
@@ -62,12 +67,18 @@ public class ReloadableClassesIndex {
         if (cls.visibleAnnotations == null) {
             return;
         }
+        String reloadableDesc = Type.getDescriptor(Reloadable.class);
+        String nonReloadeableDesc = Type.getDescriptor(NonReloadable.class);
         for (Object o : cls.visibleAnnotations) {
             AnnotationNode a = (AnnotationNode) o;
-            if (Type.getDescriptor(Reloadable.class).equals(a.desc)) {
+            if (reloadableDesc.equals(a.desc)) {
+                log.debug("class {} is reloadable", cls.name);
                 isReloadableMap.put(cls.name, true);
-            } else if (Type.getDescriptor(NonReloadable.class).equals(a.desc)) {
-                isReloadableMap.put(cls.name, false);
+            } else {
+                if (nonReloadeableDesc.equals(a.desc)) {
+                    log.debug("class {} is NOT reloadable", cls.name);
+                    isReloadableMap.put(cls.name, false);
+                }
             }
         }
     }

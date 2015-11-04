@@ -2,6 +2,9 @@ package com.github.ruediste.rise.nonReloadable.front.reload;
 
 import java.io.InputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.io.ByteStreams;
 
 /**
@@ -9,6 +12,8 @@ import com.google.common.io.ByteStreams;
  * delegates to the parent class loader for other classes
  */
 public class ReloadableClassLoader extends ClassLoader {
+    public static Logger log = LoggerFactory
+            .getLogger(ReloadableClassLoader.class);
 
     private ReloadableClassesIndex index;
 
@@ -31,6 +36,7 @@ public class ReloadableClassLoader extends ClassLoader {
         }
         if (!name.startsWith("java.")) {
             if (index.isReloadable(name)) {
+                log.debug("Class {} is reloadable", name);
                 synchronized (getClassLoadingLock(name)) {
                     Class<?> result = findLoadedClass(name);
                     if (result == null) {

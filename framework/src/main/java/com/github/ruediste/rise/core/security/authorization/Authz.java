@@ -8,7 +8,6 @@ import javax.inject.Inject;
 
 import com.github.ruediste.c3java.invocationRecording.MethodInvocation;
 import com.github.ruediste.c3java.invocationRecording.MethodInvocationRecorder;
-import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
 
 /**
  * Facade for the authorization and authorization introspection subsystem.
@@ -84,9 +83,7 @@ public class Authz {
     }
 
     public void checkAuthorized(Object target, Method m, Object[] args) {
-        InjectorsHolder.getRestartableInjector()
-                .getInstance(MethodAuthorizationManager.class)
-                .checkAuthorized(target, m, args);
+        methodAuthorizationManager.checkAuthorized(target, m, args);
     }
 
     /**

@@ -34,7 +34,10 @@ import com.google.common.base.Stopwatch;
 import com.google.common.io.ByteStreams;
 
 /**
- * Notifier for changes to the available classpath resources
+ * Notifier for changes to the available classpath resources. Only notifications
+ * for resources which pass
+ * {@link CoreConfigurationNonRestartable#shouldClasspathResourceBeScanned(String)}
+ * are generated.
  */
 @Singleton
 public class ResourceChangeNotifier {

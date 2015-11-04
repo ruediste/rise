@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.component;
 
+import java.time.Duration;
 import java.util.LinkedList;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -155,10 +156,14 @@ public class ComponentConfiguration {
         finalInitialHandlerSupplier = initialChain.controllerInvokerSupplier;
     }
 
+    public Supplier<RequestParser> heartbeatRequestParserSupplier;
+
     @PostConstruct
     public void postConstruct(
-            Provider<ComponentViewRepository> componentViewRepository) {
+            Provider<ComponentViewRepository> componentViewRepository,
+            Provider<HearbeatRequestParser> heartbeatRequestParser) {
         viewFactorySupplier = () -> componentViewRepository.get()::createView;
+        heartbeatRequestParserSupplier = heartbeatRequestParser::get;
     }
 
     public static class ReloadChainSupplierRefs {
@@ -212,13 +217,31 @@ public class ComponentConfiguration {
         return viewFactory.apply(controller, qualifier);
     }
 
-    private String reloadPath = "/~component/reload";
+    public String reloadPath = "/~component/reload";
 
     public String getReloadPath() {
         return reloadPath;
     }
 
-    private String ajaxPath = "/~component/ajax";
+    public String heartbeatPath = "/~component/heartbeat";
+
+    public String getHeartbeatPath() {
+        return heartbeatPath;
+    }
+
+    public Duration heartbeatInterval = Duration.ofSeconds(10);
+
+    public Duration getHeartbeatInterval() {
+        return heartbeatInterval;
+    }
+
+    public Duration heartbeatTimeout = Duration.ofSeconds(30);
+
+    public Duration getHeartbeatTimeout() {
+        return heartbeatTimeout;
+    }
+
+    public String ajaxPath = "/~component/ajax";
 
     public String getAjaxPath() {
         return ajaxPath;

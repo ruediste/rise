@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.transaction.TransactionManager;
 
@@ -31,7 +30,7 @@ import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 import com.github.ruediste.rise.core.web.HttpRenderResult;
 import com.github.ruediste.rise.integration.RiseCanvas;
 import com.github.ruediste.rise.integration.RiseCanvasBase;
-import com.github.ruediste.salta.standard.util.SimpleProxyScopeHandler;
+import com.github.ruediste.salta.jsr330.Injector;
 
 @Singleton
 public class ComponentUtil implements ICoreUtil {
@@ -40,11 +39,11 @@ public class ComponentUtil implements ICoreUtil {
     Logger log;
 
     private final AttachedProperty<Component, Long> componentNr = new AttachedProperty<>();
-    private final AttachedProperty<ViewComponentBase<?>, Map<Long, Component>> componentIdMap = new AttachedProperty<>();
+    private final AttachedProperty<ViewComponentBase<?>, Map<Long, Component>> componentNrMap = new AttachedProperty<>();
     private final AttachedProperty<ViewComponentBase<?>, Long> maxComponentNr = new AttachedProperty<>();
 
     @Inject
-    PageInfo pageInfo;
+    ComponentPage pageInfo;
 
     @Inject
     ComponentTemplateIndex componentTemplateIndex;
@@ -64,11 +63,13 @@ public class ComponentUtil implements ICoreUtil {
     ComponentRequestInfo componentRequestInfo;
 
     @Inject
-    @Named("pageScoped")
-    SimpleProxyScopeHandler pageScopeHandler;
+    PageScopeManager pageScopeHandler;
 
     @Inject
     PageReloadRequest reloadRequest;
+
+    @Inject
+    Injector injector;
 
     public long pageId() {
         return pageInfo.getPageId();
@@ -83,23 +84,24 @@ public class ComponentUtil implements ICoreUtil {
     }
 
     public Component getComponent(ViewComponentBase<?> view, long componentId) {
-        return componentIdMap.get(view).get(componentId);
+        return componentNrMap.get(view).get(componentId);
     }
 
     /**
-     * Set the component number of all children of the root component which do
-     * not have a number yet
+     * Render a component and all its children
      */
     public byte[] renderComponents(ViewComponentBase<?> view,
             Component rootComponent) {
+        // Set the component number of all children of the root component which
+        // do not have a number yet
         {
             // set the component IDs
             Map<Long, Component> map;
-            if (componentIdMap.isSet(view)) {
-                map = componentIdMap.get(view);
+            if (componentNrMap.isSet(view)) {
+                map = componentNrMap.get(view);
             } else {
                 map = new HashMap<>();
-                componentIdMap.set(view, map);
+                componentNrMap.set(view, map);
             }
             long nr;
             {
@@ -263,12 +265,7 @@ public class ComponentUtil implements ICoreUtil {
     public void runInPageScope(Runnable r) {
         PageHandle pageHandle = componentRequestInfo.getPageHandle();
         synchronized (pageHandle.lock) {
-            pageScopeHandler.enter(pageHandle.instances);
-            try {
-                r.run();
-            } finally {
-                pageScopeHandler.exit();
-            }
+            pageScopeHandler.inScopeDo(pageHandle.pageScopeState, r);
         }
     }
 

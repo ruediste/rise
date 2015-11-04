@@ -5,7 +5,7 @@ import javax.inject.Inject;
 import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.ComponentConfiguration;
 import com.github.ruediste.rise.component.ComponentUtil;
-import com.github.ruediste.rise.component.PageInfo;
+import com.github.ruediste.rise.component.ComponentPage;
 import com.github.ruediste.rise.core.ChainedRequestHandler;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
@@ -15,7 +15,7 @@ import com.github.ruediste.rise.core.web.HttpServletResponseCustomizer;
 public class ViewRenderer extends ChainedRequestHandler {
 
     @Inject
-    PageInfo pageInfo;
+    ComponentPage pageInfo;
 
     @Inject
     CoreRequestInfo coreRequestInfo;
@@ -32,7 +32,7 @@ public class ViewRenderer extends ChainedRequestHandler {
     @Override
     public void run(Runnable next) {
         next.run();
-        PageInfo pi = pageInfo;
+        ComponentPage pi = pageInfo;
         pi.setView(config.createView(pi.getController()));
         ViewComponentBase<?> view = pi.getView();
         coreRequestInfo.setActionResult(new ContentRenderResult(
