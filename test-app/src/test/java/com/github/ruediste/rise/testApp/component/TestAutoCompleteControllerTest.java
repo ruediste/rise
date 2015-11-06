@@ -7,19 +7,24 @@ import org.junit.Test;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 
+import com.github.ruediste.rise.test.elementObject.CAutoCompleteEO;
 import com.github.ruediste.rise.testApp.WebTest;
 import com.google.common.base.Predicate;
 
 public class TestAutoCompleteControllerTest extends WebTest {
 
+    private CAutoCompleteEO autoComplete;
+
     @Before
     public void before() {
         driver.navigate().to(url(go(TestAutoCompleteController.class).index()));
+        autoComplete = pageObject(CAutoCompleteEO.class,
+                byDataTestName("entry"));
     }
 
     @Test
     public void searchUnique_noSelect_push_itemPushed() {
-        driver.findElement(byDataTestName("entry")).sendKeys("Javasc");
+        autoComplete.setText("Javasc");
         driver.findElement(byDataTestName("push")).click();
         doWait().until(new Predicate<WebDriver>() {
             @Override
@@ -32,7 +37,7 @@ public class TestAutoCompleteControllerTest extends WebTest {
 
     @Test
     public void searchNonUnique_noSelect_push_noItemPushed() {
-        driver.findElement(byDataTestName("entry")).sendKeys("Java");
+        autoComplete.setText("Java");
         driver.findElement(byDataTestName("push")).click();
         doWait().until(new Predicate<WebDriver>() {
             @Override
@@ -45,15 +50,13 @@ public class TestAutoCompleteControllerTest extends WebTest {
 
     @Test
     public void searchNonUnique_select_push_itemPushed() {
-        driver.findElement(byDataTestName("entry")).sendKeys("Java");
+        autoComplete.setText("Java");
         doWait().ignoring(NoSuchElementException.class)
                 .until(new Predicate<WebDriver>() {
 
                     @Override
                     public boolean apply(WebDriver input) {
-                        driver.findElement(
-                                byDataTestName("rise_autocomplete_entry"))
-                                .findElement(byDataTestName("0")).click();
+                        autoComplete.choose("0");
                         return true;
                     }
                 });

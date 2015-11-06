@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -137,5 +138,21 @@ public interface TestUtil {
         WebElement reload = element.findElement(
                 By.xpath("ancestor::*[contains(@class,'rise_reload')]"));
         return reload;
+    }
+
+    default <T extends PageObject> T pageObject(Class<T> cls) {
+        return PageObjectFactory.createPageObject(internal_getDriver(), cls,
+                Optional.empty());
+    }
+
+    default <T extends PageObject> T pageObject(Class<T> cls,
+            Supplier<WebElement> rootElementFunction) {
+        return PageObjectFactory.createPageObject(internal_getDriver(), cls,
+                Optional.of(rootElementFunction));
+    }
+
+    default <T extends PageObject> T pageObject(Class<T> cls, By by) {
+        return PageObjectFactory.createPageObject(internal_getDriver(), cls,
+                Optional.of(() -> internal_getDriver().findElement(by)));
     }
 }
