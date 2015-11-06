@@ -132,6 +132,10 @@ public class AssetPipelineConfiguration {
      */
     public String assetBasePath = "assets/";
 
+    public String getAssetBasePath() {
+        return assetBasePath;
+    }
+
     public void initialize() {
 
     }
@@ -144,7 +148,11 @@ public class AssetPipelineConfiguration {
 
     public final Map<AssetType, Function<Asset, Asset>> defaultMinifiers = new HashMap<>();
 
-    public int defaultHashLength = 10;
+    private int defaultHashLength = 10;
+
+    public int getDefaultHashLength() {
+        return defaultHashLength;
+    }
 
     public Function<Asset, Asset> getDefaultMinifier(AssetType type) {
         return defaultMinifiers.get(type);

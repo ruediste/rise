@@ -27,6 +27,9 @@ public class AssetRequestMapperTest {
     Logger log;
 
     @InjectMocks
+    AssetHelper helper;
+
+    @InjectMocks
     AssetRequestMapper mapper;
 
     AssetPipelineConfiguration pipelineConfig;
@@ -34,7 +37,9 @@ public class AssetRequestMapperTest {
     @Before
     public void setup() {
         pipelineConfig = new AssetPipelineConfiguration();
+        mapper.helper = helper;
         mapper.pipelineConfiguration = pipelineConfig;
+        helper.pipelineConfiguration = pipelineConfig;
     }
 
     private static class A extends AssetBundle {

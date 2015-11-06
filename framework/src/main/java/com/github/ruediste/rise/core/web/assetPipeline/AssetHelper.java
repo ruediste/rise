@@ -43,7 +43,7 @@ public class AssetHelper {
     public String calculateAbsoluteLocation(String location,
             Class<?> bundleClass) {
         return calculateAbsoluteLocation(location,
-                pipelineConfiguration.assetBasePath, bundleClass);
+                pipelineConfiguration.getAssetBasePath(), bundleClass);
     }
 
     public Asset loadAssetFromClasspath(String path, Class<?> bundleClass) {
@@ -97,7 +97,7 @@ public class AssetHelper {
 
             @Override
             public String getName() {
-                String basePath = pipelineConfiguration.assetBasePath;
+                String basePath = pipelineConfiguration.getAssetBasePath();
                 if (!Strings.isNullOrEmpty(fullPath)
                         && fullPath.startsWith(basePath))
                     return fullPath.substring(basePath.length());
@@ -147,7 +147,7 @@ public class AssetHelper {
                 String hash = BaseEncoding.base64Url().encode(
                         Hashing.sha256().hashBytes(asset.getData()).asBytes());
                 sb.append(hash.substring(0, Integer.min(hash.length(),
-                        pipelineConfiguration.defaultHashLength)));
+                        pipelineConfiguration.getDefaultHashLength())));
             }
                 break;
             case "name": {

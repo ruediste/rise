@@ -21,13 +21,13 @@ import org.junit.Test;
 
 import com.github.ruediste.rise.nonReloadable.front.ApplicationEventQueue;
 import com.github.ruediste.rise.nonReloadable.front.LoggerModule;
-import com.github.ruediste.rise.nonReloadable.front.reload.DirectoryChangeWatcher;
-import com.github.ruediste.rise.nonReloadable.front.reload.FileChangeNotifier;
 import com.github.ruediste.rise.nonReloadable.front.reload.FileChangeNotifier.FileChangeTransaction;
 import com.github.ruediste.rise.test.TestHelpers;
+import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Salta;
 
+@SuppressWarnings("unchecked")
 public class FileChangeNotifierTest {
 
     private Path tempDir;
@@ -80,7 +80,8 @@ public class FileChangeNotifierTest {
         Thread.sleep(100);
         assertThat(transactions, hasSize(2));
         assertThat(transactions.get(0).addedFiles, hasSize(0));
-        assertThat(transactions.get(1).addedFiles, contains(testTxt));
+        assertThat(transactions.get(1).addedFiles,
+                contains(Pair.of(tempDir, testTxt)));
     }
 
     @Test
@@ -93,7 +94,8 @@ public class FileChangeNotifierTest {
         Files.delete(testTxt);
         Thread.sleep(100);
         assertThat(transactions, hasSize(1));
-        assertThat(transactions.get(0).removedFiles, contains(testTxt));
+        assertThat(transactions.get(0).removedFiles,
+                contains(Pair.of(tempDir, testTxt)));
     }
 
     @Test
@@ -112,6 +114,7 @@ public class FileChangeNotifierTest {
         Files.write(testTxt2, "Hello World".getBytes());
         Thread.sleep(100);
         assertThat(transactions, hasSize(1));
-        assertThat(transactions.get(0).modifiedFiles, contains(testTxt2));
+        assertThat(transactions.get(0).modifiedFiles,
+                contains(Pair.of(tempDir, testTxt2)));
     }
 }

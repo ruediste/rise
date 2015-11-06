@@ -1,31 +1,30 @@
 package com.github.ruediste.rise.testApp.security;
 
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import com.github.ruediste.rise.testApp.PageObject;
+import com.github.ruediste.rise.test.PageObject;
 
 public class LoginPO extends PageObject {
 
-    public LoginPO(WebDriver driver) {
-        super(driver);
+    @Override
+    protected void initialize() {
         assertPage(LoginController.class, x -> x.index(null));
     }
 
     public void setUserName(String value) {
-        WebElement element = driver.findElement(byDataTestName("userName"));
+        WebElement element = findElement(byDataTestName("userName"));
         element.clear();
         element.sendKeys(value);
     }
 
     public void setPassword(String value) {
-        WebElement element = driver.findElement(byDataTestName("password"));
+        WebElement element = findElement(byDataTestName("password"));
         element.clear();
         element.sendKeys(value);
     }
 
     public void login() {
-        driver.findElement(byDataTestName("login")).click();
+        findElement(byDataTestName("login")).click();
     }
 
     public void login(String user, String pwd) {

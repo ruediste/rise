@@ -17,6 +17,6 @@ public class SassCompilerTest {
         TestAsset sass = new TestAsset("foo.scss", "body { color: red;}");
         sass.location = "assets/res/sass.scss";
         Asset css = compiler.create("{name}.{extT}").apply(sass);
-        assertEquals("body{color:red}\n", css.getDataString());
+        assertEquals("body {\n  color: red;\n}\n" + "", css.getDataString());
     }
 }

@@ -32,7 +32,7 @@ public class ProgrammaticAuthenticationControllerTest extends WebTest {
     public void testAuthenticationRequired() throws Exception {
         deleteAllCookies();
         loadAuthRequired();
-        new LoginPO(driver).defaultLogin();
+        pageObject(LoginPO.class).defaultLogin();
         assertPage(ProgrammaticAuthenticationController.class,
                 x -> x.authenticationRequired());
     }
@@ -41,7 +41,7 @@ public class ProgrammaticAuthenticationControllerTest extends WebTest {
     public void testAuthenticationRequired_tokenTheft() throws Exception {
         deleteAllCookies();
         loadAuthRequired();
-        new LoginPO(driver).defaultLogin();
+        pageObject(LoginPO.class).defaultLogin();
 
         // modify stored token
         Cookie cookie = driver.manage()
@@ -66,7 +66,7 @@ public class ProgrammaticAuthenticationControllerTest extends WebTest {
         // perform normal login
         deleteAllCookies();
         loadAuthRequired();
-        new LoginPO(driver).defaultLogin();
+        pageObject(LoginPO.class).defaultLogin();
         assertPage(ProgrammaticAuthenticationController.class,
                 x -> x.authenticationRequired());
 
@@ -78,7 +78,7 @@ public class ProgrammaticAuthenticationControllerTest extends WebTest {
 
         deleteAllCookies();
         loadAuthRequired();
-        new LoginPO(driver);
+        pageObject(LoginPO.class);
     }
 
     private void deleteAllCookies() {
@@ -91,7 +91,7 @@ public class ProgrammaticAuthenticationControllerTest extends WebTest {
     }
 
     private void loadAuthRequired() {
-        startSession();
+        // startSession();
         driver.navigate().to(url(go(ProgrammaticAuthenticationController.class)
                 .authenticationRequired()));
     }

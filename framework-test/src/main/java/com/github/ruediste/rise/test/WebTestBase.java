@@ -13,9 +13,9 @@ import org.slf4j.Logger;
 
 import com.github.ruediste.remoteJUnit.client.Remote;
 import com.github.ruediste.remoteJUnit.client.RemoteTestRunner;
-import com.github.ruediste.remoteJUnit.codeRunner.ParentClassLoaderSupplier;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.IController;
+import com.github.ruediste.rise.core.RemotUnitTestInitializer;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.integration.RiseServer;
 import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
@@ -29,18 +29,6 @@ public abstract class WebTestBase implements TestUtil {
 
     @Inject
     IntegrationTestUtil util;
-
-    static class ServerParentClassLoaderSupplier
-            implements ParentClassLoaderSupplier {
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public ClassLoader getParentClassLoader() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-    }
 
     protected String url(ActionResult result) {
         Cookie sessionId = driver.manage().getCookieNamed("JSESSIONID");
@@ -73,6 +61,11 @@ public abstract class WebTestBase implements TestUtil {
      */
     private static Object serverTestCase;
 
+    /**
+     * If the test is executed remotely, the {@link RemotUnitTestInitializer}
+     * will have initialized the {@link InjectorsHolder}. Otherwise we start a
+     * server locally and run the tests locally, too.
+     */
     @Before
     public final void beforeWebTestBase() {
         boolean runWithSeparateServer = runWithSeparateServer();
@@ -112,7 +105,7 @@ public abstract class WebTestBase implements TestUtil {
             }
         }
 
-        if (util == null) {
+        if (util == null && injector != null) {
             injector.injectMembers(this);
             util.initialize(getBaseUrl());
         }
@@ -129,7 +122,7 @@ public abstract class WebTestBase implements TestUtil {
 
     /**
      * In case the remote server is not reachable, start the server and return
-     * the restartable injector
+     * it
      */
     protected abstract RiseServer startServer();
 

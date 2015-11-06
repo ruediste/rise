@@ -16,7 +16,6 @@ import java.lang.annotation.Target;
  * <p>
  * The annotation can be repeated. In this case, the wrapper annotation has to
  * be annotated with this meta annotation as well.
- * 
  * <p>
  * Sample:
  * 
@@ -28,6 +27,9 @@ import java.lang.annotation.Target;
  *     Rights value();
  * }
  * </pre>
+ * <p>
+ * The specified rights will be wrapped in {@link RequiresRightAnnotationRight}
+ * instances for authorization checking.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)

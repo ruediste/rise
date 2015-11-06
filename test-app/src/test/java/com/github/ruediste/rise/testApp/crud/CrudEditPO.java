@@ -5,17 +5,16 @@ import static java.util.stream.Collectors.toList;
 import java.util.List;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import com.github.ruediste.rise.crud.CrudControllerBase;
 import com.github.ruediste.rise.crud.DefaultCrudEditController;
-import com.github.ruediste.rise.testApp.PageObject;
+import com.github.ruediste.rise.test.PageObject;
 
 public class CrudEditPO extends PageObject {
 
-    protected CrudEditPO(WebDriver driver) {
-        super(driver);
+    @Override
+    protected void initialize() {
         assertPage(CrudControllerBase.class, x -> x.edit(null));
     }
 
@@ -50,7 +49,7 @@ public class CrudEditPO extends PageObject {
                 driver.findElement(By.cssSelector(dataTestSelector("properties")
                         + ".form-control[data-test-name=\"" + propertyTestName
                         + "\"]~* [data-test-name=\"pick\"]")));
-        return new CrudPickerPO(driver);
+        return pageObject(CrudPickerPO.class);
     }
 
     public CrudBrowserPO browse() {
@@ -58,7 +57,7 @@ public class CrudEditPO extends PageObject {
                 By.cssSelector(dataTestSelector("buttons") + dataTestSelector(
                         CrudControllerBase.class, x -> x.browse(null, null))))
                 .click();
-        return new CrudBrowserPO(driver);
+        return pageObject(CrudBrowserPO.class);
     }
 
     public CrudDisplayPO save() {
@@ -67,7 +66,7 @@ public class CrudEditPO extends PageObject {
                 By.cssSelector(dataTestSelector("buttons") + dataTestSelector(
                         DefaultCrudEditController.class, x -> x.save())))
                 .click();
-        return new CrudDisplayPO(driver);
+        return pageObject(CrudDisplayPO.class);
     }
 
     public CrudEditPO setProperty(String dataTestName, String value) {

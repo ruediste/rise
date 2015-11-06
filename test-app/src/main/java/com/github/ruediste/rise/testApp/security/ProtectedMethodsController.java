@@ -2,6 +2,7 @@ package com.github.ruediste.rise.testApp.security;
 
 import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.ActionResult;
+import com.github.ruediste.rise.core.security.urlSigning.UrlUnsigned;
 import com.github.ruediste.rise.testApp.RequiresRight;
 import com.github.ruediste.rise.testApp.Rights;
 import com.github.ruediste.rise.testApp.TestCanvas;
@@ -33,6 +34,7 @@ public class ProtectedMethodsController
 
     }
 
+    @UrlUnsigned
     public ActionResult index() {
         return view(IndexView.class, "");
     }

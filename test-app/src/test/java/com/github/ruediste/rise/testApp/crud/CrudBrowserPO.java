@@ -1,13 +1,11 @@
 package com.github.ruediste.rise.testApp.crud;
 
-import org.openqa.selenium.WebDriver;
-
 import com.github.ruediste.rise.crud.CrudControllerBase;
 
 public class CrudBrowserPO extends CrudListPO<CrudBrowserPO> {
 
-    public CrudBrowserPO(WebDriver driver) {
-        super(driver);
+    @Override
+    protected void initialize() {
         assertPage(CrudControllerBase.class, x -> x.browse(null, null));
     }
 
@@ -18,20 +16,20 @@ public class CrudBrowserPO extends CrudListPO<CrudBrowserPO> {
         getActions(rowIndex).findElement(
                 byDataTestName(CrudControllerBase.class, x -> x.display(null)))
                 .click();
-        return new CrudDisplayPO(driver);
+        return pageObject(CrudDisplayPO.class);
     }
 
     public CrudEditPO edit(int rowIndex) {
         getActions(rowIndex).findElement(
                 byDataTestName(CrudControllerBase.class, x -> x.edit(null)))
                 .click();
-        return new CrudEditPO(driver);
+        return pageObject(CrudEditPO.class);
     }
 
     public CrudDeletePO delete(int rowIndex) {
         getActions(rowIndex).findElement(
                 byDataTestName(CrudControllerBase.class, x -> x.delete(null)))
                 .click();
-        return new CrudDeletePO(driver);
+        return pageObject(CrudDeletePO.class);
     }
 }

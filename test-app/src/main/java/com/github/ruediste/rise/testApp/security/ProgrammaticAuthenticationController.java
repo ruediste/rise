@@ -6,6 +6,7 @@ import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.security.AuthenticationHolder;
+import com.github.ruediste.rise.core.security.urlSigning.UrlUnsigned;
 import com.github.ruediste.rise.testApp.TestCanvas;
 import com.github.ruediste.rise.testApp.TestPageTemplate;
 import com.github.ruediste.rise.testApp.ViewMvc;
@@ -34,10 +35,12 @@ public class ProgrammaticAuthenticationController
     @Inject
     AuthenticationHolder authenticationHolder;
 
+    @UrlUnsigned
     public ActionResult noAuthenticationRequired() {
         return view(View.class, "success");
     }
 
+    @UrlUnsigned
     public ActionResult authenticationRequired() {
         authenticationHolder.checkAutheticationPresetn();
         return view(View.class, "success");

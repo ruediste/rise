@@ -1,7 +1,7 @@
 package com.github.ruediste.rise.testApp.startupError;
 
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
 import com.github.ruediste.remoteJUnit.client.Remote;
 import com.github.ruediste.rise.integration.RiseServer;
@@ -13,8 +13,7 @@ public abstract class StartupErrorTest extends WebTestBase {
 
     @Override
     protected WebDriver createDriver() {
-        // HtmlUnitDriver driver = new HtmlUnitDriver(true);
-        FirefoxDriver driver = new FirefoxDriver();
+        HtmlUnitDriver driver = new HtmlUnitDriver(true);
         return driver;
     }
 

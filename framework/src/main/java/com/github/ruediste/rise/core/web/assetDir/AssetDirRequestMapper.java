@@ -108,7 +108,7 @@ public class AssetDirRequestMapper {
         for (AssetDir dir : dirs) {
             String location = dir.getLocation();
             String absoluteLocation = AssetHelper.calculateAbsoluteLocation(
-                    location, pipelineConfiguration.assetBasePath,
+                    location, pipelineConfiguration.getAssetBasePath(),
                     dir.getClass());
 
             String pathInfoPrefix = dir.getName();

@@ -19,7 +19,6 @@ import com.github.ruediste.rise.util.GenericEvent;
 import com.github.ruediste.salta.core.Binding;
 import com.github.ruediste.salta.core.CoreDependencyKey;
 import com.github.ruediste.salta.jsr330.MembersInjector;
-import com.github.ruediste.salta.standard.ScopeImpl.ScopeHandler;
 import com.github.ruediste.salta.standard.util.SimpleProxyScopeManager;
 import com.google.common.base.Preconditions;
 
@@ -99,7 +98,8 @@ public class HttpScopeManager {
         }
     }
 
-    static final class SessionScopeManager implements ScopeHandler {
+    static final class SessionScopeManager implements
+            com.github.ruediste.salta.standard.ScopeImpl.ScopeHandler {
 
         @Inject
         SessionScopeEvents scopeEvents;

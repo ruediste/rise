@@ -1,8 +1,11 @@
 package com.github.ruediste.rise.test;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -45,5 +48,18 @@ public class PageObject implements TestUtil {
     @Override
     public WebDriver internal_getDriver() {
         return driver;
+    }
+
+    private SearchContext getSearchContext() {
+        return rootElementSupplier.map(x -> (SearchContext) x.get())
+                .orElse(driver);
+    }
+
+    protected WebElement findElement(By by) {
+        return by.findElement(getSearchContext());
+    }
+
+    protected List<WebElement> findElements(By by) {
+        return by.findElements(getSearchContext());
     }
 }

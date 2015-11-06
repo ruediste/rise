@@ -48,7 +48,7 @@ public class TestCrudControllerTest extends WebTest {
 
     @Test
     public void browseRightColumns() {
-        CrudBrowserPO browser = new CrudBrowserPO(driver);
+        CrudBrowserPO browser = pageObject(CrudBrowserPO.class);
         assertThat(browser.getColumnTestNames(),
                 contains("stringValue", "actions"));
     }
@@ -64,7 +64,7 @@ public class TestCrudControllerTest extends WebTest {
      * Search for all {@link TestCrudEntityA}s
      */
     private CrudBrowserPO searchEntity() {
-        CrudBrowserPO browser = new CrudBrowserPO(driver);
+        CrudBrowserPO browser = pageObject(CrudBrowserPO.class);
         browser.setFilter(
                 dataTestName(TestCrudEntityA.class, x -> x.getStringValue()),
                 a.getStringValue());

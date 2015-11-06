@@ -5,16 +5,11 @@ import static java.util.stream.Collectors.toList;
 import java.util.List;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import com.github.ruediste.rise.testApp.PageObject;
+import com.github.ruediste.rise.test.PageObject;
 
 public class CrudListPO<TSelf extends CrudListPO<TSelf>> extends PageObject {
-
-    public CrudListPO(WebDriver driver) {
-        super(driver);
-    }
 
     public TSelf search() {
         waitForRefresh(driver.findElement(byDataTestName("search")),

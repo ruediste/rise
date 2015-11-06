@@ -94,7 +94,7 @@ public abstract class AssetBundle {
      */
     String calculateAbsoluteLocation(String location) {
         return AssetHelper.calculateAbsoluteLocation(location,
-                pipelineConfiguration.assetBasePath, getClass());
+                pipelineConfiguration.getAssetBasePath(), getClass());
     }
 
     Asset loadAssetFromClasspath(String path) {

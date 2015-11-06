@@ -21,6 +21,7 @@ import com.github.ruediste.rise.core.security.authentication.InMemoryAuthenticat
 import com.github.ruediste.rise.core.security.authorization.AuthorizationFailure;
 import com.github.ruediste.rise.core.security.authorization.AuthorizationManager;
 import com.github.ruediste.rise.core.security.authorization.AuthorizationResult;
+import com.github.ruediste.rise.core.security.authorization.RequiresRightAnnotationRight;
 import com.github.ruediste.rise.core.security.authorization.Right;
 import com.github.ruediste.rise.core.security.web.rememberMe.InMemoryRememberMeTokenDao;
 import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeAuthenticationProvider;
@@ -125,11 +126,16 @@ public class TestRestartableApplication extends RestartableApplicationBase {
         authorizationManager
                 .setAuthorizationPerformer((Set<? extends Right> rights,
                         Optional<AuthenticationSuccess> authentication) -> {
-                    for (Object right : rights) {
-                        if (!Objects.equals(Rights.ALLOWED, right))
-                            return AuthorizationResult
-                                    .failure(new AuthorizationFailure(
-                                            "right was not ALLOWED"));
+                    for (Right right : rights) {
+                        if (right instanceof RequiresRightAnnotationRight) {
+                            Object value = ((RequiresRightAnnotationRight) right)
+                                    .getValue();
+                            if (Objects.equals(Rights.ALLOWED, value))
+                                continue;
+                        }
+                        return AuthorizationResult
+                                .failure(new AuthorizationFailure(
+                                        "right was not ALLOWED"));
                     }
                     return AuthorizationResult.authorized();
                 });
