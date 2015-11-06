@@ -40,6 +40,11 @@ public class CAutoComplete<Titem, Tid>
          * Load the item for a an id.
          */
         Titem load(Tid id);
+
+        /**
+         * Get the test name for the item, used to identify the item in tests
+         */
+        String getTestName(Titem item);
     }
 
     private Titem chosenItem;

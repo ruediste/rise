@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.component.components.CAutoComplete.CAutoCompleteParameters;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
 import com.github.ruediste.rise.core.web.HttpRenderResult;
@@ -101,6 +102,9 @@ public class CAutoCompleteTemplate
     @Inject
     JsonRenderResultFactory resultFactory;
 
+    @Inject
+    CoreConfiguration config;
+
     private <T> HttpRenderResult search(CAutoComplete<T, ?> component) {
         CAutoCompleteParameters<T, ?> parameters = component.getParameters();
         List<T> items = parameters
@@ -109,6 +113,9 @@ public class CAutoCompleteTemplate
             Map<String, Object> result = new HashMap<>();
             result.put("label", parameters.getSuggestion(i));
             result.put("value", parameters.getValue(i));
+            if (config.isRenderTestName()) {
+                result.put("testName", parameters.getTestName(i));
+            }
             result.put("id",
                     BaseEncoding.base64()
                             .encode(signatureHelper.serializeSigned(

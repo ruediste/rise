@@ -55,9 +55,15 @@ public class TestAutoCompleteController extends ControllerComponent {
                         public Entry load(Integer id) {
                             return controller.getEntryById(id);
                         }
+
+                        @Override
+                        public String getTestName(Entry item) {
+                            return String.valueOf(item.getId());
+                        }
                     }).bindItem(() -> controller.data().getEntry()))
                     .add(new CButton(controller, x -> x.pushPull()))
                     .add(new CButton(controller, x -> x.push()))
+                    .add(new CButton(controller, x -> x.pull()))
                     .add(toComponentDirect(html -> html.write("Chosen Entry: ")
                             .span().TEST_NAME("chosenEntry").content(String
                                     .valueOf(controller.data().getEntry()))));
@@ -108,6 +114,8 @@ public class TestAutoCompleteController extends ControllerComponent {
         availableEntries.add(new Entry(1, "JavaScript"));
         availableEntries.add(new Entry(2, "Ruby"));
         availableEntries.add(new Entry(3, "C++"));
+        availableEntries
+                .add(new Entry(4, "<script> alert(\"boom\") </script>"));
     }
 
     public Entry getEntryById(int id) {
@@ -118,6 +126,11 @@ public class TestAutoCompleteController extends ControllerComponent {
     @Labeled
     public void pushPull() {
         data.pushDown();
+        data.pullUp();
+    }
+
+    @Labeled
+    public void pull() {
         data.pullUp();
     }
 

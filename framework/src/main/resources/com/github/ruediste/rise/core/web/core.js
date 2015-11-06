@@ -1,12 +1,12 @@
 var rise = (function() {
-	var getComponentNr = function(element){
-		return  element.data("rise-component-nr");
+	var getComponentNr = function(element) {
+		return element.data("rise-component-nr");
 	}
 	var generateKey = function(element, key) {
-		return "c_" +getComponentNr(element) + "_" + key;
+		return "c_" + getComponentNr(element) + "_" + key;
 	};
 
-	var getPageNr = function(){
+	var getPageNr = function() {
 		return $("body").data("rise-page-nr");
 	}
 	/**
@@ -51,7 +51,8 @@ var rise = (function() {
 					"nr" : getPageNr()
 				},
 				complete : function() {
-					window.setTimeout(sendHearbeats, $("body").data("rise-heartbeat-interval"));
+					window.setTimeout(sendHearbeats, $("body").data(
+							"rise-heartbeat-interval"));
 				}
 			});
 		}
@@ -87,9 +88,8 @@ var rise = (function() {
 		// perform request
 		$.ajax({
 			method : "POST",
-			url : $("body").data("rise-reload-url") + "?page="
-					+ getPageNr() + "&nr="
-					+ getComponentNr(receiver),
+			url : $("body").data("rise-reload-url") + "?page=" + getPageNr()
+					+ "&nr=" + getComponentNr(receiver),
 			data : JSON.stringify(data),
 			contentType : "text/json; charset=UTF-8",
 			processData : false,
@@ -136,8 +136,6 @@ var rise = (function() {
 		onReload.fire($(document));
 	});
 
-	
-	
 	return {
 		onReload : onReload,
 		generateKey : generateKey
@@ -145,11 +143,31 @@ var rise = (function() {
 
 })();
 
+$.widget("rise.riseAutocomplete", $.ui.autocomplete, {
+	_renderItem : function(ul, item) {
+		var result = $("<li>");
+		if (item.testName)
+			result.attr("data-test-name", item.testName);
+		result.append($("<a>").text(item.label));
+		result.appendTo(ul);
+		return result;
+	},
+	_renderMenu : function(ul, items) {
+		var that = this;
+		if (this.element.attr("data-test-name"))
+			$(ul).attr("data-test-name",
+					"rise_autocomplete_" + this.element.attr("data-test-name"))
+		$.each(items, function(index, item) {
+			that._renderItemData(ul, item);
+		});
+	}
+});
+
 // register autocomplete
 rise.onReload.add(function() {
 	$(".rise_autocomplete").each(function(idx, element) {
 		element = $(element);
-		element.autocomplete({
+		element.riseAutocomplete({
 			source : element.data("riseIntSource"),
 			change : function(event, ui) {
 				if (ui.item)
