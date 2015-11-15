@@ -82,7 +82,7 @@ public class MemberOrderIndex {
      * appearance in the class file (which should match source code order)
      */
     public List<Member> orderMembers(Class<?> declaringClass,
-            Collection<? extends Member> members) {
+            Collection<Member> members) {
 
         Map<String, Integer> map = classes
                 .get(Type.getInternalName(declaringClass));
