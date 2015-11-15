@@ -10,6 +10,13 @@
 	<name>rise-sample-app</name>
 	<description>sample application</description>
 
+	<pluginRepositories>
+		<pluginRepository>
+			<id>ossrhsnapshots-plugins</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</pluginRepository>
+	</pluginRepositories>
+	
 	<dependencies>
 		<dependency>
 			<groupId>com.github.ruediste.rise</groupId>
