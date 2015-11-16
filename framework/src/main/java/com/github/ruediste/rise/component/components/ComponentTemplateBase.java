@@ -71,6 +71,11 @@ public abstract class ComponentTemplateBase<T extends Component>
         return util.getParameterValue(component, key);
     }
 
+    public Optional<Object> getParameterObject(Component component,
+            String key) {
+        return util.getParameterObject(component, key);
+    }
+
     public boolean isParameterDefined(Component component, String key) {
         return util.isParameterDefined(component, key);
     }

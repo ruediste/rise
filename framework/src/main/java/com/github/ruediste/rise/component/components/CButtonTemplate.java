@@ -8,8 +8,8 @@ import javax.inject.Inject;
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.rendersnakeXT.canvas.BootstrapCanvasCss;
 import com.github.ruediste.rendersnakeXT.canvas.BootstrapCanvasCss.B_ButtonArgs;
-import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.ComponentPage;
+import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.integration.IconUtil;
@@ -86,7 +86,7 @@ public class CButtonTemplate extends BootstrapComponentTemplateBase<CButton> {
     public void raiseEvents(CButton component) {
         if (component.isDisabled())
             return;
-        if (util.isParameterDefined(component, "riseIntClicked")
+        if (util.isParameterDefined(component, "clicked")
                 && component.getHandler() != null) {
             component.getHandler().run();
         }
