@@ -38,7 +38,8 @@ public class AssetHelper {
 
     /**
      * Map the path of an asset to the full resouce path to be used to load the
-     * asset from the classpath. Rules see {@link #locations(String...)}
+     * asset from the classpath. Rules see
+     * {@link AssetBundle#locations(String...)}
      */
     public String calculateAbsoluteLocation(String location,
             Class<?> bundleClass) {
@@ -116,7 +117,8 @@ public class AssetHelper {
 
     /**
      * Map the path of an asset to the full resouce path to be used to load the
-     * asset from the classpath. Rules see {@link #locations(String...)}
+     * asset from the classpath. Rules see
+     * {@link AssetBundle#locations(String...)}
      */
     public static String calculateAbsoluteLocation(String location,
             String basePath, Class<?> cls) {
@@ -130,6 +132,11 @@ public class AssetHelper {
         return basePath + location;
     }
 
+    /**
+     * resolve a name template
+     * 
+     * @see AssetGroup#name(String)
+     */
     public String resolveNameTemplate(Asset asset, String template) {
         String name = asset.getName();
         Pattern p = Pattern.compile(

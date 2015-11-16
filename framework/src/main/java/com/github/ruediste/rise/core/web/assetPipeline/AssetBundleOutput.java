@@ -5,9 +5,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * Collects {@link Asset} from an {@link AssetBundle}. The
- * {@link AssetRenderUtil} can be used to reference the assets of an output from
- * a page.
+ * Collects {@link Asset} from an {@link AssetBundle}. The {@link AssetHelper}
+ * can be used to reference the assets of an output from a page.
  */
 public class AssetBundleOutput extends AssetGroup implements Consumer<Asset> {
 

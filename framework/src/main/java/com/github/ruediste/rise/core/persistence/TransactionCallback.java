@@ -4,7 +4,7 @@ import com.github.ruediste.rise.core.persistence.em.EntityManagerSet;
 
 /**
  * Callback for transactional code. Typically used as argument to
- * {@link TransactionTemplate#do}
+ * {@link TransactionTemplate#execute(TransactionCallback)}
  */
 public interface TransactionCallback<T> {
 

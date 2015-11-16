@@ -9,8 +9,7 @@ import com.google.common.collect.Iterables;
  * relation using {@link ChildRelation}s.
  *
  * <p>
- * <img src="doc-files/childRelation.png" />
- * </p>
+ * <img src="doc-files/childRelation.png" alt="class hierarchy overview">
  *
  * @param <TSelf>
  *            type of this component

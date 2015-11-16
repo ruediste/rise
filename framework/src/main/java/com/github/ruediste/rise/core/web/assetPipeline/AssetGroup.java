@@ -358,8 +358,6 @@ public class AssetGroup {
 
     /**
      * Asset group where the data in the assets get's cached.
-     * 
-     * @see AssetGroup#eager()
      */
     public AssetGroup cache() {
         return new AssetGroup(bundle,

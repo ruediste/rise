@@ -22,8 +22,7 @@ public interface Asset {
      * If the returned string starts with a forward slash (/) the result is used
      * as is. Otherwise the value of
      * {@link AssetPipelineConfiguration#assetPathInfoPrefix} is prepended. This
-     * can be achieved using
-     * {@link AssetPipelineHelper#getAssetPathInfo(String)}
+     * can be achieved using {@link AssetHelper#getAssetPathInfo(String)}
      */
     String getName();
 

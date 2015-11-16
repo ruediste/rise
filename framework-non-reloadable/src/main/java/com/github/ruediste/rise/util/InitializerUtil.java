@@ -1,10 +1,14 @@
 package com.github.ruediste.rise.util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
-import com.github.ruediste.salta.jsr330.*;
+import com.github.ruediste.salta.jsr330.AbstractModule;
+import com.github.ruediste.salta.jsr330.Injector;
+import com.github.ruediste.salta.jsr330.JSR330InjectorConfiguration;
 import com.github.ruediste.salta.standard.config.StandardInjectorConfiguration;
 import com.google.common.collect.Lists;
 
@@ -29,7 +33,6 @@ import com.google.common.collect.Lists;
  * order they are registered. If a single class is registered multiple times,
  * the last registration determines when the corresponding initializer is
  * executed.
- * </p>
  */
 public class InitializerUtil {
 

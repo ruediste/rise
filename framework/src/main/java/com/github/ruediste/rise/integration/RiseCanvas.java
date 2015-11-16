@@ -10,6 +10,7 @@ import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
+import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.util.MethodInvocation;
 import com.github.ruediste1.i18n.lString.LString;
 
@@ -98,7 +99,7 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
      * Add a "data-test-name" attribute to the current element. The name can be
      * used to locate elements in selenium tests. It is only written if
      * {@link CoreConfiguration#isRenderTestName()}, which is by default the
-     * case in all stages except {@link ProjectStage#PRODUCTION}.
+     * case in all stages except {@link ApplicationStage#PRODUCTION}.
      * 
      * @param name
      *            test name to render. If null or empty, the attribute will be

@@ -47,6 +47,9 @@ public abstract class ComponentBase<TSelf extends AttachedPropertyBearer>
         return self;
     }
 
+    /**
+     * Establish an explicit binding
+     */
     public <T> TSelf bind(Supplier<T> bindingGroupAccessor,
             BiConsumer<TSelf, T> pullUp, BiConsumer<TSelf, T> pushDown) {
 

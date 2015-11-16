@@ -221,8 +221,6 @@ public class CssProcessor {
     /**
      * Relocate the given style sheets without inlining imports
      * 
-     * @param styleSheets
-     *            the style sheets to relocate
      * @param nameTemplate
      *            pattern to use as style sheet name (see
      *            {@link AssetGroup#name(String)})
@@ -362,34 +360,33 @@ public class CssProcessor {
 
     private String getTargetStyleLocation(String nameTemplate,
             String styleLocation) {
-        String targetStyleLocation = helper
-                .resolveNameTemplate(new Asset() {
+        String targetStyleLocation = helper.resolveNameTemplate(new Asset() {
 
-                    @Override
-                    public String getName() {
-                        return styleLocation;
-                    }
+            @Override
+            public String getName() {
+                return styleLocation;
+            }
 
-                    @Override
-                    public byte[] getData() {
-                        return new byte[] {};
-                    }
+            @Override
+            public byte[] getData() {
+                return new byte[] {};
+            }
 
-                    @Override
-                    public String getContentType() {
-                        return config.getDefaultContentType(getAssetType());
-                    }
+            @Override
+            public String getContentType() {
+                return config.getDefaultContentType(getAssetType());
+            }
 
-                    @Override
-                    public AssetType getAssetType() {
-                        return DefaultAssetTypes.CSS;
-                    }
+            @Override
+            public AssetType getAssetType() {
+                return DefaultAssetTypes.CSS;
+            }
 
-                    @Override
-                    public String getClasspathLocation() {
-                        return null;
-                    }
-                }, nameTemplate);
+            @Override
+            public String getClasspathLocation() {
+                return null;
+            }
+        }, nameTemplate);
         return targetStyleLocation;
     }
 

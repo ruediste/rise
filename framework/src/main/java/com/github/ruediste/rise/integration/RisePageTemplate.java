@@ -9,8 +9,8 @@ import javax.inject.Inject;
 import com.github.ruediste.rendersnakeXT.canvas.Html5Canvas;
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.component.ComponentConfiguration;
-import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.component.ComponentPage;
+import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
@@ -129,7 +129,7 @@ public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>>
      *            otherwise to the top of the page
      * @param urlPoducer
      *            produces the link to
-     *            {@link StageRibbonControllerBase#index(String)}
+     *            {@link StageRibbonControllerBase#index(UrlSpec)}
      */
     public Renderable<TCanvas> stageRibbon(boolean isFixed,
             Function<UrlSpec, ActionResult> urlPoducer) {

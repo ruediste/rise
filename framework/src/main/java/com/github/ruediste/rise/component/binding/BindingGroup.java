@@ -8,15 +8,15 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.stream.Stream;
 
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
-
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
 import com.github.ruediste.rise.component.tree.RelationsComponent;
 import com.google.common.base.Defaults;
 import com.google.common.reflect.TypeToken;
+
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
 
 /**
  * A group of bindings managed by a controller.
@@ -28,10 +28,10 @@ import com.google.common.reflect.TypeToken;
  * <p>
  * The binding is triggered explicitly. The controller instantiates a
  * {@link BindingGroup} and references it in an instance variable. If the data
- * is ready, the controller uses the {@link #pullUp(Object)} method to fill the
+ * is ready, the controller uses the {@link #pullUp()} method to fill the
  * components with data. To retrieve the data from the components, it uses
- * {@link #pushDown(Object)}. To the view the binding group is exposed via a
- * function returning {@link #proxy()}.
+ * {@link #pushDown()}. To the view the binding group is exposed via a function
+ * returning {@link #proxy()}.
  * </p>
  *
  * <p>
@@ -63,16 +63,16 @@ import com.google.common.reflect.TypeToken;
  * </p>
  *
  * <p>
- * <strong> One Way Bindings </strong><br/>
+ * <strong> One Way Bindings </strong><br>
  * Using {@link RelationsComponent#bindOneWay(java.util.function.Consumer)} the
  * check if a binding could be two way is suppressed and the binding always
  * takes the direction as specified by the lambda expression.
  * </p>
  *
  * <p>
- * <strong> Explicit Bindings </strong><br/>
+ * <strong> Explicit Bindings </strong><br>
  * Using
- * {@link RelationsComponent#bind(java.util.function.Consumer, java.util.function.Consumer)}
+ * {@link RelationsComponent#bind(java.util.function.Supplier, java.util.function.BiConsumer, java.util.function.BiConsumer)}
  * an explicit binding is established. The two lambda expressions are always
  * invoked with the real objects. This can be used to easily define
  * one-of-a-kind transformations in place. Either expression can be null, in
@@ -80,7 +80,7 @@ import com.google.common.reflect.TypeToken;
  * </p>
  *
  * <p>
- * <strong> Transformers </strong><br/>
+ * <strong> Transformers </strong><br>
  * Transformers allow a value to be transformed. When a lambda expression is
  * executed to establish a binding, the usage of any transformer is recorded and
  * integrated in the binding. Transformers can be one-way (implementing only

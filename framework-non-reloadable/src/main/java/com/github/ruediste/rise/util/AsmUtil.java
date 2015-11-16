@@ -168,9 +168,6 @@ public class AsmUtil {
     /**
      * Return the annotations present by type. Repeated annotations are taken
      * into account
-     * 
-     * @param repeatedTypeInternalName
-     *            name of the repeat annoation. May be null
      */
     public static List<AnnotationNode> getAnnotationsByType(
             List<AnnotationNode> annotations,

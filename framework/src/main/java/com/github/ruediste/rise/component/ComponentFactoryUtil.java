@@ -70,7 +70,7 @@ public class ComponentFactoryUtil {
     }
 
     /**
-     * @see ComponentFactory#toSubView(Supplier)
+     * @see ComponentFactory#toSubView(Supplier, Function)
      */
     public <T> Component toSubView(Supplier<T> bindingGroupAccessor,
             Function<T, Object> controllerAccessor) {

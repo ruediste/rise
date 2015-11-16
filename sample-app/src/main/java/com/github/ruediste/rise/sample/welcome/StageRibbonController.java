@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.persistence.Updating;
-import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.core.web.RedirectRenderResult;
 import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste.rise.integration.RisePageTemplate;
@@ -102,6 +101,7 @@ public class StageRibbonController
         //@formatter:on
     }
 
+    @Override
     public ActionResult index(UrlSpec returnUrl) {
         Data data = new Data();
         data.returnUrl = returnUrl;

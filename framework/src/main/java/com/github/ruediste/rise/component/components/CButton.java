@@ -10,8 +10,9 @@ import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
 
 /**
- * A button triggering a handler on the server. For a direct link, use
- * {@link CButtonLink}
+ * A button triggering a handler on the server. If a handler is specified, it
+ * will be called using a page reload. If a target is present, the button will
+ * work as link.
  * 
  * <p>
  * If no children are present, the handler will be used to determine the invoked

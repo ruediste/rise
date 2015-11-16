@@ -94,7 +94,7 @@ public class CoreConfiguration {
     public final Deque<RequestParser> requestParsers = new LinkedList<>();
 
     /**
-     * This is the request parser using the {@link #PathInfoIndex} to parse a
+     * This is the request parser using the {@link PathInfoIndex} to parse a
      * request. initially added to {@link #requestParsers}
      */
     public RequestParser pathInfoIndexRequestParser;

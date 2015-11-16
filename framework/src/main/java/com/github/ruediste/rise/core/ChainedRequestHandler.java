@@ -8,10 +8,9 @@ import javax.inject.Provider;
 import javax.servlet.http.HttpServletResponse;
 
 import com.github.ruediste.rise.core.web.ActionResultRenderer;
+import com.github.ruediste.rise.mvc.MvcConfiguration;
 import com.github.ruediste.rise.mvc.MvcControllerInvoker;
 import com.github.ruediste.rise.mvc.MvcPersistenceHandler;
-import com.github.ruediste.rise.mvc.MvcConfiguration;
-import com.github.ruediste.rise.mvc.MvcRequestInfo;
 import com.github.ruediste.rise.mvc.MvcRequestMapperImpl;
 import com.github.ruediste.rise.util.ChainedRunnable;
 
@@ -64,7 +63,7 @@ public abstract class ChainedRequestHandler extends ChainedRunnable {
         public Supplier<RequestMapper> mapperSupplier;
 
         /**
-         * Handler rendering {@link MvcRequestInfo#getActionResult()} the the
+         * Handler rendering {@link CoreRequestInfo#getActionResult()} to the
          * {@link HttpServletResponse}
          */
         public Supplier<ChainedRequestHandler> actionResultRendererSupplier;

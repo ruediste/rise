@@ -35,7 +35,8 @@ import net.sf.cglib.proxy.Enhancer;
  * {@link #runInEachSessionScope(Runnable)}) and destroy events ( see
  * {@link SessionScopeEvents} )
  * <p>
- * <img src="doc-files/sessionScopeLifeCycle.png"/>
+ * <img src="doc-files/sessionScopeLifeCycle.png" alt=
+ * "class diagram of the life cycle handling">
  * <p>
  * When a session is destroyed,
  * {@link SessionScopeData#valueUnbound(HttpSessionBindingEvent)} is invoked,
