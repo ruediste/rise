@@ -124,9 +124,14 @@ public class CDataGrid<T> extends ComponentBase<CDataGrid<T>> {
         setItems(Arrays.asList(items));
     }
 
-    public void setItems(List<T> items) {
+    public CDataGrid<T> setItems(List<T> items) {
         itemsDirty = true;
         this.items = new ArrayList<>(items);
+        return this;
+    }
+
+    public CDataGrid<T> bindItems(Supplier<List<T>> itemsSupplier) {
+        return bindTestNameProperty(c -> c.setItems(itemsSupplier.get()));
     }
 
     public CDataGrid<T> setColumns(

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ComponentBase;
@@ -53,6 +54,10 @@ public class CSortable<T> extends ComponentBase<CSortable<T>> {
 
     public List<T> getItems() {
         return items;
+    }
+
+    public CSortable<T> bindItems(Supplier<List<T>> itemsSupplier) {
+        return bindTestNameProperty(c -> c.setItems(itemsSupplier.get()));
     }
 
     public CSortable<T> setItems(List<T> items) {

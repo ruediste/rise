@@ -76,6 +76,19 @@ public abstract class ComponentBase<TSelf extends AttachedPropertyBearer>
     }
 
     /**
+     * Bind a property of this component. In addition, the {@link #TEST_NAME()}
+     * is set to the name of the model property.
+     * 
+     * @see #bind(Consumer)
+     */
+    public TSelf bindTestNameProperty(Consumer<TSelf> binder) {
+        TSelf self = self();
+        TEST_NAME(BindingUtil.bind(self, binder).getB().modelPath
+                .getAccessedProperty().getName());
+        return self;
+    }
+
+    /**
      * Set the "data-test-name" attribute to for this component. It will
      * generally be added to the outermost HTML-element rendered for this
      * component by the template.

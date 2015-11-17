@@ -22,18 +22,22 @@ public class TestSortableController extends ControllerComponent {
         @Override
         protected Component createComponents() {
             return new CPage()
-                    .add(new CSortable<String>()
-                            .bind(c -> c.setItems(controller.data().getItems()))
-                            .setChildComponentFactory(
-                                    x -> toComponent(html -> html.write(x))))
+                    .add(new CSortable<String>().CLASS("list-group")
+                            .bindItems(() -> controller.data().getItems())
+                            .setChildComponentFactory(x -> toComponent(
+                                    html -> html.li().CLASS("list-group-item")
+                                            .TEST_NAME(x).write(x)._li())))
                     .add(new CButton(controller, x -> x.pullUp()))
                     .add(new CButton(controller, x -> x.pushDown()))
-                    .add(toComponentDirect(html -> html.write(
-                            String.valueOf(controller.data.get().items))));
+                    .add(toComponentDirect(
+                            html -> html.span().TEST_NAME("controllerStatus")
+                                    .write(String.valueOf(
+                                            controller.data.get().items))
+                            ._span()));
         }
     }
 
-    static class Data {
+    public static class Data {
         private List<String> items = new ArrayList<>();
 
         public List<String> getItems() {

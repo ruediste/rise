@@ -61,23 +61,12 @@ var rise = (function() {
 	var onReload = $.Callbacks();
 
 	var extractData = function(data, element) {
-		var send = element.data("riseSend");
-		if (send !== undefined) {
-			send.split(" ").forEach(function(e) {
-				var value = element.data(e);
-				if (value)
-					data.push({
-						name : generateKey(element, e),
-						value : value
-					});
-			});
+		
+		var extractFunc = element.data("riseExtractData");
+		if (extractFunc !== undefined) {
+			extractFunc.call(element, data);
 		}
 
-		var extractFunc=element.data("riseExtractData");
-		if (extractFunc !== undefined){
-			extractFunc.call(element,data);
-		}
-		
 		element.children().each(function(idx, e) {
 			extractData(data, $(e));
 		});
@@ -128,7 +117,7 @@ var rise = (function() {
 
 		// clicks on rise_buttons trigger a view reload
 		$(document).on("click", ".rise_button", function() {
-			$(this).data("rise-button-clicked",true);
+			$(this).data("rise-button-clicked", true);
 			$(this).trigger("rise_viewReload");
 			return false;
 		});
@@ -143,8 +132,8 @@ var rise = (function() {
 	return {
 		onReload : onReload,
 		generateKey : generateKey,
-		setExtractData : function(element, func){
-			$(element).data("riseExtractData",func);
+		setExtractData : function(element, func) {
+			$(element).data("riseExtractData", func);
 		}
 	};
 
@@ -172,7 +161,7 @@ $.widget("rise.riseAutocomplete", $.ui.autocomplete, {
 
 // register autocomplete
 rise.onReload.add(function() {
-	$(".rise_button").each(function(idx,element){
+	$(".rise_button").each(function(idx, element) {
 		rise.setExtractData(element, function(data) {
 			if (this.data("rise-button-clicked"))
 				data.push({
@@ -181,7 +170,7 @@ rise.onReload.add(function() {
 				})
 		});
 	});
-	
+
 	$(".rise_autocomplete").each(function(idx, element) {
 		element = $(element);
 		element.riseAutocomplete({
@@ -194,16 +183,20 @@ rise.onReload.add(function() {
 			}
 		});
 	});
-	
+
 	$(".rise_sortable").each(function(idx, element) {
 		element = $(element);
+		element.children().each(function(childIdx, child) {
+			$(child).attr("data-rise-sortable-index", childIdx);
+		});
 		element.sortable();
 		rise.setExtractData(element, function(data) {
 			data.push({
 				name : rise.generateKey(this, "order"),
-				value : this.sortable("toArray",{attribute:"data-rise-sortable-index"}).toString() 
+				value : this.sortable("toArray", {
+					attribute : "data-rise-sortable-index"
+				}).toString()
 			})
 		});
 	});
 });
-

@@ -10,7 +10,6 @@ import com.github.ruediste.rise.test.WebTestBase;
 import com.github.ruediste.rise.testApp.app.TestAppFrontServlet;
 import com.github.ruediste.rise.testApp.app.TestRestartableApplication;
 import com.github.ruediste.rise.testApp.security.LoginController;
-import com.github.ruediste.rise.testApp.security.LoginPO;
 
 public abstract class WebTest extends WebTestBase {
 
@@ -31,8 +30,8 @@ public abstract class WebTest extends WebTestBase {
 
     @Before
     final public void beforeWebTest() {
-        startSession();
-        pageObject(LoginPO.class).defaultLogin();
+        // startSession();
+        // pageObject(LoginPO.class).defaultLogin();
     }
 
     @Override
