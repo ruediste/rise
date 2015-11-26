@@ -16,7 +16,6 @@ import com.github.ruediste.rise.component.components.CAutoComplete.CAutoComplete
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
-import com.github.ruediste.rise.core.web.CoreAssetBundle;
 import com.github.ruediste.rise.core.web.HttpRenderResult;
 import com.github.ruediste.rise.core.web.JsonRenderResultFactory;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
@@ -53,15 +52,10 @@ public class CAutoCompleteTemplate
 
     public <T> void doRenderImpl(CAutoComplete<T, ?> component,
             BootstrapRiseCanvas<?> html) {
-        String value;
-        Optional<String> itemStr = Optional.empty();
         html.input().TYPE("text").BformControl().CLASS("rise_autocomplete")
-                .TEST_NAME(component.TEST_NAME())
+                .rCOMPONENT_ATTRIBUTES(component)
                 .NAME(util.getKey(component, "text"))
-                .ID(util.getComponentId(component))
                 .DATA("rise-int-source", getAjaxUrl(component))
-                .DATA(CoreAssetBundle.componentAttributeNr,
-                        String.valueOf(util.getComponentNr(component)))
                 .DATA("rise-send", "riseIntChosenItem");
 
         if (component.isItemChosen()) {

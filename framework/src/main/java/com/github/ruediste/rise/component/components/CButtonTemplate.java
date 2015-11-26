@@ -10,7 +10,6 @@ import com.github.ruediste.rendersnakeXT.canvas.BootstrapCanvasCss;
 import com.github.ruediste.rendersnakeXT.canvas.BootstrapCanvasCss.B_ButtonArgs;
 import com.github.ruediste.rise.component.ComponentPage;
 import com.github.ruediste.rise.component.ComponentUtil;
-import com.github.ruediste.rise.core.web.CoreAssetBundle;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.integration.IconUtil;
 import com.github.ruediste1.i18n.label.LabelUtil;
@@ -69,16 +68,14 @@ public class CButtonTemplate extends BootstrapComponentTemplateBase<CButton> {
 
         if (isLink) {
             html.bButtonA(argSupplier).CLASS("rise_button_link")
-                    .CLASS(button.CLASS()).TEST_NAME(button.TEST_NAME())
+                    .rCOMPONENT_ATTRIBUTES(button)
                     .fIf(button.isDisabled(), () -> html.HREF("#"),
                             () -> html.HREF(button.getTarget()))
                     .renderChildren(button)._bButtonA();
         } else {
-            html.bButton(argSupplier).CLASS("rise_button").CLASS(button.CLASS())
-                    .TEST_NAME(button.TEST_NAME())
-                    .DATA(CoreAssetBundle.componentAttributeNr,
-                            String.valueOf(util.getComponentNr(button)))
-                    .renderChildren(button)._bButton();
+            html.bButton(argSupplier).CLASS("rise_button")
+                    .rCOMPONENT_ATTRIBUTES(button).renderChildren(button)
+                    ._bButton();
         }
     }
 

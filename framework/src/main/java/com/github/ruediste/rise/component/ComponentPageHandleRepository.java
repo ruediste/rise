@@ -102,7 +102,7 @@ public class ComponentPageHandleRepository {
      * this method
      */
     public void destroyCurrentPage() {
-        page.fireDestroy();
+        page.destroy();
         pageHandles.remove(page.getPageId());
     }
 

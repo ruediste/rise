@@ -7,6 +7,7 @@ import java.util.Deque;
 import javax.inject.Singleton;
 
 import com.github.ruediste.rise.util.GenericEvent;
+import com.github.ruediste.rise.util.GenericEventManager;
 import com.github.ruediste.rise.util.Pair;
 import com.google.common.reflect.TypeToken;
 
@@ -18,8 +19,8 @@ import com.google.common.reflect.TypeToken;
 public class DefaultAuthenticationManager implements AuthenticationManager {
 
     private final Deque<Pair<Class<?>, AuthenticationProvider<?>>> providers = new ArrayDeque<>();
-    private GenericEvent<AuthenticationRequest> preAuthenticationEvent = new GenericEvent<>();
-    private GenericEvent<Pair<AuthenticationRequest, AuthenticationResult>> postAuthenticationEvent = new GenericEvent<>();
+    private GenericEventManager<AuthenticationRequest> preAuthenticationEvent = new GenericEventManager<>();
+    private GenericEventManager<Pair<AuthenticationRequest, AuthenticationResult>> postAuthenticationEvent = new GenericEventManager<>();
 
     /**
      * Authenticate an authentication request. Throws an exception if the
@@ -72,11 +73,11 @@ public class DefaultAuthenticationManager implements AuthenticationManager {
 
     @Override
     public GenericEvent<AuthenticationRequest> preAuthenticationEvent() {
-        return preAuthenticationEvent;
+        return preAuthenticationEvent.event();
     }
 
     @Override
     public GenericEvent<Pair<AuthenticationRequest, AuthenticationResult>> postAuthenticationEvent() {
-        return postAuthenticationEvent;
+        return postAuthenticationEvent.event();
     }
 }

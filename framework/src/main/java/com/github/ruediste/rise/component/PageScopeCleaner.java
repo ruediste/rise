@@ -58,7 +58,7 @@ public class PageScopeCleaner {
 
                                 pageScopeManager.inScopeDo(
                                         handle.pageScopeState, () -> {
-                                    page.fireDestroy();
+                                    page.destroy();
                                 });
                             }
                         } catch (Throwable t) {

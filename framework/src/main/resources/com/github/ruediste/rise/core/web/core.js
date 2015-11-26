@@ -8,6 +8,14 @@ var rise = (function() {
 
 	var getPageNr = function() {
 		return $("body").data("rise-page-nr");
+	};
+
+	var setExtractData = function(element, func) {
+		$(element).data("riseExtractData", func);
+	};
+
+	var triggerViewReload = function(element) {
+		$(element).trigger("rise_viewReload");
 	}
 	/**
 	 * Enters an endless loop polling for an application restart
@@ -61,7 +69,7 @@ var rise = (function() {
 	var onReload = $.Callbacks();
 
 	var extractData = function(data, element) {
-		
+
 		var extractFunc = element.data("riseExtractData");
 		if (extractFunc !== undefined) {
 			extractFunc.call(element, data);
@@ -117,9 +125,32 @@ var rise = (function() {
 
 		// clicks on rise_buttons trigger a view reload
 		$(document).on("click", ".rise_button", function() {
-			$(this).data("rise-button-clicked", true);
-			$(this).trigger("rise_viewReload");
+			setExtractData(this, function(data) {
+				data.push({
+					name : rise.generateKey(this, "clicked"),
+					value : "clicked"
+				})
+			});
+
+			triggerViewReload(this);
 			return false;
+		});
+
+		// support for generic event handlers
+		var eventHandler = function(evt) {
+			setExtractData(this, function(data) {
+				data.push({
+					name : "event_triggered",
+					value : $(this).attr("data-rise-reload-on-" + evt.data)
+				})
+			});
+			triggerViewReload(this);
+			return false;
+		};
+
+		[ "focusin", "focusout", "click" ].forEach(function(event) {
+			$(document).on(event, "*[data-rise-reload-on-" + event + "]",
+					event, eventHandler);
 		});
 
 		// start polling for application restart
@@ -132,9 +163,8 @@ var rise = (function() {
 	return {
 		onReload : onReload,
 		generateKey : generateKey,
-		setExtractData : function(element, func) {
-			$(element).data("riseExtractData", func);
-		}
+		setExtractData : setExtractData,
+		triggerViewReload : triggerViewReload
 	};
 
 })();
@@ -160,8 +190,8 @@ $.widget("rise.riseAutocomplete", $.ui.autocomplete, {
 });
 
 // register autocomplete
-rise.onReload.add(function() {
-	$(".rise_button").each(function(idx, element) {
+rise.onReload.add(function(reloaded) {
+	reloaded.find(".rise_button").each(function(idx, element) {
 		rise.setExtractData(element, function(data) {
 			if (this.data("rise-button-clicked"))
 				data.push({
@@ -171,7 +201,7 @@ rise.onReload.add(function() {
 		});
 	});
 
-	$(".rise_autocomplete").each(function(idx, element) {
+	reloaded.find(".rise_autocomplete").each(function(idx, element) {
 		element = $(element);
 		element.riseAutocomplete({
 			source : element.data("riseIntSource"),
@@ -184,7 +214,7 @@ rise.onReload.add(function() {
 		});
 	});
 
-	$(".rise_sortable").each(function(idx, element) {
+	reloaded.find(".rise_sortable").each(function(idx, element) {
 		element = $(element);
 		element.children().each(function(childIdx, child) {
 			$(child).attr("data-rise-sortable-index", childIdx);
@@ -198,5 +228,33 @@ rise.onReload.add(function() {
 				}).toString()
 			})
 		});
+	});
+});
+
+// click edit
+$(document).on("focusout", ".rise_click_edit._edit", function() {
+	rise.setExtractData(this, function(data) {
+		data.push({
+			name : rise.generateKey(this, "view")
+		});
+	});
+	rise.triggerViewReload(this);
+	return false;
+});
+$(document).on("click", ".rise_click_edit._view", function() {
+	rise.setExtractData(this, function(data) {
+		data.push({
+			name : rise.generateKey(this, "edit")
+		});
+	});
+	rise.triggerViewReload(this);
+	return false;
+});
+
+rise.onReload.add(function(reloaded) {
+	reloaded.find(".rise_click_edit._edit").each(function(){
+		var focusId=$(this).data("rise-click-edit-focus-on-reload");
+		if (focusId)
+			$(document.getElementById(focusId)).focus();
 	});
 });

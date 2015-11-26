@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
-import com.github.ruediste.rise.core.web.CoreAssetBundle;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.google.common.base.Splitter;
 
@@ -31,9 +30,7 @@ public class CSortableTemplate
         //@formatter:off
         html.fIf(useDiv, () -> html.div(), () -> html.ul())
                 .CLASS("rise_sortable").CLASS(sortable.CLASS())
-                .DATA(CoreAssetBundle.componentAttributeNr,
-                        String.valueOf(util.getComponentNr(sortable)))
-                .TEST_NAME(sortable.TEST_NAME())
+                .rCOMPONENT_ATTRIBUTES(sortable)
           .renderChildren(sortable)
         .close();
         //@formatter:on

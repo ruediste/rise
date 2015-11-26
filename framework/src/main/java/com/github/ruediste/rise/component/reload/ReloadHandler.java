@@ -94,6 +94,9 @@ public class ReloadHandler implements Runnable {
         }
 
         // raise events
+        request.getParameterValue("event_triggered").ifPresent(nrStr -> {
+            page.getEventHandler(Integer.valueOf(nrStr)).run();
+        });
         for (Component c : components) {
             componentTemplateIndex.getTemplate(c).raiseEvents(c);
         }
@@ -106,7 +109,7 @@ public class ReloadHandler implements Runnable {
         } else if (coreRequestInfo.getActionResult() == null) {
             // render result
             coreRequestInfo.setActionResult(new ContentRenderResult(
-                    util.renderComponents(view, reloadComponent), r -> {
+                    util.renderComponents(page, reloadComponent), r -> {
                         r.setContentType(coreConfiguration.htmlContentType);
                         if (view instanceof HttpServletResponseCustomizer) {
                             ((HttpServletResponseCustomizer) view)

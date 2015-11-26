@@ -3,7 +3,7 @@ package com.github.ruediste.rise.component.components;
 /**
  * Component representing a partial page reload context
  */
-@DefaultTemplate(CReloadHtmlTemplate.class)
+@DefaultTemplate(CReloadTemplate.class)
 public class CReload extends MultiChildrenComponent<CReload> {
 
     private int reloadCount;

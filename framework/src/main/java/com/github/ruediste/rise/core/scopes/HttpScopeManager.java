@@ -15,7 +15,7 @@ import javax.servlet.http.HttpSessionBindingListener;
 
 import com.github.ruediste.rise.core.scopes.HttpScopeManager.SessionScopeManager.SessionScopeData;
 import com.github.ruediste.rise.nonReloadable.front.reload.NonReloadable;
-import com.github.ruediste.rise.util.GenericEvent;
+import com.github.ruediste.rise.util.GenericEventManager;
 import com.github.ruediste.salta.core.Binding;
 import com.github.ruediste.salta.core.CoreDependencyKey;
 import com.github.ruediste.salta.jsr330.MembersInjector;
@@ -114,7 +114,7 @@ public class HttpScopeManager {
                 implements Serializable, HttpSessionBindingListener {
             private static final long serialVersionUID = 1L;
             public ConcurrentMap<Binding, Object> sessionDataMap = new ConcurrentHashMap<>();
-            public GenericEvent<HttpSessionBindingEvent> valueUnbound = new GenericEvent<>();
+            public GenericEventManager<HttpSessionBindingEvent> valueUnbound = new GenericEventManager<>();
 
             @Override
             public void valueBound(HttpSessionBindingEvent event) {

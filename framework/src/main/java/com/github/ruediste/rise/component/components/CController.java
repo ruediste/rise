@@ -2,20 +2,17 @@ package com.github.ruediste.rise.component.components;
 
 import java.util.Collections;
 
-import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
 import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.ComponentViewRepository;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.component.tree.ComponentBase;
 import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
 
 /**
  * Embeds the view of a controller
  */
 @DefaultTemplate(RenderChildrenTemplate.class)
-public class CController extends AttachedPropertyBearerBase
-        implements Component {
-
-    private Component parent;
+public class CController extends ComponentBase<CController> {
 
     private Component rootComponent;
 
@@ -49,16 +46,6 @@ public class CController extends AttachedPropertyBearerBase
             return Collections.emptyList();
         else
             return Collections.singletonList(rootComponent);
-    }
-
-    @Override
-    public Component getParent() {
-        return parent;
-    }
-
-    @Override
-    public void parentChanged(Component newParent) {
-        parent = newParent;
     }
 
     @Override

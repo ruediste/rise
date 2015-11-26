@@ -16,6 +16,7 @@ import com.github.ruediste.rise.crud.CrudUtil.CrudList;
 import com.github.ruediste.rise.crud.CrudUtil.CrudPicker;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
 import com.github.ruediste.rise.util.GenericEvent;
+import com.github.ruediste.rise.util.GenericEventManager;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.Labeled;
 import com.github.ruediste1.i18n.message.TMessage;
@@ -53,7 +54,7 @@ public class DefaultCrudPickerController extends SubControllerComponent
 
     }
 
-    GenericEvent<Object> pickerClosed = new GenericEvent<>();
+    private GenericEventManager<Object> pickerClosed = new GenericEventManager<>();
 
     @Labeled
     @GlyphiconIcon(Glyphicon.check)
@@ -69,7 +70,7 @@ public class DefaultCrudPickerController extends SubControllerComponent
 
     @Override
     public GenericEvent<Object> pickerClosed() {
-        return pickerClosed;
+        return pickerClosed.event();
     }
 
     public CrudPicker initialize(Class<?> entityClass,

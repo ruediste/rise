@@ -4,12 +4,11 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
 import com.github.ruediste.rise.component.binding.Binding;
 import com.github.ruediste.rise.component.binding.BindingUtil;
 
-public abstract class ComponentBase<TSelf extends AttachedPropertyBearer>
+public abstract class ComponentBase<TSelf extends Component>
         extends AttachedPropertyBearerBase implements Component {
 
     private Component parent;

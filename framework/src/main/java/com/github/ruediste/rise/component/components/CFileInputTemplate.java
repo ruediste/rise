@@ -25,7 +25,7 @@ public class CFileInputTemplate
     @Override
     public void doRender(CFileInput component, BootstrapRiseCanvas<?> html) {
 
-        html.input().ID(getComponentId(component)).TYPE("file")
+        html.input().rCOMPONENT_ATTRIBUTES(component).TYPE("file")
                 .CLASS("rise_fileinput").MULTIPLE("multiple")
                 .DATA("upload-url", getAjaxUrl(component) + "/upload")
                 .DATA("delete-url", getAjaxUrl(component) + "/delete")

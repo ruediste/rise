@@ -21,8 +21,8 @@ public class CInputTemplate extends BootstrapComponentTemplateBase<CInput> {
             throw new RuntimeException("Input type of CInput not set");
 
         html.input().TYPE(inputType.toString()).BformControl()
-                .VALUE(component.getValue()).TEST_NAME(component.TEST_NAME())
+                .VALUE(component.getValue())
                 .NAME(util.getKey(component, "value"))
-                .ID(util.getComponentId(component));
+                .rCOMPONENT_ATTRIBUTES(component);
     }
 }

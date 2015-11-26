@@ -159,7 +159,7 @@ public abstract class RestartableApplicationBase
             for (PageHandle handle : componentPageHandleRepository
                     .getPageHandles()) {
                 pageScopeManager.inScopeDo(handle.pageScopeState, () -> {
-                    page.fireDestroy();
+                    page.destroy();
                 });
             }
         });

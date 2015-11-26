@@ -1,9 +1,5 @@
 package com.github.ruediste.rise.util;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -12,53 +8,26 @@ import java.util.function.Consumer;
  */
 public class GenericEvent<T> {
 
-    private Set<Runnable> listeningRunnables = new LinkedHashSet<>();
-    private Set<Consumer<T>> listeningConsumers = new LinkedHashSet<>();
+    final private GenericEventManager<T> manager;
 
-    /**
-     * @return true if the listener was not yet registered
-     */
-    public synchronized boolean addListener(Runnable listener) {
-        return listeningRunnables.add(listener);
+    public GenericEvent(GenericEventManager<T> manager) {
+        this.manager = manager;
     }
 
-    /**
-     * @return true if the listener was not yet registered
-     */
-    public synchronized boolean addListener(Consumer<T> listener) {
-        return listeningConsumers.add(listener);
+    public boolean addListener(Runnable listener) {
+        return manager.addListener(listener);
     }
 
-    /**
-     * @return true if the listener was registered
-     */
-    public synchronized boolean removeListener(Runnable listener) {
-        return listeningRunnables.remove(listener);
+    public boolean addListener(Consumer<T> listener) {
+        return manager.addListener(listener);
     }
 
-    /**
-     * @return true if the listener was registered
-     */
-    public synchronized boolean removeListener(Consumer<T> listener) {
-        return listeningConsumers.remove(listener);
+    public boolean removeListener(Runnable listener) {
+        return manager.removeListener(listener);
     }
 
-    public synchronized void clearListeners() {
-        listeningRunnables.clear();
-        listeningConsumers.clear();
+    public boolean removeListener(Consumer<T> listener) {
+        return manager.removeListener(listener);
     }
 
-    /**
-     * fire the event
-     */
-    public void fire(T arg) {
-        List<Consumer<T>> listeningConsumersCopy;
-        List<Runnable> listeningRunnablesCopy;
-        synchronized (this) {
-            listeningConsumersCopy = new ArrayList<>(listeningConsumers);
-            listeningRunnablesCopy = new ArrayList<>(listeningRunnables);
-        }
-        listeningConsumersCopy.forEach(x -> x.accept(arg));
-        listeningRunnablesCopy.forEach(Runnable::run);
-    }
 }

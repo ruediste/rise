@@ -4,9 +4,12 @@ import java.util.function.Consumer;
 
 import com.github.ruediste.rendersnakeXT.canvas.FuncCanvas;
 import com.github.ruediste.rendersnakeXT.canvas.Html5Canvas;
+import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.component.tree.ComponentBase;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
+import com.github.ruediste.rise.core.web.CoreAssetBundle;
 import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
@@ -129,5 +132,25 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
             ifFalse.accept(target);
 
         return self();
+    }
+
+    public enum JavaScriptEvent {
+        focusin, focusout, click
+    }
+
+    /**
+     * Register an event handler on the current tag
+     */
+    default TSelf rON(JavaScriptEvent event, Runnable eventHandler) {
+        internal_riseHelper().ON(this, event, eventHandler);
+        return self();
+    }
+
+    default TSelf rCOMPONENT_ATTRIBUTES(ComponentBase<?> component) {
+        ComponentUtil componentUtil = internal_riseHelper().getComponentUtil();
+        return self().ID(componentUtil.getComponentId(component))
+                .CLASS(component.CLASS()).TEST_NAME(component.TEST_NAME())
+                .DATA(CoreAssetBundle.componentAttributeNr, String
+                        .valueOf(componentUtil.getComponentNr(component)));
     }
 }

@@ -10,6 +10,10 @@ import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ComponentBase;
 import com.google.common.base.Objects;
 
+/**
+ * Contains a set of components for different cases. Always shows the component
+ * corresponding to the current case.
+ */
 @DefaultTemplate(CSwitchTemplate.class)
 public class CSwitch<T> extends ComponentBase<CSwitch<T>> {
 

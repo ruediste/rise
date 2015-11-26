@@ -86,8 +86,8 @@ public class CAutoComplete<Titem, Tid>
     }
 
     /**
-     * Set the currently chosen item. Equivalent to
-     * {@link #setChosenItem(Object)}
+     * Set the currently chosen item. If the item is null, the text is set to
+     * empty instead
      */
     public CAutoComplete<Titem, Tid> setItem(Titem item) {
         if (item == null)

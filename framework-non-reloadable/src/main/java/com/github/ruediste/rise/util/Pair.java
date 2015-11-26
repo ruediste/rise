@@ -3,6 +3,9 @@ package com.github.ruediste.rise.util;
 import java.io.Serializable;
 import java.util.Objects;
 
+import com.github.ruediste.c3java.invocationRecording.TerminalType;
+
+@TerminalType
 public class Pair<A, B> implements Serializable {
     private static final long serialVersionUID = 1L;
 

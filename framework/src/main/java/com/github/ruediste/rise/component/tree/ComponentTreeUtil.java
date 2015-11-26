@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
+import com.google.common.base.Preconditions;
 
 /**
  * Static utility class for component tree traversal.
@@ -23,12 +24,14 @@ public class ComponentTreeUtil {
      * is the component itself and all children, transitively.
      */
     static public List<Component> subTree(Component c) {
+        Preconditions.checkNotNull(c);
         ArrayList<Component> result = new ArrayList<>();
         subTree(c, result);
         return result;
     }
 
     static private void subTree(Component c, ArrayList<Component> result) {
+        Preconditions.checkNotNull(c);
         result.add(c);
         for (Component child : c.getChildren()) {
             subTree(child, result);

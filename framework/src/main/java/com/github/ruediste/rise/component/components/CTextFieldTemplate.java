@@ -19,8 +19,7 @@ public class CTextFieldTemplate
     public void doRender(CTextField component, BootstrapRiseCanvas<?> html) {
         html.input().TYPE(component.isPassword() ? "password" : "text")
                 .BformControl().VALUE(component.getText())
-                .TEST_NAME(component.TEST_NAME())
-                .NAME(util.getKey(component, "value"))
-                .ID(util.getComponentId(component));
+                .rCOMPONENT_ATTRIBUTES(component)
+                .NAME(util.getKey(component, "value"));
     }
 }

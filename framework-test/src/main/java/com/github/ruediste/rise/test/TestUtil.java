@@ -4,38 +4,34 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 import java.lang.reflect.Method;
+import java.time.Duration;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.github.ruediste.c3java.invocationRecording.MethodInvocation;
 import com.github.ruediste.c3java.invocationRecording.MethodInvocationRecorder;
 import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.github.ruediste.c3java.properties.PropertyUtil;
-import com.google.common.base.Predicate;
-
-import junit.framework.AssertionFailedError;
 
 public interface TestUtil {
     public static int defaultWaitSeconds = 1;
 
     WebDriver internal_getDriver();
 
-    default WebDriverWait doWait() {
-        return new WebDriverWait(internal_getDriver(), defaultWaitSeconds);
+    default RiseWait<WebDriver> doWait() {
+        return new RiseWait<>(internal_getDriver())
+                .withTimeout(Duration.ofSeconds(defaultWaitSeconds));
     }
 
-    default FluentWait<WebDriver> doWait(long timeOutInSeconds) {
-        return new WebDriverWait(internal_getDriver(), timeOutInSeconds)
-                .ignoring(StaleElementReferenceException.class);
+    default RiseWait<WebDriver> doWait(long timeOutInSeconds) {
+        return new RiseWait<>(internal_getDriver())
+                .withTimeout(Duration.ofSeconds(timeOutInSeconds));
     }
 
     default <T> void assertPage(Class<T> cls, Consumer<T> methodAccessor) {
@@ -43,25 +39,22 @@ public interface TestUtil {
                 .getLastInvocation(cls, methodAccessor).getMethod();
         String expectedPageName = method.getDeclaringClass().getName() + "."
                 + method.getName();
-        doWait().ignoring(AssertionFailedError.class,
-                StaleElementReferenceException.class)
-                .ignoring(AssertionError.class)
-                .until(new Predicate<WebDriver>() {
-                    @Override
-                    public boolean apply(WebDriver x) {
-                        assertThat(
-                                internal_getDriver()
-                                        .findElement(By.tagName("body"))
-                                        .getAttribute("data-test-name"),
-                                equalTo(expectedPageName));
-                        return true;
-                    }
+        doWait().until(new Runnable() {
 
-                    @Override
-                    public String toString() {
-                        return "page name is " + expectedPageName;
-                    }
-                });
+            @Override
+            public void run() {
+                assertThat(
+                        internal_getDriver().findElement(By.tagName("body"))
+                                .getAttribute("data-test-name"),
+                        equalTo(expectedPageName));
+
+            }
+
+            @Override
+            public String toString() {
+                return "page name is " + expectedPageName;
+            }
+        });
     }
 
     default By byDataTestName(String name) {
@@ -116,10 +109,10 @@ public interface TestUtil {
         WebElement body = internal_getDriver().findElement(By.tagName("body"));
         String initialReloadCount = body.getAttribute("data-rise-reload-count");
         action.accept(element);
-        doWait(timeoutSeconds).ignoring(StaleElementReferenceException.class)
-                .until(new Predicate<WebDriver>() {
+        doWait(timeoutSeconds)
+                .untilTrue(new java.util.function.Predicate<WebDriver>() {
                     @Override
-                    public boolean apply(WebDriver d) {
+                    public boolean test(WebDriver d) {
                         String currentReloadCount = body
                                 .getAttribute("data-rise-reload-count");
                         return !Objects.equals(initialReloadCount,

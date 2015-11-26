@@ -2,9 +2,7 @@ package com.github.ruediste.rise.component;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -39,8 +37,6 @@ public class ComponentUtil implements ICoreUtil {
     Logger log;
 
     private final AttachedProperty<Component, Long> componentNr = new AttachedProperty<>();
-    private final AttachedProperty<ViewComponentBase<?>, Map<Long, Component>> componentNrMap = new AttachedProperty<>();
-    private final AttachedProperty<ViewComponentBase<?>, Long> maxComponentNr = new AttachedProperty<>();
 
     @Inject
     ComponentPage pageInfo;
@@ -84,40 +80,27 @@ public class ComponentUtil implements ICoreUtil {
     }
 
     public Component getComponent(ViewComponentBase<?> view, long componentId) {
-        return componentNrMap.get(view).get(componentId);
+        return pageInfo.getComponentNrMap().get(componentId);
     }
 
     /**
      * Render a component and all its children
      */
-    public byte[] renderComponents(ViewComponentBase<?> view,
+    public byte[] renderComponents(ComponentPage page,
             Component rootComponent) {
         // Set the component number of all children of the root component which
-        // do not have a number yet
+        // do not have a number yet. This allows components to reference each
+        // other in the generated view without caring about the rendering order.
         {
             // set the component IDs
-            Map<Long, Component> map;
-            if (componentNrMap.isSet(view)) {
-                map = componentNrMap.get(view);
-            } else {
-                map = new HashMap<>();
-                componentNrMap.set(view, map);
-            }
-            long nr;
-            {
-                Long tmp = maxComponentNr.get(view);
-                if (tmp == null) {
-                    tmp = 0L;
-                }
-                nr = tmp;
-            }
+            ComponentPage p = page.self();
             for (Component c : ComponentTreeUtil.subTree(rootComponent)) {
                 if (!componentNr.isSet(c)) {
-                    map.put(nr, c);
+                    long nr = p.getNextComponentNr();
+                    p.getComponentNrMap().put(nr, c);
                     componentNr.set(c, nr++);
                 }
             }
-            maxComponentNr.set(view, nr);
         }
         // render the view first, to detect possible errors
         // before rendering the result
