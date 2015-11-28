@@ -62,9 +62,6 @@ public class DefaultCrudListController extends SubControllerComponent
         @Inject
         LabelUtil labelUtil;
 
-        /**
-         * @return
-         */
         @Override
         protected Component createComponents() {
 

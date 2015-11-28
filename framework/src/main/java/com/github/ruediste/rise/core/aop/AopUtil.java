@@ -9,10 +9,6 @@ import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
-
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
@@ -30,6 +26,10 @@ import com.github.ruediste.salta.standard.recipe.RecipeInstantiatorImpl;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.reflect.TypeToken;
+
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
 
 /**
  * Utility to register AOP advices
@@ -269,11 +269,6 @@ public class AopUtil {
 
     /**
      * Register an advice using a subclass
-     * 
-     * @param config
-     * @param typeMatcher
-     * @param methodMatcher
-     * @param advice
      */
     public static void registerSubclass(StandardInjectorConfiguration config,
             Predicate<TypeToken<?>> typeMatcher,
@@ -289,11 +284,6 @@ public class AopUtil {
 
     /**
      * register an advice using a proxy
-     * 
-     * @param config
-     * @param typeMatcher
-     * @param methodMatcher
-     * @param advice
      */
     public static void registerProxy(StandardInjectorConfiguration config,
             Predicate<TypeToken<?>> typeMatcher,

@@ -13,8 +13,6 @@ public interface AuthenticationManager {
     /**
      * Authenticate an authentication request. Throws an exception if the
      * authentication is not successful
-     * 
-     * @return
      */
     AuthenticationResult authenticate(AuthenticationRequest request);
 

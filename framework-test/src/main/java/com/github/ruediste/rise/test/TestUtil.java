@@ -39,7 +39,7 @@ public interface TestUtil {
                 .getLastInvocation(cls, methodAccessor).getMethod();
         String expectedPageName = method.getDeclaringClass().getName() + "."
                 + method.getName();
-        doWait().until(new Runnable() {
+        doWait().untilPassing(new Runnable() {
 
             @Override
             public void run() {

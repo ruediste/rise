@@ -16,8 +16,6 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import net.sf.cglib.asm.Type;
-
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.objectweb.asm.tree.ClassNode;
@@ -27,6 +25,8 @@ import com.github.ruediste.rise.nonReloadable.NonRestartable;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassChangeNotifier.ClassChangeTransaction;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
+
+import net.sf.cglib.asm.Type;
 
 /**
  * An index containing the whole class hierarchy as well as the parsed classes.
@@ -122,9 +122,6 @@ public class ClassHierarchyIndex {
 
     /**
      * Return the parsed class node for the given internal name
-     *
-     * @param internalName
-     * @return
      */
     public Optional<ClassNode> tryGetNode(String internalName) {
         return Optional.ofNullable(classMap.get(internalName));
@@ -132,9 +129,6 @@ public class ClassHierarchyIndex {
 
     /**
      * Return the parsed class node for the given internal name
-     *
-     * @param internalName
-     * @return
      */
     public ClassNode getNode(String internalName) {
         ClassNode result = classMap.get(internalName);
@@ -147,9 +141,6 @@ public class ClassHierarchyIndex {
     /**
      * Return the child classes for the given class or interface given by it's
      * internal name
-     *
-     * @param internalName
-     * @return
      */
     public Set<ClassNode> getChildren(String internalName) {
         Set<ClassNode> result = childMap.get(internalName);

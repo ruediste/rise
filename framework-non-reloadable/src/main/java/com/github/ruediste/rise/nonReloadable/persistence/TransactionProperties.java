@@ -38,8 +38,6 @@ public class TransactionProperties {
 
     /**
      * Get the isolation level of the current transaction
-     * 
-     * @return
      */
     public IsolationLevel getIsolationLevel(Class<?> qualifier) {
         Object result = registry

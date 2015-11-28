@@ -22,10 +22,19 @@ import com.google.common.collect.MultimapBuilder;
  * {@link GenericEventManager} must be kept. Typical code:
  * 
  * <pre>
- * {@code
- * private GenericEventManager<MyObj> myEventMgr=new GenericEventManager<>();
- * public GenericEvent<MyObj> getMyEvent(); { return myEventMgr.event();}
- * public void fireMyEvent(){ myEventMgr.fire(this); }
+ * 
+ * private GenericEventManager<MyObj> myEventMgr = new GenericEventManager<>();
+ * 
+ * public GenericEvent<MyObj> getMyEvent();
+ * 
+ * {
+ *     return myEventMgr.event();
+ * }
+ * 
+ * public void fireMyEvent() {
+ *     myEventMgr.fire(this);
+ * }
+ * 
  * </pre>
  * 
  * <p>

@@ -58,7 +58,6 @@ public class RiseServer {
     }
 
     /**
-     * @param frontServlet
      * @param port
      *            port to start server on, 0 for random port
      */

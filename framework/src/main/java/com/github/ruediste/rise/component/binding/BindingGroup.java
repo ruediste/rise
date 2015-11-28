@@ -177,8 +177,6 @@ public class BindingGroup<T> implements Serializable {
 
     /**
      * Create a dummy usable for use with beanutils
-     *
-     * @return
      */
     @SuppressWarnings("unchecked")
     T createDummyProxy() {

@@ -25,8 +25,6 @@ public class DefaultAuthenticationManager implements AuthenticationManager {
     /**
      * Authenticate an authentication request. Throws an exception if the
      * authentication is not successful
-     * 
-     * @return
      */
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })

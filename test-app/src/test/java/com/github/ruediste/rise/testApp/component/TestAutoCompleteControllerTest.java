@@ -38,7 +38,7 @@ public class TestAutoCompleteControllerTest extends WebTest {
     @Test
     public void searchNonUnique_select_push_itemPushed() {
         autoComplete.setText("Java");
-        doWait().until(() -> autoComplete.choose("0"));
+        doWait().untilPassing(() -> autoComplete.choose("0"));
 
         driver.findElement(
                 byDataTestName(TestAutoCompleteController.class, x -> x.push()))

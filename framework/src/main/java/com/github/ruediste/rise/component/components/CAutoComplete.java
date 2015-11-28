@@ -130,11 +130,7 @@ public class CAutoComplete<Titem, Tid>
     /**
      * Return the current value of the auto complete. If the user did not choose
      * an item, or edited the text after choosing, a search with the current
-     * text is attemted. If exactly one match is found, this match is returned
-     * as chosen item, the text otherwise.
-     * <p>
-     * If this behaviour is not desired, use {@link #getValueNoSearch()}
-     * instead.
+     * text is attempted according to {@link #getAutoSearchMode()}.
      */
     public AutoCompleteValue<Titem> getValue() {
         if (value.isItemChosen() || autoSearchMode == AutoSearchMode.NONE)
@@ -185,8 +181,6 @@ public class CAutoComplete<Titem, Tid>
 
     /**
      * Text the user entered. Null if an item was chosen
-     * 
-     * @see #getChosenItem()
      */
     public String getText() {
         return value.isItemChosen() ? null : value.getText();

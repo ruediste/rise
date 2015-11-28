@@ -73,7 +73,7 @@ public class RiseWait<T> {
      * <p>
      * In reality, the interval may be greater as the cost of actually
      * evaluating a condition function is not factored in. The default polling
-     * interval is {@link #FIVE_HUNDRED_MILLIS}.
+     * interval is 500ms.
      *
      * @param duration
      *            The timeout duration.
@@ -88,7 +88,7 @@ public class RiseWait<T> {
      * Repeatedly applies this instance's input value to the given consumer
      * until the timeout expires or the consumer runs without exception.
      **/
-    public void until(final Consumer<T> passes) {
+    public void untilPassing(final Consumer<T> passes) {
         untilTrue(new Predicate<T>() {
             @Override
             public boolean test(T i) {
@@ -107,8 +107,8 @@ public class RiseWait<T> {
      * Repeatedly runs the given runnable until the timeout expires or the
      * runable runs without exception.
      **/
-    public void until(final Runnable passes) {
-        until(new Consumer<T>() {
+    public void untilPassing(final Runnable passes) {
+        untilPassing(new Consumer<T>() {
             @Override
             public void accept(T i) {
                 passes.run();

@@ -6,7 +6,6 @@ import java.util.Set;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
-import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste.salta.jsr330.JSR330InjectorConfiguration;
 import com.github.ruediste.salta.standard.config.StandardInjectorConfiguration;
@@ -17,8 +16,8 @@ import com.google.common.collect.Lists;
  * afterwards.
  *
  * <p>
- * The initializers can be registered in the {@link AbstractModule#configure()
- * configure()} method of Salta modules:
+ * The initializers can be registered in the configure() method of Salta
+ * modules:
  *
  * <pre>
  * protected void configure() throws Exception {

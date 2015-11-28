@@ -86,8 +86,6 @@ public class EclipseLinkPersistenceUnitManager
 
     /**
      * open this manager if it is currently closed
-     * 
-     * @return
      */
     synchronized private HashMap<String, Object> checkOpen(
             Consumer<Map<String, Object>> propertiesCustomizer) {

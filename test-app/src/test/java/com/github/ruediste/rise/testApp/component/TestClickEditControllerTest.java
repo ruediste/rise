@@ -17,7 +17,7 @@ public class TestClickEditControllerTest extends WebTest {
     @Test
     public void click_switchToEditMode() {
         getClickEdit().click();
-        doWait().until(
+        doWait().untilPassing(
                 () -> getClickEdit().findElement(By.cssSelector("input")));
     }
 
@@ -25,7 +25,7 @@ public class TestClickEditControllerTest extends WebTest {
     public void focusout_switchToViewMode() {
         getClickEdit().click();
         driver.findElement(byDataTestName("clickTarget")).click();
-        doWait().until(
+        doWait().untilPassing(
                 () -> getClickEdit().findElement(byDataTestName("viewText")));
     }
 

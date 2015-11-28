@@ -6,12 +6,10 @@ import static org.hamcrest.Matchers.contains;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
 import com.github.ruediste.rise.testApp.WebTest;
-import com.google.common.base.Predicate;
 
 public class TestSortableControllerTest extends WebTest {
 
@@ -27,31 +25,20 @@ public class TestSortableControllerTest extends WebTest {
     public void testChangeOrderAndPushDown_orderChanged() {
         changeOrder();
         pushDown();
-        doWait().until(new Predicate<WebDriver>() {
-
-            @Override
-            public boolean apply(WebDriver input) {
-                return driver.findElement(byDataTestName("controllerStatus"))
-                        .getText().equals("[bar, foo, fooBar]");
-            }
-        });
+        doWait().untilTrue(
+                () -> driver.findElement(byDataTestName("controllerStatus"))
+                        .getText().equals("[bar, foo, fooBar]"));
     }
 
     @Test
     public void testChangeOrderAndPullUp_orderRestored() {
         changeOrder();
         pullUp();
-        doWait().until(new Predicate<WebDriver>() {
-
-            @Override
-            public boolean apply(WebDriver input) {
-                return contains("foo", "bar", "fooBar").matches(driver
-                        .findElements(By.cssSelector(dataTestSelector(
-                                TestSortableController.Data.class,
+        doWait().untilTrue(() -> contains("foo", "bar", "fooBar").matches(driver
+                .findElements(By.cssSelector(
+                        dataTestSelector(TestSortableController.Data.class,
                                 x -> x.getItems()) + "> li"))
-                        .stream().map(e -> e.getText()).collect(toList()));
-            }
-        });
+                .stream().map(e -> e.getText()).collect(toList())));
     }
 
     @Test
@@ -59,17 +46,11 @@ public class TestSortableControllerTest extends WebTest {
         changeOrder();
         pushDown();
         pullUp();
-        doWait().until(new Predicate<WebDriver>() {
-
-            @Override
-            public boolean apply(WebDriver input) {
-                return contains("bar", "foo", "fooBar").matches(driver
-                        .findElements(By.cssSelector(dataTestSelector(
-                                TestSortableController.Data.class,
+        doWait().untilTrue(() -> contains("bar", "foo", "fooBar").matches(driver
+                .findElements(By.cssSelector(
+                        dataTestSelector(TestSortableController.Data.class,
                                 x -> x.getItems()) + "> li"))
-                        .stream().map(e -> e.getText()).collect(toList()));
-            }
-        });
+                .stream().map(e -> e.getText()).collect(toList())));
     }
 
     private void pullUp() {
