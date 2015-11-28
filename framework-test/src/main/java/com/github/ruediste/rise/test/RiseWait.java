@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.test;
 
 import java.util.concurrent.TimeUnit;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -118,6 +119,19 @@ public class RiseWait<T> {
                 return passes.toString();
             }
         });
+    }
+
+    /**
+     * Repeatedly tries the given supplier until the timeout expires or the
+     * supplier evaluates to true.
+     *
+     * @param isTrue
+     *            The predicate to wait on.
+     * @throws TimeoutException
+     *             If the timeout expires.
+     */
+    public void untilTrue(final BooleanSupplier isTrue) {
+        untilTrue(x -> isTrue.getAsBoolean());
     }
 
     /**

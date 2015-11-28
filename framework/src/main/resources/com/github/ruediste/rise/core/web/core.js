@@ -189,7 +189,7 @@ $.widget("rise.riseAutocomplete", $.ui.autocomplete, {
 	}
 });
 
-// register autocomplete
+// register components for reload
 rise.onReload.add(function(reloaded) {
 	reloaded.find(".rise_button").each(function(idx, element) {
 		rise.setExtractData(element, function(data) {
@@ -203,6 +203,13 @@ rise.onReload.add(function(reloaded) {
 
 	reloaded.find(".rise_autocomplete").each(function(idx, element) {
 		element = $(element);
+		rise.setExtractData(element, function(data) {
+			if (element.data("riseIntChosenItem"))
+				data.push({
+					name : rise.generateKey(element, "riseIntChosenItem"),
+					value : element.data("riseIntChosenItem")
+				})
+		});
 		element.riseAutocomplete({
 			source : element.data("riseIntSource"),
 			change : function(event, ui) {
@@ -233,12 +240,15 @@ rise.onReload.add(function(reloaded) {
 
 // click edit
 $(document).on("focusout", ".rise_click_edit._edit", function() {
-	rise.setExtractData(this, function(data) {
-		data.push({
-			name : rise.generateKey(this, "view")
+	var callback = function(element) {
+		rise.setExtractData(element, function(data) {
+			data.push({
+				name : rise.generateKey(element, "view")
+			});
 		});
-	});
-	rise.triggerViewReload(this);
+		rise.triggerViewReload(element);
+	}
+	window.setTimeout(callback,0,$(this));
 	return false;
 });
 $(document).on("click", ".rise_click_edit._view", function() {
@@ -252,8 +262,8 @@ $(document).on("click", ".rise_click_edit._view", function() {
 });
 
 rise.onReload.add(function(reloaded) {
-	reloaded.find(".rise_click_edit._edit").each(function(){
-		var focusId=$(this).data("rise-click-edit-focus-on-reload");
+	reloaded.find(".rise_click_edit._edit").each(function() {
+		var focusId = $(this).data("rise-click-edit-focus-on-reload");
 		if (focusId)
 			$(document.getElementById(focusId)).focus();
 	});

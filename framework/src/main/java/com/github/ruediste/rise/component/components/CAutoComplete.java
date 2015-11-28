@@ -3,16 +3,70 @@ package com.github.ruediste.rise.component.components;
 import java.util.List;
 import java.util.function.Supplier;
 
+import com.github.ruediste.c3java.invocationRecording.TerminalType;
+
 /**
  * Text Field with support for autocompletion.
  * 
  * <p>
  * The text field will typically be used to search for existing entries.
  * 
+ * <p>
+ * <b> Auto Search Mode </b> <br>
+ * When the user enters a text but does not select a proposed item, a search
+ * with the entered text can be performed prior to returning the chosen item. In
+ * {@link AutoSearchMode#SINGLE} an item is considered selected if only a single
+ * match is found for the text. In {@link AutoSearchMode#SINGLE_MATCHING}
+ * (default mode), an item is considered selected if only a single match is
+ * found and that item has a {@link CAutoCompleteParameters#getValue(Object)}
+ * equal to the current text.
  */
 @DefaultTemplate(CAutoCompleteTemplate.class)
 public class CAutoComplete<Titem, Tid>
         extends CInputBase<CAutoComplete<Titem, Tid>> {
+
+    public enum AutoSearchMode {
+        NONE, SINGLE, SINGLE_MATCHING, SINGLE_MATCHING_IGNORE_CASE;
+    }
+
+    @TerminalType
+    public static class AutoCompleteValue<T> {
+        private final boolean isItemChosen;
+        private final T item;
+        private final String text;
+
+        private AutoCompleteValue(boolean isItemChosen, T item, String text) {
+            this.isItemChosen = isItemChosen;
+            this.item = item;
+            this.text = text;
+        }
+
+        public static <T> AutoCompleteValue<T> ofItem(T item) {
+            return new AutoCompleteValue<T>(true, item, null);
+        }
+
+        public static <T> AutoCompleteValue<T> ofText(String text) {
+            return new AutoCompleteValue<T>(false, null, text);
+        }
+
+        public boolean isItemChosen() {
+            return isItemChosen;
+        }
+
+        public T getItem() {
+            return item;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        @Override
+        public String toString() {
+            return "AutoCompleteValue("
+                    + (isItemChosen ? "item=" + item : "text=" + text) + ")";
+        }
+    }
 
     public interface CAutoCompleteParameters<Titem, Tid> {
         /**
@@ -47,11 +101,9 @@ public class CAutoComplete<Titem, Tid>
         String getTestName(Titem item);
     }
 
-    private Titem chosenItem;
+    private AutoCompleteValue<Titem> value;
 
-    private String text;
-
-    private boolean itemChosen;
+    private AutoSearchMode autoSearchMode = AutoSearchMode.SINGLE_MATCHING;
 
     private final CAutoCompleteParameters<Titem, Tid> parameters;
 
@@ -67,22 +119,57 @@ public class CAutoComplete<Titem, Tid>
      * If true, an item has been chosen and the text is null.
      */
     public boolean isItemChosen() {
-        return itemChosen;
+        return value.isItemChosen;
+    }
+
+    public CAutoComplete<Titem, Tid> setValue(AutoCompleteValue<Titem> value) {
+        this.value = value;
+        return this;
     }
 
     /**
-     * The current item of the auto complete. If the user did not choose an
-     * item, but edited the text before calling this method, a search is
-     * triggered. If only a single element is found it is returned. Otherwise
-     * (user chose an item), the chosen item is returned
+     * Return the current value of the auto complete. If the user did not choose
+     * an item, or edited the text after choosing, a search with the current
+     * text is attemted. If exactly one match is found, this match is returned
+     * as chosen item, the text otherwise.
+     * <p>
+     * If this behaviour is not desired, use {@link #getValueNoSearch()}
+     * instead.
      */
+    public AutoCompleteValue<Titem> getValue() {
+        if (value.isItemChosen() || autoSearchMode == AutoSearchMode.NONE)
+            return value;
+        List<Titem> items = getParameters().search(value.getText());
+        if (items.size() == 1) {
+            Titem singleItem = items.get(0);
+            AutoCompleteValue<Titem> singleValue = AutoCompleteValue
+                    .ofItem(singleItem);
+            switch (autoSearchMode) {
+            case SINGLE: {
+                return singleValue;
+            }
+            case SINGLE_MATCHING:
+                if (value.getText().equals(parameters.getValue(singleItem)))
+                    return singleValue;
+                break;
+            case SINGLE_MATCHING_IGNORE_CASE:
+                if (value.getText()
+                        .equalsIgnoreCase(parameters.getValue(singleItem)))
+                    return singleValue;
+                break;
+            default:
+                throw new UnsupportedOperationException();
+            }
+        }
+        return value;
+    }
+
     public Titem getItem() {
-        if (isItemChosen())
-            return chosenItem;
-        List<Titem> items = getParameters().search(getText());
-        if (items.size() == 1)
-            return items.get(0);
-        return null;
+        AutoCompleteValue<Titem> v = getValue();
+        if (v.isItemChosen())
+            return v.getItem();
+        else
+            return null;
     }
 
     /**
@@ -92,24 +179,7 @@ public class CAutoComplete<Titem, Tid>
     public CAutoComplete<Titem, Tid> setItem(Titem item) {
         if (item == null)
             return setText("");
-        else
-            return setChosenItem(item);
-    }
-
-    /**
-     * Item which was chosen from the suggestions. Will be null if the user
-     * edited the value text afterwards.
-     * 
-     * @see #getText()
-     */
-    public Titem getChosenItem() {
-        return chosenItem;
-    }
-
-    public CAutoComplete<Titem, Tid> setChosenItem(Titem chosenItem) {
-        this.chosenItem = chosenItem;
-        this.text = null;
-        itemChosen = true;
+        value = AutoCompleteValue.ofItem(item);
         return this;
     }
 
@@ -119,13 +189,11 @@ public class CAutoComplete<Titem, Tid>
      * @see #getChosenItem()
      */
     public String getText() {
-        return text;
+        return value.isItemChosen() ? null : value.getText();
     }
 
     public CAutoComplete<Titem, Tid> setText(String text) {
-        this.text = text;
-        this.chosenItem = null;
-        itemChosen = false;
+        value = AutoCompleteValue.ofText(text);
         return this;
     }
 
@@ -135,6 +203,16 @@ public class CAutoComplete<Titem, Tid>
 
     public CAutoComplete<Titem, Tid> bindItem(Supplier<Titem> itemAccessor) {
         return bindLabelProperty(c -> c.setItem(itemAccessor.get()));
+    }
+
+    public AutoSearchMode getAutoSearchMode() {
+        return autoSearchMode;
+    }
+
+    public CAutoComplete<Titem, Tid> setAutoSearchMode(
+            AutoSearchMode autoSearchMode) {
+        this.autoSearchMode = autoSearchMode;
+        return this;
     }
 
 }

@@ -12,6 +12,7 @@ import javax.crypto.Mac;
 import javax.inject.Inject;
 
 import com.github.ruediste.rise.component.ComponentRequestInfo;
+import com.github.ruediste.rise.component.components.CAutoComplete.AutoCompleteValue;
 import com.github.ruediste.rise.component.components.CAutoComplete.CAutoCompleteParameters;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.CoreConfiguration;
@@ -55,11 +56,10 @@ public class CAutoCompleteTemplate
         html.input().TYPE("text").BformControl().CLASS("rise_autocomplete")
                 .rCOMPONENT_ATTRIBUTES(component)
                 .NAME(util.getKey(component, "text"))
-                .DATA("rise-int-source", getAjaxUrl(component))
-                .DATA("rise-send", "riseIntChosenItem");
+                .DATA("rise-int-source", getAjaxUrl(component));
 
         if (component.isItemChosen()) {
-            T item = component.getChosenItem();
+            T item = component.getValue().getItem();
             html.VALUE(component.getParameters().getValue(item))
                     .DATA("rise-int-chosen-item",
                             BaseEncoding.base64()
@@ -80,14 +80,14 @@ public class CAutoCompleteTemplate
                 "riseIntChosenItem");
         if (chosenItem.isPresent()) {
             component
-                    .setChosenItem(
-                            component.getParameters()
+                    .setValue(
+                            AutoCompleteValue.ofItem(component.getParameters()
                                     .load(signatureHelper
                                             .deserializeSigned(
                                                     BaseEncoding.base64()
                                                             .decode(chosenItem
                                                                     .get()),
-                                            hashContext(component))));
+                                            hashContext(component)))));
         } else {
             component.setText(getParameterValue(component, "text").get());
         }

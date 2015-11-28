@@ -9,6 +9,8 @@ import java.util.List;
 import com.github.ruediste.rise.api.ControllerComponent;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CAutoComplete;
+import com.github.ruediste.rise.component.components.CAutoComplete.AutoCompleteValue;
+import com.github.ruediste.rise.component.components.CAutoComplete.AutoSearchMode;
 import com.github.ruediste.rise.component.components.CAutoComplete.CAutoCompleteParameters;
 import com.github.ruediste.rise.component.components.CButton;
 import com.github.ruediste.rise.component.components.CClickEdit;
@@ -18,7 +20,6 @@ import com.github.ruediste.rise.component.components.CTextField;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.security.urlSigning.UrlUnsigned;
-import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste1.i18n.label.Label;
 import com.github.ruediste1.i18n.label.Labeled;
 
@@ -34,8 +35,9 @@ public class TestClickEditController extends ControllerComponent {
                         CTextField tf = new CTextField().setText(v);
                         c.setEditComponent(tf, () -> tf.getText(), tf);
                     }).bindValue(() -> controller.data().getTestLine()))
-                    .add(new CClickEdit<Pair<TestClickEditController.Entry, String>>(
-                            v -> new CText(v.getB()).TEST_NAME("viewText"),
+                    .add(new CClickEdit<AutoCompleteValue<TestClickEditController.Entry>>(
+                            v -> new CText(v.isItemChosen() ? v.getItem().name
+                                    : v.getText()).TEST_NAME("viewText"),
                             (v, c) -> {
                                 CAutoComplete<Entry, Integer> auto = new CAutoComplete<>(
                                         new CAutoCompleteParameters<Entry, Integer>() {
@@ -74,19 +76,24 @@ public class TestClickEditController extends ControllerComponent {
                                     public String getTestName(Entry item) {
                                         return item.name;
                                     }
-                                }).setItem(v.getA());
-                                c.setEditComponent(auto,
-                                        () -> Pair.of(auto.getChosenItem(),
-                                                auto.getText()),
+                                }).setValue(v)
+                                        .setAutoSearchMode(AutoSearchMode.NONE);
+                                c.setEditComponent(auto, () -> auto.getValue(),
                                         auto);
                             }).bindValue(
                                     () -> controller.data().getAutoComplete()))
                     .add(new CText("clickTarget").TEST_NAME("clickTarget"))
                     .add(new CButton(controller, x -> x.push()))
-                    .add(new CButton(controller, x -> x.pull()))
-                    .add(toComponentDirect(html -> html.write("Line: ").span()
-                            .TEST_NAME("testLine").content(String.valueOf(
-                                    controller.data().getTestLine()))));
+                    .add(new CButton(controller, x -> x.pull())).add(
+                            toComponentDirect(
+                                    html -> html.write("Line: ").span()
+                                            .TEST_NAME("testLine")
+                                            .content(String.valueOf(controller
+                                                    .data().getTestLine()))
+                                    .write("AutoCompleteValue: ").span()
+                                    .TEST_NAME("autoCompleteValue")
+                                    .content(String.valueOf(controller.data()
+                                            .getAutoComplete()))));
 
         }
 
@@ -110,6 +117,11 @@ public class TestClickEditController extends ControllerComponent {
             this.name = name;
             this.id = id;
         }
+
+        @Override
+        public String toString() {
+            return "" + id + ":" + name;
+        }
     }
 
     List<Entry> entries = new ArrayList<>(
@@ -117,8 +129,8 @@ public class TestClickEditController extends ControllerComponent {
 
     public static class Data {
         private String testLine;
-        private Pair<Entry, String> autoComplete = Pair.of(null,
-                "autoComplete");
+        private AutoCompleteValue<Entry> autoComplete = AutoCompleteValue
+                .ofText("autocomplete");
 
         public String getTestLine() {
             return testLine;
@@ -128,11 +140,11 @@ public class TestClickEditController extends ControllerComponent {
             this.testLine = testLine;
         }
 
-        public Pair<Entry, String> getAutoComplete() {
+        public AutoCompleteValue<Entry> getAutoComplete() {
             return autoComplete;
         }
 
-        public void setAutoComplete(Pair<Entry, String> autoComplete) {
+        public void setAutoComplete(AutoCompleteValue<Entry> autoComplete) {
             this.autoComplete = autoComplete;
         }
 
