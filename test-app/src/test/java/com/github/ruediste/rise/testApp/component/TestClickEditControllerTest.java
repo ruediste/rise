@@ -16,20 +16,30 @@ public class TestClickEditControllerTest extends WebTest {
 
     @Test
     public void click_switchToEditMode() {
-        getClickEdit().click();
-        doWait().untilPassing(
-                () -> getClickEdit().findElement(By.cssSelector("input")));
+        getEditLine().click();
+        doWait().untilPassing(() -> getEditLine().findElement(
+                By.cssSelector(dataTestSelector("testLine") + "input")));
     }
 
     @Test
     public void focusout_switchToViewMode() {
-        getClickEdit().click();
+        getEditLine().click();
         driver.findElement(byDataTestName("clickTarget")).click();
-        doWait().untilPassing(
-                () -> getClickEdit().findElement(byDataTestName("viewText")));
+        doWait().untilPassing(() -> getEditLine().findElement(By.cssSelector(
+                dataTestSelector("testLine") + dataTestSelector("viewText"))));
     }
 
-    private WebElement getClickEdit() {
+    @Test
+    public void autoComplete_text_autoSearch_push() {
+
+    }
+
+    @Test
+    public void autoComplete_search_select_push() {
+
+    }
+
+    private WebElement getEditLine() {
         return driver.findElement(byDataTestName(
                 TestClickEditController.Data.class, x -> x.getTestLine()));
     }

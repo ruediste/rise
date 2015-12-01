@@ -8,8 +8,9 @@ import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
 import com.github.ruediste.rise.component.binding.Binding;
 import com.github.ruediste.rise.component.binding.BindingUtil;
 
-public abstract class ComponentBase<TSelf extends Component>
-        extends AttachedPropertyBearerBase implements Component {
+public abstract class ComponentBase<TSelf extends ComponentBase<TSelf>>
+        extends AttachedPropertyBearerBase
+        implements Component, TestNamedComponent<TSelf> {
 
     private Component parent;
     private String class_;
@@ -20,7 +21,7 @@ public abstract class ComponentBase<TSelf extends Component>
     }
 
     @SuppressWarnings("unchecked")
-    protected TSelf self() {
+    public TSelf self() {
         return (TSelf) this;
     }
 
@@ -92,11 +93,13 @@ public abstract class ComponentBase<TSelf extends Component>
      * generally be added to the outermost HTML-element rendered for this
      * component by the template.
      */
+    @Override
     public TSelf TEST_NAME(String testName) {
         this.testName = testName;
         return self();
     }
 
+    @Override
     public String TEST_NAME() {
         return testName;
     }

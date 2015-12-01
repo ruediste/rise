@@ -9,6 +9,7 @@ import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CButton;
 import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.component.components.CSortable;
+import com.github.ruediste.rise.component.components.CText;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.security.urlSigning.UrlUnsigned;
@@ -24,9 +25,8 @@ public class TestSortableController extends ControllerComponent {
             return new CPage()
                     .add(new CSortable<String>().CLASS("list-group")
                             .bindItems(() -> controller.data().getItems())
-                            .setChildComponentFactory(x -> toComponent(
-                                    html -> html.li().CLASS("list-group-item")
-                                            .TEST_NAME(x).write(x)._li())))
+                            .setChildComponentFactory(CText::new)
+                            .setTestNameExtractor(x -> x))
                     .add(new CButton(controller, x -> x.pullUp()))
                     .add(new CButton(controller, x -> x.pushDown()))
                     .add(toComponentDirect(

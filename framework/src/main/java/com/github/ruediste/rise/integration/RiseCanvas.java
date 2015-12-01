@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.integration;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.github.ruediste.rendersnakeXT.canvas.FuncCanvas;
@@ -111,6 +112,10 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
     default TSelf TEST_NAME(String name) {
         internal_riseHelper().TEST_NAME(name);
         return self();
+    }
+
+    default TSelf TEST_NAME(Optional<String> name) {
+        return fIfPresent(name, s -> self().TEST_NAME(s));
     }
 
     default TSelf rIfAuthorized(ActionResult target,

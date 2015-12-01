@@ -36,7 +36,8 @@ public class CFormGroupTemplate
                     .filter(x -> x instanceof LabeledComponent)
                     .collect(toList());
             if (labeled.size() == 1)
-                label = ((LabeledComponent) labeled.get(0)).getLabel(labelUtil);
+                label = ((LabeledComponent<?>) labeled.get(0))
+                        .getLabel(labelUtil);
             List<Component> constraintAwares = subTree.stream()
                     .filter(x -> x instanceof ViolationStatusBearer)
                     .collect(toList());

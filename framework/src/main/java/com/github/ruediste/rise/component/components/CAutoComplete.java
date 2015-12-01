@@ -107,6 +107,9 @@ public class CAutoComplete<Titem, Tid>
 
     private final CAutoCompleteParameters<Titem, Tid> parameters;
 
+    /**
+     * for proxy generation
+     */
     CAutoComplete() {
         parameters = null;
     }

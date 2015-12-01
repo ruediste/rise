@@ -1,0 +1,91 @@
+package com.github.ruediste.rise.testApp.component;
+
+import static org.junit.Assert.assertEquals;
+
+import java.util.Optional;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.interactions.Actions;
+
+import com.github.ruediste.rise.testApp.WebTest;
+
+public class TestSelectControllerTest extends WebTest {
+
+    private Actions actions;
+
+    @Before
+    public void before() {
+        actions = new Actions(driver);
+    }
+
+    private void open(boolean allowEmpty, String initialSelection) {
+        driver.navigate().to(url(go(TestSelectController.class)
+                .index(allowEmpty, initialSelection)));
+    }
+
+    @Test
+    public void noneSelected_selectionCorrect() {
+        open(true, null);
+        checkSelection(Optional.empty());
+    }
+
+    @Test
+    public void selected_selectionCorrect() {
+        open(true, "bar");
+        checkSelection(Optional.of("bar"));
+    }
+
+    @Test
+    public void noneSelected_select_push_pull() {
+        open(true, null);
+        select("foo");
+        pushDown();
+        pullUp();
+        checkSelection(Optional.of("foo"));
+    }
+
+    @Test
+    public void noneSelected_select_push() {
+        open(true, null);
+        select("foo");
+        pushDown();
+        checkState(Optional.of("foo"));
+    }
+
+    private void checkSelection(Optional<String> of) {
+        String selection = driver
+                .findElement(By.cssSelector(
+                        dataTestSelector("selectedItem") + "*[selected]"))
+                .getAttribute("data-test-name");
+        Optional<String> current;
+        if ("-".equals(selection))
+            current = Optional.empty();
+        else
+            current = Optional.of(selection);
+        assertEquals(of, current);
+    }
+
+    private void select(String item) {
+        driver.findElement(byDataTestName(item)).click();
+    }
+
+    private void checkState(Optional<String> expected) {
+        doWait().until(() -> assertEquals(expected.toString(), driver
+                .findElement(byDataTestName("controllerStatus")).getText()));
+
+    }
+
+    private void pushDown() {
+        driver.findElement(
+                byDataTestName(TestSelectController.class, x -> x.pushDown()))
+                .click();
+    }
+
+    private void pullUp() {
+        driver.findElement(
+                byDataTestName(TestSelectController.class, x -> x.pullUp()))
+                .click();
+    }
+}

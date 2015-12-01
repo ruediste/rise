@@ -9,6 +9,7 @@ import java.util.List;
 import com.github.ruediste.rise.api.ControllerComponent;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CAutoComplete;
+import com.github.ruediste.rise.component.components.CAutoComplete.AutoSearchMode;
 import com.github.ruediste.rise.component.components.CAutoComplete.CAutoCompleteParameters;
 import com.github.ruediste.rise.component.components.CButton;
 import com.github.ruediste.rise.component.components.CPage;
@@ -60,7 +61,8 @@ public class TestAutoCompleteController extends ControllerComponent {
                         public String getTestName(Entry item) {
                             return String.valueOf(item.getId());
                         }
-                    }).bindItem(() -> controller.data().getEntry()))
+                    }).setAutoSearchMode(controller.autoSearchMode)
+                            .bindItem(() -> controller.data().getEntry()))
                     .add(new CButton(controller, x -> x.pushPull()))
                     .add(new CButton(controller, x -> x.push()))
                     .add(new CButton(controller, x -> x.pull()))
@@ -158,6 +160,7 @@ public class TestAutoCompleteController extends ControllerComponent {
     }
 
     private BindingGroup<Data> data = new BindingGroup<>(new Data());
+    private AutoSearchMode autoSearchMode = AutoSearchMode.SINGLE;
 
     Data data() {
         return getData().proxy();
@@ -165,6 +168,12 @@ public class TestAutoCompleteController extends ControllerComponent {
 
     @UrlUnsigned
     public ActionResult index() {
+        return null;
+    }
+
+    @UrlUnsigned
+    public ActionResult index(CAutoComplete.AutoSearchMode autoSearchMode) {
+        this.autoSearchMode = autoSearchMode;
         return null;
     }
 

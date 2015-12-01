@@ -124,8 +124,8 @@ public class TestClickEditController extends ControllerComponent {
         }
     }
 
-    List<Entry> entries = new ArrayList<>(
-            Arrays.asList(new Entry("Java", 0), new Entry("Ruby", 1)));
+    List<Entry> entries = new ArrayList<>(Arrays.asList(new Entry("Java", 0),
+            new Entry("Ruby", 1), new Entry("JavaScript", 2)));
 
     public static class Data {
         private String testLine;

@@ -3,6 +3,7 @@ package com.github.ruediste.rise.testApp.component;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.github.ruediste.rise.component.components.CAutoComplete.AutoSearchMode;
 import com.github.ruediste.rise.test.elementObject.CAutoCompleteEO;
 import com.github.ruediste.rise.testApp.WebTest;
 
@@ -12,39 +13,50 @@ public class TestAutoCompleteControllerTest extends WebTest {
 
     @Before
     public void before() {
-        driver.navigate().to(url(go(TestAutoCompleteController.class).index()));
         autoComplete = pageObject(CAutoCompleteEO.class,
                 byDataTestName("entry"));
     }
 
+    private void open(AutoSearchMode mode) {
+        driver.navigate()
+                .to(url(go(TestAutoCompleteController.class).index(mode)));
+    }
+
     @Test
     public void searchUnique_noSelect_push_itemPushed() {
+        open(AutoSearchMode.SINGLE);
         autoComplete.setText("Javasc");
-        driver.findElement(byDataTestName("push")).click();
-        doWait().untilTrue(
-                () -> driver.findElement(byDataTestName("chosenEntry"))
-                        .getText().equals("JavaScript"));
+        push();
+        checkControllerState("JavaScript");
     }
 
     @Test
     public void searchNonUnique_noSelect_push_noItemPushed() {
+        open(AutoSearchMode.SINGLE);
         autoComplete.setText("Java");
-        driver.findElement(byDataTestName("push")).click();
-        doWait().untilTrue(
-                () -> driver.findElement(byDataTestName("chosenEntry"))
-                        .getText().equals("null"));
+        push();
+        checkControllerState("null");
     }
 
     @Test
     public void searchNonUnique_select_push_itemPushed() {
+        open(AutoSearchMode.SINGLE);
         autoComplete.setText("Java");
         doWait().untilPassing(() -> autoComplete.choose("0"));
+        push();
+        checkControllerState("Java");
+    }
 
+    private void checkControllerState(String expected) {
+        doWait().untilTrue(() -> {
+            return driver.findElement(byDataTestName("chosenEntry")).getText()
+                    .equals(expected);
+        });
+    }
+
+    private void push() {
         driver.findElement(
                 byDataTestName(TestAutoCompleteController.class, x -> x.push()))
                 .click();
-        doWait().untilTrue(
-                () -> driver.findElement(byDataTestName("chosenEntry"))
-                        .getText().equals("Java"));
     }
 }
