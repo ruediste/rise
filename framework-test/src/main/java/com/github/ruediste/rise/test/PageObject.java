@@ -6,13 +6,16 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 
 public class PageObject {
 
     protected WebDriver driver;
+    protected Actions actions;
     private Optional<Supplier<WebElement>> rootElementSupplier;
     private final TestUtilImpl testUtil = new TestUtilImpl();
 
@@ -29,6 +32,7 @@ public class PageObject {
 
     public void setDriver(WebDriver driver) {
         this.driver = driver;
+        actions = new Actions(driver);
         testUtil.setDriver(driver);
     }
 
@@ -127,5 +131,16 @@ public class PageObject {
 
     protected <T extends PageObject> T pageObject(Class<T> cls, By by) {
         return testUtil.pageObject(cls, by);
+    }
+
+    /**
+     * set the text using actions, solving some issues with the DOM events fired
+     * when using {@link WebElement#clear()} and
+     * {@link WebElement#sendKeys(CharSequence...)}
+     */
+    protected void setText(WebElement element, String text) {
+        actions.click(element).sendKeys(Keys.END).keyDown(Keys.SHIFT)
+                .sendKeys(Keys.HOME).keyUp(Keys.SHIFT).sendKeys(Keys.BACK_SPACE)
+                .sendKeys(text).perform();
     }
 }

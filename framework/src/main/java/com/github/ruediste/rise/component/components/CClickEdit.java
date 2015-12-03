@@ -102,12 +102,14 @@ public class CClickEdit<T> extends RelationsComponent<CClickEdit<T>>
     }
 
     public void switchToView() {
-        isEdit = false;
-        value = valueExtractor.get();
-        valueExtractor = null;
-        focusComponent = null;
-        focusEditComponentOnReload = false;
-        updateChild();
+        if (isEdit) {
+            isEdit = false;
+            value = valueExtractor.get();
+            valueExtractor = null;
+            focusComponent = null;
+            focusEditComponentOnReload = false;
+            updateChild();
+        }
     }
 
     public void switchToEdit() {

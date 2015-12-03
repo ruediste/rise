@@ -7,8 +7,9 @@ import com.github.ruediste.rise.test.PageObject;
 public class CAutoCompleteEO extends PageObject {
 
     public CAutoCompleteEO setText(String text) {
-        rootElement().clear();
-        rootElement().sendKeys(text);
+        actions.click(rootElement()).sendKeys(Keys.END).keyDown(Keys.SHIFT)
+                .sendKeys(Keys.HOME).keyUp(Keys.SHIFT).sendKeys(Keys.BACK_SPACE)
+                .sendKeys(text).perform();
         return this;
     }
 

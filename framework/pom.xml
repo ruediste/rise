@@ -71,6 +71,14 @@
 					<artifactId>commons-exec</artifactId>
 					<groupId>org.apache.commons</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>sass-gems</artifactId>
+					<groupId>me.n4u.sass</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>bourbon-gem-jar</artifactId>
+					<groupId>nz.co.edmi</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 

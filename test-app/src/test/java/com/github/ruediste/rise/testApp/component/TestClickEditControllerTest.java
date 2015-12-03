@@ -40,9 +40,6 @@ public class TestClickEditControllerTest extends WebTest {
     @Test
     public void autoComplete_text_autoSearch_push() throws Throwable {
         getAutoCompleteEditClick().click();
-        Thread.sleep(1000);
-        autoComplete.setText("Ruby");
-        Thread.sleep(1000);
         doWait().untilPassing(() -> autoComplete.setText("Ruby"));
         pushDown();
         checkAutoCompleteValue(AutoCompleteValue

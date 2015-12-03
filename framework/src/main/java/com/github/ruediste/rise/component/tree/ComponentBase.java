@@ -10,7 +10,7 @@ import com.github.ruediste.rise.component.binding.BindingUtil;
 
 public abstract class ComponentBase<TSelf extends ComponentBase<TSelf>>
         extends AttachedPropertyBearerBase
-        implements Component, TestNamedComponent<TSelf> {
+        implements TestNamedComponent<TSelf>, Component {
 
     private Component parent;
     private String class_;
