@@ -18,8 +18,8 @@ public class TestClickEditControllerTest extends WebTest {
     @Before
     public void before() {
         driver.navigate().to(url(go(TestClickEditController.class).index()));
-        autoComplete = pageObject(CAutoCompleteEO.class, By.cssSelector(
-                dataTestSelector("autoComplete") + ".rise_autocomplete"));
+        autoComplete = pageObject(CAutoCompleteEO.class,
+                By.cssSelector(dataTestSelector("autoComplete") + "> input"));
     }
 
     @Test
@@ -38,8 +38,11 @@ public class TestClickEditControllerTest extends WebTest {
     }
 
     @Test
-    public void autoComplete_text_autoSearch_push() {
-        getAutoComplete().click();
+    public void autoComplete_text_autoSearch_push() throws Throwable {
+        getAutoCompleteEditClick().click();
+        Thread.sleep(1000);
+        autoComplete.setText("Ruby");
+        Thread.sleep(1000);
         doWait().untilPassing(() -> autoComplete.setText("Ruby"));
         pushDown();
         checkAutoCompleteValue(AutoCompleteValue
@@ -62,7 +65,7 @@ public class TestClickEditControllerTest extends WebTest {
                 .click();
     }
 
-    private WebElement getAutoComplete() {
+    private WebElement getAutoCompleteEditClick() {
         return driver.findElement(byDataTestName("autoComplete"));
     }
 

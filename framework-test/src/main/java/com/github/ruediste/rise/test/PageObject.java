@@ -2,6 +2,7 @@ package com.github.ruediste.rise.test;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.openqa.selenium.By;
@@ -9,10 +10,11 @@ import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-public class PageObject implements TestUtil {
+public class PageObject {
 
     protected WebDriver driver;
     private Optional<Supplier<WebElement>> rootElementSupplier;
+    private final TestUtilImpl testUtil = new TestUtilImpl();
 
     /**
      * Called after fields have been initialized. No need to call super()
@@ -27,6 +29,7 @@ public class PageObject implements TestUtil {
 
     public void setDriver(WebDriver driver) {
         this.driver = driver;
+        testUtil.setDriver(driver);
     }
 
     public Optional<Supplier<WebElement>> getRootElementSupplier() {
@@ -45,11 +48,6 @@ public class PageObject implements TestUtil {
         this.rootElementSupplier = rootElementSupplier;
     }
 
-    @Override
-    public WebDriver internal_getDriver() {
-        return driver;
-    }
-
     private SearchContext getSearchContext() {
         return rootElementSupplier.map(x -> (SearchContext) x.get())
                 .orElse(driver);
@@ -61,5 +59,73 @@ public class PageObject implements TestUtil {
 
     protected List<WebElement> findElements(By by) {
         return by.findElements(getSearchContext());
+    }
+
+    protected RiseWait<WebDriver> doWait() {
+        return testUtil.doWait();
+    }
+
+    protected RiseWait<WebDriver> doWait(long timeOutInSeconds) {
+        return testUtil.doWait(timeOutInSeconds);
+    }
+
+    protected <T> void assertPage(Class<T> cls, Consumer<T> methodAccessor) {
+        testUtil.assertPage(cls, methodAccessor);
+    }
+
+    protected By byDataTestName(String name) {
+        return testUtil.byDataTestName(name);
+    }
+
+    protected <T> String dataTestSelector(Class<T> cls, Consumer<T> accessor) {
+        return testUtil.dataTestSelector(cls, accessor);
+    }
+
+    protected String dataTestSelector(String name) {
+        return testUtil.dataTestSelector(name);
+    }
+
+    protected <T> By byDataTestName(Class<T> cls, Consumer<T> accessor) {
+        return testUtil.byDataTestName(cls, accessor);
+    }
+
+    protected <T> String dataTestName(Class<T> cls, Consumer<T> accessor) {
+        return testUtil.dataTestName(cls, accessor);
+    }
+
+    protected void clickAndWaitForRefresh(WebElement element) {
+        testUtil.clickAndWaitForRefresh(element);
+    }
+
+    protected void clickAndWaitForRefresh(WebElement element, int waitSeconds) {
+        testUtil.clickAndWaitForRefresh(element, waitSeconds);
+    }
+
+    protected <T extends WebElement> void waitForRefresh(T element,
+            Consumer<T> action) {
+        testUtil.waitForRefresh(element, action);
+    }
+
+    protected <T extends WebElement> void waitForRefresh(T element,
+            int timeoutSeconds, Consumer<T> action) {
+        testUtil.waitForRefresh(element, timeoutSeconds, action);
+    }
+
+    protected <T extends WebElement> WebElement getContainingReloadElement(
+            T element) {
+        return testUtil.getContainingReloadElement(element);
+    }
+
+    protected <T extends PageObject> T pageObject(Class<T> cls) {
+        return testUtil.pageObject(cls);
+    }
+
+    protected <T extends PageObject> T pageObject(Class<T> cls,
+            Supplier<WebElement> rootElementFunction) {
+        return testUtil.pageObject(cls, rootElementFunction);
+    }
+
+    protected <T extends PageObject> T pageObject(Class<T> cls, By by) {
+        return testUtil.pageObject(cls, by);
     }
 }

@@ -1,5 +1,7 @@
 package com.github.ruediste.rise.test.elementObject;
 
+import org.openqa.selenium.Keys;
+
 import com.github.ruediste.rise.test.PageObject;
 
 public class CAutoCompleteEO extends PageObject {
@@ -15,5 +17,14 @@ public class CAutoCompleteEO extends PageObject {
         driver.findElement(byDataTestName("rise_autocomplete_" + testName))
                 .findElement(byDataTestName(optionTestName)).click();
         return this;
+    }
+
+    public CAutoCompleteEO enter() {
+        rootElement().sendKeys(Keys.ENTER);
+        return this;
+    }
+
+    public String getText() {
+        return rootElement().getAttribute("value");
     }
 }

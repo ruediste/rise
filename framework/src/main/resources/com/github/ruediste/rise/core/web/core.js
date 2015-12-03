@@ -122,6 +122,12 @@ var rise = (function() {
 			event.stopPropagation();
 			reload(this);
 		});
+		
+		$(document).on("submit", ".rise_reload", function(event) {
+			event.preventDefault();
+			event.stopPropagation();
+			reload(this);
+		});
 
 		// clicks on rise_buttons trigger a view reload
 		$(document).on("click", ".rise_button", function() {
@@ -239,7 +245,7 @@ rise.onReload.add(function(reloaded) {
 });
 
 // click edit
-$(document).on("focusout", ".rise_click_edit._edit", function() {
+$(document).on("change focusout", ".rise_click_edit._edit", function() {
 	var callback = function(element) {
 		rise.setExtractData(element, function(data) {
 			data.push({

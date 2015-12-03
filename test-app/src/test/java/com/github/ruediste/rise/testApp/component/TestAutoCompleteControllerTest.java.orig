@@ -1,7 +1,5 @@
 package com.github.ruediste.rise.testApp.component;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,15 +23,6 @@ public class TestAutoCompleteControllerTest extends WebTest {
     }
 
     @Test
-    public void text_enter_reloadCorrect() {
-        open(AutoSearchMode.SINGLE);
-        autoComplete.setText("foo").enter();
-        doWait().untilPassing(() -> {
-            assertEquals("foo", autoComplete.getText());
-        });
-    }
-
-    @Test
     public void searchUnique_noSelect_push_itemPushed() {
         open(AutoSearchMode.SINGLE);
         autoComplete.setText("Javasc");
@@ -53,7 +42,10 @@ public class TestAutoCompleteControllerTest extends WebTest {
     public void searchNonUnique_select_push_itemPushed() {
         open(AutoSearchMode.SINGLE);
         autoComplete.setText("Java");
+<<<<<<< HEAD
         doWait().untilPassing(() -> autoComplete.choose("0"));
+=======
+        doWait().until(() -> autoComplete.choose("0"));
         push();
         checkControllerState("Java");
     }
@@ -64,6 +56,7 @@ public class TestAutoCompleteControllerTest extends WebTest {
                     .equals(expected);
         });
     }
+>>>>>>> add CSelect
 
     private void push() {
         driver.findElement(

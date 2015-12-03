@@ -1,15 +1,16 @@
 package com.github.ruediste.rise.test;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.support.ui.Clock;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.Sleeper;
 
 /**
  * Helper to poll for a condition to become true.
@@ -19,26 +20,17 @@ import org.openqa.selenium.support.ui.Sleeper;
  * with Java 8 Lambdas.
  */
 public class RiseWait<T> {
-    FluentWait<T> fluentWait;
+    private T input;
+    private Duration timeout = Duration.ofSeconds(1);
+    private Duration interval = Duration.ofMillis(500);
+    private String message;
 
     /**
      * @param input
      *            The input value to pass to the evaluated conditions.
      */
     public RiseWait(T input) {
-        fluentWait = new FluentWait<>(input);
-    }
-
-    /**
-     * @param input
-     *            The input value to pass to the evaluated conditions.
-     * @param clock
-     *            The clock to use when measuring the timeout.
-     * @param sleeper
-     *            Used to put the thread to sleep between evaluation loops.
-     */
-    public RiseWait(T input, Clock clock, Sleeper sleeper) {
-        fluentWait = new FluentWait<>(input, clock, sleeper);
+        this.input = input;
     }
 
     /**
@@ -50,8 +42,8 @@ public class RiseWait<T> {
      * 
      * @return A self reference.
      */
-    public RiseWait<T> withTimeout(java.time.Duration duration) {
-        fluentWait.withTimeout(duration.toMillis(), TimeUnit.MILLISECONDS);
+    public RiseWait<T> withTimeout(java.time.Duration timeout) {
+        this.timeout = timeout;
         return this;
     }
 
@@ -63,7 +55,7 @@ public class RiseWait<T> {
      * @return A self reference.
      */
     public RiseWait<T> withMessage(String message) {
-        fluentWait.withMessage(message);
+        this.message = message;
         return this;
     }
 
@@ -79,8 +71,8 @@ public class RiseWait<T> {
      *            The timeout duration.
      * @return A self reference.
      */
-    public RiseWait<T> pollingEvery(java.time.Duration duration) {
-        fluentWait.pollingEvery(duration.toMillis(), TimeUnit.MILLISECONDS);
+    public RiseWait<T> pollingEvery(java.time.Duration interval) {
+        this.interval = interval;
         return this;
     }
 
@@ -89,18 +81,47 @@ public class RiseWait<T> {
      * until the timeout expires or the consumer runs without exception.
      **/
     public void untilPassing(final Consumer<T> passes) {
-        untilTrue(new Predicate<T>() {
-            @Override
-            public boolean test(T i) {
-                passes.accept(i);
-                return true;
+        untilSucessful(() -> {
+            passes.accept(input);
+            return null;
+        } , x -> true,
+                lastThrowable -> new TimeoutException(
+                        String.format(
+                                "Timed out after waiting %.2f seconds for %s%s",
+                                timeout.toMillis() / 1000.0,
+                                message == null ? passes : message,
+                                lastThrowable == null ? ""
+                                        : ". Cause:\n"
+                                                + lastThrowable.toString()),
+                        lastThrowable));
+    }
+
+    private <V> V untilSucessful(final Supplier<V> operation,
+            Predicate<V> isSuccessful,
+            Function<Throwable, RuntimeException> exceptionProducer) {
+        Instant end = Instant.now().plus(interval);
+        Throwable lastThrowable;
+        while (true) {
+            try {
+                V result = operation.get();
+                if (isSuccessful.test(result))
+                    return result;
+                else
+                    lastThrowable = null;
+            } catch (Throwable t) {
+                lastThrowable = t;
+            }
+            if (Instant.now().isAfter(end)) {
+                throw exceptionProducer.apply(lastThrowable);
             }
 
-            @Override
-            public String toString() {
-                return passes.toString();
+            try {
+                Thread.sleep(interval.toMillis());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new WebDriverException(e);
             }
-        });
+        }
     }
 
     /**
@@ -144,21 +165,14 @@ public class RiseWait<T> {
      *             If the timeout expires.
      */
     public void untilTrue(final Predicate<T> isTrue) {
-        fluentWait.until(new com.google.common.base.Predicate<T>() {
-            @Override
-            public boolean apply(T input) {
-                try {
-                    return isTrue.test(input);
-                } catch (Throwable t) {
-                    return false;
-                }
-            }
+        untilSucessful(() -> isTrue.test(input), x -> x,
+                lastThrowable -> new TimeoutException(
+                        String.format(
+                                "Timed out after waiting %d seconds for %s to return true",
+                                timeout.toMillis() / 1000.0,
+                                message == null ? isTrue : message),
+                        lastThrowable));
 
-            @Override
-            public String toString() {
-                return isTrue.toString();
-            }
-        });
     }
 
     /**
@@ -181,22 +195,14 @@ public class RiseWait<T> {
      *             If the timeout expires.
      */
     public <V> V untilValue(Function<? super T, V> isTrue) {
-        return fluentWait.until(new com.google.common.base.Function<T, V>() {
-
-            @Override
-            public V apply(T input) {
-                try {
-                    return isTrue.apply(input);
-                } catch (Throwable t) {
-                    return null;
-                }
-            }
-
-            @Override
-            public String toString() {
-                return isTrue.toString();
-            }
-        });
+        return untilSucessful(() -> isTrue.apply(input),
+                x -> x != null && x != Boolean.FALSE,
+                lastThrowable -> new TimeoutException(
+                        String.format(
+                                "Timed out after waiting %d seconds for %s to return a value other than null or false",
+                                timeout.toMillis() / 1000.0,
+                                message == null ? isTrue : message),
+                        lastThrowable));
     }
 
 }
