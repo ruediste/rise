@@ -13,7 +13,8 @@ import com.github.ruediste.rise.component.tree.SingleChildRelation;
  * back to the display view when the focus on the edit view is lost.
  */
 @DefaultTemplate(CCLickEditTemplate.class)
-public class CClickEdit<T> extends RelationsComponent<CClickEdit<T>> {
+public class CClickEdit<T> extends RelationsComponent<CClickEdit<T>>
+        implements LabeledComponentTrait<CClickEdit<T>> {
 
     private SingleChildRelation<Component, CClickEdit<T>> child = new SingleChildRelation<>(
             this);
@@ -28,6 +29,7 @@ public class CClickEdit<T> extends RelationsComponent<CClickEdit<T>> {
     private Component focusComponent;
 
     private boolean focusEditComponentOnReload;
+    private LabeledComponentStatus labeledComponentStatus = new LabeledComponentStatus();
 
     CClickEdit() {
     }
@@ -83,8 +85,12 @@ public class CClickEdit<T> extends RelationsComponent<CClickEdit<T>> {
         return this;
     }
 
+    /**
+     * Bind the value to a property, set the label if the property is labeled
+     * and set the {@link #TEST_NAME()} to the name of the property
+     */
     public CClickEdit<T> bindValue(Supplier<T> supplier) {
-        return bindTestNameProperty(x -> x.setValue(supplier.get()));
+        return bindLabelProperty(x -> x.setValue(supplier.get()));
     }
 
     public BiConsumer<T, EditComponentConsumer<T>> getEditComponentFactory() {
@@ -146,5 +152,10 @@ public class CClickEdit<T> extends RelationsComponent<CClickEdit<T>> {
     public void setFocusEditComponentOnReload(
             boolean focusEditComponentOnReload) {
         this.focusEditComponentOnReload = focusEditComponentOnReload;
+    }
+
+    @Override
+    public LabeledComponentStatus internal_getLabeledComponentStatus() {
+        return labeledComponentStatus;
     }
 }

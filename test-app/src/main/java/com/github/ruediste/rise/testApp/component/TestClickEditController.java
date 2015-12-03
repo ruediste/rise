@@ -76,8 +76,8 @@ public class TestClickEditController extends ControllerComponent {
                                     public String getTestName(Entry item) {
                                         return item.name;
                                     }
-                                }).setValue(v)
-                                        .setAutoSearchMode(AutoSearchMode.NONE);
+                                }).setValue(v).setAutoSearchMode(
+                                        AutoSearchMode.SINGLE);
                                 c.setEditComponent(auto, () -> auto.getValue(),
                                         auto);
                             }).bindValue(
@@ -113,7 +113,7 @@ public class TestClickEditController extends ControllerComponent {
         String name;
         int id;
 
-        Entry(String name, int id) {
+        public Entry(String name, int id) {
             this.name = name;
             this.id = id;
         }

@@ -72,7 +72,7 @@ public class TestSelectControllerTest extends WebTest {
     }
 
     private void checkState(Optional<String> expected) {
-        doWait().until(() -> assertEquals(expected.toString(), driver
+        doWait().untilPassing(() -> assertEquals(expected.toString(), driver
                 .findElement(byDataTestName("controllerStatus")).getText()));
 
     }
@@ -84,8 +84,8 @@ public class TestSelectControllerTest extends WebTest {
     }
 
     private void pullUp() {
-        driver.findElement(
+        doWait().untilPassing(() -> driver.findElement(
                 byDataTestName(TestSelectController.class, x -> x.pullUp()))
-                .click();
+                .click());
     }
 }

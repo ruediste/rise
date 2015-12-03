@@ -38,6 +38,9 @@ public interface LabeledComponentTrait<TSelf extends LabeledComponentTrait<TSelf
         return internal_getLabeledComponentStatus().getLabelProperty();
     }
 
+    /**
+     * Set the label property and the {@link #TEST_NAME()}
+     */
     default TSelf setLabelProperty(PropertyInfo labelProperty) {
         internal_getLabeledComponentStatus().setLabelProperty(labelProperty);
         TEST_NAME(labelProperty.getName());
@@ -54,6 +57,10 @@ public interface LabeledComponentTrait<TSelf extends LabeledComponentTrait<TSelf
         return internal_getLabeledComponentStatus().getLabel(labelUtil);
     }
 
+    /**
+     * Bind a property, set the label to the label of the property and the
+     * {@link #TEST_NAME()} to the name of the property
+     */
     default TSelf bindLabelProperty(Consumer<TSelf> accessor) {
         TSelf self = self();
         setLabelProperty(BindingUtil.bind(self, accessor).getB());
