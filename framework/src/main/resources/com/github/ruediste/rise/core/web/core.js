@@ -124,9 +124,9 @@ var rise = (function() {
 		});
 		
 		$(document).on("submit", ".rise_reload", function(event) {
+			// cancel submit events
 			event.preventDefault();
 			event.stopPropagation();
-			reload(this);
 		});
 
 		// clicks on rise_buttons trigger a view reload
@@ -154,6 +154,7 @@ var rise = (function() {
 			return false;
 		};
 
+		// register generic event handlers
 		[ "focusin", "focusout", "click" ].forEach(function(event) {
 			$(document).on(event, "*[data-rise-reload-on-" + event + "]",
 					event, eventHandler);
@@ -245,7 +246,7 @@ rise.onReload.add(function(reloaded) {
 });
 
 // click edit
-$(document).on("change focusout", ".rise_click_edit._edit", function() {
+$(document).on("focusout", ".rise_click_edit._edit", function(event) {
 	var callback = function(element) {
 		rise.setExtractData(element, function(data) {
 			data.push({
@@ -255,7 +256,7 @@ $(document).on("change focusout", ".rise_click_edit._edit", function() {
 		rise.triggerViewReload(element);
 	}
 	window.setTimeout(callback,0,$(this));
-	return false;
+	return true;
 });
 $(document).on("click", ".rise_click_edit._view", function() {
 	rise.setExtractData(this, function(data) {
