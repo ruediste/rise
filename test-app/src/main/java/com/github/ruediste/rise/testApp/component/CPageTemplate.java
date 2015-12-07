@@ -8,6 +8,8 @@ import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
+import com.github.ruediste.rise.core.web.assetPipeline.CssProcessor;
+import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
 import com.github.ruediste.rise.core.web.bootstrap.BootstrapBundle;
 import com.github.ruediste.rise.core.web.jQuery.JQueryAssetBundle;
 import com.github.ruediste.rise.core.web.jQueryUi.JQueryUiAssetBundle;
@@ -31,14 +33,19 @@ public class CPageTemplate extends ComponentTemplateBase<CPage> {
         @Inject
         JQueryUiAssetBundle jQueryUiAssetBundle;
 
+        @Inject
+        CssProcessor css;
+
         AssetBundleOutput out = new AssetBundleOutput(this);
 
         @Override
         public void initialize() {
-            jQueryAssetBundle.out.send(out);
-            jQueryUiAssetBundle.out.send(out);
-            bootstrapBundle.out.send(out);
-            coreBundle.out.send(out);
+            jQueryAssetBundle.out
+                    .join(jQueryUiAssetBundle.out, bootstrapBundle.out,
+                            coreBundle.out)
+                    .select(DefaultAssetTypes.CSS)
+                    .split(g -> g.map(css.process("{qname}.{ext}", x -> x)))
+                    .send(out);
         }
 
     }

@@ -27,7 +27,7 @@ public class AssetReferencingView
     Bundle bundle;
 
     @Override
-    protected AssetBundleOutput getAssetBundleOut(TestAssetBundle bundle) {
+    protected AssetBundleOutput getAssetBundleOut(MvcAssetBundle bundle) {
         return this.bundle.out;
     }
 

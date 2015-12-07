@@ -304,6 +304,10 @@ public class AssetGroup {
             this.test = test;
         }
 
+        /**
+         * Process the matching assets with the given function, leave the other
+         * assets unchanged
+         */
         public AssetGroup split(Function<AssetGroup, AssetGroup> match) {
             return split(match, x -> x);
         }

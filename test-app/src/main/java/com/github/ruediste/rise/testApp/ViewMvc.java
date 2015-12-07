@@ -42,14 +42,14 @@ public abstract class ViewMvc<TController extends IControllerMvc, TData>
 
                 @Override
                 public AssetBundleOutput getAssetBundleOut(
-                        TestAssetBundle bundle) {
+                        MvcAssetBundle bundle) {
                     return ViewMvc.this.getAssetBundleOut(bundle);
                 }
             });
         });
     }
 
-    protected AssetBundleOutput getAssetBundleOut(TestAssetBundle bundle) {
+    protected AssetBundleOutput getAssetBundleOut(MvcAssetBundle bundle) {
         return bundle.out;
     }
 

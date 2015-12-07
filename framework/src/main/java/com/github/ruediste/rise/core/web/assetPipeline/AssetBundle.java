@@ -41,9 +41,6 @@ public abstract class AssetBundle {
     AssetHelper helper;
 
     @Inject
-    CssProcessor cssProcessor;
-
-    @Inject
     ClasspathResourceIndex resourceIndex;
 
     AttachedPropertyBearerBase cache = new AttachedPropertyBearerBase();

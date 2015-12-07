@@ -11,7 +11,7 @@ import com.github.ruediste1.i18n.lString.LString;
 public class TestPageTemplate extends PageTemplateBase {
 
     @Inject
-    TestAssetBundle bundle;
+    MvcAssetBundle bundle;
 
     @Inject
     RisePageTemplate<TestCanvas> risePageTemplate;
@@ -51,7 +51,7 @@ public class TestPageTemplate extends PageTemplateBase {
 
         void renderContent(TestCanvas html);
 
-        default AssetBundleOutput getAssetBundleOut(TestAssetBundle bundle) {
+        default AssetBundleOutput getAssetBundleOut(MvcAssetBundle bundle) {
             return bundle.out;
         }
     }

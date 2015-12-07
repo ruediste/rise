@@ -8,7 +8,6 @@ public class JQueryUiAssetBundle extends AssetBundle {
 
     @Override
     protected void initialize() {
-
         out = webJar("jquery-ui", "jquery-ui.js", "jquery-ui.css",
                 "jquery-ui.theme.css", "jquery-ui.structure.css")
                         .insertMinInProd().load();
