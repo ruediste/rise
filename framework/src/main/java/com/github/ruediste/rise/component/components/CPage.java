@@ -33,4 +33,5 @@ public class CPage extends RelationsComponent<CPage> {
     public void setTitle(LString title) {
         this.title = title;
     }
+
 }

@@ -141,6 +141,11 @@ var rise = (function() {
 			triggerViewReload(this);
 			return false;
 		});
+		
+		$(document).on("change", ".rise_c_select._selectionHandler", function() {
+			triggerViewReload(this);
+			return false;
+		});
 
 		// support for generic event handlers
 		var eventHandler = function(evt) {
@@ -159,6 +164,8 @@ var rise = (function() {
 			$(document).on(event, "*[data-rise-reload-on-" + event + "]",
 					event, eventHandler);
 		});
+		
+		
 
 		// start polling for application restart
 		pollForApplicationRestart();

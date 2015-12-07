@@ -23,6 +23,9 @@ public class TestSelectController extends ControllerComponent {
 
         @Override
         protected Component createComponents() {
+            CText selectedItemText = new CText(
+                    String.valueOf(controller.data().getSelectedItem()))
+                            .TEST_NAME("viewStatus");
             return new CPage()
                     .add(new CSelect<String>().CLASS("list-group")
                             .bindItems(() -> controller.data().getItems())
@@ -30,15 +33,20 @@ public class TestSelectController extends ControllerComponent {
                             .bindSelectedItem(
                                     () -> controller.data().getSelectedItem())
                     .setChildComponentFactory(x -> new CText(x))
-                    .setTestNameExtractor(x -> x))
-                    .add(new CButton(controller, x -> x.pullUp()))
+                    .setTestNameExtractor(x -> x).apply(x -> {
+                        if (controller.addSelectionHandler) {
+                            x.setSelectionHandler(i -> selectedItemText
+                                    .setTextString(String.valueOf(i)));
+                        }
+                    })).add(new CButton(controller, x -> x.pullUp()))
                     .add(new CButton(controller, x -> x.pushDown()))
                     .add(new CButton(controller, x -> x.reload()))
-                    .add(toComponentDirect(html -> html.span()
-                            .TEST_NAME("controllerStatus")
-                            .write(String.valueOf(
-                                    controller.data.get().getSelectedItem()))
-                            ._span()));
+                    .add(toComponentDirect(
+                            html -> html.span().TEST_NAME("controllerStatus")
+                                    .write(String.valueOf(controller.data.get()
+                                            .getSelectedItem()))
+                                    ._span()))
+                    .add(selectedItemText);
         }
     }
 
@@ -72,6 +80,7 @@ public class TestSelectController extends ControllerComponent {
     }
 
     boolean allowEmpty;
+    boolean addSelectionHandler;
 
     @Labeled
     public void reload() {
@@ -91,8 +100,18 @@ public class TestSelectController extends ControllerComponent {
     }
 
     @UrlUnsigned
-    public ActionResult index(boolean allowEmpty, String initialSelection) {
+    public ActionResult selectionHandler() {
+        allowEmpty = true;
+        addSelectionHandler = true;
+        return null;
+
+    }
+
+    @UrlUnsigned
+    public ActionResult index(boolean allowEmpty, String initialSelection,
+            boolean addHandler) {
         this.allowEmpty = allowEmpty;
+        this.addSelectionHandler = addHandler;
         data.get().setSelectedItem(Optional.ofNullable(initialSelection));
         return null;
     }

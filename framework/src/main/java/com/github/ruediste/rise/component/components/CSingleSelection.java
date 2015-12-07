@@ -1,6 +1,8 @@
 package com.github.ruediste.rise.component.components;
 
+import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.github.ruediste.rise.component.ViolationStatus;
@@ -19,6 +21,8 @@ public class CSingleSelection<T, TSelf extends CSingleSelection<T, TSelf>>
     private LabeledComponentStatus labeledComponentStatus = new LabeledComponentStatus();
     private ViolationStatus violationStatus = new ViolationStatus();
 
+    private Consumer<Optional<T>> selectionHandler;
+
     public boolean isItemSelected(T item) {
         return selectedItem.equals(Optional.of(item));
     }
@@ -29,7 +33,11 @@ public class CSingleSelection<T, TSelf extends CSingleSelection<T, TSelf>>
 
     public TSelf setSelectedItem(Optional<T> selectedItem) {
         Preconditions.checkNotNull(selectedItem);
+        boolean invokeHandler = selectionHandler != null
+                && !Objects.equals(this.selectedItem, selectedItem);
         this.selectedItem = selectedItem;
+        if (invokeHandler)
+            selectionHandler.accept(selectedItem);
         return self();
     }
 
@@ -46,4 +54,14 @@ public class CSingleSelection<T, TSelf extends CSingleSelection<T, TSelf>>
     public ViolationStatus getViolationStatus() {
         return violationStatus;
     }
+
+    public TSelf setSelectionHandler(Consumer<Optional<T>> selectionHandler) {
+        this.selectionHandler = selectionHandler;
+        return self();
+    }
+
+    public Consumer<Optional<T>> getSelectionHandler() {
+        return selectionHandler;
+    }
+
 }

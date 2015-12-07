@@ -20,26 +20,27 @@ public class TestSelectControllerTest extends WebTest {
         actions = new Actions(driver);
     }
 
-    private void open(boolean allowEmpty, String initialSelection) {
+    private void open(boolean allowEmpty, String initialSelection,
+            boolean addHandler) {
         driver.navigate().to(url(go(TestSelectController.class)
-                .index(allowEmpty, initialSelection)));
+                .index(allowEmpty, initialSelection, addHandler)));
     }
 
     @Test
     public void noneSelected_selectionCorrect() {
-        open(true, null);
+        open(true, null, false);
         checkSelection(Optional.empty());
     }
 
     @Test
     public void selected_selectionCorrect() {
-        open(true, "bar");
+        open(true, "bar", false);
         checkSelection(Optional.of("bar"));
     }
 
     @Test
     public void noneSelected_select_push_pull() {
-        open(true, null);
+        open(true, null, false);
         select("foo");
         pushDown();
         pullUp();
@@ -48,10 +49,31 @@ public class TestSelectControllerTest extends WebTest {
 
     @Test
     public void noneSelected_select_push() {
-        open(true, null);
+        open(true, null, false);
         select("foo");
         pushDown();
         checkState(Optional.of("foo"));
+    }
+
+    @Test
+    public void withSelectHandler_changeSelection_viewStatusUpdated() {
+        open(true, null, true);
+        checkViewStatus(Optional.empty());
+        select("foo");
+        checkViewStatus(Optional.of("foo"));
+    }
+
+    @Test
+    public void noSelectHandler_changeSelection_viewStatusNotUpdated() {
+        open(true, null, false);
+        checkViewStatus(Optional.empty());
+        select("foo");
+        checkViewStatus(Optional.empty());
+    }
+
+    private void checkViewStatus(Optional<Object> item) {
+        doWait().untilPassing(() -> assertEquals(String.valueOf(item),
+                driver.findElement(byDataTestName("viewStatus")).getText()));
     }
 
     private void checkSelection(Optional<String> of) {

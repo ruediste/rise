@@ -17,8 +17,11 @@ public class CSelectTemplate
         if (!select.isAllowEmpty() && !select.getSelectedItem().isPresent())
             throw new RuntimeException(
                     "CSelect does not allow an empty selection, but no item is selected");
-        html.select().BformControl().rCOMPONENT_ATTRIBUTES(select)
+        html.select().BformControl().CLASS("rise_c_select")
+                .rCOMPONENT_ATTRIBUTES(select)
                 .NAME(util.getKey(select, "value"))
+                .fIf(select.getSelectionHandler() != null,
+                        () -> html.CLASS("_selectionHandler"))
                 .fIf(select.isAllowEmpty(),
                         () -> html.option().VALUE("-").TEST_NAME("-")
                                 .fIf(!select.getSelectedItem().isPresent(),
@@ -46,5 +49,13 @@ public class CSelectTemplate
                 component.setSelectedItem(Optional.of(
                         component.getItems().get(Integer.parseInt(idxStr))));
         });
+    }
+
+    @Override
+    public void raiseEvents(CSelect<?> component) {
+        raiseEventsImpl(component);
+    }
+
+    public <T> void raiseEventsImpl(CSelect<T> select) {
     }
 }
