@@ -37,7 +37,7 @@ public class RiseWait<T> {
      * Sets how long to wait for the evaluated condition to be true. The default
      * timeout is 0.5 seconds.
      *
-     * @param duration
+     * @param timeout
      *            The timeout duration.
      * 
      * @return A self reference.
@@ -67,8 +67,8 @@ public class RiseWait<T> {
      * evaluating a condition function is not factored in. The default polling
      * interval is 500ms.
      *
-     * @param duration
-     *            The timeout duration.
+     * @param interval
+     *            the polling interval
      * @return A self reference.
      */
     public RiseWait<T> pollingEvery(java.time.Duration interval) {

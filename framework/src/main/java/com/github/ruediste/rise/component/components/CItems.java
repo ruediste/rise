@@ -50,8 +50,7 @@ public class CItems<T, TSelf extends CItems<T, TSelf>>
     }
 
     /**
-     * update the child components if {@link #shouldRecalculateChildren()}
-     * returns true
+     * update the child components if {@link #childrenDirty} is true
      */
     protected void updateChildren() {
         if (childrenDirty) {

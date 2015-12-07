@@ -22,6 +22,7 @@ import com.google.common.collect.MultimapBuilder;
  * {@link GenericEventManager} must be kept. Typical code:
  * 
  * <pre>
+ * {@code
  * 
  * private GenericEventManager<MyObj> myEventMgr = new GenericEventManager<>();
  * 
@@ -35,7 +36,9 @@ import com.google.common.collect.MultimapBuilder;
  *     myEventMgr.fire(this);
  * }
  * 
+ * }
  * </pre>
+ * 
  * 
  * <p>
  * <b> Weak Listeners </b> <br>
