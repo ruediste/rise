@@ -49,4 +49,11 @@ public class CrudDisplayPO extends PageObject {
                 .stream().map(x -> x.getAttribute("data-test-name"))
                 .collect(toList());
     }
+
+    public CrudBrowserPO showItems(String name) {
+        driver.findElement(By.cssSelector(
+                dataTestSelector("properties") + dataTestSelector(name)))
+                .click();
+        return pageObject(CrudBrowserPO.class);
+    }
 }

@@ -1,6 +1,5 @@
 package com.github.ruediste.rise.integration;
 
-import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -19,6 +18,7 @@ import com.github.ruediste.rise.core.web.CoreAssetBundle;
 import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.front.RestartCountHolder;
+import com.github.ruediste.rise.util.MethodInvocation;
 
 public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>>
         extends PageTemplateBase {
@@ -52,9 +52,14 @@ public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>>
             ActionInvocation<String> invocation = coreRequestInfo
                     .getStringActionInvocation();
             if (invocation != null) {
-                Method method = invocation.methodInvocation.getMethod();
-                testName = method.getDeclaringClass().getName() + "."
-                        + method.getName();
+                MethodInvocation<String> methodInvocation = invocation.methodInvocation;
+                String ctrlName = coreConfig
+                        .getRequestMapper(methodInvocation.getInstanceClass())
+                        .getControllerImplementationClass(
+                                methodInvocation.getInstanceClass())
+                        .getName();
+                testName = ctrlName + "."
+                        + methodInvocation.getMethod().getName();
             }
         }
         //@formatter:off
@@ -139,7 +144,7 @@ public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>>
                             + (isFixed ? " rise-ribbon-fixed" : ""))
                     .STYLE("background: " + stage.backgroundColor)
 
-            .a().STYLE("color: " + stage.color)
+                    .a().STYLE("color: " + stage.color)
                     .HREF(urlPoducer.apply(
                             coreRequestInfo.getRequest().createUrlSpec()))
                     .content(stage.toString())._div();

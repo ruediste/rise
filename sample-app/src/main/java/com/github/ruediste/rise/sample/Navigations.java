@@ -4,23 +4,32 @@ import javax.inject.Singleton;
 
 import com.github.ruediste.rise.core.navigation.Navigation;
 import com.github.ruediste.rise.core.navigation.NavigationsContainer;
+import com.github.ruediste.rise.sample.component.SampleComponentController;
+import com.github.ruediste.rise.sample.crud.CrudController;
 import com.github.ruediste.rise.sample.welcome.WelcomeController;
 import com.github.ruediste1.i18n.label.MembersLabeled;
 
+/**
+ * Contains the {@link Navigation} of the sample application, used to render the
+ * menu.
+ */
 @Singleton
 public class Navigations extends NavigationsContainer {
 
     @MembersLabeled
     private enum GroupLabels {
-        A
+        CRUD
     }
 
     Navigation topNavigation;
 
     @Override
     protected void initializeImpl() {
-        topNavigation = build().group(GroupLabels.A)
-                .add(go(WelcomeController.class).index())._group()
-                .add(go(WelcomeController.class).other()).getResult();
+        topNavigation = build().add(go(WelcomeController.class).index())
+                .add(go(SampleComponentController.class).index())
+                .group(GroupLabels.CRUD)
+                .add(go(CrudController.class).showTodos())
+                .add(go(CrudController.class).showTodoCategories())._group()
+                .getResult();
     }
 }

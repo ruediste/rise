@@ -16,6 +16,12 @@ import com.github.ruediste.rise.crud.CrudUtil.EditFactory;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
 import com.github.ruediste1.i18n.label.Labeled;
 
+/**
+ * Base class for controllers exposing the CRUD UI.
+ * 
+ * <p>
+ * This class is intended to be subclassed in the concrete applications.
+ */
 public abstract class CrudControllerBase extends ControllerComponent {
 
     @Inject

@@ -24,4 +24,15 @@ public class CrudInvocationController
         return redirect(go(TestCrudController.class)
                 .browse(TestCrudEntityA.class, null));
     }
+
+    @UrlUnsigned
+    @Updating
+    public ActionResult browseTestEntiesB() {
+        TestCrudEntityB e = new TestCrudEntityB();
+        e.setValue("Hello World2");
+        em.persist(e);
+
+        return redirect(go(TestCrudController.class)
+                .browse(TestCrudEntityB.class, null));
+    }
 }

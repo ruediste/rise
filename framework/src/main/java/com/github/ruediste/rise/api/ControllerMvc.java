@@ -22,7 +22,7 @@ public class ControllerMvc<TSelf extends ControllerMvc<TSelf>>
                 .getRawType();
     }
 
-    protected <TView extends ViewMvcBase<?, TData>, TData> ActionResult view(
+    protected <TView extends ViewMvcBase<?, TData, ?>, TData> ActionResult view(
             Class<TView> viewClass, TData data) {
         return util.view(viewClass, data);
     }

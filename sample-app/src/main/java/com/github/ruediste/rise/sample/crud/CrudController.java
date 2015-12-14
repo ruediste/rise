@@ -10,6 +10,9 @@ import com.github.ruediste.rise.sample.db.TodoCategory;
 import com.github.ruediste.rise.sample.db.TodoItem;
 import com.github.ruediste1.i18n.label.Labeled;
 
+/**
+ * Controller exposing the CRUD UI.
+ */
 public class CrudController extends CrudControllerBase {
 
     @Labeled

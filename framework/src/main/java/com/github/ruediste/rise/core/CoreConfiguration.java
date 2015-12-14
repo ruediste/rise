@@ -18,6 +18,7 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.objectweb.asm.tree.ClassNode;
+import org.slf4j.Logger;
 
 import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasTarget;
 import com.github.ruediste.rise.core.argumentSerializer.ArgumentSerializer;
@@ -35,6 +36,7 @@ import com.github.ruediste.rise.integration.RiseCanvas;
 import com.github.ruediste.rise.integration.RiseCanvasBase;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.CoreConfigurationNonRestartable;
+import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
 import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste.salta.standard.Stage;
@@ -45,15 +47,17 @@ import com.github.ruediste.salta.standard.Stage;
 @Singleton
 public class CoreConfiguration {
 
-    public CoreConfiguration() {
-        // TODO Auto-generated constructor stub
-    }
+    @Inject
+    Logger log;
 
     @Inject
     Injector injector;
 
     @Inject
     CoreConfigurationNonRestartable configNonRestartable;
+
+    @Inject
+    ApplicationStage stage;
 
     private <T> T get(Class<T> cls) {
         return injector.getInstance(cls);
@@ -249,6 +253,22 @@ public class CoreConfiguration {
 
     public void loadDevelopmentFixture() {
         developmentFixtureLoader.ifPresent(Runnable::run);
+    }
+
+    /**
+     * Drop and create the databases and load the development fixture. Only
+     * allowed in development mode.
+     */
+    public void recreateDatabases() {
+        if (stage == ApplicationStage.DEVELOPMENT) {
+            log.info("Dropping and Creating DB schemas ...");
+            injector.getInstance(DataBaseLinkRegistry.class)
+                    .dropAndCreateSchemas();
+            loadDevelopmentFixture();
+        } else {
+            throw new RuntimeException(
+                    "Can recreate databases in development mode only");
+        }
     }
 
     /**

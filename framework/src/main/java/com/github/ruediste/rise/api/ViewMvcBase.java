@@ -1,10 +1,10 @@
 package com.github.ruediste.rise.api;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvas;
 import com.github.ruediste.rise.core.ActionResult;
@@ -47,10 +47,13 @@ import com.google.common.reflect.TypeToken;
  * }
  * </pre>
  */
-public abstract class ViewMvcBase<TController extends IControllerMvc, TData> {
+public abstract class ViewMvcBase<TController extends IControllerMvc, TData, TCanvas extends RiseCanvasBase<?>> {
 
     @Inject
     private MvcUtil util;
+
+    @Inject
+    Provider<TCanvas> canvasProvider;
 
     private TData data;
 
@@ -76,19 +79,14 @@ public abstract class ViewMvcBase<TController extends IControllerMvc, TData> {
         return data;
     }
 
-    protected <T extends RiseCanvasBase<?>> void render(
-            ByteArrayOutputStream stream, T canvas, Consumer<T> renderer) {
-        canvas.initializeForOutput(stream);
-        renderer.accept(canvas);
+    public void render(ByteArrayOutputStream out) {
+        TCanvas canvas = canvasProvider.get();
+        canvas.initializeForOutput(out);
+        render(canvas);
         canvas.flush();
     }
 
-    /**
-     * Render this by calling
-     * {@link #render(ByteArrayOutputStream, RiseCanvasBase, Consumer)}
-     */
-    abstract public void render(ByteArrayOutputStream stream)
-            throws IOException;
+    protected abstract void render(TCanvas html);
 
     public ActionInvocationBuilderKnownController<? extends TController> path() {
         return util.path(controllerClass);

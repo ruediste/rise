@@ -11,7 +11,6 @@ import com.github.ruediste.rise.nonReloadable.persistence.EclipseLinkPersistence
 import com.github.ruediste.rise.nonReloadable.persistence.H2DatabaseIntegrationInfo;
 import com.github.ruediste.rise.nonReloadable.persistence.PersistenceModuleUtil;
 import com.github.ruediste.salta.jsr330.AbstractModule;
-import com.github.ruediste.salta.jsr330.Salta;
 import com.github.ruediste1.i18n.label.LabelUtil;
 
 public class TestAppFrontServlet extends FrontServletBase {
@@ -28,8 +27,7 @@ public class TestAppFrontServlet extends FrontServletBase {
 
     @Override
     protected void initImpl() throws Exception {
-        setStage(ApplicationStage.DEVELOPMENT);
-        Salta.createInjector(getStage().getSaltaStage(), new AbstractModule() {
+        createInjector(ApplicationStage.DEVELOPMENT, new AbstractModule() {
 
             @Override
             protected void configure() throws Exception {
@@ -51,9 +49,7 @@ public class TestAppFrontServlet extends FrontServletBase {
                 });
             }
 
-        }, new BitronixModule(),
-                new IntegrationModuleNonRestartable(getServletConfig()))
-                .injectMembers(this);
+        }, new BitronixModule(), new IntegrationModuleNonRestartable(this));
     }
 
 }

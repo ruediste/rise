@@ -61,13 +61,25 @@ public class TestCrudControllerTest extends WebTest {
     }
 
     /**
-     * Search for all {@link TestCrudEntityA}s
+     * search for {@link #a}
      */
     private CrudBrowserPO searchEntity() {
         CrudBrowserPO browser = pageObject(CrudBrowserPO.class);
         browser.setFilter(
                 dataTestName(TestCrudEntityA.class, x -> x.getStringValue()),
                 a.getStringValue());
+        browser.search();
+        return browser;
+    }
+
+    private CrudBrowserPO searchEntityB() {
+        driver.navigate().to(url(go(TestCrudController.class)
+                .browse(TestCrudEntityB.class, null)));
+
+        CrudBrowserPO browser = pageObject(CrudBrowserPO.class);
+        browser.setFilter(
+                dataTestName(TestCrudEntityB.class, x -> x.getValue()),
+                b.getValue());
         browser.search();
         return browser;
     }
@@ -179,6 +191,12 @@ public class TestCrudControllerTest extends WebTest {
             assertEquals(b.getId(), em.find(TestCrudEntityA.class, a.getId())
                     .getEntityB().getId());
         });
+    }
+
+    @Test
+    public void openB_showEntityAs() {
+        searchEntityB().display(0).showItems(
+                dataTestName(TestCrudEntityB.class, x -> x.getEntityAs()));
     }
 
     @Test

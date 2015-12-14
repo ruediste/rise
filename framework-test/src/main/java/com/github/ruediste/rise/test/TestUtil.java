@@ -18,8 +18,13 @@ import com.github.ruediste.c3java.invocationRecording.MethodInvocation;
 import com.github.ruediste.c3java.invocationRecording.MethodInvocationRecorder;
 import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.github.ruediste.c3java.properties.PropertyUtil;
+import com.github.ruediste.rise.core.CoreConfiguration;
+import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
 
 public interface TestUtil {
+    /**
+     * Defines the default waiting duration. Can be adjusted globally.
+     */
     public static int defaultWaitSeconds = 1;
 
     WebDriver internal_getDriver();
@@ -35,10 +40,19 @@ public interface TestUtil {
     }
 
     default <T> void assertPage(Class<T> cls, Consumer<T> methodAccessor) {
-        Method method = MethodInvocationRecorder
-                .getLastInvocation(cls, methodAccessor).getMethod();
-        String expectedPageName = method.getDeclaringClass().getName() + "."
+        MethodInvocation<Object> invocation = MethodInvocationRecorder
+                .getLastInvocation(cls, methodAccessor);
+
+        Class<?> declaredController = invocation.getInstanceType().getRawType();
+        Class<?> controllerImplementation = InjectorsHolder
+                .getRestartableInjector().getInstance(CoreConfiguration.class)
+                .getRequestMapper(declaredController)
+                .getControllerImplementationClass(declaredController);
+
+        Method method = invocation.getMethod();
+        String expectedPageName = controllerImplementation.getName() + "."
                 + method.getName();
+
         doWait().untilPassing(new Runnable() {
 
             @Override

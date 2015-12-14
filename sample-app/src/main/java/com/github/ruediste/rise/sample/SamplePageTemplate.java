@@ -11,6 +11,12 @@ import com.github.ruediste.rise.sample.welcome.StageRibbonController;
 import com.github.ruediste.rise.sample.welcome.WelcomeController;
 import com.github.ruediste1.i18n.lString.LString;
 
+/**
+ * Template to render pages of the sample application.
+ * 
+ * Renders the assets and the header/menu structure. Used by both MVC (
+ * {@link ViewMvc}) and Component ({@link ViewComponent}) pages.
+ */
 public class SamplePageTemplate extends PageTemplateBase {
 
     @Inject
@@ -71,6 +77,13 @@ public class SamplePageTemplate extends PageTemplateBase {
 
     public interface SamplePageTemplateParameters {
         LString getTitle();
+
+        /**
+         * Overwrite and return true to skip rendering the navigation
+         */
+        default boolean isRenderRaw() {
+            return false;
+        }
 
         void renderContent(SampleCanvas html);
     }

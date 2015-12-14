@@ -16,11 +16,10 @@ import com.github.ruediste.rise.nonReloadable.persistence.PersistenceModuleUtil;
 import com.github.ruediste.rise.sample.SamplePackage;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Provides;
-import com.github.ruediste.salta.jsr330.Salta;
 
 public class SampleFrontServlet extends FrontServletBase {
     public SampleFrontServlet() {
-        super(SampleApp.class);
+        super(SampleRestartableApp.class);
     }
 
     @Inject
@@ -30,8 +29,7 @@ public class SampleFrontServlet extends FrontServletBase {
 
     @Override
     protected void initImpl() throws Exception {
-        setStage(ApplicationStage.DEVELOPMENT);
-        Salta.createInjector(getStage().getSaltaStage(), new AbstractModule() {
+        createInjector(ApplicationStage.DEVELOPMENT, new AbstractModule() {
 
             @Override
             protected void configure() throws Exception {
@@ -55,9 +53,7 @@ public class SampleFrontServlet extends FrontServletBase {
                 // get the stage from the super class
                 return getStage();
             }
-        }, new BitronixModule(),
-                new IntegrationModuleNonRestartable(getServletConfig()))
-                .injectMembers(this);
+        }, new BitronixModule(), new IntegrationModuleNonRestartable(this));
         config.setBasePackage(SamplePackage.class);
     }
 

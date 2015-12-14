@@ -1,8 +1,7 @@
 package com.github.ruediste.rise.integration;
 
-import javax.servlet.ServletConfig;
-
 import com.github.ruediste.rise.api.ApplicationModuleNonRestartable;
+import com.github.ruediste.rise.nonReloadable.front.FrontServletBase;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 
 /**
@@ -10,14 +9,14 @@ import com.github.ruediste.salta.jsr330.AbstractModule;
  */
 public class IntegrationModuleNonRestartable extends AbstractModule {
 
-    private ServletConfig servletConfig;
+    private FrontServletBase frontServlet;
 
-    public IntegrationModuleNonRestartable(ServletConfig servletConfig) {
-        this.servletConfig = servletConfig;
+    public IntegrationModuleNonRestartable(FrontServletBase frontServlet) {
+        this.frontServlet = frontServlet;
     }
 
     @Override
     protected void configure() {
-        install(new ApplicationModuleNonRestartable(servletConfig));
+        install(new ApplicationModuleNonRestartable(frontServlet));
     }
 }

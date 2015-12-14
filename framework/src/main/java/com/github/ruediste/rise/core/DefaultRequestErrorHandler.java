@@ -29,6 +29,7 @@ public class DefaultRequestErrorHandler implements RequestErrorHandler {
 
     @Override
     public void handle() {
+        // fake a request forward to the error handler
         PathInfo errorHandlerPath = util
                 .toPathInfo(errorHandlerPathGenerator.apply(util));
         DelegatingHttpRequest errorHandlerRequest = new DelegatingHttpRequest(
@@ -39,6 +40,8 @@ public class DefaultRequestErrorHandler implements RequestErrorHandler {
             };
         };
         info.setRequest(errorHandlerRequest);
+
+        // parse the request and use the parse result
         config.parse(errorHandlerRequest).handle();
     }
 }

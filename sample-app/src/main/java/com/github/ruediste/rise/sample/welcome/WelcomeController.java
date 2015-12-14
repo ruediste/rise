@@ -9,7 +9,6 @@ import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.security.urlSigning.UrlUnsigned;
 import com.github.ruediste.rise.core.web.ActionPath;
 import com.github.ruediste1.i18n.label.Label;
-import com.github.ruediste1.i18n.label.Labeled;
 
 public class WelcomeController extends ControllerMvc<WelcomeController> {
 
@@ -25,11 +24,6 @@ public class WelcomeController extends ControllerMvc<WelcomeController> {
     @ActionPath(value = "/", primary = true)
     public ActionResult index() {
         return view(WelcomeView.class, new Data());
-    }
-
-    @Labeled
-    public ActionResult other() {
-        return view(OtherView.class, "Test");
     }
 
     public ActionResult error() {

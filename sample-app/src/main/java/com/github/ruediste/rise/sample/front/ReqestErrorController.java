@@ -117,13 +117,7 @@ public class ReqestErrorController extends ControllerMvc<ReqestErrorController>
 
     @Updating
     public ActionResult dropAndCreateDataBase() {
-        if (stage == ApplicationStage.DEVELOPMENT) {
-            log.info("Dropping and Creating DB schemas ...");
-            registry.dropAndCreateSchemas();
-            config.loadDevelopmentFixture();
-        } else {
-            log.error("Stage is not development");
-        }
+        config.recreateDatabases();
         return new RedirectToRefererRenderResult();
     }
 

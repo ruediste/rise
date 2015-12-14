@@ -9,6 +9,9 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
 import com.github.ruediste.salta.jsr330.Injector;
 
+/**
+ * Base class to define {@link Navigation}s. Provides utility functions.
+ */
 public abstract class NavigationsContainer {
 
     @Inject
@@ -39,6 +42,9 @@ public abstract class NavigationsContainer {
         return injector.getInstance(NavigationBuilder.class);
     }
 
+    /**
+     * Perform the initialization of the navigations
+     */
     protected abstract void initializeImpl();
 
 }

@@ -26,7 +26,14 @@ public enum ApplicationStage {
 
     final private Stage saltaStage;
 
+    /**
+     * Foreground color to identify the stage. Can be modified form anywhere.
+     */
     public String color;
+
+    /**
+     * Background color to identify the stage. Can be modified form anywhere.
+     */
     public String backgroundColor;
 
     private ApplicationStage(Stage saltaStage, String color,

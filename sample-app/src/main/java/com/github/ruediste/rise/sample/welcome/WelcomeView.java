@@ -17,15 +17,13 @@ public class WelcomeView
     @Override
     public void renderContent(SampleCanvas html) {
         html.h1().content(label(this));
-        html.bButtonA().HREF(go().other()).content("other");
         html.bButtonA().HREF(go(TodoController.class).index())
                 .content("Todo Items");
         html.bButtonA().HREF(go().error()).content("Page with error");
         html.rButtonA(go(FileUploadController.class).index());
         html.rButtonA(go(CrudController.class).showTodos());
         html.rButtonA(go(CrudController.class).showTodoCategories());
-        html.rButtonA(go(SampleComponentController.class).index(), a -> {
-        });
+        html.rButtonA(go(SampleComponentController.class).index());
 
     }
 }

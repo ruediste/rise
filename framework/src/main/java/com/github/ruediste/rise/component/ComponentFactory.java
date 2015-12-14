@@ -12,7 +12,8 @@ import com.github.ruediste.rise.component.tree.Component;
 
 /**
  * Provide various methods to create components based on a certain type of
- * canvas.
+ * canvas. Intended to be used as trait for classes requiring the functionality
+ * to create such components. (such as views)
  */
 public interface ComponentFactory<TCanvas extends HtmlCanvas<?>> {
 
@@ -54,14 +55,24 @@ public interface ComponentFactory<TCanvas extends HtmlCanvas<?>> {
                 renderable);
     }
 
+    /**
+     * Create a component displaying the given view as sub view.
+     */
     default Component toSubView(ViewComponentBase<?> view) {
         return internal_componentFactoryUtil().toSubView(view);
     }
 
+    /**
+     * Create a view corresponding to the specified controller.
+     */
     default Component toSubView(Object controller) {
         return internal_componentFactoryUtil().toSubView(controller);
     }
 
+    /**
+     * Create a sub view always displaying the view corresponding to the
+     * specified controller.
+     */
     default <T> Component toSubView(Supplier<T> bindingGroupAccessor,
             Function<T, Object> controllerAccessor) {
 

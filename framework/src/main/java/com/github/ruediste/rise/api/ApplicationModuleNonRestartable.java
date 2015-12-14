@@ -1,17 +1,16 @@
 package com.github.ruediste.rise.api;
 
-import javax.servlet.ServletConfig;
-
 import com.github.ruediste.rise.nonReloadable.CoreNonRestartableModule;
+import com.github.ruediste.rise.nonReloadable.front.FrontServletBase;
 import com.github.ruediste.rise.nonReloadable.front.LoggerModule;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 
 public class ApplicationModuleNonRestartable extends AbstractModule {
 
-    protected ServletConfig servletConfig;
+    private FrontServletBase frontServlet;
 
-    public ApplicationModuleNonRestartable(ServletConfig servletConfig) {
-        this.servletConfig = servletConfig;
+    public ApplicationModuleNonRestartable(FrontServletBase frontServlet) {
+        this.frontServlet = frontServlet;
     }
 
     @Override
@@ -22,7 +21,7 @@ public class ApplicationModuleNonRestartable extends AbstractModule {
     }
 
     protected void installCoreModule() {
-        install(new CoreNonRestartableModule(servletConfig));
+        install(new CoreNonRestartableModule(frontServlet));
     }
 
     protected void installLoggerModule() {

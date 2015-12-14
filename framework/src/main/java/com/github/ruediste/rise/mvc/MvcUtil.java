@@ -1,7 +1,6 @@
 package com.github.ruediste.rise.mvc;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -44,19 +43,15 @@ public class MvcUtil implements ICoreUtil {
         return coreUtil;
     }
 
-    public <TView extends ViewMvcBase<?, TData>, TData> ActionResult view(
+    public <TView extends ViewMvcBase<?, TData, ?>, TData> ActionResult view(
             Class<TView> viewClass, TData data) {
 
         TView view = injector.getInstance(viewClass);
         view.initialize(data);
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream(1024);
-        try {
-            view.render(stream);
-        } catch (IOException e) {
-            throw new RuntimeException("Error while rendering view", e);
+        view.render(stream);
 
-        }
         return new ContentRenderResult(stream.toByteArray(), r -> {
             r.setContentType(coreConfiguration.htmlContentType);
             if (view instanceof HttpServletResponseCustomizer) {

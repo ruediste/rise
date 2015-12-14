@@ -3,6 +3,7 @@ package com.github.ruediste.rise.nonReloadable;
 import javax.inject.Named;
 import javax.servlet.ServletConfig;
 
+import com.github.ruediste.rise.nonReloadable.front.FrontServletBase;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClasspathResourceIndex;
 import com.github.ruediste.rise.nonReloadable.front.reload.ReloadableClassLoader;
 import com.github.ruediste.rise.nonReloadable.front.reload.ReloadableClassesIndex;
@@ -12,10 +13,10 @@ import com.github.ruediste.salta.jsr330.Provides;
 
 public class CoreNonRestartableModule extends AbstractModule {
 
-    private ServletConfig servletConfig;
+    private FrontServletBase frontServlet;
 
-    public CoreNonRestartableModule(ServletConfig servletConfig) {
-        this.servletConfig = servletConfig;
+    public CoreNonRestartableModule(FrontServletBase frontServlet) {
+        this.frontServlet = frontServlet;
     }
 
     @Override
@@ -34,8 +35,13 @@ public class CoreNonRestartableModule extends AbstractModule {
     }
 
     @Provides
+    FrontServletBase frontServlet() {
+        return frontServlet;
+    }
+
+    @Provides
     ServletConfig servletConfig() {
-        return servletConfig;
+        return frontServlet.getServletConfig();
     }
 
 }

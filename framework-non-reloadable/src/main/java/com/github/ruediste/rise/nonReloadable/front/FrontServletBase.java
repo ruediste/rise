@@ -27,6 +27,8 @@ import com.github.ruediste.rise.nonReloadable.front.reload.ResourceChangeNotifie
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
 import com.github.ruediste.rise.util.InitializerUtil;
 import com.github.ruediste.salta.jsr330.Injector;
+import com.github.ruediste.salta.jsr330.Salta;
+import com.github.ruediste.salta.jsr330.SaltaModule;
 import com.github.ruediste.salta.standard.Stage;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Stopwatch;
@@ -93,6 +95,16 @@ public abstract class FrontServletBase extends HttpServlet {
     public FrontServletBase(RestartableApplication fixedApplicationInstance) {
         Preconditions.checkNotNull(fixedApplicationInstance);
         this.fixedRestartableApplicationInstance = fixedApplicationInstance;
+    }
+
+    /**
+     * Create an injector an inject this instance
+     */
+    protected void createInjector(ApplicationStage stage,
+            SaltaModule... modules) {
+        setStage(stage);
+        Salta.createInjector(stage.getSaltaStage(), modules)
+                .injectMembers(this);
     }
 
     @Override

@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.objectweb.asm.Type;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
 import org.objectweb.asm.tree.ClassNode;
@@ -25,8 +26,6 @@ import com.github.ruediste.rise.nonReloadable.NonRestartable;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassChangeNotifier.ClassChangeTransaction;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
-
-import net.sf.cglib.asm.Type;
 
 /**
  * An index containing the whole class hierarchy as well as the parsed classes.

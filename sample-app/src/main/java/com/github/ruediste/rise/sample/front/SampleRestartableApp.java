@@ -25,7 +25,7 @@ import com.github.ruediste1.i18n.lString.PatternStringResolver;
 import com.github.ruediste1.i18n.lString.ResouceBundleTranslatedStringResolver;
 import com.github.ruediste1.i18n.lString.TranslatedStringResolver;
 
-public class SampleApp extends RestartableApplicationBase {
+public class SampleRestartableApp extends RestartableApplicationBase {
 
     @Inject
     CoreConfiguration config;

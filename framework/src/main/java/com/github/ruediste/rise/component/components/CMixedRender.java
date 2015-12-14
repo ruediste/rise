@@ -31,6 +31,7 @@ public class CMixedRender extends ComponentBase<CMixedRender> {
 
     public CMixedRender add(Component child) {
         Preconditions.checkNotNull(child);
+
         entries.add(new Entry() {
 
             @Override
@@ -43,6 +44,9 @@ public class CMixedRender extends ComponentBase<CMixedRender> {
                 html.render(util.component(child));
             }
         });
+        if (child.getParent() != null)
+            child.getParent().childRemoved(child);
+        child.parentChanged(this);
         return this;
     }
 

@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.crud;
 
+import java.util.Collection;
 import java.util.function.Supplier;
 
 import javax.inject.Inject;
@@ -134,9 +135,8 @@ public class CrudDisplayComponents extends
                                                         .subquery(entity.getClass());
                                                 Root<? extends Object> root = sq.from(entity
                                                         .getClass());
-                                                ctx.addWhere(ctx.root().in(
-                                                        root.get((PluralAttribute) p
-                                                                .getAttribute())));
+                                                
+                                                ctx.addWhere(ctx.root().in((Collection)p.getValue(entity)));
                                             }
                                         );
                                     list.setItemActionsFactory(obj->new CDataGrid.Cell(
@@ -152,7 +152,7 @@ public class CrudDisplayComponents extends
                                     ComponentTreeUtil.raiseEvent(btn,
                                             new CComponentStack.PushComponentEvent(
                                                     new CController(list)));
-                                })))
+                                })).TEST_NAME(p.getName()))
                             ._div()
                         ._bFormGroup()));
         //@formatter:on

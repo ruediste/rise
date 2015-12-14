@@ -9,6 +9,9 @@ import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CurrentLocale;
 import com.github.ruediste.rise.core.web.RedirectToRefererRenderResult;
 
+/**
+ * Controller to switch the current language.
+ */
 public class LanguageController extends ControllerMvc<LanguageController> {
 
     @Inject
