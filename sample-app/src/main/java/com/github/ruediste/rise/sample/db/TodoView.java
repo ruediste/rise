@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import com.github.ruediste.rise.sample.SampleCanvas;
 import com.github.ruediste.rise.sample.db.TodoController.IndexData;
 import com.github.ruediste1.i18n.label.Label;
+import com.github.ruediste1.i18n.label.MembersLabeled;
 
 @Label("Todo Items")
 public class TodoView extends PageView<TodoController, IndexData> {
@@ -14,13 +15,18 @@ public class TodoView extends PageView<TodoController, IndexData> {
     @Inject
     Logger log;
 
+    @MembersLabeled
+    private enum Labels {
+        @Label("Todo Items") TITLE, ADD
+    }
+
     @Override
     public void renderContent(SampleCanvas html) {
 
         // @formatter:off
 		html.bRow()
 		    .bCol(x->x.xs(12))
-		        .h1().content("Todo Items")
+		        .h1().content(label(Labels.TITLE))
 		    ._bCol()
 		._bRow()
 		.fForEach(data().allItems, item->{
@@ -29,7 +35,7 @@ public class TodoView extends PageView<TodoController, IndexData> {
 		            .write(item.getName())
 		        ._bCol()
 		        .bCol(x->x.xs(3))
-		            .bButtonA().HREF(go().delete(item)).content("delete")
+		            .rButtonA(go().delete(item))
 		        ._bCol()
 		    ._bRow();
 		})
@@ -39,7 +45,7 @@ public class TodoView extends PageView<TodoController, IndexData> {
 				    .input().BformControl().TYPE("text").NAME("name")
 				._bCol()
 				.bCol(x->x.xs(3))
-					.input().BformControl().TYPE("submit").VALUE("add")
+					.input().BformControl().TYPE("submit").VALUE(resolve(label(Labels.ADD)))
 				._bCol()
 			._bRow()
 		._form();

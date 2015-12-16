@@ -13,6 +13,7 @@ import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.persistence.Updating;
 import com.github.ruediste1.i18n.label.Label;
+import com.github.ruediste1.i18n.label.Labeled;
 
 public class TodoController extends ControllerMvc<TodoController> {
 
@@ -39,6 +40,7 @@ public class TodoController extends ControllerMvc<TodoController> {
     }
 
     @Updating
+    @Labeled
     public ActionResult delete(TodoItem item) {
         em.remove(item);
         return redirect(go().index());

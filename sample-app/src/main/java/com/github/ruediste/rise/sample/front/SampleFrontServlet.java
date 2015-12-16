@@ -15,7 +15,6 @@ import com.github.ruediste.rise.nonReloadable.persistence.H2DatabaseIntegrationI
 import com.github.ruediste.rise.nonReloadable.persistence.PersistenceModuleUtil;
 import com.github.ruediste.rise.sample.SamplePackage;
 import com.github.ruediste.salta.jsr330.AbstractModule;
-import com.github.ruediste.salta.jsr330.Provides;
 
 public class SampleFrontServlet extends FrontServletBase {
     public SampleFrontServlet() {
@@ -48,11 +47,6 @@ public class SampleFrontServlet extends FrontServletBase {
                 });
             }
 
-            @Provides
-            ApplicationStage stage() {
-                // get the stage from the super class
-                return getStage();
-            }
         }, new BitronixModule(), new IntegrationModuleNonRestartable(this));
         config.setBasePackage(SamplePackage.class);
     }

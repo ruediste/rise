@@ -1,10 +1,12 @@
 package com.github.ruediste.rise.sample.crud;
 
+import com.github.ruediste.rendersnakeXT.canvas.Glyphicon;
 import com.github.ruediste.rise.component.components.CComponentStack;
 import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.crud.CrudControllerBase;
+import com.github.ruediste.rise.sample.Icon;
 import com.github.ruediste.rise.sample.ViewComponent;
 import com.github.ruediste.rise.sample.db.TodoCategory;
 import com.github.ruediste.rise.sample.db.TodoItem;
@@ -26,6 +28,7 @@ public class CrudController extends CrudControllerBase {
         }
     }
 
+    @Icon(Glyphicon.bookmark)
     @Labeled
     public ActionResult showTodos() {
         return browse(TodoItem.class, null);

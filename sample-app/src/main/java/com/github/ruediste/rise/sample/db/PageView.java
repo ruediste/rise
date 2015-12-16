@@ -9,7 +9,6 @@ import com.github.ruediste.rise.sample.SamplePageTemplate;
 import com.github.ruediste.rise.sample.SamplePageTemplate.SamplePageTemplateParameters;
 import com.github.ruediste.rise.sample.ViewMvc;
 import com.github.ruediste1.i18n.lString.LString;
-import com.github.ruediste1.i18n.label.LabelUtil;
 
 public abstract class PageView<TController extends IControllerMvc, TData>
         extends ViewMvc<TController, TData>
@@ -21,12 +20,9 @@ public abstract class PageView<TController extends IControllerMvc, TData>
     @Inject
     SamplePageTemplate template;
 
-    @Inject
-    LabelUtil labelUtil;
-
     @Override
     public LString getTitle() {
-        return labelUtil.getTypeLabel(getClass());
+        return label(this);
     }
 
     @Override
@@ -34,11 +30,4 @@ public abstract class PageView<TController extends IControllerMvc, TData>
         template.renderOn(html, this);
     }
 
-    public LString label(Class<?> clazz) {
-        return labelUtil.getTypeLabel(clazz);
-    }
-
-    public LString label(Object obj) {
-        return labelUtil.getTypeLabel(obj.getClass());
-    }
 }
