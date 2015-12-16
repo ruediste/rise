@@ -100,14 +100,18 @@ public class NavigationRenderer {
 
             if (item.getChildren().isEmpty()) {
                 if (item.target.isPresent())
-                    html.a().HREF(item.target.get()).content(item.text);
+                    html.a().HREF(item.target.get())
+                            .fIfPresent(item.icon, html::render)
+                            .content(item.text);
                 else
                     html.a().HREF("#").content(item.text);
                 html._li();
             } else {
                 html.CLASS("dropdown").a().HREF("#").CLASS("dropdown-toggle")
                         .DATA("toggle", "dropdown").ROLE("button")
-                        .ARIA_EXPANDED("false").write(item.text).bCaret()._a();
+                        .ARIA_EXPANDED("false")
+                        .fIfPresent(item.icon, html::render).write(item.text)
+                        .bCaret()._a();
                 html.ul().CLASS("dropdown-menu").ROLE("menu");
                 renderNavItems(html, ctx, item.getChildren(), level + 1);
                 html._ul()._li();

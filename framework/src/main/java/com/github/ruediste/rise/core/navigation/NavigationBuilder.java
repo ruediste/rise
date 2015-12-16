@@ -8,10 +8,13 @@ import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
+import com.github.ruediste.rendersnakeXT.canvas.Html5Canvas;
+import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.rise.core.navigation.Navigation.NavigationItem;
+import com.github.ruediste.rise.integration.IconUtil;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.LabelUtil;
 
@@ -39,11 +42,17 @@ public class NavigationBuilder {
     @Inject
     LabelUtil labelUtil;
 
+    @Inject
+    IconUtil iconUtil;
+
     private final Navigation result = new Navigation();
 
     private Deque<NavigationItem> currentGroup = new ArrayDeque<>();
 
-    private NavigationBuilder add(NavigationItem item) {
+    /**
+     * Add a navigation item to the current group
+     */
+    public NavigationBuilder add(NavigationItem item) {
         if (currentGroup.isEmpty())
             result.getRootItems().add(item);
         else
@@ -54,15 +63,34 @@ public class NavigationBuilder {
     public NavigationBuilder add(ActionResult target) {
         Method method = util.toActionInvocation(target).methodInvocation
                 .getMethod();
-        return add(target, labelUtil.getMethodLabel(method));
+        return add(target, labelUtil.getMethodLabel(method),
+                iconUtil.tryGetIcon(method));
     }
 
     public NavigationBuilder add(ActionResult target, String text) {
         return add(target, locale -> text);
     }
 
+    public NavigationBuilder add(ActionResult target, String text,
+            Renderable<Html5Canvas<?>> icon) {
+        return add(target, locale -> text, icon);
+    }
+
     public NavigationBuilder add(ActionResult target, LString text) {
-        return add(new NavigationItem(text, Optional.of(target),
+        return add(new NavigationItem(text, Optional.empty(),
+                Optional.of(target), new SameActionInvocationPredicate(
+                        util.toActionInvocation(target))));
+    }
+
+    public NavigationBuilder add(ActionResult target, LString text,
+            Renderable<Html5Canvas<?>> icon) {
+        return add(target, text, Optional.of(icon));
+
+    }
+
+    public NavigationBuilder add(ActionResult target, LString text,
+            Optional<Renderable<Html5Canvas<?>>> icon) {
+        return add(new NavigationItem(text, icon, Optional.of(target),
                 new SameActionInvocationPredicate(
                         util.toActionInvocation(target))));
     }
@@ -77,7 +105,7 @@ public class NavigationBuilder {
 
     public NavigationBuilder group(LString text) {
         NavigationItem group = new NavigationItem(text, Optional.empty(),
-                x -> false);
+                Optional.empty(), x -> false);
         add(group);
         currentGroup.push(group);
         return this;
