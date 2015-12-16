@@ -5,6 +5,7 @@
 		<class>com.github.ruediste.rise.testApp.crud.TestCrudEntityA</class>
 		<class>com.github.ruediste.rise.testApp.crud.TestCrudEntityB</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
 		<properties>
 		</properties>
 	</persistence-unit>

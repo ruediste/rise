@@ -2,7 +2,6 @@ package com.github.ruediste.rise.test;
 
 import javax.inject.Inject;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
@@ -19,6 +18,7 @@ import com.github.ruediste.rise.core.RemotUnitTestInitializer;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.integration.RiseServer;
 import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
+import com.github.ruediste.rise.nonReloadable.InjectorsHolder.Holder;
 import com.github.ruediste.salta.jsr330.Injector;
 
 @RunWith(RemoteTestRunner.class)
@@ -47,6 +47,9 @@ public abstract class WebTestBase implements TestUtil {
 
     protected WebDriver driver;
 
+    /**
+     * Get the url the application is reachable under
+     */
     protected abstract String getBaseUrl();
 
     private static Boolean isRunningLocally;
@@ -62,12 +65,47 @@ public abstract class WebTestBase implements TestUtil {
     private static Object serverTestCase;
 
     /**
+     * If true is returned, the server is restarted for this test class. Only
+     * makes sense when annotating the test case with
+     * {@link Remote#endpoint() @Remote(endpoint="-")}
+     */
+    protected boolean runWithSeparateServer() {
+        return false;
+    }
+
+    /**
+     * In case the remote server is not reachable, start the server and return
+     * it
+     */
+    protected abstract RiseServer startServer();
+
+    @Rule
+    public final TestRule closeDriverOnSuccess() {
+        return (base, description) -> new Statement() {
+
+            @Override
+            public void evaluate() throws Throwable {
+                driver = createDriver();
+                try {
+                    base.evaluate();
+                } finally {
+                    try {
+                        driver.close();
+                    } catch (Throwable t) {
+                        // swallow
+                    }
+                }
+            }
+        };
+    }
+
+    /**
      * If the test is executed remotely, the {@link RemotUnitTestInitializer}
      * will have initialized the {@link InjectorsHolder}. Otherwise we start a
      * server locally and run the tests locally, too.
      */
-    @Before
-    public final void beforeWebTestBase() {
+    @Rule
+    public final TestRule setupServer() {
         boolean runWithSeparateServer = runWithSeparateServer();
 
         synchronized (lock) {
@@ -109,41 +147,26 @@ public abstract class WebTestBase implements TestUtil {
             injector.injectMembers(this);
             util.initialize(getBaseUrl());
         }
-    }
 
-    /**
-     * If true is returned, the server is restarted for this test class. Only
-     * makes sense when annotating the test case with
-     * {@link Remote#endpoint() @Remote(endpoint="-")}
-     */
-    protected boolean runWithSeparateServer() {
-        return false;
-    }
+        if (Boolean.TRUE.equals(isRunningLocally)) {
+            // setup the InjectorsHolder when running locally
+            return (base, description) -> new Statement() {
 
-    /**
-     * In case the remote server is not reachable, start the server and return
-     * it
-     */
-    protected abstract RiseServer startServer();
-
-    @Rule
-    public final TestRule closeDriverOnSuccess() {
-        return (base, description) -> new Statement() {
-
-            @Override
-            public void evaluate() throws Throwable {
-                driver = createDriver();
-                try {
-                    base.evaluate();
-                } finally {
+                @Override
+                public void evaluate() throws Throwable {
+                    Holder holder = InjectorsHolder.setInjectors(
+                            server.getServlet().getNonRestartableInjector(),
+                            server.getServlet()
+                                    .getCurrentRestartableInjector());
                     try {
-                        driver.close();
-                    } catch (Throwable t) {
-                        // swallow
+                        base.evaluate();
+                    } finally {
+                        InjectorsHolder.restoreInjectors(holder);
                     }
                 }
-            }
-        };
+            };
+        } else
+            return (base, description) -> base;
     }
 
     protected abstract WebDriver createDriver();

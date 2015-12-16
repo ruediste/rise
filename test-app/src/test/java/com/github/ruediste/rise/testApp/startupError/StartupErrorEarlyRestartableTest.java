@@ -3,6 +3,7 @@ package com.github.ruediste.rise.testApp.startupError;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 
@@ -30,6 +31,7 @@ public class StartupErrorEarlyRestartableTest extends StartupErrorTest {
     }
 
     @Test
+    @Ignore("needs to be run individually")
     public void test() {
         driver.navigate().to(getBaseUrl());
         assertTrue(driver.getTitle().contains("Startup Error"));

@@ -8,11 +8,14 @@ import javax.inject.Provider;
 
 import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvas;
 import com.github.ruediste.rise.core.ActionResult;
+import com.github.ruediste.rise.core.CurrentLocale;
 import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
 import com.github.ruediste.rise.integration.RiseCanvasBase;
 import com.github.ruediste.rise.mvc.IControllerMvc;
 import com.github.ruediste.rise.mvc.MvcUtil;
+import com.github.ruediste1.i18n.lString.LString;
+import com.github.ruediste1.i18n.label.LabelUtil;
 import com.google.common.reflect.TypeToken;
 
 /**
@@ -54,6 +57,12 @@ public abstract class ViewMvcBase<TController extends IControllerMvc, TData, TCa
 
     @Inject
     Provider<TCanvas> canvasProvider;
+
+    @Inject
+    LabelUtil labelUtil;
+
+    @Inject
+    CurrentLocale currentLocale;
 
     private TData data;
 
@@ -109,4 +118,19 @@ public abstract class ViewMvcBase<TController extends IControllerMvc, TData, TCa
         return util.url(path);
     }
 
+    public LString label(Class<?> clazz) {
+        return labelUtil.getTypeLabel(clazz);
+    }
+
+    public LString label(Object obj) {
+        return labelUtil.getTypeLabel(obj.getClass());
+    }
+
+    public LString label(Enum<?> enumMember) {
+        return labelUtil.getEnumMemberLabel(enumMember);
+    }
+
+    public String resolve(LString lstr) {
+        return lstr.resolve(currentLocale.getCurrentLocale());
+    }
 }

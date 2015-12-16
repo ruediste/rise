@@ -107,22 +107,20 @@ public interface TestUtil {
      * wait for refresh after clicking the element
      */
     default void clickAndWaitForRefresh(WebElement element, int waitSeconds) {
-        waitForRefresh(element, waitSeconds, x -> x.click());
+        executeAndWaitForRefresh(() -> element.click(), waitSeconds);
     }
 
-    default <T extends WebElement> void waitForRefresh(T element,
-            Consumer<T> action) {
-        waitForRefresh(element, defaultWaitSeconds, action);
+    default void executeAndWaitForRefresh(Runnable action) {
+        executeAndWaitForRefresh(action, defaultWaitSeconds);
     }
 
     /**
      * Perform the given action and wait for the next page reload.
      */
-    default <T extends WebElement> void waitForRefresh(T element,
-            int timeoutSeconds, Consumer<T> action) {
+    default void executeAndWaitForRefresh(Runnable action, int timeoutSeconds) {
         WebElement body = internal_getDriver().findElement(By.tagName("body"));
         String initialReloadCount = body.getAttribute("data-rise-reload-count");
-        action.accept(element);
+        action.run();
         doWait(timeoutSeconds)
                 .untilTrue(new java.util.function.Predicate<WebDriver>() {
                     @Override

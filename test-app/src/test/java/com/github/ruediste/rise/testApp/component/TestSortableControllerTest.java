@@ -44,8 +44,9 @@ public class TestSortableControllerTest extends WebTest {
     @Test
     public void testChangeOrder_PushDown_PullUp_orderKept() {
         changeOrder();
-        pushDown();
-        pullUp();
+
+        executeAndWaitForRefresh(() -> pushDown());
+        executeAndWaitForRefresh(() -> pullUp());
         doWait().untilTrue(() -> contains("bar", "foo", "fooBar").matches(driver
                 .findElements(By.cssSelector(
                         dataTestSelector(TestSortableController.Data.class,

@@ -12,8 +12,7 @@ import com.github.ruediste.rise.test.PageObject;
 public class CrudListPO<TSelf extends CrudListPO<TSelf>> extends PageObject {
 
     public TSelf search() {
-        waitForRefresh(driver.findElement(byDataTestName("search")),
-                x -> x.click());
+        clickAndWaitForRefresh(driver.findElement(byDataTestName("search")));
         return self();
     }
 

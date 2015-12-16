@@ -54,6 +54,7 @@ public class StartupErrorAfterNonRestartableInjectionTest
         return frontServlet;
     }
 
+    @Ignore("needs to be run individually")
     @Test
     public void testErrorMessage() {
         driver.navigate().to(getBaseUrl());

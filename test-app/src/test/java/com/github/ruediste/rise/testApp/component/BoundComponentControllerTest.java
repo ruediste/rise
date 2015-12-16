@@ -27,9 +27,11 @@ public class BoundComponentControllerTest extends WebTest {
     }
 
     void check(String bound, String direct) {
-        assertEquals(bound,
-                driver.findElement(By.cssSelector("#bound")).getText());
-        assertEquals(direct,
-                driver.findElement(By.cssSelector("#direct")).getText());
+        doWait().untilPassing(() -> {
+            assertEquals(bound,
+                    driver.findElement(By.cssSelector("#bound")).getText());
+            assertEquals(direct,
+                    driver.findElement(By.cssSelector("#direct")).getText());
+        });
     }
 }

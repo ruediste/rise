@@ -3,6 +3,7 @@ package com.github.ruediste.rise.testApp.startupError;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.ruediste.rise.nonReloadable.front.FrontServletBase;
@@ -36,6 +37,7 @@ public class StartupErrorEarlyTest extends StartupErrorTest {
     }
 
     @Test
+    @Ignore("needs to be run individually")
     public void test() {
         driver.navigate().to(getBaseUrl());
         assertTrue(driver.getTitle().contains("Startup Error"));

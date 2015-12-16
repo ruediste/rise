@@ -112,6 +112,12 @@
 			<groupId>com.github.ruediste</groupId>
 			<artifactId>c3java</artifactId>
 			<version>1.1-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>asm</artifactId>
+					<groupId>org.ow2.asm</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.github.ruediste.remoteJUnit</groupId>

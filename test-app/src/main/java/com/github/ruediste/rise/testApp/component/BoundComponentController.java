@@ -8,6 +8,7 @@ import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.component.components.CTextField;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.ActionResult;
+import com.github.ruediste.rise.core.security.urlSigning.UrlUnsigned;
 import com.github.ruediste1.i18n.label.Labeled;
 import com.github.ruediste1.i18n.label.PropertiesLabeled;
 
@@ -23,14 +24,14 @@ public class BoundComponentController extends ControllerComponent {
                     .add(toComponentBound(() -> controller.data(), x -> x.span()
                             .ID("bound").content(controller.data().getValue())))
 
-            .add(toComponentDirect(x -> x.span().ID("direct")
-                    .content(controller.data().getValue())))
+                    .add(toComponentDirect(x -> x.span().ID("direct")
+                            .content(controller.data().getValue())))
 
-            .add(new CFormGroup(new CTextField().CLASS("textField")
-                    .bindText(() -> controller.data().getValue())))
+                    .add(new CFormGroup(new CTextField().CLASS("textField")
+                            .bindText(() -> controller.data().getValue())))
 
-            .add(new CButton("pushDown").CLASS("pushDown")
-                    .setHandler(() -> controller.pushDown()))
+                    .add(new CButton("pushDown").CLASS("pushDown")
+                            .setHandler(() -> controller.pushDown()))
                     .add(new CButton("pullUp").CLASS("pullUp")
                             .setHandler(() -> controller.pullUp()))
 
@@ -58,6 +59,7 @@ public class BoundComponentController extends ControllerComponent {
         return data.proxy();
     }
 
+    @UrlUnsigned
     public ActionResult index() {
         data.set(new Data());
 

@@ -105,14 +105,12 @@ public class PageObject {
         testUtil.clickAndWaitForRefresh(element, waitSeconds);
     }
 
-    protected <T extends WebElement> void waitForRefresh(T element,
-            Consumer<T> action) {
-        testUtil.waitForRefresh(element, action);
+    protected void executeAndWaitForRefresh(Runnable action) {
+        testUtil.executeAndWaitForRefresh(action);
     }
 
-    protected <T extends WebElement> void waitForRefresh(T element,
-            int timeoutSeconds, Consumer<T> action) {
-        testUtil.waitForRefresh(element, timeoutSeconds, action);
+    protected void executeAndWaitForRefresh(Runnable action, int timeoutSeconds) {
+        testUtil.executeAndWaitForRefresh(action, timeoutSeconds);
     }
 
     protected <T extends WebElement> WebElement getContainingReloadElement(

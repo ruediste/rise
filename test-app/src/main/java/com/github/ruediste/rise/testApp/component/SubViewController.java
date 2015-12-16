@@ -7,6 +7,7 @@ import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.component.components.CText;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.ActionResult;
+import com.github.ruediste.rise.core.security.urlSigning.UrlUnsigned;
 import com.github.ruediste1.i18n.label.Labeled;
 import com.github.ruediste1.i18n.label.PropertiesLabeled;
 
@@ -88,6 +89,7 @@ public class SubViewController extends ControllerComponent {
         return data.proxy();
     }
 
+    @UrlUnsigned
     public ActionResult index() {
         data.get().setSubController(sub1);
         return null;

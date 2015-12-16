@@ -340,6 +340,10 @@ public abstract class FrontServletBase extends HttpServlet {
         return stage;
     }
 
+    public Injector getNonRestartableInjector() {
+        return nonRestartableInjector;
+    }
+
     public Injector getCurrentRestartableInjector() {
         RestartableApplicationInfo info = currentApplicationInfo;
         if (info != null)
