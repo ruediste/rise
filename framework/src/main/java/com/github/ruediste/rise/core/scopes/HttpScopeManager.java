@@ -1,8 +1,9 @@
 package com.github.ruediste.rise.core.scopes;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;
@@ -113,7 +114,7 @@ public class HttpScopeManager {
         public static class SessionScopeData
                 implements Serializable, HttpSessionBindingListener {
             private static final long serialVersionUID = 1L;
-            public ConcurrentMap<Binding, Object> sessionDataMap = new ConcurrentHashMap<>();
+            public Map<Binding, Object> sessionDataMap = new HashMap<>();
             public GenericEventManager<HttpSessionBindingEvent> valueUnbound = new GenericEventManager<>();
 
             @Override
@@ -208,9 +209,12 @@ public class HttpScopeManager {
                             State state = currentState.get();
                             Preconditions.checkState(state != null,
                                     "Access to session scoped proxy without active session scope");
-                            return state.getSessionData().sessionDataMap
-                                    .computeIfAbsent(binding,
-                                            b -> supplier.get());
+                            Map<Binding, Object> sessionDataMap = state
+                                    .getSessionData().sessionDataMap;
+                            synchronized (sessionDataMap) {
+                                return sessionDataMap.computeIfAbsent(binding,
+                                        b -> supplier.get());
+                            }
                         }
                     });
 
