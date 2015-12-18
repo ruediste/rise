@@ -10,6 +10,7 @@ import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ComponentBase;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
+import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
 import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
@@ -116,6 +117,11 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
 
     default TSelf TEST_NAME(Optional<String> name) {
         return fIfPresent(name, s -> self().TEST_NAME(s));
+    }
+
+    default TSelf TEST_NAME(ActionResult name) {
+        return TEST_NAME(((ActionInvocationResult) name).methodInvocation
+                .getMethod().getName());
     }
 
     default TSelf rIfAuthorized(ActionResult target,

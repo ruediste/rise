@@ -1,10 +1,9 @@
 package com.github.ruediste.rise.testApp.crud;
 
-import java.util.ArrayList;
-import java.util.Random;
-
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+
+import org.apache.commons.lang3.RandomStringUtils;
 
 import com.github.ruediste.rise.core.persistence.TransactionTemplate;
 
@@ -18,13 +17,13 @@ public class TestEntityFactory {
 
     public TestCrudEntityA testCrudEntityA() {
         TestCrudEntityA result = new TestCrudEntityA();
-        result.setStringValue(randomString());
+        result.setStringValue(RandomStringUtils.randomAlphanumeric(10));
         return save(result);
     }
 
     public TestCrudEntityB testCrudEntityB() {
         TestCrudEntityB result = new TestCrudEntityB();
-        result.setValue(randomString());
+        result.setValue(RandomStringUtils.randomAlphanumeric(10));
         return save(result);
     }
 
@@ -33,32 +32,4 @@ public class TestEntityFactory {
         return result;
     }
 
-    private static Random random = new Random();
-    static char[] randomChars;
-
-    static {
-        ArrayList<Character> tmp = new ArrayList<>();
-        for (char ch = 'a'; ch <= 'z'; ch++)
-            tmp.add(ch);
-        for (char ch = 'A'; ch <= 'Z'; ch++)
-            tmp.add(ch);
-        for (char ch = '0'; ch <= '9'; ch++)
-            tmp.add(ch);
-        randomChars = new char[tmp.size()];
-        for (int i = 0; i < tmp.size(); i++)
-            randomChars[i] = tmp.get(i);
-    }
-
-    private String randomString() {
-        return randomString(10);
-    }
-
-    private String randomString(int length) {
-        StringBuilder sb = new StringBuilder();
-
-        for (int i = 0; i < length; i++) {
-            sb.append(randomChars[random.nextInt(randomChars.length)]);
-        }
-        return sb.toString();
-    }
 }
