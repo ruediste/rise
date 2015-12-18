@@ -65,10 +65,6 @@ public abstract class FrontServletBase extends HttpServlet {
 
     public volatile RestartableApplicationInfo currentApplicationInfo;
 
-    private RestartableApplication fixedRestartableApplicationInstance;
-
-    private Class<? extends RestartableApplication> restartableApplicationInstanceClass;
-
     private String applicationInstanceClassName;
 
     private StartupErrorHandler startupErrorHandler;
@@ -80,21 +76,33 @@ public abstract class FrontServletBase extends HttpServlet {
     private Stopwatch startupStopwatch;
     private boolean isInitialStartup = true;
 
+    private boolean useReloadableClassloader;
+
     /**
      * Construct using a {@link RestartableApplication} class. Enables reloading
      */
     public FrontServletBase(
-            Class<? extends RestartableApplication> dynamicApplicationInstanceClass) {
-        Preconditions.checkNotNull(dynamicApplicationInstanceClass);
-        this.restartableApplicationInstanceClass = dynamicApplicationInstanceClass;
+            Class<? extends RestartableApplication> restartableApplicationInstanceClass) {
+        this(restartableApplicationInstanceClass, true);
     }
 
     /**
-     * Construct using a fixed application instance. This will disable reloading
+     * Construct using a {@link RestartableApplication} class.
+     * 
+     * @param useReloadableClassloader
+     *            if set to true, a separate class loader (
+     *            {@link ReloadableClassLoader}) is used to load reloadable
+     *            classes. This enables to apply changes without restarting the
+     *            server. For testing purposes, the separate class loader causes
+     *            issues, therefore the option to not use it.
      */
-    public FrontServletBase(RestartableApplication fixedApplicationInstance) {
-        Preconditions.checkNotNull(fixedApplicationInstance);
-        this.fixedRestartableApplicationInstance = fixedApplicationInstance;
+    public FrontServletBase(
+            Class<? extends RestartableApplication> restartableApplicationInstanceClass,
+            boolean useReloadableClassloader) {
+        this.useReloadableClassloader = useReloadableClassloader;
+        Preconditions.checkNotNull(restartableApplicationInstanceClass);
+        applicationInstanceClassName = restartableApplicationInstanceClass
+                .getName();
     }
 
     /**
@@ -145,32 +153,13 @@ public abstract class FrontServletBase extends HttpServlet {
 
     private void initInAET() {
         // setup application reloading
-        if (fixedRestartableApplicationInstance == null) {
-            applicationInstanceClassName = restartableApplicationInstanceClass
-                    .getName();
-            notifier.addListener(trx -> reloadApplicationInstance());
-        }
+        notifier.addListener(trx -> reloadApplicationInstance());
 
         // run initializers
         InitializerUtil.runInitializers(nonRestartableInjector);
 
-        if (fixedRestartableApplicationInstance != null) {
-            notifier.close();
-            // we are started with a fixed application instance, just use
-            // it.
-            // Primarily used for Unit Testing
-            currentApplicationInfo = new RestartableApplicationInfo(
-                    fixedRestartableApplicationInstance,
-                    Thread.currentThread().getContextClassLoader());
-            fixedRestartableApplicationInstance.start(nonRestartableInjector);
-            StartupTimeLogger.stopAndLog("Total Startup Time",
-                    startupStopwatch);
-            StartupTimeLogger.writeTimesToLog(
-                    "Startup with fixed application instance times");
-        } else {
-            // application gets started through the initial file change
-            // transaction
-        }
+        // application gets started through the initial file change
+        // transaction
     }
 
     private void reloadApplicationInstance() {
@@ -202,8 +191,11 @@ public abstract class FrontServletBase extends HttpServlet {
             Thread currentThread = Thread.currentThread();
             ClassLoader old = currentThread.getContextClassLoader();
             try {
-                ReloadableClassLoader dynamicClassloader = dynamicClassLoaderProvider
-                        .get();
+                ClassLoader dynamicClassloader;
+                if (useReloadableClassloader)
+                    dynamicClassloader = dynamicClassLoaderProvider.get();
+                else
+                    dynamicClassloader = getClass().getClassLoader();
                 currentThread.setContextClassLoader(dynamicClassloader);
 
                 instance = (RestartableApplication) dynamicClassloader
@@ -349,7 +341,7 @@ public abstract class FrontServletBase extends HttpServlet {
         if (info != null)
             return info.application.getRestartableInjector();
         else
-            return fixedRestartableApplicationInstance.getRestartableInjector();
+            return null;
     }
 
     @PostConstruct

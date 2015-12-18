@@ -37,7 +37,7 @@ public abstract class WebTest extends WebTestBase {
     @Override
     protected RiseServer startServer() {
         RiseServer server = new RiseServer();
-        server.start(new TestAppFrontServlet(new TestRestartableApplication()),
+        server.start(new TestAppFrontServlet(TestRestartableApplication.class),
                 8080);
         return server;
     }

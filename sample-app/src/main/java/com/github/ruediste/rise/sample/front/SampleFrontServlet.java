@@ -17,8 +17,15 @@ import com.github.ruediste.rise.sample.SamplePackage;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 
 public class SampleFrontServlet extends FrontServletBase {
+    private boolean testing;
+
     public SampleFrontServlet() {
-        super(SampleRestartableApp.class);
+        this(false);
+    }
+
+    public SampleFrontServlet(boolean testing) {
+        super(SampleRestartableApp.class, !testing);
+        this.testing = testing;
     }
 
     @Inject
@@ -39,8 +46,12 @@ public class SampleFrontServlet extends FrontServletBase {
 
                     @Override
                     protected void initializeProperties(Properties props) {
-                        props.setProperty("URL",
-                                "jdbc:h2:file:~/sampleApp;DB_CLOSE_DELAY=-1;MVCC=false");
+                        if (testing)
+                            props.setProperty("URL",
+                                    "jdbc:h2:meme:sampleApp;DB_CLOSE_DELAY=-1;MVCC=false");
+                        else
+                            props.setProperty("URL",
+                                    "jdbc:h2:file:~/sampleApp;DB_CLOSE_DELAY=-1;MVCC=false");
                         props.setProperty("user", "sa");
                         props.setProperty("password", "sa");
                     }

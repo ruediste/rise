@@ -13,17 +13,18 @@ import com.github.ruediste.rise.testApp.app.TestRestartableApplication;
 import com.github.ruediste.salta.jsr330.Injector;
 
 public class StartupErrorEarlyRestartableTest extends StartupErrorTest {
+    private final static class App extends TestRestartableApplication {
+        @Override
+        protected void startImpl(Injector permanentInjector) {
+            throw new RuntimeException("My Error");
+        }
+    }
+
     @Override
     protected final FrontServletBase createServlet(Object testCase) {
-        TestRestartableApplication app = new TestRestartableApplication() {
+        TestRestartableApplication app = new App();
 
-            @Override
-            protected void startImpl(Injector permanentInjector) {
-                throw new RuntimeException("My Error");
-            }
-        };
-
-        FrontServletBase frontServlet = new TestAppFrontServlet(app) {
+        FrontServletBase frontServlet = new TestAppFrontServlet(App.class) {
             private static final long serialVersionUID = 1L;
         };
 

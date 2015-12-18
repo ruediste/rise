@@ -144,6 +144,8 @@ public abstract class WebTestBase implements TestUtil {
         }
 
         if (util == null && injector != null) {
+            // We have an injector but util is not injected yet, so inject this
+            // instance
             injector.injectMembers(this);
             util.initialize(getBaseUrl());
         }

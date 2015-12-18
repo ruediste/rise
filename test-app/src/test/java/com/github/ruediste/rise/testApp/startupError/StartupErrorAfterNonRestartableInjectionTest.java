@@ -27,16 +27,16 @@ import com.github.ruediste.salta.jsr330.MembersInjector;
  */
 public class StartupErrorAfterNonRestartableInjectionTest
         extends StartupErrorTest {
+    private static class App extends TestRestartableApplication {
+        @Override
+        protected void startImpl(Injector permanentInjector) {
+        }
+    }
+
     @Override
     protected final FrontServletBase createServlet(Object testCase) {
-        TestRestartableApplication app = new TestRestartableApplication() {
 
-            @Override
-            protected void startImpl(Injector permanentInjector) {
-            }
-        };
-
-        FrontServletBase frontServlet = new TestAppFrontServlet(app) {
+        FrontServletBase frontServlet = new TestAppFrontServlet(App.class) {
             private static final long serialVersionUID = 1L;
 
             @Inject
