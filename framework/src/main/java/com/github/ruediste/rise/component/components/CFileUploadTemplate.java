@@ -8,13 +8,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.ruediste.rise.component.components.CFileInput.UploadedFile;
+import com.github.ruediste.rise.component.components.CFileUpload.UploadedFile;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.web.HttpRenderResult;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 
-public class CFileInputTemplate
-        extends BootstrapComponentTemplateBase<CFileInput> {
+public class CFileUploadTemplate
+        extends BootstrapComponentTemplateBase<CFileUpload> {
 
     @Inject
     CoreRequestInfo coreRequestInfo;
@@ -23,7 +23,7 @@ public class CFileInputTemplate
     ObjectMapper mapper;
 
     @Override
-    public void doRender(CFileInput component, BootstrapRiseCanvas<?> html) {
+    public void doRender(CFileUpload component, BootstrapRiseCanvas<?> html) {
 
         html.input().rCOMPONENT_ATTRIBUTES(component).TYPE("file")
                 .CLASS("rise_fileinput").MULTIPLE("multiple")
@@ -54,7 +54,7 @@ public class CFileInputTemplate
     }
 
     @Override
-    public HttpRenderResult handleAjaxRequest(CFileInput component,
+    public HttpRenderResult handleAjaxRequest(CFileUpload component,
             String suffix) throws Throwable {
         if ("upload".equals(suffix)) {
             // read submitted files

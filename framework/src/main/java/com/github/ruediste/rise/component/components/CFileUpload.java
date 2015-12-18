@@ -8,8 +8,8 @@ import java.util.List;
 import com.github.ruediste.rise.component.tree.RelationsComponent;
 import com.google.common.io.ByteStreams;
 
-@DefaultTemplate(CFileInputTemplate.class)
-public class CFileInput extends RelationsComponent<CFileInput> {
+@DefaultTemplate(CFileUploadTemplate.class)
+public class CFileUpload extends RelationsComponent<CFileUpload> {
 
     public interface UploadedFile {
         /**
@@ -32,8 +32,8 @@ public class CFileInput extends RelationsComponent<CFileInput> {
         InputStream getInputStream() throws IOException;
 
         default byte[] getBytes() {
-            try {
-                return ByteStreams.toByteArray(getInputStream());
+            try (InputStream in = getInputStream()) {
+                return ByteStreams.toByteArray(in);
             } catch (IOException e) {
                 throw new RuntimeException(
                         "Unable to load data of file " + getSubmittedFileName(),
@@ -42,7 +42,7 @@ public class CFileInput extends RelationsComponent<CFileInput> {
         }
     }
 
-    private final List<UploadedFile> uploadedFiles = new ArrayList<CFileInput.UploadedFile>();
+    private final List<UploadedFile> uploadedFiles = new ArrayList<CFileUpload.UploadedFile>();
 
     public List<UploadedFile> getUploadedFiles() {
         return uploadedFiles;
