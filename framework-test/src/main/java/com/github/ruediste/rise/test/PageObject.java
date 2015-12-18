@@ -1,7 +1,9 @@
 package com.github.ruediste.rise.test;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -16,7 +18,7 @@ public class PageObject {
 
     protected WebDriver driver;
     protected Actions actions;
-    private Optional<Supplier<WebElement>> rootElementSupplier;
+    private Supplier<? extends SearchContext> rootSearchContextSupplier;
     private final TestUtilImpl testUtil = new TestUtilImpl();
 
     /**
@@ -36,33 +38,97 @@ public class PageObject {
         testUtil.setDriver(driver);
     }
 
-    public Optional<Supplier<WebElement>> getRootElementSupplier() {
-        return rootElementSupplier;
+    public Supplier<? extends SearchContext> getRootSearchContextSupplier() {
+        return rootSearchContextSupplier;
     }
 
-    public WebElement rootElement() {
-        return getRootElementSupplier()
-                .orElseThrow(
-                        () -> new RuntimeException("No root element defined"))
-                .get();
+    protected WebElement rootElement() {
+        SearchContext ctx = rootSearchContextSupplier.get();
+        if (ctx instanceof WebElement)
+            return (WebElement) ctx;
+        else if (ctx instanceof WebDriver)
+            return ctx.findElement(By.cssSelector("html"));
+        throw new RuntimeException(
+                "Unable to determine root element for search context " + ctx);
     }
 
     public void setRootElementSupplier(
-            Optional<Supplier<WebElement>> rootElementSupplier) {
-        this.rootElementSupplier = rootElementSupplier;
-    }
-
-    private SearchContext getSearchContext() {
-        return rootElementSupplier.map(x -> (SearchContext) x.get())
-                .orElse(driver);
+            Supplier<? extends SearchContext> rootSearchContextSupplier) {
+        this.rootSearchContextSupplier = rootSearchContextSupplier;
     }
 
     protected WebElement findElement(By by) {
-        return by.findElement(getSearchContext());
+        return by.findElement(rootSearchContextSupplier.get());
     }
 
     protected List<WebElement> findElements(By by) {
-        return by.findElements(getSearchContext());
+        return by.findElements(rootSearchContextSupplier.get());
+    }
+
+    protected WebElement lazy(By by) {
+        return (WebElement) Proxy.newProxyInstance(
+                WebElement.class.getClassLoader(),
+                new Class<?>[] { WebElement.class }, new InvocationHandler() {
+
+                    @Override
+                    public Object invoke(Object proxy, Method method,
+                            Object[] args) throws Throwable {
+                        return method.invoke(findElement(by), args);
+                    }
+                });
+    }
+
+    @SuppressWarnings("unchecked")
+    protected List<WebElement> lazys(By by) {
+        return (List<WebElement>) Proxy.newProxyInstance(
+                WebElement.class.getClassLoader(),
+                new Class<?>[] { List.class }, new InvocationHandler() {
+
+                    @Override
+                    public Object invoke(Object proxy, Method method,
+                            Object[] args) throws Throwable {
+                        return method.invoke(findElements(by), args);
+                    }
+                });
+    }
+
+    protected WebElement cached(By by) {
+        return (WebElement) Proxy.newProxyInstance(
+                WebElement.class.getClassLoader(),
+                new Class<?>[] { WebElement.class }, new InvocationHandler() {
+
+                    WebElement element;
+
+                    @Override
+                    public Object invoke(Object proxy, Method method,
+                            Object[] args) throws Throwable {
+                        synchronized (this) {
+                            if (element == null)
+                                element = findElement(by);
+                        }
+                        return method.invoke(element, args);
+                    }
+                });
+    }
+
+    @SuppressWarnings("unchecked")
+    protected List<WebElement> cacheds(By by) {
+        return (List<WebElement>) Proxy.newProxyInstance(
+                WebElement.class.getClassLoader(),
+                new Class<?>[] { List.class }, new InvocationHandler() {
+
+                    List<WebElement> element;
+
+                    @Override
+                    public Object invoke(Object proxy, Method method,
+                            Object[] args) throws Throwable {
+                        synchronized (this) {
+                            if (element == null)
+                                element = findElements(by);
+                        }
+                        return method.invoke(element, args);
+                    }
+                });
     }
 
     protected RiseWait<WebDriver> doWait() {
@@ -109,7 +175,8 @@ public class PageObject {
         testUtil.executeAndWaitForRefresh(action);
     }
 
-    protected void executeAndWaitForRefresh(Runnable action, int timeoutSeconds) {
+    protected void executeAndWaitForRefresh(Runnable action,
+            int timeoutSeconds) {
         testUtil.executeAndWaitForRefresh(action, timeoutSeconds);
     }
 
@@ -119,16 +186,21 @@ public class PageObject {
     }
 
     protected <T extends PageObject> T pageObject(Class<T> cls) {
-        return testUtil.pageObject(cls);
+        return testUtil.pageObject(cls, rootSearchContextSupplier);
     }
 
     protected <T extends PageObject> T pageObject(Class<T> cls,
-            Supplier<WebElement> rootElementFunction) {
-        return testUtil.pageObject(cls, rootElementFunction);
+            WebElement rootElement) {
+        return pageObject(cls, () -> rootElement);
+    }
+
+    protected <T extends PageObject> T pageObject(Class<T> cls,
+            Supplier<WebElement> rootElementSupplier) {
+        return testUtil.pageObject(cls, rootElementSupplier);
     }
 
     protected <T extends PageObject> T pageObject(Class<T> cls, By by) {
-        return testUtil.pageObject(cls, by);
+        return testUtil.pageObject(cls, getRootSearchContextSupplier(), by);
     }
 
     /**

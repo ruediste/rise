@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -146,18 +147,23 @@ public interface TestUtil {
     }
 
     default <T extends PageObject> T pageObject(Class<T> cls) {
-        return PageObjectFactory.createPageObject(internal_getDriver(), cls,
-                Optional.empty());
+        return pageObject(cls, () -> internal_getDriver());
     }
 
     default <T extends PageObject> T pageObject(Class<T> cls,
-            Supplier<WebElement> rootElementFunction) {
+            Supplier<? extends SearchContext> rootSearchContextSupplier) {
         return PageObjectFactory.createPageObject(internal_getDriver(), cls,
-                Optional.of(rootElementFunction));
+                rootSearchContextSupplier);
     }
 
     default <T extends PageObject> T pageObject(Class<T> cls, By by) {
+        return pageObject(cls, () -> internal_getDriver(), by);
+    }
+
+    default <T extends PageObject> T pageObject(Class<T> cls,
+            Supplier<? extends SearchContext> rootSearchContextSupplier,
+            By by) {
         return PageObjectFactory.createPageObject(internal_getDriver(), cls,
-                Optional.of(() -> internal_getDriver().findElement(by)));
+                () -> by.findElement(rootSearchContextSupplier.get()));
     }
 }
