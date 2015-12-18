@@ -1,7 +1,6 @@
 package com.github.ruediste.rise.api;
 
 import java.io.ByteArrayOutputStream;
-import java.util.function.Consumer;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -23,32 +22,8 @@ import com.google.common.reflect.TypeToken;
  * 
  * <p>
  * Since each application will use it's own {@link HtmlCanvas} subclass, the
- * method called to render the view takes a {@link ByteArrayOutputStream} as
- * argument ({@link #render(ByteArrayOutputStream)}). Each application is
- * supposed to create a subclass called {@code ViewMvc} which
- * <ul>
- * <li>defines an abstract method {@code render(AppSpecificCanvas)}</li>
- * <li>implement {@link #render(ByteArrayOutputStream)} by creating a canvas
- * instance and invoking
- * {@link #render(ByteArrayOutputStream, RiseCanvasBase, Consumer)}, with the
- * consumer invoking the defined {@code render method}
- * </ul>
- * 
- * Sample:
- * 
- * <pre>
- * &#064;{@code Inject
- * Provider<SampleCanvas> canvasProvider;
- * }
- * 
- * &#064;{@code Override
- * public void render(ByteArrayOutputStream out) throws IOException {
- *     render(out, canvasProvider.get(), this::render);
- * }
- * 
- * protected abstract void render(SampleCanvas html);
- * }
- * </pre>
+ * type is passed as generic parameter. The class is instantiated by the DI
+ * framework (salta) and passed to {@link #render(RiseCanvasBase)}.
  */
 public abstract class ViewMvcBase<TController extends IControllerMvc, TData, TCanvas extends RiseCanvasBase<?>> {
 
