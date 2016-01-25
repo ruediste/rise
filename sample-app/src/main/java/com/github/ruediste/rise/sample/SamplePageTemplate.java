@@ -3,6 +3,8 @@ package com.github.ruediste.rise.sample;
 import javax.inject.Inject;
 
 import com.github.ruediste.rise.core.navigation.NavigationRenderer;
+import com.github.ruediste.rise.core.security.AuthenticationHolder;
+import com.github.ruediste.rise.core.security.login.LoginController;
 import com.github.ruediste.rise.integration.PageTemplateBase;
 import com.github.ruediste.rise.integration.RisePageTemplate;
 import com.github.ruediste.rise.integration.RisePageTemplate.RisePageTemplateParameters;
@@ -30,6 +32,9 @@ public class SamplePageTemplate extends PageTemplateBase {
 
     @Inject
     NavigationRenderer navRenderer;
+
+    @Inject
+    AuthenticationHolder authHolder;
 
     public void renderOn(SampleCanvas canvas,
             SamplePageTemplateParameters parameters) {
@@ -61,6 +66,7 @@ public class SamplePageTemplate extends PageTemplateBase {
                             .p().BnavbarText().BnavbarRight()
                               .a().BnavbarLink().HREF(go(LanguageController.class).switchLanguage("de")).content("de")
                               .a().BnavbarLink().HREF(go(LanguageController.class).switchLanguage("en")).content("en")
+                              .fIf(authHolder.tryGetCurrentPrincipal().isPresent(), ()->html.a().BnavbarLink().HREF(go(LoginController.class).logout()).content("logout"))
                             ._p();
                         })
                         .bContainer_fluid()

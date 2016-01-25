@@ -1,4 +1,4 @@
-package com.github.ruediste.rise.core.security.authentication;
+package com.github.ruediste.rise.core.security.authentication.core;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -14,6 +14,9 @@ import com.google.common.reflect.TypeToken;
 /**
  * {@link AuthenticationManager} implementation using
  * {@link AuthenticationProvider}s to perform the actual authentications.
+ * 
+ * <p>
+ * <img src="doc-files/authenticationCoreOverview.png" alt="">
  */
 @Singleton
 public class DefaultAuthenticationManager implements AuthenticationManager {
@@ -35,7 +38,7 @@ public class DefaultAuthenticationManager implements AuthenticationManager {
         for (Pair<Class<?>, AuthenticationProvider<?>> pair : getProviders()) {
             if (pair.getA().isAssignableFrom(request.getClass())) {
                 result = ((AuthenticationProvider) pair.getB())
-                        .tryAuthenticate(request);
+                        .authenticate(request);
                 if (result.isSuccess())
                     break;
                 else

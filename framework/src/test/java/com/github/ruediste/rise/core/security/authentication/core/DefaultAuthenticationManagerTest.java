@@ -1,4 +1,4 @@
-package com.github.ruediste.rise.core.security.authentication;
+package com.github.ruediste.rise.core.security.authentication.core;
 
 import static org.junit.Assert.assertEquals;
 
@@ -6,6 +6,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.github.ruediste.rise.core.security.Principal;
+import com.github.ruediste.rise.core.security.authentication.InMemoryAuthenticationProvider;
+import com.github.ruediste.rise.core.security.authentication.UsernamePasswordAuthenticationRequest;
+import com.github.ruediste.rise.core.security.authentication.core.AuthenticationResult;
+import com.github.ruediste.rise.core.security.authentication.core.DefaultAuthenticationManager;
 
 public class DefaultAuthenticationManagerTest {
 

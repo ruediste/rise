@@ -3,11 +3,14 @@ package com.github.ruediste.rise.core.security.authorization;
 import java.util.Arrays;
 import java.util.List;
 
-import com.github.ruediste.rise.core.security.authentication.AuthenticationSuccess;
+import com.github.ruediste.rise.core.security.authentication.core.AuthenticationSuccess;
 
 /**
  * The outcome of checking if an {@link AuthenticationSuccess} implies a set of
  * rights
+ * 
+ * <p>
+ * <img src="doc-files/authorizationDecisionOverview.png" alt="">
  */
 public class AuthorizationResult {
 

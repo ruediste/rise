@@ -27,17 +27,25 @@ public interface BootstrapRiseCanvas<TSelf extends BootstrapRiseCanvas<TSelf>>
 
         R_ButtonArgs buttonArgs = new R_ButtonArgs(this, true);
 
+        Object instance = internal_riseHelper().getControllerAuthzInstance(
+                actionInvocation.methodInvocation.getInstanceClass());
+        boolean authorized = helper.getAuthz().isAuthorized(instance,
+                actionInvocation.methodInvocation.getMethod(),
+                actionInvocation.methodInvocation.getArguments());
+
+        if (!authorized && buttonArgs.nonAuthorizedHidden) {
+            return self();
+        }
+
         TSelf result = bButtonA(() -> {
             args.accept(buttonArgs);
-            Object instance = internal_riseHelper().getControllerAuthzInstance(
-                    actionInvocation.methodInvocation.getInstanceClass());
-            if (!helper.getAuthz().isAuthorized(instance,
-                    actionInvocation.methodInvocation.getMethod(),
-                    actionInvocation.methodInvocation.getArguments())) {
-                buttonArgs.disabled();
-            }
             return buttonArgs;
         });
+
+        if (!authorized && !buttonArgs.nonAuthorizedNormal) {
+            buttonArgs.disabled();
+        }
+
         if (buttonArgs.disabled)
             result.HREF("#");
         else {
@@ -62,6 +70,8 @@ public interface BootstrapRiseCanvas<TSelf extends BootstrapRiseCanvas<TSelf>>
 
         boolean iconOnly;
         boolean disabled;
+        boolean nonAuthorizedHidden;
+        boolean nonAuthorizedNormal;
 
         public R_ButtonArgs iconOnly() {
             iconOnly = true;
@@ -70,6 +80,34 @@ public interface BootstrapRiseCanvas<TSelf extends BootstrapRiseCanvas<TSelf>>
 
         public R_ButtonArgs iconOnly(boolean value) {
             iconOnly = value;
+            return this;
+        }
+
+        public R_ButtonArgs nonAuthorizedHidden() {
+            return nonAuthorizedHidden(true);
+        }
+
+        /**
+         * By default, buttons targeting controller methods for which the
+         * current user is not authorized are disabled. By setting this to true,
+         * such buttons are hidden
+         */
+        public R_ButtonArgs nonAuthorizedHidden(boolean value) {
+            nonAuthorizedHidden = value;
+            return this;
+        }
+
+        public R_ButtonArgs nonAuthorizedNormal() {
+            return nonAuthorizedNormal(true);
+        }
+
+        /**
+         * By default, buttons targeting controller methods for which the
+         * current user is not authorized are disabled. By setting this to true,
+         * such buttons are shown normal
+         */
+        public R_ButtonArgs nonAuthorizedNormal(boolean value) {
+            nonAuthorizedNormal = value;
             return this;
         }
 

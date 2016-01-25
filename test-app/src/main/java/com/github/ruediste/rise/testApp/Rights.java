@@ -1,5 +1,7 @@
 package com.github.ruediste.rise.testApp;
 
-public enum Rights {
+import com.github.ruediste.rise.core.security.authorization.Right;
+
+public enum Rights implements Right {
     ALLOWED, FORBIDDEN
 }

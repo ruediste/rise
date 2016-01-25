@@ -2,7 +2,7 @@ package com.github.ruediste.rise.core.security.web.rememberMe;
 
 import java.security.AuthProvider;
 
-import com.github.ruediste.rise.core.security.authentication.AuthenticationRequest;
+import com.github.ruediste.rise.core.security.authentication.core.AuthenticationRequest;
 
 /**
  * Request to perform an authentication based on a remember me cookie contained

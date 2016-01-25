@@ -5,8 +5,11 @@ import java.util.function.Supplier;
 
 import javax.inject.Singleton;
 
+/**
+ * Helper used by {@link Authz} to perform method authorization introspection.
+ */
 @Singleton
-public class AuthzHelper {
+public class IsAuthorizingHelper {
 
     public ThreadLocal<Boolean> isAuthorizing = new ThreadLocal<>();
 

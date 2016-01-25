@@ -107,6 +107,9 @@ var rise = (function() {
 					onReload.fire(receiver);
 				}
 			},
+			error : function(jqXHR, testStatus, errorThrown){
+				$("html").get(0).innerHTML=jqXHR.responseText;
+			},
 			dataType : "html",
 			headers : {
 				"rise-is-ajax" : "true"

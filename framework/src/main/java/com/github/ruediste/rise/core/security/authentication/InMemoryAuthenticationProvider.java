@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Objects;
 
 import com.github.ruediste.rise.core.security.Principal;
+import com.github.ruediste.rise.core.security.authentication.core.AuthenticationProvider;
+import com.github.ruediste.rise.core.security.authentication.core.AuthenticationResult;
 import com.github.ruediste.rise.util.Pair;
 
 /**
@@ -16,7 +18,7 @@ public class InMemoryAuthenticationProvider<T extends Principal> implements
     public HashMap<String, Pair<String, T>> users = new HashMap<>();
 
     @Override
-    public AuthenticationResult tryAuthenticate(
+    public AuthenticationResult authenticate(
             UsernamePasswordAuthenticationRequest request) {
         Pair<String, T> pair = users.get(request.getUserName());
         if (pair == null)

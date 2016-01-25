@@ -2,6 +2,8 @@ package com.github.ruediste.rise.core.security.authorization;
 
 /**
  * Base classes describing authorization failures
+ * 
+ * <img src="doc-files/authorizationDecisionOverview.png" alt="">
  */
 public class AuthorizationFailure {
     private final String message;

@@ -14,4 +14,9 @@ public abstract class LoginController extends ControllerComponent {
 
     public abstract ActionResult tokenTheftDetected(UrlSpec redirectUrl);
 
+    /**
+     * Logout the current user and redirect to the referrer
+     */
+    public abstract ActionResult logout();
+
 }

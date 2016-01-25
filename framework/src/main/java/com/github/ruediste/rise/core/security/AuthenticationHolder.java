@@ -3,17 +3,17 @@ package com.github.ruediste.rise.core.security;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import com.github.ruediste.rise.core.security.authentication.AuthenticationSuccess;
+import com.github.ruediste.rise.core.security.authentication.core.AuthenticationSuccess;
 import com.github.ruediste.salta.jsr330.ImplementedBy;
 
 /**
- * Gives access to the current subject.
+ * Holder of the current {@link AuthenticationSuccess}, if any.
  */
 @ImplementedBy(DefaultAuthenticationHolder.class)
 public interface AuthenticationHolder {
     /**
-     * Get the current subject. Throws a {@link NoAuthenticationException} if no
-     * subject is logged in.
+     * Get the current principal. Throws a {@link NoAuthenticationException} if
+     * no principal is currently active.
      */
     Principal getCurrentPrincipal();
 

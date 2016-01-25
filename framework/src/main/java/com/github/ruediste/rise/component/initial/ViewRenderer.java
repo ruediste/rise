@@ -5,6 +5,7 @@ import javax.inject.Inject;
 import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.ComponentConfiguration;
 import com.github.ruediste.rise.component.ComponentPage;
+import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.core.ChainedRequestHandler;
 import com.github.ruediste.rise.core.CoreConfiguration;
@@ -29,10 +30,20 @@ public class ViewRenderer extends ChainedRequestHandler {
     @Inject
     ComponentConfiguration config;
 
+    @Inject
+    ComponentRequestInfo componentRequestInfo;
+
     @Override
     public void run(Runnable next) {
         next.run();
         ComponentPage page = componentPage.self();
+
+        // handle page closing in initial requests
+        if (componentRequestInfo.getClosePageResult() != null) {
+            coreRequestInfo
+                    .setActionResult(componentRequestInfo.getClosePageResult());
+            return;
+        }
         page.setView(config.createView(page.getController()));
         ViewComponentBase<?> view = page.getView();
         coreRequestInfo.setActionResult(new ContentRenderResult(

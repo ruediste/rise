@@ -7,6 +7,9 @@ import javax.inject.Inject;
 import com.github.ruediste.rise.core.ChainedRequestHandler;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 
+/**
+ * Render the action result set by the current request to the response
+ */
 public class ActionResultRenderer extends ChainedRequestHandler {
 
     @Inject

@@ -10,6 +10,9 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKno
 import com.github.ruediste.rise.core.web.HttpRenderResult;
 import com.github.ruediste.rise.core.web.RedirectRenderResult;
 
+/**
+ * Base class for component sub controllers
+ */
 public class SubControllerComponent {
 
     @Inject

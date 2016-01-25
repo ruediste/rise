@@ -3,7 +3,6 @@ package com.github.ruediste.rise.core.security.authorization;
 import static java.util.stream.Collectors.toSet;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -11,14 +10,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiPredicate;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
-import com.github.ruediste.rise.core.CoreRestartableModule;
 import com.github.ruediste.rise.core.aop.AopUtil;
 import com.github.ruediste.salta.jsr330.binder.Binder;
 import com.google.common.annotations.VisibleForTesting;
@@ -26,18 +24,25 @@ import com.google.common.annotations.VisibleForTesting;
 import net.sf.cglib.proxy.Enhancer;
 
 /**
- * Manages rules determining the rights are reqired to call a method.
+ * Manages rules determining the rights required to call a method.
+ * 
+ * <p>
+ * The manager works through subclass AOP, therefore the {@link Right}
+ * extraction rules have to be initialized during the Salta module
+ * initialization.
  */
-@Singleton
 public class MethodAuthorizationManager {
 
     @Inject
-    AuthorizationManager authorizationManager;
+    AuthorizationDecisionManager authorizationManager;
 
     @Inject
-    AuthzHelper authzHelper;
+    IsAuthorizingHelper authzHelper;
 
     interface MethodAuthorizationRule {
+        /**
+         * Return the rights required to call the given method
+         */
         Set<? extends Right> getRequiredRights(Object target, Method method,
                 Object[] args);
     }
@@ -45,102 +50,95 @@ public class MethodAuthorizationManager {
     @VisibleForTesting
     static class RuleEntry {
         MethodAuthorizationRule rule;
+        /**
+         * can be null
+         */
         Predicate<Class<?>> typeMatcher;
+        /**
+         * can be null
+         */
         BiPredicate<Class<?>, Method> methodMatcher;
 
     }
 
     @VisibleForTesting
     List<RuleEntry> entries = new ArrayList<>();
-    private boolean defaultRuleDisabled;
 
     public MethodAuthorizationManager() {
-        addDefaultRule();
-    }
-
-    private void addDefaultRule() {
-        addRule(t -> !defaultRuleDisabled, (t, m) -> {
-            for (Annotation annotation : m.getDeclaredAnnotations()) {
-                if (annotation.annotationType()
-                        .isAnnotationPresent(MetaRequiresRight.class))
-                    return true;
-            }
-            return false;
-        } , new MethodAuthorizationRule() {
-
-            @Override
-            public Set<? extends Right> getRequiredRights(Object target,
-                    Method method, Object[] args) {
-                Set<Right> requiredRights = new HashSet<>();
-                for (Annotation annotation : method.getAnnotations()) {
-                    if (annotation.annotationType()
-                            .isAnnotationPresent(MetaRequiresRight.class)) {
-                        try {
-                            extractRights(requiredRights, annotation, target,
-                                    method);
-                        } catch (Exception e) {
-                            throw new RuntimeException(
-                                    "error while reading value of annotation "
-                                            + annotation + " on method "
-                                            + method);
-                        }
-                    }
-                }
-                return requiredRights;
-            }
-
-            private void extractRights(Set<Right> requiredRights,
-                    Annotation annotation, Object target, Method method)
-                            throws NoSuchMethodException,
-                            IllegalAccessException, InvocationTargetException {
-                Method valueMethod = annotation.annotationType()
-                        .getMethod("value");
-                Object value = valueMethod.invoke(annotation);
-                if (valueMethod.getReturnType().isArray()) {
-                    if (Annotation.class.isAssignableFrom(
-                            valueMethod.getReturnType().getComponentType())) {
-                        for (int i = 0; i < Array.getLength(value); i++) {
-                            extractRights(requiredRights,
-                                    (Annotation) Array.get(value, i), target,
-                                    method);
-                        }
-
-                    } else
-                        for (int i = 0; i < Array.getLength(value); i++) {
-                            Object right = Array.get(value, i);
-                            requiredRights.add(new RequiresRightAnnotationRight(
-                                    right, method, annotation));
-                        }
-                } else
-                    requiredRights.add(new RequiresRightAnnotationRight(value,
-                            method, annotation));
-            }
-        });
     }
 
     private static final AttachedProperty<AttachedPropertyBearer, MethodAuthorizationManager> managerProperty = new AttachedProperty<>(
             MethodAuthorizationManager.class.getSimpleName());
 
     /**
-     * Disable the default rule which checks for {@link MetaRequiresRight}
-     * -Annotations
+     * Add a {@link MethodAuthorizationRule} for the given binder
      */
-    public static void disableDefaultRule(Binder binder) {
-        MethodAuthorizationManager mgr = managerProperty.get(binder.config());
-        mgr.defaultRuleDisabled = true;
+    public static void addRule(Binder binder, MethodAuthorizationRule rule,
+            Predicate<Class<?>> typeMatcher,
+            BiPredicate<Class<?>, Method> methodMatcher) {
+        get(binder).addRule(typeMatcher, methodMatcher, rule);
     }
 
     /**
-     * Add a {@link MethodAuthorizationRule} for the given binder
+     * Retrieve the manager instance associated with the given binder. If no
+     * manager is associated yet, create a new one and register it.
      */
-    public static void addRule(Binder binder, Predicate<Class<?>> typeMatcher,
-            BiPredicate<Class<?>, Method> methodMatcher,
-            MethodAuthorizationRule rule) {
-        MethodAuthorizationManager mgr = managerProperty.get(binder.config());
-        mgr.addRule(typeMatcher, methodMatcher, rule);
+    public static MethodAuthorizationManager get(Binder binder) {
+        MethodAuthorizationManager result = managerProperty
+                .get(binder.config());
+        if (result == null) {
+            result = new MethodAuthorizationManager();
+            result.register(binder);
+        }
+        return result;
     }
 
-    public void addRule(Predicate<Class<?>> typeMatcher,
+    /**
+     * Add a rule to extract rights from a certain annotation
+     * 
+     * @param extractor
+     *            extractor of rights from a single occurrence of the
+     *            annotation. If the annotation is repeated, the extractor is
+     *            invoked multiple times. The return value may be null
+     */
+    public static <T extends Annotation> void addRule(Binder binder,
+            Class<T> annotationClass, Function<T, Set<Right>> extractor) {
+        get(binder).addRule(annotationClass, extractor);
+    }
+
+    /**
+     * Add a rule to extract rights from a certain annotation
+     * 
+     * @param extractor
+     *            extractor of rights from a single occurrence of the
+     *            annotation. If the annotation is repeated, the extractor is
+     *            invoked multiple times. The return value may be null
+     * @return
+     */
+    public <T extends Annotation> MethodAuthorizationManager addRule(
+            Class<T> annotationClass, Function<T, Set<Right>> extractor) {
+        addRule(t -> true,
+                (t, m) -> m.getDeclaredAnnotationsByType(
+                        annotationClass).length > 0,
+                new MethodAuthorizationRule() {
+
+                    @Override
+                    public Set<? extends Right> getRequiredRights(Object target,
+                            Method method, Object[] args) {
+                        HashSet<Right> result = new HashSet<>();
+                        for (T annotation : method.getDeclaredAnnotationsByType(
+                                annotationClass)) {
+                            Set<Right> tmp = extractor.apply(annotation);
+                            if (tmp != null)
+                                result.addAll(tmp);
+                        }
+                        return result;
+                    }
+                });
+        return this;
+    }
+
+    public MethodAuthorizationManager addRule(Predicate<Class<?>> typeMatcher,
             BiPredicate<Class<?>, Method> methodMatcher,
             MethodAuthorizationRule rule) {
         RuleEntry entry = new RuleEntry();
@@ -148,19 +146,18 @@ public class MethodAuthorizationManager {
         entry.typeMatcher = typeMatcher;
         entry.rule = rule;
         entries.add(entry);
+        return this;
     }
 
-    /**
-     * Called from the {@link CoreRestartableModule}
-     */
-    public void register(Binder binder) {
+    private MethodAuthorizationManager register(Binder binder) {
         managerProperty.set(binder.config(), this);
         AopUtil.registerSubclass(binder.config().standardConfig, t -> {
             Class<?> cls = t.getRawType();
-            return entries.stream().anyMatch(e -> e.typeMatcher.test(cls));
+            return entries.stream().anyMatch(
+                    e -> e.typeMatcher == null || e.typeMatcher.test(cls));
         } , (t, m) -> entries.stream().anyMatch(e -> {
             Class<?> cls = t.getRawType();
-            return e.methodMatcher.test(cls, m);
+            return e.methodMatcher == null || e.methodMatcher.test(cls, m);
         }), i -> {
             Object target = i.getTarget();
             if (target != null) {
@@ -180,6 +177,7 @@ public class MethodAuthorizationManager {
         });
 
         binder.bind(MethodAuthorizationManager.class).toInstance(this);
+        return this;
     }
 
     public void checkAuthorized(Object target, Method m, Object[] args) {

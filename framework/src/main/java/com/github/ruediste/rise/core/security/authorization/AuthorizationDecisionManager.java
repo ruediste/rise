@@ -7,28 +7,41 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.github.ruediste.rise.core.front.RestartableApplicationBase;
 import com.github.ruediste.rise.core.security.AuthenticationHolder;
-import com.github.ruediste.rise.core.security.authentication.AuthenticationSuccess;
+import com.github.ruediste.rise.core.security.authentication.core.AuthenticationSuccess;
 
 /**
  * Manager to determine if an {@link AuthenticationSuccess} implies specified
  * rights.
  * 
  * <p>
- * This is mainly a holder for a {@link AuthorizationPerformer}, providing some
- * convenience methods. Since the combination of different authorization
- * mechanisms is very application dependent, only a single
- * {@link AuthorizationPerformer} is referenced. Create a custom implementation
- * to combine different sources.
+ * Usually, application code uses {@link Authz} instead.
+ * 
+ * <p>
+ * This is mainly a holder for a {@link AuthorizationDecisionPerformer},
+ * providing some convenience methods. Since the combination of different
+ * authorization mechanisms is very application dependent, only a single
+ * {@link AuthorizationDecisionPerformer} is referenced. Create a custom
+ * implementation to combine different sources. The performer is typically
+ * initialized by the {@link RestartableApplicationBase}
+ * 
+ * <p>
+ * The class contains corresponding check... and perform... methods. The
+ * check... methods throw an exception if the authorization cannot be granted,
+ * the perform... methods return an {@link AuthorizationResult}.
+ * 
+ * <p>
+ * <img src="doc-files/authorizationDecisionOverview.png" alt="">
  */
 @Singleton
-public class AuthorizationManager {
+public class AuthorizationDecisionManager {
 
     @Inject
     AuthenticationHolder authenticationHolder;
 
     @FunctionalInterface
-    public interface AuthorizationPerformer {
+    public interface AuthorizationDecisionPerformer {
         /**
          * Check if the provided authentication implies all specified rights.
          * 
@@ -41,7 +54,7 @@ public class AuthorizationManager {
                 Optional<AuthenticationSuccess> authentication);
     }
 
-    private AuthorizationPerformer authorizationPerformer;
+    private AuthorizationDecisionPerformer authorizationPerformer;
 
     public void checkAuthorization(Right right,
             Optional<AuthenticationSuccess> authentication) {
@@ -96,12 +109,11 @@ public class AuthorizationManager {
                 authenticationHolder.tryGetCurrentAuthentication());
     }
 
-    public AuthorizationPerformer getAuthorizationPerformer() {
+    public AuthorizationDecisionPerformer getAuthorizationPerformer() {
         return authorizationPerformer;
     }
 
-    public void setAuthorizationPerformer(
-            AuthorizationPerformer rightsChecker) {
+    public void setPerformer(AuthorizationDecisionPerformer rightsChecker) {
         this.authorizationPerformer = rightsChecker;
     }
 }

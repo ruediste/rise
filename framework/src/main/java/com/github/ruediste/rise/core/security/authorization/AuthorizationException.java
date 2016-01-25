@@ -4,6 +4,8 @@ import java.util.List;
 
 /**
  * Exception representing a failed authorization
+ * <p>
+ * <img src="doc-files/authorizationDecisionOverview.png" alt="">
  */
 public class AuthorizationException extends RuntimeException {
     private static final long serialVersionUID = 1L;

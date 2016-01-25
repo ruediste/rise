@@ -1,4 +1,4 @@
-package com.github.ruediste.rise.core.security.authentication;
+package com.github.ruediste.rise.core.security.authentication.core;
 
 /**
  * Performs authentication of a certain type of {@link AuthenticationRequest}.
@@ -8,5 +8,5 @@ public interface AuthenticationProvider<T extends AuthenticationRequest> {
     /**
      * Authenticate an authentication request.
      */
-    AuthenticationResult tryAuthenticate(T request);
+    AuthenticationResult authenticate(T request);
 }

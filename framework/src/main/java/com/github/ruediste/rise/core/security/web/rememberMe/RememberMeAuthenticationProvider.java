@@ -15,11 +15,12 @@ import org.slf4j.Logger;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.security.Principal;
-import com.github.ruediste.rise.core.security.authentication.AuthenticationManager;
-import com.github.ruediste.rise.core.security.authentication.AuthenticationProvider;
-import com.github.ruediste.rise.core.security.authentication.AuthenticationRequest;
-import com.github.ruediste.rise.core.security.authentication.AuthenticationResult;
+import com.github.ruediste.rise.core.security.authentication.AuthenticationSuccessImpl;
 import com.github.ruediste.rise.core.security.authentication.RememberMeAwareAuthenticationRequest;
+import com.github.ruediste.rise.core.security.authentication.core.AuthenticationManager;
+import com.github.ruediste.rise.core.security.authentication.core.AuthenticationProvider;
+import com.github.ruediste.rise.core.security.authentication.core.AuthenticationRequest;
+import com.github.ruediste.rise.core.security.authentication.core.AuthenticationResult;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 
@@ -64,7 +65,7 @@ public class RememberMeAuthenticationProvider implements
     }
 
     @Override
-    public AuthenticationResult tryAuthenticate(
+    public AuthenticationResult authenticate(
             RememberMeCookieAuthenticationRequest request) {
         AuthenticationResult failure = AuthenticationResult
                 .failure(new NoRememberMeTokenFoundAuthenticationFailure());
@@ -112,7 +113,7 @@ public class RememberMeAuthenticationProvider implements
             info.getServletResponse()
                     .addCookie(createRememberMeCookie(updatedToken));
             return AuthenticationResult
-                    .success(new RememberMeAuthenticationSuccess(principal));
+                    .success(new AuthenticationSuccessImpl(principal, true));
         } else {
             // series did match, but token did not. There appears to
             // have been a token theft

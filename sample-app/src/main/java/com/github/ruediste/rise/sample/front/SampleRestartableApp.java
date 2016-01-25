@@ -1,6 +1,8 @@
 package com.github.ruediste.rise.sample.front;
 
+import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -12,6 +14,17 @@ import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.DefaultRequestErrorHandler;
 import com.github.ruediste.rise.core.front.RestartableApplicationBase;
+import com.github.ruediste.rise.core.security.Principal;
+import com.github.ruediste.rise.core.security.authentication.InMemoryAuthenticationProvider;
+import com.github.ruediste.rise.core.security.authentication.core.AuthenticationSuccess;
+import com.github.ruediste.rise.core.security.authentication.core.DefaultAuthenticationManager;
+import com.github.ruediste.rise.core.security.authorization.AuthorizationFailure;
+import com.github.ruediste.rise.core.security.authorization.AuthorizationDecisionManager;
+import com.github.ruediste.rise.core.security.authorization.AuthorizationResult;
+import com.github.ruediste.rise.core.security.authorization.MethodAuthorizationManager;
+import com.github.ruediste.rise.core.security.authorization.Right;
+import com.github.ruediste.rise.core.security.web.rememberMe.InMemoryRememberMeTokenDao;
+import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeAuthenticationProvider;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetPipelineConfiguration;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.sample.SampleCanvas;
@@ -45,6 +58,18 @@ public class SampleRestartableApp extends RestartableApplicationBase {
     @Inject
     AssetPipelineConfiguration assetPipelineConfiguration;
 
+    @Inject
+    DefaultAuthenticationManager defaultAuthenticationManager;
+
+    @Inject
+    AuthorizationDecisionManager authorizationDecisionManager;
+
+    @Inject
+    RememberMeAuthenticationProvider rememberMeAuthenticationProvider;
+
+    @Inject
+    InMemoryRememberMeTokenDao rememberMeTokenDao;
+
     @Override
     protected void startImpl(Injector permanentInjector) {
         Salta.createInjector(permanentInjector
@@ -56,6 +81,9 @@ public class SampleRestartableApp extends RestartableApplicationBase {
                         bind(PatternStringResolver.class)
                                 .to(DefaultPatternStringResolver.class)
                                 .in(Singleton.class);
+                        MethodAuthorizationManager.get(binder()).addRule(
+                                RequiresRight.class,
+                                a -> Collections.singleton(a.value()));
 
                     }
 
@@ -82,5 +110,51 @@ public class SampleRestartableApp extends RestartableApplicationBase {
                 CPageHtmlTemplate.class);
 
         // assetPipelineConfiguration.assetMode = AssetMode.PRODUCTION;
+
+        // security
+        rememberMeAuthenticationProvider.setDao(rememberMeTokenDao);
+        defaultAuthenticationManager
+                .addProvider(rememberMeAuthenticationProvider);
+
+        defaultAuthenticationManager
+                .addProvider(new InMemoryAuthenticationProvider<Principal>()
+                        .with("admin", "admin",
+                                new ExplicitRightsPrincipal(
+                                        SampleRight.VIEW_USER_PAGE,
+                                        SampleRight.VIEW_ADMIN_PAGE))
+                        .with("user", "user", new ExplicitRightsPrincipal(
+                                SampleRight.VIEW_USER_PAGE)));
+
+        authorizationDecisionManager
+                .setPerformer((Set<? extends Right> rights,
+                        Optional<AuthenticationSuccess> authentication) -> {
+                    if (!authentication.isPresent()) {
+                        if (rights.isEmpty())
+                            return AuthorizationResult.authorized();
+                        else
+                            return AuthorizationResult
+                                    .failure(new AuthorizationFailure(
+                                            "No user logged in"));
+                    }
+                    Principal principal = authentication.get().getPrincipal();
+                    if (principal instanceof ExplicitRightsPrincipal) {
+                        for (Right right : rights) {
+                            if (((ExplicitRightsPrincipal) principal).grantedRights
+                                    .contains(right))
+                                continue;
+                            return AuthorizationResult.failure(
+                                    new AuthorizationFailure("right " + right
+                                            + " is not granted for principal "
+                                            + principal));
+                        }
+                    } else
+                        return AuthorizationResult
+                                .failure(new AuthorizationFailure(
+                                        "Unable to handle principal "
+                                                + principal));
+
+                    return AuthorizationResult.authorized();
+                });
+
     }
 }

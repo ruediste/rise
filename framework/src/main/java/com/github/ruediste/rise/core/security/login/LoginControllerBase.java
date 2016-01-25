@@ -6,8 +6,11 @@ import org.slf4j.Logger;
 
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.security.urlSigning.UrlUnsigned;
+import com.github.ruediste.rise.core.security.web.AuthenticationSessionInfo;
+import com.github.ruediste.rise.core.web.RedirectToRefererRenderResult;
 import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste1.i18n.label.Label;
+import com.github.ruediste1.i18n.label.Labeled;
 
 /**
  * Base class for login.
@@ -17,6 +20,9 @@ import com.github.ruediste1.i18n.label.Label;
  * {@link LoginSubController}
  */
 public abstract class LoginControllerBase extends LoginController {
+    @Inject
+    AuthenticationSessionInfo info;
+
     @Inject
     Logger log;
 
@@ -53,6 +59,14 @@ public abstract class LoginControllerBase extends LoginController {
 
     public LoginSubController getLoginSubController() {
         return loginSubController;
+    }
+
+    @Labeled
+    @Override
+    public ActionResult logout() {
+        info.setSuccess(null);
+        closePage(new RedirectToRefererRenderResult());
+        return null;
     }
 
 }

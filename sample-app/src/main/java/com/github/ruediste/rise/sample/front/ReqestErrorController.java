@@ -15,8 +15,8 @@ import com.github.ruediste.rise.core.web.HttpServletResponseCustomizer;
 import com.github.ruediste.rise.core.web.RedirectToRefererRenderResult;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
+import com.github.ruediste.rise.sample.PageView;
 import com.github.ruediste.rise.sample.SampleCanvas;
-import com.github.ruediste.rise.sample.db.PageView;
 import com.github.ruediste.rise.sample.welcome.WelcomeController;
 import com.github.ruediste1.i18n.label.Label;
 import com.github.ruediste1.i18n.label.Labeled;
@@ -47,7 +47,8 @@ public class ReqestErrorController extends ControllerMvc<ReqestErrorController>
 
     @Labeled
     @Label("Unexpected Error")
-    private static class View extends PageView<ReqestErrorController, Data> {
+    private static class View extends PageView<ReqestErrorController, Data>
+            implements HttpServletResponseCustomizer {
 
         @Override
         public void renderContent(SampleCanvas html) {
@@ -100,6 +101,11 @@ public class ReqestErrorController extends ControllerMvc<ReqestErrorController>
 			   
 			html._bContainer();
 			// @formatter:on
+        }
+
+        @Override
+        public void customizeServletResponse(HttpServletResponse response) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -1,4 +1,4 @@
-package com.github.ruediste.rise.core.security.authentication;
+package com.github.ruediste.rise.core.security.authentication.core;
 
 import com.github.ruediste.rise.util.GenericEvent;
 import com.github.ruediste.rise.util.Pair;
@@ -6,6 +6,9 @@ import com.github.ruediste.salta.jsr330.ImplementedBy;
 
 /**
  * Manages the authentication of {@link AuthenticationRequest}s.
+ * 
+ * <p>
+ * <img src="doc-files/authenticationCoreOverview.png" alt="">
  */
 @ImplementedBy(DefaultAuthenticationManager.class)
 public interface AuthenticationManager {

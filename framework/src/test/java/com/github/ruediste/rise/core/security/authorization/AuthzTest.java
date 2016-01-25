@@ -19,8 +19,8 @@ import org.junit.Test;
 
 import com.github.ruediste.c3java.invocationRecording.MethodInvocationRecorder;
 import com.github.ruediste.rise.core.aop.AopUtil;
-import com.github.ruediste.rise.core.security.authentication.AuthenticationSuccess;
-import com.github.ruediste.rise.core.security.authorization.AuthorizationManager.AuthorizationPerformer;
+import com.github.ruediste.rise.core.security.authentication.core.AuthenticationSuccess;
+import com.github.ruediste.rise.core.security.authorization.AuthorizationDecisionManager.AuthorizationDecisionPerformer;
 import com.github.ruediste.rise.core.security.authorization.MethodAuthorizationManager.MethodAuthorizationRule;
 import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
 import com.github.ruediste.salta.jsr330.AbstractModule;
@@ -49,7 +49,7 @@ public class AuthzTest {
     MethodAuthorizationManager mgr;
 
     @Inject
-    AuthorizationManager authManager;
+    AuthorizationDecisionManager authManager;
 
     @Inject
     Authz authz;
@@ -98,7 +98,7 @@ public class AuthzTest {
         checkSuccessCalled = false;
         executedDelegate = false;
         rightPresent = false;
-        authManager.setAuthorizationPerformer(new AuthorizationPerformer() {
+        authManager.setPerformer(new AuthorizationDecisionPerformer() {
 
             @Override
             public AuthorizationResult performAuthorization(
@@ -177,6 +177,9 @@ public class AuthzTest {
 
         public void m() {
         }
+
+        public void superCall() {
+        }
     }
 
     static class Derived1 extends Base {
@@ -188,6 +191,11 @@ public class AuthzTest {
 
             authz.doAuthChecks(() -> {
             });
+        }
+
+        @Override
+        public void superCall() {
+            // TODO: implement, add tests
         }
     }
 

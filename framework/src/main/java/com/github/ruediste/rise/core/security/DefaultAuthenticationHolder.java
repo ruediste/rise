@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 
 import javax.inject.Singleton;
 
-import com.github.ruediste.rise.core.security.authentication.AuthenticationSuccess;
+import com.github.ruediste.rise.core.security.authentication.core.AuthenticationSuccess;
 
 @Singleton
 public class DefaultAuthenticationHolder implements AuthenticationHolder {

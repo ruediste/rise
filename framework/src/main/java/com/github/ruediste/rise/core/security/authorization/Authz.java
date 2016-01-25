@@ -11,16 +11,17 @@ import com.github.ruediste.c3java.invocationRecording.MethodInvocationRecorder;
 
 /**
  * Facade for the authorization and authorization introspection subsystem.
+ * 
  */
 public class Authz {
     @Inject
-    AuthorizationManager authorizationManager;
+    AuthorizationDecisionManager authorizationManager;
 
     @Inject
-    public MethodAuthorizationManager methodAuthorizationManager;
+    MethodAuthorizationManager methodAuthorizationManager;
 
     @Inject
-    AuthzHelper helper;
+    IsAuthorizingHelper helper;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public <T> AuthorizationResult performAuthorization(T target,

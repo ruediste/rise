@@ -9,6 +9,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,7 +28,7 @@ import com.github.ruediste.salta.jsr330.Salta;
 public class MethodAuthorizationManagerTest {
 
     @Inject
-    AuthorizationManager mgr;
+    AuthorizationDecisionManager mgr;
 
     @Inject
     Authz authz;
@@ -39,19 +40,17 @@ public class MethodAuthorizationManagerTest {
 
             @Override
             protected void configure() throws Exception {
-                new MethodAuthorizationManager().register(binder());
+                MethodAuthorizationManager.get(binder()).addRule(
+                        RequiresRight.class,
+                        r -> Collections.singleton(r.value()));
             }
         });
         injector.injectMembers(this);
-        mgr.setAuthorizationPerformer((rights, auth) -> {
+        mgr.setPerformer((rights, auth) -> {
             AuthorizationResultBuilder builder = new AuthorizationResultBuilder();
             for (com.github.ruediste.rise.core.security.authorization.Right right : rights) {
-                if (right instanceof RequiresRightAnnotationRight) {
-                    Object value = ((RequiresRightAnnotationRight) right)
-                            .getValue();
-                    if (allowedRights.contains(value))
-                        continue;
-                }
+                if (allowedRights.contains(right))
+                    continue;
                 builder.add(new AuthorizationFailure(
                         "Right " + right + " not allowed"));
             }
@@ -67,11 +66,10 @@ public class MethodAuthorizationManagerTest {
 
     Set<Object> allowedRights;
 
-    enum TestRightRight {
+    enum TestRightRight implements Right {
         TEST_RIGHT, OTHER_RIGHT
     }
 
-    @MetaRequiresRight
     @Retention(RetentionPolicy.RUNTIME)
     @Repeatable(RepeatRequiresRight.class)
     @Target(ElementType.METHOD)
@@ -79,11 +77,10 @@ public class MethodAuthorizationManagerTest {
         TestRightRight value();
     }
 
-    @MetaRequiresRight
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
     @interface RepeatRequiresRight {
-        RequiresRight[]value();
+        RequiresRight[] value();
     }
 
     static class Service {

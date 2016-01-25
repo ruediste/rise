@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 
+import com.github.ruediste.rise.sample.PageView;
 import com.github.ruediste.rise.sample.SampleCanvas;
 import com.github.ruediste.rise.sample.db.TodoController.IndexData;
 import com.github.ruediste1.i18n.label.Label;

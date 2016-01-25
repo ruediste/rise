@@ -1,6 +1,8 @@
 package com.github.ruediste.rise.testApp.app;
 
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -15,19 +17,20 @@ import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.DefaultRequestErrorHandler;
 import com.github.ruediste.rise.core.front.RestartableApplicationBase;
 import com.github.ruediste.rise.core.security.Principal;
-import com.github.ruediste.rise.core.security.authentication.AuthenticationSuccess;
-import com.github.ruediste.rise.core.security.authentication.DefaultAuthenticationManager;
 import com.github.ruediste.rise.core.security.authentication.InMemoryAuthenticationProvider;
+import com.github.ruediste.rise.core.security.authentication.core.AuthenticationSuccess;
+import com.github.ruediste.rise.core.security.authentication.core.DefaultAuthenticationManager;
 import com.github.ruediste.rise.core.security.authorization.AuthorizationFailure;
-import com.github.ruediste.rise.core.security.authorization.AuthorizationManager;
+import com.github.ruediste.rise.core.security.authorization.AuthorizationDecisionManager;
 import com.github.ruediste.rise.core.security.authorization.AuthorizationResult;
-import com.github.ruediste.rise.core.security.authorization.RequiresRightAnnotationRight;
+import com.github.ruediste.rise.core.security.authorization.MethodAuthorizationManager;
 import com.github.ruediste.rise.core.security.authorization.Right;
 import com.github.ruediste.rise.core.security.web.rememberMe.InMemoryRememberMeTokenDao;
 import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeAuthenticationProvider;
 import com.github.ruediste.rise.integration.DynamicIntegrationModule;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
+import com.github.ruediste.rise.testApp.RequiresRight;
 import com.github.ruediste.rise.testApp.Rights;
 import com.github.ruediste.rise.testApp.TestCanvas;
 import com.github.ruediste.rise.testApp.component.CPageTemplate;
@@ -59,7 +62,7 @@ public class TestRestartableApplication extends RestartableApplicationBase {
     DefaultAuthenticationManager defaultAuthenticationManager;
 
     @Inject
-    AuthorizationManager authorizationManager;
+    AuthorizationDecisionManager authorizationManager;
 
     @Inject
     RememberMeAuthenticationProvider rememberMeAuthenticationProvider;
@@ -95,6 +98,9 @@ public class TestRestartableApplication extends RestartableApplicationBase {
                 InitializerUtil.register(config(), Initializer.class);
                 bind(PatternStringResolver.class)
                         .to(DefaultPatternStringResolver.class);
+                MethodAuthorizationManager.get(binder()).addRule(
+                        RequiresRight.class,
+                        a -> new HashSet<>(Arrays.asList(a.value())));
             }
 
             @Singleton
@@ -124,15 +130,12 @@ public class TestRestartableApplication extends RestartableApplicationBase {
                         .with("foo", "foo", null));
 
         authorizationManager
-                .setAuthorizationPerformer((Set<? extends Right> rights,
+                .setPerformer((Set<? extends Right> rights,
                         Optional<AuthenticationSuccess> authentication) -> {
                     for (Right right : rights) {
-                        if (right instanceof RequiresRightAnnotationRight) {
-                            Object value = ((RequiresRightAnnotationRight) right)
-                                    .getValue();
-                            if (Objects.equals(Rights.ALLOWED, value))
-                                continue;
-                        }
+
+                        if (Objects.equals(Rights.ALLOWED, right))
+                            continue;
                         return AuthorizationResult
                                 .failure(new AuthorizationFailure(
                                         "right was not ALLOWED"));

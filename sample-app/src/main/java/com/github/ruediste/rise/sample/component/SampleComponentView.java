@@ -27,16 +27,18 @@ public class SampleComponentView
         PatternString theCounterIs(int count);
     }
 
+    @Inject
+    Messages messages;
+
     @Override
     protected Component createComponents() {
         return new CPage(label(this))
                 .add(toComponent(
                         html -> html
-                                .add(toComponentDirect(x -> x.write(messageUtil
-                                        .getMessageInterfaceInstance(
-                                                Messages.class)
+                                .add(toComponentDirect(x -> x.write(messages
                                         .theCounterIs(controller.counter))))
-                .add(new CButton("ClickMe").setHandler(() -> controller.inc()))
+                        .add(new CButton("ClickMe")
+                                .setHandler(() -> controller.inc()))
                 .add(new CFormGroup(new CTextField()
                         .bindText(() -> controller.getData().getText())))));
     }

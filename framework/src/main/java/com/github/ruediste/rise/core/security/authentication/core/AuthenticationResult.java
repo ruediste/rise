@@ -1,15 +1,19 @@
-package com.github.ruediste.rise.core.security.authentication;
+package com.github.ruediste.rise.core.security.authentication.core;
 
 import java.util.Arrays;
 import java.util.List;
 
 import com.github.ruediste.rise.core.security.Principal;
+import com.github.ruediste.rise.core.security.authentication.AuthenticationSuccessImpl;
 
 /**
  * Result of an authentication attempt.
  * <p>
  * Can be a success or a failure. In case of failure, the
  * {@link AuthenticationFailure failures} are reported.
+ * 
+ * <p>
+ * <img src="doc-files/authenticationCoreOverview.png" alt="">
  */
 public class AuthenticationResult {
     final private boolean isSuccess;
@@ -25,7 +29,7 @@ public class AuthenticationResult {
     }
 
     public static AuthenticationResult success(Principal principal) {
-        return success(new AuthenticationSuccess(principal));
+        return success(new AuthenticationSuccessImpl(principal, false));
     }
 
     public static AuthenticationResult success(AuthenticationSuccess success) {

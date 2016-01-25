@@ -1,8 +1,10 @@
 package com.github.ruediste.rise.core.security.authentication;
 
+/**
+ * Request for an authentication (login) using username/password
+ */
 public class UsernamePasswordAuthenticationRequest
-        implements AuthenticationRequest, RememberMeAwareAuthenticationRequest {
-
+        implements RememberMeAwareAuthenticationRequest {
     private String userName;
     private String password;
     private boolean rememberMe;

@@ -1,7 +1,7 @@
 package com.github.ruediste.rise.core.security.web.rememberMe;
 
 import com.github.ruediste.rise.core.security.Principal;
-import com.github.ruediste.rise.core.security.authentication.AuthenticationFailure;
+import com.github.ruediste.rise.core.security.authentication.core.AuthenticationFailure;
 
 public class RememberMeTokenTheftFailure extends AuthenticationFailure {
 

@@ -51,7 +51,7 @@ public class CoreRestartableModule extends AbstractModule {
         registerPermanentRule();
         registerAssetBundleScopeRule();
         registerMessagesRule();
-        new MethodAuthorizationManager().register(binder());
+        MethodAuthorizationManager.get(binder());
     }
 
     private void registerMessagesRule() {
