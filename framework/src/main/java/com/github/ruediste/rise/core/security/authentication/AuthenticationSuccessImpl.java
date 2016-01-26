@@ -1,17 +1,15 @@
 package com.github.ruediste.rise.core.security.authentication;
 
+import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
 import com.github.ruediste.rise.core.security.Principal;
-import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeAwareAuthenticationSuccess;
+import com.github.ruediste.rise.core.security.authentication.core.AuthenticationSuccess;
 
-public class AuthenticationSuccessImpl
-        implements RememberMeAwareAuthenticationSuccess {
+public class AuthenticationSuccessImpl extends AttachedPropertyBearerBase
+        implements AuthenticationSuccess {
     final private Principal principal;
-    final private boolean suceededThroughRememberMe;
 
-    public AuthenticationSuccessImpl(Principal principal,
-            boolean suceededThroughRememberMe) {
+    public AuthenticationSuccessImpl(Principal principal) {
         this.principal = principal;
-        this.suceededThroughRememberMe = suceededThroughRememberMe;
     }
 
     @Override
@@ -20,7 +18,7 @@ public class AuthenticationSuccessImpl
     }
 
     @Override
-    public boolean isSucceededThroughRememberMe() {
-        return suceededThroughRememberMe;
+    public String toString() {
+        return getClass().getSimpleName() + "[" + principal + "]";
     }
 }

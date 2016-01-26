@@ -9,4 +9,11 @@ public interface AuthenticationProvider<T extends AuthenticationRequest> {
      * Authenticate an authentication request.
      */
     AuthenticationResult authenticate(T request);
+
+    /**
+     * Invoked after the provider has been registered with the
+     * {@link AuthenticationManager}
+     */
+    default void initialize(AuthenticationManager mgr) {
+    }
 }

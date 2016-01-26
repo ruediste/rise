@@ -21,7 +21,7 @@ public class DefaultAuthenticationHolder implements AuthenticationHolder {
     }
 
     @Override
-    public void checkAutheticationPresetn() {
+    public void checkAutheticationPresent() {
         getCurrentAuthentication();
     }
 

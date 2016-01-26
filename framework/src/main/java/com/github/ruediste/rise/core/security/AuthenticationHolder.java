@@ -8,6 +8,10 @@ import com.github.ruediste.salta.jsr330.ImplementedBy;
 
 /**
  * Holder of the current {@link AuthenticationSuccess}, if any.
+ * 
+ * <p>
+ * The current success can change when handling a single request to impersonate
+ * other (often technical) users or to add more rights to the current success.
  */
 @ImplementedBy(DefaultAuthenticationHolder.class)
 public interface AuthenticationHolder {
@@ -31,7 +35,7 @@ public interface AuthenticationHolder {
      * Check if an authentication is present. Throws a
      * {@link NoAuthenticationException} if no subject is logged in.
      */
-    void checkAutheticationPresetn();
+    void checkAutheticationPresent();
 
     /**
      * Run code with a given subject

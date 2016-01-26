@@ -1,6 +1,6 @@
 package com.github.ruediste.rise.sample.front;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
 
@@ -18,8 +18,8 @@ import com.github.ruediste.rise.core.security.Principal;
 import com.github.ruediste.rise.core.security.authentication.InMemoryAuthenticationProvider;
 import com.github.ruediste.rise.core.security.authentication.core.AuthenticationSuccess;
 import com.github.ruediste.rise.core.security.authentication.core.DefaultAuthenticationManager;
-import com.github.ruediste.rise.core.security.authorization.AuthorizationFailure;
 import com.github.ruediste.rise.core.security.authorization.AuthorizationDecisionManager;
+import com.github.ruediste.rise.core.security.authorization.AuthorizationFailure;
 import com.github.ruediste.rise.core.security.authorization.AuthorizationResult;
 import com.github.ruediste.rise.core.security.authorization.MethodAuthorizationManager;
 import com.github.ruediste.rise.core.security.authorization.Right;
@@ -83,7 +83,7 @@ public class SampleRestartableApp extends RestartableApplicationBase {
                                 .in(Singleton.class);
                         MethodAuthorizationManager.get(binder()).addRule(
                                 RequiresRight.class,
-                                a -> Collections.singleton(a.value()));
+                                a -> Arrays.asList(a.value()));
 
                     }
 
@@ -125,36 +125,31 @@ public class SampleRestartableApp extends RestartableApplicationBase {
                         .with("user", "user", new ExplicitRightsPrincipal(
                                 SampleRight.VIEW_USER_PAGE)));
 
-        authorizationDecisionManager
-                .setPerformer((Set<? extends Right> rights,
-                        Optional<AuthenticationSuccess> authentication) -> {
-                    if (!authentication.isPresent()) {
-                        if (rights.isEmpty())
-                            return AuthorizationResult.authorized();
-                        else
-                            return AuthorizationResult
-                                    .failure(new AuthorizationFailure(
-                                            "No user logged in"));
-                    }
-                    Principal principal = authentication.get().getPrincipal();
-                    if (principal instanceof ExplicitRightsPrincipal) {
-                        for (Right right : rights) {
-                            if (((ExplicitRightsPrincipal) principal).grantedRights
-                                    .contains(right))
-                                continue;
-                            return AuthorizationResult.failure(
-                                    new AuthorizationFailure("right " + right
-                                            + " is not granted for principal "
-                                            + principal));
-                        }
-                    } else
-                        return AuthorizationResult
-                                .failure(new AuthorizationFailure(
-                                        "Unable to handle principal "
-                                                + principal));
-
+        authorizationDecisionManager.setPerformer((Set<? extends Right> rights,
+                Optional<AuthenticationSuccess> authentication) -> {
+            if (!authentication.isPresent()) {
+                if (rights.isEmpty())
                     return AuthorizationResult.authorized();
-                });
+                else
+                    return AuthorizationResult.failure(
+                            new AuthorizationFailure("No user logged in"));
+            }
+            Principal principal = authentication.get().getPrincipal();
+            if (principal instanceof ExplicitRightsPrincipal) {
+                for (Right right : rights) {
+                    if (((ExplicitRightsPrincipal) principal).grantedRights
+                            .contains(right))
+                        continue;
+                    return AuthorizationResult.failure(new AuthorizationFailure(
+                            "right " + right + " is not granted for principal "
+                                    + principal));
+                }
+            } else
+                return AuthorizationResult.failure(new AuthorizationFailure(
+                        "Unable to handle principal " + principal));
+
+            return AuthorizationResult.authorized();
+        });
 
     }
 }

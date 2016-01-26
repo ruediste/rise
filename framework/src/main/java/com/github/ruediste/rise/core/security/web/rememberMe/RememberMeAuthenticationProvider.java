@@ -5,22 +5,23 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 
+import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.security.Principal;
-import com.github.ruediste.rise.core.security.authentication.AuthenticationSuccessImpl;
 import com.github.ruediste.rise.core.security.authentication.RememberMeAwareAuthenticationRequest;
 import com.github.ruediste.rise.core.security.authentication.core.AuthenticationManager;
 import com.github.ruediste.rise.core.security.authentication.core.AuthenticationProvider;
 import com.github.ruediste.rise.core.security.authentication.core.AuthenticationRequest;
 import com.github.ruediste.rise.core.security.authentication.core.AuthenticationResult;
+import com.github.ruediste.rise.core.security.authentication.core.AuthenticationSuccess;
+import com.github.ruediste.rise.core.security.web.LoginManager;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 
@@ -31,6 +32,8 @@ import com.google.common.base.Strings;
 public class RememberMeAuthenticationProvider implements
         AuthenticationProvider<RememberMeCookieAuthenticationRequest> {
 
+    private static final AttachedProperty<AuthenticationSuccess, Long> tokenIdProperty = new AttachedProperty<>(
+            "tokenId");
     @Inject
     Logger log;
 
@@ -40,13 +43,17 @@ public class RememberMeAuthenticationProvider implements
     @Inject
     CoreRequestInfo info;
 
+    @Inject
+    LoginManager loginManager;
+
     private SecureRandom random = new SecureRandom();
 
     private RememberMeTokenDao dao;
 
-    @PostConstruct
-    public void postConstruct(AuthenticationManager authenticationManager) {
-        authenticationManager.postAuthenticationEvent().addListener(pair -> {
+    @Override
+    public void initialize(AuthenticationManager mgr) {
+
+        mgr.postAuthenticationEvent().addListener(pair -> {
             AuthenticationRequest req = pair.getA();
             AuthenticationResult res = pair.getB();
             if (req instanceof RememberMeAwareAuthenticationRequest
@@ -60,8 +67,18 @@ public class RememberMeAuthenticationProvider implements
                 dao.newToken(token, res.getSuccess().getPrincipal());
                 info.getServletResponse()
                         .addCookie(createRememberMeCookie(token));
+                tokenIdProperty.set(res.getSuccess(), token.getId());
             }
         });
+
+        loginManager.logoutEvent().addListener(success -> {
+            Long tokenId = tokenIdProperty.get(success);
+            if (tokenId != null) {
+                dao.delete(tokenId);
+                log.debug("removed token tokenId");
+            }
+        });
+
     }
 
     @Override
@@ -113,7 +130,7 @@ public class RememberMeAuthenticationProvider implements
             info.getServletResponse()
                     .addCookie(createRememberMeCookie(updatedToken));
             return AuthenticationResult
-                    .success(new AuthenticationSuccessImpl(principal, true));
+                    .success(new RemberMeAuthenticationSuccess(principal));
         } else {
             // series did match, but token did not. There appears to
             // have been a token theft

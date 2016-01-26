@@ -47,21 +47,25 @@ public class WebRequestAuthenticator extends ChainedRequestHandler {
     CoreRequestInfo coreRequestInfo;
 
     @Inject
-    AuthenticationSessionInfo info;
+    LoginManager loginManager;
+
+    @Inject
+    LoginHolder loginHolder;
 
     @Inject
     CoreUtil util;
 
     @Override
     public void run(Runnable next) {
-        AuthenticationSuccess success = info.getSuccess();
+        AuthenticationSuccess success = loginHolder.getSuccess();
 
         if (success == null) {
             AuthenticationResult result = authenticationManager
                     .authenticate(new RememberMeCookieAuthenticationRequest());
             if (result.isSuccess()) {
                 success = result.getSuccess();
-                info.setSuccess(success);
+                log.debug("remember me login successful: {}", success);
+                loginManager.login(success);
             } else {
                 for (AuthenticationFailure failure : result.getFailures()) {
                     if (failure instanceof RememberMeTokenTheftFailure) {
@@ -76,6 +80,8 @@ public class WebRequestAuthenticator extends ChainedRequestHandler {
                     }
                 }
             }
+        } else {
+            log.debug("found success in login holder: {}", success);
         }
 
         try {
@@ -87,6 +93,9 @@ public class WebRequestAuthenticator extends ChainedRequestHandler {
                 next.run();
             }
         } catch (Exception e) {
+            // determine if the exception occurred due to insufficient rights.
+            // If so,
+            // redirecto to the LoginController
             Throwable t = e;
             while (t != null) {
                 if (t instanceof NoAuthenticationException

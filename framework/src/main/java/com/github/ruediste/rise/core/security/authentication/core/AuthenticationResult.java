@@ -29,7 +29,7 @@ public class AuthenticationResult {
     }
 
     public static AuthenticationResult success(Principal principal) {
-        return success(new AuthenticationSuccessImpl(principal, false));
+        return success(new AuthenticationSuccessImpl(principal));
     }
 
     public static AuthenticationResult success(AuthenticationSuccess success) {

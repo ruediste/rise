@@ -42,7 +42,7 @@ public class ProgrammaticAuthenticationController
 
     @UrlUnsigned
     public ActionResult authenticationRequired() {
-        authenticationHolder.checkAutheticationPresetn();
+        authenticationHolder.checkAutheticationPresent();
         return view(View.class, "success");
     }
 

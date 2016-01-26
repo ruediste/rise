@@ -6,6 +6,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -102,7 +103,8 @@ public class MethodAuthorizationManager {
      *            invoked multiple times. The return value may be null
      */
     public static <T extends Annotation> void addRule(Binder binder,
-            Class<T> annotationClass, Function<T, Set<Right>> extractor) {
+            Class<T> annotationClass,
+            Function<T, Collection<Right>> extractor) {
         get(binder).addRule(annotationClass, extractor);
     }
 
@@ -116,7 +118,8 @@ public class MethodAuthorizationManager {
      * @return
      */
     public <T extends Annotation> MethodAuthorizationManager addRule(
-            Class<T> annotationClass, Function<T, Set<Right>> extractor) {
+            Class<T> annotationClass,
+            Function<T, Collection<Right>> extractor) {
         addRule(t -> true,
                 (t, m) -> m.getDeclaredAnnotationsByType(
                         annotationClass).length > 0,
@@ -128,7 +131,7 @@ public class MethodAuthorizationManager {
                         HashSet<Right> result = new HashSet<>();
                         for (T annotation : method.getDeclaredAnnotationsByType(
                                 annotationClass)) {
-                            Set<Right> tmp = extractor.apply(annotation);
+                            Collection<Right> tmp = extractor.apply(annotation);
                             if (tmp != null)
                                 result.addAll(tmp);
                         }

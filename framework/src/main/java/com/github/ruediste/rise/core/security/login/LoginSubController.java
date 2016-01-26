@@ -21,7 +21,7 @@ import com.github.ruediste.rise.core.security.authentication.UsernamePasswordAut
 import com.github.ruediste.rise.core.security.authentication.core.AuthenticationFailure;
 import com.github.ruediste.rise.core.security.authentication.core.AuthenticationManager;
 import com.github.ruediste.rise.core.security.authentication.core.AuthenticationResult;
-import com.github.ruediste.rise.core.security.web.AuthenticationSessionInfo;
+import com.github.ruediste.rise.core.security.web.LoginManager;
 import com.github.ruediste.rise.core.web.RedirectRenderResult;
 import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste1.i18n.lString.LString;
@@ -147,7 +147,7 @@ public class LoginSubController extends SubControllerComponent {
     AuthenticationManager mgr;
 
     @Inject
-    AuthenticationSessionInfo info;
+    LoginManager loginManager;
 
     private UrlSpec redirectUrl;
 
@@ -186,7 +186,7 @@ public class LoginSubController extends SubControllerComponent {
 
         if (result.isSuccess()) {
             log.debug("Login sucessful");
-            info.setSuccess(result.getSuccess());
+            loginManager.login(result.getSuccess());
             closePage(new RedirectRenderResult(redirectUrl));
         } else {
             log.debug("Login failed");

@@ -70,6 +70,7 @@ public class DefaultAuthenticationManager implements AuthenticationManager {
     public <T extends AuthenticationRequest> void addProvider(
             Class<T> requestClass, AuthenticationProvider<? super T> provider) {
         providers.add(Pair.of(requestClass, provider));
+        provider.initialize(this);
     }
 
     @Override
@@ -81,4 +82,5 @@ public class DefaultAuthenticationManager implements AuthenticationManager {
     public GenericEvent<Pair<AuthenticationRequest, AuthenticationResult>> postAuthenticationEvent() {
         return postAuthenticationEvent.event();
     }
+
 }

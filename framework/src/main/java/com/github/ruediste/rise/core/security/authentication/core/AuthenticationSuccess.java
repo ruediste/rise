@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.core.security.authentication.core;
 
+import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
 import com.github.ruediste.rise.core.security.Principal;
 
 /**
@@ -13,7 +14,7 @@ import com.github.ruediste.rise.core.security.Principal;
  * <p>
  * <img src="doc-files/authenticationCoreOverview.png" alt="">
  */
-public interface AuthenticationSuccess {
+public interface AuthenticationSuccess extends AttachedPropertyBearer {
 
     Principal getPrincipal();
 
