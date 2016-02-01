@@ -2,11 +2,11 @@ package com.github.ruediste.rise.crud;
 
 import java.util.Collection;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 import javax.persistence.metamodel.Attribute.PersistentAttributeType;
 import javax.persistence.metamodel.PluralAttribute;
 
@@ -14,7 +14,6 @@ import com.github.ruediste.rendersnakeXT.canvas.Glyphicon;
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.component.ComponentFactoryUtil;
 import com.github.ruediste.rise.component.ComponentUtil;
-import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CButton;
 import com.github.ruediste.rise.component.components.CComponentStack;
 import com.github.ruediste.rise.component.components.CController;
@@ -28,11 +27,12 @@ import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.github.ruediste1.i18n.label.Labeled;
+import com.google.common.io.BaseEncoding;
 import com.google.common.primitives.Primitives;
 
 @Singleton
 public class CrudDisplayComponents extends
-        FactoryCollectionNew<PersistentProperty, CrudDisplayComponents.CrudDisplayComponentFactory> {
+        FactoryCollection<CrudPropertyInfo, CrudDisplayComponents.CrudDisplayComponentFactory> {
 
     @Inject
     ComponentFactoryUtil util;
@@ -49,6 +49,9 @@ public class CrudDisplayComponents extends
     @Inject
     ComponentUtil componentUtil;
 
+    @Inject
+    CrudReflectionUtil crudReflectionUtil;
+
     private Component toComponentBound(Supplier<?> bindingAccessor,
             Renderable<BootstrapRiseCanvas<?>> renderer) {
         return util.toComponentBound(bindingAccessor, renderer);
@@ -59,84 +62,93 @@ public class CrudDisplayComponents extends
     }
 
     public interface CrudDisplayComponentFactory {
-        Component create(PersistentProperty property, BindingGroup<?> group);
+        Component create(CrudPropertyHandle property);
     }
 
-    public Component create(PersistentProperty property,
-            BindingGroup<?> group) {
-        return getFactory(property).create(property, group);
+    public Component create(CrudPropertyHandle propertyHandle) {
+        return getFactory(propertyHandle.info()).create(propertyHandle);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({})
     public CrudDisplayComponents() {
-        addFactory(
-                p -> Long.class
-                        .equals(Primitives.wrap(p.getAttribute().getJavaType()))
-                        || Integer.class.equals(
-                                Primitives.wrap(p.getAttribute().getJavaType()))
-                || String.class.equals(p.getAttribute().getJavaType()),
-                (property, group) -> {
-                    return toComponentBound(() -> group.proxy(),
-                            html -> html
-                        //@formatter:off
-                        .bFormGroup()
-                          .label().content(labelUtil.getPropertyLabel(property.getProperty()))
-                          .span().BformControl().DISABLED("disabled").TEST_NAME(property.getName())
-                            .content(String.valueOf(property.getValue(group.get())))
-                        ._bFormGroup());
-                        //@formatter:on
-                });
+        addNumbersFactory();
+        addEnumElementCollectionFactory();
+        addManyToOneFactory();
+        addOneToManyFactory();
+        addByteArrayFactory();
+        addEmbeddedFactory();
+    }
 
+    public void addEmbeddedFactory() {
         addFactory(
                 p -> p.getAttribute()
-                        .getPersistentAttributeType() == PersistentAttributeType.MANY_TO_ONE,
-                (p, g) -> {
-                    //@formatter:off
-                    return toComponentBound(
-                            () -> g.proxy(),
-                            html -> {
-                                Object value = p.getValue(g.get());
-                                html.bFormGroup()
-                                    .label().content(labelUtil.getPropertyLabel(p.getProperty()))
-                                        .fIf(value!=null, ()->html.bInputGroup())
-                                        .span().BformControl().DISABLED("disabled").TEST_NAME(p.getName())
-                                        .render(x-> crudUtil .getStrategy(IdentificationRenderer.class, p.getAttribute().getJavaType())
-                                          .renderIdenification(html, value))
-                                        ._span()
-                                        .fIf(value!=null, ()->html
-                                        .bInputGroupBtn().rButtonA(componentUtil.go(CrudControllerBase.class).display(value), a -> a.iconOnly())
-                                            ._bInputGroupBtn()
-                                            ._bInputGroup()
-                                        )
-                                ._bFormGroup();
-                            });
-                    //@formatter:on
-                });
+                        .getPersistentAttributeType() == PersistentAttributeType.EMBEDDED,
+                handle -> toComponentBound(() -> handle.proxy(), html -> {
+
+                    Object value = handle.getValue();
+                    if (value == null)
+                        throw new RuntimeException(handle.info().getAttribute()
+                                + " is null. Cannot handle that");
+                    html.bCol(x -> x.xs(11).xsOffset(1));
+                    for (CrudPropertyInfo property : crudReflectionUtil
+                            .getDisplayProperties(
+                                    crudReflectionUtil.getPersistentType(
+                                            handle.info().getEmQualifier(),
+                                            value.getClass()))) {
+                        CrudPropertyHandle subHandle = CrudPropertyHandle
+                                .create(property, handle::rootEntity,
+                                        handle::getValue, handle.group());
+                        html.bFormGroup().label()
+                                .content(labelUtil.getPropertyLabel(
+                                        subHandle.info().getProperty()))
+                                .add(create(subHandle))._bFormGroup();
+                    }
+                    html._bCol();
+                }));
+    }
+
+    public void addByteArrayFactory() {
+        addFactory(p -> byte[].class.equals(p.getAttribute().getJavaType()),
+                property -> toComponentBound(() -> property.proxy(),
+                        html -> html.span().BformControl().DISABLED("disabled")
+                                .TEST_NAME(property.info().getName())
+                                .content(BaseEncoding.base16().encode(
+                                        (byte[]) property.getValue()))));
+    }
+
+    public void addEnumElementCollectionFactory() {
+        addFactory(
+                p -> p.getAttribute()
+                        .getPersistentAttributeType() == PersistentAttributeType.ELEMENT_COLLECTION,
+                (p) -> toComponentBound(() -> p.proxy(), html -> {
+                    html.div()
+                            .content(StreamSupport
+                                    .stream(((Iterable<?>) p.getValue())
+                                            .spliterator(), false)
+                            .map(String::valueOf)
+                            .collect(Collectors.joining(", ")));
+                }));
+    }
+
+    @SuppressWarnings("rawtypes")
+    public void addOneToManyFactory() {
         //@formatter:off
         addFactory(
                 p -> p.getAttribute().getPersistentAttributeType() == PersistentAttributeType.ONE_TO_MANY,
-                (p, g) -> toComponent(html->html
-                        .bFormGroup()
-                            .label().content(labelUtil.getPropertyLabel(p.getProperty()))
+                (p) -> toComponent(html->html
                             .div()
                                 .add(new CButton(this,
                                 (btn, x) -> x.showItems(() -> {
-                                    Object entity = g.get();
-                                    PluralAttribute attr=(PluralAttribute) p.getAttribute();
-
+                                    PluralAttribute attr=(PluralAttribute) p.info().getAttribute();
+                                    Class<?> elementType = attr.getElementType().getJavaType();
                                     CrudList list =
                                         crudUtil
-                                        .getStrategy(CrudUtil.CrudListFactory.class,entity.getClass())
+                                        .getStrategy(CrudUtil.CrudListFactory.class,elementType)
                                         .createList(
-                                            persistenceUtil.getEmQualifier(entity),
-                                            attr.getElementType().getJavaType(),
+                                            p.info().getEmQualifier(),
+                                            elementType,
                                             ctx -> {
-                                                Subquery<? extends Object> sq = ctx.query()
-                                                        .subquery(entity.getClass());
-                                                Root<? extends Object> root = sq.from(entity
-                                                        .getClass());
-                                                
-                                                ctx.addWhere(ctx.root().in((Collection)p.getValue(entity)));
+                                                ctx.addWhere(ctx.root().in((Collection)p.getValue()));
                                             }
                                         );
                                     list.setItemActionsFactory(obj->new CDataGrid.Cell(
@@ -152,10 +164,53 @@ public class CrudDisplayComponents extends
                                     ComponentTreeUtil.raiseEvent(btn,
                                             new CComponentStack.PushComponentEvent(
                                                     new CController(list)));
-                                })).TEST_NAME(p.getName()))
-                            ._div()
-                        ._bFormGroup()));
+                                })).TEST_NAME(p.info().getName()))
+                            ._div()));
         //@formatter:on
+    }
+
+    public void addManyToOneFactory() {
+        addFactory(
+                p -> p.getAttribute()
+                        .getPersistentAttributeType() == PersistentAttributeType.MANY_TO_ONE,
+                (p) -> {
+                    //@formatter:off
+                    return toComponentBound(
+                            () -> p.proxy(),
+                            html -> {
+                                Object value = p.getValue();
+                                html.bFormGroup()
+                                    .label().content(labelUtil.getPropertyLabel(p.info().getProperty()))
+                                        .fIf(value!=null, ()->html.bInputGroup())
+                                        .span().BformControl().DISABLED("disabled").TEST_NAME(p.info().getName())
+                                        .render(x-> crudUtil .getStrategy(IdentificationRenderer.class, p.info().getAttribute().getJavaType())
+                                          .renderIdenification(html, value))
+                                        ._span()
+                                        .fIf(value!=null, ()->html
+                                        .bInputGroupBtn().rButtonA(componentUtil.go(CrudControllerBase.class).display(value), a -> a.iconOnly())
+                                            ._bInputGroupBtn()
+                                            ._bInputGroup()
+                                        )
+                                ._bFormGroup();
+                            });
+                    //@formatter:on
+                });
+    }
+
+    public void addNumbersFactory() {
+        addFactory(p -> {
+            Class<?> javaType = Primitives.wrap(p.getAttribute().getJavaType());
+            return Long.class.equals(javaType) || Integer.class.equals(javaType)
+                    || Short.class.equals(javaType)
+                    || String.class.equals(javaType);
+        } , (property) -> {
+            return toComponentBound(() -> property.proxy(),
+                    html -> html
+                        //@formatter:off
+                          .span().BformControl().DISABLED("disabled").TEST_NAME(property.info().getName())
+                            .content(String.valueOf(property.getValue())));
+                        //@formatter:on
+        });
     }
 
     @Labeled

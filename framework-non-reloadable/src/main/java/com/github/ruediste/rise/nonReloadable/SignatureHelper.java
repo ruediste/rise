@@ -43,10 +43,16 @@ public class SignatureHelper {
         mainRandom.nextBytes(secret);
     }
 
+    /**
+     * Return a thread local {@link SecureRandom} instance
+     */
     public SecureRandom getRandom() {
         return threadLocalRandom.get();
     }
 
+    /**
+     * Create a hasher with the secret
+     */
     public Mac createHasher() {
         return createHasher(secret);
     }

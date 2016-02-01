@@ -23,7 +23,7 @@ import com.github.ruediste.rise.core.persistence.TestEntity;
 import com.github.ruediste.rise.nonReloadable.front.reload.MemberOrderIndex;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PersistentPropertyTest extends DbTestBase {
+public class CrudPropertyHandleTest extends DbTestBase {
 
     @Mock
     MemberOrderIndex index;
@@ -46,12 +46,13 @@ public class PersistentPropertyTest extends DbTestBase {
     @Test
     public void getAndSetPropertyValueField() {
         PersistentType type = util.getPersistentType(null, TestEntity.class);
-        PersistentProperty p = util.getAllPropertiesMap(type).get("value");
+        CrudPropertyInfo info = util.getAllPropertiesMap(type).get("value");
         TestEntity e = new TestEntity();
+        CrudPropertyHandle p = CrudPropertyHandle.create(info, () -> e, () -> e,
+                null);
         e.setValue("foo");
-        assertEquals("foo", p.getValue(e));
-        p.setValue(e, "bar");
+        assertEquals("foo", p.getValue());
+        p.setValue("bar");
         assertEquals("bar", e.getValue());
     }
-
 }

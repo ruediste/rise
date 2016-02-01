@@ -7,5 +7,7 @@
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<class>com.github.ruediste.rise.sample.db.TodoItem</class>
 		<class>com.github.ruediste.rise.sample.db.TodoCategory</class>
+		<class>com.github.ruediste.rise.sample.User</class>
+		<class>com.github.ruediste.rise.core.security.login.PasswordHash</class>
 	</persistence-unit>
 </persistence>

@@ -129,8 +129,10 @@ public class RememberMeAuthenticationProvider implements
             dao.updateToken(updatedToken);
             info.getServletResponse()
                     .addCookie(createRememberMeCookie(updatedToken));
-            return AuthenticationResult
-                    .success(new RemberMeAuthenticationSuccess(principal));
+            RemberMeAuthenticationSuccess success = new RemberMeAuthenticationSuccess(
+                    principal);
+            tokenIdProperty.set(success, token.getId());
+            return AuthenticationResult.success(success);
         } else {
             // series did match, but token did not. There appears to
             // have been a token theft

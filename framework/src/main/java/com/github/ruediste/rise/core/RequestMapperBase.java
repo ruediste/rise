@@ -66,7 +66,7 @@ public abstract class RequestMapperBase implements RequestMapper {
     ControllerReflectionUtil util;
 
     @Inject
-    SignatureHelper urlSignatureHelper;
+    SignatureHelper signatureHelper;
 
     @Inject
     CoreRequestInfo coreRequestInfo;
@@ -174,7 +174,7 @@ public abstract class RequestMapperBase implements RequestMapper {
                                             throw new RuntimeException(
                                                     "No Signature found in request");
                                         Mac mac = null;
-                                        mac = urlSignatureHelper.createHasher();
+                                        mac = signatureHelper.createHasher();
                                         mac.update(coreRequestInfo
                                                 .getServletRequest()
                                                 .getSession().getId()
@@ -186,7 +186,7 @@ public abstract class RequestMapperBase implements RequestMapper {
                                                 .copyOfRange(mac.doFinal(), 0,
                                                         coreConfig.urlSignatureBytes);
 
-                                        if (!urlSignatureHelper.slowEquals(
+                                        if (!signatureHelper.slowEquals(
                                                 calculatedSignature,
                                                 Base64.getUrlDecoder().decode(
                                                         requestSignature))) {
@@ -256,7 +256,7 @@ public abstract class RequestMapperBase implements RequestMapper {
 
         Mac mac = null;
         if (urlSign) {
-            mac = urlSignatureHelper.createHasher();
+            mac = signatureHelper.createHasher();
             mac.update(sessionIdSupplier.get().getBytes(Charsets.UTF_8));
             mac.update(prefix.getBytes(Charsets.UTF_8));
         }
@@ -284,7 +284,7 @@ public abstract class RequestMapperBase implements RequestMapper {
                     .decode(request.getParameter(SIGNATURE_PARAMETER_NAME));
             byte[] calculatedSignature = Arrays.copyOfRange(mac.doFinal(), 0,
                     coreConfig.urlSignatureBytes);
-            if (!urlSignatureHelper.slowEquals(signature,
+            if (!signatureHelper.slowEquals(signature,
                     calculatedSignature)) {
                 throw new RuntimeException("URL signature does not match");
             }
@@ -330,7 +330,7 @@ public abstract class RequestMapperBase implements RequestMapper {
 
         Mac mac = null;
         if (urlSign) {
-            mac = urlSignatureHelper.createHasher();
+            mac = signatureHelper.createHasher();
             mac.update(sessionIdSupplier.get().getBytes(Charsets.UTF_8));
         }
 

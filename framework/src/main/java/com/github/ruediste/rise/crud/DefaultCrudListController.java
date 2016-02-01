@@ -67,7 +67,7 @@ public class DefaultCrudListController extends SubControllerComponent
 
             // create columns
             ArrayList<Column<Object>> columns = new ArrayList<>();
-            for (PersistentProperty p : controller.columnProperties) {
+            for (CrudPropertyInfo p : controller.columnProperties) {
                 PropertyInfo property = p.getProperty();
                 columns.add(
                         new Column<>(
@@ -143,7 +143,7 @@ public class DefaultCrudListController extends SubControllerComponent
 
     BindingGroup<Data> data = new BindingGroup<>(new Data());
 
-    List<PersistentProperty> columnProperties;
+    List<CrudPropertyInfo> columnProperties;
 
     List<CrudPropertyFilter> filterList;
 
@@ -181,7 +181,8 @@ public class DefaultCrudListController extends SubControllerComponent
         type = crudReflectionUtil.getPersistentType(emQualifier, entityClass);
 
         columnProperties = crudReflectionUtil.getBrowserProperties(type);
-        filterList = columnProperties.stream().map(filters::getFactory)
+        filterList = columnProperties.stream()
+                .map(p -> filters.getFactory(p).createFilter(p))
                 .collect(toList());
 
         search();

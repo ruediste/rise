@@ -5,9 +5,16 @@ import java.util.ArrayList;
 import com.google.common.collect.Iterables;
 
 /**
- * Base class for the {@link Component} interface. Implements the parent-child
- * relation using {@link ChildRelation}s.
+ * Implements the parent-child relation using {@link ChildRelation}s.
  *
+ * <p>
+ * To add a child relation, simply declare a field: <pre> 
+ *  {@code
+ *    public final MultiChildrenRelation<Component, TSelf> children = new MultiChildrenRelation<>(
+ *          self());
+ *  }
+ *  </pre>
+ * 
  * <p>
  * <img src="doc-files/childRelation.png" alt="class hierarchy overview">
  *

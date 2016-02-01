@@ -8,14 +8,12 @@ import java.util.Date;
  * expression.
  *
  * <p>
- * see wiki for an overview
- * </p>
- * 
- * <p>
  * {@link BindingUtil} and {@link BindingGroup} create proxies which record
  * method invocations in the {@link BindingExpressionExecutionRecord}. The
  * recorded information is used to determine the bindings to be created.
  * </p>
+ * 
+ * <img src="doc-files/bindingPropertyAccessRecording.png" alt="">
  */
 class BindingExpressionExecutionRecorder {
 

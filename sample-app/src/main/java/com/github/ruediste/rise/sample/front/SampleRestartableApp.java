@@ -1,6 +1,8 @@
 package com.github.ruediste.rise.sample.front;
 
+import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -15,7 +17,11 @@ import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.DefaultRequestErrorHandler;
 import com.github.ruediste.rise.core.front.RestartableApplicationBase;
 import com.github.ruediste.rise.core.security.Principal;
-import com.github.ruediste.rise.core.security.authentication.InMemoryAuthenticationProvider;
+import com.github.ruediste.rise.core.security.authentication.PasswordMismatchAuthenticationFailure;
+import com.github.ruediste.rise.core.security.authentication.UserNameNotFoundAuthenticationFailure;
+import com.github.ruediste.rise.core.security.authentication.UsernamePasswordAuthenticationRequest;
+import com.github.ruediste.rise.core.security.authentication.core.AuthenticationProvider;
+import com.github.ruediste.rise.core.security.authentication.core.AuthenticationResult;
 import com.github.ruediste.rise.core.security.authentication.core.AuthenticationSuccess;
 import com.github.ruediste.rise.core.security.authentication.core.DefaultAuthenticationManager;
 import com.github.ruediste.rise.core.security.authorization.AuthorizationDecisionManager;
@@ -28,6 +34,8 @@ import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeAuthentic
 import com.github.ruediste.rise.core.web.assetPipeline.AssetPipelineConfiguration;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.sample.SampleCanvas;
+import com.github.ruediste.rise.sample.User;
+import com.github.ruediste.rise.sample.UserRepository;
 import com.github.ruediste.rise.sample.component.CPageHtmlTemplate;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
@@ -69,6 +77,23 @@ public class SampleRestartableApp extends RestartableApplicationBase {
 
     @Inject
     InMemoryRememberMeTokenDao rememberMeTokenDao;
+
+    @Inject
+    UserRepository userRepository;
+
+    private static class UserPrincipal implements Principal, Serializable {
+        private static final long serialVersionUID = 1L;
+        private final long userId;
+
+        public UserPrincipal(long userId) {
+            this.userId = userId;
+        }
+
+        public long getUserId() {
+            return userId;
+        }
+
+    }
 
     @Override
     protected void startImpl(Injector permanentInjector) {
@@ -116,14 +141,35 @@ public class SampleRestartableApp extends RestartableApplicationBase {
         defaultAuthenticationManager
                 .addProvider(rememberMeAuthenticationProvider);
 
-        defaultAuthenticationManager
-                .addProvider(new InMemoryAuthenticationProvider<Principal>()
-                        .with("admin", "admin",
-                                new ExplicitRightsPrincipal(
-                                        SampleRight.VIEW_USER_PAGE,
-                                        SampleRight.VIEW_ADMIN_PAGE))
-                        .with("user", "user", new ExplicitRightsPrincipal(
-                                SampleRight.VIEW_USER_PAGE)));
+        // defaultAuthenticationManager
+        // .addProvider(new InMemoryAuthenticationProvider<Principal>()
+        // .with("admin", "admin",
+        // new ExplicitRightsPrincipal(
+        // SampleRight.VIEW_USER_PAGE,
+        // SampleRight.VIEW_ADMIN_PAGE))
+        // .with("user", "user", new ExplicitRightsPrincipal(
+        // SampleRight.VIEW_USER_PAGE)));
+
+        defaultAuthenticationManager.addProvider(
+                new AuthenticationProvider<UsernamePasswordAuthenticationRequest>() {
+
+                    @Override
+                    public AuthenticationResult authenticate(
+                            UsernamePasswordAuthenticationRequest request) {
+                        return userRepository.getUser(request.getUserName())
+                                .map(user -> {
+                            if (Objects.equals(request.getPassword(),
+                                    user.getPassword()))
+                                return AuthenticationResult.success(
+                                        new UserPrincipal(user.getId()));
+                            else
+                                return AuthenticationResult.failure(
+                                        new PasswordMismatchAuthenticationFailure());
+                        }).orElseGet(() -> AuthenticationResult.failure(
+                                new UserNameNotFoundAuthenticationFailure(
+                                        request.getUserName())));
+                    }
+                });
 
         authorizationDecisionManager.setPerformer((Set<? extends Right> rights,
                 Optional<AuthenticationSuccess> authentication) -> {
@@ -143,6 +189,22 @@ public class SampleRestartableApp extends RestartableApplicationBase {
                     return AuthorizationResult.failure(new AuthorizationFailure(
                             "right " + right + " is not granted for principal "
                                     + principal));
+                }
+            } else if (principal instanceof UserPrincipal) {
+                UserPrincipal userPrincipal = (UserPrincipal) principal;
+                Optional<User> user = userRepository
+                        .getUser(userPrincipal.getUserId());
+                if (!user.isPresent()) {
+                    return AuthorizationResult.failure(new AuthorizationFailure(
+                            "User with id " + userPrincipal.getUserId()
+                                    + " not found"));
+                }
+                for (Right right : rights) {
+                    if (user.get().getGrantedRights().contains(right))
+                        continue;
+                    return AuthorizationResult.failure(new AuthorizationFailure(
+                            "right " + right + " is not granted for user "
+                                    + user.get().getName()));
                 }
             } else
                 return AuthorizationResult.failure(new AuthorizationFailure(

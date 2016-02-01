@@ -113,8 +113,8 @@ public class RequestMapperBaseTest {
     public void before() {
 
         mapper.util = util;
-        mapper.urlSignatureHelper = new SignatureHelper();
-        mapper.urlSignatureHelper.postConstruct();
+        mapper.signatureHelper = new SignatureHelper();
+        mapper.signatureHelper.postConstruct();
 
         when(index.tryGetNode(any())).thenReturn(Optional.empty());
         when(index.tryGetNode(a.name)).thenReturn(Optional.of(a));

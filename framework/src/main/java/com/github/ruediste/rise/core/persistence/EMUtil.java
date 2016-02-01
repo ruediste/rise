@@ -1,0 +1,63 @@
+package com.github.ruediste.rise.core.persistence;
+
+import java.util.ArrayList;
+import java.util.function.Consumer;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+public class EMUtil {
+
+    public interface PersistenceFilterContext<T> {
+        CriteriaBuilder cb();
+
+        CriteriaQuery<T> query();
+
+        Root<T> root();
+
+        void addWhere(Predicate predicate);
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static <T> TypedQuery<T> queryWithFilter(EntityManager em,
+            Class<T> entityClass, Consumer<PersistenceFilterContext> action) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery q = cb.createQuery(entityClass);
+        Root root = q.from(entityClass);
+        q.select(root);
+
+        ArrayList<Predicate> whereClauses = new ArrayList<>();
+        PersistenceFilterContext filterContext = new PersistenceFilterContext<T>() {
+
+            @Override
+            public CriteriaQuery<T> query() {
+                return q;
+            }
+
+            @Override
+            public CriteriaBuilder cb() {
+                return cb;
+            }
+
+            @Override
+            public Root<T> root() {
+                return root;
+            }
+
+            @Override
+            public void addWhere(Predicate predicate) {
+                whereClauses.add(predicate);
+            }
+        };
+
+        action.accept(filterContext);
+
+        q.where(whereClauses.toArray(new Predicate[] {}));
+        return em.createQuery(filterContext.query());
+    }
+
+}

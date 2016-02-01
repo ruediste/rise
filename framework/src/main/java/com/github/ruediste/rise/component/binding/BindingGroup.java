@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
+import com.github.ruediste.rise.component.tree.ComponentBase;
 import com.github.ruediste.rise.component.tree.RelationsComponent;
 import com.google.common.base.Defaults;
 import com.google.common.reflect.TypeToken;
@@ -22,9 +23,9 @@ import net.sf.cglib.proxy.MethodProxy;
  * A group of bindings managed by a controller.
  * 
  * <p>
- * see wiki for an overview
+ * <img src="doc-files/bindingOverview.png" alt="">
  * </p>
- *
+ * 
  * <p>
  * The binding is triggered explicitly. The controller instantiates a
  * {@link BindingGroup} and references it in an instance variable. If the data
@@ -36,10 +37,10 @@ import net.sf.cglib.proxy.MethodProxy;
  *
  * <p>
  * The component classes have a
- * {@link RelationsComponent#bind(java.util.function.Consumer)} method which
- * accepts a lambda expression. The lambda expression has the component as
- * parameter and sets a property of the component to some value retrieved via a
- * binding group exposed by the controller.
+ * {@link ComponentBase#bind(java.util.function.Consumer)} method which accepts
+ * a lambda expression. The lambda expression has the component as parameter and
+ * sets a property of the component to some value retrieved via a binding group
+ * exposed by the controller.
  * </p>
  *
  * <p>
@@ -49,6 +50,8 @@ import net.sf.cglib.proxy.MethodProxy;
  * record the methods invoked on themselves. This information is used to
  * determine which properties are accessed.
  * </p>
+ * 
+ * <img src="doc-files/bindingPropertyAccessRecording.png" alt="">
  *
  * <p>
  * When the involved properties are known, it is determined if they are readable

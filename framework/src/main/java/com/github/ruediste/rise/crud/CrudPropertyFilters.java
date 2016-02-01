@@ -28,8 +28,8 @@ import com.google.common.primitives.Primitives;
 
 @Singleton
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class CrudPropertyFilters
-        extends FactoryCollection<PersistentProperty, CrudPropertyFilter> {
+public class CrudPropertyFilters extends
+        FactoryCollection<CrudPropertyInfo, CrudPropertyFilters.CrudPropertyFilterFactory> {
 
     @Inject
     LabelUtil labelUtil;
@@ -53,119 +53,108 @@ public class CrudPropertyFilters
         TranslatedString max();
     }
 
+    public interface CrudPropertyFilterFactory {
+        CrudPropertyFilter createFilter(CrudPropertyInfo property);
+    }
+
     @Inject
     Messages messages;
 
     {
-        getFactories()
-                .add(new Function<PersistentProperty, CrudPropertyFilter>() {
+        addFactory(p -> String.class.equals(p.getAttribute().getJavaType()),
+                p -> {
+                    PropertyInfo property = p.getProperty();
+                    CTextField textField = new CTextField().setText("")
+                            .TEST_NAME(property.getName())
+                            .setLabel(labelUtil.getPropertyLabel(property));
+                    CFormGroup component = new CFormGroup(textField);
+                    return new CrudPropertyFilter() {
 
-                    @Override
-                    public CrudPropertyFilter apply(PersistentProperty decl) {
-
-                        Class<?> cls = decl.getAttribute().getJavaType();
-
-                        PropertyInfo property = decl.getProperty();
-
-                        if (String.class.equals(cls)) {
-                            CTextField textField = new CTextField().setText("")
-                                    .TEST_NAME(property.getName())
-                                    .setLabel(labelUtil
-                                            .getPropertyLabel(property));
-                            CFormGroup component = new CFormGroup(textField);
-                            return new CrudPropertyFilter() {
-
-                                @Override
-                                public Component getComponent() {
-                                    return component;
-                                }
-
-                                @Override
-                                public void applyFilter(
-                                        PersistenceFilterContext ctx) {
-                                    CriteriaBuilder cb = ctx.cb();
-                                    Path<String> path = ctx.root()
-                                            .get((SingularAttribute) decl
-                                                    .getAttribute());
-                                    ctx.addWhere(cb.or(path.isNull(), cb.like(
-                                            path,
-                                            "%" + textField.getText() + "%")));
-                                }
-                            };
+                        @Override
+                        public Component getComponent() {
+                            return component;
                         }
 
-                        CrudPropertyFilter result = checkNumber(decl, cls,
-                                property, Long.class, Long::parseLong);
-                        if (result != null)
-                            return result;
-                        result = checkNumber(decl, cls, property, Integer.class,
-                                Integer::parseInt);
-                        if (result != null)
-                            return result;
-                        return null;
-                    }
-
+                        @Override
+                        public void applyFilter(PersistenceFilterContext ctx) {
+                            CriteriaBuilder cb = ctx.cb();
+                            Path<String> path = ctx.root()
+                                    .get((SingularAttribute) p.getAttribute());
+                            ctx.addWhere(cb.or(path.isNull(), cb.like(path,
+                                    "%" + textField.getText() + "%")));
+                        }
+                    };
                 });
-
+        addNumberFactory(Long.class, Long::parseLong);
+        addNumberFactory(Integer.class, Integer::parseInt);
+        addNumberFactory(Short.class, Short::parseShort);
     }
 
-    private <T extends Comparable> CrudPropertyFilter checkNumber(
-            PersistentProperty decl, Class<?> cls, PropertyInfo property,
-            Class<T> boxCls, Function<String, T> parse) {
-        if (!boxCls.equals(Primitives.wrap(cls)))
-            return null;
+    private <T extends Comparable> void addNumberFactory(Class<T> boxCls,
+            Function<String, T> parse) {
 
-        LString propertyLabel = labelUtil.getPropertyLabel(property);
-        CInput min = new CInput(InputType.number)
-                .setLabel(messages.minNumber(propertyLabel)).setValue("")
-                .setRenderFormGroup(false);
+        addFactory(p -> boxCls
+                .equals(Primitives.wrap(p.getAttribute().getJavaType())), p -> {
+                    PropertyInfo property = p.getProperty();
+                    LString propertyLabel = labelUtil
+                            .getPropertyLabel(property);
+                    CInput min = new CInput(InputType.number)
+                            .setLabel(messages.minNumber(propertyLabel))
+                            .setValue("").setRenderFormGroup(false);
 
-        CInput max = new CInput(InputType.number)
-                .setLabel(messages.maxNumber(propertyLabel)).setValue("")
-                .setRenderFormGroup(false);
+                    CInput max = new CInput(InputType.number)
+                            .setLabel(messages.maxNumber(propertyLabel))
+                            .setValue("").setRenderFormGroup(false);
 
-        // @formatter:off
-            Component component = componentFactoryUtil.toComponent((BootstrapRiseCanvas<?> html) ->
-              html
-              .bFormGroup()
-                .label().content(labelUtil.getPropertyLabel(property))
-                  .div().BformInline()
-                    .bInputGroup().CLASS(x->x.sm(6))
-                      .span().BinputGroupAddon().content(messages.min())
-                      .add(min)
-                    ._bInputGroup()
-                    .bInputGroup().CLASS(x->x.sm(6))
-                      .span().BinputGroupAddon().content(messages.max())
-                      .add(max)
-                    ._bInputGroup()
-                ._div()
-              ._bFormGroup());
-            // @formatter:on
+                    // @formatter:off
+                        Component component = componentFactoryUtil.toComponent((BootstrapRiseCanvas<?> html) ->
+                          html
+                          .bFormGroup()
+                            .label().content(labelUtil.getPropertyLabel(property))
+                              .div().BformInline()
+                                .bInputGroup().CLASS(x->x.sm(6))
+                                  .span().BinputGroupAddon().content(messages.min())
+                                  .add(min)
+                                ._bInputGroup()
+                                .bInputGroup().CLASS(x->x.sm(6))
+                                  .span().BinputGroupAddon().content(messages.max())
+                                  .add(max)
+                                ._bInputGroup()
+                            ._div()
+                          ._bFormGroup());
+                        // @formatter:on
 
-        return new CrudPropertyFilter() {
+                    return new CrudPropertyFilter() {
 
-            @Override
-            public Component getComponent() {
-                return component;
-            }
+                        @Override
+                        public Component getComponent() {
+                            return component;
+                        }
 
-            @Override
-            public void applyFilter(PersistenceFilterContext ctx) {
-                if (!Strings.isNullOrEmpty(min.getValue())) {
-                    ctx.addWhere(ctx.cb().greaterThanOrEqualTo(
-                            ctx.root().get(decl.getProperty().getName()),
-                            parse.apply(min.getValue())));
+                        @Override
+                        public void applyFilter(PersistenceFilterContext ctx) {
+                            if (!Strings.isNullOrEmpty(min.getValue())) {
+                                ctx.addWhere(
+                                        ctx.cb().greaterThanOrEqualTo(
+                                                ctx.root()
+                                                        .get(property
+                                                                .getName()),
+                                                parse.apply(min.getValue())));
 
-                }
-                if (!Strings.isNullOrEmpty(max.getValue())) {
-                    ctx.addWhere(ctx.cb().lessThanOrEqualTo(
-                            ctx.root().get(decl.getProperty().getName()),
-                            parse.apply(max.getValue())));
+                            }
+                            if (!Strings.isNullOrEmpty(max.getValue())) {
+                                ctx.addWhere(
+                                        ctx.cb().lessThanOrEqualTo(
+                                                ctx.root()
+                                                        .get(property
+                                                                .getName()),
+                                                parse.apply(max.getValue())));
 
-                }
+                            }
 
-            }
-        };
+                        }
+                    };
+                });
     }
 
 }

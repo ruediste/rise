@@ -29,7 +29,8 @@ public class Navigations extends NavigationsContainer {
                 .add(go(SampleComponentController.class).index())
                 .group(GroupLabels.CRUD)
                 .add(go(CrudController.class).showTodos())
-                .add(go(CrudController.class).showTodoCategories())._group()
-                .getResult();
+                .add(go(CrudController.class).showTodoCategories())
+                .add(go(CrudController.class).browse(User.class, null), "Users")
+                ._group().getResult();
     }
 }

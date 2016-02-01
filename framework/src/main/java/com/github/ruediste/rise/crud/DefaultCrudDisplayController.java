@@ -8,6 +8,7 @@ import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.persistence.PersistentType;
 import com.github.ruediste.rise.core.persistence.RisePersistenceUtil;
+import com.github.ruediste1.i18n.label.LabelUtil;
 
 public class DefaultCrudDisplayController extends SubControllerComponent {
 
@@ -25,13 +26,23 @@ public class DefaultCrudDisplayController extends SubControllerComponent {
         @Inject
         CrudDisplayComponents displayComponents;
 
+        @Inject
+        LabelUtil labelUtil;
+
         @Override
         protected Component createComponents() {
             return toComponent(html -> {
                 html.div().TEST_NAME("properties");
-                for (PersistentProperty p : util
+                for (CrudPropertyInfo p : util
                         .getDisplayProperties(controller.type)) {
-                    html.add(displayComponents.create(p, controller.data));
+                    CrudPropertyHandle handle = CrudPropertyHandle.create(p,
+                            () -> controller.data.get(),
+                            () -> controller.data.proxy(), controller.data);
+                    html.bFormGroup().label()
+                            .content(labelUtil.getPropertyLabel(
+                                    handle.info().getProperty()))
+                            .add(displayComponents.create(handle))
+                            ._bFormGroup();
                 }
                 html._div().div().TEST_NAME("buttons")
                         .rButtonA(go(CrudControllerBase.class).browse(

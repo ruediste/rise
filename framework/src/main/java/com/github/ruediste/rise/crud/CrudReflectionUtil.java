@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -34,37 +35,38 @@ public class CrudReflectionUtil {
     @Inject
     MemberOrderIndex memberOrderIndex;
 
-    public List<PersistentProperty> getDisplayProperties(PersistentType type) {
+    public List<CrudPropertyInfo> getDisplayProperties(PersistentType type) {
         return getAllProperties(type);
     }
 
-    public List<PersistentProperty> getEditProperties(PersistentType type) {
+    public List<CrudPropertyInfo> getEditProperties(PersistentType type) {
         return getAllProperties(type);
     }
 
-    public Map<String, PersistentProperty> getAllPropertiesMap(
+    public Map<String, CrudPropertyInfo> getAllPropertiesMap(
             PersistentType type) {
         return getAllProperties(type).stream()
                 .collect(toMap(x -> x.getAttribute().getName(), x -> x));
     }
 
-    public List<PersistentProperty> getAllProperties(PersistentType type) {
+    public List<CrudPropertyInfo> getAllProperties(PersistentType type) {
         return getOrderedAttributes(type.getType()).stream()
-                .map(this::toPersistentProperty).collect(toList());
+                .map(toPersistentPropertyFunction(type.getEmQualifier())::apply)
+                .collect(toList());
     }
 
-    public List<PersistentProperty> getBrowserProperties(PersistentType type) {
+    public List<CrudPropertyInfo> getBrowserProperties(PersistentType type) {
         return getPropertiesAnnotatedWith(type, CrudBrowserColumn.class,
                 CrudIdentifying.class);
     }
 
-    public List<PersistentProperty> getIdentificationProperties(
+    public List<CrudPropertyInfo> getIdentificationProperties(
             PersistentType type) {
         return getPropertiesAnnotatedWith(type, CrudIdentifying.class);
     }
 
     @SafeVarargs
-    final private List<PersistentProperty> getPropertiesAnnotatedWith(
+    final private List<CrudPropertyInfo> getPropertiesAnnotatedWith(
             PersistentType type,
             Class<? extends Annotation>... annotationClasses) {
         Preconditions.checkNotNull(type, "cls is null");
@@ -84,11 +86,13 @@ public class CrudReflectionUtil {
         }
         if (result.isEmpty())
             result = orderedAttributes;
-        return result.stream().map(this::toPersistentProperty)
+        return result.stream()
+                .map(toPersistentPropertyFunction(type.getEmQualifier())::apply)
                 .collect(toList());
     }
 
     private List<Attribute<?, ?>> getOrderedAttributes(ManagedType<?> type2) {
+        Preconditions.checkNotNull(type2, "type2");
         Map<Member, Attribute<?, ?>> memberMap = new HashMap<>();
         for (Attribute<?, ?> attr : type2.getAttributes()) {
             memberMap.put(attr.getJavaMember(), attr);
@@ -101,12 +105,18 @@ public class CrudReflectionUtil {
         return result;
     }
 
-    public PersistentProperty toPersistentProperty(Attribute<?, ?> attribute) {
+    public Function<Attribute<?, ?>, CrudPropertyInfo> toPersistentPropertyFunction(
+            Class<? extends Annotation> emQualifier) {
+        return a -> toPersistentProperty(a, emQualifier);
+    }
+
+    public CrudPropertyInfo toPersistentProperty(Attribute<?, ?> attribute,
+            Class<? extends Annotation> emQualifier) {
         PropertyInfo property = PropertyUtil.getPropertyInfo(
                 attribute.getDeclaringType().getJavaType(),
                 attribute.getName());
 
-        return new PersistentProperty(property, attribute);
+        return new CrudPropertyInfo(property, attribute, emQualifier);
     }
 
     public PersistentType getPersistentType(Object entity) {

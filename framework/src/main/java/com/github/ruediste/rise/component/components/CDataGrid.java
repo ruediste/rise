@@ -5,10 +5,12 @@ import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -210,7 +212,13 @@ public class CDataGrid<T> extends ComponentBase<CDataGrid<T>> {
     }
 
     public List<T> getItems() {
-        return items;
+        return Collections.unmodifiableList(items);
+    }
+
+    public CDataGrid<T> updateItems(Consumer<List<T>> updater) {
+        itemsDirty = true;
+        updater.accept(items);
+        return this;
     }
 
     public List<Column<T>> getColumns() {
