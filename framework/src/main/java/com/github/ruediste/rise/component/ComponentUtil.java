@@ -4,16 +4,19 @@ import java.io.ByteArrayOutputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.TransactionManager;
+import javax.validation.ConstraintViolation;
 
 import org.slf4j.Logger;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.api.ViewComponentBase;
+import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.IComponentTemplate;
 import com.github.ruediste.rise.component.reload.PageReloadRequest;
 import com.github.ruediste.rise.component.tree.Component;
@@ -252,4 +255,17 @@ public class ComponentUtil implements ICoreUtil {
         }
     }
 
+    /**
+     * Set the constraint violations
+     */
+    public <T> void setConstraintViolations(BindingGroup<T> group,
+            Set<ConstraintViolation<T>> violations) {
+
+        if (componentRequestInfo.isInitialRequest())
+            componentRequestInfo.addInitialContraintViolation(group,
+                    violations);
+        else
+            group.applyConstraintViolations(violations);
+
+    }
 }

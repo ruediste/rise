@@ -23,7 +23,7 @@ public class TestAppFrontServlet extends FrontServletBase {
 
     public TestAppFrontServlet(
             Class<? extends RestartableApplication> restartableApplicationClass) {
-        super(restartableApplicationClass, false);
+        super(restartableApplicationClass, true);
     }
 
     @Override

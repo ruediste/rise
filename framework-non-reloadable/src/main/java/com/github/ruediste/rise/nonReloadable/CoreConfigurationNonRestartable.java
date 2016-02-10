@@ -3,7 +3,6 @@ package com.github.ruediste.rise.nonReloadable;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;

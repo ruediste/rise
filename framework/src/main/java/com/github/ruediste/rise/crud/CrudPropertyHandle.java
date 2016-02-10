@@ -1,7 +1,6 @@
 package com.github.ruediste.rise.crud;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.util.function.Supplier;
 
 import com.github.ruediste.rise.component.binding.BindingGroup;
@@ -57,36 +56,32 @@ public interface CrudPropertyHandle {
 
             @Override
             public void setValue(Object value) {
-                Member member = propertyInfo.getAttribute().getJavaMember();
-                if (member instanceof Field) {
-                    Field field = (Field) member;
-                    field.setAccessible(true);
-                    try {
-                        field.set(objectSupplier.get(), value);
-                    } catch (IllegalArgumentException
-                            | IllegalAccessException e) {
-                        throw new RuntimeException(
-                                "Error while setting field " + field);
-                    }
-                } else
-                    throw new RuntimeException("Unknown member type " + member);
+                Method setter = propertyInfo.getProperty().getSetter();
+                if (setter == null)
+                    throw new RuntimeException("No setter defined for "
+                            + propertyInfo.getProperty()
+                            + ". Cannot set value");
+                try {
+                    setter.invoke(objectSupplier.get(), value);
+                } catch (Exception e) {
+                    throw new RuntimeException(
+                            "Error while setting property using " + setter);
+                }
             }
 
             @Override
             public Object getValue() {
-                Member member = propertyInfo.getAttribute().getJavaMember();
-                if (member instanceof Field) {
-                    Field field = (Field) member;
-                    field.setAccessible(true);
-                    try {
-                        return field.get(objectSupplier.get());
-                    } catch (IllegalArgumentException
-                            | IllegalAccessException e) {
-                        throw new RuntimeException(
-                                "Error while getting field " + field);
-                    }
-                } else
-                    throw new RuntimeException("Unknown member type " + member);
+                Method getter = propertyInfo.getProperty().getGetter();
+                if (getter == null)
+                    throw new RuntimeException("No getter defined for "
+                            + propertyInfo.getProperty()
+                            + ". Cannot read value");
+                try {
+                    return getter.invoke(objectSupplier.get());
+                } catch (Exception e) {
+                    throw new RuntimeException(
+                            "Error while getting property using " + getter);
+                }
             }
         };
         return handle;

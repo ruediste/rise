@@ -24,7 +24,7 @@ public class SampleFrontServlet extends FrontServletBase {
     }
 
     public SampleFrontServlet(boolean testing) {
-        super(SampleRestartableApp.class, !testing);
+        super(SampleRestartableApplication.class, !testing);
         this.testing = testing;
     }
 

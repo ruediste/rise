@@ -1,4 +1,4 @@
-package com.github.ruediste.rise.component;
+package com.github.ruediste.rise.component.validation;
 
 import java.util.Collection;
 import java.util.Collections;

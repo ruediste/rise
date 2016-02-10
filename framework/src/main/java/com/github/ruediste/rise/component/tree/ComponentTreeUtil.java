@@ -1,9 +1,12 @@
 package com.github.ruediste.rise.component.tree;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
@@ -36,6 +39,21 @@ public class ComponentTreeUtil {
         for (Component child : c.getChildren()) {
             subTree(child, result);
         }
+    }
+
+    /**
+     * Return the single component of the given type in the subtree of root. If
+     * multiple components or none are found, {@link Optional#empty()} is
+     * returned.
+     */
+    @SuppressWarnings("unchecked")
+    static public <T> Optional<T> componentOfTypeIfSingle(Component root,
+            Class<T> clazz) {
+        List<Component> matching = subTree(root).stream()
+                .filter(x -> clazz.isInstance(x)).collect(toList());
+        if (matching.size() == 1)
+            return Optional.of((T) matching.get(0));
+        return Optional.empty();
     }
 
     /**

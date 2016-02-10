@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import com.github.ruediste.rise.component.ComponentConfiguration;
 import com.github.ruediste.rise.component.ComponentTemplateIndex;
@@ -20,8 +19,8 @@ import com.github.ruediste.rise.core.security.Principal;
 import com.github.ruediste.rise.core.security.authentication.InMemoryAuthenticationProvider;
 import com.github.ruediste.rise.core.security.authentication.core.AuthenticationSuccess;
 import com.github.ruediste.rise.core.security.authentication.core.DefaultAuthenticationManager;
-import com.github.ruediste.rise.core.security.authorization.AuthorizationFailure;
 import com.github.ruediste.rise.core.security.authorization.AuthorizationDecisionManager;
+import com.github.ruediste.rise.core.security.authorization.AuthorizationFailure;
 import com.github.ruediste.rise.core.security.authorization.AuthorizationResult;
 import com.github.ruediste.rise.core.security.authorization.MethodAuthorizationManager;
 import com.github.ruediste.rise.core.security.authorization.Right;
@@ -37,12 +36,7 @@ import com.github.ruediste.rise.testApp.component.CPageTemplate;
 import com.github.ruediste.rise.util.InitializerUtil;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
-import com.github.ruediste.salta.jsr330.Provides;
 import com.github.ruediste.salta.jsr330.Salta;
-import com.github.ruediste1.i18n.lString.DefaultPatternStringResolver;
-import com.github.ruediste1.i18n.lString.PatternStringResolver;
-import com.github.ruediste1.i18n.lString.ResouceBundleTranslatedStringResolver;
-import com.github.ruediste1.i18n.lString.TranslatedStringResolver;
 
 public class TestRestartableApplication extends RestartableApplicationBase {
 
@@ -96,20 +90,11 @@ public class TestRestartableApplication extends RestartableApplicationBase {
             @Override
             protected void configure() throws Exception {
                 InitializerUtil.register(config(), Initializer.class);
-                bind(PatternStringResolver.class)
-                        .to(DefaultPatternStringResolver.class);
                 MethodAuthorizationManager.get(binder()).addRule(
                         RequiresRight.class,
                         a -> new HashSet<>(Arrays.asList(a.value())));
             }
 
-            @Singleton
-            @Provides
-            public TranslatedStringResolver resolver(
-                    ResouceBundleTranslatedStringResolver resolver) {
-                resolver.initialize("translations/translations");
-                return resolver;
-            }
         }, new DynamicIntegrationModule(nonRestartableInjector))
                 .injectMembers(this);
         index.registerTemplate(CPage.class, CPageTemplate.class);
@@ -129,19 +114,17 @@ public class TestRestartableApplication extends RestartableApplicationBase {
                 .addProvider(new InMemoryAuthenticationProvider<Principal>()
                         .with("foo", "foo", null));
 
-        authorizationManager
-                .setPerformer((Set<? extends Right> rights,
-                        Optional<AuthenticationSuccess> authentication) -> {
-                    for (Right right : rights) {
+        authorizationManager.setPerformer((Set<? extends Right> rights,
+                Optional<AuthenticationSuccess> authentication) -> {
+            for (Right right : rights) {
 
-                        if (Objects.equals(Rights.ALLOWED, right))
-                            continue;
-                        return AuthorizationResult
-                                .failure(new AuthorizationFailure(
-                                        "right was not ALLOWED"));
-                    }
-                    return AuthorizationResult.authorized();
-                });
+                if (Objects.equals(Rights.ALLOWED, right))
+                    continue;
+                return AuthorizationResult.failure(
+                        new AuthorizationFailure("right was not ALLOWED"));
+            }
+            return AuthorizationResult.authorized();
+        });
 
     }
 

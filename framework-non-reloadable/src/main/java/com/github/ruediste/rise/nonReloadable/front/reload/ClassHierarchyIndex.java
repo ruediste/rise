@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.nonReloadable.front.reload;
 
+import static java.util.stream.Collectors.toSet;
 import static org.objectweb.asm.Opcodes.ASM5;
 
 import java.util.ArrayList;
@@ -148,20 +149,35 @@ public class ClassHierarchyIndex {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> Set<Class<? extends T>> getAllChildClasses(Class<T> cls,
+            ClassLoader cl) {
+        return getAllChildren(cls).stream().map(n -> {
+            try {
+                return (Class<? extends T>) cl
+                        .loadClass(Type.getObjectType(n.name).getClassName());
+            } catch (Exception e) {
+                throw new RuntimeException(
+                        "Error while loading class " + n.name);
+            }
+        }).collect(toSet());
+    }
+
     public Set<ClassNode> getAllChildren(Class<?> cls) {
         return getAllChildren(Type.getInternalName(cls));
     }
 
     public Set<ClassNode> getAllChildren(String internalName) {
         HashSet<ClassNode> result = new HashSet<>();
-        getAllChildren(getNode(internalName), result);
+        getAllChildren(internalName, result);
         return result;
     }
 
-    private void getAllChildren(ClassNode node, HashSet<ClassNode> result) {
-        for (ClassNode child : getChildren(node.name)) {
+    private void getAllChildren(String internalParentName,
+            HashSet<ClassNode> result) {
+        for (ClassNode child : getChildren(internalParentName)) {
             if (result.add(child)) {
-                getAllChildren(child, result);
+                getAllChildren(child.name, result);
             }
         }
     }

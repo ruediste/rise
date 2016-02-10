@@ -2,6 +2,7 @@ package com.github.ruediste.rise.core;
 
 import javax.inject.Inject;
 
+import com.github.ruediste.rise.core.i18n.RiseResourceBundleResolver;
 import com.github.ruediste.rise.core.scopes.HttpScopeManager;
 import com.github.ruediste.rise.core.scopes.SessionScopeEvents;
 import com.github.ruediste.rise.core.web.assetDir.AssetDirRequestMapper;
@@ -35,6 +36,9 @@ public class CoreRestartableInitializer implements Initializer {
     @Inject
     SessionScopeEvents sessionScopeEvents;
 
+    @Inject
+    RiseResourceBundleResolver resourceBundleResolver;
+
     @Override
     public void initialize() {
         config.dynamicClassLoader = Thread.currentThread()
@@ -46,5 +50,6 @@ public class CoreRestartableInitializer implements Initializer {
 
         index.registerPathInfo(config.restartQueryPathInfo.getValue(),
                 restartQueryParser);
+        resourceBundleResolver.initialize();
     }
 }

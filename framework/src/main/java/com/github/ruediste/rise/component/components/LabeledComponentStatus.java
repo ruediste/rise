@@ -6,6 +6,9 @@ import com.github.ruediste1.i18n.lString.FixedLString;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.LabelUtil;
 
+/**
+ * Status for the {@link LabeledComponentTrait}
+ */
 public class LabeledComponentStatus {
 
     private LString label;

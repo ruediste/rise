@@ -116,7 +116,6 @@ public class CrudEditComponents extends
                     return (Collection<?>) decl.getValue();
                 }
 
-                @SuppressWarnings({ "rawtypes", "unchecked" })
                 @Override
                 public void renderOn(BootstrapRiseCanvas<?> html) {
                     CDataGrid<Object> grid = new CDataGrid<Object>();

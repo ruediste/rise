@@ -1,11 +1,11 @@
 package com.github.ruediste.rise.component.components;
 
-import com.github.ruediste.rise.component.ViolationStatus;
-import com.github.ruediste.rise.component.ViolationStatusBearer;
 import com.github.ruediste.rise.component.tree.RelationsComponent;
+import com.github.ruediste.rise.component.validation.ViolationStatus;
+import com.github.ruediste.rise.component.validation.ViolationStatusBearer;
 
 /**
- * 
+ * Base class for input components. Provides a violationStatus and labels
  */
 public class CInputBase<T extends CInputBase<T>> extends RelationsComponent<T>
         implements ViolationStatusBearer, LabeledComponentTrait<T> {

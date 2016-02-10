@@ -29,6 +29,7 @@ import com.github.ruediste1.i18n.label.LabelUtil;
 import com.github.ruediste1.i18n.label.Labeled;
 import com.google.common.io.BaseEncoding;
 import com.google.common.primitives.Primitives;
+import com.google.common.reflect.TypeToken;
 
 @Singleton
 public class CrudDisplayComponents extends
@@ -86,9 +87,21 @@ public class CrudDisplayComponents extends
                 handle -> toComponentBound(() -> handle.proxy(), html -> {
 
                     Object value = handle.getValue();
-                    if (value == null)
-                        throw new RuntimeException(handle.info().getAttribute()
-                                + " is null. Cannot handle that");
+                    if (value == null) {
+                        Class<?> rawType = TypeToken.of(
+                                handle.info().getProperty().getPropertyType())
+                                .getRawType();
+                        try {
+                            value = rawType.newInstance();
+                        } catch (Exception e) {
+                            throw new RuntimeException(
+                                    "Error while instantiating " + rawType
+                                            + " for embeddable "
+                                            + handle.info().getProperty()
+                                            + " which was null");
+                        }
+                    }
+                    Object finalValue = value;
                     html.bCol(x -> x.xs(11).xsOffset(1));
                     for (CrudPropertyInfo property : crudReflectionUtil
                             .getDisplayProperties(
@@ -97,7 +110,7 @@ public class CrudDisplayComponents extends
                                             value.getClass()))) {
                         CrudPropertyHandle subHandle = CrudPropertyHandle
                                 .create(property, handle::rootEntity,
-                                        handle::getValue, handle.group());
+                                        () -> finalValue, handle.group());
                         html.bFormGroup().label()
                                 .content(labelUtil.getPropertyLabel(
                                         subHandle.info().getProperty()))
@@ -109,11 +122,13 @@ public class CrudDisplayComponents extends
 
     public void addByteArrayFactory() {
         addFactory(p -> byte[].class.equals(p.getAttribute().getJavaType()),
-                property -> toComponentBound(() -> property.proxy(),
-                        html -> html.span().BformControl().DISABLED("disabled")
-                                .TEST_NAME(property.info().getName())
-                                .content(BaseEncoding.base16().encode(
-                                        (byte[]) property.getValue()))));
+                property -> toComponentBound(() -> property.proxy(), html -> {
+                    byte[] value = (byte[]) property.getValue();
+                    html.span().BformControl().DISABLED("disabled")
+                            .TEST_NAME(property.info().getName())
+                            .content(value == null ? "<null>"
+                                    : BaseEncoding.base16().encode(value));
+                }));
     }
 
     public void addEnumElementCollectionFactory() {

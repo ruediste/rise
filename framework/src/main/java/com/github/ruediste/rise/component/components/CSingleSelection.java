@@ -5,21 +5,17 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import com.github.ruediste.rise.component.ViolationStatus;
-import com.github.ruediste.rise.component.ViolationStatusBearer;
 import com.google.common.base.Preconditions;
 
 /**
  * Component showing a list of items and allowing a single one to be selected.
  */
 public class CSingleSelection<T, TSelf extends CSingleSelection<T, TSelf>>
-        extends CItems<T, TSelf>
-        implements LabeledComponentTrait<TSelf>, ViolationStatusBearer {
+        extends CItems<T, TSelf> implements LabeledComponentTrait<TSelf> {
 
     private Optional<T> selectedItem = Optional.empty();
 
     private LabeledComponentStatus labeledComponentStatus = new LabeledComponentStatus();
-    private ViolationStatus violationStatus = new ViolationStatus();
 
     private Consumer<Optional<T>> selectionHandler;
 
@@ -48,11 +44,6 @@ public class CSingleSelection<T, TSelf extends CSingleSelection<T, TSelf>>
     @Override
     public LabeledComponentStatus internal_getLabeledComponentStatus() {
         return labeledComponentStatus;
-    }
-
-    @Override
-    public ViolationStatus getViolationStatus() {
-        return violationStatus;
     }
 
     public TSelf setSelectionHandler(Consumer<Optional<T>> selectionHandler) {

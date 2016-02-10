@@ -5,15 +5,25 @@ import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
 import java.util.Optional;
 import java.util.function.Function;
 
+import javax.inject.Singleton;
+import javax.validation.MessageInterpolator;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+
+import org.hibernate.validator.HibernateValidator;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
+import com.github.ruediste.rise.core.i18n.RiseResourceBundleResolver;
+import com.github.ruediste.rise.core.i18n.RiseValidationMessageInterpolator;
 import com.github.ruediste.rise.core.persistence.PersistenceRestartableModule;
 import com.github.ruediste.rise.core.scopes.HttpScopeModule;
 import com.github.ruediste.rise.core.security.authorization.MethodAuthorizationManager;
 import com.github.ruediste.rise.core.web.assetDir.AssetDir;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.nonReloadable.NonRestartable;
+import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndex;
 import com.github.ruediste.rise.util.InitializerUtil;
 import com.github.ruediste.salta.core.CoreDependencyKey;
 import com.github.ruediste.salta.core.CoreInjector;
@@ -25,10 +35,17 @@ import com.github.ruediste.salta.core.compile.SupplierRecipe;
 import com.github.ruediste.salta.core.compile.SupplierRecipeImpl;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
+import com.github.ruediste.salta.jsr330.Provides;
 import com.github.ruediste.salta.standard.DependencyKey;
 import com.github.ruediste.salta.standard.InjectionPoint;
 import com.github.ruediste.salta.standard.ScopeRule;
 import com.github.ruediste.salta.standard.config.StandardInjectorConfiguration;
+import com.github.ruediste1.i18n.lString.AdditionalResourceKeyProvider;
+import com.github.ruediste1.i18n.lString.DefaultPatternStringResolver;
+import com.github.ruediste1.i18n.lString.PatternStringResolver;
+import com.github.ruediste1.i18n.lString.ResouceBundleTranslatedStringResolver;
+import com.github.ruediste1.i18n.lString.ResourceBundleResolver;
+import com.github.ruediste1.i18n.lString.TranslatedStringResolver;
 import com.github.ruediste1.i18n.message.TMessageUtil;
 import com.github.ruediste1.i18n.message.TMessages;
 import com.google.common.reflect.TypeToken;
@@ -52,9 +69,57 @@ public class CoreRestartableModule extends AbstractModule {
         registerAssetBundleScopeRule();
         registerMessagesRule();
         MethodAuthorizationManager.get(binder());
+        bindPatternStringResolver();
     }
 
-    private void registerMessagesRule() {
+    protected void bindPatternStringResolver() {
+        bind(PatternStringResolver.class).to(DefaultPatternStringResolver.class)
+                .in(Singleton.class);
+    }
+
+    @Provides
+    @Singleton
+    protected ResourceBundleResolver resourceBundleResolver(
+            RiseResourceBundleResolver resolver) {
+        return resolver;
+    }
+
+    @Provides
+    @Singleton
+    protected TranslatedStringResolver translatedStringResolver(
+            ResouceBundleTranslatedStringResolver resolver,
+            ClassHierarchyIndex idx) {
+        resolver.registerAdditionalResourceKeys(
+                idx.getAllChildClasses(AdditionalResourceKeyProvider.class,
+                        getClass().getClassLoader()));
+        return resolver;
+    }
+
+    @Provides
+    @Singleton
+    protected MessageInterpolator messageInterpolator(
+            RiseValidationMessageInterpolator interpolator) {
+        return interpolator;
+        // return new ResourceBundleMessageInterpolator(
+        // resolver::getResourceBundle);
+    }
+
+    @Provides
+    @Singleton
+    protected ValidatorFactory validatorFactory(
+            MessageInterpolator messageInterpolator) {
+        return Validation.byProvider(HibernateValidator.class).configure()
+                .messageInterpolator(messageInterpolator)
+                .buildValidatorFactory();
+    }
+
+    @Provides
+    @Singleton
+    protected Validator validator(ValidatorFactory factory) {
+        return factory.getValidator();
+    }
+
+    protected void registerMessagesRule() {
         bindCreationRule(new CreationRule() {
 
             @Override
@@ -94,7 +159,7 @@ public class CoreRestartableModule extends AbstractModule {
         });
     }
 
-    private void installPersistenceDynamicModule() {
+    protected void installPersistenceDynamicModule() {
         install(new PersistenceRestartableModule(permanentInjector));
     }
 

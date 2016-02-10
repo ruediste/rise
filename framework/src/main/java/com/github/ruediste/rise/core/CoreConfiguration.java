@@ -358,4 +358,10 @@ public class CoreConfiguration {
         if (stage != Stage.PRODUCTION)
             unitTestCodeRunnerPathInfo = "/~unitTest";
     }
+
+    public String translationsResourceBundleName = "translations/translations";
+
+    public String getTranslationsResourceBundleName() {
+        return translationsResourceBundleName;
+    }
 }

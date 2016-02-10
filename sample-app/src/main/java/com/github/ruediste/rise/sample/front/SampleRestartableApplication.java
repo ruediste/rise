@@ -8,7 +8,6 @@ import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
-import javax.inject.Singleton;
 
 import com.github.ruediste.rise.api.RestartableApplicationModule;
 import com.github.ruediste.rise.component.ComponentTemplateIndex;
@@ -39,14 +38,9 @@ import com.github.ruediste.rise.sample.UserRepository;
 import com.github.ruediste.rise.sample.component.CPageHtmlTemplate;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
-import com.github.ruediste.salta.jsr330.Provides;
 import com.github.ruediste.salta.jsr330.Salta;
-import com.github.ruediste1.i18n.lString.DefaultPatternStringResolver;
-import com.github.ruediste1.i18n.lString.PatternStringResolver;
-import com.github.ruediste1.i18n.lString.ResouceBundleTranslatedStringResolver;
-import com.github.ruediste1.i18n.lString.TranslatedStringResolver;
 
-public class SampleRestartableApp extends RestartableApplicationBase {
+public class SampleRestartableApplication extends RestartableApplicationBase {
 
     @Inject
     CoreConfiguration config;
@@ -103,21 +97,11 @@ public class SampleRestartableApp extends RestartableApplicationBase {
 
                     @Override
                     protected void configure() throws Exception {
-                        bind(PatternStringResolver.class)
-                                .to(DefaultPatternStringResolver.class)
-                                .in(Singleton.class);
+
                         MethodAuthorizationManager.get(binder()).addRule(
                                 RequiresRight.class,
                                 a -> Arrays.asList(a.value()));
 
-                    }
-
-                    @Provides
-                    @Singleton
-                    TranslatedStringResolver tStringResolver(
-                            ResouceBundleTranslatedStringResolver resolver) {
-                        resolver.initialize("translations/translations");
-                        return resolver;
                     }
 
                 }, new RestartableApplicationModule(permanentInjector))
@@ -212,6 +196,5 @@ public class SampleRestartableApp extends RestartableApplicationBase {
 
             return AuthorizationResult.authorized();
         });
-
     }
 }

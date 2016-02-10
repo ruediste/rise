@@ -11,6 +11,13 @@ import com.github.ruediste.rise.component.tree.TestNamedComponent;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.LabelUtil;
 
+/**
+ * Trait add label functions to a component.
+ * 
+ * <p>
+ * The label is typically not rendered directly by the component but by a
+ * containing component.
+ */
 public interface LabeledComponentTrait<TSelf extends LabeledComponentTrait<TSelf>>
         extends LabeledComponent<TSelf>, TestNamedComponent<TSelf>,
         AttachedPropertyBearer {

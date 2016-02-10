@@ -8,11 +8,16 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.stream.Stream;
 
+import javax.validation.ConstraintViolation;
+
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
 import com.github.ruediste.rise.component.tree.ComponentBase;
 import com.github.ruediste.rise.component.tree.RelationsComponent;
+import com.github.ruediste.rise.component.validation.ViolationStatusBearer;
 import com.google.common.base.Defaults;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 import com.google.common.reflect.TypeToken;
 
 import net.sf.cglib.proxy.Enhancer;
@@ -100,9 +105,9 @@ public class BindingGroup<T> implements Serializable {
 
     private final AttachedProperty<AttachedPropertyBearer, Set<Binding<T>>> bindings = new AttachedProperty<>();
 
-    WeakHashMap<AttachedPropertyBearer, Object> components = new WeakHashMap<>();
+    private final WeakHashMap<AttachedPropertyBearer, Object> components = new WeakHashMap<>();
 
-    T data;
+    private T data;
 
     public BindingGroup(T data) {
         tClass = data.getClass();
@@ -223,5 +228,32 @@ public class BindingGroup<T> implements Serializable {
         if (binding.getPullUp() != null) {
             binding.getPullUp().accept(data);
         }
+    }
+
+    /**
+     * Set the constraint violations
+     */
+    public void applyConstraintViolations(
+            Set<ConstraintViolation<T>> violations) {
+
+        Multimap<String, ConstraintViolation<?>> violationMap = MultimapBuilder
+                .hashKeys().arrayListValues().build();
+
+        for (ConstraintViolation<?> v : violations) {
+            violationMap.put(
+                    ValidationPathUtil.toPathString(v.getPropertyPath()), v);
+        }
+
+        getBindings().forEach(b -> {
+
+            if (b.getComponent() instanceof ViolationStatusBearer) {
+
+                ViolationStatusBearer aware = (ViolationStatusBearer) b
+                        .getComponent();
+                aware.getViolationStatus().setConstraintViolations(
+                        violationMap.get(b.modelPath.getPath()));
+                aware.getViolationStatus().setValidated(true);
+            }
+        });
     }
 }

@@ -1,8 +1,12 @@
 package com.github.ruediste.rise.api;
 
+import java.util.Set;
+
 import javax.inject.Inject;
+import javax.validation.ConstraintViolation;
 
 import com.github.ruediste.rise.component.ComponentUtil;
+import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
@@ -67,5 +71,10 @@ public class SubControllerComponent {
      */
     public void redirect(ActionResult destination) {
         closePage(new RedirectRenderResult(util.toUrlSpec(destination)));
+    }
+
+    public <T> void setConstraintViolations(BindingGroup<T> group,
+            Set<ConstraintViolation<T>> violations) {
+        util.setConstraintViolations(group, violations);
     }
 }
