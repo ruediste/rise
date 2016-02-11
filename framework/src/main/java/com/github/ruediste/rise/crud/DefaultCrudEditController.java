@@ -63,6 +63,7 @@ public class DefaultCrudEditController extends SubControllerComponent {
 
     Class<? extends Annotation> emQualifier;
 
+    @Inject
     BindingGroup<Object> entityGroup;
 
     Object entity() {
@@ -73,7 +74,7 @@ public class DefaultCrudEditController extends SubControllerComponent {
 
     public DefaultCrudEditController initialize(Object entity) {
         type = reflectionUtil.getPersistentType(entity);
-        this.entityGroup = new BindingGroup<>(entity);
+        this.entityGroup.initialize(entity);
         emQualifier = util.getEmQualifier(entity);
         return this;
     }

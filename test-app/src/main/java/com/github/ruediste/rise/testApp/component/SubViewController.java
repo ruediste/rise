@@ -1,5 +1,7 @@
 package com.github.ruediste.rise.testApp.component;
 
+import javax.inject.Inject;
+
 import com.github.ruediste.rise.api.ControllerComponent;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CButton;
@@ -42,7 +44,8 @@ public class SubViewController extends ControllerComponent {
 
     static class SubController {
 
-        BindingGroup<SubData> data = new BindingGroup<>(new SubData());
+        @Inject
+        BindingGroup<SubData> data;
 
         public SubController() {
         }
@@ -83,7 +86,8 @@ public class SubViewController extends ControllerComponent {
     SubController sub1 = new SubController("Foo");
     SubController sub2 = new SubController("bar");
 
-    BindingGroup<Data> data = new BindingGroup<>(new Data());
+    @Inject
+    BindingGroup<Data> data;
 
     Data data() {
         return data.proxy();

@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
@@ -99,12 +100,19 @@ public class BindingUtilTest {
         }
     }
 
+    BindingGroup<TestB> groupB;
+
+    @Before
+    public void before() {
+        groupB = new BindingGroup<>();
+        groupB.initialize(TestB.class);
+    }
+
     @Test
     public void simple() {
         TestA a = new TestA();
         TestB b = new TestB();
 
-        BindingGroup<TestB> groupB = new BindingGroup<>(TestB.class);
         groupB.set(b);
 
         // establish binding
@@ -126,7 +134,6 @@ public class BindingUtilTest {
         TestA a = new TestA();
         TestB b = new TestB();
 
-        BindingGroup<TestB> groupB = new BindingGroup<>(TestB.class);
         groupB.set(b);
 
         // establish binding
@@ -153,7 +160,6 @@ public class BindingUtilTest {
         TestA a = new TestA();
         TestB b = new TestB();
 
-        BindingGroup<TestB> groupB = new BindingGroup<>(TestB.class);
         groupB.set(b);
 
         // establish binding
@@ -184,7 +190,6 @@ public class BindingUtilTest {
         TestA a = new TestA();
         TestB b = new TestB();
 
-        BindingGroup<TestB> groupB = new BindingGroup<>(TestB.class);
         groupB.set(b);
 
         // establish binding
@@ -208,7 +213,6 @@ public class BindingUtilTest {
         TestC c = new TestC();
         b.setC(c);
 
-        BindingGroup<TestB> groupB = new BindingGroup<>(TestB.class);
         groupB.set(b);
 
         // establish binding
@@ -231,7 +235,6 @@ public class BindingUtilTest {
         TestA a = new TestA();
         TestB b = new TestB();
 
-        BindingGroup<TestB> groupB = new BindingGroup<>(TestB.class);
         groupB.set(b);
 
         // establish binding

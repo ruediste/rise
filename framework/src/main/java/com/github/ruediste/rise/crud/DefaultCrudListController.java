@@ -141,7 +141,8 @@ public class DefaultCrudListController extends SubControllerComponent
 
     private PersistentType type;
 
-    BindingGroup<Data> data = new BindingGroup<>(new Data());
+    @Inject
+    BindingGroup<Data> data;
 
     List<CrudPropertyInfo> columnProperties;
 

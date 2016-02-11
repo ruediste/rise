@@ -1,5 +1,7 @@
 package com.github.ruediste.rise.testApp.component;
 
+import javax.inject.Inject;
+
 import com.github.ruediste.rise.api.ControllerComponent;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CButton;
@@ -53,7 +55,8 @@ public class BoundComponentController extends ControllerComponent {
         }
     }
 
-    private BindingGroup<Data> data = new BindingGroup<>(Data.class);
+    @Inject
+    private BindingGroup<Data> data;
 
     public Data data() {
         return data.proxy();
@@ -61,8 +64,6 @@ public class BoundComponentController extends ControllerComponent {
 
     @UrlUnsigned
     public ActionResult index() {
-        data.set(new Data());
-
         return null;
     }
 

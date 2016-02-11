@@ -1,8 +1,6 @@
 package com.github.ruediste.rise.component.binding;
 
 import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -15,14 +13,9 @@ import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
 import com.github.ruediste.rise.component.tree.ComponentBase;
 import com.github.ruediste.rise.component.tree.RelationsComponent;
 import com.github.ruediste.rise.component.validation.ViolationStatusBearer;
-import com.google.common.base.Defaults;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.reflect.TypeToken;
-
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
 
 /**
  * A group of bindings managed by a controller.
@@ -39,6 +32,12 @@ import net.sf.cglib.proxy.MethodProxy;
  * {@link #pushDown()}. To the view the binding group is exposed via a function
  * returning {@link #proxy()}.
  * </p>
+ * 
+ * <p>
+ * Note that when {@link BindingGroup}s are injected, if the value type can be
+ * created by the injector, an instance is created and the group initialized
+ * with it. Otherwise the group is initialized with the class only and the value
+ * remains null.
  *
  * <p>
  * The component classes have a
@@ -101,7 +100,8 @@ public class BindingGroup<T> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final Class<?> tClass;
+    private Class<T> tClass;
+    private TypeToken<T> tTypeToken;
 
     private final AttachedProperty<AttachedPropertyBearer, Set<Binding<T>>> bindings = new AttachedProperty<>();
 
@@ -109,17 +109,31 @@ public class BindingGroup<T> implements Serializable {
 
     private T data;
 
-    public BindingGroup(T data) {
-        tClass = data.getClass();
+    @SuppressWarnings({ "unchecked" })
+    public void initialize(T data) {
+        initialize((Class<T>) data.getClass());
         this.data = data;
     }
 
-    public BindingGroup(Class<T> cls) {
-        tClass = cls;
+    public void initialize(T data, Class<T> cls) {
+        initialize(cls);
+        this.data = data;
     }
 
-    public BindingGroup(TypeToken<T> token) {
-        tClass = token.getRawType();
+    public void initialize(T data, TypeToken<T> token) {
+        initialize(token);
+        this.data = data;
+    }
+
+    public void initialize(Class<T> cls) {
+        tClass = cls;
+        tTypeToken = TypeToken.of(cls);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void initialize(TypeToken<T> token) {
+        tClass = (Class<T>) token.getRawType();
+        tTypeToken = token;
     }
 
     public Stream<Binding<T>> getBindings() {
@@ -133,6 +147,89 @@ public class BindingGroup<T> implements Serializable {
     public void pullUp() {
         getBindings().filter(b -> b.getPullUp() != null)
                 .forEach(b -> b.getPullUp().accept(data));
+    }
+
+    public interface SuccessActions<T> {
+        /**
+         * Return true if the action was successful
+         */
+        boolean success();
+
+        /**
+         * Return true if the action was a failure
+         */
+        boolean failure();
+
+        /**
+         * When the action was successful, run the provided runnable
+         */
+        T onSuccess(Runnable r);
+
+        /**
+         * When the action was a failure, run the provided runnable
+         */
+        T onFailure(Runnable r);
+
+    }
+
+    public interface PullUpActions extends SuccessActions<PullUpActions> {
+    }
+
+    public PullUpActions tryPullUp() {
+        return null;
+    }
+
+    public interface ValidateActions extends SuccessActions<ValidateActions> {
+
+    }
+
+    /**
+     * Validate the value of this group and update the validation state of the
+     * components
+     */
+    public ValidateActions validate() {
+        return null;
+
+    }
+
+    /**
+     * Validate the value of this group and update the validation state of the
+     * components
+     */
+    public ValidateActions validate(Class<?>... groups) {
+        return null;
+    }
+
+    public interface PushDownActions extends SuccessActions<PushDownActions> {
+
+        /**
+         * Validate the value of this group, both if the push down was
+         * successful or failed. The success state value represents both the
+         * push down and the validation.
+         */
+        ValidateActions validate();
+
+        /**
+         * Validate the value of this group, both if the push down was
+         * successful or failed. The success state value represents both the
+         * push down and the validation.
+         */
+        ValidateActions validate(Class<?>... groups);
+    }
+
+    /**
+     * Push down but do not show errors in the components
+     */
+    public boolean silentPushDown() {
+        return false;
+    }
+
+    /**
+     * Push down and show errors in the components. The returned value can be
+     * used to determine if the attempt was successful or if there were errors.
+     */
+    public PushDownActions tryPushDown() {
+        return null;
     }
 
     /**
@@ -174,39 +271,8 @@ public class BindingGroup<T> implements Serializable {
     @SuppressWarnings("unchecked")
     private <TModel> TModel createModelProxy(Class<?> modelClass) {
         return (TModel) BindingExpressionExecutionRecorder
-                .getCurrentLog().modelRecorder.getProxy(modelClass);
+                .getCurrentLog().modelRecorder.getProxy(tTypeToken);
 
-    }
-
-    private boolean isTerminal(Class<?> clazz) {
-        return clazz.isPrimitive() || String.class.equals(clazz)
-                || Date.class.equals(clazz);
-    }
-
-    /**
-     * Create a dummy usable for use with beanutils
-     */
-    @SuppressWarnings("unchecked")
-    T createDummyProxy() {
-        return (T) createDummyProxy(tClass);
-    }
-
-    private Object createDummyProxy(Class<?> cls) {
-        Enhancer e = new Enhancer();
-        e.setSuperclass(cls);
-        e.setCallback(new MethodInterceptor() {
-
-            @Override
-            public Object intercept(Object obj, Method method, Object[] args,
-                    MethodProxy proxy) throws Throwable {
-                if (isTerminal(method.getReturnType())) {
-                    return Defaults.defaultValue(method.getReturnType());
-                }
-                return createDummyProxy(method.getReturnType());
-            }
-        });
-
-        return e.create();
     }
 
     @SuppressWarnings({ "unchecked" })

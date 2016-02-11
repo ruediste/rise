@@ -134,7 +134,8 @@ public class LoginSubController extends SubControllerComponent {
         }
     }
 
-    BindingGroup<LoginData> data = new BindingGroup<>(new LoginData());
+    @Inject
+    BindingGroup<LoginData> data;
 
     public LoginData data() {
         return data.proxy();

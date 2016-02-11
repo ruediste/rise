@@ -58,13 +58,14 @@ public class DefaultCrudDisplayController extends SubControllerComponent {
         }
     }
 
+    @Inject
     BindingGroup<Object> data;
 
     PersistentType type;
 
     public DefaultCrudDisplayController initialize(Object entity) {
         type = reflectionUtil.getPersistentType(entity);
-        data = new BindingGroup<>(entity);
+        data.initialize(entity);
         return this;
     }
 }

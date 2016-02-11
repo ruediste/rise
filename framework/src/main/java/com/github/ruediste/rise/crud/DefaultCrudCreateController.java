@@ -56,9 +56,10 @@ public class DefaultCrudCreateController extends SubControllerComponent {
 
     Class<? extends Annotation> emQualifier;
 
+    @Inject
     BindingGroup<Object> entityGroup;
 
-    Object entity() {
+    public Object entity() {
         return entityGroup.proxy();
     }
 
@@ -68,7 +69,7 @@ public class DefaultCrudCreateController extends SubControllerComponent {
             Class<? extends Annotation> emQualifier) {
         type = reflectionUtil.getPersistentType(emQualifier, entityClass);
         try {
-            this.entityGroup = new BindingGroup<>(entityClass.newInstance());
+            entityGroup.initialize(entityClass.newInstance());
         } catch (InstantiationException | IllegalAccessException e) {
             throw new RuntimeException("Error while creating instance of "
                     + entityClass + " for default create CRUD controller");

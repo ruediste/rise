@@ -39,8 +39,8 @@ public abstract class CrudControllerBase extends ControllerComponent {
         }
     }
 
-    private BindingGroup<Data> data = new BindingGroup<CrudControllerBase.Data>(
-            new Data());
+    @Inject
+    private BindingGroup<Data> data;
 
     public Data data() {
         return data.proxy();

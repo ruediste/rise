@@ -6,6 +6,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import com.github.ruediste.rise.api.ControllerComponent;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CAutoComplete;
@@ -29,40 +31,41 @@ public class TestAutoCompleteController extends ControllerComponent {
         protected Component createComponents() {
             return new CPage(label(this))
 
-            .add(new CAutoComplete<>(
-                    new CAutoCompleteParameters<Entry, Integer>() {
+                    .add(new CAutoComplete<>(
+                            new CAutoCompleteParameters<Entry, Integer>() {
 
-                        @Override
-                        public List<Entry> search(String term) {
-                            return controller.search(term);
-                        }
+                                @Override
+                                public List<Entry> search(String term) {
+                                    return controller.search(term);
+                                }
 
-                        @Override
-                        public String getSuggestion(Entry item) {
-                            return item.getValue();
-                        }
+                                @Override
+                                public String getSuggestion(Entry item) {
+                                    return item.getValue();
+                                }
 
-                        @Override
-                        public String getValue(Entry item) {
-                            return item.getValue();
-                        }
+                                @Override
+                                public String getValue(Entry item) {
+                                    return item.getValue();
+                                }
 
-                        @Override
-                        public Integer getId(Entry item) {
-                            return item.getId();
-                        }
+                                @Override
+                                public Integer getId(Entry item) {
+                                    return item.getId();
+                                }
 
-                        @Override
-                        public Entry load(Integer id) {
-                            return controller.getEntryById(id);
-                        }
+                                @Override
+                                public Entry load(Integer id) {
+                                    return controller.getEntryById(id);
+                                }
 
-                        @Override
-                        public String getTestName(Entry item) {
-                            return String.valueOf(item.getId());
-                        }
-                    }).setAutoSearchMode(controller.autoSearchMode)
-                            .bindItem(() -> controller.data().getEntry()))
+                                @Override
+                                public String getTestName(Entry item) {
+                                    return String.valueOf(item.getId());
+                                }
+                            }).setAutoSearchMode(controller.autoSearchMode)
+                                    .bindItem(
+                                            () -> controller.data().getEntry()))
                     .add(new CButton(controller, x -> x.pushPull()))
                     .add(new CButton(controller, x -> x.push()))
                     .add(new CButton(controller, x -> x.pull()))
@@ -159,7 +162,8 @@ public class TestAutoCompleteController extends ControllerComponent {
         }
     }
 
-    private BindingGroup<Data> data = new BindingGroup<>(new Data());
+    @Inject
+    private BindingGroup<Data> data;
     private AutoSearchMode autoSearchMode = AutoSearchMode.SINGLE;
 
     Data data() {

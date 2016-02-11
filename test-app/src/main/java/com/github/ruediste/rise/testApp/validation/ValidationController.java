@@ -20,6 +20,10 @@ import com.github.ruediste1.i18n.label.PropertiesLabeled;
 
 public class ValidationController extends ControllerComponent {
 
+    public ValidationController() {
+        // TODO Auto-generated constructor stub
+    }
+
     public static class View extends ViewComponent<ValidationController> {
         @Override
         protected Component createComponents() {
@@ -45,7 +49,8 @@ public class ValidationController extends ControllerComponent {
         }
     }
 
-    BindingGroup<TestA> data = new BindingGroup<>(new TestA());
+    @Inject
+    BindingGroup<TestA> data;
 
     TestA data() {
         return data.proxy();
@@ -67,6 +72,7 @@ public class ValidationController extends ControllerComponent {
 
     @Labeled
     public void validate() {
+        // data.tryPushDown().validate().onSuccess(null);
         data.pushDown();
         setConstraintViolations(data, validator.validate(data.get()));
     }

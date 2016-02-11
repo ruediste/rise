@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import javax.inject.Inject;
+
 import com.github.ruediste.rise.api.ControllerComponent;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CButton;
@@ -73,7 +75,8 @@ public class TestSelectController extends ControllerComponent {
 
     }
 
-    BindingGroup<Data> data = new BindingGroup<>(new Data());
+    @Inject
+    BindingGroup<Data> data;
 
     Data data() {
         return data.proxy();

@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import com.github.ruediste.rise.api.ControllerComponent;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CAutoComplete;
@@ -150,7 +152,8 @@ public class TestClickEditController extends ControllerComponent {
 
     }
 
-    private BindingGroup<Data> data = new BindingGroup<>(new Data());
+    @Inject
+    private BindingGroup<Data> data;
 
     Data data() {
         return getData().proxy();
