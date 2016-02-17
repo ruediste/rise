@@ -1,4 +1,4 @@
-package com.github.ruediste.rise.component.binding;
+package com.github.ruediste.rise.component.validation;
 
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;

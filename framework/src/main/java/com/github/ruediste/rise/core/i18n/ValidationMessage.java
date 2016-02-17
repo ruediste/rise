@@ -7,7 +7,7 @@ import javax.validation.Payload;
  * 
  * <p>
  * Using this interface is not mandatory, as any labeled payload will be
- * considered, but it's usage is encouraged to faciliate looking up existing
+ * considered, but it's usage is encouraged to facilitate looking up existing
  * messages.
  * 
  * @see RiseValidationMessageInterpolator

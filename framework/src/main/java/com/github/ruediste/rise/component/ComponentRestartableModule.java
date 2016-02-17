@@ -3,7 +3,6 @@ package com.github.ruediste.rise.component;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -20,9 +19,9 @@ import com.github.ruediste.salta.core.compile.MethodCompilationContext;
 import com.github.ruediste.salta.core.compile.SupplierRecipe;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
+import com.github.ruediste.salta.jsr330.JSR330InjectorConfiguration;
 import com.github.ruediste.salta.standard.DependencyKey;
 import com.github.ruediste.salta.standard.ScopeImpl;
-import com.github.ruediste.salta.standard.recipe.FixedConstructorRecipeInstantiator;
 import com.github.ruediste.salta.standard.recipe.FixedMethodInvocationFunctionRecipe;
 import com.google.common.reflect.TypeToken;
 
@@ -67,6 +66,7 @@ public class ComponentRestartableModule extends AbstractModule {
     }
 
     protected void bindBindingGroupCreationRule() {
+        JSR330InjectorConfiguration config = config();
         bindCreationRule(new CreationRule() {
 
             @Override
@@ -78,11 +78,13 @@ public class ComponentRestartableModule extends AbstractModule {
                 return Optional.of(ctx -> {
                     TypeToken<?> dataType = key.getType().resolveType(
                             BindingGroup.class.getTypeParameters()[0]);
-                    FixedConstructorRecipeInstantiator constructorRecipe = new FixedConstructorRecipeInstantiator(
-                            bindingGroupConstructor, Collections.emptyList());
+
+                    SupplierRecipe constructionRecipe = config.standardConfig.construction
+                            .createConcreteConstructionRecipe(key.getType(),
+                                    ctx);
 
                     if (TypeToken.of(Object.class).equals(dataType)) {
-                        return constructorRecipe;
+                        return constructionRecipe;
                     }
 
                     FixedMethodInvocationFunctionRecipe initializeRecipe = ctx
@@ -105,7 +107,7 @@ public class ComponentRestartableModule extends AbstractModule {
                         @Override
                         protected Class<?> compileImpl(GeneratorAdapter mv,
                                 MethodCompilationContext ctx) {
-                            Class<?> t = constructorRecipe.compile(ctx);
+                            Class<?> t = constructionRecipe.compile(ctx);
                             mv.dup();
                             initializeRecipe.compile(t, ctx);
                             return t;

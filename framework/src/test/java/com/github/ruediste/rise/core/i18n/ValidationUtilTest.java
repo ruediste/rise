@@ -24,13 +24,13 @@ import com.github.ruediste1.i18n.label.Label;
 import com.github.ruediste1.i18n.label.LabelUtil;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RiseValidationMessageInterpolatorTest {
+public class ValidationUtilTest {
 
     @Mock
     CurrentLocale currentLocale;
 
     @InjectMocks
-    RiseValidationMessageInterpolator interpolator;
+    ValidationUtil util;
 
     private Validator validator;
 
@@ -40,15 +40,13 @@ public class RiseValidationMessageInterpolatorTest {
 
     @Before
     public void before() {
-        interpolator.patternStringResolver = (s, l) -> s.getPattern()
-                .resolve(null);
-        interpolator.translatedStringResolver = (s, l) -> toString(s);
-        interpolator.labelUtil = new LabelUtil(
-                interpolator.translatedStringResolver);
+        util.patternStringResolver = (s, l) -> s.getPattern().resolve(null);
+        util.translatedStringResolver = (s, l) -> toString(s);
+        util.labelUtil = new LabelUtil(util.translatedStringResolver);
         when(currentLocale.getCurrentLocale()).thenReturn(Locale.ENGLISH);
         validator = Validation.byDefaultProvider().configure()
-                .messageInterpolator(interpolator).buildValidatorFactory()
-                .getValidator();
+                .messageInterpolator(new RiseValidationMessageInterpolator())
+                .buildValidatorFactory().getValidator();
 
     }
 
@@ -57,14 +55,20 @@ public class RiseValidationMessageInterpolatorTest {
         String value = "ab";
     }
 
-    @Test
-    public void testDefaultMessage() {
+    void checkMessage(String expected, Class<?> classToValidate) {
+
         Set<ConstraintViolation<TestA>> violations = validator
                 .validate(new TestA());
         assertEquals(1, violations.size());
         ConstraintViolation<?> violation = violations.iterator().next();
         assertEquals("org.hibernate.validator.constraints.Length.message;null",
-                violation.getMessage());
+                util.getMessage(violation).resolve(Locale.ENGLISH));
+    }
+
+    @Test
+    public void testDefaultMessage() {
+        checkMessage("org.hibernate.validator.constraints.Length.message;null",
+                TestA.class);
     }
 
     @Label("length of {validatedValue} must be between {min} and {max}")
@@ -79,13 +83,9 @@ public class RiseValidationMessageInterpolatorTest {
 
     @Test
     public void testCustomMessage() {
-        Set<ConstraintViolation<TestB>> violations = validator
-                .validate(new TestB());
-        assertEquals(1, violations.size());
-        ConstraintViolation<?> violation = violations.iterator().next();
-        assertEquals(
+        checkMessage(
                 "com.github.ruediste.rise.core.i18n.RiseValidationMessageInterpolatorTest$CustomMessage;length of {validatedValue} must be between {min} and {max}",
-                violation.getMessage());
+                TestB.class);
     }
 
     private class TestC {
@@ -95,10 +95,6 @@ public class RiseValidationMessageInterpolatorTest {
 
     @Test
     public void testExplicitMessage() {
-        Set<ConstraintViolation<TestC>> violations = validator
-                .validate(new TestC());
-        assertEquals(1, violations.size());
-        ConstraintViolation<?> violation = violations.iterator().next();
-        assertEquals("foo", violation.getMessage());
+        checkMessage("foo", TestA.class);
     }
 }

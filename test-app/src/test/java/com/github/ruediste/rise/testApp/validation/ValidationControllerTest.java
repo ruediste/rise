@@ -16,7 +16,7 @@ public class ValidationControllerTest extends WebTest {
 
     public static class ViewPO extends PageObject {
         private WebElement validateButton = lazy(
-                byDataTestName(ValidationController.class, x -> x.validate()));
+                byDataTestName(ValidationController.class, x -> x.pushAndValidate()));
         private WebElement strText = lazy(byDataTestName(
                 ValidationController.TestA.class, x -> x.getStr()));
         private WebElement helpBlock = lazy(By.cssSelector(".help-block"));

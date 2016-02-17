@@ -6,13 +6,21 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
+import com.github.ruediste.rise.component.ComponentRequestInfo;
+import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.tree.ComponentBase;
 import com.github.ruediste.rise.component.tree.RelationsComponent;
-import com.github.ruediste.rise.component.validation.ViolationStatusBearer;
+import com.github.ruediste.rise.component.validation.ValidationException;
+import com.github.ruediste.rise.component.validation.ValidationPathUtil;
+import com.github.ruediste.rise.component.validation.ValidationStatusRepository;
+import com.github.ruediste.rise.core.i18n.ValidationUtil;
+import com.github.ruediste1.lambdaPegParser.Var;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.reflect.TypeToken;
@@ -100,6 +108,20 @@ public class BindingGroup<T> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @Inject
+    ComponentUtil componentUtil;
+
+    @Inject
+    ValidationUtil validationUtil;
+
+    @Inject
+    ComponentRequestInfo componentRequestInfo;
+
+    @Inject
+    Validator validator;
+    @Inject
+    ValidationStatusRepository validationStatusRepository;
+
     private Class<T> tClass;
     private TypeToken<T> tTypeToken;
 
@@ -141,14 +163,6 @@ public class BindingGroup<T> implements Serializable {
                 .flatMap(c -> bindings.get(c).stream());
     }
 
-    /**
-     * Pull the data of all bindings up from the model to the view
-     */
-    public void pullUp() {
-        getBindings().filter(b -> b.getPullUp() != null)
-                .forEach(b -> b.getPullUp().accept(data));
-    }
-
     public interface SuccessActions<T> {
         /**
          * Return true if the action was successful
@@ -172,14 +186,95 @@ public class BindingGroup<T> implements Serializable {
 
     }
 
-    public interface PullUpActions extends SuccessActions<PullUpActions> {
+    /**
+     * Pull the data of all bindings up from the model to the view
+     */
+    public void pullUp() {
+        validationStatusRepository.clearFailures(this);
+        getBindings().forEach(b -> validationStatusRepository
+                .setValidated(b.getComponent(), false));
+        getBindings().filter(b -> b.getPullUp() != null)
+                .forEach(b -> b.getPullUp().accept(data));
     }
 
-    public PullUpActions tryPullUp() {
-        return null;
+    public interface ValidateActions<T>
+            extends SuccessActions<ValidateActions<T>> {
+
+        Set<ConstraintViolation<T>> violations();
+
     }
 
-    public interface ValidateActions extends SuccessActions<ValidateActions> {
+    private static abstract class SuccessActionsImpl<T>
+            implements SuccessActions<T> {
+
+        private boolean success;
+
+        public SuccessActionsImpl(boolean success) {
+            this.success = success;
+        }
+
+        abstract protected T t();
+
+        @Override
+        public boolean success() {
+            return success;
+        }
+
+        @Override
+        public boolean failure() {
+            return !success;
+        }
+
+        @Override
+        public T onSuccess(Runnable r) {
+            if (success)
+                r.run();
+            return t();
+        }
+
+        @Override
+        public T onFailure(Runnable r) {
+            if (!success)
+                r.run();
+            return t();
+        }
+
+    }
+
+    private static class ValidateActionsImpl<T>
+            extends SuccessActionsImpl<ValidateActions<T>>
+            implements ValidateActions<T> {
+
+        private Set<ConstraintViolation<T>> violations;
+
+        public ValidateActionsImpl(boolean success,
+                Set<ConstraintViolation<T>> violations) {
+            super(success && violations.isEmpty());
+            this.violations = violations;
+        }
+
+        @Override
+        protected ValidateActions<T> t() {
+            return this;
+        }
+
+        @Override
+        public Set<ConstraintViolation<T>> violations() {
+            return violations;
+        }
+    }
+
+    /**
+     * Set constraint violations for this binding group. Defers applying until
+     * the components have been constructed during initial page requests.
+     */
+    public void addConstraintViolations(
+            Set<ConstraintViolation<T>> violations) {
+
+        if (componentRequestInfo.isInitialRequest())
+            componentRequestInfo.addInitialContraintViolation(this, violations);
+        else
+            applyConstraintViolations(violations);
 
     }
 
@@ -187,8 +282,11 @@ public class BindingGroup<T> implements Serializable {
      * Validate the value of this group and update the validation state of the
      * components
      */
-    public ValidateActions validate() {
-        return null;
+    public ValidateActions<T> validate() {
+        Set<ConstraintViolation<T>> violations = validator.validate(data);
+        validationStatusRepository.clearFailures(this);
+        addConstraintViolations(violations);
+        return new ValidateActionsImpl<>(true, violations);
 
     }
 
@@ -196,40 +294,99 @@ public class BindingGroup<T> implements Serializable {
      * Validate the value of this group and update the validation state of the
      * components
      */
-    public ValidateActions validate(Class<?>... groups) {
-        return null;
+    public ValidateActions<T> validate(Class<?>... groups) {
+        Set<ConstraintViolation<T>> violations = validator.validate(data,
+                groups);
+        validationStatusRepository.clearFailures(this);
+        addConstraintViolations(violations);
+        return new ValidateActionsImpl<>(true, violations);
     }
 
-    public interface PushDownActions extends SuccessActions<PushDownActions> {
+    public interface PushDownActions<T>
+            extends SuccessActions<PushDownActions<T>> {
 
         /**
          * Validate the value of this group, both if the push down was
          * successful or failed. The success state value represents both the
          * push down and the validation.
          */
-        ValidateActions validate();
+        ValidateActions<T> validate();
 
         /**
          * Validate the value of this group, both if the push down was
          * successful or failed. The success state value represents both the
          * push down and the validation.
          */
-        ValidateActions validate(Class<?>... groups);
+        ValidateActions<T> validate(Class<?>... groups);
+    }
+
+    private class PushDownActionsImpl
+            extends SuccessActionsImpl<PushDownActions<T>>
+            implements PushDownActions<T> {
+
+        public PushDownActionsImpl(boolean success) {
+            super(success);
+        }
+
+        @Override
+        public ValidateActions<T> validate() {
+            Set<ConstraintViolation<T>> violations = validator.validate(data);
+            addConstraintViolations(violations);
+            return new ValidateActionsImpl<>(success(), violations);
+        }
+
+        @Override
+        public ValidateActions<T> validate(Class<?>... groups) {
+            Set<ConstraintViolation<T>> violations = validator.validate(data,
+                    groups);
+            addConstraintViolations(violations);
+            return new ValidateActionsImpl<>(success(), violations);
+        }
+
+        @Override
+        protected PushDownActions<T> t() {
+            return this;
+        }
+
     }
 
     /**
      * Push down but do not show errors in the components
+     * 
+     * @return true if the push down was successful, false otherwise
      */
     public boolean silentPushDown() {
-        return false;
+        Var<Boolean> success = new Var<Boolean>(true);
+        getBindings().filter(b -> b.getPushDown() != null).forEach(b -> {
+            try {
+                b.getPushDown().accept(data);
+            } catch (ValidationException e) {
+                success.setValue(false);
+            }
+        });
+        return success.getValue();
     }
 
     /**
      * Push down and show errors in the components. The returned value can be
      * used to determine if the attempt was successful or if there were errors.
      */
-    public PushDownActions tryPushDown() {
-        return null;
+    public PushDownActions<T> tryPushDown() {
+        validationStatusRepository.clearFailures(this);
+
+        Var<Boolean> success = new Var<Boolean>(true);
+        getBindings().filter(b -> b.getPushDown() != null).forEach(b -> {
+            AttachedPropertyBearer component = b.getComponent();
+            try {
+                b.getPushDown().accept(data);
+            } catch (ValidationException e) {
+                success.setValue(false);
+                validationStatusRepository.addFailures(this, component,
+                        e.getFailures());
+            }
+            validationStatusRepository.setValidated(component, true);
+        });
+        return new PushDownActionsImpl(success.getValue());
     }
 
     /**
@@ -297,7 +454,9 @@ public class BindingGroup<T> implements Serializable {
     }
 
     /**
-     * Set the constraint violations
+     * Directly apply violations to a binding group. Do not use this method
+     * during an initial page request. Usually, it is better to use
+     * {@link #addConstraintViolations(Set)}.
      */
     public void applyConstraintViolations(
             Set<ConstraintViolation<T>> violations) {
@@ -311,15 +470,10 @@ public class BindingGroup<T> implements Serializable {
         }
 
         getBindings().forEach(b -> {
-
-            if (b.getComponent() instanceof ViolationStatusBearer) {
-
-                ViolationStatusBearer aware = (ViolationStatusBearer) b
-                        .getComponent();
-                aware.getViolationStatus().setConstraintViolations(
-                        violationMap.get(b.modelPath.getPath()));
-                aware.getViolationStatus().setValidated(true);
-            }
+            validationStatusRepository.addFailures(this, b.getComponent(),
+                    validationUtil.toFailures(
+                            violationMap.get(b.modelPath.getPath())));
+            validationStatusRepository.setValidated(b.getComponent(), true);
         });
     }
 }

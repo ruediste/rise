@@ -72,9 +72,4 @@ public class SubControllerComponent {
     public void redirect(ActionResult destination) {
         closePage(new RedirectRenderResult(util.toUrlSpec(destination)));
     }
-
-    public <T> void setConstraintViolations(BindingGroup<T> group,
-            Set<ConstraintViolation<T>> violations) {
-        util.setConstraintViolations(group, violations);
-    }
 }

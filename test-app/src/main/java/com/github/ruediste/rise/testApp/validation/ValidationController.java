@@ -7,6 +7,7 @@ import org.hibernate.validator.constraints.Length;
 
 import com.github.ruediste.rise.api.ControllerComponent;
 import com.github.ruediste.rise.component.binding.BindingGroup;
+import com.github.ruediste.rise.component.binding.transformers.HexStringToByteArrayTransformer;
 import com.github.ruediste.rise.component.components.CButton;
 import com.github.ruediste.rise.component.components.CFormGroup;
 import com.github.ruediste.rise.component.components.CPage;
@@ -31,7 +32,12 @@ public class ValidationController extends ControllerComponent {
             return new CPage()
                     .add(new CFormGroup().add(new CTextField()
                             .bindText(() -> controller.data().getStr())))
-                    .add(new CButton(controller, x -> x.validate()));
+                    .add(new CFormGroup().add(new CTextField().bindText(
+                            () -> new HexStringToByteArrayTransformer()
+                                    .transform(
+                                            controller.data().getByteArray()))))
+                    .add(new CButton(controller, x -> x.pushAndValidate()))
+                    .add(new CButton(controller, x -> x.pullUp()));
         }
     }
 
@@ -40,12 +46,22 @@ public class ValidationController extends ControllerComponent {
         @Length(min = 5)
         private String str = "ab";
 
+        private byte[] byteArray;
+
         public String getStr() {
             return str;
         }
 
         public void setStr(String str) {
             this.str = str;
+        }
+
+        public byte[] getByteArray() {
+            return byteArray;
+        }
+
+        public void setByteArray(byte[] byteArray) {
+            this.byteArray = byteArray;
         }
     }
 
@@ -66,14 +82,17 @@ public class ValidationController extends ControllerComponent {
 
     @UrlUnsigned
     public ActionResult initialValidation() {
-        validate();
+        pushAndValidate();
         return null;
     }
 
     @Labeled
-    public void validate() {
-        // data.tryPushDown().validate().onSuccess(null);
-        data.pushDown();
-        setConstraintViolations(data, validator.validate(data.get()));
+    public void pushAndValidate() {
+        data.tryPushDown().validate();
+    }
+
+    @Labeled
+    public void pullUp() {
+        data.pullUp();
     }
 }

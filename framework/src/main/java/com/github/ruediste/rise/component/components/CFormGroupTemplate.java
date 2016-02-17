@@ -3,12 +3,12 @@ package com.github.ruediste.rise.component.components;
 import java.util.Collection;
 
 import javax.inject.Inject;
-import javax.validation.ConstraintViolation;
 
 import com.github.ruediste.rise.component.tree.ComponentTreeUtil;
 import com.github.ruediste.rise.component.validation.ValidationState;
-import com.github.ruediste.rise.component.validation.ViolationStatus;
-import com.github.ruediste.rise.component.validation.ViolationStatusBearer;
+import com.github.ruediste.rise.component.validation.ValidationStatus;
+import com.github.ruediste.rise.component.validation.ValidationStatusRepository;
+import com.github.ruediste.rise.core.i18n.ValidationFailure;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.LabelUtil;
@@ -20,26 +20,26 @@ public class CFormGroupTemplate
     @Inject
     LabelUtil labelUtil;
 
+    @Inject
+    ValidationStatusRepository repo;
+
     @Override
     public void doRender(CFormGroup component, BootstrapRiseCanvas<?> html) {
 
         LString label = ComponentTreeUtil
                 .componentOfTypeIfSingle(component, LabeledComponent.class)
                 .map(x -> x.getLabel(labelUtil)).orElse(null);
-        ViolationStatus violationStatus = ComponentTreeUtil
-                .componentOfTypeIfSingle(component, ViolationStatusBearer.class)
-                .map(x -> x.getViolationStatus()).orElse(null);
+        ValidationStatus violationStatus = repo.getValidationStatus(component);
 
         html.bFormGroup().CLASS(component.CLASS());
 
         // render violation status
         if (violationStatus != null) {
-            if (violationStatus
-                    .getValidationState() == ValidationState.SUCCESS) {
+            if (violationStatus.getState() == ValidationState.SUCCESS) {
                 html.BhasSuccess();
             }
 
-            if (violationStatus.getValidationState() == ValidationState.ERROR) {
+            if (violationStatus.getState() == ValidationState.FAILED) {
                 html.BhasError();
             }
         }
@@ -54,8 +54,8 @@ public class CFormGroupTemplate
 
         // render constraint violation
         if (violationStatus != null) {
-            Collection<ConstraintViolation<?>> constraintViolations = violationStatus
-                    .getConstraintViolations();
+            Collection<ValidationFailure> constraintViolations = violationStatus
+                    .getFailures();
             if (constraintViolations != null
                     && !constraintViolations.isEmpty()) {
                 if (constraintViolations.size() == 1) {
@@ -63,11 +63,10 @@ public class CFormGroupTemplate
                             .getOnlyElement(constraintViolations).getMessage());
                 }
                 if (constraintViolations.size() > 1) {
-                    html.ul().BhelpBlock();
-                    for (ConstraintViolation<?> v : constraintViolations) {
-                        html.li().content(v.getMessage());
-                    }
-                    html._ul();
+                    html.ul().BhelpBlock()
+                            .fForEach(constraintViolations,
+                                    v -> html.li().content(v.getMessage()))
+                            ._ul();
                 }
             }
         }
