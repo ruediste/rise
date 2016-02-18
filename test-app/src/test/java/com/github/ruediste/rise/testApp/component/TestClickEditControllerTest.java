@@ -8,17 +8,17 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
 import com.github.ruediste.rise.component.components.CAutoComplete.AutoCompleteValue;
-import com.github.ruediste.rise.test.elementObject.CAutoCompleteEO;
+import com.github.ruediste.rise.test.elementObject.AutoCompleteEO;
 import com.github.ruediste.rise.testApp.WebTest;
 
 public class TestClickEditControllerTest extends WebTest {
 
-    private CAutoCompleteEO autoComplete;
+    private AutoCompleteEO autoComplete;
 
     @Before
     public void before() {
         driver.navigate().to(url(go(TestClickEditController.class).index()));
-        autoComplete = pageObject(CAutoCompleteEO.class,
+        autoComplete = pageObject(AutoCompleteEO.class,
                 By.cssSelector(dataTestSelector("autoComplete") + "> input"));
     }
 

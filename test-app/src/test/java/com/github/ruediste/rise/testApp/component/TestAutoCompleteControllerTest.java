@@ -6,16 +6,16 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.github.ruediste.rise.component.components.CAutoComplete.AutoSearchMode;
-import com.github.ruediste.rise.test.elementObject.CAutoCompleteEO;
+import com.github.ruediste.rise.test.elementObject.AutoCompleteEO;
 import com.github.ruediste.rise.testApp.WebTest;
 
 public class TestAutoCompleteControllerTest extends WebTest {
 
-    private CAutoCompleteEO autoComplete;
+    private AutoCompleteEO autoComplete;
 
     @Before
     public void before() {
-        autoComplete = pageObject(CAutoCompleteEO.class,
+        autoComplete = pageObject(AutoCompleteEO.class,
                 byDataTestName("entry"));
     }
 
