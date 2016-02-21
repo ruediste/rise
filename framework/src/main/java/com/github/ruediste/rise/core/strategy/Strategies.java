@@ -1,45 +1,80 @@
 package com.github.ruediste.rise.core.strategy;
 
 import java.lang.reflect.AnnotatedElement;
+import java.util.HashSet;
 import java.util.Optional;
-import java.util.function.Predicate;
+import java.util.Set;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.github.ruediste.rise.util.Pair;
+import com.github.ruediste.salta.jsr330.Injector;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
 
 @Singleton
 public class Strategies {
+    
+    @Inject
+    Injector injector;
 
-    interface Strategy<TKey> {
+    public interface Strategy<TKey> {
 
+        boolean applies(TKey key);
+        
     }
 
-    private final ListMultimap<Class<?>, Pair<Predicate<?>, Object>> strategies = MultimapBuilder
+    private final ListMultimap<Class<?>,Strategy<?>> strategies = MultimapBuilder
             .hashKeys().arrayListValues().build();
 
-    public <TKey, T extends Strategy<TKey>> void putStrategy(
-            Class<T> strategyClass, Predicate<TKey> predicate, T strategy) {
-        strategies.get(strategyClass).add(Pair.of(predicate, strategy));
+    public  void putStrategy(
+             Strategy<?> strategy) {
+        getStrategyClasses(strategy.getClass()).forEach(s->strategies.put(s, strategy));
     }
 
     public <TKey, T extends Strategy<TKey>> void putStrategyFirst(
-            Class<T> strategyClass, Predicate<TKey> predicate, T strategy) {
-        strategies.get(strategyClass).add(0, Pair.of(predicate, strategy));
+             T strategy) {
+        getStrategyClasses(strategy.getClass()).forEach(s->strategies.get(s).add(0,strategy));
+    }
+    
+     HashSet<Class<?>> getStrategyClasses(Class<?> cls){
+        HashSet<Class<?>> classes=new HashSet<>();
+        fillStrategyClasses(cls, classes);
+        return classes;
+    }
+     
+    private void fillStrategyClasses(Class<?> cls, Set<Class<?>> classes){
+        if (cls.getSuperclass()!=null && Strategy.class.isAssignableFrom(cls.getSuperclass())){
+            if (classes.add(cls.getSuperclass()))
+                fillStrategyClasses(cls.getSuperclass(), classes);
+        }
+        
+        for (Class<?> i: cls.getInterfaces()){
+            if (Strategy.class.equals(i))
+                continue;
+            if (Strategy.class.isAssignableFrom(i) && classes.add(i))
+                fillStrategyClasses(i, classes);
+        }
     }
 
     @SuppressWarnings("unchecked")
     public <TKey, T extends Strategy<TKey>> Optional<T> getStrategy(
             Class<T> strategyClass, TKey key) {
         return strategies.get(strategyClass).stream()
-                .filter(x -> ((Predicate<TKey>) x.getA()).test(key))
+                .filter(x -> ((Strategy<TKey>)x).applies(key))
+                .map(strategyClass::cast)
                 .findFirst();
     }
 
     public <TKey, T extends Strategy<TKey>> Optional<T> getStrategy(
             Class<T> strategyClass, TKey key, AnnotatedElement element) {
-        return null;
+        for (UseStrategy a: element.getAnnotationsByType(UseStrategy.class)){
+            if (strategyClass.isAssignableFrom(a.value())){
+                T strategy = strategyClass.cast(injector.getInstance(a.value()));
+                if (strategy.applies(key))
+                    return Optional.of(strategy);
+            }
+        }
+        return getStrategy(strategyClass, key);
     }
 }
