@@ -6,6 +6,7 @@
 		<class>com.github.ruediste.rise.testApp.crud.TestCrudEntityB</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
+		<validation-mode>NONE</validation-mode>
 		<properties>
 		</properties>
 	</persistence-unit>

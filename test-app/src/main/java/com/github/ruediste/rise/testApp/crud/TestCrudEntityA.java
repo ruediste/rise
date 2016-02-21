@@ -28,6 +28,7 @@ public class TestCrudEntityA {
     private TestCrudEntityB entityB;
 
     @Length(min = 3, max = 10)
+    private
     String constrainedValue;
 
     private byte[] byteArray;
@@ -73,6 +74,14 @@ public class TestCrudEntityA {
 
     public void setEmbeddable(TestCrudEmbeddable embeddable) {
         this.embeddable = embeddable;
+    }
+
+    public String getConstrainedValue() {
+        return constrainedValue;
+    }
+
+    public void setConstrainedValue(String constrainedValue) {
+        this.constrainedValue = constrainedValue;
     }
 
 }

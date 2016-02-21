@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -20,6 +21,7 @@ import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.component.ComponentFactoryUtil;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.binding.BindingUtil;
+import com.github.ruediste.rise.component.binding.transformers.HexStringToByteArrayTransformer;
 import com.github.ruediste.rise.component.components.CButton;
 import com.github.ruediste.rise.component.components.CComponentStack;
 import com.github.ruediste.rise.component.components.CController;
@@ -43,6 +45,7 @@ import com.github.ruediste.rise.integration.GlyphiconIcon;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.github.ruediste1.i18n.label.Labeled;
 import com.google.common.primitives.Primitives;
+import com.google.common.reflect.TypeToken;
 
 /**
  * Please not that components can operate directly on the entity instead of
@@ -88,6 +91,7 @@ public class CrudEditComponents extends
     @PostConstruct
     public void initialize() {
         addStringFactory();
+        addByteArrayFactory();
         addNumberFactory(Long.class, Long::parseLong);
         addNumberFactory(Integer.class, Integer::parseInt);
 
@@ -95,6 +99,63 @@ public class CrudEditComponents extends
         addOneToManyFactory();
 
         addEnumElementCollectionFactory();
+
+        addEmbeddedFactory();
+
+    }
+
+    private Component toComponentBound(Supplier<?> bindingAccessor,
+            Renderable<BootstrapRiseCanvas<?>> renderer) {
+        return util.toComponentBound(bindingAccessor, renderer);
+    }
+
+    public Component create(CrudPropertyHandle propertyHandle) {
+        return getFactory(propertyHandle.info()).create(propertyHandle);
+    }
+
+    @Inject
+    CrudReflectionUtil crudReflectionUtil;
+
+    private void addEmbeddedFactory() {
+        addFactory(
+                p -> p.getAttribute()
+                        .getPersistentAttributeType() == PersistentAttributeType.EMBEDDED,
+                handle -> toComponentBound(() -> handle.proxy(), html -> {
+
+                    Object value = handle.getValue();
+                    if (value == null) {
+                        Class<?> rawType = TypeToken.of(
+                                handle.info().getProperty().getPropertyType())
+                                .getRawType();
+                        try {
+                            value = rawType.newInstance();
+                        } catch (Exception e) {
+                            throw new RuntimeException(
+                                    "Error while instantiating " + rawType
+                                            + " for embeddable "
+                                            + handle.info().getProperty()
+                                            + " which was null");
+                        }
+                        handle.setValue(value);
+                    }
+
+                    html.bFormGroup().label()
+                            .content(labelUtil.getPropertyLabel(
+                                    handle.info().getProperty()))
+                            .bCol(x -> x.xs(11).xsOffset(1));
+                    for (CrudPropertyInfo property : crudReflectionUtil
+                            .getDisplayProperties(
+                                    crudReflectionUtil.getPersistentType(
+                                            handle.info().getEmQualifier(),
+                                            value.getClass()))) {
+                        CrudPropertyHandle subHandle = CrudPropertyHandle
+                                .create(property, handle::rootEntity,
+                                        () -> handle.getValue(),
+                                        handle.group());
+                        html.add(create(subHandle));
+                    }
+                    html._bCol()._bFormGroup();
+                }));
 
     }
 
@@ -116,6 +177,7 @@ public class CrudEditComponents extends
                     return (Collection<?>) decl.getValue();
                 }
 
+                @SuppressWarnings("unchecked")
                 @Override
                 public void renderOn(BootstrapRiseCanvas<?> html) {
                     CDataGrid<Object> grid = new CDataGrid<Object>();
@@ -161,6 +223,16 @@ public class CrudEditComponents extends
                         .setLabel(labelUtil
                                 .getPropertyLabel(decl.info().getProperty()))
                         .bindText(() -> (String) decl.getValue())));
+    }
+
+    public void addByteArrayFactory() {
+        addFactory(
+                decl -> byte[].class.equals(decl.getAttribute().getJavaType()),
+                (decl) -> new CFormGroup(new CTextField()
+                        .setLabel(labelUtil
+                                .getPropertyLabel(decl.info().getProperty()))
+                        .bindText(() -> new HexStringToByteArrayTransformer()
+                                .transform((byte[]) decl.getValue()))));
     }
 
     public void addManyToOneFactory() {
