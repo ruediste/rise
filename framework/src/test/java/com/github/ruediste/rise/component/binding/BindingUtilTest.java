@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.component.binding;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -11,6 +12,7 @@ import org.junit.Test;
 
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
 import com.github.ruediste.rise.component.binding.transformers.Transformers;
+import com.github.ruediste.rise.component.validation.ValidationStatusRepository;
 
 public class BindingUtilTest {
 
@@ -105,7 +107,10 @@ public class BindingUtilTest {
     @Before
     public void before() {
         groupB = new BindingGroup<>();
+        groupB.validationStatusRepository = mock(
+                ValidationStatusRepository.class);
         groupB.initialize(TestB.class);
+
     }
 
     @Test
