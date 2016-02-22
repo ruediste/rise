@@ -12,7 +12,6 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.github.ruediste.rise.core.strategy.Strategies.Strategy;
 import com.github.ruediste.salta.jsr330.Injector;
 
 public class StrategiesTest {

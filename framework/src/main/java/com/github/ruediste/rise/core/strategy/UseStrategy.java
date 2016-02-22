@@ -6,11 +6,10 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import com.github.ruediste.rise.core.strategy.Strategies.Strategy;
 import com.github.ruediste.salta.jsr330.Injector;
 
 /**
- * Add a strategy to an element
+ * Add a {@link Strategy} to an element
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(UseStrategies.class)
