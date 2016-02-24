@@ -21,5 +21,5 @@ public @interface UseStrategy {
      * Additonal strategy to add to the annotated element. The strategy is
      * instantiated using the {@link Injector}
      */
-    Class<? extends Strategy<?>> value();
+    Class<? extends Strategy> value();
 }

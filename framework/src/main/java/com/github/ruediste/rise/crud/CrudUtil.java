@@ -4,8 +4,6 @@ import static java.util.stream.Collectors.joining;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -24,10 +22,10 @@ import com.github.ruediste.rise.component.IControllerComponent;
 import com.github.ruediste.rise.component.components.CDataGrid.Cell;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.persistence.PersistentType;
-import com.github.ruediste.rise.crud.annotations.CrudStrategy;
+import com.github.ruediste.rise.core.strategy.Strategies;
+import com.github.ruediste.rise.core.strategy.Strategy;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.util.GenericEvent;
-import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste.salta.jsr330.ImplementedBy;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.google.common.base.Preconditions;
@@ -38,34 +36,15 @@ public class CrudUtil {
     @Inject
     Injector injector;
 
-    private Map<Pair<Class<?>, Class<?>>, Object> explicitStrategyMap = new HashMap<>();
+    @Inject
+    Strategies strategies;
 
-    public <T> void setExplicitStragegy(Class<T> strategyClas,
-            Class<?> entityClass, T strategy) {
-        explicitStrategyMap.put(Pair.of(strategyClas, entityClass), strategy);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> T getStrategy(Class<T> strategy, Class<?> entityClass) {
-        // first check explicitly registered strategies
-        Object result = explicitStrategyMap.get(Pair.of(strategy, entityClass));
-
-        // check annotations
-        if (result == null) {
-            for (CrudStrategy f : entityClass
-                    .getAnnotationsByType(CrudStrategy.class)) {
-                if (strategy.equals(f.type())) {
-                    return (T) injector.getInstance(f.implementation());
-                }
-            }
-        }
-
-        // use default factory
-        if (result == null) {
-            result = injector.getInstance(strategy);
-        }
-
-        return (T) result;
+    public <TKey, T extends Strategy> T getStrategy(Class<T> strategy,
+            Class<?> entityClass) {
+        return strategies.getStrategies(strategy, entityClass).findFirst()
+                .orElseThrow(() -> new RuntimeException("No strategy "
+                        + strategy.getName() + " found for entity class "
+                        + entityClass.getName()));
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -122,7 +101,7 @@ public class CrudUtil {
      * performed.
      */
     @ImplementedBy(DefaultBrowserFactory.class)
-    public interface BrowserFactory {
+    public interface BrowserFactory extends Strategy {
         Object createBrowser(Class<?> entityClass,
                 Class<? extends Annotation> emQualifier);
     }
@@ -141,7 +120,7 @@ public class CrudUtil {
     }
 
     @ImplementedBy(DefaultDisplayFactory.class)
-    public interface DisplayFactory {
+    public interface DisplayFactory extends Strategy {
 
         Object createDisplay(Object entity);
     }
@@ -159,7 +138,7 @@ public class CrudUtil {
     }
 
     @ImplementedBy(DefaultEditFactory.class)
-    public interface EditFactory {
+    public interface EditFactory extends Strategy {
 
         Object createEdit(Object entity);
     }
@@ -177,7 +156,7 @@ public class CrudUtil {
     }
 
     @ImplementedBy(DefaultCreateFactory.class)
-    public interface CreateFactory {
+    public interface CreateFactory extends Strategy {
 
         Object createCreate(Class<?> entityClass,
                 Class<? extends Annotation> emQualifier);
@@ -197,7 +176,7 @@ public class CrudUtil {
     }
 
     @ImplementedBy(DefaultDeleteFactory.class)
-    public interface DeleteFactory {
+    public interface DeleteFactory extends Strategy {
 
         Object createDelete(Object entity);
     }
@@ -215,7 +194,7 @@ public class CrudUtil {
     }
 
     @ImplementedBy(DefaultIdentificationRenderer.class)
-    public interface IdentificationRenderer {
+    public interface IdentificationRenderer extends Strategy {
         void renderIdenification(BootstrapRiseCanvas<?> html, Object entity);
     }
 
@@ -255,7 +234,7 @@ public class CrudUtil {
     }
 
     @ImplementedBy(DefaultCrudPickerFactory.class)
-    public interface CrudPickerFactory {
+    public interface CrudPickerFactory extends Strategy {
         CrudPicker createPicker(Class<? extends Annotation> emQualifier,
                 Class<?> entityClass);
     }
@@ -289,7 +268,7 @@ public class CrudUtil {
     }
 
     @ImplementedBy(DefaultCrudListFactory.class)
-    public interface CrudListFactory {
+    public interface CrudListFactory extends Strategy {
         /**
          * Create a {@link CrudList} controller for the given entities.
          * 

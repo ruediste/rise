@@ -1,10 +1,16 @@
 package com.github.ruediste.rise.crud;
 
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
 import java.util.Collection;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.metamodel.Attribute.PersistentAttributeType;
@@ -21,6 +27,8 @@ import com.github.ruediste.rise.component.components.CDataGrid;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ComponentTreeUtil;
 import com.github.ruediste.rise.core.persistence.RisePersistenceUtil;
+import com.github.ruediste.rise.core.strategy.Strategies;
+import com.github.ruediste.rise.core.strategy.Strategy;
 import com.github.ruediste.rise.crud.CrudUtil.CrudList;
 import com.github.ruediste.rise.crud.CrudUtil.IdentificationRenderer;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
@@ -32,8 +40,10 @@ import com.google.common.primitives.Primitives;
 import com.google.common.reflect.TypeToken;
 
 @Singleton
-public class CrudDisplayComponents extends
-        FactoryCollection<CrudPropertyInfo, CrudDisplayComponents.CrudDisplayComponentFactory> {
+public class CrudDisplayComponents {
+
+    @Inject
+    Strategies strategies;
 
     @Inject
     ComponentFactoryUtil util;
@@ -62,16 +72,35 @@ public class CrudDisplayComponents extends
         return util.toComponent(renderer);
     }
 
-    public interface CrudDisplayComponentFactory {
-        Component create(CrudPropertyHandle property);
+    public interface CrudDisplayComponentFactory extends Strategy {
+        Optional<Component> create(CrudPropertyHandle property);
     }
 
     public Component create(CrudPropertyHandle propertyHandle) {
-        return getFactory(propertyHandle.info()).create(propertyHandle);
+        AnnotatedElement element = null;
+        Member member = propertyHandle.info().getAttribute().getJavaMember();
+        if (member instanceof AnnotatedElement) {
+            element = (AnnotatedElement) member;
+        }
+
+        return strategies
+                .getStrategy(CrudDisplayComponentFactory.class, element,
+                        f -> f.create(propertyHandle))
+                .orElseThrow(() -> new RuntimeException(
+                        "No display component found for " + propertyHandle));
     }
 
-    @SuppressWarnings({})
-    public CrudDisplayComponents() {
+    void addFactory(Predicate<CrudPropertyInfo> filter,
+            Function<CrudPropertyHandle, Component> factory) {
+        strategies.putStrategy(CrudDisplayComponentFactory.class, handle -> {
+            if (filter.test(handle.info()))
+                return Optional.of(factory.apply(handle));
+            return Optional.empty();
+        });
+    }
+
+    @PostConstruct
+    public void initialize() {
         addNumbersFactory();
         addEnumElementCollectionFactory();
         addManyToOneFactory();

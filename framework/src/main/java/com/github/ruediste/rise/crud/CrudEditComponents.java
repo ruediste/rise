@@ -1,10 +1,13 @@
 package com.github.ruediste.rise.crud;
 
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;
@@ -36,6 +39,8 @@ import com.github.ruediste.rise.component.components.InputType;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ComponentTreeUtil;
 import com.github.ruediste.rise.core.persistence.RisePersistenceUtil;
+import com.github.ruediste.rise.core.strategy.Strategies;
+import com.github.ruediste.rise.core.strategy.Strategy;
 import com.github.ruediste.rise.crud.CrudUtil.CrudList;
 import com.github.ruediste.rise.crud.CrudUtil.CrudPicker;
 import com.github.ruediste.rise.crud.CrudUtil.CrudPickerFactory;
@@ -52,13 +57,13 @@ import com.google.common.reflect.TypeToken;
  * waiting for the binding to be triggered.
  */
 @Singleton
-public class CrudEditComponents extends
-        FactoryCollection<CrudPropertyInfo, CrudEditComponents.CrudEditComponentFactory> {
+public class CrudEditComponents {
     @Inject
     ComponentFactoryUtil util;
 
     @Inject
     CrudUtil crudUtil;
+
     @Inject
     LabelUtil labelUtil;
 
@@ -68,8 +73,11 @@ public class CrudEditComponents extends
     @Inject
     ComponentUtil componentUtil;
 
-    public interface CrudEditComponentFactory {
-        Component create(CrudPropertyHandle handle);
+    @Inject
+    Strategies strategies;
+
+    public interface CrudEditComponentFactory extends Strategy {
+        Optional<Component> create(CrudPropertyHandle handle);
     }
 
     private Component toComponent(Renderable<BootstrapRiseCanvas<?>> renderer) {
@@ -82,10 +90,27 @@ public class CrudEditComponents extends
         abstract void pick();
     }
 
-    public Component createEditComponent(CrudPropertyInfo property,
-            CrudPropertyHandle handle) {
+    public Component createEditComponent(CrudPropertyHandle handle) {
+        AnnotatedElement element = null;
+        Member member = handle.info().getAttribute().getJavaMember();
+        if (member instanceof AnnotatedElement) {
+            element = (AnnotatedElement) member;
+        }
 
-        return getFactory(property).create(handle);
+        return strategies
+                .getStrategy(CrudEditComponentFactory.class, element,
+                        f -> f.create(handle))
+                .orElseThrow(() -> new RuntimeException(
+                        "No Edit component found for " + handle.info()));
+    }
+
+    void addFactory(Predicate<CrudPropertyInfo> filter,
+            Function<CrudPropertyHandle, Component> factory) {
+        strategies.putStrategy(CrudEditComponentFactory.class, handle -> {
+            if (filter.test(handle.info()))
+                return Optional.of(factory.apply(handle));
+            return Optional.empty();
+        });
     }
 
     @PostConstruct
@@ -107,10 +132,6 @@ public class CrudEditComponents extends
     private Component toComponentBound(Supplier<?> bindingAccessor,
             Renderable<BootstrapRiseCanvas<?>> renderer) {
         return util.toComponentBound(bindingAccessor, renderer);
-    }
-
-    public Component create(CrudPropertyHandle propertyHandle) {
-        return getFactory(propertyHandle.info()).create(propertyHandle);
     }
 
     @Inject
@@ -152,7 +173,7 @@ public class CrudEditComponents extends
                                 .create(property, handle::rootEntity,
                                         () -> handle.getValue(),
                                         handle.group());
-                        html.add(create(subHandle));
+                        html.add(createEditComponent(subHandle));
                     }
                     html._bCol()._bFormGroup();
                 }));
@@ -177,7 +198,7 @@ public class CrudEditComponents extends
                     return (Collection<?>) decl.getValue();
                 }
 
-                @SuppressWarnings("unchecked")
+                @SuppressWarnings({ "unchecked", "rawtypes" })
                 @Override
                 public void renderOn(BootstrapRiseCanvas<?> html) {
                     CDataGrid<Object> grid = new CDataGrid<Object>();

@@ -126,7 +126,11 @@ public class CrudReflectionUtil {
 
     public PersistentType getPersistentType(
             Class<? extends Annotation> emQualifier, Class<?> entityClass) {
-        return new PersistentType(emQualifier, entityClass,
-                persistenceUtil.getManagedType(emQualifier, entityClass));
+        ManagedType<?> managedType = persistenceUtil.getManagedType(emQualifier,
+                entityClass);
+        if (managedType == null)
+            throw new RuntimeException("No managed type found for "
+                    + entityClass + " using emQualifier " + emQualifier);
+        return new PersistentType(emQualifier, entityClass, managedType);
     }
 }

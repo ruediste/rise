@@ -1,60 +1,66 @@
 package com.github.ruediste.rise.crud;
 
 import static org.junit.Assert.assertSame;
-import static org.mockito.Mockito.when;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 
+import com.github.ruediste.rise.core.strategy.Strategy;
+import com.github.ruediste.rise.core.strategy.UseStrategy;
 import com.github.ruediste.rise.crud.annotations.CrudStrategy;
+import com.github.ruediste.salta.jsr330.ImplementedBy;
 import com.github.ruediste.salta.jsr330.Injector;
+import com.github.ruediste.salta.jsr330.Salta;
 
-@RunWith(MockitoJUnitRunner.class)
 public class CrudUtilTest {
 
-    @Mock
+    @Inject
     Injector injector;
-    @Mock
-    TestFactory testFactoryMock;
 
-    TestFactoryImpl testFactoryImpl;
-
-    @InjectMocks
+    @Inject
     CrudUtil util;
+
+    @Inject
+    TestFactoryImpl1 impl1;
+
+    @Inject
+    TestFactoryImpl2 impl2;
 
     @Before
     public void before() {
-        testFactoryImpl = new TestFactoryImpl();
+        injector = Salta.createInjector();
+        Salta.createInjector().injectMembers(this);
     }
 
     private class A {
     }
 
-    @CrudStrategy(type = TestFactory.class, implementation = TestFactoryImpl.class)
+    @UseStrategy(TestFactoryImpl2.class)
+    @CrudStrategy(type = TestFactory.class, implementation = TestFactoryImpl2.class)
     private class B {
     }
 
-    private interface TestFactory {
+    @ImplementedBy(TestFactoryImpl1.class)
+    private interface TestFactory extends Strategy {
 
     }
 
-    private static class TestFactoryImpl {
+    @Singleton
+    private static class TestFactoryImpl1 implements TestFactory {
+
+    }
+
+    @Singleton
+    private static class TestFactoryImpl2 implements TestFactory {
 
     }
 
     @Test
     public void testGetStrategy() throws Exception {
-        when(injector.getInstance(TestFactory.class))
-                .thenReturn(testFactoryMock);
-        when(injector.getInstance(TestFactoryImpl.class))
-                .thenReturn(testFactoryImpl);
-        assertSame(testFactoryMock,
-                util.getStrategy(TestFactory.class, A.class));
-        assertSame(testFactoryImpl,
-                util.getStrategy(TestFactory.class, B.class));
+        assertSame(impl1, util.getStrategy(TestFactory.class, A.class));
+        assertSame(impl2, util.getStrategy(TestFactory.class, B.class));
     }
 }

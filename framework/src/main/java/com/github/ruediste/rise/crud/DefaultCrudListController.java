@@ -158,7 +158,6 @@ public class DefaultCrudListController extends SubControllerComponent
         return emh.getEntityManager(type.getEmQualifier());
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Labeled
     @GlyphiconIcon(Glyphicon.search)
     public void search() {
@@ -182,8 +181,7 @@ public class DefaultCrudListController extends SubControllerComponent
         type = crudReflectionUtil.getPersistentType(emQualifier, entityClass);
 
         columnProperties = crudReflectionUtil.getBrowserProperties(type);
-        filterList = columnProperties.stream()
-                .map(p -> filters.getFactory(p).createFilter(p))
+        filterList = columnProperties.stream().map(filters::create)
                 .collect(toList());
 
         search();

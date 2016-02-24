@@ -41,7 +41,7 @@ public class CrudPropertyInfo {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(property, attribute);
+        return Objects.hashCode(property, attribute, emQualifier);
     }
 
     @Override
@@ -54,7 +54,8 @@ public class CrudPropertyInfo {
             return false;
         CrudPropertyInfo other = (CrudPropertyInfo) obj;
         return Objects.equal(property, other.property)
-                && Objects.equal(attribute, other.attribute);
+                && Objects.equal(attribute, other.attribute)
+                && Objects.equal(emQualifier, other.emQualifier);
     }
 
     @Override

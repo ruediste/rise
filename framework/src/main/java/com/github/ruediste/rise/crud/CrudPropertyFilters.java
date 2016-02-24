@@ -1,7 +1,12 @@
 package com.github.ruediste.rise.crud;
 
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
+import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -15,6 +20,8 @@ import com.github.ruediste.rise.component.components.CInput;
 import com.github.ruediste.rise.component.components.CTextField;
 import com.github.ruediste.rise.component.components.InputType;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.core.strategy.Strategies;
+import com.github.ruediste.rise.core.strategy.Strategy;
 import com.github.ruediste.rise.crud.CrudUtil.PersistenceFilterContext;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste1.i18n.lString.LString;
@@ -28,8 +35,10 @@ import com.google.common.primitives.Primitives;
 
 @Singleton
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class CrudPropertyFilters extends
-        FactoryCollection<CrudPropertyInfo, CrudPropertyFilters.CrudPropertyFilterFactory> {
+public class CrudPropertyFilters {
+
+    @Inject
+    Strategies strategies;
 
     @Inject
     LabelUtil labelUtil;
@@ -53,14 +62,41 @@ public class CrudPropertyFilters extends
         TranslatedString max();
     }
 
-    public interface CrudPropertyFilterFactory {
-        CrudPropertyFilter createFilter(CrudPropertyInfo property);
+    public interface CrudPropertyFilterFactory extends Strategy {
+        Optional<CrudPropertyFilter> createFilter(CrudPropertyInfo property);
+    }
+
+    public CrudPropertyFilter create(CrudPropertyInfo info) {
+        AnnotatedElement element = null;
+        Member member = info.getAttribute().getJavaMember();
+        if (member instanceof AnnotatedElement) {
+            element = (AnnotatedElement) member;
+        }
+
+        return strategies
+                .getStrategy(CrudPropertyFilterFactory.class, element,
+                        f -> f.createFilter(info))
+                .orElseThrow(() -> new RuntimeException(
+                        "No filter found for " + info));
+    }
+
+    void addFactory(Predicate<CrudPropertyInfo> filter,
+            Function<CrudPropertyInfo, CrudPropertyFilter> factory) {
+        strategies.putStrategy(CrudPropertyFilterFactory.class, info -> {
+            if (filter.test(info))
+                return Optional.of(factory.apply(info));
+            return Optional.empty();
+        });
     }
 
     @Inject
     Messages messages;
 
-    {
+    /**
+     * <img src="doc-files/hello.png" alt=""> t
+     */
+    @PostConstruct
+    public void initialize() {
         addFactory(p -> String.class.equals(p.getAttribute().getJavaType()),
                 p -> {
                     PropertyInfo property = p.getProperty();
