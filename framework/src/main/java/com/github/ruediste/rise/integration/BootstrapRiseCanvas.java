@@ -53,7 +53,7 @@ public interface BootstrapRiseCanvas<TSelf extends BootstrapRiseCanvas<TSelf>>
         }
 
         result.TEST_NAME(method.getName());
-        TranslatedString label = helper.getLabelUtil().getMethodLabel(method);
+        TranslatedString label = helper.getLabelUtil().method(method).label();
         if (buttonArgs.iconOnly) {
             return result.render(helper.getIconUtil().getIcon(method)).span()
                     .BsrOnly().content(label)._bButtonA();

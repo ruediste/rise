@@ -39,7 +39,7 @@ public class LabeledComponentStatus {
         if (label != null)
             return label;
         if (getLabelProperty() != null)
-            return labelUtil.getPropertyLabel(getLabelProperty());
+            return labelUtil.property(getLabelProperty()).label();
         return null;
     }
 

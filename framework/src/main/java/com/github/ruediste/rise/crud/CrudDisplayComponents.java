@@ -141,8 +141,7 @@ public class CrudDisplayComponents {
                                 .create(property, handle::rootEntity,
                                         () -> finalValue, handle.group());
                         html.bFormGroup().label()
-                                .content(labelUtil.getPropertyLabel(
-                                        subHandle.info().getProperty()))
+                                .content(labelUtil.property(subHandle.info().getProperty()).label())
                                 .add(create(subHandle))._bFormGroup();
                     }
                     html._bCol();
@@ -224,7 +223,7 @@ public class CrudDisplayComponents {
                             html -> {
                                 Object value = p.getValue();
                                 html.bFormGroup()
-                                    .label().content(labelUtil.getPropertyLabel(p.info().getProperty()))
+                                    .label().content(labelUtil.property(p.info().getProperty()).label())
                                         .fIf(value!=null, ()->html.bInputGroup())
                                         .span().BformControl().DISABLED("disabled").TEST_NAME(p.info().getName())
                                         .render(x-> crudUtil .getStrategy(IdentificationRenderer.class, p.info().getAttribute().getJavaType())

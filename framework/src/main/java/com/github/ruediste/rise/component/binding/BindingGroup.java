@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -193,8 +194,10 @@ public class BindingGroup<T> implements Serializable {
         validationStatusRepository.clearFailures(this);
         getBindings().forEach(b -> validationStatusRepository
                 .setValidated(b.getComponent(), false));
-        getBindings().filter(b -> b.getPullUp() != null)
-                .forEach(b -> b.getPullUp().accept(data));
+        getBindings().collect(Collectors.toList()).forEach(b -> {
+            if (b.getPullUp() != null)
+                b.getPullUp().accept(data);
+        });
     }
 
     public interface ValidateActions<T>

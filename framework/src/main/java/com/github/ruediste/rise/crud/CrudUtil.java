@@ -3,6 +3,8 @@ package com.github.ruediste.rise.crud;
 import static java.util.stream.Collectors.joining;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -298,5 +300,17 @@ public class CrudUtil {
                     constantFilter);
         }
 
+    }
+
+    public void invokeActionMethod(Method m, Object target) {
+        try {
+            m.setAccessible(true);
+            m.invoke(target);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e.getCause());
+        } catch (IllegalAccessException | IllegalArgumentException e) {
+            throw new RuntimeException(
+                    "Error while invoking action method " + m, e);
+        }
     }
 }

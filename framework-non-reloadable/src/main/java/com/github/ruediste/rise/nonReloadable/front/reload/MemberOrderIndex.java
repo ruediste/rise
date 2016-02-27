@@ -81,8 +81,8 @@ public class MemberOrderIndex {
      * Order members which are all declared in the same class by their
      * appearance in the class file (which should match source code order)
      */
-    public List<Member> orderMembers(Class<?> declaringClass,
-            Collection<Member> members) {
+    public <T extends Member> List<T> orderMembers(Class<?> declaringClass,
+            Collection<T> members) {
 
         Map<String, Integer> map = classes
                 .get(Type.getInternalName(declaringClass));

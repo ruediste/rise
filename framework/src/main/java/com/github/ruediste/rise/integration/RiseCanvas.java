@@ -82,7 +82,7 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
 
     default TSelf content(Enum<?> value) {
         return content(
-                internal_riseHelper().getLabelUtil().getEnumMemberLabel(value));
+                internal_riseHelper().getLabelUtil().enumMember(value).label());
     }
 
     default TSelf write(LString value) {

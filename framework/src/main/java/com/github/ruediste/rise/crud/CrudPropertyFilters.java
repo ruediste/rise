@@ -102,7 +102,7 @@ public class CrudPropertyFilters {
                     PropertyInfo property = p.getProperty();
                     CTextField textField = new CTextField().setText("")
                             .TEST_NAME(property.getName())
-                            .setLabel(labelUtil.getPropertyLabel(property));
+                            .setLabel(labelUtil.property(property).label());
                     CFormGroup component = new CFormGroup(textField);
                     return new CrudPropertyFilter() {
 
@@ -132,8 +132,7 @@ public class CrudPropertyFilters {
         addFactory(p -> boxCls
                 .equals(Primitives.wrap(p.getAttribute().getJavaType())), p -> {
                     PropertyInfo property = p.getProperty();
-                    LString propertyLabel = labelUtil
-                            .getPropertyLabel(property);
+                    LString propertyLabel = labelUtil.property(property).label();
                     CInput min = new CInput(InputType.number)
                             .setLabel(messages.minNumber(propertyLabel))
                             .setValue("").setRenderFormGroup(false);
@@ -146,7 +145,7 @@ public class CrudPropertyFilters {
                         Component component = componentFactoryUtil.toComponent((BootstrapRiseCanvas<?> html) ->
                           html
                           .bFormGroup()
-                            .label().content(labelUtil.getPropertyLabel(property))
+                            .label().content(labelUtil.property(property).label())
                               .div().BformInline()
                                 .bInputGroup().CLASS(x->x.sm(6))
                                   .span().BinputGroupAddon().content(messages.min())

@@ -8,7 +8,10 @@ import javax.persistence.ManyToOne;
 
 import org.hibernate.validator.constraints.Length;
 
+import com.github.ruediste.rendersnakeXT.canvas.Glyphicon;
+import com.github.ruediste.rise.crud.annotations.CrudDisplayAction;
 import com.github.ruediste.rise.crud.annotations.CrudBrowserColumn;
+import com.github.ruediste.rise.integration.GlyphiconIcon;
 import com.github.ruediste1.i18n.label.Labeled;
 import com.github.ruediste1.i18n.label.PropertiesLabeled;
 
@@ -28,8 +31,7 @@ public class TestCrudEntityA {
     private TestCrudEntityB entityB;
 
     @Length(min = 3, max = 10)
-    private
-    String constrainedValue;
+    private String constrainedValue;
 
     private byte[] byteArray;
 
@@ -82,6 +84,13 @@ public class TestCrudEntityA {
 
     public void setConstrainedValue(String constrainedValue) {
         this.constrainedValue = constrainedValue;
+    }
+
+    @CrudDisplayAction
+    @Labeled
+    @GlyphiconIcon(Glyphicon.bullhorn)
+    private void setStringValueToFoo() {
+        stringValue = "foo";
     }
 
 }

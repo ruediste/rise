@@ -63,7 +63,7 @@ public class NavigationBuilder {
     public NavigationBuilder add(ActionResult target) {
         Method method = util.toActionInvocation(target).methodInvocation
                 .getMethod();
-        return add(target, labelUtil.getMethodLabel(method),
+        return add(target, labelUtil.method(method).label(),
                 iconUtil.tryGetIcon(method));
     }
 
@@ -100,7 +100,7 @@ public class NavigationBuilder {
     }
 
     public NavigationBuilder group(Enum<?> labelEnum) {
-        return group(labelUtil.getEnumMemberLabel(labelEnum));
+        return group(labelUtil.enumMember(labelEnum).label());
     }
 
     public NavigationBuilder group(LString text) {

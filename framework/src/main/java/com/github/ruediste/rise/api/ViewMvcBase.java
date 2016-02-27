@@ -94,15 +94,15 @@ public abstract class ViewMvcBase<TController extends IControllerMvc, TData, TCa
     }
 
     public LString label(Class<?> clazz) {
-        return labelUtil.getTypeLabel(clazz);
+        return labelUtil.type(clazz).label();
     }
 
     public LString label(Object obj) {
-        return labelUtil.getTypeLabel(obj.getClass());
+        return labelUtil.type(obj.getClass()).label();
     }
 
     public LString label(Enum<?> enumMember) {
-        return labelUtil.getEnumMemberLabel(enumMember);
+        return labelUtil.enumMember(enumMember).label();
     }
 
     public String resolve(LString lstr) {

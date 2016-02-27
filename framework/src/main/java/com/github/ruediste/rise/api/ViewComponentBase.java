@@ -49,11 +49,11 @@ public abstract class ViewComponentBase<TController>
     }
 
     protected LString label(Class<?> clazz) {
-        return componentUtil.labelUtil().getTypeLabel(clazz);
+        return componentUtil.labelUtil().type(clazz).label();
     }
 
     protected LString label(Enum<?> e) {
-        return componentUtil.labelUtil().getEnumMemberLabel(e);
+        return componentUtil.labelUtil().enumMember(e).label();
     }
 
     protected LString label(Object obj) {

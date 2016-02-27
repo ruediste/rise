@@ -6,11 +6,14 @@ import static java.util.stream.Collectors.toMap;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -21,7 +24,9 @@ import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.github.ruediste.c3java.properties.PropertyUtil;
 import com.github.ruediste.rise.core.persistence.PersistentType;
 import com.github.ruediste.rise.core.persistence.RisePersistenceUtil;
+import com.github.ruediste.rise.crud.annotations.CrudBrowseAction;
 import com.github.ruediste.rise.crud.annotations.CrudBrowserColumn;
+import com.github.ruediste.rise.crud.annotations.CrudDisplayAction;
 import com.github.ruediste.rise.crud.annotations.CrudIdentifying;
 import com.github.ruediste.rise.nonReloadable.front.reload.MemberOrderIndex;
 import com.google.common.base.Preconditions;
@@ -132,5 +137,22 @@ public class CrudReflectionUtil {
             throw new RuntimeException("No managed type found for "
                     + entityClass + " using emQualifier " + emQualifier);
         return new PersistentType(emQualifier, entityClass, managedType);
+    }
+
+    public List<Method> getBrowseActionMethods(Class<?> cls) {
+        return getActionMethods(cls, CrudBrowseAction.class);
+    }
+
+    public List<Method> getDisplayActionMethods(Class<?> cls) {
+        return getActionMethods(cls, CrudDisplayAction.class);
+    }
+
+    private List<Method> getActionMethods(Class<?> cls,
+            Class<? extends Annotation> annotationClass) {
+        List<Method> result = Arrays.stream(cls.getDeclaredMethods())
+                .filter(m -> m.isAnnotationPresent(annotationClass))
+                .collect(Collectors.toList());
+        memberOrderIndex.orderMembers(getClass(), result);
+        return result;
     }
 }

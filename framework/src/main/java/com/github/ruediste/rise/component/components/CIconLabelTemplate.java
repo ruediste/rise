@@ -25,7 +25,7 @@ public class CIconLabelTemplate
 
         LString label = component.getLabel();
         if (label == null && component.getMethod() != null) {
-            label = labelUtil.getMethodLabel(component.getMethod());
+            label = labelUtil.method(component.getMethod()).label();
         }
 
         if (label == null)

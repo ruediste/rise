@@ -28,6 +28,13 @@ public class InjectorsHolder {
         return holder.get().restartableInjector;
     }
 
+    /**
+     * Obtain an instance from the restartable injector
+     */
+    public static <T> T getInstance(Class<T> cls) {
+        return getRestartableInjector().getInstance(cls);
+    }
+
     public static Injector getNonRestartableInjector() {
         return holder.get().nonRestartableInjector;
     }

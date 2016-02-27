@@ -195,11 +195,13 @@ public class LoginSubController extends SubControllerComponent {
             msgs.clear();
             for (AuthenticationFailure failure : result.getFailures()) {
                 if (failure instanceof UserNameNotFoundAuthenticationFailure)
-                    msgs.add(labelUtil.getEnumMemberLabel(
-                            Messages.USERNAME_PASSWORD_INCORRECT));
+                    msgs.add(labelUtil
+                            .enumMember(Messages.USERNAME_PASSWORD_INCORRECT)
+                            .label());
                 else
-                    msgs.add(labelUtil.getEnumMemberLabel(
-                            Messages.AUTHENTICATION_FAILED));
+                    msgs.add(
+                            labelUtil.enumMember(Messages.AUTHENTICATION_FAILED)
+                                    .label());
             }
             data.get().setPassword("");
             data.pullUp();

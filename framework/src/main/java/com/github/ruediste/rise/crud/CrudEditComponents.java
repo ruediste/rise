@@ -161,8 +161,7 @@ public class CrudEditComponents {
                     }
 
                     html.bFormGroup().label()
-                            .content(labelUtil.getPropertyLabel(
-                                    handle.info().getProperty()))
+                            .content(labelUtil.property(handle.info().getProperty()).label())
                             .bCol(x -> x.xs(11).xsOffset(1));
                     for (CrudPropertyInfo property : crudReflectionUtil
                             .getDisplayProperties(
@@ -224,8 +223,7 @@ public class CrudEditComponents {
                                     Arrays.asList(enumType.getEnumConstants()))
                             .setAllowEmpty(true);
                     html.bFormGroup().label()
-                            .content(labelUtil.getPropertyLabel(
-                                    decl.info().getProperty()))
+                            .content(labelUtil.property(decl.info().getProperty()).label())
                             .add(grid).add(select)
                             .add(new CButton(CrudEditComponents.this,
                                     x -> x.add(() -> select.getSelectedItem()
@@ -241,8 +239,7 @@ public class CrudEditComponents {
         addFactory(
                 decl -> String.class.equals(decl.getAttribute().getJavaType()),
                 (decl) -> new CFormGroup(new CTextField()
-                        .setLabel(labelUtil
-                                .getPropertyLabel(decl.info().getProperty()))
+                        .setLabel(labelUtil.property(decl.info().getProperty()).label())
                         .bindText(() -> (String) decl.getValue())));
     }
 
@@ -250,8 +247,7 @@ public class CrudEditComponents {
         addFactory(
                 decl -> byte[].class.equals(decl.getAttribute().getJavaType()),
                 (decl) -> new CFormGroup(new CTextField()
-                        .setLabel(labelUtil
-                                .getPropertyLabel(decl.info().getProperty()))
+                        .setLabel(labelUtil.property(decl.info().getProperty()).label())
                         .bindText(() -> new HexStringToByteArrayTransformer()
                                 .transform((byte[]) decl.getValue()))));
     }
@@ -274,7 +270,7 @@ public class CrudEditComponents {
                     //@formatter:off
                     return toComponent(html -> html
                             .bFormGroup()
-                                .label().content(labelUtil.getPropertyLabel(decl.info().getProperty()))
+                                .label().content(labelUtil.property(decl.info().getProperty()).label())
                                 .bInputGroup()
                                 .span().BformControl().DISABLED("disbled").TEST_NAME(decl.info().getAttribute().getName())
                                     .add(cValue)
@@ -309,7 +305,7 @@ public class CrudEditComponents {
                 p -> p.getAttribute().getPersistentAttributeType() == PersistentAttributeType.ONE_TO_MANY,
                 (decl) -> toComponent(html->html
                         .bFormGroup()
-                            .label().content(labelUtil.getPropertyLabel(decl.info().getProperty()))
+                            .label().content(labelUtil.property(decl.info().getProperty()).label())
                             .div()
                                 .add(new CButton(this,
                                 (btn, x) -> x.chooseItems(() -> {
@@ -376,8 +372,7 @@ public class CrudEditComponents {
                         Primitives.wrap(decl.getAttribute().getJavaType())),
                 (decl) -> {
                     CInput input = new CInput(InputType.number)
-                            .setLabel(labelUtil.getPropertyLabel(
-                                    decl.info().getProperty()))
+                            .setLabel(labelUtil.property(decl.info().getProperty()).label())
                             .TEST_NAME(decl.info().getAttribute().getName());
 
                     BindingUtil.bind(input, decl.group(),

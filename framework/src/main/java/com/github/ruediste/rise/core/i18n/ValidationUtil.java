@@ -60,7 +60,7 @@ public class ValidationUtil {
             Optional<TranslatedString> pattern = violation
                     .getConstraintDescriptor().getPayload().stream()
                     .filter(Payload.class::isAssignableFrom)
-                    .map(x -> labelUtil.tryGetTypeLabel(x))
+                    .map(x -> labelUtil.type(x).tryLabel())
                     .filter(x -> x.isPresent()).map(x -> x.get()).findFirst();
             if (pattern.isPresent())
                 // we found a labeled payload. Use payload label as pattern

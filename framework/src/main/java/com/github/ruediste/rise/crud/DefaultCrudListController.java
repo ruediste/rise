@@ -71,8 +71,7 @@ public class DefaultCrudListController extends SubControllerComponent
                 PropertyInfo property = p.getProperty();
                 columns.add(
                         new Column<>(
-                                () -> new CDataGrid.Cell(labelUtil
-                                        .getPropertyLabel(property)),
+                                () -> new CDataGrid.Cell(labelUtil.property(property).label()),
                         item -> new Cell(new CText(
                                 Objects.toString(property.getValue(item)))))
                                         .TEST_NAME(property.getName()));

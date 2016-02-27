@@ -47,6 +47,6 @@ public abstract class ViewMvc<TController extends IControllerMvc, TData>
     protected abstract void renderContent(TestCanvas html);
 
     protected LString getTitle() {
-        return labelUtil.getTypeLabel(getClass());
+        return labelUtil.type(getClass()).label();
     }
 }

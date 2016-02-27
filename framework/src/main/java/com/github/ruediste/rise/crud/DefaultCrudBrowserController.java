@@ -11,6 +11,7 @@ import com.github.ruediste.rise.component.components.CButtonTemplate;
 import com.github.ruediste.rise.component.components.CController;
 import com.github.ruediste.rise.component.components.CDataGrid;
 import com.github.ruediste.rise.component.components.CGroup;
+import com.github.ruediste.rise.component.components.CIconLabel;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.crud.CrudUtil.CrudList;
 import com.github.ruediste1.i18n.lString.LString;
@@ -21,6 +22,9 @@ public class DefaultCrudBrowserController extends SubControllerComponent {
 
     @Inject
     CrudUtil util;
+
+    @Inject
+    CrudReflectionUtil reflectionUtil;
 
     private CrudList ctrl;
 
@@ -54,15 +58,22 @@ public class DefaultCrudBrowserController extends SubControllerComponent {
         ctrl = util.getStrategy(CrudUtil.CrudListFactory.class, entityClass)
                 .createList(emQualifier, entityClass, null);
 
-        ctrl.setItemActionsFactory(item -> new CDataGrid.Cell(new CGroup()
-                .add(new CButton(go(CrudControllerBase.class).display(item),
-                        true).apply(CButtonTemplate.setArgs(x -> x.primary())))
-                .add(new CButton(go(CrudControllerBase.class).edit(item), true)
-                        .apply(CButtonTemplate.setArgs(x -> {
-                        })))
-                .add(new CButton(go(CrudControllerBase.class).delete(item),
-                        true).apply(
-                                CButtonTemplate.setArgs(x -> x.danger())))));
+        ctrl.setItemActionsFactory(item -> {
+            CGroup group = new CGroup()
+                    .add(new CButton(go(CrudControllerBase.class).display(item),
+                            true).apply(
+                                    CButtonTemplate.setArgs(x -> x.primary())))
+                    .add(new CButton(go(CrudControllerBase.class).edit(item),
+                            true).apply(CButtonTemplate.setArgs(x -> {
+            }))).add(
+                    new CButton(go(CrudControllerBase.class).delete(item), true)
+                            .apply(CButtonTemplate.setArgs(x -> x.danger())));
+            reflectionUtil.getBrowseActionMethods(entityClass).forEach(m -> {
+                group.add(new CButton().add(new CIconLabel().setMethod(m))
+                        .setHandler(() -> util.invokeActionMethod(m, item)));
+            });
+            return new CDataGrid.Cell(group);
+        });
 
         ctrl.setBottomActions(new CButton(
                 go(CrudControllerBase.class).create(entityClass, emQualifier)));
