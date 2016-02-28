@@ -21,12 +21,13 @@ public class EditComponents {
 
         private PropertyInfo property;
 
-        public PropertyApi(PropertyInfo property) {
+        private PropertyApi(PropertyInfo property) {
             this.property = property;
         }
 
         Optional<Component> tryGet() {
-            strategies.getStrategy(EditComponent.class, property.get, null)
+            strategies.getStrategy(EditComponent.class,property.)
+            // strategies.getStrategy(EditComponent.class, property.get, null);
         }
     }
 

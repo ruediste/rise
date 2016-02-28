@@ -73,9 +73,7 @@ public class CrudPropertyFilters {
             element = (AnnotatedElement) member;
         }
 
-        return strategies
-                .getStrategy(CrudPropertyFilterFactory.class, element,
-                        f -> f.createFilter(info))
+        return strategies.getStrategy(CrudPropertyFilterFactory.class).element(element).get(f -> f.createFilter(info))
                 .orElseThrow(() -> new RuntimeException(
                         "No filter found for " + info));
     }

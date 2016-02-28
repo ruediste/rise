@@ -2,8 +2,10 @@ package com.github.ruediste.rise.core.strategy;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -32,22 +34,32 @@ public class StrategiesTest {
 
     @ImplementedBy(TestStrategyImpl.class)
     interface TestStrategy extends Strategy {
-
+        Optional<String> get();
     }
 
     @Singleton
     static class TestStrategyImpl implements TestStrategy {
 
+        @Override
+        public Optional<String> get() {
+            return Optional.of("foo");
+        }
     }
 
     @Singleton
     static class SubTestStrategyImpl extends TestStrategyImpl {
+        static int invocationCount = 0;
 
+        @Override
+        public Optional<String> get() {
+            invocationCount++;
+            return Optional.empty();
+        }
     }
 
-    @SuppressWarnings({ "unchecked" })
     @Before
     public void before() {
+        SubTestStrategyImpl.invocationCount = 0;
         Salta.createInjector().injectMembers(this);
     }
 
@@ -76,6 +88,22 @@ public class StrategiesTest {
 
     enum TestEnum {
         @UseStrategy(SubTestStrategyImpl.class) VALUE1, VALUE2
+    }
+
+    @Test
+    public void testGetCachedStrategy() {
+        strategies.putStrategy(subStrategy);
+        assertEquals(Optional.of("foo"),
+                strategies.getStrategy(TestStrategy.class).cached(null)
+                        .get(TestStrategy::get));
+        assertEquals(1, SubTestStrategyImpl.invocationCount);
+        assertEquals(Optional.of("foo"),
+                strategies.getStrategy(TestStrategy.class).cached(null)
+                        .get(TestStrategy::get));
+        assertEquals(1, SubTestStrategyImpl.invocationCount);
+        assertEquals(Optional.of("foo"), strategies
+                .getStrategy(TestStrategy.class).get(TestStrategy::get));
+        assertEquals(2, SubTestStrategyImpl.invocationCount);
     }
 
     @Test

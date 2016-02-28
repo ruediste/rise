@@ -97,9 +97,8 @@ public class CrudEditComponents {
             element = (AnnotatedElement) member;
         }
 
-        return strategies
-                .getStrategy(CrudEditComponentFactory.class, element,
-                        f -> f.create(handle))
+        return strategies.getStrategy(CrudEditComponentFactory.class)
+                .element(element).get(f -> f.create(handle))
                 .orElseThrow(() -> new RuntimeException(
                         "No Edit component found for " + handle.info()));
     }
@@ -161,7 +160,9 @@ public class CrudEditComponents {
                     }
 
                     html.bFormGroup().label()
-                            .content(labelUtil.property(handle.info().getProperty()).label())
+                            .content(labelUtil
+                                    .property(handle.info().getProperty())
+                                    .label())
                             .bCol(x -> x.xs(11).xsOffset(1));
                     for (CrudPropertyInfo property : crudReflectionUtil
                             .getDisplayProperties(
@@ -204,16 +205,16 @@ public class CrudEditComponents {
                     grid.addColumn(() -> new CDataGrid.Cell(r -> "Name"),
                             o -> new CDataGrid.Cell(r -> String.valueOf(o)))
 
-                            .addColumn(() -> new CDataGrid.Cell(r -> ""),
-                                    o -> new CDataGrid.Cell(new CButton(
-                                            CrudEditComponents.this,
-                                            x -> x.remove(() -> grid
-                                                    .updateItems(i -> i
-                                                            .remove(o))))))
+                    .addColumn(() -> new CDataGrid.Cell(r -> ""),
+                            o -> new CDataGrid.Cell(new CButton(
+                                    CrudEditComponents.this,
+                                    x -> x.remove(() -> grid
+                                            .updateItems(i -> i.remove(o))))))
 
-                            .bind(() -> decl.proxy(), (g, obj) -> g.setItems(
+                    .bind(() -> decl.proxy(),
+                            (g, obj) -> g.setItems(
                                     new ArrayList<Object>(targetCollection())),
-                                    (g, obj) -> {
+                            (g, obj) -> {
                         targetCollection().clear();
                         ((Collection) targetCollection()).addAll(g.getItems());
 
@@ -223,7 +224,9 @@ public class CrudEditComponents {
                                     Arrays.asList(enumType.getEnumConstants()))
                             .setAllowEmpty(true);
                     html.bFormGroup().label()
-                            .content(labelUtil.property(decl.info().getProperty()).label())
+                            .content(labelUtil
+                                    .property(decl.info().getProperty())
+                                    .label())
                             .add(grid).add(select)
                             .add(new CButton(CrudEditComponents.this,
                                     x -> x.add(() -> select.getSelectedItem()
@@ -237,9 +240,11 @@ public class CrudEditComponents {
 
     public void addStringFactory() {
         addFactory(
-                decl -> String.class.equals(decl.getAttribute().getJavaType()),
+                decl -> String.class
+                        .equals(decl.getAttribute().getJavaType()),
                 (decl) -> new CFormGroup(new CTextField()
-                        .setLabel(labelUtil.property(decl.info().getProperty()).label())
+                        .setLabel(labelUtil.property(decl.info().getProperty())
+                                .label())
                         .bindText(() -> (String) decl.getValue())));
     }
 
@@ -247,7 +252,8 @@ public class CrudEditComponents {
         addFactory(
                 decl -> byte[].class.equals(decl.getAttribute().getJavaType()),
                 (decl) -> new CFormGroup(new CTextField()
-                        .setLabel(labelUtil.property(decl.info().getProperty()).label())
+                        .setLabel(labelUtil.property(decl.info().getProperty())
+                                .label())
                         .bindText(() -> new HexStringToByteArrayTransformer()
                                 .transform((byte[]) decl.getValue()))));
     }
@@ -372,7 +378,9 @@ public class CrudEditComponents {
                         Primitives.wrap(decl.getAttribute().getJavaType())),
                 (decl) -> {
                     CInput input = new CInput(InputType.number)
-                            .setLabel(labelUtil.property(decl.info().getProperty()).label())
+                            .setLabel(labelUtil
+                                    .property(decl.info().getProperty())
+                                    .label())
                             .TEST_NAME(decl.info().getAttribute().getName());
 
                     BindingUtil.bind(input, decl.group(),

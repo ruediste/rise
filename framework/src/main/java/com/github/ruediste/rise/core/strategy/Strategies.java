@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -98,20 +99,6 @@ public class Strategies {
                                 : Stream.of()));
     }
 
-    public <T extends Strategy, R> Optional<R> getStrategy(
-            Class<T> strategyClass, Function<T, Optional<R>> filter) {
-
-        return getStrategies(strategyClass).map(filter)
-                .filter(x -> x.isPresent()).findFirst().flatMap(x -> x);
-    }
-
-    public <T extends Strategy, R> Optional<R> getStrategy(
-            Class<T> strategyClass, AnnotatedElement element,
-            Function<T, Optional<R>> filter) {
-        return getStrategies(strategyClass, element).map(filter)
-                .filter(x -> x.isPresent()).findFirst().flatMap(x -> x);
-    }
-
     @SuppressWarnings({ "unchecked" })
     public <T extends Strategy> Stream<T> getStrategies(Class<T> strategyClass,
             AnnotatedElement element) {
@@ -131,5 +118,62 @@ public class Strategies {
         return (Stream<T>) Stream.concat(
                 Stream.concat(perElementStrategyStream, annotationStream),
                 getStrategies(strategyClass));
+    }
+
+    private ConcurrentHashMap<Object, Optional<Strategy>> strategyCache = new ConcurrentHashMap<>();
+
+    public class GetStrategyApi<T extends Strategy> {
+        private final Class<T> strategyClass;
+        private Optional<AnnotatedElement> element = Optional.empty();
+        private boolean isCached;
+        private Object cacheKey;
+
+        public GetStrategyApi(Class<T> strategyClass) {
+            this.strategyClass = strategyClass;
+        }
+
+        public GetStrategyApi<T> element(AnnotatedElement element) {
+            this.element = Optional.ofNullable(element);
+            return this;
+        }
+
+        public GetStrategyApi<T> cached(Object key) {
+            isCached = true;
+            cacheKey = key;
+            return this;
+        }
+
+        private <R> Optional<Pair<T, R>> getUncached(
+                Function<T, Optional<R>> filter) {
+            return element.map(e -> getStrategies(strategyClass, e))
+                    .orElseGet(() -> getStrategies(strategyClass))
+                    .flatMap(s -> filter.apply(s)
+                            .map(r -> Stream.of(Pair.of(s, r)))
+                            .orElse(Stream.of()))
+                    .findFirst();
+        }
+
+        public <R> Optional<R> get(Function<T, Optional<R>> filter) {
+            if (isCached) {
+                Object key = Pair
+                        .of(element.map(x -> (Object) Pair.of(strategyClass, x))
+                                .orElseGet(() -> strategyClass), cacheKey);
+
+                return strategyCache.getOrDefault(key, Optional.empty())
+                        .map(s -> filter.apply(strategyClass.cast(s)))
+                        .orElseGet(() -> {
+                            Optional<Pair<T, R>> pair = getUncached(filter);
+                            strategyCache.put(key, pair.map(Pair::getA));
+                            return pair.map(Pair::getB);
+                        });
+            } else {
+                return getUncached(filter).map(Pair::getB);
+            }
+        }
+    }
+
+    public <T extends Strategy> GetStrategyApi<T> getStrategy(
+            Class<T> strategyClass) {
+        return new GetStrategyApi<>(strategyClass);
     }
 }

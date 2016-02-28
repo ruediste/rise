@@ -83,9 +83,7 @@ public class CrudDisplayComponents {
             element = (AnnotatedElement) member;
         }
 
-        return strategies
-                .getStrategy(CrudDisplayComponentFactory.class, element,
-                        f -> f.create(propertyHandle))
+        return strategies.getStrategy(CrudDisplayComponentFactory.class).element(element).get(f -> f.create(propertyHandle))
                 .orElseThrow(() -> new RuntimeException(
                         "No display component found for " + propertyHandle));
     }
