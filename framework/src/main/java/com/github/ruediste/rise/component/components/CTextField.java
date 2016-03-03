@@ -1,6 +1,6 @@
 package com.github.ruediste.rise.component.components;
 
-import com.google.common.base.Supplier;
+import java.util.function.Supplier;
 
 @DefaultTemplate(CTextFieldTemplate.class)
 public class CTextField extends CInputBase<CTextField> {

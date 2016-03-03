@@ -120,7 +120,11 @@ public class CoreRestartableModule extends AbstractModule {
     }
 
     protected void registerMessagesRule() {
-        bindCreationRule(new CreationRule() {
+        bindCreationRule(createMessagesRule());
+    }
+
+    public static CreationRule createMessagesRule() {
+        return new CreationRule() {
 
             @Override
             public Optional<Function<RecipeCreationContext, SupplierRecipe>> apply(
@@ -142,7 +146,9 @@ public class CoreRestartableModule extends AbstractModule {
                                         GeneratorAdapter mv,
                                         MethodCompilationContext ctx) {
                                     utilRecipe.compile(ctx);
-                                    mv.visitLdcInsn(Type.getType(typeName));
+                                    ctx.addFieldAndLoad(Class.class,
+                                            key.getRawType());
+                                    // mv.visitLdcInsn(Type.getType(typeName));
                                     mv.visitMethodInsn(INVOKEVIRTUAL,
                                             "com/github/ruediste1/i18n/message/TMessageUtil",
                                             "getMessageInterfaceInstance",
@@ -156,7 +162,7 @@ public class CoreRestartableModule extends AbstractModule {
                 }
                 return Optional.empty();
             }
-        });
+        };
     }
 
     protected void installPersistenceDynamicModule() {

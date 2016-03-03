@@ -15,77 +15,76 @@ import com.github.ruediste.rise.core.persistence.PersistentType;
 import com.github.ruediste.rise.core.persistence.RisePersistenceUtil;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
+import com.github.ruediste1.i18n.label.LabelUtil;
 import com.github.ruediste1.i18n.label.Labeled;
 
 public class DefaultCrudEditController extends SubControllerComponent {
 
-    @Inject
-    RisePersistenceUtil util;
+	@Inject
+	RisePersistenceUtil util;
 
-    @Inject
-    CrudReflectionUtil reflectionUtil;
+	@Inject
+	CrudReflectionUtil reflectionUtil;
 
-    static class View
-            extends FrameworkViewComponent<DefaultCrudEditController> {
-        @Inject
-        CrudReflectionUtil util;
+	static class View extends FrameworkViewComponent<DefaultCrudEditController> {
+		@Inject
+		CrudReflectionUtil util;
 
-        @Inject
-        CrudEditComponents editComponents;
+		@Inject
+		CrudEditComponents editComponents;
 
-        @Override
-        protected Component createComponents() {
-            //@formatter:off
-            return toComponent(html -> {
-                html.div().TEST_NAME("properties");
-                    for (CrudPropertyInfo p : util
-                            .getEditProperties(controller.type)) {
-                        html.add(  editComponents.createEditComponent(CrudPropertyHandle.create(p,
-                                () -> controller.entityGroup.get(),
-                                () -> controller.entityGroup
-                                        .proxy(),
-                        controller.entityGroup)));
-                    }
-                html._div()
-                .div().TEST_NAME("buttons")
-                    .add(new CButton(controller, c -> c.save()).apply(CButtonTemplate.setArgs(x->x.primary())))
-                    .rButtonA(go(CrudControllerBase.class).display(controller.entityGroup.get()))
-                    .rButtonA(go(CrudControllerBase.class).browse(
-                        controller.entityGroup.get().getClass(),
-                        controller.emQualifier))
-                ._div();
+		@Inject
+		LabelUtil labelUtil;
 
-            });
-            //@formatter:on
-        }
-    }
+		@Override
+		protected Component createComponents() {
+			// @formatter:off
+			return toComponent(html -> {
+				html.div().TEST_NAME("properties");
+				for (CrudPropertyInfo p : util.getEditProperties(controller.type)) {
+					CrudPropertyHandle hadle = CrudPropertyHandle.create(p, () -> controller.entityGroup.get(),
+							() -> controller.entityGroup.proxy(), controller.entityGroup);
+					html.bFormGroup().label().content(labelUtil.property(p.getProperty()).label())
+							.add(editComponents.createEditComponent(hadle))._bFormGroup();
+				}
+				html._div().div().TEST_NAME("buttons")
+						.add(new CButton(controller, c -> c.save()).apply(CButtonTemplate.setArgs(x -> x.primary())))
+						.rButtonA(go(CrudControllerBase.class).display(controller.entityGroup.get()))
+						.rButtonA(go(CrudControllerBase.class).browse(controller.entityGroup.get().getClass(),
+								controller.emQualifier))
+						._div();
 
-    Class<? extends Annotation> emQualifier;
+			});
+			// @formatter:on
+		}
+	}
 
-    @Inject
-    BindingGroup<Object> entityGroup;
+	Class<? extends Annotation> emQualifier;
 
-    Object entity() {
-        return entityGroup.proxy();
-    }
+	@Inject
+	BindingGroup<Object> entityGroup;
 
-    PersistentType type;
+	Object entity() {
+		return entityGroup.proxy();
+	}
 
-    public DefaultCrudEditController initialize(Object entity) {
-        type = reflectionUtil.getPersistentType(entity);
-        this.entityGroup.initialize(entity);
-        emQualifier = util.getEmQualifier(entity);
-        return this;
-    }
+	PersistentType type;
 
-    @Inject
-    EntityManagerHolder holder;
+	public DefaultCrudEditController initialize(Object entity) {
+		type = reflectionUtil.getPersistentType(entity);
+		this.entityGroup.initialize(entity);
+		emQualifier = util.getEmQualifier(entity);
+		return this;
+	}
 
-    @Labeled
-    @GlyphiconIcon(Glyphicon.save)
-    public void save() {
-        entityGroup.pushDown();
-        commit();
-        redirect(go(CrudControllerBase.class).display(entityGroup.get()));
-    }
+	@Inject
+	EntityManagerHolder holder;
+
+	@Labeled
+	@GlyphiconIcon(Glyphicon.save)
+	public void save() {
+		entityGroup.pushDown();
+		commit();
+		redirect(go(CrudControllerBase.class).display(entityGroup.get()));
+	}
 }

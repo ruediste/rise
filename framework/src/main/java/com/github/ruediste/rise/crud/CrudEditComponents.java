@@ -23,19 +23,14 @@ import com.github.ruediste.rendersnakeXT.canvas.Glyphicon;
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.component.ComponentFactoryUtil;
 import com.github.ruediste.rise.component.ComponentUtil;
-import com.github.ruediste.rise.component.binding.BindingUtil;
-import com.github.ruediste.rise.component.binding.transformers.HexStringToByteArrayTransformer;
 import com.github.ruediste.rise.component.components.CButton;
 import com.github.ruediste.rise.component.components.CComponentStack;
 import com.github.ruediste.rise.component.components.CController;
 import com.github.ruediste.rise.component.components.CDataGrid;
-import com.github.ruediste.rise.component.components.CFormGroup;
-import com.github.ruediste.rise.component.components.CInput;
 import com.github.ruediste.rise.component.components.CSelect;
 import com.github.ruediste.rise.component.components.CSwitch;
-import com.github.ruediste.rise.component.components.CTextField;
 import com.github.ruediste.rise.component.components.CValue;
-import com.github.ruediste.rise.component.components.InputType;
+import com.github.ruediste.rise.component.generic.EditComponents;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ComponentTreeUtil;
 import com.github.ruediste.rise.core.persistence.RisePersistenceUtil;
@@ -49,7 +44,6 @@ import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.github.ruediste1.i18n.label.Labeled;
-import com.google.common.primitives.Primitives;
 import com.google.common.reflect.TypeToken;
 
 /**
@@ -58,373 +52,279 @@ import com.google.common.reflect.TypeToken;
  */
 @Singleton
 public class CrudEditComponents {
-    @Inject
-    ComponentFactoryUtil util;
+	@Inject
+	ComponentFactoryUtil util;
 
-    @Inject
-    CrudUtil crudUtil;
+	@Inject
+	CrudUtil crudUtil;
 
-    @Inject
-    LabelUtil labelUtil;
+	@Inject
+	LabelUtil labelUtil;
 
-    @Inject
-    RisePersistenceUtil persistenceUtil;
+	@Inject
+	RisePersistenceUtil persistenceUtil;
 
-    @Inject
-    ComponentUtil componentUtil;
+	@Inject
+	ComponentUtil componentUtil;
 
-    @Inject
-    Strategies strategies;
+	@Inject
+	Strategies strategies;
 
-    public interface CrudEditComponentFactory extends Strategy {
-        Optional<Component> create(CrudPropertyHandle handle);
-    }
+	@Inject
+	EditComponents editComponents;
 
-    private Component toComponent(Renderable<BootstrapRiseCanvas<?>> renderer) {
-        return util.toComponent(renderer);
-    }
+	public interface CrudEditComponentFactory extends Strategy {
+		Optional<Component> create(CrudPropertyHandle handle);
+	}
 
-    abstract class Targets {
-        @GlyphiconIcon(Glyphicon.open)
-        @Labeled
-        abstract void pick();
-    }
+	private Component toComponent(Renderable<BootstrapRiseCanvas<?>> renderer) {
+		return util.toComponent(renderer);
+	}
 
-    public Component createEditComponent(CrudPropertyHandle handle) {
-        AnnotatedElement element = null;
-        Member member = handle.info().getAttribute().getJavaMember();
-        if (member instanceof AnnotatedElement) {
-            element = (AnnotatedElement) member;
-        }
+	abstract class Targets {
+		@GlyphiconIcon(Glyphicon.open)
+		@Labeled
+		abstract void pick();
+	}
 
-        return strategies.getStrategy(CrudEditComponentFactory.class)
-                .element(element).get(f -> f.create(handle))
-                .orElseThrow(() -> new RuntimeException(
-                        "No Edit component found for " + handle.info()));
-    }
+	public Component createEditComponent(CrudPropertyHandle handle) {
+		AnnotatedElement element = null;
+		Member member = handle.info().getAttribute().getJavaMember();
+		if (member instanceof AnnotatedElement) {
+			element = (AnnotatedElement) member;
+		}
 
-    void addFactory(Predicate<CrudPropertyInfo> filter,
-            Function<CrudPropertyHandle, Component> factory) {
-        strategies.putStrategy(CrudEditComponentFactory.class, handle -> {
-            if (filter.test(handle.info()))
-                return Optional.of(factory.apply(handle));
-            return Optional.empty();
-        });
-    }
+		return strategies.getStrategy(CrudEditComponentFactory.class).element(element).get(f -> f.create(handle))
+				.orElseThrow(() -> new RuntimeException("No Edit component found for " + handle.info()));
+	}
 
-    @PostConstruct
-    public void initialize() {
-        addStringFactory();
-        addByteArrayFactory();
-        addNumberFactory(Long.class, Long::parseLong);
-        addNumberFactory(Integer.class, Integer::parseInt);
+	void addFactory(Predicate<CrudPropertyInfo> filter, Function<CrudPropertyHandle, Component> factory) {
+		strategies.putStrategy(CrudEditComponentFactory.class, handle -> {
+			if (filter.test(handle.info()))
+				return Optional.of(factory.apply(handle));
+			return Optional.empty();
+		});
+	}
 
-        addManyToOneFactory();
-        addOneToManyFactory();
+	@PostConstruct
+	public void initialize() {
 
-        addEnumElementCollectionFactory();
+		addManyToOneFactory();
+		addOneToManyFactory();
 
-        addEmbeddedFactory();
+		addEnumElementCollectionFactory();
 
-    }
+		addEmbeddedFactory();
+		addEditComponentFactory();
 
-    private Component toComponentBound(Supplier<?> bindingAccessor,
-            Renderable<BootstrapRiseCanvas<?>> renderer) {
-        return util.toComponentBound(bindingAccessor, renderer);
-    }
+	}
 
-    @Inject
-    CrudReflectionUtil crudReflectionUtil;
+	private void addEditComponentFactory() {
+		strategies.putStrategy(CrudEditComponentFactory.class, new CrudEditComponentFactory() {
 
-    private void addEmbeddedFactory() {
-        addFactory(
-                p -> p.getAttribute()
-                        .getPersistentAttributeType() == PersistentAttributeType.EMBEDDED,
-                handle -> toComponentBound(() -> handle.proxy(), html -> {
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			@Override
+			public Optional<Component> create(CrudPropertyHandle handle) {
+				return editComponents.property(handle.info().getProperty()).tryGet().map(wrapper -> {
+					Component component = wrapper.getComponent();
+					wrapper.bindValue((Supplier) () -> handle.getValue());
+					return component;
+				});
+			}
+		});
+	}
 
-                    Object value = handle.getValue();
-                    if (value == null) {
-                        Class<?> rawType = TypeToken.of(
-                                handle.info().getProperty().getPropertyType())
-                                .getRawType();
-                        try {
-                            value = rawType.newInstance();
-                        } catch (Exception e) {
-                            throw new RuntimeException(
-                                    "Error while instantiating " + rawType
-                                            + " for embeddable "
-                                            + handle.info().getProperty()
-                                            + " which was null");
-                        }
-                        handle.setValue(value);
-                    }
+	private Component toComponentBound(Supplier<?> bindingAccessor, Renderable<BootstrapRiseCanvas<?>> renderer) {
+		return util.toComponentBound(bindingAccessor, renderer);
+	}
 
-                    html.bFormGroup().label()
-                            .content(labelUtil
-                                    .property(handle.info().getProperty())
-                                    .label())
-                            .bCol(x -> x.xs(11).xsOffset(1));
-                    for (CrudPropertyInfo property : crudReflectionUtil
-                            .getDisplayProperties(
-                                    crudReflectionUtil.getPersistentType(
-                                            handle.info().getEmQualifier(),
-                                            value.getClass()))) {
-                        CrudPropertyHandle subHandle = CrudPropertyHandle
-                                .create(property, handle::rootEntity,
-                                        () -> handle.getValue(),
-                                        handle.group());
-                        html.add(createEditComponent(subHandle));
-                    }
-                    html._bCol()._bFormGroup();
-                }));
+	@Inject
+	CrudReflectionUtil crudReflectionUtil;
 
-    }
+	private void addEmbeddedFactory() {
+		addFactory(p -> p.getAttribute().getPersistentAttributeType() == PersistentAttributeType.EMBEDDED,
+				handle -> toComponentBound(() -> handle.proxy(), html -> {
 
-    public void addEnumElementCollectionFactory() {
-        addFactory(p -> {
-            if (p.getAttribute()
-                    .getPersistentAttributeType() != PersistentAttributeType.ELEMENT_COLLECTION)
-                return false;
-            PluralAttribute<?, ?, ?> pluralAttribute = (PluralAttribute<?, ?, ?>) p
-                    .getAttribute();
-            return pluralAttribute.getElementType().getJavaType().isEnum();
-        } , (decl) -> {
-            PluralAttribute<?, ?, ?> pluralAttribute = (PluralAttribute<?, ?, ?>) decl
-                    .info().getAttribute();
-            Class<?> enumType = pluralAttribute.getElementType().getJavaType();
-            return toComponent(new Renderable<BootstrapRiseCanvas<?>>() {
+					Object value = handle.getValue();
+					if (value == null) {
+						Class<?> rawType = TypeToken.of(handle.info().getProperty().getPropertyType()).getRawType();
+						try {
+							value = rawType.newInstance();
+						} catch (Exception e) {
+							throw new RuntimeException("Error while instantiating " + rawType + " for embeddable "
+									+ handle.info().getProperty() + " which was null");
+						}
+						handle.setValue(value);
+					}
 
-                private Collection<?> targetCollection() {
-                    return (Collection<?>) decl.getValue();
-                }
+					html.bCol(x -> x.xs(11).xsOffset(1));
+					for (CrudPropertyInfo property : crudReflectionUtil.getDisplayProperties(
+							crudReflectionUtil.getPersistentType(handle.info().getEmQualifier(), value.getClass()))) {
+						CrudPropertyHandle subHandle = CrudPropertyHandle.create(property, handle::rootEntity,
+								() -> handle.getValue(), handle.group());
+						html.bFormGroup().label().content(labelUtil.property(property.getProperty()).label())
+								.add(createEditComponent(subHandle))._bFormGroup();
+					}
+					html._bCol();
+				}));
 
-                @SuppressWarnings({ "unchecked", "rawtypes" })
-                @Override
-                public void renderOn(BootstrapRiseCanvas<?> html) {
-                    CDataGrid<Object> grid = new CDataGrid<Object>();
-                    grid.addColumn(() -> new CDataGrid.Cell(r -> "Name"),
-                            o -> new CDataGrid.Cell(r -> String.valueOf(o)))
+	}
 
-                    .addColumn(() -> new CDataGrid.Cell(r -> ""),
-                            o -> new CDataGrid.Cell(new CButton(
-                                    CrudEditComponents.this,
-                                    x -> x.remove(() -> grid
-                                            .updateItems(i -> i.remove(o))))))
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private Collection<Object> castToObjectCollection(Object input) {
+		return (Collection) input;
+	}
 
-                    .bind(() -> decl.proxy(),
-                            (g, obj) -> g.setItems(
-                                    new ArrayList<Object>(targetCollection())),
-                            (g, obj) -> {
-                        targetCollection().clear();
-                        ((Collection) targetCollection()).addAll(g.getItems());
+	public void addEnumElementCollectionFactory() {
+		addFactory(p -> {
+			if (p.getAttribute().getPersistentAttributeType() != PersistentAttributeType.ELEMENT_COLLECTION)
+				return false;
+			PluralAttribute<?, ?, ?> pluralAttribute = (PluralAttribute<?, ?, ?>) p.getAttribute();
+			return pluralAttribute.getElementType().getJavaType().isEnum();
+		}, (decl) -> {
+			PluralAttribute<?, ?, ?> pluralAttribute = (PluralAttribute<?, ?, ?>) decl.info().getAttribute();
+			Class<?> enumType = pluralAttribute.getElementType().getJavaType();
+			return toComponent(new Renderable<BootstrapRiseCanvas<?>>() {
 
-                    });
-                    CSelect<Object> select = new CSelect<>()
-                            .setItems(
-                                    Arrays.asList(enumType.getEnumConstants()))
-                            .setAllowEmpty(true);
-                    html.bFormGroup().label()
-                            .content(labelUtil
-                                    .property(decl.info().getProperty())
-                                    .label())
-                            .add(grid).add(select)
-                            .add(new CButton(CrudEditComponents.this,
-                                    x -> x.add(() -> select.getSelectedItem()
-                                            .map(o -> grid.updateItems(
-                                                    i1 -> i1.add(o))))))
-                            ._bFormGroup();
-                }
-            });
-        });
-    }
+				@Override
+				public void renderOn(BootstrapRiseCanvas<?> html) {
+					CDataGrid<Object> grid = new CDataGrid<Object>();
+					grid.addColumn(() -> new CDataGrid.Cell(r -> "Name"),
+							o -> new CDataGrid.Cell(r -> String.valueOf(o)))
 
-    public void addStringFactory() {
-        addFactory(
-                decl -> String.class
-                        .equals(decl.getAttribute().getJavaType()),
-                (decl) -> new CFormGroup(new CTextField()
-                        .setLabel(labelUtil.property(decl.info().getProperty())
-                                .label())
-                        .bindText(() -> (String) decl.getValue())));
-    }
+							.addColumn(() -> new CDataGrid.Cell(r -> ""),
+									o -> new CDataGrid.Cell(new CButton(CrudEditComponents.this,
+											x -> x.remove(() -> grid.updateItems(i -> i.remove(o))))))
 
-    public void addByteArrayFactory() {
-        addFactory(
-                decl -> byte[].class.equals(decl.getAttribute().getJavaType()),
-                (decl) -> new CFormGroup(new CTextField()
-                        .setLabel(labelUtil.property(decl.info().getProperty())
-                                .label())
-                        .bindText(() -> new HexStringToByteArrayTransformer()
-                                .transform((byte[]) decl.getValue()))));
-    }
+							.bind(() -> decl.proxy(),
+									(g, obj) -> g
+											.setItems(new ArrayList<Object>(castToObjectCollection(decl.getValue()))),
+									(g, obj) -> {
+										castToObjectCollection(decl.getValue()).clear();
+										castToObjectCollection(decl.getValue()).addAll(g.getItems());
 
-    public void addManyToOneFactory() {
-        // Many to One
-        addFactory(
-                decl -> decl.getAttribute()
-                        .getPersistentAttributeType() == PersistentAttributeType.MANY_TO_ONE,
-                (decl) -> {
-                    Class<?> cls = decl.info().getAttribute().getJavaType();
+									});
+					CSelect<Object> select = new CSelect<>().setItems(Arrays.asList(enumType.getEnumConstants()))
+							.setAllowEmpty(true);
+					html.add(grid).add(select).add(new CButton(CrudEditComponents.this,
+							x -> x.add(() -> select.getSelectedItem().map(o -> grid.updateItems(i1 -> i1.add(o))))));
+				}
+			});
+		});
+	}
 
-                    CValue<Object> cValue = new CValue<>(
-                            v -> toComponent(html -> crudUtil
-                                    .getStrategy(IdentificationRenderer.class,
-                                            cls)
-                                    .renderIdenification(html, v)))
-                                            .bindValue(() -> decl.getValue());
+	public void addManyToOneFactory() {
+		// Many to One
+		addFactory(decl -> decl.getAttribute().getPersistentAttributeType() == PersistentAttributeType.MANY_TO_ONE,
+				(decl) -> {
+					Class<?> cls = decl.info().getAttribute().getJavaType();
 
-                    //@formatter:off
-                    return toComponent(html -> html
-                            .bFormGroup()
-                                .label().content(labelUtil.property(decl.info().getProperty()).label())
-                                .bInputGroup()
-                                .span().BformControl().DISABLED("disbled").TEST_NAME(decl.info().getAttribute().getName())
-                                    .add(cValue)
-                                ._span()
-                                .bInputGroupBtn()
-                                    .add(new CButton(this,(btn, c)->c.pick(()->{
-                                        CrudPicker picker = crudUtil.getStrategy(CrudPickerFactory.class, cls)
-                                                .createPicker(decl.info().getEmQualifier(), cls);
-                                        picker.pickerClosed().addListener(value->{
-                                            if (value!=null){
-                                                cValue.setValue(value);
-                                            }
-                                            ComponentTreeUtil
-                                            .raiseEvent(btn, new CComponentStack.PopComponentEvent());
-                                        });
-                                        ComponentTreeUtil
-                                                .raiseEvent(btn, new CComponentStack.PushComponentEvent(
-                                                        new CController(picker)));
-                                    })))
-                                    .add(new CButton(this,c->c.clear(()->cValue.setValue(null))))
-                                ._bInputGroupBtn()
-                                ._bInputGroup()
-                            ._bFormGroup());
-                    //@formatter:on);
-                });
-    }
+					CValue<Object> cValue = new CValue<>(v -> toComponent(html -> crudUtil
+							.getStrategy(IdentificationRenderer.class, cls).renderIdenification(html, v)))
+									.bindValue(() -> decl.getValue());
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void addOneToManyFactory() {
-        //@formatter:off
-        addFactory(
-                p -> p.getAttribute().getPersistentAttributeType() == PersistentAttributeType.ONE_TO_MANY,
-                (decl) -> toComponent(html->html
-                        .bFormGroup()
-                            .label().content(labelUtil.property(decl.info().getProperty()).label())
-                            .div()
-                                .add(new CButton(this,
-                                (btn, x) -> x.chooseItems(() -> {
-                                    PluralAttribute attr=(PluralAttribute) decl.info().getAttribute();
-                                    OneToMany oneToMany = ((AnnotatedElement)attr.getJavaMember()).getAnnotation(OneToMany.class);
-                                    Collection collection = (Collection) decl.getValue();
-                                    
-                                    CrudList list =
-                                        crudUtil
-                                        .getStrategy(CrudUtil.CrudListFactory.class,attr.getElementType().getJavaType())
-                                        .createList(
-                                                decl.info().getEmQualifier(),
-                                            attr.getElementType().getJavaType(),null
-                                        );
-                                    list.setItemActionsFactory(obj->{
-                                        CSwitch<Boolean> result=new CSwitch<>();
-                                        if ("".equals(oneToMany.mappedBy())){
-                                            // this is the owning side
-                                            result.put(true, new CButton(this,c->c.remove(()->{
-                                                collection.remove(obj);
-                                                result.setOption(false);
-                                            })));
-                                            result.put(false, new CButton(this,c->c.add(()->{
-                                                collection.add(obj);
-                                                result.setOption(true);
-                                            })));
-                                        }
-                                        else{
-                                            PropertyInfo owningProperty = PropertyUtil.getPropertyInfo(attr.getElementType().getJavaType(), oneToMany.mappedBy());
-                                            result.put(true, new CButton(this,c->c.remove(()->{
-                                                collection.remove(obj);
-                                                owningProperty.setValue(obj, null);
-                                                result.setOption(false);
-                                            })));
-                                            result.put(false, new CButton(this,c->c.add(()->{
-                                                collection.add(obj);
-                                                owningProperty.setValue(obj, decl.rootEntity());
-                                                result.setOption(true);
-                                            })));
-                                        }
-                                        result.setOption(collection.contains(obj));
-                                        return new CDataGrid.Cell(result);
-                                    });
-                                    list.setBottomActions(new CButton(
-                                            this,
-                                            x1 -> x1.back(() -> ComponentTreeUtil
-                                                    .raiseEvent(
-                                                            btn,
-                                                            new CComponentStack.PopComponentEvent()))));
+					// @formatter:off
+					return toComponent(html -> html.bInputGroup().span().BformControl().DISABLED("disbled")
+							.TEST_NAME(decl.info().getAttribute().getName()).add(cValue)._span().bInputGroupBtn()
+							.add(new CButton(this, (btn, c) -> c.pick(() -> {
+								CrudPicker picker = crudUtil.getStrategy(CrudPickerFactory.class, cls)
+										.createPicker(decl.info().getEmQualifier(), cls);
+								picker.pickerClosed().addListener(value -> {
+									if (value != null) {
+										cValue.setValue(value);
+									}
+									ComponentTreeUtil.raiseEvent(btn, new CComponentStack.PopComponentEvent());
+								});
+								ComponentTreeUtil.raiseEvent(btn,
+										new CComponentStack.PushComponentEvent(new CController(picker)));
+							}))).add(new CButton(this, c -> c.clear(() -> cValue.setValue(null))))._bInputGroupBtn()
+							._bInputGroup());
+					// @formatter:on);
+				});
+	}
 
-                                    ComponentTreeUtil.raiseEvent(btn,
-                                            new CComponentStack.PushComponentEvent(
-                                                    new CController(list)));
-                                })))
-                            ._div()
-                        ._bFormGroup()));
-        //@formatter:on
-    }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void addOneToManyFactory() {
+		// @formatter:off
+		addFactory(p -> p.getAttribute().getPersistentAttributeType() == PersistentAttributeType.ONE_TO_MANY,
+				(decl) -> toComponent(html -> html.div().add(new CButton(this, (btn, x) -> x.chooseItems(() -> {
+					PluralAttribute attr = (PluralAttribute) decl.info().getAttribute();
+					OneToMany oneToMany = ((AnnotatedElement) attr.getJavaMember()).getAnnotation(OneToMany.class);
+					Collection collection = (Collection) decl.getValue();
 
-    private <T> void addNumberFactory(Class<T> boxCls,
-            Function<String, T> parse) {
-        addFactory(
-                decl -> boxCls.equals(
-                        Primitives.wrap(decl.getAttribute().getJavaType())),
-                (decl) -> {
-                    CInput input = new CInput(InputType.number)
-                            .setLabel(labelUtil
-                                    .property(decl.info().getProperty())
-                                    .label())
-                            .TEST_NAME(decl.info().getAttribute().getName());
+					CrudList list = crudUtil
+							.getStrategy(CrudUtil.CrudListFactory.class, attr.getElementType().getJavaType())
+							.createList(decl.info().getEmQualifier(), attr.getElementType().getJavaType(), null);
+					list.setItemActionsFactory(obj -> {
+						CSwitch<Boolean> result = new CSwitch<>();
+						if ("".equals(oneToMany.mappedBy())) {
+							// this is the owning side
+							result.put(true, new CButton(this, c -> c.remove(() -> {
+								collection.remove(obj);
+								result.setOption(false);
+							})));
+							result.put(false, new CButton(this, c -> c.add(() -> {
+								collection.add(obj);
+								result.setOption(true);
+							})));
+						} else {
+							PropertyInfo owningProperty = PropertyUtil
+									.getPropertyInfo(attr.getElementType().getJavaType(), oneToMany.mappedBy());
+							result.put(true, new CButton(this, c -> c.remove(() -> {
+								collection.remove(obj);
+								owningProperty.setValue(obj, null);
+								result.setOption(false);
+							})));
+							result.put(false, new CButton(this, c -> c.add(() -> {
+								collection.add(obj);
+								owningProperty.setValue(obj, decl.rootEntity());
+								result.setOption(true);
+							})));
+						}
+						result.setOption(collection.contains(obj));
+						return new CDataGrid.Cell(result);
+					});
+					list.setBottomActions(new CButton(this, x1 -> x1
+							.back(() -> ComponentTreeUtil.raiseEvent(btn, new CComponentStack.PopComponentEvent()))));
 
-                    BindingUtil.bind(input, decl.group(),
-                            entity -> input
-                                    .setValue(String.valueOf(decl.getValue())),
-                            entity -> decl
-                                    .setValue(parse.apply(input.getValue())));
-                    return new CFormGroup(input);
-                });
-    }
+					ComponentTreeUtil.raiseEvent(btn, new CComponentStack.PushComponentEvent(new CController(list)));
+				})))._div()));
+		// @formatter:on
+	}
 
-    @Labeled
-    @GlyphiconIcon(Glyphicon.edit)
-    void chooseItems(Runnable callback) {
-        callback.run();
-    }
+	@Labeled
+	@GlyphiconIcon(Glyphicon.edit)
+	void chooseItems(Runnable callback) {
+		callback.run();
+	}
 
-    @Labeled
-    @GlyphiconIcon(Glyphicon.plus)
-    void add(Runnable callback) {
-        callback.run();
-    }
+	@Labeled
+	@GlyphiconIcon(Glyphicon.plus)
+	void add(Runnable callback) {
+		callback.run();
+	}
 
-    @Labeled
-    @GlyphiconIcon(Glyphicon.minus)
-    void remove(Runnable callback) {
-        callback.run();
-    }
+	@Labeled
+	@GlyphiconIcon(Glyphicon.minus)
+	void remove(Runnable callback) {
+		callback.run();
+	}
 
-    @Labeled
-    @GlyphiconIcon(Glyphicon.hand_right)
-    void pick(Runnable callback) {
-        callback.run();
-    }
+	@Labeled
+	@GlyphiconIcon(Glyphicon.hand_right)
+	void pick(Runnable callback) {
+		callback.run();
+	}
 
-    @Labeled
-    @GlyphiconIcon(Glyphicon.remove)
-    void clear(Runnable callback) {
-        callback.run();
-    }
+	@Labeled
+	@GlyphiconIcon(Glyphicon.remove)
+	void clear(Runnable callback) {
+		callback.run();
+	}
 
-    @Labeled
-    @GlyphiconIcon(Glyphicon.arrow_left)
-    void back(Runnable callback) {
-        callback.run();
-    }
+	@Labeled
+	@GlyphiconIcon(Glyphicon.arrow_left)
+	void back(Runnable callback) {
+		callback.run();
+	}
 }

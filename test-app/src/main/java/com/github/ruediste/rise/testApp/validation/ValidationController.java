@@ -7,7 +7,7 @@ import org.hibernate.validator.constraints.Length;
 
 import com.github.ruediste.rise.api.ControllerComponent;
 import com.github.ruediste.rise.component.binding.BindingGroup;
-import com.github.ruediste.rise.component.binding.transformers.HexStringToByteArrayTransformer;
+import com.github.ruediste.rise.component.binding.transformers.ByteArrayToHexStringTransformer;
 import com.github.ruediste.rise.component.components.CButton;
 import com.github.ruediste.rise.component.components.CFormGroup;
 import com.github.ruediste.rise.component.components.CPage;
@@ -33,7 +33,7 @@ public class ValidationController extends ControllerComponent {
                     .add(new CFormGroup().add(new CTextField()
                             .bindText(() -> controller.data().getStr())))
                     .add(new CFormGroup().add(new CTextField().bindText(
-                            () -> new HexStringToByteArrayTransformer()
+                            () -> new ByteArrayToHexStringTransformer()
                                     .transform(
                                             controller.data().getByteArray()))))
                     .add(new CButton(controller, x -> x.pushAndValidate()))
