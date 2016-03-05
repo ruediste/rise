@@ -12,7 +12,7 @@ import com.github.ruediste1.lambdaPegParser.Var;
 public class EntityRefUtilTest extends DbTestBase {
 
     @Inject
-    TransactionTemplate template;
+    TransactionControl template;
 
     @Inject
     EntityRefUtil util;

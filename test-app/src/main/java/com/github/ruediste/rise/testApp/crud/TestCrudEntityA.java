@@ -9,6 +9,9 @@ import javax.persistence.ManyToOne;
 import org.hibernate.validator.constraints.Length;
 
 import com.github.ruediste.rendersnakeXT.canvas.Glyphicon;
+import com.github.ruediste.rise.api.InjectParameter;
+import com.github.ruediste.rise.core.persistence.TransactionControl;
+import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 import com.github.ruediste.rise.crud.annotations.CrudBrowserColumn;
 import com.github.ruediste.rise.crud.annotations.CrudDisplayAction;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
@@ -89,8 +92,23 @@ public class TestCrudEntityA {
 	@CrudDisplayAction
 	@Labeled
 	@GlyphiconIcon(Glyphicon.bullhorn)
-	private void setStringValueToFoo() {
-		stringValue = "foo";
+	private void setStringValueAction(@Labeled String newValue, @InjectParameter TransactionControl trx,
+			@InjectParameter EntityManagerHolder emh) {
+		trx.updating().execute(() -> {
+			emh.joinTransaction();
+			stringValue = newValue;
+		});
+	}
+
+	@CrudDisplayAction
+	@Labeled
+	@GlyphiconIcon(Glyphicon.bullhorn)
+	private void setStringValueToFoo(@InjectParameter TransactionControl trx,
+			@InjectParameter EntityManagerHolder emh) {
+		trx.updating().execute(() -> {
+			emh.joinTransaction();
+			stringValue = "foo";
+		});
 	}
 
 }

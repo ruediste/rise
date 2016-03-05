@@ -11,7 +11,7 @@ import javax.inject.Singleton;
 import com.github.ruediste.rise.nonReloadable.SignatureHelper;
 
 @Singleton
-public class PasswordHashingHelper {
+public class PasswordHashingService {
     @Inject
     SignatureHelper signatureHelper;
 

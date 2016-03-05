@@ -18,7 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebElement;
 
-import com.github.ruediste.rise.core.persistence.TransactionTemplate;
+import com.github.ruediste.rise.core.persistence.TransactionControl;
 import com.github.ruediste.rise.testApp.WebTest;
 
 public class TestCrudControllerTest extends WebTest {
@@ -27,7 +27,7 @@ public class TestCrudControllerTest extends WebTest {
     TestEntityFactory factory;
 
     @Inject
-    TransactionTemplate trx;
+    TransactionControl trx;
 
     @Inject
     EntityManager em;

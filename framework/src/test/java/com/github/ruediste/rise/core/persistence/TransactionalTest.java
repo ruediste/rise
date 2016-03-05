@@ -23,10 +23,10 @@ import com.github.ruediste.salta.jsr330.SaltaModule;
 public class TransactionalTest extends DbTestBase {
 
     @Mock
-    TransactionTemplate trx;
+    TransactionControl trx;
 
     @Mock
-    TransactionExecutor trxe;
+    ITransactionControl trxe;
 
     @Override
     protected SaltaModule additionalRestartableModule() {
@@ -39,7 +39,7 @@ public class TransactionalTest extends DbTestBase {
 
             @Provides
             @Singleton
-            TransactionTemplate template() {
+            TransactionControl template() {
                 return trx;
             }
 

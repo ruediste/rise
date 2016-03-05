@@ -16,7 +16,7 @@ import javax.persistence.EntityManager;
 import org.junit.Test;
 import org.openqa.selenium.By;
 
-import com.github.ruediste.rise.core.persistence.TransactionTemplate;
+import com.github.ruediste.rise.core.persistence.TransactionControl;
 import com.github.ruediste.rise.testApp.WebTest;
 
 public class EntityControllerMvcTest extends WebTest {
@@ -25,7 +25,7 @@ public class EntityControllerMvcTest extends WebTest {
     TestEntityRepository rep;
 
     @Inject
-    TransactionTemplate template;
+    TransactionControl template;
 
     @Inject
     EntityManager em;

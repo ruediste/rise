@@ -5,7 +5,7 @@ import java.util.Arrays;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
-import com.github.ruediste.rise.core.security.login.PasswordHashingHelper;
+import com.github.ruediste.rise.core.security.login.PasswordHashingService;
 import com.github.ruediste.rise.sample.User;
 import com.github.ruediste.rise.sample.db.TodoCategory;
 import com.github.ruediste.rise.sample.db.TodoItem;
@@ -16,7 +16,7 @@ public class DevelopmentFixture implements Runnable {
     EntityManager em;
 
     @Inject
-    PasswordHashingHelper hashingHelper;
+    PasswordHashingService hashingHelper;
 
     @Override
     public void run() {

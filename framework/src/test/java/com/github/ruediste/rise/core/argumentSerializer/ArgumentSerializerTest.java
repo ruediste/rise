@@ -14,13 +14,13 @@ import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.persistence.DbTestBase;
 import com.github.ruediste.rise.core.persistence.TestEntity;
 import com.github.ruediste.rise.core.persistence.TestEntityDerived;
-import com.github.ruediste.rise.core.persistence.TransactionTemplate;
+import com.github.ruediste.rise.core.persistence.TransactionControl;
 import com.github.ruediste.rise.util.AnnotatedTypes;
 
 public class ArgumentSerializerTest extends DbTestBase {
 
     @Inject
-    TransactionTemplate template;
+    TransactionControl template;
 
     @Inject
     EntityManager em;

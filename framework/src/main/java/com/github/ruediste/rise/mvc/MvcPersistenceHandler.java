@@ -10,7 +10,7 @@ import com.github.ruediste.rise.core.ChainedRequestHandler;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.rise.core.persistence.NoTransaction;
-import com.github.ruediste.rise.core.persistence.TransactionTemplate;
+import com.github.ruediste.rise.core.persistence.TransactionControl;
 import com.github.ruediste.rise.core.persistence.Updating;
 
 public class MvcPersistenceHandler extends ChainedRequestHandler {
@@ -25,7 +25,7 @@ public class MvcPersistenceHandler extends ChainedRequestHandler {
     CoreRequestInfo coreRequestInfo;
 
     @Inject
-    TransactionTemplate template;
+    TransactionControl template;
 
     @Override
     public void run(Runnable next) {

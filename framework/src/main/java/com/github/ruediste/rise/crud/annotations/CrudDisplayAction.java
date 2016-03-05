@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.github.ruediste.rise.core.persistence.TransactionTemplate;
+import com.github.ruediste.rise.core.persistence.TransactionControl;
 import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
 
 /**
@@ -23,7 +23,7 @@ import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
  * 
  * <p>
  * There is no special transaction handling performed by the framework. Use the
- * {@link TransactionTemplate} to do that. The view is refreshed after the
+ * {@link TransactionControl} to do that. The view is refreshed after the
  * method returns.
  */
 @Target(ElementType.METHOD)

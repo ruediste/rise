@@ -15,87 +15,89 @@ import com.github.ruediste.rise.component.tree.ComponentTreeUtil;
  * {@link ComponentTreeUtil#raiseEvent(Component, ComponentEvent) raising}
  * {@link PopComponentEvent}s or {@link PushComponentEvent}s from child
  * components.
+ * 
+ * <p>
+ * In addition, a {@link ComponentStackHandle} can be created from any
+ * component, encapsulating the event raising.
  */
 @DefaultTemplate(CComponentStackTemplate.class)
 public class CComponentStack extends ComponentBase<CComponentStack> {
 
-    Deque<Component> stack = new LinkedList<>();
+	Deque<Component> stack = new LinkedList<>();
 
-    /**
-     * Pop the top component from the next containing {@link CComponentStack}
-     */
-    public static class PopComponentEvent extends ComponentEventBase {
+	/**
+	 * Pop the top component from the next containing {@link CComponentStack}
+	 */
+	public static class PopComponentEvent extends ComponentEventBase {
 
-        public PopComponentEvent() {
-            super(ComponentEventType.BUBBLE);
-        }
-    }
+		public PopComponentEvent() {
+			super(ComponentEventType.BUBBLE);
+		}
+	}
 
-    /**
-     * Push a component to the next containing {@link CComponentStack}
-     */
-    public static class PushComponentEvent extends ComponentEventBase {
+	/**
+	 * Push a component to the next containing {@link CComponentStack}
+	 */
+	public static class PushComponentEvent extends ComponentEventBase {
 
-        final private Component component;
+		final private Component component;
 
-        public PushComponentEvent(Component component) {
-            super(ComponentEventType.BUBBLE);
-            this.component = component;
-        }
+		public PushComponentEvent(Component component) {
+			super(ComponentEventType.BUBBLE);
+			this.component = component;
+		}
 
-        public Component getComponent() {
-            return component;
-        }
-    }
+		public Component getComponent() {
+			return component;
+		}
+	}
 
-    public CComponentStack() {
-        ComponentTreeUtil.registerEventListener(this, PopComponentEvent.class,
-                e -> {
-                    e.cancel();
-                    pop();
-                });
-        ComponentTreeUtil.registerEventListener(this, PushComponentEvent.class,
-                e -> {
-                    e.cancel();
-                    push(e.getComponent());
-                });
-    }
+	public CComponentStack() {
+		ComponentTreeUtil.registerEventListener(this, PopComponentEvent.class, e -> {
+			e.cancel();
+			pop();
+		});
+		ComponentTreeUtil.registerEventListener(this, PushComponentEvent.class, e -> {
+			e.cancel();
+			push(e.getComponent());
+		});
+	}
 
-    public CComponentStack(Component component) {
-        this();
-        push(component);
-    }
+	public CComponentStack(Component component) {
+		this();
+		push(component);
+	}
 
-    @Override
-    public Iterable<Component> getChildren() {
-        return stack;
-    }
+	@Override
+	public Iterable<Component> getChildren() {
+		return stack;
+	}
 
-    @Override
-    public void childRemoved(Component child) {
-        stack.remove(child);
-    }
+	@Override
+	public void childRemoved(Component child) {
+		stack.remove(child);
+	}
 
-    public Component peek() {
-        return stack.peek();
-    }
+	public Component peek() {
+		return stack.peek();
+	}
 
-    /**
-     * @return the component stack (this)
-     */
-    public CComponentStack push(Component e) {
+	/**
+	 * @return the component stack (this)
+	 */
+	public CComponentStack push(Component e) {
 
-        stack.push(e);
-        if (e.getParent() != null)
-            e.getParent().childRemoved(e);
-        e.parentChanged(this);
-        return this;
-    }
+		stack.push(e);
+		if (e.getParent() != null)
+			e.getParent().childRemoved(e);
+		e.parentChanged(this);
+		return this;
+	}
 
-    public Component pop() {
-        Component tos = stack.pop();
-        tos.parentChanged(null);
-        return tos;
-    }
+	public Component pop() {
+		Component tos = stack.pop();
+		tos.parentChanged(null);
+		return tos;
+	}
 
 }

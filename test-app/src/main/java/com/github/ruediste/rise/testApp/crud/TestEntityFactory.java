@@ -5,12 +5,12 @@ import javax.persistence.EntityManager;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
-import com.github.ruediste.rise.core.persistence.TransactionTemplate;
+import com.github.ruediste.rise.core.persistence.TransactionControl;
 
 public class TestEntityFactory {
 
     @Inject
-    TransactionTemplate trx;
+    TransactionControl trx;
 
     @Inject
     EntityManager em;

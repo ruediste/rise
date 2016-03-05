@@ -36,172 +36,154 @@ import com.github.ruediste1.i18n.label.Labeled;
 import com.github.ruediste1.i18n.label.MembersLabeled;
 import com.google.common.base.Preconditions;
 
-public class DefaultCrudListController extends SubControllerComponent
-        implements CrudList {
-    @Inject
-    CrudReflectionUtil crudReflectionUtil;
+public class DefaultCrudListController extends SubControllerComponent implements CrudList {
+	@Inject
+	CrudReflectionUtil crudReflectionUtil;
 
-    @Inject
-    CrudPropertyFilters filters;
+	@Inject
+	CrudPropertyFilters filters;
 
-    @Inject
-    ComponentUtil componentUtil;
+	@Inject
+	ComponentUtil componentUtil;
 
-    @Inject
-    CrudUtil crudUtil;
+	@Inject
+	CrudUtil crudUtil;
 
-    @SuppressWarnings("unused")
-    private static class DefaultCrudBrowserView
-            extends FrameworkViewComponent<DefaultCrudListController> {
+	@SuppressWarnings("unused")
+	private static class DefaultCrudBrowserView extends FrameworkViewComponent<DefaultCrudListController> {
 
-        @MembersLabeled
-        enum Labels {
-            FILTER, ACTIONS
-        }
+		@MembersLabeled
+		enum Labels {
+			FILTER, ACTIONS
+		}
 
-        @Inject
-        LabelUtil labelUtil;
+		@Inject
+		LabelUtil labelUtil;
 
-        @Override
-        protected Component createComponents() {
+		@Override
+		protected Component createComponents() {
 
-            // create columns
-            ArrayList<Column<Object>> columns = new ArrayList<>();
-            for (CrudPropertyInfo p : controller.columnProperties) {
-                PropertyInfo property = p.getProperty();
-                columns.add(
-                        new Column<>(
-                                () -> new CDataGrid.Cell(labelUtil.property(property).label()),
-                        item -> new Cell(new CText(
-                                Objects.toString(property.getValue(item)))))
-                                        .TEST_NAME(property.getName()));
-            }
-            if (controller.getItemActionsFactory() != null)
-                columns.add(
-                        new Column<Object>(
-                                () -> new Cell(
-                                        new CText(label(Labels.ACTIONS))),
-                                controller.getItemActionsFactory())
-                                        .TEST_NAME("actions"));
+			// create columns
+			ArrayList<Column<Object>> columns = new ArrayList<>();
+			for (CrudPropertyInfo p : controller.columnProperties) {
+				PropertyInfo property = p.getProperty();
+				columns.add(new Column<>(() -> new CDataGrid.Cell(labelUtil.property(property).label()),
+						item -> new Cell(new CText(Objects.toString(property.getValue(item)))))
+								.TEST_NAME(property.getName()));
+			}
+			if (controller.getItemActionsFactory() != null)
+				columns.add(new Column<Object>(() -> new Cell(new CText(label(Labels.ACTIONS))),
+						controller.getItemActionsFactory()).TEST_NAME("actions"));
 
-            // @formatter:off
-            return toComponent(html -> html
-                    .div().CLASS("panel panel-default")
-                        .div().CLASS("panel-heading").content(Labels.FILTER)
-                        .div().CLASS("panel-body")
-                            .fForEach(controller.filterList, filter -> {
-                                html.add(filter.getComponent());
-                            })
-                        ._div()
-                    ._div()
-                    .add(new CButton(controller, x -> x.search())
-                        .apply(CButtonTemplate.setArgs(x -> x.primary())))
-                    .add(new CDataGrid<Object>().TEST_NAME("resultList")
-                            .setColumns(columns)
-                            .bindOneWay(
-                                    g -> g.setItems(controller.data()
-                                            .getItems()))).div()
-                    .TEST_NAME("bottom-actions")
-                      .fIf(controller.bottomActions!=null, ()->html
-                          .add(controller.bottomActions))
-                    ._div());
-            // @formatter:on
-        }
-    }
+			// @formatter:off
+			return toComponent(html -> html.div().CLASS("panel panel-default").div().CLASS("panel-heading")
+					.content(Labels.FILTER).div().CLASS("panel-body").fForEach(controller.filterList, filter -> {
+						html.add(filter.getComponent());
+					})._div()._div()
+					.add(new CButton(controller, x -> x.search()).apply(CButtonTemplate.setArgs(x -> x.primary())))
+					.add(new CDataGrid<Object>().TEST_NAME("resultList").setColumns(columns)
+							.bindOneWay(g -> g.setItems(controller.data().getItems())))
+					.div().TEST_NAME("bottom-actions")
+					.fIf(controller.bottomActions != null, () -> html.add(controller.bottomActions))._div());
+			// @formatter:on
+		}
+	}
 
-    @Inject
-    EntityManagerHolder emh;
+	@Inject
+	EntityManagerHolder emh;
 
-    static class Data {
-        private List<Object> items;
+	static class Data {
+		private List<Object> items;
 
-        public List<Object> getItems() {
-            return items;
-        }
+		public List<Object> getItems() {
+			return items;
+		}
 
-        public void setItems(List<Object> objects) {
-            this.items = objects;
-        }
-    }
+		public void setItems(List<Object> objects) {
+			this.items = objects;
+		}
+	}
 
-    private Function<Object, Cell> itemActionsFactory;
+	private Function<Object, Cell> itemActionsFactory;
 
-    private Component bottomActions;
+	private Component bottomActions;
 
-    public Component getBottomActions() {
-        return bottomActions;
-    }
+	public Component getBottomActions() {
+		return bottomActions;
+	}
 
-    @Override
-    public DefaultCrudListController setBottomActions(Component bottomActions) {
-        this.bottomActions = bottomActions;
-        return this;
-    }
+	@Override
+	public DefaultCrudListController setBottomActions(Component bottomActions) {
+		this.bottomActions = bottomActions;
+		return this;
+	}
 
-    private PersistentType type;
+	private PersistentType type;
 
-    @Inject
-    BindingGroup<Data> data;
+	@Inject
+	BindingGroup<Data> data;
 
-    List<CrudPropertyInfo> columnProperties;
+	List<CrudPropertyInfo> columnProperties;
 
-    List<CrudPropertyFilter> filterList;
+	List<CrudPropertyFilter> filterList;
 
-    private Consumer<PersistenceFilterContext<?>> constantFilter;
+	private Consumer<PersistenceFilterContext<?>> constantFilter;
 
-    Data data() {
-        return data.proxy();
-    }
+	Data data() {
+		return data.proxy();
+	}
 
-    private EntityManager getEm() {
-        return emh.getEntityManager(type.getEmQualifier());
-    }
+	private EntityManager getEm() {
+		return emh.getEntityManager(type.getEmQualifier());
+	}
 
-    @Labeled
-    @GlyphiconIcon(Glyphicon.search)
-    public void search() {
-        TypedQuery<Object> q = crudUtil.queryWithFilters(type, getEm(), ctx -> {
-            if (constantFilter != null)
-                constantFilter.accept(ctx);
-            for (CrudPropertyFilter filter : filterList) {
-                filter.applyFilter(ctx);
-            }
-        });
+	@Labeled
+	@GlyphiconIcon(Glyphicon.search)
+	public void search() {
+		TypedQuery<Object> q = crudUtil.queryWithFilters(type, getEm(), ctx -> {
+			if (constantFilter != null)
+				constantFilter.accept(ctx);
+			for (CrudPropertyFilter filter : filterList) {
+				filter.applyFilter(ctx);
+			}
+		});
 
-        data.get().setItems(q.getResultList());
-        data.pullUp();
-    }
+		data.get().setItems(q.getResultList());
+		data.pullUp();
+	}
 
-    public DefaultCrudListController initialize(Class<?> entityClass,
-            Class<? extends Annotation> emQualifier,
-            Consumer<PersistenceFilterContext<?>> constantFilter) {
-        this.constantFilter = constantFilter;
-        Preconditions.checkNotNull(entityClass, "entityClass is null");
-        type = crudReflectionUtil.getPersistentType(emQualifier, entityClass);
+	public DefaultCrudListController initialize(Class<?> entityClass, Class<? extends Annotation> emQualifier,
+			Consumer<PersistenceFilterContext<?>> constantFilter) {
+		this.constantFilter = constantFilter;
+		Preconditions.checkNotNull(entityClass, "entityClass is null");
+		type = crudReflectionUtil.getPersistentType(emQualifier, entityClass);
 
-        columnProperties = crudReflectionUtil.getBrowserProperties(type);
-        filterList = columnProperties.stream().map(filters::create)
-                .collect(toList());
+		columnProperties = crudReflectionUtil.getBrowserProperties(type);
+		filterList = columnProperties.stream().map(filters::create).collect(toList());
 
-        search();
+		search();
 
-        return this;
-    }
+		return this;
+	}
 
-    public Function<Object, Cell> getItemActionsFactory() {
-        return itemActionsFactory;
-    }
+	public Function<Object, Cell> getItemActionsFactory() {
+		return itemActionsFactory;
+	}
 
-    @Override
-    public DefaultCrudListController setItemActionsFactory(
-            Function<Object, Cell> itemActionsFactory) {
-        this.itemActionsFactory = itemActionsFactory;
-        return this;
-    }
+	@Override
+	public DefaultCrudListController setItemActionsFactory(Function<Object, Cell> itemActionsFactory) {
+		this.itemActionsFactory = itemActionsFactory;
+		return this;
+	}
 
-    @Override
-    public PersistentType getType() {
-        return type;
-    }
+	@Override
+	public PersistentType getType() {
+		return type;
+	}
+
+	@Override
+	public void refresh() {
+		search();
+	}
 
 }

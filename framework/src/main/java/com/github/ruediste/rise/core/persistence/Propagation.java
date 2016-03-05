@@ -8,24 +8,28 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public enum Propagation {
 
-    /**
-     * Support a current transaction, create a new one if none exists. Analogous
-     * to EJB transaction attribute of the same name.
-     * <p>
-     * This is the default setting of a transaction annotation.
-     */
-    REQUIRED(),
+	/**
+	 * Support a current transaction, create a new one if none exists. Analogous
+	 * to EJB transaction attribute of the same name.
+	 * 
+	 * <p>
+	 * If the running transaction has a lower isolation level than the requested
+	 * transaction, a new transaction is started
+	 * <p>
+	 * This is the default setting of a transaction annotation.
+	 */
+	REQUIRED(),
 
-    /**
-     * Support a current transaction, throw an exception if none exists.
-     * Analogous to EJB transaction attribute of the same name.
-     */
-    MANDATORY(),
+	/**
+	 * Support a current transaction, throw an exception if none exists.
+	 * Analogous to EJB transaction attribute of the same name.
+	 */
+	MANDATORY(),
 
-    /**
-     * Execute non-transactionally, throw an exception if a transaction exists.
-     * Analogous to EJB transaction attribute of the same name.
-     */
-    NEVER(),
+	/**
+	 * Execute non-transactionally, throw an exception if a transaction exists.
+	 * Analogous to EJB transaction attribute of the same name.
+	 */
+	NEVER(),
 
 }

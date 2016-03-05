@@ -15,7 +15,7 @@ import org.slf4j.Logger;
  * {@link DataSource} delegating to a registered delegate based on the
  * {@link IsolationLevel} of the current transaction
  * 
- * @see TransactionProperties#getIsolationLevel(Class)
+ * @see TransactionProperties#getIsolationLevel()
  */
 public class IsolationLevelDataSourceRouter extends DelegatingDataSource {
 
@@ -39,7 +39,7 @@ public class IsolationLevelDataSourceRouter extends DelegatingDataSource {
         try {
             if (txm.getStatus() != Status.STATUS_NO_TRANSACTION) {
                 IsolationLevel level = transactionProperties
-                        .getIsolationLevel(qualifier);
+                        .getIsolationLevel();
                 result = dataSources.get(level);
                 if (result == null) {
                     result = dataSources.get(defaultLevel);

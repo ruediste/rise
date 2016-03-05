@@ -3,8 +3,6 @@ package com.github.ruediste.rise.crud;
 import static java.util.stream.Collectors.joining;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -35,282 +33,255 @@ import com.google.common.base.Preconditions;
 @Singleton
 public class CrudUtil {
 
-    @Inject
-    Injector injector;
-
-    @Inject
-    Strategies strategies;
-
-    public <TKey, T extends Strategy> T getStrategy(Class<T> strategy,
-            Class<?> entityClass) {
-        return strategies.getStrategies(strategy, entityClass).findFirst()
-                .orElseThrow(() -> new RuntimeException("No strategy "
-                        + strategy.getName() + " found for entity class "
-                        + entityClass.getName()));
-    }
+	@Inject
+	Injector injector;
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <T> TypedQuery<T> queryWithFilters(PersistentType type,
-            EntityManager em, Consumer<PersistenceFilterContext> action) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery q = cb.createQuery(type.getEntityClass());
-        Root root = q.from(type.getEntityClass());
-        q.select(root);
+	@Inject
+	Strategies strategies;
 
-        ArrayList<Predicate> whereClauses = new ArrayList<>();
-        PersistenceFilterContext filterContext = new PersistenceFilterContext<T>() {
+	public <TKey, T extends Strategy> T getStrategy(Class<T> strategy, Class<?> entityClass) {
+		return strategies.getStrategies(strategy, entityClass).findFirst().orElseThrow(() -> new RuntimeException(
+				"No strategy " + strategy.getName() + " found for entity class " + entityClass.getName()));
+	}
 
-            @Override
-            public CriteriaQuery<T> query() {
-                return q;
-            }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public <T> TypedQuery<T> queryWithFilters(PersistentType type, EntityManager em,
+			Consumer<PersistenceFilterContext> action) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery q = cb.createQuery(type.getEntityClass());
+		Root root = q.from(type.getEntityClass());
+		q.select(root);
 
-            @Override
-            public CriteriaBuilder cb() {
-                return cb;
-            }
+		ArrayList<Predicate> whereClauses = new ArrayList<>();
+		PersistenceFilterContext filterContext = new PersistenceFilterContext<T>() {
 
-            @Override
-            public Root<T> root() {
-                return root;
-            }
+			@Override
+			public CriteriaQuery<T> query() {
+				return q;
+			}
 
-            @Override
-            public void addWhere(Predicate predicate) {
-                whereClauses.add(predicate);
-            }
-        };
+			@Override
+			public CriteriaBuilder cb() {
+				return cb;
+			}
 
-        action.accept(filterContext);
+			@Override
+			public Root<T> root() {
+				return root;
+			}
 
-        q.where(whereClauses.toArray(new Predicate[] {}));
-        return em.createQuery(filterContext.query());
-    }
+			@Override
+			public void addWhere(Predicate predicate) {
+				whereClauses.add(predicate);
+			}
+		};
 
-    interface PersistenceFilterContext<T> {
-        CriteriaBuilder cb();
+		action.accept(filterContext);
 
-        CriteriaQuery<T> query();
+		q.where(whereClauses.toArray(new Predicate[] {}));
+		return em.createQuery(filterContext.query());
+	}
 
-        Root<T> root();
+	interface PersistenceFilterContext<T> {
+		CriteriaBuilder cb();
 
-        void addWhere(Predicate predicate);
-    }
+		CriteriaQuery<T> query();
 
-    /**
-     * A browser displays all instances of a certain type and allows the user to
-     * search/filter the list. For each instance, certain operations can be
-     * performed.
-     */
-    @ImplementedBy(DefaultBrowserFactory.class)
-    public interface BrowserFactory extends Strategy {
-        Object createBrowser(Class<?> entityClass,
-                Class<? extends Annotation> emQualifier);
-    }
+		Root<T> root();
 
-    private static class DefaultBrowserFactory implements BrowserFactory {
+		void addWhere(Predicate predicate);
+	}
 
-        @Inject
-        Provider<DefaultCrudBrowserController> provider;
+	/**
+	 * A browser displays all instances of a certain type and allows the user to
+	 * search/filter the list. For each instance, certain operations can be
+	 * performed.
+	 */
+	@ImplementedBy(DefaultBrowserFactory.class)
+	public interface BrowserFactory extends Strategy {
+		Object createBrowser(Class<?> entityClass, Class<? extends Annotation> emQualifier);
+	}
 
-        @Override
-        public Object createBrowser(Class<?> entityClass,
-                Class<? extends Annotation> emQualifier) {
-            return provider.get().initialize(entityClass, emQualifier);
-        }
+	private static class DefaultBrowserFactory implements BrowserFactory {
 
-    }
+		@Inject
+		Provider<DefaultCrudBrowserController> provider;
 
-    @ImplementedBy(DefaultDisplayFactory.class)
-    public interface DisplayFactory extends Strategy {
+		@Override
+		public Object createBrowser(Class<?> entityClass, Class<? extends Annotation> emQualifier) {
+			return provider.get().initialize(entityClass, emQualifier);
+		}
 
-        Object createDisplay(Object entity);
-    }
+	}
 
-    private static class DefaultDisplayFactory implements DisplayFactory {
+	@ImplementedBy(DefaultDisplayFactory.class)
+	public interface DisplayFactory extends Strategy {
 
-        @Inject
-        Provider<DefaultCrudDisplayController> provider;
+		Object createDisplay(Object entity);
+	}
 
-        @Override
-        public Object createDisplay(Object entity) {
-            return provider.get().initialize(entity);
-        }
+	private static class DefaultDisplayFactory implements DisplayFactory {
 
-    }
+		@Inject
+		Provider<DefaultCrudDisplayController> provider;
 
-    @ImplementedBy(DefaultEditFactory.class)
-    public interface EditFactory extends Strategy {
+		@Override
+		public Object createDisplay(Object entity) {
+			return provider.get().initialize(entity);
+		}
 
-        Object createEdit(Object entity);
-    }
+	}
 
-    private static class DefaultEditFactory implements EditFactory {
+	@ImplementedBy(DefaultEditFactory.class)
+	public interface EditFactory extends Strategy {
 
-        @Inject
-        Provider<DefaultCrudEditController> provider;
+		Object createEdit(Object entity);
+	}
 
-        @Override
-        public Object createEdit(Object entity) {
-            return provider.get().initialize(entity);
-        }
+	private static class DefaultEditFactory implements EditFactory {
 
-    }
+		@Inject
+		Provider<DefaultCrudEditController> provider;
 
-    @ImplementedBy(DefaultCreateFactory.class)
-    public interface CreateFactory extends Strategy {
+		@Override
+		public Object createEdit(Object entity) {
+			return provider.get().initialize(entity);
+		}
 
-        Object createCreate(Class<?> entityClass,
-                Class<? extends Annotation> emQualifier);
-    }
+	}
 
-    private static class DefaultCreateFactory implements CreateFactory {
+	@ImplementedBy(DefaultCreateFactory.class)
+	public interface CreateFactory extends Strategy {
 
-        @Inject
-        Provider<DefaultCrudCreateController> provider;
+		Object createCreate(Class<?> entityClass, Class<? extends Annotation> emQualifier);
+	}
 
-        @Override
-        public Object createCreate(Class<?> entityClass,
-                Class<? extends Annotation> emQualifier) {
-            return provider.get().initialize(entityClass, emQualifier);
-        }
+	private static class DefaultCreateFactory implements CreateFactory {
 
-    }
+		@Inject
+		Provider<DefaultCrudCreateController> provider;
 
-    @ImplementedBy(DefaultDeleteFactory.class)
-    public interface DeleteFactory extends Strategy {
+		@Override
+		public Object createCreate(Class<?> entityClass, Class<? extends Annotation> emQualifier) {
+			return provider.get().initialize(entityClass, emQualifier);
+		}
 
-        Object createDelete(Object entity);
-    }
-
-    private static class DefaultDeleteFactory implements DeleteFactory {
-
-        @Inject
-        Provider<DefaultCrudDeleteController> provider;
-
-        @Override
-        public Object createDelete(Object entity) {
-            return provider.get().initialize(entity);
-        }
-
-    }
-
-    @ImplementedBy(DefaultIdentificationRenderer.class)
-    public interface IdentificationRenderer extends Strategy {
-        void renderIdenification(BootstrapRiseCanvas<?> html, Object entity);
-    }
-
-    private static class DefaultIdentificationRenderer
-            implements IdentificationRenderer {
-
-        @Inject
-        CrudReflectionUtil util;
-
-        @Override
-        public void renderIdenification(BootstrapRiseCanvas<?> html,
-                Object entity) {
-            if (entity == null)
-                html.write("<null>");
-            else {
-                PersistentType type = util.getPersistentType(entity);
-                html.write(
-                        util.getIdentificationProperties(type).stream()
-                                .map(p -> p.getProperty().getName() + ":"
-                                        + String.valueOf(p.getProperty()
-                                                .getValue(entity)))
-                        .collect(joining(" ")));
-            }
-        }
-    }
-
-    /**
-     * A sub controller which allows to pick an instance of an entity
-     */
-    public interface CrudPicker {
-
-        /**
-         * fired when the picker is closed. The argument is the picked entity,
-         * or null if picking has been canceled
-         */
-        GenericEvent<Object> pickerClosed();
-    }
-
-    @ImplementedBy(DefaultCrudPickerFactory.class)
-    public interface CrudPickerFactory extends Strategy {
-        CrudPicker createPicker(Class<? extends Annotation> emQualifier,
-                Class<?> entityClass);
-    }
-
-    public static class DefaultCrudPickerFactory implements CrudPickerFactory {
-
-        @Inject
-        Provider<DefaultCrudPickerController> provider;
-
-        @Override
-        public CrudPicker createPicker(Class<? extends Annotation> emQualifier,
-                Class<?> entityClass) {
-            Preconditions.checkNotNull(entityClass, "entityClass is null");
-            return provider.get().initialize(entityClass, emQualifier);
-        }
-
-    }
-
-    /**
-     * {@link ControllerComponent} displaying a list of entities
-     */
-    public interface CrudList extends IControllerComponent {
-
-        PersistentType getType();
-
-        DefaultCrudListController setItemActionsFactory(
-                Function<Object, Cell> itemActionsFactory);
-
-        DefaultCrudListController setBottomActions(Component bottomActions);
-
-    }
-
-    @ImplementedBy(DefaultCrudListFactory.class)
-    public interface CrudListFactory extends Strategy {
-        /**
-         * Create a {@link CrudList} controller for the given entities.
-         * 
-         * @param emQualifier
-         *            persistence unit to use
-         * @param entityClass
-         *            entity class to display
-         * @param constantFilter
-         *            filter to use regardless of the filter entered by the user
-         */
-        CrudList createList(Class<? extends Annotation> emQualifier,
-                Class<?> entityClass,
-                Consumer<PersistenceFilterContext<?>> constantFilter);
-    }
-
-    public static class DefaultCrudListFactory implements CrudListFactory {
-
-        @Inject
-        Provider<DefaultCrudListController> provider;
-
-        @Override
-        public CrudList createList(Class<? extends Annotation> emQualifier,
-                Class<?> entityClass,
-                Consumer<PersistenceFilterContext<?>> constantFilter) {
-            Preconditions.checkNotNull(entityClass, "entityClass is null");
-            return provider.get().initialize(entityClass, emQualifier,
-                    constantFilter);
-        }
-
-    }
-
-    public void invokeActionMethod(Method m, Object target) {
-        try {
-            m.setAccessible(true);
-            m.invoke(target);
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException(e.getCause());
-        } catch (IllegalAccessException | IllegalArgumentException e) {
-            throw new RuntimeException(
-                    "Error while invoking action method " + m, e);
-        }
-    }
+	}
+
+	@ImplementedBy(DefaultDeleteFactory.class)
+	public interface DeleteFactory extends Strategy {
+
+		Object createDelete(Object entity);
+	}
+
+	private static class DefaultDeleteFactory implements DeleteFactory {
+
+		@Inject
+		Provider<DefaultCrudDeleteController> provider;
+
+		@Override
+		public Object createDelete(Object entity) {
+			return provider.get().initialize(entity);
+		}
+
+	}
+
+	@ImplementedBy(DefaultIdentificationRenderer.class)
+	public interface IdentificationRenderer extends Strategy {
+		void renderIdenification(BootstrapRiseCanvas<?> html, Object entity);
+	}
+
+	private static class DefaultIdentificationRenderer implements IdentificationRenderer {
+
+		@Inject
+		CrudReflectionUtil util;
+
+		@Override
+		public void renderIdenification(BootstrapRiseCanvas<?> html, Object entity) {
+			if (entity == null)
+				html.write("<null>");
+			else {
+				PersistentType type = util.getPersistentType(entity);
+				html.write(util.getIdentificationProperties(type).stream()
+						.map(p -> p.getProperty().getName() + ":" + String.valueOf(p.getProperty().getValue(entity)))
+						.collect(joining(" ")));
+			}
+		}
+	}
+
+	/**
+	 * A sub controller which allows to pick an instance of an entity
+	 */
+	public interface CrudPicker {
+
+		/**
+		 * fired when the picker is closed. The argument is the picked entity,
+		 * or null if picking has been canceled
+		 */
+		GenericEvent<Object> pickerClosed();
+	}
+
+	@ImplementedBy(DefaultCrudPickerFactory.class)
+	public interface CrudPickerFactory extends Strategy {
+		CrudPicker createPicker(Class<? extends Annotation> emQualifier, Class<?> entityClass);
+	}
+
+	public static class DefaultCrudPickerFactory implements CrudPickerFactory {
+
+		@Inject
+		Provider<DefaultCrudPickerController> provider;
+
+		@Override
+		public CrudPicker createPicker(Class<? extends Annotation> emQualifier, Class<?> entityClass) {
+			Preconditions.checkNotNull(entityClass, "entityClass is null");
+			return provider.get().initialize(entityClass, emQualifier);
+		}
+
+	}
+
+	/**
+	 * {@link ControllerComponent} displaying a list of entities
+	 */
+	public interface CrudList extends IControllerComponent {
+
+		PersistentType getType();
+
+		DefaultCrudListController setItemActionsFactory(Function<Object, Cell> itemActionsFactory);
+
+		DefaultCrudListController setBottomActions(Component bottomActions);
+
+		void refresh();
+
+	}
+
+	@ImplementedBy(DefaultCrudListFactory.class)
+	public interface CrudListFactory extends Strategy {
+		/**
+		 * Create a {@link CrudList} controller for the given entities.
+		 * 
+		 * @param emQualifier
+		 *            persistence unit to use
+		 * @param entityClass
+		 *            entity class to display
+		 * @param constantFilter
+		 *            filter to use regardless of the filter entered by the user
+		 */
+		CrudList createList(Class<? extends Annotation> emQualifier, Class<?> entityClass,
+				Consumer<PersistenceFilterContext<?>> constantFilter);
+	}
+
+	public static class DefaultCrudListFactory implements CrudListFactory {
+
+		@Inject
+		Provider<DefaultCrudListController> provider;
+
+		@Override
+		public CrudList createList(Class<? extends Annotation> emQualifier, Class<?> entityClass,
+				Consumer<PersistenceFilterContext<?>> constantFilter) {
+			Preconditions.checkNotNull(entityClass, "entityClass is null");
+			return provider.get().initialize(entityClass, emQualifier, constantFilter);
+		}
+
+	}
+
 }

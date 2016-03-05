@@ -11,14 +11,14 @@ import org.openqa.selenium.WebDriver;
 
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.core.persistence.TransactionCallback;
-import com.github.ruediste.rise.core.persistence.TransactionTemplate;
+import com.github.ruediste.rise.core.persistence.TransactionControl;
 import com.github.ruediste.rise.testApp.WebTest;
 import com.github.ruediste.rise.testApp.persistence.TestAppEntity;
 
 public class TestComponentControllerTest extends WebTest {
 
     @Inject
-    TransactionTemplate t;
+    TransactionControl t;
 
     @Inject
     ComponentUtil util;
