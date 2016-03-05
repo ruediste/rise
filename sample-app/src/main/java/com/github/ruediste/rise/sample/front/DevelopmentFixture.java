@@ -16,7 +16,7 @@ public class DevelopmentFixture implements Runnable {
     EntityManager em;
 
     @Inject
-    PasswordHashingService hashingHelper;
+    PasswordHashingService hashingService;
 
     @Override
     public void run() {
@@ -30,18 +30,14 @@ public class DevelopmentFixture implements Runnable {
 
         User user = new User();
         user.setName("admin");
-        user.setPassword("admin");
-        user.setHash(hashingHelper.createHash("admin"));
-        user.getGrantedRights().addAll(Arrays.asList(
-                SampleRight.VIEW_ADMIN_PAGE, SampleRight.VIEW_USER_PAGE));
+        user.setHash(hashingService.createHash("admin"));
+        user.getGrantedRights().addAll(Arrays.asList(SampleRight.VIEW_ADMIN_PAGE, SampleRight.VIEW_USER_PAGE));
         em.persist(user);
 
         user = new User();
         user.setName("user");
-        user.setPassword("user");
-        user.setHash(hashingHelper.createHash("user"));
-        user.getGrantedRights()
-                .addAll(Arrays.asList(SampleRight.VIEW_USER_PAGE));
+        user.setHash(hashingService.createHash("user"));
+        user.getGrantedRights().addAll(Arrays.asList(SampleRight.VIEW_USER_PAGE));
         em.persist(user);
     }
 

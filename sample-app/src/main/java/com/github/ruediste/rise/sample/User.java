@@ -33,10 +33,7 @@ public class User {
     @CrudBrowserColumn
     private String name;
 
-    private String password;
-
     @Embedded
-
     private PasswordHash hash;
 
     @ElementCollection
@@ -64,14 +61,6 @@ public class User {
 
     public void setGrantedRights(Set<SampleRight> grantedRights) {
         this.grantedRights = grantedRights;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public PasswordHash getHash() {

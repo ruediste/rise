@@ -45,8 +45,7 @@ public class PasswordHashingService {
         signatureHelper.getRandom().nextBytes(salt);
 
         // Hash the password
-        byte[] hash = pbkdf2(hashAlgorithm, iterations, hashBytes, salt,
-                password);
+        byte[] hash = pbkdf2(hashAlgorithm, iterations, hashBytes, salt, password);
         // format iterations:salt:hash
         return new PasswordHash(hashAlgorithm, iterations, salt, hash);
     }
@@ -60,8 +59,7 @@ public class PasswordHashingService {
      *            the hash of the valid password
      * @return true if the password is correct, false if not
      */
-    public boolean validatePassword(String password, PasswordHash goodHash)
-            throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public boolean validatePassword(String password, PasswordHash goodHash) {
         return validatePassword(password.toCharArray(), goodHash);
     }
 
@@ -74,12 +72,10 @@ public class PasswordHashingService {
      *            the hash of the valid password
      * @return true if the password is correct, false if not
      */
-    public boolean validatePassword(char[] password, PasswordHash goodHash)
-            throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public boolean validatePassword(char[] password, PasswordHash goodHash) {
         // Compute the hash of the provided password, using the same salt,
         // iteration count, and hash length
-        byte[] testHash = pbkdf2(goodHash.getAlgorithm(),
-                goodHash.getIterations(), goodHash.getHash().length,
+        byte[] testHash = pbkdf2(goodHash.getAlgorithm(), goodHash.getIterations(), goodHash.getHash().length,
                 goodHash.getSalt(), password);
         // Compare the hashes in constant time. The password is correct if
         // both hashes match.
@@ -102,19 +98,13 @@ public class PasswordHashingService {
      * 
      * @return the PBDKF2 hash of the password
      */
-    private byte[] pbkdf2(String hashAlgorithm, int iterations,
-            int passwordBytes, byte[] salt, char[] password) {
-        PBEKeySpec spec = new PBEKeySpec(password, salt, iterations,
-                passwordBytes * 8);
+    private byte[] pbkdf2(String hashAlgorithm, int iterations, int passwordBytes, byte[] salt, char[] password) {
+        PBEKeySpec spec = new PBEKeySpec(password, salt, iterations, passwordBytes * 8);
         try {
-            SecretKeyFactory skf = SecretKeyFactory
-                    .getInstance(getHashAlgorithm());
+            SecretKeyFactory skf = SecretKeyFactory.getInstance(getHashAlgorithm());
             return skf.generateSecret(spec).getEncoded();
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            throw new RuntimeException(
-                    "Error while hashing password. hashAlgorithm: "
-                            + hashAlgorithm,
-                    e);
+            throw new RuntimeException("Error while hashing password. hashAlgorithm: " + hashAlgorithm, e);
         }
     }
 
