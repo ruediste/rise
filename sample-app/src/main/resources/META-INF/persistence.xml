@@ -3,12 +3,12 @@
 	xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
 	<persistence-unit name="sampleApp">
-		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
-		<exclude-unlisted-classes>true</exclude-unlisted-classes>
-		<validation-mode>NONE</validation-mode>
 		<class>com.github.ruediste.rise.sample.db.TodoItem</class>
 		<class>com.github.ruediste.rise.sample.db.TodoCategory</class>
 		<class>com.github.ruediste.rise.sample.User</class>
 		<class>com.github.ruediste.rise.core.security.login.PasswordHash</class>
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
+		<validation-mode>NONE</validation-mode>
 	</persistence-unit>
 </persistence>
