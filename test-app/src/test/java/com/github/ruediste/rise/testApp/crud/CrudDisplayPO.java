@@ -3,6 +3,7 @@ package com.github.ruediste.rise.testApp.crud;
 import static java.util.stream.Collectors.toList;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.openqa.selenium.By;
 
@@ -17,43 +18,36 @@ public class CrudDisplayPO extends PageObject {
     }
 
     public String getPropertyText(String name) {
-        return driver.findElement(By.cssSelector(
-                dataTestSelector("properties") + dataTestSelector(name)))
-                .getText();
+        return findElement(By.cssSelector(dataTestSelector("properties") + dataTestSelector(name))).getText();
     }
 
     public CrudBrowserPO browse() {
-        driver.findElement(byDataTestName(CrudControllerBase.class,
-                x -> x.browse(null, null))).click();
+        findElement(byDataTestName(CrudControllerBase.class, x -> x.browse(null, null))).click();
         return pageObject(CrudBrowserPO.class);
     }
 
     public CrudEditPO edit() {
-        driver.findElement(
-                byDataTestName(CrudControllerBase.class, x -> x.edit(null)))
-                .click();
+        findElement(byDataTestName(CrudControllerBase.class, x -> x.edit(null))).click();
         return pageObject(CrudEditPO.class);
     }
 
     public CrudDeletePO delete() {
-        driver.findElement(
-                byDataTestName(CrudControllerBase.class, x -> x.delete(null)))
-                .click();
+        findElement(byDataTestName(CrudControllerBase.class, x -> x.delete(null))).click();
         return pageObject(CrudDeletePO.class);
     }
 
     public List<String> getPropertyTestNames() {
-        return driver
-                .findElements(By.cssSelector(
-                        dataTestSelector("properties") + "*[data-test-name]"))
-                .stream().map(x -> x.getAttribute("data-test-name"))
-                .collect(toList());
+        return findElements(By.cssSelector(dataTestSelector("properties") + "*[data-test-name]")).stream()
+                .map(x -> x.getAttribute("data-test-name")).collect(toList());
     }
 
-    public CrudBrowserPO showItems(String name) {
-        driver.findElement(By.cssSelector(
-                dataTestSelector("properties") + dataTestSelector(name)))
-                .click();
-        return pageObject(CrudBrowserPO.class);
+    public CrudListPO<?> showItems(String name) {
+        findElement(By.cssSelector(dataTestSelector("properties") + dataTestSelector(name))).click();
+        return pageObject(CrudListPO.class);
+    }
+
+    public <T> ActionMethodInvocationPO invokeAction(Class<T> cls, Consumer<T> accessor) {
+        findElement(byDataTestName("actions")).findElement(byDataTestName(cls, accessor)).click();
+        return pageObject(ActionMethodInvocationPO.class);
     }
 }

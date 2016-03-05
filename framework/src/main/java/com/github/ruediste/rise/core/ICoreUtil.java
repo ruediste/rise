@@ -2,6 +2,8 @@ package com.github.ruediste.rise.core;
 
 import java.util.function.Supplier;
 
+import javax.servlet.http.HttpServletResponse;
+
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
@@ -35,18 +37,15 @@ public interface ICoreUtil {
         return getCoreUtil().url(path);
     }
 
-    default ActionInvocation<String> toStringInvocation(
-            ActionInvocation<Object> invocation) {
+    default ActionInvocation<String> toStringInvocation(ActionInvocation<Object> invocation) {
         return getCoreUtil().toStringInvocation(invocation);
     }
 
-    default ActionInvocation<Supplier<Object>> toSupplierInvocation(
-            ActionInvocation<String> stringInvocation) {
+    default ActionInvocation<Supplier<Object>> toSupplierInvocation(ActionInvocation<String> stringInvocation) {
         return getCoreUtil().toSupplierInvocation(stringInvocation);
     }
 
-    default ActionInvocation<Object> toObjectInvocation(
-            ActionInvocation<String> stringInvocation) {
+    default ActionInvocation<Object> toObjectInvocation(ActionInvocation<String> stringInvocation) {
         return getCoreUtil().toObjectInvocation(stringInvocation);
     }
 
@@ -62,8 +61,7 @@ public interface ICoreUtil {
         return getCoreUtil().go(controllerClass);
     }
 
-    default <T extends IController> ActionInvocationBuilderKnownController<T> path(
-            Class<T> controllerClass) {
+    default <T extends IController> ActionInvocationBuilderKnownController<T> path(Class<T> controllerClass) {
         return getCoreUtil().path(controllerClass);
     }
 
@@ -71,8 +69,7 @@ public interface ICoreUtil {
         return getCoreUtil().path();
     }
 
-    default ActionInvocation<Object> toActionInvocation(
-            ActionResult invocation) {
+    default ActionInvocation<Object> toActionInvocation(ActionResult invocation) {
         return getCoreUtil().toActionInvocation(invocation);
     }
 
@@ -84,10 +81,17 @@ public interface ICoreUtil {
         return getCoreUtil().toString(string);
     }
 
+    /**
+     * generate the url for the given path, encoding it using
+     * {@link HttpServletResponse#encodeRedirectURL(String)}
+     */
     default String redirectUrl(UrlSpec path) {
         return getCoreUtil().redirectUrl(path);
     }
 
+    /**
+     * Return the referer from the HTTP request
+     */
     default String refererUrl() {
         return getCoreUtil().refererUrl();
     }
@@ -104,8 +108,7 @@ public interface ICoreUtil {
         return getCoreUtil().toUrlSpec(invocation);
     }
 
-    default UrlSpec toUrlSpec(ActionInvocation<String> invocation,
-            Supplier<String> sessionId) {
+    default UrlSpec toUrlSpec(ActionInvocation<String> invocation, Supplier<String> sessionId) {
         return getCoreUtil().toUrlSpec(invocation, sessionId);
     }
 

@@ -10,28 +10,37 @@ import com.github.ruediste.rise.nonReloadable.NonRestartable;
 @Singleton
 public class TransactionProperties {
 
-	@Inject
-	TransactionSynchronizationRegistry registry;
+    @Inject
+    TransactionSynchronizationRegistry registry;
 
-	private Object isolationLevel = new Object();
-	private Object forceRollback = new Object();
+    private Object isolationLevel = new Object();
+    private Object forceRollback = new Object();
+    private Object updating = new Object();
 
-	public void setIsolationLevel(IsolationLevel level) {
-		registry.putResource(isolationLevel, level);
-	}
+    public void setUpdating(boolean updating) {
+        registry.putResource(this.updating, updating);
+    }
 
-	public void forceRollback() {
-		registry.putResource(forceRollback, true);
-	}
+    public boolean isUpdating() {
+        return Boolean.TRUE.equals(registry.getResource(updating));
+    }
 
-	public boolean isForceRollback() {
-		return registry.getResource(forceRollback) != null;
-	}
+    public void setIsolationLevel(IsolationLevel level) {
+        registry.putResource(isolationLevel, level);
+    }
 
-	/**
-	 * Get the isolation level of the current transaction
-	 */
-	public IsolationLevel getIsolationLevel() {
-		return (IsolationLevel) registry.getResource(isolationLevel);
-	}
+    public void forceRollback() {
+        registry.putResource(forceRollback, true);
+    }
+
+    public boolean isForceRollback() {
+        return registry.getResource(forceRollback) != null;
+    }
+
+    /**
+     * Get the isolation level of the current transaction
+     */
+    public IsolationLevel getIsolationLevel() {
+        return (IsolationLevel) registry.getResource(isolationLevel);
+    }
 }

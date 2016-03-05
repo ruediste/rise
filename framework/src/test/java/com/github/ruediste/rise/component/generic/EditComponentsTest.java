@@ -34,7 +34,7 @@ public class EditComponentsTest {
 	static class SpecialFactory implements EditComponentFactory {
 
 		@Override
-		public Optional<EditComponentWrapper<?>> getComponent(Class<?> cls, Optional<PropertyInfo> info) {
+		public Optional<EditComponentWrapper<?>> getComponent(Class<?> cls, Optional<String> name, Optional<PropertyInfo> info) {
 			return Optional.of(new EditComponentWrapper<Object>() {
 
 				@Override

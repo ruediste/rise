@@ -11,8 +11,7 @@ import javax.persistence.Id;
 
 import com.github.ruediste.rendersnakeXT.canvas.Glyphicon;
 import com.github.ruediste.rise.api.InjectParameter;
-import com.github.ruediste.rise.core.persistence.TransactionControl;
-import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
+import com.github.ruediste.rise.core.persistence.Updating;
 import com.github.ruediste.rise.core.security.login.PasswordHash;
 import com.github.ruediste.rise.core.security.login.PasswordHashingService;
 import com.github.ruediste.rise.crud.annotations.CrudBrowserColumn;
@@ -27,70 +26,67 @@ import com.github.ruediste1.i18n.label.PropertiesLabeled;
 @Labeled
 public class User {
 
-	@GeneratedValue
-	@Id
-	private long id;
+    @GeneratedValue
+    @Id
+    private long id;
 
-	@CrudBrowserColumn
-	private String name;
+    @CrudBrowserColumn
+    private String name;
 
-	private String password;
+    private String password;
 
-	@Embedded
+    @Embedded
 
-	private PasswordHash hash;
+    private PasswordHash hash;
 
-	@ElementCollection
-	private Set<SampleRight> grantedRights = new HashSet<>();
+    @ElementCollection
+    private Set<SampleRight> grantedRights = new HashSet<>();
 
-	public long getId() {
-		return id;
-	}
+    public long getId() {
+        return id;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public void setId(long id) {
+        this.id = id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public Set<SampleRight> getGrantedRights() {
-		return grantedRights;
-	}
+    public Set<SampleRight> getGrantedRights() {
+        return grantedRights;
+    }
 
-	public void setGrantedRights(Set<SampleRight> grantedRights) {
-		this.grantedRights = grantedRights;
-	}
+    public void setGrantedRights(Set<SampleRight> grantedRights) {
+        this.grantedRights = grantedRights;
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    public String getPassword() {
+        return password;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	public PasswordHash getHash() {
-		return hash;
-	}
+    public PasswordHash getHash() {
+        return hash;
+    }
 
-	public void setHash(PasswordHash hash) {
-		this.hash = hash;
-	}
+    public void setHash(PasswordHash hash) {
+        this.hash = hash;
+    }
 
-	@CrudDisplayAction
-	@Labeled
-	@GlyphiconIcon(Glyphicon.bullhorn)
-	private void setPassword(@Labeled String newPassword, @InjectParameter PasswordHashingService service,
-			@InjectParameter TransactionControl trx, @InjectParameter EntityManagerHolder emh) {
-		trx.updating().execute(() -> {
-			emh.joinTransaction();
-			hash = service.createHash(newPassword);
-		});
-	}
+    @CrudDisplayAction
+    @Labeled
+    @GlyphiconIcon(Glyphicon.bullhorn)
+    @Updating
+    private void setPassword(@Labeled String newPassword, @InjectParameter PasswordHashingService service) {
+        hash = service.createHash(newPassword);
+    }
 }

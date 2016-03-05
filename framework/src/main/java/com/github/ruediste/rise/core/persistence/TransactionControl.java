@@ -30,269 +30,298 @@ import com.github.ruediste.rise.nonReloadable.persistence.TransactionProperties;
 @Singleton
 public class TransactionControl implements ITransactionControl {
 
-	@Inject
-	Logger log;
+    @Inject
+    Logger log;
 
-	@Inject
-	TransactionManager txm;
+    @Inject
+    TransactionManager txm;
 
-	@Inject
-	EntityManagerHolder holder;
+    @Inject
+    EntityManagerHolder holder;
 
-	@Inject
-	MvcRequestInfo info;
+    @Inject
+    MvcRequestInfo info;
 
-	@Inject
-	TransactionProperties transactionProperties;
+    @Inject
+    TransactionProperties transactionProperties;
 
-	public class TransactionControlImpl implements ITransactionControl {
-		private boolean forceNewEntityManagerSet = false;
-		private boolean updating = false;
-		private IsolationLevel isolationLevel = IsolationLevel.DEFAULT;
-		private int timeout;
-		private Propagation propagation = Propagation.REQUIRED;
+    public class TransactionControlImpl implements ITransactionControl {
+        private boolean forceNewEntityManagerSet = false;
+        private boolean updating = false;
+        private IsolationLevel isolationLevel = IsolationLevel.DEFAULT;
+        private int timeout;
+        private Propagation propagation = Propagation.REQUIRED;
+        private boolean noAutoJoin;
 
-		private ArrayList<Class<? extends Throwable>> noRollbackFor = new ArrayList<>();
-		private ArrayList<Class<? extends Throwable>> rollbackFor = new ArrayList<>();
+        private ArrayList<Class<? extends Throwable>> noRollbackFor = new ArrayList<>();
+        private ArrayList<Class<? extends Throwable>> rollbackFor = new ArrayList<>();
 
-		@Override
-		public ITransactionControl propagation(Propagation propagation) {
-			this.propagation = propagation;
-			return this;
-		}
+        @Override
+        public ITransactionControl propagation(Propagation propagation) {
+            this.propagation = propagation;
+            return this;
+        }
 
-		@Override
-		public ITransactionControl timeout(int seconds) {
-			timeout = seconds;
-			return this;
-		}
+        @Override
+        public ITransactionControl timeout(int seconds) {
+            timeout = seconds;
+            return this;
+        }
 
-		@Override
-		public ITransactionControl forceNewEntityManagerSet() {
-			forceNewEntityManagerSet = true;
-			return this;
-		}
+        @Override
+        public ITransactionControl forceNewEntityManagerSet() {
+            forceNewEntityManagerSet = true;
+            return this;
+        }
 
-		@Override
-		public ITransactionControl updating() {
-			updating = true;
-			return this;
-		}
+        @Override
+        public ITransactionControl noAutoJoin() {
+            noAutoJoin = true;
+            return this;
+        }
 
-		@Override
-		public ITransactionControl updating(boolean value) {
-			updating = value;
-			return this;
-		}
+        @Override
+        public ITransactionControl updating() {
+            updating = true;
+            return this;
+        }
 
-		@Override
-		@SuppressWarnings("unchecked")
-		public ITransactionControl noRollbackFor(Class<? extends Throwable>... exceptions) {
-			noRollbackFor.addAll(Arrays.asList(exceptions));
-			return this;
-		}
+        @Override
+        public ITransactionControl updating(boolean value) {
+            updating = value;
+            return this;
+        }
 
-		@Override
-		@SuppressWarnings("unchecked")
-		public ITransactionControl rollbackFor(Class<? extends Throwable>... exceptions) {
-			rollbackFor.addAll(Arrays.asList(exceptions));
-			return this;
-		}
+        @Override
+        @SuppressWarnings("unchecked")
+        public ITransactionControl noRollbackFor(Class<? extends Throwable>... exceptions) {
+            noRollbackFor.addAll(Arrays.asList(exceptions));
+            return this;
+        }
 
-		@Override
-		public ITransactionControl isolation(IsolationLevel level) {
-			this.isolationLevel = level;
-			return this;
-		}
+        @Override
+        @SuppressWarnings("unchecked")
+        public ITransactionControl rollbackFor(Class<? extends Throwable>... exceptions) {
+            rollbackFor.addAll(Arrays.asList(exceptions));
+            return this;
+        }
 
-		@Override
-		public void execute(TransactionCallbackNoResult action) {
-			execute(new TransactionCallback<Object>() {
+        @Override
+        public ITransactionControl isolation(IsolationLevel level) {
+            this.isolationLevel = level;
+            return this;
+        }
 
-				@Override
-				public void beforeEntityManagerSetCreated() {
-					action.beforeEntityManagerSetCreated();
-				}
+        @Override
+        public void execute(TransactionCallbackNoResult action) {
+            execute(new TransactionCallback<Object>() {
 
-				@Override
-				public Object doInTransaction() {
-					action.doInTransaction();
-					return null;
-				}
-			});
-		}
+                @Override
+                public Object doInTransaction() {
+                    action.doInTransaction();
+                    return null;
+                }
+            });
+        }
 
-		@Override
-		public <T> T execute(TransactionCallback<T> action) {
-			try {
-				switch (propagation) {
-				case MANDATORY:
-					// check that a transaction is in progress
-					if (txm.getStatus() != Status.STATUS_ACTIVE) {
-						throw new RuntimeException(
-								"Entered block with MANDATORY transaction, but no transaction was active");
-					}
-					return executeWithNewEntityManagerSetIfForcedOrNonePresent(() -> action.doInTransaction());
-				case NEVER:
-					// make sure no transaction is in porgress
-					if (txm.getStatus() == Status.STATUS_ACTIVE) {
-						throw new RuntimeException("Entered block with NEVER transaction, but transaction was active");
-					}
-					if (forceNewEntityManagerSet) {
-						return holder.withNewEntityManagerSet(() -> action.doInTransaction());
-					} else {
-						return action.doInTransaction();
-					}
-				case REQUIRED: {
-					Supplier<T> supplier = () -> executeWithNewEntityManagerSetIfForcedOrNonePresent(
-							() -> action.doInTransaction());
-					if (txm.getStatus() == Status.STATUS_ACTIVE) {
-						if (transactionProperties.getIsolationLevel().isLowerThan(getActualIsolationLevel())) {
-							// we require a higher isolation level, suspend trx
-							// and start a new one
-							return suspendTransactionAndExecute(() -> executeInNewTransaction(supplier));
-						} else
-							return supplier.get();
-					} else
-						return executeInNewTransaction(supplier);
-				}
-				default:
-					throw new IllegalArgumentException();
-				}
-			} catch (SystemException e) {
-				throw new RuntimeException(e);
-			}
-		}
+        @Override
+        public <T> T execute(TransactionCallback<T> action) {
 
-		private <T> T executeWithNewEntityManagerSetIfForcedOrNonePresent(Supplier<T> supplier) {
-			if (forceNewEntityManagerSet || holder.getCurrentEntityManagerSet() == null) {
-				return holder.withNewEntityManagerSet(supplier);
-			} else {
-				return supplier.get();
-			}
-		}
+            try {
+                switch (propagation) {
+                case MANDATORY:
+                    // check that a transaction is in progress
+                    if (!isMatchingTransactionActive()) {
+                        throw new RuntimeException(
+                                "Entered block with MANDATORY transaction, but no matching transaction was active");
+                    }
+                    return executeWithNewEntityManagerSetIfForcedOrNonePresent(() -> {
+                        if (!noAutoJoin)
+                            holder.joinTransaction();
+                        return action.doInTransaction();
+                    });
+                case NEVER:
+                    // make sure no transaction is in porgress
+                    if (txm.getStatus() == Status.STATUS_ACTIVE) {
+                        throw new RuntimeException("Entered block with NEVER transaction, but transaction was active");
+                    }
+                    return executeWithNewEntityManagerSetIfForcedOrNonePresent(action);
+                case REQUIRED: {
+                    if (isMatchingTransactionActive())
+                        return executeWithNewEntityManagerSetIfForcedOrNonePresent(action);
+                    else if (txm.getStatus() == Status.STATUS_ACTIVE) {
+                        // current transaction does not match => suspend and run
+                        // new one
+                        return executeWithNewEntityManagerSetIfForcedOrNonePresent(
+                                () -> suspendTransactionAndExecute(() -> executeInNewTransaction(action)));
+                    } else
+                        // no transaction running, start a new one
+                        return executeWithNewEntityManagerSetIfForcedOrNonePresent(
+                                () -> executeInNewTransaction(action));
+                }
+                case REQUIRE_NEW: {
+                    if (txm.getStatus() == Status.STATUS_ACTIVE) {
+                        // suspend and run new one
+                        return executeWithNewEntityManagerSetIfForcedOrNonePresent(
+                                () -> suspendTransactionAndExecute(() -> executeInNewTransaction(action)));
+                    } else
+                        // no transaction running, start a new one
+                        return executeWithNewEntityManagerSetIfForcedOrNonePresent(
+                                () -> executeInNewTransaction(action));
+                }
+                default:
+                    throw new IllegalArgumentException("Unknown propagation " + propagation);
+                }
+            } catch (SystemException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
-		private <T> T suspendTransactionAndExecute(Supplier<T> supplier) {
-			Transaction old;
-			try {
-				old = txm.suspend();
-				try {
-					return supplier.get();
-				} finally {
-					txm.resume(old);
-				}
-			} catch (InvalidTransactionException | IllegalStateException | SystemException e) {
-				throw new TransactionException("Error while suspending and resuming transaction", e);
-			}
-		}
+        private boolean isMatchingTransactionActive() throws SystemException {
+            boolean matchingTransactionActive = txm.getStatus() == Status.STATUS_ACTIVE
+                    && (!transactionProperties.getIsolationLevel().isLowerThan(getActualIsolationLevel()))
+                    && transactionProperties.isUpdating() == updating;
+            return matchingTransactionActive;
+        }
 
-		private <T> T executeInNewTransaction(Supplier<T> supplier) {
+        private <T> T executeWithNewEntityManagerSetIfForcedOrNonePresent(Supplier<T> supplier) {
+            if (forceNewEntityManagerSet || holder.getCurrentEntityManagerSet() == null) {
+                return holder.withNewEntityManagerSet(supplier);
+            } else {
+                return supplier.get();
+            }
+        }
 
-			try {
-				txm.begin();
+        private <T> T suspendTransactionAndExecute(Supplier<T> supplier) {
+            Transaction old;
+            try {
+                old = txm.suspend();
+                try {
+                    return supplier.get();
+                } finally {
+                    txm.resume(old);
+                }
+            } catch (InvalidTransactionException | IllegalStateException | SystemException e) {
+                throw new TransactionException("Error while suspending and resuming transaction", e);
+            }
+        }
 
-				transactionProperties.setIsolationLevel(getActualIsolationLevel());
-				txm.setTransactionTimeout(timeout);
+        private <T> T executeInNewTransaction(Supplier<T> supplier) {
 
-				T result;
-				try {
-					result = supplier.get();
-				} catch (Throwable t) {
-					throw new InvocationTargetException(t);
-				}
-				if (updating && !transactionProperties.isForceRollback()) {
-					txm.commit();
-				}
-				return result;
+            try {
+                txm.begin();
 
-			} catch (InvocationTargetException t) {
-				throw new RuntimeException("Error while running transaction", t.getTargetException());
-			} catch (Exception e) {
-				throw new TransactionException("Transaction error occured", e);
-			} finally {
-				Integer status;
-				try {
-					status = txm.getStatus();
-					try {
-						if (status != Status.STATUS_NO_TRANSACTION)
-							txm.rollback();
-					} catch (IllegalStateException | SecurityException | SystemException e) {
-						log.error("Error during transaction rollback. Status was " + status, e);
-					}
-				} catch (SystemException e) {
-					log.error("Unable to get transaction status", e);
-				}
+                transactionProperties.setIsolationLevel(getActualIsolationLevel());
+                transactionProperties.setUpdating(updating);
+                txm.setTransactionTimeout(timeout);
 
-			}
-		}
+                if (!noAutoJoin)
+                    holder.joinTransaction();
 
-		private IsolationLevel getActualIsolationLevel() {
-			IsolationLevel actualIsolationLevel = isolationLevel;
+                T result;
+                try {
+                    result = supplier.get();
+                } catch (Throwable t) {
+                    throw new InvocationTargetException(t);
+                }
+                if (updating && !transactionProperties.isForceRollback()) {
+                    txm.commit();
+                }
+                return result;
 
-			if (isolationLevel == null || isolationLevel == IsolationLevel.DEFAULT)
-				actualIsolationLevel = updating ? IsolationLevel.SERIALIZABLE : IsolationLevel.REPEATABLE_READ;
-			return actualIsolationLevel;
-		}
-	}
+            } catch (InvocationTargetException t) {
+                throw new RuntimeException("Error while running transaction", t.getTargetException());
+            } catch (Exception e) {
+                throw new TransactionException("Transaction error occured", e);
+            } finally {
+                Integer status;
+                try {
+                    status = txm.getStatus();
+                    try {
+                        if (status != Status.STATUS_NO_TRANSACTION)
+                            txm.rollback();
+                    } catch (IllegalStateException | SecurityException | SystemException e) {
+                        log.error("Error during transaction rollback. Status was " + status, e);
+                    }
+                } catch (SystemException e) {
+                    log.error("Unable to get transaction status", e);
+                }
 
-	/**
-	 * Create a new {@link ITransactionControl} with default settings (
-	 * non-updating, using a fresh {@link EntityManagerSet})
-	 */
-	public ITransactionControl executor() {
-		return new TransactionControlImpl();
-	}
+            }
+        }
 
-	@Override
-	public <T> T execute(TransactionCallback<T> action) {
-		return executor().execute(action);
-	}
+        private IsolationLevel getActualIsolationLevel() {
+            IsolationLevel actualIsolationLevel = isolationLevel;
 
-	@Override
-	public void execute(TransactionCallbackNoResult action) {
-		executor().execute(action);
-	}
+            if (isolationLevel == null || isolationLevel == IsolationLevel.DEFAULT)
+                actualIsolationLevel = updating ? IsolationLevel.SERIALIZABLE : IsolationLevel.REPEATABLE_READ;
+            return actualIsolationLevel;
+        }
+    }
 
-	@Override
-	public ITransactionControl isolation(IsolationLevel level) {
-		return executor().isolation(level);
-	}
+    /**
+     * Create a new {@link ITransactionControl} with default settings (
+     * non-updating, using a fresh {@link EntityManagerSet})
+     */
+    public ITransactionControl executor() {
+        return new TransactionControlImpl();
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public ITransactionControl rollbackFor(Class<? extends Throwable>... exceptions) {
-		return executor().rollbackFor(exceptions);
-	}
+    @Override
+    public <T> T execute(TransactionCallback<T> action) {
+        return executor().execute(action);
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public ITransactionControl noRollbackFor(Class<? extends Throwable>... exceptions) {
-		return executor().noRollbackFor(exceptions);
-	}
+    @Override
+    public void execute(TransactionCallbackNoResult action) {
+        executor().execute(action);
+    }
 
-	@Override
-	public ITransactionControl updating(boolean value) {
-		return executor().updating(value);
-	}
+    @Override
+    public ITransactionControl isolation(IsolationLevel level) {
+        return executor().isolation(level);
+    }
 
-	@Override
-	public ITransactionControl updating() {
-		return executor().updating();
-	}
+    @SuppressWarnings("unchecked")
+    @Override
+    public ITransactionControl rollbackFor(Class<? extends Throwable>... exceptions) {
+        return executor().rollbackFor(exceptions);
+    }
 
-	@Override
-	public ITransactionControl forceNewEntityManagerSet() {
-		return executor().forceNewEntityManagerSet();
-	}
+    @SuppressWarnings("unchecked")
+    @Override
+    public ITransactionControl noRollbackFor(Class<? extends Throwable>... exceptions) {
+        return executor().noRollbackFor(exceptions);
+    }
 
-	@Override
-	public ITransactionControl timeout(int seconds) {
-		return executor().timeout(seconds);
-	}
+    @Override
+    public ITransactionControl updating(boolean value) {
+        return executor().updating(value);
+    }
 
-	@Override
-	public ITransactionControl propagation(Propagation propagation) {
-		return executor().propagation(propagation);
-	}
+    @Override
+    public ITransactionControl updating() {
+        return executor().updating();
+    }
+
+    @Override
+    public ITransactionControl forceNewEntityManagerSet() {
+        return executor().forceNewEntityManagerSet();
+    }
+
+    @Override
+    public ITransactionControl timeout(int seconds) {
+        return executor().timeout(seconds);
+    }
+
+    @Override
+    public ITransactionControl propagation(Propagation propagation) {
+        return executor().propagation(propagation);
+    }
+
+    @Override
+    public ITransactionControl noAutoJoin() {
+        return executor().noAutoJoin();
+    }
 
 }

@@ -1,19 +1,18 @@
 package com.github.ruediste.rise.core.persistence;
 
-import com.github.ruediste.rise.core.persistence.em.EntityManagerSet;
+import java.util.function.Supplier;
 
 /**
  * Callback for transactional code. Typically used as argument to
  * {@link TransactionControl#execute(TransactionCallback)}
  */
-public interface TransactionCallback<T> {
+@FunctionalInterface
+public interface TransactionCallback<T> extends Supplier<T> {
 
     T doInTransaction();
 
-    /**
-     * Called before the {@link EntityManagerSet} is created. Can be used to
-     * initialize transaction properties
-     */
-    default void beforeEntityManagerSetCreated() {
+    @Override
+    default T get() {
+        return doInTransaction();
     }
 }

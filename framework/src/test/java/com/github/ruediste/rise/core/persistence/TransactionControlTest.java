@@ -13,55 +13,70 @@ import com.github.ruediste.rise.nonReloadable.persistence.TransactionProperties;
 
 public class TransactionControlTest extends DbTestBase {
 
-	@Inject
-	TransactionControl txc;
+    @Inject
+    TransactionControl txc;
 
-	@Inject
-	TransactionProperties props;
+    @Inject
+    TransactionProperties props;
 
-	@Inject
-	EntityManager em;
+    @Inject
+    EntityManager em;
 
-	boolean executed;
+    boolean executed;
 
-	@Before
-	public void before() {
-		executed = false;
-	}
+    @Before
+    public void before() {
+        executed = false;
+    }
 
-	@Test
-	public void testRequiredWithDifferentIsolationHigher() {
-		txc.isolation(IsolationLevel.REPEATABLE_READ).execute(() -> {
-			txc.isolation(IsolationLevel.SERIALIZABLE).execute(() -> {
-				assertEquals(IsolationLevel.SERIALIZABLE, props.getIsolationLevel());
-			});
-		});
-	}
+    @Test
+    public void testRequiredWithDifferentIsolationHigher() {
+        txc.isolation(IsolationLevel.REPEATABLE_READ).execute(() -> {
+            txc.isolation(IsolationLevel.SERIALIZABLE).execute(() -> {
+                assertEquals(IsolationLevel.SERIALIZABLE, props.getIsolationLevel());
+            });
+        });
+    }
 
-	@Test
-	public void testRequiredWithDifferentIsolationLower() {
-		txc.isolation(IsolationLevel.SERIALIZABLE).execute(() -> {
-			txc.isolation(IsolationLevel.REPEATABLE_READ).execute(() -> {
-				assertEquals(IsolationLevel.SERIALIZABLE, props.getIsolationLevel());
-			});
-		});
-	}
+    @Test
+    public void testRequiredWithDifferentIsolationLower() {
+        txc.isolation(IsolationLevel.SERIALIZABLE).execute(() -> {
+            txc.isolation(IsolationLevel.REPEATABLE_READ).execute(() -> {
+                assertEquals(IsolationLevel.SERIALIZABLE, props.getIsolationLevel());
+            });
+        });
+    }
 
-	@Test
-	public void testRequiredUpdatingNestedInNonUpdating() {
-		TestEntity e = new TestEntity();
-		txc.updating().execute(() -> {
-			e.setValue("foo");
-			em.persist(e);
-		});
-		txc.isolation(IsolationLevel.SERIALIZABLE).execute(() -> {
-			txc.updating().execute(() -> {
-				em.find(TestEntity.class, e.getId()).setValue("bar");
-			});
-		});
-		txc.execute(() -> {
-			assertEquals("bar", em.find(TestEntity.class, e.getId()).getValue());
-		});
+    @Test
+    public void testRequiredUpdatingNestedInNonUpdating() {
+        TestEntity e = new TestEntity();
+        txc.updating().execute(() -> {
+            e.setValue("foo");
+            em.persist(e);
+        });
+        txc.isolation(IsolationLevel.SERIALIZABLE).execute(() -> {
+            txc.updating().execute(() -> {
+                em.find(TestEntity.class, e.getId()).setValue("bar");
+            });
+        });
+        txc.execute(() -> {
+            assertEquals("bar", em.find(TestEntity.class, e.getId()).getValue());
+        });
+    }
 
-	}
+    @Test(expected = RuntimeException.class)
+    public void testPropagationRequireNew() {
+        TestEntity e = new TestEntity();
+
+        txc.updating().execute(() -> {
+            e.setValue("foo");
+            em.persist(e);
+            em.flush();
+            txc.updating().propagation(Propagation.REQUIRE_NEW).forceNewEntityManagerSet().execute(() -> {
+                // reading needs to run into a serialization problem
+                assertEquals(null, em.find(TestEntity.class, e.getId()));
+            });
+        });
+
+    }
 }
