@@ -23,6 +23,7 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
 public class CButton extends MultiChildrenComponent<CButton> {
     private Runnable handler;
     private ActionResult target;
+    private Method invokedMethod;
     private boolean isDisabled;
 
     public CButton() {
@@ -86,11 +87,10 @@ public class CButton extends MultiChildrenComponent<CButton> {
      */
     public <T> CButton(ActionResult target, boolean showIconOnly) {
         this.setTarget(target);
-        Method invokedMethod = ((ActionInvocationResult) target).methodInvocation
-                .getMethod();
-        TEST_NAME(invokedMethod.getName());
-        add(new CIconLabel().setMethod(invokedMethod)
-                .setShowIconOnly(showIconOnly));
+        setTarget(target);
+        if (invokedMethod != null)
+            TEST_NAME(invokedMethod.getName());
+        add(new CIconLabel().setMethod(invokedMethod).setShowIconOnly(showIconOnly));
     }
 
     /**
@@ -100,22 +100,17 @@ public class CButton extends MultiChildrenComponent<CButton> {
      * {@link #TEST_NAME(String)} is set to the name of the method.
      */
     @SuppressWarnings("unchecked")
-    public <T> CButton(T target, BiConsumer<CButton, T> handler,
-            boolean showIconOnly) {
+    public <T> CButton(T target, BiConsumer<CButton, T> handler, boolean showIconOnly) {
         this.handler = () -> handler.accept(this, target);
-        Method invokedMethod = MethodInvocationRecorder
-                .getLastInvocation((Class<T>) target.getClass(),
-                        t -> handler.accept(this, t))
-                .getMethod();
+        invokedMethod = MethodInvocationRecorder
+                .getLastInvocation((Class<T>) target.getClass(), t -> handler.accept(this, t)).getMethod();
         TEST_NAME(invokedMethod.getName());
-        add(new CIconLabel().setMethod(invokedMethod)
-                .setShowIconOnly(showIconOnly));
+        add(new CIconLabel().setMethod(invokedMethod).setShowIconOnly(showIconOnly));
     }
 
     public CButton setHandler(Runnable handler) {
         if (target != null && handler != null)
-            throw new IllegalStateException(
-                    "Cannot set handler if the target is set. Clear target first");
+            throw new IllegalStateException("Cannot set handler if the target is set. Clear target first");
 
         this.handler = handler;
         return this;
@@ -125,19 +120,23 @@ public class CButton extends MultiChildrenComponent<CButton> {
         return handler;
     }
 
+    /**
+     * Get the target of this button. When the button is clicked, not page
+     * reload is triggered.
+     */
     public ActionResult getTarget() {
         return target;
     }
 
     /**
-     * Set the target of this button. The button will be rendered as link. No
-     * page request will be triggered.
+     * Set the target of this button. No page request will be triggered.
      */
     public CButton setTarget(ActionResult target) {
         if (target != null && handler != null)
-            throw new IllegalStateException(
-                    "Cannot set target if the handler is set. Clear handler first");
+            throw new IllegalStateException("Cannot set target if the handler is set. Clear handler first");
         this.target = target;
+        if (target != null)
+            invokedMethod = ((ActionInvocationResult) target).methodInvocation.getMethod();
         return this;
     }
 
@@ -148,6 +147,18 @@ public class CButton extends MultiChildrenComponent<CButton> {
     public CButton setDisabled(boolean isDisabled) {
         this.isDisabled = isDisabled;
         return this;
+    }
+
+    /**
+     * Method beeing invoked. Can be null. Can be present both if a handler or a
+     * target is defined.
+     */
+    public Method getInvokedMethod() {
+        return invokedMethod;
+    }
+
+    public void setInvokedMethod(Method invokedMethod) {
+        this.invokedMethod = invokedMethod;
     }
 
 }

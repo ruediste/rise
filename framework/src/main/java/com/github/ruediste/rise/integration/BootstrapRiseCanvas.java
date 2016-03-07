@@ -18,29 +18,24 @@ public interface BootstrapRiseCanvas<TSelf extends BootstrapRiseCanvas<TSelf>>
         });
     }
 
-    public default TSelf rButtonA(ActionResult target,
-            Consumer<R_ButtonArgs> args) {
+    public default TSelf rButtonA(ActionResult target, Consumer<R_ButtonArgs> args) {
         RiseCanvasHelper helper = internal_riseHelper();
-        ActionInvocation<Object> actionInvocation = helper.getUtil()
-                .toActionInvocation(target);
+        ActionInvocation<Object> actionInvocation = helper.getUtil().toActionInvocation(target);
         Method method = actionInvocation.methodInvocation.getMethod();
 
         R_ButtonArgs buttonArgs = new R_ButtonArgs(this, true);
+        args.accept(buttonArgs);
 
-        Object instance = internal_riseHelper().getControllerAuthzInstance(
-                actionInvocation.methodInvocation.getInstanceClass());
-        boolean authorized = helper.getAuthz().isAuthorized(instance,
-                actionInvocation.methodInvocation.getMethod(),
+        Object instance = internal_riseHelper()
+                .getControllerAuthzInstance(actionInvocation.methodInvocation.getInstanceClass());
+        boolean authorized = helper.getAuthz().isAuthorized(instance, actionInvocation.methodInvocation.getMethod(),
                 actionInvocation.methodInvocation.getArguments());
 
         if (!authorized && buttonArgs.nonAuthorizedHidden) {
             return self();
         }
 
-        TSelf result = bButtonA(() -> {
-            args.accept(buttonArgs);
-            return buttonArgs;
-        });
+        TSelf result = bButtonA(() -> buttonArgs);
 
         if (!authorized && !buttonArgs.nonAuthorizedNormal) {
             buttonArgs.disabled();
@@ -55,17 +50,15 @@ public interface BootstrapRiseCanvas<TSelf extends BootstrapRiseCanvas<TSelf>>
         result.TEST_NAME(method.getName());
         TranslatedString label = helper.getLabelUtil().method(method).label();
         if (buttonArgs.iconOnly) {
-            return result.render(helper.getIconUtil().getIcon(method)).span()
-                    .BsrOnly().content(label)._bButtonA();
+            return result.render(helper.getIconUtil().getIcon(method)).span().BsrOnly().content(label)._bButtonA();
         } else
-            return result.fIfPresent(helper.getIconUtil().tryGetIcon(method),
-                    this::render).content(label);
+            return result.fIfPresent(helper.getIconUtil().tryGetIcon(method), this::render).content(label);
     }
 
     public static class R_ButtonArgs extends B_ButtonArgs<R_ButtonArgs> {
 
-        protected R_ButtonArgs(BootstrapCanvasCss<?> html, boolean isAnchor) {
-            super(html, isAnchor);
+        protected R_ButtonArgs(BootstrapCanvasCss<?> html, boolean isLink) {
+            super(html, isLink);
         }
 
         boolean iconOnly;

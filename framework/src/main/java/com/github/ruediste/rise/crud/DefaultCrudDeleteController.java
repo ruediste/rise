@@ -2,11 +2,12 @@ package com.github.ruediste.rise.crud;
 
 import javax.inject.Inject;
 
+import com.github.ruediste.rendersnakeXT.canvas.BootstrapCanvasCss.B_ButtonStyle;
 import com.github.ruediste.rendersnakeXT.canvas.Glyphicon;
+import com.github.ruediste.rise.api.ButtonStyle;
 import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.component.FrameworkViewComponent;
 import com.github.ruediste.rise.component.components.CButton;
-import com.github.ruediste.rise.component.components.CButtonTemplate;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.persistence.PersistentType;
 import com.github.ruediste.rise.core.persistence.RisePersistenceUtil;
@@ -40,8 +41,7 @@ public class DefaultCrudDeleteController extends SubControllerComponent {
         REALLY_DELETE
     }
 
-    static class View
-            extends FrameworkViewComponent<DefaultCrudDeleteController> {
+    static class View extends FrameworkViewComponent<DefaultCrudDeleteController> {
         @Inject
         Messages messages;
         @Inject
@@ -55,18 +55,14 @@ public class DefaultCrudDeleteController extends SubControllerComponent {
             return toComponent(html -> {
                 html.div().BbgDanger().h1().content(Labels.REALLY_DELETE);
                 html.span().TEST_NAME("identification");
-                crudUtil.getStrategy(CrudUtil.IdentificationRenderer.class,
-                        controller.type.getClass())
+                crudUtil.getStrategy(CrudUtil.IdentificationRenderer.class, controller.type.getClass())
                         .renderIdenification(html, controller.entity);
                 html._span()._div();
 
-                html.add(new CButton(controller, c -> c.delete())
-                        .apply(CButtonTemplate.setArgs(x -> x.danger())));
-                html.rButtonA(go(CrudControllerBase.class).browse(
-                        controller.type.getEntityClass(),
+                html.add(new CButton(controller, c -> c.delete()));
+                html.rButtonA(go(CrudControllerBase.class).browse(controller.type.getEntityClass(),
                         controller.type.getEmQualifier()));
-                html.rButtonA(go(CrudControllerBase.class)
-                        .display(controller.entity));
+                html.rButtonA(go(CrudControllerBase.class).display(controller.entity));
 
             });
         }
@@ -83,10 +79,10 @@ public class DefaultCrudDeleteController extends SubControllerComponent {
 
     @Labeled
     @GlyphiconIcon(Glyphicon.remove_sign)
+    @ButtonStyle(B_ButtonStyle.DANGER)
     public void delete() {
         holder.getEntityManager(type.getEmQualifier()).remove(entity);
         commit();
-        redirect(go(CrudControllerBase.class).browse(type.getEntityClass(),
-                type.getEmQualifier()));
+        redirect(go(CrudControllerBase.class).browse(type.getEntityClass(), type.getEmQualifier()));
     }
 }

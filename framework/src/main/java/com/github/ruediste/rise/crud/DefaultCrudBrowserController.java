@@ -7,7 +7,6 @@ import javax.inject.Inject;
 import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.component.FrameworkViewComponent;
 import com.github.ruediste.rise.component.components.CButton;
-import com.github.ruediste.rise.component.components.CButtonTemplate;
 import com.github.ruediste.rise.component.components.CController;
 import com.github.ruediste.rise.component.components.CDataGrid;
 import com.github.ruediste.rise.component.components.CGroup;
@@ -59,12 +58,9 @@ public class DefaultCrudBrowserController extends SubControllerComponent {
         ctrl = util.getStrategy(CrudUtil.CrudListFactory.class, entityClass).createList(emQualifier, entityClass, null);
 
         ctrl.setItemActionsFactory(item -> {
-            CGroup group = new CGroup()
-                    .add(new CButton(go(CrudControllerBase.class).display(item), true)
-                            .apply(CButtonTemplate.setArgs(x -> x.primary())))
-                    .add(new CButton(go(CrudControllerBase.class).edit(item), true).apply(CButtonTemplate.setArgs(x -> {
-                    }))).add(new CButton(go(CrudControllerBase.class).delete(item), true)
-                            .apply(CButtonTemplate.setArgs(x -> x.danger())));
+            CGroup group = new CGroup().add(new CButton(go(CrudControllerBase.class).display(item), true))
+                    .add(new CButton(go(CrudControllerBase.class).edit(item), true))
+                    .add(new CButton(go(CrudControllerBase.class).delete(item), true));
             reflectionUtil.getBrowseActionMethods(entityClass).forEach(m -> {
                 CButton btn = new CButton().add(new CIconLabel().setMethod(m));
                 btn.setHandler(
