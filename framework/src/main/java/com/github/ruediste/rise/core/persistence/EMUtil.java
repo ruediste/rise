@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.core.persistence;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 import javax.persistence.EntityManager;
@@ -22,9 +23,14 @@ public class EMUtil {
         void addWhere(Predicate predicate);
     }
 
+    public static <T> List<T> loadAll(EntityManager em, Class<T> entityClass) {
+        return queryWithFilter(em, entityClass, x -> {
+        }).getResultList();
+    }
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T> TypedQuery<T> queryWithFilter(EntityManager em,
-            Class<T> entityClass, Consumer<PersistenceFilterContext> action) {
+    public static <T> TypedQuery<T> queryWithFilter(EntityManager em, Class<T> entityClass,
+            Consumer<PersistenceFilterContext> action) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery q = cb.createQuery(entityClass);
         Root root = q.from(entityClass);
