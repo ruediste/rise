@@ -1,28 +1,31 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>com.github.ruediste</groupId>
-		<artifactId>ossparent</artifactId>
-		<version>1.1</version>
-	</parent>
+<!-- 	<parent> -->
+<!-- 		<groupId>com.github.ruediste</groupId> -->
+<!-- 		<artifactId>ossparent</artifactId> -->
+<!-- 		<version>1.1</version> -->
+<!-- 	</parent> -->
 
+	<repositories>
+		<repository>
+			<id>ossrhsnapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</repository>
+	</repositories>
+	
 	<groupId>com.github.ruediste.rise</groupId>
-	<artifactId>rise-parent</artifactId>
+	<artifactId>sample-parent</artifactId>
 	<packaging>pom</packaging>
 	<version>1.0-SNAPSHOT</version>
-	<name>Rise Framework Parent</name>
+	<name>Rise Sample Application Parent</name>
 	<url>http://maven.apache.org</url>
 	<modules>
-		<module>framework</module>
-		<module>test-app</module>
-		<module>sample-parent</module>
-		<module>framework-non-reloadable</module>
-		<module>framework-test</module>
+		<module>sample-app</module>
+		<module>sample-app-deps</module>
 	</modules>
 
 	<properties>
-		<asm.version>5.0.3</asm.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -86,11 +89,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>18.0</version>
-		</dependency>
 
 		<dependency>
 			<groupId>junit</groupId>
@@ -112,55 +110,5 @@
 			<version>1.3</version>
 			<scope>test</scope>
 		</dependency>
-
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.9</version>
-		</dependency>
 	</dependencies>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.ow2.asm</groupId>
-				<artifactId>asm</artifactId>
-				<version>${asm.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.ow2.asm</groupId>
-				<artifactId>asm-all-debug</artifactId>
-				<version>${asm.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.ow2.asm</groupId>
-				<artifactId>asm-util</artifactId>
-				<version>${asm.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.ow2.asm</groupId>
-				<artifactId>asm-analysis</artifactId>
-				<version>${asm.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.ow2.asm</groupId>
-				<artifactId>asm-commons</artifactId>
-				<version>${asm.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.ow2.asm</groupId>
-				<artifactId>asm-tree</artifactId>
-				<version>${asm.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>ch.qos.logback</groupId>
-				<artifactId>logback-classic</artifactId>
-				<version>1.1.3</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 </project>
