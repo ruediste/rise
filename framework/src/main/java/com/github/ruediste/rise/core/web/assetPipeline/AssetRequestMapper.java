@@ -33,161 +33,154 @@ import com.google.common.collect.Multimap;
 
 @Singleton
 public class AssetRequestMapper {
-    @Inject
-    Logger log;
+	@Inject
+	Logger log;
 
-    private final static class AssetRequestParseResult
-            implements RequestParseResult {
-        @Inject
-        CoreRequestInfo info;
+	private final static class AssetRequestParseResult implements RequestParseResult {
+		@Inject
+		CoreRequestInfo info;
 
-        @Inject
-        Logger log;
+		@Inject
+		Logger log;
 
-        private Asset asset;
+		private Asset asset;
 
-        AssetRequestParseResult initialize(Asset asset) {
-            this.asset = asset;
-            return this;
+		AssetRequestParseResult initialize(Asset asset) {
+			this.asset = asset;
+			return this;
 
-        }
+		}
 
-        @Override
-        public void handle() {
-            HttpServletResponse response = info.getServletResponse();
-            response.setStatus(HttpServletResponse.SC_OK);
-            response.setContentType(asset.getContentType());
-            byte[] data = asset.getData();
-            response.setContentLength(data.length);
-            try (OutputStream out = response.getOutputStream()) {
-                out.write(data, 0, data.length);
-            } catch (IOException e) {
-                log.warn("Error while sending asset response", e);
-            }
-        }
-    }
+		@Override
+		public void handle() {
+			HttpServletResponse response = info.getServletResponse();
+			response.setStatus(HttpServletResponse.SC_OK);
+			response.setContentType(asset.getContentType());
+			byte[] data = asset.getData();
+			response.setContentLength(data.length);
+			try (OutputStream out = response.getOutputStream()) {
+				out.write(data, 0, data.length);
+			} catch (IOException e) {
+				log.warn("Error while sending asset response", e);
+			}
+		}
+	}
 
-    @Inject
-    ClassHierarchyIndex cache;
+	@Inject
+	ClassHierarchyIndex cache;
 
-    @Inject
-    CoreConfiguration coreConfiguration;
+	@Inject
+	CoreConfiguration coreConfiguration;
 
-    @Inject
-    AssetPipelineConfiguration pipelineConfiguration;
+	@Inject
+	AssetPipelineConfiguration pipelineConfiguration;
 
-    @Inject
-    Injector injector;
+	@Inject
+	Injector injector;
 
-    @Inject
-    PathInfoIndex index;
+	@Inject
+	PathInfoIndex index;
 
-    @Inject
-    DirectoryChangeWatcher watcher;
+	@Inject
+	DirectoryChangeWatcher watcher;
 
-    @Inject
-    javax.inject.Provider<AssetRequestParseResult> resultProvider;
+	@Inject
+	javax.inject.Provider<AssetRequestParseResult> resultProvider;
 
-    @Inject
-    AssetHelper helper;
+	@Inject
+	AssetHelper helper;
 
-    private List<AssetBundle> bundles = new ArrayList<>();
+	@Inject
+	ClassLoader classLoader;
 
-    public void initialize() {
-        Stopwatch watch = Stopwatch.createStarted();
+	private List<AssetBundle> bundles = new ArrayList<>();
 
-        // collect all bundles
-        String internalName = Type.getInternalName(AssetBundle.class);
-        registerChildBundles(internalName);
+	public void initialize() {
+		Stopwatch watch = Stopwatch.createStarted();
 
-        // call initialize methods in correct order
-        queuedForInitialization.forEach(AssetBundle::initialize);
+		// collect all bundles
+		String internalName = Type.getInternalName(AssetBundle.class);
+		registerChildBundles(internalName);
 
-        // register bundles with PathInfoIndex
-        registerAssets(bundles);
+		// call initialize methods in correct order
+		queuedForInitialization.forEach(AssetBundle::initialize);
 
-        StartupTimeLogger.stopAndLog("Asset Bundle Registration", watch);
-    }
+		// register bundles with PathInfoIndex
+		registerAssets(bundles);
 
-    void registerAssets(List<AssetBundle> bundles) {
-        Multimap<String, Pair<AssetBundle, Asset>> assets = ArrayListMultimap
-                .create();
+		StartupTimeLogger.stopAndLog("Asset Bundle Registration", watch);
+	}
 
-        for (AssetBundle bundle : bundles) {
-            for (AssetBundleOutput output : bundle.outputs) {
-                for (Asset asset : output.getAssets()) {
-                    String pathInfo = helper.getAssetPathInfo(asset.getName());
-                    assets.put(pathInfo, Pair.of(bundle, asset));
+	void registerAssets(List<AssetBundle> bundles) {
+		Multimap<String, Pair<AssetBundle, Asset>> assets = ArrayListMultimap.create();
 
-                }
-            }
-        }
+		for (AssetBundle bundle : bundles) {
+			for (AssetBundleOutput output : bundle.outputs) {
+				for (Asset asset : output.getAssets()) {
+					String pathInfo = helper.getAssetPathInfo(asset.getName());
+					assets.put(pathInfo, Pair.of(bundle, asset));
 
-        TreeSet<String> logMessages = new TreeSet<>();
+				}
+			}
+		}
 
-        for (Entry<String, Collection<Pair<AssetBundle, Asset>>> entry : assets
-                .asMap().entrySet()) {
+		TreeSet<String> logMessages = new TreeSet<>();
 
-            byte[] data = null;
-            Pair<AssetBundle, Asset> first = null;
-            for (Pair<AssetBundle, Asset> pair : entry.getValue()) {
-                byte[] tmp = pair.getB().getData();
-                if (data == null) {
-                    data = tmp;
-                    first = pair;
-                } else {
-                    // there is more than one asset with the same URL. make
-                    // sure it has the same data
-                    if (!Arrays.equals(data, tmp)) {
-                        throw new RuntimeException(
-                                "Two Assets map to the same name "
-                                        + entry.getKey()
-                                        + " but contain different data. They are declared in the following bundles:\n"
-                                        + pair.getA().getClass().getName()
-                                        + "\n -> " + pair.getB() + "\n"
-                                        + first.getA().getClass().getName()
-                                        + "\n -> " + first.getB());
-                    }
-                }
-            }
+		for (Entry<String, Collection<Pair<AssetBundle, Asset>>> entry : assets.asMap().entrySet()) {
 
-            // all assets mapping to this path have the same data. Just pick the
-            // first
-            Asset asset = first.getB();
-            index.registerPathInfo(entry.getKey(),
-                    x -> resultProvider.get().initialize(asset));
-            if (log.isDebugEnabled())
-                logMessages.add(String.format("Registered %s -> %s",
-                        first.getA().getClass().getSimpleName(),
-                        entry.getKey()));
-        }
-        if (log.isDebugEnabled())
-            logMessages.forEach(x -> log.debug(x));
-    }
+			byte[] data = null;
+			Pair<AssetBundle, Asset> first = null;
+			for (Pair<AssetBundle, Asset> pair : entry.getValue()) {
+				byte[] tmp = pair.getB().getData();
+				if (data == null) {
+					data = tmp;
+					first = pair;
+				} else {
+					// there is more than one asset with the same URL. make
+					// sure it has the same data
+					if (!Arrays.equals(data, tmp)) {
+						throw new RuntimeException("Two Assets map to the same name " + entry.getKey()
+								+ " but contain different data. They are declared in the following bundles:\n"
+								+ pair.getA().getClass().getName() + "\n -> " + pair.getB() + "\n"
+								+ first.getA().getClass().getName() + "\n -> " + first.getB());
+					}
+				}
+			}
 
-    void registerChildBundles(String internalName) {
-        for (ClassNode child : cache.getChildren(internalName)) {
-            registerBundle(child);
-            registerChildBundles(child.name);
-        }
-    }
+			// all assets mapping to this path have the same data. Just pick the
+			// first
+			Asset asset = first.getB();
+			index.registerPathInfo(entry.getKey(), x -> resultProvider.get().initialize(asset));
+			if (log.isDebugEnabled())
+				logMessages.add(
+						String.format("Registered %s -> %s", first.getA().getClass().getSimpleName(), entry.getKey()));
+		}
+		if (log.isDebugEnabled())
+			logMessages.forEach(x -> log.debug(x));
+	}
 
-    void registerBundle(ClassNode cls) {
-        Class<?> bundleClass;
-        bundleClass = AsmUtil.loadClass(Type.getObjectType(cls.name),
-                coreConfiguration.dynamicClassLoader);
+	void registerChildBundles(String internalName) {
+		for (ClassNode child : cache.getChildren(internalName)) {
+			registerBundle(child);
+			registerChildBundles(child.name);
+		}
+	}
 
-        AssetBundle bundle = (AssetBundle) injector.getInstance(bundleClass);
-        bundles.add(bundle);
-    }
+	void registerBundle(ClassNode cls) {
+		Class<?> bundleClass;
+		bundleClass = AsmUtil.loadClass(Type.getObjectType(cls.name), classLoader);
 
-    private ArrayList<AssetBundle> queuedForInitialization = new ArrayList<AssetBundle>();
+		AssetBundle bundle = (AssetBundle) injector.getInstance(bundleClass);
+		bundles.add(bundle);
+	}
 
-    /**
-     * Called from the initialize of {@link AssetBundle}. Used to call the
-     * initialize() methods in the correct order.
-     */
-    public void queueInitialization(AssetBundle assetBundle) {
-        queuedForInitialization.add(assetBundle);
-    }
+	private ArrayList<AssetBundle> queuedForInitialization = new ArrayList<AssetBundle>();
+
+	/**
+	 * Called from the initialize of {@link AssetBundle}. Used to call the
+	 * initialize() methods in the correct order.
+	 */
+	public void queueInitialization(AssetBundle assetBundle) {
+		queuedForInitialization.add(assetBundle);
+	}
 }

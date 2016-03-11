@@ -38,165 +38,149 @@ import com.google.common.collect.BiMap;
 @RunWith(MockitoJUnitRunner.class)
 public class RequestMapperBaseTest {
 
-    private static class RequestMapper extends RequestMapperBase {
+	private static class RequestMapper extends RequestMapperBase {
 
-        protected RequestMapper() {
-            super(A.class);
-        }
+		protected RequestMapper() {
+			super(A.class);
+		}
 
-        @Override
-        protected RequestParseResult createParseResult(
-                ActionInvocation<String> path) {
-            return null;
-        }
+		@Override
+		protected RequestParseResult createParseResult(ActionInvocation<String> path) {
+			return null;
+		}
 
-    }
+	}
 
-    @SuppressWarnings("unused")
-    private abstract class A {
-        public ActionResult a() {
-            return null;
-        }
+	@SuppressWarnings("unused")
+	private abstract class A {
+		public ActionResult a() {
+			return null;
+		}
 
-        public ActionResult ab() {
-            return null;
-        }
+		public ActionResult ab() {
+			return null;
+		}
 
-        public ActionResult c(Integer i) {
-            return null;
-        }
-    }
+		public ActionResult c(Integer i) {
+			return null;
+		}
+	}
 
-    @SuppressWarnings("unused")
-    private class B extends A {
-        public ActionResult b() {
-            return null;
-        };
+	@SuppressWarnings("unused")
+	private class B extends A {
+		public ActionResult b() {
+			return null;
+		};
 
-        @Override
-        public ActionResult ab() {
-            return null;
-        };
+		@Override
+		public ActionResult ab() {
+			return null;
+		};
 
-        public ActionResult c(Boolean i) {
-            return null;
-        }
-    }
+		public ActionResult c(Boolean i) {
+			return null;
+		}
+	}
 
-    @Mock
-    Logger log;
-    @Mock
-    PathInfoIndex pathInfoIndex;
+	@Mock
+	Logger log;
+	@Mock
+	PathInfoIndex pathInfoIndex;
 
-    @Mock
-    ClassHierarchyIndex index;
+	@Mock
+	ClassHierarchyIndex index;
 
-    @Mock
-    CoreConfiguration config;
+	@Mock
+	CoreConfiguration config;
 
-    @InjectMocks
-    ControllerReflectionUtil util;
+	@InjectMocks
+	ControllerReflectionUtil util;
 
-    @InjectMocks
-    RequestMapper mapper;
+	@InjectMocks
+	RequestMapper mapper;
 
-    ClassNode a = AsmUtil.readClass(A.class);
-    ClassNode b = AsmUtil.readClass(B.class);
-    MethodRef a_a = new MethodRef(a.name, "a",
-            "()" + Type.getDescriptor(ActionResult.class));
-    MethodRef a_c = new MethodRef(a.name, "c",
-            "(Ljava/lang/Integer;)" + Type.getDescriptor(ActionResult.class));
+	ClassNode a = AsmUtil.readClass(A.class);
+	ClassNode b = AsmUtil.readClass(B.class);
+	MethodRef a_a = new MethodRef(a.name, "a", "()" + Type.getDescriptor(ActionResult.class));
+	MethodRef a_c = new MethodRef(a.name, "c", "(Ljava/lang/Integer;)" + Type.getDescriptor(ActionResult.class));
 
-    String sessionId = "12345";
+	String sessionId = "12345";
 
-    @Before
-    public void before() {
+	@Before
+	public void before() {
 
-        mapper.util = util;
-        mapper.signatureHelper = new SignatureHelper();
-        mapper.signatureHelper.postConstruct();
+		mapper.util = util;
+		mapper.signatureHelper = new SignatureHelper();
+		mapper.signatureHelper.postConstruct();
 
-        when(index.tryGetNode(any())).thenReturn(Optional.empty());
-        when(index.tryGetNode(a.name)).thenReturn(Optional.of(a));
-        when(index.tryGetNode(b.name)).thenReturn(Optional.of(b));
-        when(config.calculateControllerName(a)).thenReturn("a");
-        when(config.calculateControllerName(b)).thenReturn("b");
-        config.dynamicClassLoader = getClass().getClassLoader();
-        config.doUrlSigning = true;
-        config.urlSignatureBytes = 20;
-    }
+		when(index.tryGetNode(any())).thenReturn(Optional.empty());
+		when(index.tryGetNode(a.name)).thenReturn(Optional.of(a));
+		when(index.tryGetNode(b.name)).thenReturn(Optional.of(b));
+		when(config.calculateControllerName(a)).thenReturn("a");
+		when(config.calculateControllerName(b)).thenReturn("b");
+		config.doUrlSigning = true;
+		config.urlSignatureBytes = 20;
+	}
 
-    @Test
-    public void testHierarchy() {
-        mapper.register(b);
-        assertThat(mapper.actionMethodNameMap.keySet(), not(contains(a.name)));
-        BiMap<OverrideDesc, String> map = mapper.actionMethodNameMap
-                .get(b.name);
-        assertNotNull(map);
-        assertThat(map.keySet(),
-                containsInAnyOrder(new OverrideDesc("a()"),
-                        new OverrideDesc("c(Ljava/lang/Integer;)"),
-                        new OverrideDesc("c(Ljava/lang/Boolean;)"),
-                        new OverrideDesc("ab()"), new OverrideDesc("b()")));
-    }
+	@Test
+	public void testHierarchy() {
+		mapper.register(b);
+		assertThat(mapper.actionMethodNameMap.keySet(), not(contains(a.name)));
+		BiMap<OverrideDesc, String> map = mapper.actionMethodNameMap.get(b.name);
+		assertNotNull(map);
+		assertThat(map.keySet(), containsInAnyOrder(new OverrideDesc("a()"), new OverrideDesc("c(Ljava/lang/Integer;)"),
+				new OverrideDesc("c(Ljava/lang/Boolean;)"), new OverrideDesc("ab()"), new OverrideDesc("b()")));
+	}
 
-    @Test
-    public void testGenerateBaseClass() throws Throwable {
-        mapper.register(b);
-        ActionInvocation<String> invocation = createInvocationToA_a();
-        PathInfo pathInfo = mapper.generate(invocation, () -> sessionId)
-                .getPathInfo();
-        assertEquals("/b.a", pathInfo.getValue());
-    }
+	@Test
+	public void testGenerateBaseClass() throws Throwable {
+		mapper.register(b);
+		ActionInvocation<String> invocation = createInvocationToA_a();
+		PathInfo pathInfo = mapper.generate(invocation, () -> sessionId).getPathInfo();
+		assertEquals("/b.a", pathInfo.getValue());
+	}
 
-    ActionInvocationParameter testParameter = new ActionInvocationParameter(
-            "TEST");
+	ActionInvocationParameter testParameter = new ActionInvocationParameter("TEST");
 
-    @Test
-    public void parameterRoundtrip() throws Exception {
-        mapper.register(a);
-        ActionInvocation<String> invocation = createInvocationToA_a();
-        testParameter.set(invocation, "foo");
-        UrlSpec spec = mapper.generate(invocation, () -> sessionId);
-        ActionInvocation<String> parsed = mapper.parse("/a.a", a, a_a,
-                new HttpRequestImpl(spec), () -> sessionId);
-        assertEquals("foo", testParameter.get(parsed));
-    }
+	@Test
+	public void parameterRoundtrip() throws Exception {
+		mapper.register(a);
+		ActionInvocation<String> invocation = createInvocationToA_a();
+		testParameter.set(invocation, "foo");
+		UrlSpec spec = mapper.generate(invocation, () -> sessionId);
+		ActionInvocation<String> parsed = mapper.parse("/a.a", a, a_a, new HttpRequestImpl(spec), () -> sessionId);
+		assertEquals("foo", testParameter.get(parsed));
+	}
 
-    @Test
-    public void signatureChecked() throws Exception {
-        mapper.register(a);
-        ActionInvocation<String> invocation = createInvocationToA_a();
-        UrlSpec spec = mapper.generate(invocation, () -> sessionId);
-        try {
-            mapper.parse("/a.a", a, a_a, new HttpRequestImpl(spec),
-                    () -> "1234567");
-            fail();
-        } catch (RuntimeException e) {
-            if (!e.getMessage().contains("URL signature"))
-                throw e;
-        }
-    }
+	@Test
+	public void signatureChecked() throws Exception {
+		mapper.register(a);
+		ActionInvocation<String> invocation = createInvocationToA_a();
+		UrlSpec spec = mapper.generate(invocation, () -> sessionId);
+		try {
+			mapper.parse("/a.a", a, a_a, new HttpRequestImpl(spec), () -> "1234567");
+			fail();
+		} catch (RuntimeException e) {
+			if (!e.getMessage().contains("URL signature"))
+				throw e;
+		}
+	}
 
-    @Test
-    public void roundtripWithArg() throws Exception {
-        mapper.register(a);
-        ActionInvocation<String> invocation = new ActionInvocation<>();
-        invocation.methodInvocation = new MethodInvocation<>(A.class,
-                A.class.getMethod("c", Integer.class));
-        invocation.methodInvocation.getArguments().add("1");
+	@Test
+	public void roundtripWithArg() throws Exception {
+		mapper.register(a);
+		ActionInvocation<String> invocation = new ActionInvocation<>();
+		invocation.methodInvocation = new MethodInvocation<>(A.class, A.class.getMethod("c", Integer.class));
+		invocation.methodInvocation.getArguments().add("1");
 
-        UrlSpec spec = mapper.generate(invocation, () -> sessionId);
-        ActionInvocation<String> parsed = mapper.parse("/a.c", a, a_c,
-                new HttpRequestImpl(spec), () -> sessionId);
-        assertNotNull(parsed);
-    }
+		UrlSpec spec = mapper.generate(invocation, () -> sessionId);
+		ActionInvocation<String> parsed = mapper.parse("/a.c", a, a_c, new HttpRequestImpl(spec), () -> sessionId);
+		assertNotNull(parsed);
+	}
 
-    private ActionInvocation<String> createInvocationToA_a()
-            throws NoSuchMethodException {
-        ActionInvocation<String> invocation = new ActionInvocation<>();
-        invocation.methodInvocation = new MethodInvocation<>(A.class,
-                A.class.getMethod("a"));
-        return invocation;
-    }
+	private ActionInvocation<String> createInvocationToA_a() throws NoSuchMethodException {
+		ActionInvocation<String> invocation = new ActionInvocation<>();
+		invocation.methodInvocation = new MethodInvocation<>(A.class, A.class.getMethod("a"));
+		return invocation;
+	}
 }

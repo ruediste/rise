@@ -48,380 +48,325 @@ import com.google.common.collect.MultimapBuilder;
  */
 public abstract class RequestMapperBase implements RequestMapper {
 
-    private static final String SIGNATURE_PARAMETER_NAME = "SIGN";
+	private static final String SIGNATURE_PARAMETER_NAME = "SIGN";
 
-    @Inject
-    Logger log;
+	@Inject
+	Logger log;
 
-    @Inject
-    CoreConfiguration coreConfig;
+	@Inject
+	CoreConfiguration coreConfig;
 
-    @Inject
-    ClassHierarchyIndex cache;
+	@Inject
+	ClassLoader classLoader;
 
-    @Inject
-    PathInfoIndex idx;
+	@Inject
+	ClassHierarchyIndex cache;
 
-    @Inject
-    ControllerReflectionUtil util;
+	@Inject
+	PathInfoIndex idx;
 
-    @Inject
-    SignatureHelper signatureHelper;
+	@Inject
+	ControllerReflectionUtil util;
 
-    @Inject
-    CoreRequestInfo coreRequestInfo;
+	@Inject
+	SignatureHelper signatureHelper;
 
-    /**
-     * Map controller instance classes and methods to their prefixes. Prefixes
-     * do not include a final "." or "/". Used for
-     * {@link #generate(ActionInvocation, Supplier)}.
-     */
-    final HashMap<Pair<String, OverrideDesc>, String> methodToPrefixMap = new HashMap<>();
+	@Inject
+	CoreRequestInfo coreRequestInfo;
 
-    /**
-     * Map from controller classes to their implementations.
-     */
-    final Multimap<String, String> controllerImplementationsMap = MultimapBuilder
-            .hashKeys().arrayListValues().build();
+	/**
+	 * Map controller instance classes and methods to their prefixes. Prefixes
+	 * do not include a final "." or "/". Used for
+	 * {@link #generate(ActionInvocation, Supplier)}.
+	 */
+	final HashMap<Pair<String, OverrideDesc>, String> methodToPrefixMap = new HashMap<>();
 
-    /**
-     * Map between methods and their action method names, grouped by class
-     */
-    final HashMap<String, BiMap<OverrideDesc, String>> actionMethodNameMap = new HashMap<>();
+	/**
+	 * Map from controller classes to their implementations.
+	 */
+	final Multimap<String, String> controllerImplementationsMap = MultimapBuilder.hashKeys().arrayListValues().build();
 
-    private Class<?> controllerInterface;
+	/**
+	 * Map between methods and their action method names, grouped by class
+	 */
+	final HashMap<String, BiMap<OverrideDesc, String>> actionMethodNameMap = new HashMap<>();
 
-    protected RequestMapperBase(Class<?> controllerBaseClass) {
-        this.controllerInterface = controllerBaseClass;
+	private Class<?> controllerInterface;
 
-    }
+	protected RequestMapperBase(Class<?> controllerBaseClass) {
+		this.controllerInterface = controllerBaseClass;
 
-    @Override
-    public void initialize() {
-        String internalName = Type.getInternalName(controllerInterface);
-        for (ClassNode cls : cache.getAllChildren(internalName)) {
-            // skip abstract methods
-            if ((cls.access & Opcodes.ACC_ABSTRACT) != 0)
-                continue;
-            register(cls);
-        }
-    }
+	}
 
-    void register(ClassNode cls) {
-        String controllerName = coreConfig.calculateControllerName(cls);
-        log.debug("found controller " + cls.name + " -> " + controllerName);
+	@Override
+	public void initialize() {
+		String internalName = Type.getInternalName(controllerInterface);
+		for (ClassNode cls : cache.getAllChildren(internalName)) {
+			// skip abstract methods
+			if ((cls.access & Opcodes.ACC_ABSTRACT) != 0)
+				continue;
+			register(cls);
+		}
+	}
 
-        // build method name map
-        BiMap<OverrideDesc, String> methodNameMap = HashBiMap.create();
-        actionMethodNameMap.put(cls.name, methodNameMap);
+	void register(ClassNode cls) {
+		String controllerName = coreConfig.calculateControllerName(cls);
+		log.debug("found controller " + cls.name + " -> " + controllerName);
 
-        ClassNode instanceCls = cls;
-        while (cls != null) {
-            controllerImplementationsMap.put(cls.name, instanceCls.name);
-            if (cls.methods != null)
-                for (MethodNode m : cls.methods) {
-                    if (!util.isActionMethod(m)) {
-                        continue;
-                    }
-                    String name = m.name;
+		// build method name map
+		BiMap<OverrideDesc, String> methodNameMap = HashBiMap.create();
+		actionMethodNameMap.put(cls.name, methodNameMap);
 
-                    OverrideDesc overrideDesc = AsmUtil.getOverrideDesc(m.name,
-                            m.desc);
+		ClassNode instanceCls = cls;
+		while (cls != null) {
+			controllerImplementationsMap.put(cls.name, instanceCls.name);
+			if (cls.methods != null)
+				for (MethodNode m : cls.methods) {
+					if (!util.isActionMethod(m)) {
+						continue;
+					}
+					String name = m.name;
 
-                    if (methodNameMap.containsKey(overrideDesc))
-                        continue;
-                    log.debug("found action method " + name);
+					OverrideDesc overrideDesc = AsmUtil.getOverrideDesc(m.name, m.desc);
 
-                    // find unique name
-                    if (methodNameMap.inverse().containsKey(name)) {
-                        int i = 1;
-                        String tmp;
-                        do {
-                            tmp = name + "_" + i;
-                            i += 1;
-                        } while (methodNameMap.inverse().containsKey(tmp));
-                        name = tmp;
-                    }
+					if (methodNameMap.containsKey(overrideDesc))
+						continue;
+					log.debug("found action method " + name);
 
-                    MethodRef methodRef = new MethodRef(cls.name, m.name,
-                            m.desc);
-                    methodNameMap.put(overrideDesc, name);
+					// find unique name
+					if (methodNameMap.inverse().containsKey(name)) {
+						int i = 1;
+						String tmp;
+						do {
+							tmp = name + "_" + i;
+							i += 1;
+						} while (methodNameMap.inverse().containsKey(tmp));
+						name = tmp;
+					}
 
-                    // determine the path infos to register under
-                    MethodPathInfos pathInfos = ActionPathAnnotationUtil
-                            .getPathInfos(m,
-                                    () -> "/" + controllerName
-                                            + ("index".equals(m.name) ? ""
-                                                    : "." + m.name));
+					MethodRef methodRef = new MethodRef(cls.name, m.name, m.desc);
+					methodNameMap.put(overrideDesc, name);
 
-                    // add the path infos for the method to the respective maps
-                    if (Type.getArgumentTypes(m.desc).length == 0) {
-                        // no parameters
-                        for (String prefix : pathInfos.pathInfos) {
-                            idx.registerPathInfo(prefix, new RequestParser() {
-                                @Override
-                                public RequestParseResult parse(
-                                        HttpRequest req) {
-                                    ActionInvocation<String> invocation = createInvocation(
-                                            instanceCls, methodRef);
-                                    if (shouldDoUrlSigning(
-                                            invocation.methodInvocation
-                                                    .getMethod())) {
-                                        String requestSignature = req
-                                                .getParameter(
-                                                        SIGNATURE_PARAMETER_NAME);
-                                        if (requestSignature == null)
-                                            throw new RuntimeException(
-                                                    "No Signature found in request");
-                                        Mac mac = null;
-                                        mac = signatureHelper.createHasher();
-                                        mac.update(coreRequestInfo
-                                                .getServletRequest()
-                                                .getSession().getId()
-                                                .getBytes(Charsets.UTF_8));
-                                        mac.update(prefix
-                                                .getBytes(Charsets.UTF_8));
+					// determine the path infos to register under
+					MethodPathInfos pathInfos = ActionPathAnnotationUtil.getPathInfos(m,
+							() -> "/" + controllerName + ("index".equals(m.name) ? "" : "." + m.name));
 
-                                        byte[] calculatedSignature = Arrays
-                                                .copyOfRange(mac.doFinal(), 0,
-                                                        coreConfig.urlSignatureBytes);
+					// add the path infos for the method to the respective maps
+					if (Type.getArgumentTypes(m.desc).length == 0) {
+						// no parameters
+						for (String prefix : pathInfos.pathInfos) {
+							idx.registerPathInfo(prefix, new RequestParser() {
+								@Override
+								public RequestParseResult parse(HttpRequest req) {
+									ActionInvocation<String> invocation = createInvocation(instanceCls, methodRef);
+									if (shouldDoUrlSigning(invocation.methodInvocation.getMethod())) {
+										String requestSignature = req.getParameter(SIGNATURE_PARAMETER_NAME);
+										if (requestSignature == null)
+											throw new RuntimeException("No Signature found in request");
+										Mac mac = null;
+										mac = signatureHelper.createHasher();
+										mac.update(coreRequestInfo.getServletRequest().getSession().getId()
+												.getBytes(Charsets.UTF_8));
+										mac.update(prefix.getBytes(Charsets.UTF_8));
 
-                                        if (!signatureHelper.slowEquals(
-                                                calculatedSignature,
-                                                Base64.getUrlDecoder().decode(
-                                                        requestSignature))) {
-                                            throw new RuntimeException(
-                                                    "URL signature did not match");
-                                        }
-                                    }
-                                    return createParseResult(invocation);
-                                }
+										byte[] calculatedSignature = Arrays.copyOfRange(mac.doFinal(), 0,
+												coreConfig.urlSignatureBytes);
 
-                                @Override
-                                public String toString() {
-                                    return "RequestParser[" + methodRef + "]";
-                                };
-                            });
-                        }
-                    } else {
-                        // there are parameters
-                        for (String prefix : pathInfos.pathInfos) {
-                            idx.registerPrefix(prefix + "/",
-                                    req -> createParseResult(parse(prefix,
-                                            instanceCls, methodRef, req)));
-                        }
-                    }
+										if (!signatureHelper.slowEquals(calculatedSignature,
+												Base64.getUrlDecoder().decode(requestSignature))) {
+											throw new RuntimeException("URL signature did not match");
+										}
+									}
+									return createParseResult(invocation);
+								}
 
-                    methodToPrefixMap.put(
-                            Pair.of(instanceCls.name, overrideDesc),
-                            pathInfos.primaryPathInfo);
-                }
-            cls = cache.tryGetNode(cls.superName).orElse(null);
-        }
+								@Override
+								public String toString() {
+									return "RequestParser[" + methodRef + "]";
+								};
+							});
+						}
+					} else {
+						// there are parameters
+						for (String prefix : pathInfos.pathInfos) {
+							idx.registerPrefix(prefix + "/",
+									req -> createParseResult(parse(prefix, instanceCls, methodRef, req)));
+						}
+					}
 
-    }
+					methodToPrefixMap.put(Pair.of(instanceCls.name, overrideDesc), pathInfos.primaryPathInfo);
+				}
+			cls = cache.tryGetNode(cls.superName).orElse(null);
+		}
 
-    protected abstract RequestParseResult createParseResult(
-            ActionInvocation<String> path);
+	}
 
-    /**
-     * Parse a request. The prefix must include the method name and the first
-     * "/". The remaining pathInfo has the form
-     *
-     * <pre>
-     * ({argument}("/"{argument})*)?
-     * </pre>
-     */
-    public ActionInvocation<String> parse(String prefix,
-            ClassNode controllerClassNode, MethodRef methodRef,
-            HttpRequest request) {
-        return parse(prefix, controllerClassNode, methodRef, request,
-                () -> coreRequestInfo.getServletRequest().getSession().getId());
-    }
+	protected abstract RequestParseResult createParseResult(ActionInvocation<String> path);
 
-    ActionInvocation<String> parse(String prefix, ClassNode controllerClassNode,
-            MethodRef methodRef, HttpRequest request,
-            Supplier<String> sessionIdSupplier) {
-        ActionInvocation<String> invocation;
-        try {
-            invocation = createInvocation(controllerClassNode, methodRef);
-        } catch (Exception e) {
-            throw new RuntimeException(
-                    "Error while loading " + controllerClassNode.name + "."
-                            + methodRef.methodName + "(" + methodRef.desc + ")",
-                    e);
-        }
-        Method method = invocation.methodInvocation.getMethod();
-        boolean urlSign = shouldDoUrlSigning(method);
+	/**
+	 * Parse a request. The prefix must include the method name and the first
+	 * "/". The remaining pathInfo has the form
+	 *
+	 * <pre>
+	 * ({argument}("/"{argument})*)?
+	 * </pre>
+	 */
+	public ActionInvocation<String> parse(String prefix, ClassNode controllerClassNode, MethodRef methodRef,
+			HttpRequest request) {
+		return parse(prefix, controllerClassNode, methodRef, request,
+				() -> coreRequestInfo.getServletRequest().getSession().getId());
+	}
 
-        Mac mac = null;
-        if (urlSign) {
-            mac = signatureHelper.createHasher();
-            mac.update(sessionIdSupplier.get().getBytes(Charsets.UTF_8));
-            mac.update(prefix.getBytes(Charsets.UTF_8));
-        }
+	ActionInvocation<String> parse(String prefix, ClassNode controllerClassNode, MethodRef methodRef,
+			HttpRequest request, Supplier<String> sessionIdSupplier) {
+		ActionInvocation<String> invocation;
+		try {
+			invocation = createInvocation(controllerClassNode, methodRef);
+		} catch (Exception e) {
+			throw new RuntimeException("Error while loading " + controllerClassNode.name + "." + methodRef.methodName
+					+ "(" + methodRef.desc + ")", e);
+		}
+		Method method = invocation.methodInvocation.getMethod();
+		boolean urlSign = shouldDoUrlSigning(method);
 
-        String remaining = request.getPathInfo().substring(prefix.length(),
-                request.getPathInfo().length());
+		Mac mac = null;
+		if (urlSign) {
+			mac = signatureHelper.createHasher();
+			mac.update(sessionIdSupplier.get().getBytes(Charsets.UTF_8));
+			mac.update(prefix.getBytes(Charsets.UTF_8));
+		}
 
-        // collect arguments
-        if (!remaining.isEmpty()) {
-            int i = 0;
-            for (String arg : Splitter.on('/')
-                    .splitToList(remaining.substring(1))) {
-                invocation.methodInvocation.getArguments().add(arg);
-                if (urlSign && !method.getParameters()[i]
-                        .isAnnotationPresent(UrlUnsigned.class)) {
-                    mac.update(("/" + arg).getBytes(Charsets.UTF_8));
-                }
-                i++;
-            }
-        }
+		String remaining = request.getPathInfo().substring(prefix.length(), request.getPathInfo().length());
 
-        // check url signature
-        if (urlSign) {
-            byte[] signature = Base64.getUrlDecoder()
-                    .decode(request.getParameter(SIGNATURE_PARAMETER_NAME));
-            byte[] calculatedSignature = Arrays.copyOfRange(mac.doFinal(), 0,
-                    coreConfig.urlSignatureBytes);
-            if (!signatureHelper.slowEquals(signature,
-                    calculatedSignature)) {
-                throw new RuntimeException("URL signature does not match");
-            }
-        }
+		// collect arguments
+		if (!remaining.isEmpty()) {
+			int i = 0;
+			for (String arg : Splitter.on('/').splitToList(remaining.substring(1))) {
+				invocation.methodInvocation.getArguments().add(arg);
+				if (urlSign && !method.getParameters()[i].isAnnotationPresent(UrlUnsigned.class)) {
+					mac.update(("/" + arg).getBytes(Charsets.UTF_8));
+				}
+				i++;
+			}
+		}
 
-        // collect parameters
-        for (Entry<String, String[]> entry : request.getParameterMap()
-                .entrySet()) {
-            invocation.getParameters().put(entry.getKey(), entry.getValue());
-        }
-        return invocation;
+		// check url signature
+		if (urlSign) {
+			byte[] signature = Base64.getUrlDecoder().decode(request.getParameter(SIGNATURE_PARAMETER_NAME));
+			byte[] calculatedSignature = Arrays.copyOfRange(mac.doFinal(), 0, coreConfig.urlSignatureBytes);
+			if (!signatureHelper.slowEquals(signature, calculatedSignature)) {
+				throw new RuntimeException("URL signature does not match");
+			}
+		}
 
-    }
+		// collect parameters
+		for (Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
+			invocation.getParameters().put(entry.getKey(), entry.getValue());
+		}
+		return invocation;
 
-    /**
-     * Create an {@link ActionInvocation} without parameters
-     */
-    protected ActionInvocation<String> createInvocation(
-            ClassNode controllerClassNode, MethodRef methodRef) {
-        ActionInvocation<String> invocation = new ActionInvocation<>();
+	}
 
-        // load method
-        try {
-            Class<?> controllerClass = AsmUtil.loadClass(
-                    Type.getObjectType(controllerClassNode.name),
-                    coreConfig.dynamicClassLoader);
-            Method method = AsmUtil.loadMethod(methodRef,
-                    coreConfig.dynamicClassLoader);
-            invocation.methodInvocation = new MethodInvocation<>(
-                    controllerClass, method);
-        } catch (Exception e) {
-            throw new RuntimeException("Error while creating invocation for "
-                    + controllerClassNode.name + "." + methodRef.methodName, e);
-        }
-        return invocation;
-    }
+	/**
+	 * Create an {@link ActionInvocation} without parameters
+	 */
+	protected ActionInvocation<String> createInvocation(ClassNode controllerClassNode, MethodRef methodRef) {
+		ActionInvocation<String> invocation = new ActionInvocation<>();
 
-    @Override
-    public UrlSpec generate(ActionInvocation<String> path,
-            Supplier<String> sessionIdSupplier) {
-        Method method = path.methodInvocation.getMethod();
-        boolean urlSign = shouldDoUrlSigning(method);
+		// load method
+		try {
+			Class<?> controllerClass = AsmUtil.loadClass(Type.getObjectType(controllerClassNode.name), classLoader);
+			Method method = AsmUtil.loadMethod(methodRef, classLoader);
+			invocation.methodInvocation = new MethodInvocation<>(controllerClass, method);
+		} catch (Exception e) {
+			throw new RuntimeException(
+					"Error while creating invocation for " + controllerClassNode.name + "." + methodRef.methodName, e);
+		}
+		return invocation;
+	}
 
-        Mac mac = null;
-        if (urlSign) {
-            mac = signatureHelper.createHasher();
-            mac.update(sessionIdSupplier.get().getBytes(Charsets.UTF_8));
-        }
+	@Override
+	public UrlSpec generate(ActionInvocation<String> path, Supplier<String> sessionIdSupplier) {
+		Method method = path.methodInvocation.getMethod();
+		boolean urlSign = shouldDoUrlSigning(method);
 
-        StringBuilder sb = new StringBuilder();
-        MethodRef ref = MethodRef.of(method);
-        OverrideDesc overrideDesc = AsmUtil.getOverrideDesc(method);
+		Mac mac = null;
+		if (urlSign) {
+			mac = signatureHelper.createHasher();
+			mac.update(sessionIdSupplier.get().getBytes(Charsets.UTF_8));
+		}
 
-        String prefix;
-        {
-            String controllerInternalName = Type
-                    .getInternalName(path.methodInvocation.getInstanceClass());
+		StringBuilder sb = new StringBuilder();
+		MethodRef ref = MethodRef.of(method);
+		OverrideDesc overrideDesc = AsmUtil.getOverrideDesc(method);
 
-            String controllerImplementationName = getControllerImplementation(
-                    controllerInternalName);
-            prefix = methodToPrefixMap
-                    .get(Pair.of(controllerImplementationName, overrideDesc));
+		String prefix;
+		{
+			String controllerInternalName = Type.getInternalName(path.methodInvocation.getInstanceClass());
 
-            if (prefix == null)
-                throw new RuntimeException("Unable to find prefix for\n" + ref
-                        + "\nfor instance class "
-                        + path.methodInvocation.getInstanceClass().getName());
-        }
+			String controllerImplementationName = getControllerImplementation(controllerInternalName);
+			prefix = methodToPrefixMap.get(Pair.of(controllerImplementationName, overrideDesc));
 
-        sb.append(prefix);
+			if (prefix == null)
+				throw new RuntimeException("Unable to find prefix for\n" + ref + "\nfor instance class "
+						+ path.methodInvocation.getInstanceClass().getName());
+		}
 
-        if (urlSign) {
-            mac.update(prefix.getBytes(Charsets.UTF_8));
-        }
+		sb.append(prefix);
 
-        // add arguments
-        for (int i = 0; i < method.getParameterCount(); i++) {
-            String argument = "/" + path.methodInvocation.getArguments().get(i);
-            sb.append(argument);
+		if (urlSign) {
+			mac.update(prefix.getBytes(Charsets.UTF_8));
+		}
 
-            if (urlSign && !method.getParameters()[i]
-                    .isAnnotationPresent(UrlUnsigned.class)) {
-                mac.update(argument.getBytes(Charsets.UTF_8));
-            }
-        }
+		// add arguments
+		for (int i = 0; i < method.getParameterCount(); i++) {
+			String argument = "/" + path.methodInvocation.getArguments().get(i);
+			sb.append(argument);
 
-        ArrayList<Pair<String, String>> parameters = new ArrayList<>();
-        for (Entry<String, String[]> entry : path.getParameters().entrySet()) {
-            for (String value : entry.getValue()) {
-                parameters.add(Pair.of(entry.getKey(), value));
-            }
-        }
+			if (urlSign && !method.getParameters()[i].isAnnotationPresent(UrlUnsigned.class)) {
+				mac.update(argument.getBytes(Charsets.UTF_8));
+			}
+		}
 
-        if (urlSign) {
-            byte[] signature = mac.doFinal();
-            parameters
-                    .add(Pair.of(SIGNATURE_PARAMETER_NAME,
-                            Base64.getUrlEncoder()
-                                    .encodeToString(Arrays.copyOfRange(
-                                            signature, 0,
-                                            coreConfig.urlSignatureBytes))));
-        }
-        return new UrlSpec(new PathInfo(sb.toString()), parameters);
+		ArrayList<Pair<String, String>> parameters = new ArrayList<>();
+		for (Entry<String, String[]> entry : path.getParameters().entrySet()) {
+			for (String value : entry.getValue()) {
+				parameters.add(Pair.of(entry.getKey(), value));
+			}
+		}
 
-    }
+		if (urlSign) {
+			byte[] signature = mac.doFinal();
+			parameters.add(Pair.of(SIGNATURE_PARAMETER_NAME, Base64.getUrlEncoder()
+					.encodeToString(Arrays.copyOfRange(signature, 0, coreConfig.urlSignatureBytes))));
+		}
+		return new UrlSpec(new PathInfo(sb.toString()), parameters);
 
-    @Override
-    public Class<?> getControllerImplementationClass(
-            Class<?> controllerBaseClass) {
-        String controllerImplementation = getControllerImplementation(
-                Type.getInternalName(controllerBaseClass));
-        return AsmUtil.loadClass(Type.getObjectType(controllerImplementation),
-                coreConfig.dynamicClassLoader);
-    }
+	}
 
-    /**
-     * Return the internal name of the class implementing the given controller
-     * class
-     */
-    private String getControllerImplementation(String controllerInternalName) {
-        Collection<String> implementations = controllerImplementationsMap
-                .get(controllerInternalName);
-        if (implementations.size() == 0)
-            throw new RuntimeException("No implementation for "
-                    + controllerInternalName + " found");
+	@Override
+	public Class<?> getControllerImplementationClass(Class<?> controllerBaseClass) {
+		String controllerImplementation = getControllerImplementation(Type.getInternalName(controllerBaseClass));
+		return AsmUtil.loadClass(Type.getObjectType(controllerImplementation), classLoader);
+	}
 
-        if (implementations.size() > 1)
-            throw new RuntimeException("Multiple implementations for "
-                    + controllerInternalName + " found");
+	/**
+	 * Return the internal name of the class implementing the given controller
+	 * class
+	 */
+	private String getControllerImplementation(String controllerInternalName) {
+		Collection<String> implementations = controllerImplementationsMap.get(controllerInternalName);
+		if (implementations.size() == 0)
+			throw new RuntimeException("No implementation for " + controllerInternalName + " found");
 
-        String controllerImplementationName = Iterables
-                .getOnlyElement(implementations);
-        return controllerImplementationName;
-    }
+		if (implementations.size() > 1)
+			throw new RuntimeException("Multiple implementations for " + controllerInternalName + " found");
 
-    private boolean shouldDoUrlSigning(Method method) {
-        return coreConfig.doUrlSigning
-                && !method.isAnnotationPresent(UrlUnsigned.class);
-    }
+		String controllerImplementationName = Iterables.getOnlyElement(implementations);
+		return controllerImplementationName;
+	}
+
+	private boolean shouldDoUrlSigning(Method method) {
+		return coreConfig.doUrlSigning && !method.isAnnotationPresent(UrlUnsigned.class);
+	}
 }

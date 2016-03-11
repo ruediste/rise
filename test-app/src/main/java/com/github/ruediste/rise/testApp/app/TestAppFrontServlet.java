@@ -35,7 +35,7 @@ public class TestAppFrontServlet extends FrontServletBase {
                 bind(LabelUtil.class).toInstance(
                         new LabelUtil((str, locale) -> str.getFallback()));
                 PersistenceModuleUtil.bindDataSource(binder(), null,
-                        new EclipseLinkPersistenceUnitManager("testApp"),
+                        new EclipseLinkPersistenceUnitManager(),
                         new BitronixDataSourceFactory(
                                 new H2DatabaseIntegrationInfo()) {
 

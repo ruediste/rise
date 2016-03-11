@@ -52,167 +52,153 @@ import com.google.common.reflect.TypeToken;
 
 public class CoreRestartableModule extends AbstractModule {
 
-    private Injector permanentInjector;
+	private Injector permanentInjector;
 
-    public CoreRestartableModule(Injector permanentInjector) {
-        this.permanentInjector = permanentInjector;
+	public CoreRestartableModule(Injector permanentInjector) {
+		this.permanentInjector = permanentInjector;
 
-    }
+	}
 
-    @Override
-    protected void configure() throws Exception {
-        InitializerUtil.register(config(), CoreRestartableInitializer.class);
-        InitializerUtil.register(config(), RemotUnitTestInitializer.class);
-        installHttpScopeModule();
-        installPersistenceDynamicModule();
-        registerPermanentRule();
-        registerAssetBundleScopeRule();
-        registerMessagesRule();
-        MethodAuthorizationManager.get(binder());
-        bindPatternStringResolver();
-    }
+	@Override
+	protected void configure() throws Exception {
+		InitializerUtil.register(config(), CoreRestartableInitializer.class);
+		InitializerUtil.register(config(), RemotUnitTestInitializer.class);
+		installHttpScopeModule();
+		installPersistenceDynamicModule();
+		registerPermanentRule();
+		registerAssetBundleScopeRule();
+		registerMessagesRule();
+		MethodAuthorizationManager.get(binder());
+		bindPatternStringResolver();
+	}
 
-    protected void bindPatternStringResolver() {
-        bind(PatternStringResolver.class).to(DefaultPatternStringResolver.class)
-                .in(Singleton.class);
-    }
+	protected void bindPatternStringResolver() {
+		bind(PatternStringResolver.class).to(DefaultPatternStringResolver.class).in(Singleton.class);
+	}
 
-    @Provides
-    @Singleton
-    protected ResourceBundleResolver resourceBundleResolver(
-            RiseResourceBundleResolver resolver) {
-        return resolver;
-    }
+	@Provides
+	@Singleton
+	protected ResourceBundleResolver resourceBundleResolver(RiseResourceBundleResolver resolver) {
+		return resolver;
+	}
 
-    @Provides
-    @Singleton
-    protected TranslatedStringResolver translatedStringResolver(
-            ResouceBundleTranslatedStringResolver resolver,
-            ClassHierarchyIndex idx) {
-        resolver.registerAdditionalResourceKeys(
-                idx.getAllChildClasses(AdditionalResourceKeyProvider.class,
-                        getClass().getClassLoader()));
-        return resolver;
-    }
+	@Provides
+	@Singleton
+	protected TranslatedStringResolver translatedStringResolver(ResouceBundleTranslatedStringResolver resolver,
+			ClassHierarchyIndex idx) {
+		resolver.registerAdditionalResourceKeys(
+				idx.getAllChildClasses(AdditionalResourceKeyProvider.class, getClass().getClassLoader()));
+		return resolver;
+	}
 
-    @Provides
-    @Singleton
-    protected MessageInterpolator messageInterpolator(
-            RiseValidationMessageInterpolator interpolator) {
-        return interpolator;
-        // return new ResourceBundleMessageInterpolator(
-        // resolver::getResourceBundle);
-    }
+	@Provides
+	@Singleton
+	protected MessageInterpolator messageInterpolator(RiseValidationMessageInterpolator interpolator) {
+		return interpolator;
+		// return new ResourceBundleMessageInterpolator(
+		// resolver::getResourceBundle);
+	}
 
-    @Provides
-    @Singleton
-    protected ValidatorFactory validatorFactory(
-            MessageInterpolator messageInterpolator) {
-        return Validation.byProvider(HibernateValidator.class).configure()
-                .messageInterpolator(messageInterpolator)
-                .buildValidatorFactory();
-    }
+	@Provides
+	@Singleton
+	protected ValidatorFactory validatorFactory(MessageInterpolator messageInterpolator) {
+		return Validation.byProvider(HibernateValidator.class).configure().messageInterpolator(messageInterpolator)
+				.buildValidatorFactory();
+	}
 
-    @Provides
-    @Singleton
-    protected Validator validator(ValidatorFactory factory) {
-        return factory.getValidator();
-    }
+	@Provides
+	@Singleton
+	protected Validator validator(ValidatorFactory factory) {
+		return factory.getValidator();
+	}
 
-    protected void registerMessagesRule() {
-        bindCreationRule(createMessagesRule());
-    }
+	@Provides
+	protected ClassLoader restartableClassLoader() {
+		return getClass().getClassLoader();
+	}
 
-    public static CreationRule createMessagesRule() {
-        return new CreationRule() {
+	protected void registerMessagesRule() {
+		bindCreationRule(createMessagesRule());
+	}
 
-            @Override
-            public Optional<Function<RecipeCreationContext, SupplierRecipe>> apply(
-                    CoreDependencyKey<?> key, CoreInjector injector) {
-                if (key.getRawType().isAnnotationPresent(TMessages.class)) {
-                    DependencyKey<TMessageUtil> utilKey = DependencyKey
-                            .of(TMessageUtil.class);
-                    String typeName = Type.getDescriptor(key.getRawType());
+	public static CreationRule createMessagesRule() {
+		return new CreationRule() {
 
-                    return Optional.of(
-                            new Function<RecipeCreationContext, SupplierRecipe>() {
-                        @Override
-                        public SupplierRecipe apply(RecipeCreationContext ctx) {
-                            SupplierRecipe utilRecipe = ctx.getRecipe(utilKey);
-                            return new SupplierRecipe() {
+			@Override
+			public Optional<Function<RecipeCreationContext, SupplierRecipe>> apply(CoreDependencyKey<?> key,
+					CoreInjector injector) {
+				if (key.getRawType().isAnnotationPresent(TMessages.class)) {
+					DependencyKey<TMessageUtil> utilKey = DependencyKey.of(TMessageUtil.class);
+					String typeName = Type.getDescriptor(key.getRawType());
 
-                                @Override
-                                protected Class<?> compileImpl(
-                                        GeneratorAdapter mv,
-                                        MethodCompilationContext ctx) {
-                                    utilRecipe.compile(ctx);
-                                    ctx.addFieldAndLoad(Class.class,
-                                            key.getRawType());
-                                    // mv.visitLdcInsn(Type.getType(typeName));
-                                    mv.visitMethodInsn(INVOKEVIRTUAL,
-                                            "com/github/ruediste1/i18n/message/TMessageUtil",
-                                            "getMessageInterfaceInstance",
-                                            "(Ljava/lang/Class;)Ljava/lang/Object;",
-                                            false);
-                                    return Object.class;
-                                }
-                            };
-                        }
-                    });
-                }
-                return Optional.empty();
-            }
-        };
-    }
+					return Optional.of(new Function<RecipeCreationContext, SupplierRecipe>() {
+						@Override
+						public SupplierRecipe apply(RecipeCreationContext ctx) {
+							SupplierRecipe utilRecipe = ctx.getRecipe(utilKey);
+							return new SupplierRecipe() {
 
-    protected void installPersistenceDynamicModule() {
-        install(new PersistenceRestartableModule(permanentInjector));
-    }
+								@Override
+								protected Class<?> compileImpl(GeneratorAdapter mv, MethodCompilationContext ctx) {
+									utilRecipe.compile(ctx);
+									ctx.addFieldAndLoad(Class.class, key.getRawType());
+									// mv.visitLdcInsn(Type.getType(typeName));
+									mv.visitMethodInsn(INVOKEVIRTUAL, "com/github/ruediste1/i18n/message/TMessageUtil",
+											"getMessageInterfaceInstance", "(Ljava/lang/Class;)Ljava/lang/Object;",
+											false);
+									return Object.class;
+								}
+							};
+						}
+					});
+				}
+				return Optional.empty();
+			}
+		};
+	}
 
-    protected void registerAssetBundleScopeRule() {
-        StandardInjectorConfiguration standardConfig = config().standardConfig;
-        config().standardConfig.scope.scopeRules.add(new ScopeRule() {
+	protected void installPersistenceDynamicModule() {
+		install(new PersistenceRestartableModule(permanentInjector));
+	}
 
-            @Override
-            public Scope getScope(TypeToken<?> type) {
-                if (TypeToken.of(AssetBundle.class).isAssignableFrom(type)
-                        || TypeToken.of(AssetDir.class)
-                                .isAssignableFrom(type)) {
-                    return standardConfig.singletonScope;
-                }
-                return null;
-            }
-        });
-    }
+	protected void registerAssetBundleScopeRule() {
+		StandardInjectorConfiguration standardConfig = config().standardConfig;
+		config().standardConfig.scope.scopeRules.add(new ScopeRule() {
 
-    protected void registerPermanentRule() {
-        config().standardConfig.creationPipeline.coreCreationRuleSuppliers
-                .add(0, () -> new CreationRule() {
+			@Override
+			public Scope getScope(TypeToken<?> type) {
+				if (TypeToken.of(AssetBundle.class).isAssignableFrom(type)
+						|| TypeToken.of(AssetDir.class).isAssignableFrom(type)) {
+					return standardConfig.singletonScope;
+				}
+				return null;
+			}
+		});
+	}
 
-                    @Override
-                    public Optional<Function<RecipeCreationContext, SupplierRecipe>> apply(
-                            CoreDependencyKey<?> key, CoreInjector injector) {
-                        boolean applies = false;
-                        if (key.getRawType()
-                                .isAnnotationPresent(NonRestartable.class))
-                            applies = true;
-                        else if (key instanceof InjectionPoint<?>) {
-                            if (key.getAnnotatedElement().isAnnotationPresent(
-                                    NonRestartable.class)) {
-                                applies = true;
-                            }
-                        }
-                        if (applies)
-                            return Optional.of(ctx -> new SupplierRecipeImpl(
-                                    () -> permanentInjector.getInstance(key)));
-                        else
-                            return Optional.empty();
-                    }
-                });
-    }
+	protected void registerPermanentRule() {
+		config().standardConfig.creationPipeline.coreCreationRuleSuppliers.add(0, () -> new CreationRule() {
 
-    protected void installHttpScopeModule() {
-        install(new HttpScopeModule());
-    }
+			@Override
+			public Optional<Function<RecipeCreationContext, SupplierRecipe>> apply(CoreDependencyKey<?> key,
+					CoreInjector injector) {
+				boolean applies = false;
+				if (key.getRawType().isAnnotationPresent(NonRestartable.class))
+					applies = true;
+				else if (key instanceof InjectionPoint<?>) {
+					if (key.getAnnotatedElement().isAnnotationPresent(NonRestartable.class)) {
+						applies = true;
+					}
+				}
+				if (applies)
+					return Optional.of(ctx -> new SupplierRecipeImpl(() -> permanentInjector.getInstance(key)));
+				else
+					return Optional.empty();
+			}
+		});
+	}
+
+	protected void installHttpScopeModule() {
+		install(new HttpScopeModule());
+	}
 
 }

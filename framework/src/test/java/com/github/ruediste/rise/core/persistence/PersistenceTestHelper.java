@@ -47,8 +47,7 @@ public class PersistenceTestHelper {
                         bind(ApplicationStage.class)
                                 .toInstance(ApplicationStage.DEVELOPMENT);
                         PersistenceModuleUtil.bindDataSource(binder(), null,
-                                new EclipseLinkPersistenceUnitManager(
-                                        "frameworkTest"),
+                                new EclipseLinkPersistenceUnitManager(),
                                 new BitronixDataSourceFactory(
                                         new H2DatabaseIntegrationInfo()) {
 
@@ -69,8 +68,7 @@ public class PersistenceTestHelper {
                         });
                         PersistenceModuleUtil.bindDataSource(binder(),
                                 Unit1.class,
-                                new EclipseLinkPersistenceUnitManager(
-                                        "frameworkTest1"),
+                                new EclipseLinkPersistenceUnitManager(),
                                 new BitronixDataSourceFactory(
                                         new H2DatabaseIntegrationInfo()) {
 

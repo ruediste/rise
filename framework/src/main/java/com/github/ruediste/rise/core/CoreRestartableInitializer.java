@@ -12,44 +12,41 @@ import com.github.ruediste.rise.util.Initializer;
 
 public class CoreRestartableInitializer implements Initializer {
 
-    @Inject
-    CoreConfiguration config;
+	@Inject
+	CoreConfiguration config;
 
-    @Inject
-    AssetPipelineConfiguration pipelineConfig;
+	@Inject
+	AssetPipelineConfiguration pipelineConfig;
 
-    @Inject
-    AssetRequestMapper assetRequestMapper;
+	@Inject
+	AssetRequestMapper assetRequestMapper;
 
-    @Inject
-    AssetDirRequestMapper assetDirRequestMapper;
+	@Inject
+	AssetDirRequestMapper assetDirRequestMapper;
 
-    @Inject
-    PathInfoIndex index;
+	@Inject
+	PathInfoIndex index;
 
-    @Inject
-    RestartQueryParser restartQueryParser;
+	@Inject
+	RestartQueryParser restartQueryParser;
 
-    @Inject
-    HttpScopeManager httpScopeManager;
+	@Inject
+	HttpScopeManager httpScopeManager;
 
-    @Inject
-    SessionScopeEvents sessionScopeEvents;
+	@Inject
+	SessionScopeEvents sessionScopeEvents;
 
-    @Inject
-    RiseResourceBundleResolver resourceBundleResolver;
+	@Inject
+	RiseResourceBundleResolver resourceBundleResolver;
 
-    @Override
-    public void initialize() {
-        config.dynamicClassLoader = Thread.currentThread()
-                .getContextClassLoader();
-        config.initialize();
-        pipelineConfig.initialize();
-        assetRequestMapper.initialize();
-        assetDirRequestMapper.initialize();
+	@Override
+	public void initialize() {
+		config.initialize();
+		pipelineConfig.initialize();
+		assetRequestMapper.initialize();
+		assetDirRequestMapper.initialize();
 
-        index.registerPathInfo(config.restartQueryPathInfo.getValue(),
-                restartQueryParser);
-        resourceBundleResolver.initialize();
-    }
+		index.registerPathInfo(config.restartQueryPathInfo.getValue(), restartQueryParser);
+		resourceBundleResolver.initialize();
+	}
 }

@@ -40,7 +40,7 @@ public class SampleFrontServlet extends FrontServletBase {
             @Override
             protected void configure() throws Exception {
                 PersistenceModuleUtil.bindDataSource(binder(), null,
-                        new EclipseLinkPersistenceUnitManager("sampleApp"),
+                        new EclipseLinkPersistenceUnitManager(),
                         new BitronixDataSourceFactory(
                                 new H2DatabaseIntegrationInfo()) {
 
