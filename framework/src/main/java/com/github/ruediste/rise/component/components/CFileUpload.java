@@ -35,9 +35,7 @@ public class CFileUpload extends RelationsComponent<CFileUpload> {
             try (InputStream in = getInputStream()) {
                 return ByteStreams.toByteArray(in);
             } catch (IOException e) {
-                throw new RuntimeException(
-                        "Unable to load data of file " + getSubmittedFileName(),
-                        e);
+                throw new RuntimeException("Unable to load data of file " + getSubmittedFileName(), e);
             }
         }
     }

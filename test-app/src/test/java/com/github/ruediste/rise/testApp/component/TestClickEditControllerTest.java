@@ -18,23 +18,21 @@ public class TestClickEditControllerTest extends WebTest {
     @Before
     public void before() {
         driver.navigate().to(url(go(TestClickEditController.class).index()));
-        autoComplete = pageObject(AutoCompleteEO.class,
-                By.cssSelector(dataTestSelector("autoComplete") + "> input"));
+        autoComplete = pageObject(AutoCompleteEO.class, By.cssSelector(dataTestSelector("autoComplete") + "> input"));
     }
 
     @Test
     public void click_switchToEditMode() {
         getEditLine().click();
-        doWait().untilPassing(() -> getEditLine().findElement(
-                By.cssSelector(dataTestSelector("testLine") + "input")));
+        doWait().untilPassing(() -> getEditLine().findElement(By.cssSelector(dataTestSelector("testLine") + "input")));
     }
 
     @Test
     public void focusout_switchToViewMode() {
         getEditLine().click();
         driver.findElement(byDataTestName("clickTarget")).click();
-        doWait().untilPassing(() -> getEditLine().findElement(By.cssSelector(
-                dataTestSelector("testLine") + dataTestSelector("viewText"))));
+        doWait().untilPassing(() -> getEditLine()
+                .findElement(By.cssSelector(dataTestSelector("testLine") + dataTestSelector("viewText"))));
     }
 
     @Test
@@ -42,8 +40,7 @@ public class TestClickEditControllerTest extends WebTest {
         getAutoCompleteEditClick().click();
         doWait().untilPassing(() -> autoComplete.setText("Ruby"));
         pushDown();
-        checkAutoCompleteValue(AutoCompleteValue
-                .ofItem(new TestClickEditController.Entry("Ruby", 1)));
+        checkAutoCompleteValue(AutoCompleteValue.ofItem(new TestClickEditController.Entry("Ruby", 1)));
     }
 
     @Test
@@ -52,14 +49,12 @@ public class TestClickEditControllerTest extends WebTest {
     }
 
     private void checkAutoCompleteValue(AutoCompleteValue<?> ofItem) {
-        doWait().untilPassing(() -> assertEquals(ofItem.toString(), driver
-                .findElement(byDataTestName("autoCompleteValue")).getText()));
+        doWait().untilPassing(() -> assertEquals(ofItem.toString(),
+                driver.findElement(byDataTestName("autoCompleteValue")).getText()));
     }
 
     private void pushDown() {
-        driver.findElement(
-                byDataTestName(TestClickEditController.class, x -> x.push()))
-                .click();
+        driver.findElement(byDataTestName(TestClickEditController.class, x -> x.push())).click();
     }
 
     private WebElement getAutoCompleteEditClick() {
@@ -67,7 +62,6 @@ public class TestClickEditControllerTest extends WebTest {
     }
 
     private WebElement getEditLine() {
-        return driver.findElement(byDataTestName(
-                TestClickEditController.Data.class, x -> x.getTestLine()));
+        return driver.findElement(byDataTestName(TestClickEditController.Data.class, x -> x.getTestLine()));
     }
 };

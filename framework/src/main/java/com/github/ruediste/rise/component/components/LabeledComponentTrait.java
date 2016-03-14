@@ -19,8 +19,7 @@ import com.github.ruediste1.i18n.label.LabelUtil;
  * containing component.
  */
 public interface LabeledComponentTrait<TSelf extends LabeledComponentTrait<TSelf>>
-        extends LabeledComponent<TSelf>, TestNamedComponent<TSelf>,
-        AttachedPropertyBearer {
+        extends LabeledComponent<TSelf>, TestNamedComponent<TSelf>, AttachedPropertyBearer {
 
     LabeledComponentStatus internal_getLabeledComponentStatus();
 

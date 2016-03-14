@@ -16,8 +16,8 @@ public interface RestartableApplication {
 
     void start(Injector nonRestartableInjector);
 
-    void handle(HttpServletRequest request, HttpServletResponse response,
-            HttpMethod method) throws IOException, ServletException;
+    void handle(HttpServletRequest request, HttpServletResponse response, HttpMethod method)
+            throws IOException, ServletException;
 
     void close();
 

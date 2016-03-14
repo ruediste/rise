@@ -25,8 +25,7 @@ import com.github.ruediste1.i18n.lString.LString;
 public class CDataGrid<T> extends ComponentBase<CDataGrid<T>> {
 
     public enum HAlign {
-        LEFT("left"), RIGHT("right"), CENTER("center"), JUSTIFY(
-                "justify"), JUSTIFY_ALL("justify-all");
+        LEFT("left"), RIGHT("right"), CENTER("center"), JUSTIFY("justify"), JUSTIFY_ALL("justify-all");
 
         private final String cssClass;
 
@@ -41,8 +40,7 @@ public class CDataGrid<T> extends ComponentBase<CDataGrid<T>> {
     }
 
     public enum VAlign {
-        BASELINE("baseline"), TOP("text-top"), BOTTOM("text_bottom"), CENTER(
-                "middle");
+        BASELINE("baseline"), TOP("text-top"), BOTTOM("text_bottom"), CENTER("middle");
 
         private final String cssClass;
 
@@ -90,8 +88,7 @@ public class CDataGrid<T> extends ComponentBase<CDataGrid<T>> {
 
         private String testName;
 
-        public Column(Supplier<Cell> headSupplier,
-                Function<T, Cell> cellFactory) {
+        public Column(Supplier<Cell> headSupplier, Function<T, Cell> cellFactory) {
             super();
             this.headSupplier = headSupplier;
             this.cellFactory = cellFactory;
@@ -136,8 +133,7 @@ public class CDataGrid<T> extends ComponentBase<CDataGrid<T>> {
         return bindTestNameProperty(c -> c.setItems(itemsSupplier.get()));
     }
 
-    public CDataGrid<T> setColumns(
-            @SuppressWarnings("unchecked") Column<T>... columns) {
+    public CDataGrid<T> setColumns(@SuppressWarnings("unchecked") Column<T>... columns) {
         setColumns(Arrays.asList(columns));
         return this;
     }
@@ -148,8 +144,7 @@ public class CDataGrid<T> extends ComponentBase<CDataGrid<T>> {
         return this;
     }
 
-    public CDataGrid<T> addColumn(Supplier<Cell> headSupplier,
-            Function<T, Cell> cellFactory) {
+    public CDataGrid<T> addColumn(Supplier<Cell> headSupplier, Function<T, Cell> cellFactory) {
         columns.add(new Column<>(headSupplier, cellFactory));
         return this;
     }
@@ -206,8 +201,7 @@ public class CDataGrid<T> extends ComponentBase<CDataGrid<T>> {
     @Override
     public Iterable<Component> getChildren() {
         updateCells();
-        return Stream.concat(headers.values().stream(), cells.values().stream())
-                .filter(x -> x.component.isPresent())
+        return Stream.concat(headers.values().stream(), cells.values().stream()).filter(x -> x.component.isPresent())
                 .map(x -> x.component.get()).collect(toList());
     }
 
@@ -232,8 +226,7 @@ public class CDataGrid<T> extends ComponentBase<CDataGrid<T>> {
     /**
      * Uset to set the test name of the tr elements.
      */
-    public CDataGrid<T> setItemTestNameExtractor(
-            Function<T, String> itemTestNameExtractor) {
+    public CDataGrid<T> setItemTestNameExtractor(Function<T, String> itemTestNameExtractor) {
         this.itemTestNameExtractor = itemTestNameExtractor;
         return this;
     }

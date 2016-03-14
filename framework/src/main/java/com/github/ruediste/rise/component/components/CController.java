@@ -30,10 +30,8 @@ public class CController extends ComponentBase<CController> {
         if (controller == null)
             rootComponent = null;
         else {
-            ViewComponentBase<Object> view = InjectorsHolder
-                    .getRestartableInjector()
-                    .getInstance(ComponentViewRepository.class)
-                    .createView(controller);
+            ViewComponentBase<Object> view = InjectorsHolder.getRestartableInjector()
+                    .getInstance(ComponentViewRepository.class).createView(controller);
             rootComponent = view.getRootComponent();
             rootComponent.parentChanged(this);
         }

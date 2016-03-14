@@ -24,8 +24,7 @@ public abstract class WebTest extends WebTestBase {
     }
 
     protected void startSession() {
-        driver.navigate().to(url(go(LoginController.class)
-                .index(new UrlSpec(new PathInfo("/")))));
+        driver.navigate().to(url(go(LoginController.class).index(new UrlSpec(new PathInfo("/")))));
     }
 
     @Before
@@ -37,8 +36,7 @@ public abstract class WebTest extends WebTestBase {
     @Override
     protected RiseServer startServer() {
         RiseServer server = new RiseServer();
-        server.start(new TestAppFrontServlet(TestRestartableApplication.class),
-                8080);
+        server.start(new TestAppFrontServlet(TestRestartableApplication.class), 8080);
         return server;
     }
 

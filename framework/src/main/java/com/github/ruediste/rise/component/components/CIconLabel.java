@@ -71,8 +71,7 @@ public class CIconLabel extends RelationsComponent<CIconLabel> {
     }
 
     public <T> CIconLabel setMethod(Class<T> cls, Consumer<T> target) {
-        method = MethodInvocationRecorder.getLastInvocation(cls, target)
-                .getMethod();
+        method = MethodInvocationRecorder.getLastInvocation(cls, target).getMethod();
         return this;
     }
 }

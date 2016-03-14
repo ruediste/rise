@@ -6,8 +6,7 @@ import com.github.ruediste1.i18n.lString.AdditionalResourceKeyProvider;
  * Add an additional resource key. This class is automatically picked up by
  * RISE.
  */
-public class SampleAdditionalResourceKeys
-        implements AdditionalResourceKeyProvider {
+public class SampleAdditionalResourceKeys implements AdditionalResourceKeyProvider {
 
     @Override
     public void provideKeys(KeyReceiver receiver) {

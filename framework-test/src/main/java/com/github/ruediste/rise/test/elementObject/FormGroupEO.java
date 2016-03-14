@@ -27,8 +27,7 @@ public class FormGroupEO extends PageObject {
     }
 
     public Optional<String> getValidationMessage() {
-        List<WebElement> next = rootElement().findElements(
-                By.xpath("following-sibling::*[@class='help-block']"));
+        List<WebElement> next = rootElement().findElements(By.xpath("following-sibling::*[@class='help-block']"));
         if (next.size() == 1)
             return Optional.of(next.get(0).getText());
         return Optional.empty();

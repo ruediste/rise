@@ -20,52 +20,52 @@ import com.github.ruediste.salta.jsr330.Injector;
 
 public class MvcUtil implements ICoreUtil {
 
-	@Inject
-	Provider<ActionInvocationBuilder> actionPathBuilderInstance;
+    @Inject
+    Provider<ActionInvocationBuilder> actionPathBuilderInstance;
 
-	@Inject
-	CoreUtil coreUtil;
+    @Inject
+    CoreUtil coreUtil;
 
-	@Inject
-	Injector injector;
+    @Inject
+    Injector injector;
 
-	@Inject
-	CoreConfiguration coreConfiguration;
+    @Inject
+    CoreConfiguration coreConfiguration;
 
-	@Inject
-	TransactionProperties transactionProperties;
+    @Inject
+    TransactionProperties transactionProperties;
 
-	@Override
-	public CoreUtil getCoreUtil() {
-		return coreUtil;
-	}
+    @Override
+    public CoreUtil getCoreUtil() {
+        return coreUtil;
+    }
 
-	public <TView extends ViewMvcBase<?, TData, ?>, TData> ActionResult view(Class<TView> viewClass, TData data) {
+    public <TView extends ViewMvcBase<?, TData, ?>, TData> ActionResult view(Class<TView> viewClass, TData data) {
 
-		TView view = injector.getInstance(viewClass);
-		view.initialize(data);
+        TView view = injector.getInstance(viewClass);
+        view.initialize(data);
 
-		ByteArrayOutputStream stream = new ByteArrayOutputStream(1024);
-		view.render(stream);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream(1024);
+        view.render(stream);
 
-		return new ContentRenderResult(stream.toByteArray(), r -> {
-			r.setContentType(coreConfiguration.htmlContentType);
-			if (view instanceof HttpServletResponseCustomizer) {
-				((HttpServletResponseCustomizer) view).customizeServletResponse(r);
-			}
-		});
-	}
+        return new ContentRenderResult(stream.toByteArray(), r -> {
+            r.setContentType(coreConfiguration.htmlContentType);
+            if (view instanceof HttpServletResponseCustomizer) {
+                ((HttpServletResponseCustomizer) view).customizeServletResponse(r);
+            }
+        });
+    }
 
-	public ActionResult redirect(ActionResult path) {
-		return new RedirectRenderResult(coreUtil.toUrlSpec(path));
-	}
+    public ActionResult redirect(ActionResult path) {
+        return new RedirectRenderResult(coreUtil.toUrlSpec(path));
+    }
 
-	/**
-	 * force the rollback of the transaction of an {@link Updating @Updating}
-	 * action method.
-	 */
-	public void forceRollback() {
-		transactionProperties.forceRollback();
-	}
+    /**
+     * force the rollback of the transaction of an {@link Updating @Updating}
+     * action method.
+     */
+    public void forceRollback() {
+        transactionProperties.forceRollback();
+    }
 
 }

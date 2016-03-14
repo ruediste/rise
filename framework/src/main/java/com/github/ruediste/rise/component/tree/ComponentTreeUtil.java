@@ -47,10 +47,8 @@ public class ComponentTreeUtil {
      * returned.
      */
     @SuppressWarnings("unchecked")
-    static public <T> Optional<T> componentOfTypeIfSingle(Component root,
-            Class<T> clazz) {
-        List<Component> matching = subTree(root).stream()
-                .filter(x -> clazz.isInstance(x)).collect(toList());
+    static public <T> Optional<T> componentOfTypeIfSingle(Component root, Class<T> clazz) {
+        List<Component> matching = subTree(root).stream().filter(x -> clazz.isInstance(x)).collect(toList());
         if (matching.size() == 1)
             return Optional.of((T) matching.get(0));
         return Optional.empty();
@@ -64,8 +62,7 @@ public class ComponentTreeUtil {
      *            if true, start with the provided component, otherwise start
      *            with it's parent
      */
-    static public List<Component> ancestors(Component start,
-            boolean includeStartComponent) {
+    static public List<Component> ancestors(Component start, boolean includeStartComponent) {
         ArrayList<Component> result = new ArrayList<>();
         Component c;
         if (includeStartComponent) {
@@ -87,16 +84,14 @@ public class ComponentTreeUtil {
      *            if true, include the target component, otherwise stop at the
      *            target component's parent
      */
-    static public Collection<Component> path(Component target,
-            boolean includeTargetComponent) {
+    static public Collection<Component> path(Component target, boolean includeTargetComponent) {
         List<Component> result = ancestors(target, includeTargetComponent);
         Collections.reverse(result);
         return result;
     }
 
     static private class EventRegistration {
-        EventRegistration(Consumer<?> listener, Class<?> eventType,
-                boolean handlesToo) {
+        EventRegistration(Consumer<?> listener, Class<?> eventType, boolean handlesToo) {
             super();
             this.listener = listener;
             this.eventType = eventType;
@@ -112,8 +107,7 @@ public class ComponentTreeUtil {
             "componentEventListeners");
 
     static public void raiseEvent(Component target, ComponentEvent event) {
-        event.getType().getComponentsToVisit(target)
-                .forEach(c -> raiseEventOn(c, event));
+        event.getType().getComponentsToVisit(target).forEach(c -> raiseEventOn(c, event));
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -141,8 +135,7 @@ public class ComponentTreeUtil {
         return listenerProperty.setIfAbsent(target, () -> new ArrayList<>());
     }
 
-    static public <T> void registerEventListener(Component component,
-            Class<T> eventType, Consumer<T> listener) {
+    static public <T> void registerEventListener(Component component, Class<T> eventType, Consumer<T> listener) {
         registerEventListener(eventType, component, listener, false);
     }
 
@@ -153,12 +146,11 @@ public class ComponentTreeUtil {
      *            if set to true, the listener will be notified even for events
      *            which are already canceled
      */
-    static public <T> void registerEventListener(Class<?> eventType,
-            Component component, Consumer<T> listener, boolean handlesToo) {
+    static public <T> void registerEventListener(Class<?> eventType, Component component, Consumer<T> listener,
+            boolean handlesToo) {
         List<EventRegistration> listeners = getEventListeners(component);
         synchronized (listeners) {
-            listeners.add(
-                    new EventRegistration(listener, eventType, handlesToo));
+            listeners.add(new EventRegistration(listener, eventType, handlesToo));
         }
     }
 }

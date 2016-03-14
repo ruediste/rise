@@ -16,8 +16,7 @@ public class TestPageTemplate extends PageTemplateBase {
     @Inject
     RisePageTemplate<TestCanvas> risePageTemplate;
 
-    public void renderOn(TestCanvas canvas,
-            TestPageTemplateParameters parameters) {
+    public void renderOn(TestCanvas canvas, TestPageTemplateParameters parameters) {
         // your drawing code
         // @formatter:off
         risePageTemplate.renderOn(canvas,

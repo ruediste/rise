@@ -32,15 +32,13 @@ public class AuthorizationInspector {
         }
 
         @Override
-        public MethodVisitor visitMethod(int access, String methodName,
-                String methodDesc, String signature, String[] exceptions) {
+        public MethodVisitor visitMethod(int access, String methodName, String methodDesc, String signature,
+                String[] exceptions) {
             return new MethodVisitor(Opcodes.ASM5) {
                 @Override
-                public void visitMethodInsn(int opcode, String owner,
-                        String name, String desc, boolean itf) {
+                public void visitMethodInsn(int opcode, String owner, String name, String desc, boolean itf) {
                     if (OWNER.equals(owner) && NAME.equals(name)) {
-                        authorizeCallingMethods
-                                .add(Pair.of(methodName, methodDesc));
+                        authorizeCallingMethods.add(Pair.of(methodName, methodDesc));
                     }
                 }
             };
@@ -49,31 +47,26 @@ public class AuthorizationInspector {
     }
 
     public static boolean callsDoAuthChecks(Class<?> clazz, Method method) {
-        Method impl = MethodImplementationFinder.findImplementation(clazz,
-                method);
+        Method impl = MethodImplementationFinder.findImplementation(clazz, method);
         if (impl == null)
-            throw new RuntimeException("No implementation of " + method
-                    + " found on " + clazz + " or ancestors thereof");
+            throw new RuntimeException(
+                    "No implementation of " + method + " found on " + clazz + " or ancestors thereof");
 
-        return getAuthorizeCallingMethods(impl.getDeclaringClass()).contains(
-                Pair.of(method.getName(), Type.getMethodDescriptor(method)));
+        return getAuthorizeCallingMethods(impl.getDeclaringClass())
+                .contains(Pair.of(method.getName(), Type.getMethodDescriptor(method)));
     }
 
-    private static ConcurrentMap<Class<?>, Set<Pair<String, String>>> cache = new MapMaker()
-            .weakKeys().makeMap();
+    private static ConcurrentMap<Class<?>, Set<Pair<String, String>>> cache = new MapMaker().weakKeys().makeMap();
 
-    private static Set<Pair<String, String>> getAuthorizeCallingMethods(
-            Class<?> clazz) {
+    private static Set<Pair<String, String>> getAuthorizeCallingMethods(Class<?> clazz) {
         return cache.computeIfAbsent(clazz, x -> {
             AuthorizeCallsVisitor cv;
-            try (InputStream is = clazz.getClassLoader().getResourceAsStream(
-                    Type.getInternalName(clazz) + ".class")) {
+            try (InputStream is = clazz.getClassLoader().getResourceAsStream(Type.getInternalName(clazz) + ".class")) {
                 ClassReader cr = new ClassReader(is);
                 cv = new AuthorizeCallsVisitor();
                 cr.accept(cv, ClassReader.SKIP_DEBUG + ClassReader.SKIP_FRAMES);
             } catch (IOException e) {
-                throw new RuntimeException(
-                        "error while reading class " + clazz.getName());
+                throw new RuntimeException("error while reading class " + clazz.getName());
             }
             Set<Pair<String, String>> authorizeCallingMethods = cv.authorizeCallingMethods;
             return authorizeCallingMethods;

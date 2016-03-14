@@ -46,6 +46,5 @@ public interface IComponentTemplate<T extends Component> {
      *         response, or null if the response has already be sent.
      * 
      */
-    HttpRenderResult handleAjaxRequest(T component, String suffix)
-            throws Throwable;
+    HttpRenderResult handleAjaxRequest(T component, String suffix) throws Throwable;
 }

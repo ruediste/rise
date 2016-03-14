@@ -4,8 +4,7 @@ import com.github.ruediste.rise.component.ViewQualifier;
 import com.github.ruediste.rise.component.tree.Component;
 
 @ViewQualifier(TestViewQualifier.class)
-public class TestComponentViewAlternative
-        extends ViewComponent<TestComponentController> {
+public class TestComponentViewAlternative extends ViewComponent<TestComponentController> {
 
     @Override
     protected Component createComponents() {

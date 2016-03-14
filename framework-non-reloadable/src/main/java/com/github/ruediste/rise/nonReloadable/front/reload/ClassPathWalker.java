@@ -39,8 +39,7 @@ import com.google.common.reflect.ClassPath;
  * </p>
  */
 public class ClassPathWalker {
-    private static org.slf4j.Logger log = org.slf4j.LoggerFactory
-            .getLogger(ClassPathWalker.class);
+    private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ClassPathWalker.class);
 
     public enum ClassPathVisitResult {
         /**
@@ -64,20 +63,17 @@ public class ClassPathWalker {
         /**
          * Visit a classpath root directory
          */
-        ClassPathVisitResult visitRootDirectory(Path rootDirectory,
-                ClassLoader classloader);
+        ClassPathVisitResult visitRootDirectory(Path rootDirectory, ClassLoader classloader);
 
         /**
          * Visit a Jar File on the classpath
          */
-        ClassPathVisitResult visitJarFile(Path path, JarFile jarFile,
-                ClassLoader classloader);
+        ClassPathVisitResult visitJarFile(Path path, JarFile jarFile, ClassLoader classloader);
 
         /**
          * Visit a resource
          */
-        void visitResource(String name, ClassLoader classLoader,
-                Supplier<InputStream> inputStreamSupplier);
+        void visitResource(String name, ClassLoader classLoader, Supplier<InputStream> inputStreamSupplier);
 
         /**
          * Visit a class.
@@ -88,8 +84,7 @@ public class ClassPathWalker {
          *            provides access to the class bytecode. Not valid after the
          *            method returns.
          */
-        void visitClass(String resourceName, String className,
-                ClassLoader classLoader,
+        void visitClass(String resourceName, String className, ClassLoader classLoader,
                 Supplier<InputStream> inputStreamSupplier);
 
     }
@@ -97,25 +92,21 @@ public class ClassPathWalker {
     public static class SimpleClassPathVisitor implements ClassPathVisitor {
 
         @Override
-        public ClassPathVisitResult visitRootDirectory(Path rootDirectory,
-                ClassLoader classloader) {
+        public ClassPathVisitResult visitRootDirectory(Path rootDirectory, ClassLoader classloader) {
             return ClassPathVisitResult.CONTINUE;
         }
 
         @Override
-        public ClassPathVisitResult visitJarFile(Path path, JarFile jarFile,
-                ClassLoader classloader) {
+        public ClassPathVisitResult visitJarFile(Path path, JarFile jarFile, ClassLoader classloader) {
             return ClassPathVisitResult.CONTINUE;
         }
 
         @Override
-        public void visitResource(String name, ClassLoader classLoader,
-                Supplier<InputStream> inputStreamSupplier) {
+        public void visitResource(String name, ClassLoader classLoader, Supplier<InputStream> inputStreamSupplier) {
         }
 
         @Override
-        public void visitClass(String resourceName, String className,
-                ClassLoader classLoader,
+        public void visitClass(String resourceName, String className, ClassLoader classLoader,
                 Supplier<InputStream> inputStreamSupplier) {
         }
 
@@ -126,8 +117,7 @@ public class ClassPathWalker {
 
     private final Set<URI> scannedUris = Sets.newHashSet();
     private ForkJoinPool executor = new ForkJoinPool();
-    Set<Throwable> failures = Collections
-            .newSetFromMap(new ConcurrentHashMap<>());
+    Set<Throwable> failures = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     public static void scan(ClassLoader classloader, ClassPathVisitor visitor) {
         ClassPathWalker walker = new ClassPathWalker();
@@ -135,14 +125,12 @@ public class ClassPathWalker {
     }
 
     private void doScan(ClassLoader classloader, ClassPathVisitor visitor) {
-        for (Map.Entry<URI, ClassLoader> entry : getClassPathEntries(
-                classloader).entrySet())
+        for (Map.Entry<URI, ClassLoader> entry : getClassPathEntries(classloader).entrySet())
             executor.submit(() -> {
                 try {
                     scan(entry.getKey(), entry.getValue(), visitor);
                 } catch (IOException e) {
-                    failures.add(new RuntimeException(
-                            "Error while scanning " + entry.getKey(), e));
+                    failures.add(new RuntimeException("Error while scanning " + entry.getKey(), e));
                 }
             });
         // executor.shutdown();
@@ -155,8 +143,7 @@ public class ClassPathWalker {
     }
 
     @VisibleForTesting
-    static ImmutableMap<URI, ClassLoader> getClassPathEntries(
-            ClassLoader classloader) {
+    static ImmutableMap<URI, ClassLoader> getClassPathEntries(ClassLoader classloader) {
         LinkedHashMap<URI, ClassLoader> entries = Maps.newLinkedHashMap();
         // Search parent first, since it's the order ClassLoader#loadClass()
         // uses.
@@ -181,16 +168,14 @@ public class ClassPathWalker {
         return ImmutableMap.copyOf(entries);
     }
 
-    void scan(URI uri, ClassLoader classloader, ClassPathVisitor visitor)
-            throws IOException {
+    void scan(URI uri, ClassLoader classloader, ClassPathVisitor visitor) throws IOException {
         if (uri.getScheme().equals("file") && scannedUris.add(uri)) {
             scanFrom(new File(uri), classloader, visitor);
         }
     }
 
     @VisibleForTesting
-    void scanFrom(File file, ClassLoader classloader, ClassPathVisitor visitor)
-            throws IOException {
+    void scanFrom(File file, ClassLoader classloader, ClassPathVisitor visitor) throws IOException {
         if (!file.exists()) {
             return;
         }
@@ -201,17 +186,13 @@ public class ClassPathWalker {
         }
     }
 
-    private void scanDirectory(File directory, ClassLoader classloader,
-            ClassPathVisitor visitor) throws IOException {
-        if (visitor.visitRootDirectory(directory.toPath(),
-                classloader) == ClassPathVisitResult.CONTINUE)
-            scanDirectory(directory, classloader, "", ImmutableSet.<File> of(),
-                    visitor);
+    private void scanDirectory(File directory, ClassLoader classloader, ClassPathVisitor visitor) throws IOException {
+        if (visitor.visitRootDirectory(directory.toPath(), classloader) == ClassPathVisitResult.CONTINUE)
+            scanDirectory(directory, classloader, "", ImmutableSet.<File> of(), visitor);
     }
 
-    private void scanDirectory(File directory, ClassLoader classloader,
-            String packagePrefix, ImmutableSet<File> ancestors,
-            ClassPathVisitor visitor) throws IOException {
+    private void scanDirectory(File directory, ClassLoader classloader, String packagePrefix,
+            ImmutableSet<File> ancestors, ClassPathVisitor visitor) throws IOException {
         log.debug("Scanning directory file {}", directory);
         File canonical = directory.getCanonicalFile();
         if (ancestors.contains(canonical)) {
@@ -224,32 +205,26 @@ public class ClassPathWalker {
             // IO error, just skip the directory
             return;
         }
-        ImmutableSet<File> newAncestors = ImmutableSet.<File> builder()
-                .addAll(ancestors).add(canonical).build();
+        ImmutableSet<File> newAncestors = ImmutableSet.<File> builder().addAll(ancestors).add(canonical).build();
         for (File f : files) {
             String name = f.getName();
             if (f.isDirectory()) {
-                scanDirectory(f, classloader, packagePrefix + name + "/",
-                        newAncestors, visitor);
+                scanDirectory(f, classloader, packagePrefix + name + "/", newAncestors, visitor);
             } else {
                 String resourceName = packagePrefix + name;
                 if (!resourceName.equals(JarFile.MANIFEST_NAME)) {
                     if (resourceName.endsWith(CLASS_FILE_NAME_EXTENSION))
-                        visitor.visitClass(resourceName,
-                                getClassName(resourceName), classloader,
-                                () -> classloader
-                                        .getResourceAsStream(resourceName));
+                        visitor.visitClass(resourceName, getClassName(resourceName), classloader,
+                                () -> classloader.getResourceAsStream(resourceName));
                     else
                         visitor.visitResource(resourceName, classloader,
-                                () -> classloader
-                                        .getResourceAsStream(resourceName));
+                                () -> classloader.getResourceAsStream(resourceName));
                 }
             }
         }
     }
 
-    private void scanJar(File file, ClassLoader classloader,
-            ClassPathVisitor visitor) throws IOException {
+    private void scanJar(File file, ClassLoader classloader, ClassPathVisitor visitor) throws IOException {
         log.debug("Scanning jar file {}", file);
 
         JarFile jarFile;
@@ -260,13 +235,11 @@ public class ClassPathWalker {
             return;
         }
 
-        if (visitor.visitJarFile(file.toPath(), jarFile,
-                classloader) == ClassPathVisitResult.SKIP_CONTENTS)
+        if (visitor.visitJarFile(file.toPath(), jarFile, classloader) == ClassPathVisitResult.SKIP_CONTENTS)
             return;
 
         try {
-            for (URI uri : getClassPathFromManifest(file,
-                    jarFile.getManifest())) {
+            for (URI uri : getClassPathFromManifest(file, jarFile.getManifest())) {
                 executor.submit(() -> {
                     try {
                         scan(uri, classloader, visitor);
@@ -278,8 +251,7 @@ public class ClassPathWalker {
             Enumeration<JarEntry> entries = jarFile.entries();
             while (entries.hasMoreElements()) {
                 JarEntry entry = entries.nextElement();
-                if (entry.isDirectory()
-                        || entry.getName().equals(JarFile.MANIFEST_NAME)) {
+                if (entry.isDirectory() || entry.getName().equals(JarFile.MANIFEST_NAME)) {
                     continue;
                 }
                 Supplier<InputStream> inputStreamSupplier = () -> {
@@ -290,12 +262,10 @@ public class ClassPathWalker {
                     }
                 };
                 if (entry.getName().endsWith(CLASS_FILE_NAME_EXTENSION)) {
-                    visitor.visitClass(entry.getName(),
-                            getClassName(entry.getName()), classloader,
+                    visitor.visitClass(entry.getName(), getClassName(entry.getName()), classloader,
                             inputStreamSupplier);
                 } else
-                    visitor.visitResource(entry.getName(), classloader,
-                            inputStreamSupplier);
+                    visitor.visitResource(entry.getName(), classloader, inputStreamSupplier);
             }
         } finally {
             try {
@@ -306,8 +276,7 @@ public class ClassPathWalker {
     }
 
     /** Separator for the Class-Path manifest attribute value in jar files. */
-    private static final Splitter CLASS_PATH_ATTRIBUTE_SEPARATOR = Splitter
-            .on(" ").omitEmptyStrings();
+    private static final Splitter CLASS_PATH_ATTRIBUTE_SEPARATOR = Splitter.on(" ").omitEmptyStrings();
 
     /**
      * Returns the class path URIs specified by the {@code Class-Path} manifest
@@ -317,17 +286,14 @@ public class ClassPathWalker {
      * jar file has no manifest, and an empty set will be returned.
      */
     @VisibleForTesting
-    ImmutableSet<URI> getClassPathFromManifest(File jarFile,
-            Manifest manifest) {
+    ImmutableSet<URI> getClassPathFromManifest(File jarFile, Manifest manifest) {
         if (manifest == null) {
             return ImmutableSet.of();
         }
         ImmutableSet.Builder<URI> builder = ImmutableSet.builder();
-        String classpathAttribute = manifest.getMainAttributes()
-                .getValue(Attributes.Name.CLASS_PATH.toString());
+        String classpathAttribute = manifest.getMainAttributes().getValue(Attributes.Name.CLASS_PATH.toString());
         if (classpathAttribute != null) {
-            for (String path : CLASS_PATH_ATTRIBUTE_SEPARATOR
-                    .split(classpathAttribute)) {
+            for (String path : CLASS_PATH_ATTRIBUTE_SEPARATOR.split(classpathAttribute)) {
                 URI uri;
                 try {
                     uri = getClassPathEntry(jarFile, path);
@@ -351,14 +317,12 @@ public class ClassPathWalker {
      * example, in Maven surefire plugin).
      */
     @VisibleForTesting
-    static URI getClassPathEntry(File jarFile, String path)
-            throws URISyntaxException {
+    static URI getClassPathEntry(File jarFile, String path) throws URISyntaxException {
         URI uri = new URI(path);
         if (uri.isAbsolute()) {
             return uri;
         } else {
-            return new File(jarFile.getParentFile(),
-                    path.replace('/', File.separatorChar)).toURI();
+            return new File(jarFile.getParentFile(), path.replace('/', File.separatorChar)).toURI();
         }
     }
 
@@ -366,8 +330,7 @@ public class ClassPathWalker {
 
     @VisibleForTesting
     static String getClassName(String filename) {
-        int classNameEnd = filename.length()
-                - CLASS_FILE_NAME_EXTENSION.length();
+        int classNameEnd = filename.length() - CLASS_FILE_NAME_EXTENSION.length();
         return filename.substring(0, classNameEnd).replace('/', '.');
     }
 }

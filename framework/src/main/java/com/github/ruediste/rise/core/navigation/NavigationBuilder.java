@@ -20,19 +20,16 @@ import com.github.ruediste1.i18n.label.LabelUtil;
 
 public class NavigationBuilder {
 
-    private final class SameActionInvocationPredicate
-            implements Predicate<ActionInvocation<Object>> {
+    private final class SameActionInvocationPredicate implements Predicate<ActionInvocation<Object>> {
         private ActionInvocation<?> referenceInvocation;
 
-        public SameActionInvocationPredicate(
-                ActionInvocation<?> referenceInvocation) {
+        public SameActionInvocationPredicate(ActionInvocation<?> referenceInvocation) {
             this.referenceInvocation = referenceInvocation;
         }
 
         @Override
         public boolean test(ActionInvocation<Object> x) {
-            return x.methodInvocation.getMethod()
-                    .equals(referenceInvocation.methodInvocation.getMethod());
+            return x.methodInvocation.getMethod().equals(referenceInvocation.methodInvocation.getMethod());
         }
     }
 
@@ -61,38 +58,31 @@ public class NavigationBuilder {
     }
 
     public NavigationBuilder add(ActionResult target) {
-        Method method = util.toActionInvocation(target).methodInvocation
-                .getMethod();
-        return add(target, labelUtil.method(method).label(),
-                iconUtil.tryGetIcon(method));
+        Method method = util.toActionInvocation(target).methodInvocation.getMethod();
+        return add(target, labelUtil.method(method).label(), iconUtil.tryGetIcon(method));
     }
 
     public NavigationBuilder add(ActionResult target, String text) {
         return add(target, locale -> text);
     }
 
-    public NavigationBuilder add(ActionResult target, String text,
-            Renderable<Html5Canvas<?>> icon) {
+    public NavigationBuilder add(ActionResult target, String text, Renderable<Html5Canvas<?>> icon) {
         return add(target, locale -> text, icon);
     }
 
     public NavigationBuilder add(ActionResult target, LString text) {
-        return add(new NavigationItem(text, Optional.empty(),
-                Optional.of(target), new SameActionInvocationPredicate(
-                        util.toActionInvocation(target))));
+        return add(new NavigationItem(text, Optional.empty(), Optional.of(target),
+                new SameActionInvocationPredicate(util.toActionInvocation(target))));
     }
 
-    public NavigationBuilder add(ActionResult target, LString text,
-            Renderable<Html5Canvas<?>> icon) {
+    public NavigationBuilder add(ActionResult target, LString text, Renderable<Html5Canvas<?>> icon) {
         return add(target, text, Optional.of(icon));
 
     }
 
-    public NavigationBuilder add(ActionResult target, LString text,
-            Optional<Renderable<Html5Canvas<?>>> icon) {
+    public NavigationBuilder add(ActionResult target, LString text, Optional<Renderable<Html5Canvas<?>>> icon) {
         return add(new NavigationItem(text, icon, Optional.of(target),
-                new SameActionInvocationPredicate(
-                        util.toActionInvocation(target))));
+                new SameActionInvocationPredicate(util.toActionInvocation(target))));
     }
 
     public NavigationBuilder group(String text) {
@@ -104,8 +94,7 @@ public class NavigationBuilder {
     }
 
     public NavigationBuilder group(LString text) {
-        NavigationItem group = new NavigationItem(text, Optional.empty(),
-                Optional.empty(), x -> false);
+        NavigationItem group = new NavigationItem(text, Optional.empty(), Optional.empty(), x -> false);
         add(group);
         currentGroup.push(group);
         return this;

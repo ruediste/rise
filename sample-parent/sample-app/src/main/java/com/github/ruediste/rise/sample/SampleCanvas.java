@@ -6,8 +6,7 @@ import com.github.ruediste.rise.integration.RiseCanvasBase;
 /**
  * Html canvas for the sample application
  */
-public class SampleCanvas extends RiseCanvasBase<SampleCanvas>
-        implements BootstrapRiseCanvas<SampleCanvas> {
+public class SampleCanvas extends RiseCanvasBase<SampleCanvas> implements BootstrapRiseCanvas<SampleCanvas> {
 
     @Override
     public SampleCanvas self() {

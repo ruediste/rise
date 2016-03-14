@@ -11,8 +11,7 @@ import com.github.ruediste.rise.testApp.app.TestAppFrontServlet;
 import com.github.ruediste.rise.testApp.app.TestRestartableApplication;
 import com.github.ruediste.salta.jsr330.Injector;
 
-public class StartupErrorRestartableAfterInjectionTest
-        extends StartupErrorTest {
+public class StartupErrorRestartableAfterInjectionTest extends StartupErrorTest {
     private static class App extends TestRestartableApplication {
         @Override
         protected void startImpl(Injector nonRestartableInjector) {

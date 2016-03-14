@@ -30,8 +30,7 @@ public class RisePersistenceUtil {
      * Get the {@link ManagedType} or null if the class is not part of the
      * persistence unit.
      */
-    public ManagedType<?> getManagedType(Class<? extends Annotation> qualifier,
-            Type type) {
+    public ManagedType<?> getManagedType(Class<? extends Annotation> qualifier, Type type) {
         return getManagedType(qualifier, TypeToken.of(type).getRawType());
     }
 
@@ -40,10 +39,8 @@ public class RisePersistenceUtil {
      * persistence unit.
      */
     @SuppressWarnings("unchecked")
-    public <T> ManagedType<T> getManagedType(
-            Class<? extends Annotation> qualifier, TypeToken<T> type) {
-        return (ManagedType<T>) getManagedTypeMap(qualifier).get()
-                .get(type.getRawType());
+    public <T> ManagedType<T> getManagedType(Class<? extends Annotation> qualifier, TypeToken<T> type) {
+        return (ManagedType<T>) getManagedTypeMap(qualifier).get().get(type.getRawType());
     }
 
     /**
@@ -51,8 +48,7 @@ public class RisePersistenceUtil {
      * persistence unit.
      */
     @SuppressWarnings("unchecked")
-    public <T> ManagedType<T> getManagedType(
-            Class<? extends Annotation> qualifier, Class<T> cls) {
+    public <T> ManagedType<T> getManagedType(Class<? extends Annotation> qualifier, Class<T> cls) {
         return (ManagedType<T>) getManagedTypeMap(qualifier).get().get(cls);
     }
 
@@ -62,16 +58,14 @@ public class RisePersistenceUtil {
      */
     @SuppressWarnings("unchecked")
     public <T> ManagedType<T> getManagedType(PersistentType identifier) {
-        return (ManagedType<T>) getManagedTypeMap(identifier.getEmQualifier())
-                .get().get(identifier.getEntityClass());
+        return (ManagedType<T>) getManagedTypeMap(identifier.getEmQualifier()).get().get(identifier.getEntityClass());
     }
 
     /**
      * Get the managed types for the given persistence unit. If the map is not
      * yet loaded, load it.
      */
-    public Optional<Map<Class<?>, ManagedType<?>>> getManagedTypeMap(
-            Class<? extends Annotation> qualifier) {
+    public Optional<Map<Class<?>, ManagedType<?>>> getManagedTypeMap(Class<? extends Annotation> qualifier) {
         return registry.getManagedTypeMap(qualifier);
     }
 
@@ -95,14 +89,12 @@ public class RisePersistenceUtil {
         return ((IdentifiableType<?>) managedType).getIdType().getJavaType();
     }
 
-    public Class<?> getIdType(Class<? extends Annotation> qualifier,
-            Class<?> cls) {
+    public Class<?> getIdType(Class<? extends Annotation> qualifier, Class<?> cls) {
         return getIdType(getManagedType(qualifier, cls));
     }
 
     public Object getIdentifier(Object entity) {
-        return getIdentifier(holder.getEmEntry(entity).get().getValue(),
-                entity);
+        return getIdentifier(holder.getEmEntry(entity).get().getValue(), entity);
     }
 
     /**
@@ -110,33 +102,27 @@ public class RisePersistenceUtil {
      * known, use {@link #getIdentifier(Object)}
      */
     public Object getIdentifier(EntityManager entityManager, Object entity) {
-        return entityManager.getEntityManagerFactory().getPersistenceUnitUtil()
-                .getIdentifier(entity);
+        return entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
     }
 
     /**
      * Return the identifier of an entity. If the entity manager is not yet
      * known, use {@link #getIdentifier(Object)}
      */
-    public Object getIdentifier(Class<? extends Annotation> qualifier,
-            Object entity) {
+    public Object getIdentifier(Class<? extends Annotation> qualifier, Object entity) {
         return getIdentifier(holder.getEntityManager(qualifier), entity);
     }
 
     public Class<? extends Annotation> getEmQualifier(Object entity) {
         return getEmEntry(entity)
-                .orElseThrow(() -> new RuntimeException(
-                        "No EntityManager qualifier found for " + entity))
-                .getKey();
+                .orElseThrow(() -> new RuntimeException("No EntityManager qualifier found for " + entity)).getKey();
     }
 
-    public Optional<Entry<Class<? extends Annotation>, EntityManager>> getEmEntry(
-            Object entity) {
+    public Optional<Entry<Class<? extends Annotation>, EntityManager>> getEmEntry(Object entity) {
         return holder.getEmEntry(entity);
     }
 
-    public EntityManager getEntityManager(
-            Class<? extends Annotation> qualifier) {
+    public EntityManager getEntityManager(Class<? extends Annotation> qualifier) {
         return holder.getEntityManager(qualifier);
     }
 }

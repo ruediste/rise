@@ -18,60 +18,60 @@ import com.google.common.io.ByteStreams;
 
 public class RemotUnitTestInitializer implements Initializer {
 
-	@Inject
-	CoreConfiguration config;
+    @Inject
+    CoreConfiguration config;
 
-	@Inject
-	PathInfoIndex index;
+    @Inject
+    PathInfoIndex index;
 
-	@Inject
-	CoreRequestInfo info;
+    @Inject
+    CoreRequestInfo info;
 
-	@Inject
-	Injector injector;
+    @Inject
+    Injector injector;
 
-	@NonRestartable
-	@Inject
-	Injector nonRestartableInjector;
+    @NonRestartable
+    @Inject
+    Injector nonRestartableInjector;
 
-	@Inject
-	ClassLoader classLoader;
+    @Inject
+    ClassLoader classLoader;
 
-	@Override
-	public void initialize() {
-		if (!Strings.isNullOrEmpty(config.unitTestCodeRunnerPathInfo)) {
-			ExecutorService pool = Executors.newCachedThreadPool();
-			CodeRunnerRequestHandler handler = new CodeRunnerRequestHandler(classLoader, r -> pool.execute(() -> {
-				Thread thread = Thread.currentThread();
-				ClassLoader oldCl = thread.getContextClassLoader();
-				thread.setContextClassLoader(classLoader);
-				try {
-					InjectorsHolder.withInjectors(nonRestartableInjector, injector, r);
-				} finally {
-					thread.setContextClassLoader(oldCl);
+    @Override
+    public void initialize() {
+        if (!Strings.isNullOrEmpty(config.unitTestCodeRunnerPathInfo)) {
+            ExecutorService pool = Executors.newCachedThreadPool();
+            CodeRunnerRequestHandler handler = new CodeRunnerRequestHandler(classLoader, r -> pool.execute(() -> {
+                Thread thread = Thread.currentThread();
+                ClassLoader oldCl = thread.getContextClassLoader();
+                thread.setContextClassLoader(classLoader);
+                try {
+                    InjectorsHolder.withInjectors(nonRestartableInjector, injector, r);
+                } finally {
+                    thread.setContextClassLoader(oldCl);
 
-				}
-			}));
-			index.registerPathInfo(config.unitTestCodeRunnerPathInfo, request -> new RequestParseResult() {
+                }
+            }));
+            index.registerPathInfo(config.unitTestCodeRunnerPathInfo, request -> new RequestParseResult() {
 
-				@Override
-				public void handle() {
-					try {
-						byte[] response = handler.handle(info.getServletRequest().getInputStream());
-						try (OutputStream os = info.getServletResponse().getOutputStream()) {
-							ByteStreams.copy(new ByteArrayInputStream(response), os);
-						}
-					} catch (IOException e) {
-						throw new RuntimeException(e);
-					}
-				}
+                @Override
+                public void handle() {
+                    try {
+                        byte[] response = handler.handle(info.getServletRequest().getInputStream());
+                        try (OutputStream os = info.getServletResponse().getOutputStream()) {
+                            ByteStreams.copy(new ByteArrayInputStream(response), os);
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
 
-				@Override
-				public String toString() {
-					return "UnitTestParseResult";
-				}
-			});
-		}
+                @Override
+                public String toString() {
+                    return "UnitTestParseResult";
+                }
+            });
+        }
 
-	}
+    }
 }

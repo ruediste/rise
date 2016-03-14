@@ -38,8 +38,7 @@ class BindingExpressionExecutionRecorder {
      * invoke the binding expression, supplying proxies which record invoked
      * methods in the current log. The log is then returned.
      */
-    static BindingExpressionExecutionRecord collectBindingExpressionLog(
-            Runnable runnable) {
+    static BindingExpressionExecutionRecord collectBindingExpressionLog(Runnable runnable) {
         BindingExpressionExecutionRecord oldLog = currentLog.get();
         BindingExpressionExecutionRecord result = new BindingExpressionExecutionRecord();
         try {
@@ -56,7 +55,6 @@ class BindingExpressionExecutionRecorder {
      * considered terminal or if a proxy should be returned.
      */
     static boolean isTerminal(Class<?> clazz) {
-        return clazz.isPrimitive() || String.class.equals(clazz)
-                || Date.class.equals(clazz);
+        return clazz.isPrimitive() || String.class.equals(clazz) || Date.class.equals(clazz);
     }
 }

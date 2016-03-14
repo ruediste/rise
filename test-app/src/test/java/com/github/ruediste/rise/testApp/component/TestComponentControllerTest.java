@@ -29,28 +29,25 @@ public class TestComponentControllerTest extends WebTest {
     public void testSubControllers() {
 
         // create test entity
-        TestAppEntity entity = t.executor().updating()
-                .execute(new TransactionCallback<TestAppEntity>() {
+        TestAppEntity entity = t.executor().updating().execute(new TransactionCallback<TestAppEntity>() {
 
-                    @Override
-                    public TestAppEntity doInTransaction() {
-                        TestAppEntity e = new TestAppEntity();
-                        e.setValue("foo");
-                        em.persist(e);
-                        return e;
-                    }
-                });
+            @Override
+            public TestAppEntity doInTransaction() {
+                TestAppEntity e = new TestAppEntity();
+                e.setValue("foo");
+                em.persist(e);
+                return e;
+            }
+        });
 
         // check
-        driver.navigate().to(url(util.go(TestComponentController.class)
-                .initialize(entity.getId())));
+        driver.navigate().to(url(util.go(TestComponentController.class).initialize(entity.getId())));
         compare(driver, "foo", "foo", "foo");
 
         // modify entity in ctrl A
         driver.findElement(By.cssSelector("#a input")).clear();
         driver.findElement(By.cssSelector("#a input")).sendKeys("bar");
-        clickAndWaitForRefresh(
-                driver.findElement(By.cssSelector("#a button.save")));
+        clickAndWaitForRefresh(driver.findElement(By.cssSelector("#a button.save")));
 
         // check
         compare(driver, "foo", "bar", "foo");
@@ -66,11 +63,8 @@ public class TestComponentControllerTest extends WebTest {
     }
 
     private void compare(WebDriver driver, String main, String a, String b) {
-        assertEquals(main,
-                driver.findElement(By.cssSelector("#mainValue")).getText());
-        assertEquals(a,
-                driver.findElement(By.cssSelector("#a .value")).getText());
-        assertEquals(b,
-                driver.findElement(By.cssSelector("#b .value")).getText());
+        assertEquals(main, driver.findElement(By.cssSelector("#mainValue")).getText());
+        assertEquals(a, driver.findElement(By.cssSelector("#a .value")).getText());
+        assertEquals(b, driver.findElement(By.cssSelector("#b .value")).getText());
     }
 }

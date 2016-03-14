@@ -18,8 +18,7 @@ public class CrudPropertyInfo {
     private final Attribute<?, ?> attribute;
     private final Class<? extends Annotation> emQualifier;
 
-    public CrudPropertyInfo(PropertyInfo property, Attribute<?, ?> attribute,
-            Class<? extends Annotation> emQualifier) {
+    public CrudPropertyInfo(PropertyInfo property, Attribute<?, ?> attribute, Class<? extends Annotation> emQualifier) {
         Preconditions.checkNotNull(property);
         Preconditions.checkNotNull(attribute);
         this.property = property;
@@ -53,8 +52,7 @@ public class CrudPropertyInfo {
         if (!(obj instanceof CrudPropertyInfo))
             return false;
         CrudPropertyInfo other = (CrudPropertyInfo) obj;
-        return Objects.equal(property, other.property)
-                && Objects.equal(attribute, other.attribute)
+        return Objects.equal(property, other.property) && Objects.equal(attribute, other.attribute)
                 && Objects.equal(emQualifier, other.emQualifier);
     }
 

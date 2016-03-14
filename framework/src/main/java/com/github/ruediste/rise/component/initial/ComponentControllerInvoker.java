@@ -12,8 +12,7 @@ public class ComponentControllerInvoker extends ControllerInvokerBase {
     ComponentPage pageInfo;
 
     @Override
-    protected Object getController(
-            ActionInvocation<String> stringActionInvocation) {
+    protected Object getController(ActionInvocation<String> stringActionInvocation) {
         return pageInfo.getController();
     }
 

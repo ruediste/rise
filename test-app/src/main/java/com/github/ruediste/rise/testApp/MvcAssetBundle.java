@@ -25,8 +25,7 @@ public class MvcAssetBundle extends AssetBundle {
     @Override
     protected void initialize() {
         coreBundle.out.join(bootstrap.out).select(DefaultAssetTypes.CSS)
-                .split(g -> g.map(css.process("{qname}.{ext}", x -> x)))
-                .send(out);
+                .split(g -> g.map(css.process("{qname}.{ext}", x -> x))).send(out);
     }
 
 }

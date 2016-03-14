@@ -90,8 +90,7 @@ public abstract class AssetBundle {
      * asset from the classpath. Rules see {@link #locations(String...)}
      */
     String calculateAbsoluteLocation(String location) {
-        return AssetHelper.calculateAbsoluteLocation(location,
-                pipelineConfiguration.getAssetBasePath(), getClass());
+        return AssetHelper.calculateAbsoluteLocation(location, pipelineConfiguration.getAssetBasePath(), getClass());
     }
 
     Asset loadAssetFromClasspath(String path) {
@@ -118,40 +117,30 @@ public abstract class AssetBundle {
      * {@link RiseUtil#toPrefixAndRegex(String)}
      */
     public AssetLocationGroup locations(String... locations) {
-        return new AssetLocationGroup(this,
-                Arrays.stream(locations).flatMap(l -> {
-                    String location = helper.calculateAbsoluteLocation(l,
-                            getClass());
-                    Pair<String, String> prefixAndRegex = RiseUtil
-                            .toPrefixAndRegex(location);
-                    if (prefixAndRegex.getB().isEmpty())
-                        return Stream.of(location);
-                    return resourceIndex.getResourcesByGlob(prefixAndRegex)
-                            .stream();
-                }));
+        return new AssetLocationGroup(this, Arrays.stream(locations).flatMap(l -> {
+            String location = helper.calculateAbsoluteLocation(l, getClass());
+            Pair<String, String> prefixAndRegex = RiseUtil.toPrefixAndRegex(location);
+            if (prefixAndRegex.getB().isEmpty())
+                return Stream.of(location);
+            return resourceIndex.getResourcesByGlob(prefixAndRegex).stream();
+        }));
     }
 
     public AssetLocationGroup webJar(String name, String... locations) {
-        String pomPropsLocation = "META-INF/maven/org.webjars/" + name
-                + "/pom.properties";
+        String pomPropsLocation = "META-INF/maven/org.webjars/" + name + "/pom.properties";
         Properties pomProps = new Properties();
-        InputStream in = getClass().getClassLoader()
-                .getResourceAsStream(pomPropsLocation);
+        InputStream in = getClass().getClassLoader().getResourceAsStream(pomPropsLocation);
         if (in == null) {
-            throw new RuntimeException(
-                    "unable to find " + pomPropsLocation + " on classpath");
+            throw new RuntimeException("unable to find " + pomPropsLocation + " on classpath");
         }
         try {
             pomProps.load(in);
         } catch (IOException e) {
-            throw new RuntimeException("error while loading " + pomPropsLocation
-                    + " from classpath", e);
+            throw new RuntimeException("error while loading " + pomPropsLocation + " from classpath", e);
         }
         String version = pomProps.getProperty("version");
-        String prefix = "META-INF/resources/webjars/" + name + "/" + version
-                + "/";
-        return new AssetLocationGroup(this,
-                Arrays.stream(locations).map(x -> prefix + x));
+        String prefix = "META-INF/resources/webjars/" + name + "/" + version + "/";
+        return new AssetLocationGroup(this, Arrays.stream(locations).map(x -> prefix + x));
     }
 
     /**
@@ -173,7 +162,6 @@ public abstract class AssetBundle {
     }
 
     public AssetGroup join(AssetGroup... groups) {
-        return new AssetGroup(this,
-                Arrays.stream(groups).flatMap(g -> g.assets.stream()));
+        return new AssetGroup(this, Arrays.stream(groups).flatMap(g -> g.assets.stream()));
     }
 }

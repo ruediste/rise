@@ -9,8 +9,7 @@ import java.util.TimeZone;
 import com.github.ruediste.rise.component.binding.TwoWayBindingTransformer;
 import com.google.common.base.Strings;
 
-public class DateToStringTransformer
-        extends TwoWayBindingTransformer<Date, String> {
+public class DateToStringTransformer extends TwoWayBindingTransformer<Date, String> {
 
     private DateFormat format;
 

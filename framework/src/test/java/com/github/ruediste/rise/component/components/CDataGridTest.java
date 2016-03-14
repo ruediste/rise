@@ -14,13 +14,13 @@ import com.github.ruediste.c3java.properties.PropertyUtil;
 
 public class CDataGridTest {
 
-	@Test
-	public void setItemsIsPropertyAccessor() {
-		Map<String, PropertyDeclaration> propertyDeclarations = PropertyUtil.getPropertyDeclarations(CDataGrid.class);
-		assertTrue(propertyDeclarations.containsKey("items"));
+    @Test
+    public void setItemsIsPropertyAccessor() {
+        Map<String, PropertyDeclaration> propertyDeclarations = PropertyUtil.getPropertyDeclarations(CDataGrid.class);
+        assertTrue(propertyDeclarations.containsKey("items"));
 
-		@SuppressWarnings("unchecked")
-		PropertyPath path = PropertyUtil.getPropertyPath(CDataGrid.class, x -> x.setItems((List<?>) null));
-		assertEquals("items", path.getAccessedProperty().getName());
-	}
+        @SuppressWarnings("unchecked")
+        PropertyPath path = PropertyUtil.getPropertyPath(CDataGrid.class, x -> x.setItems((List<?>) null));
+        assertEquals("items", path.getAccessedProperty().getName());
+    }
 }

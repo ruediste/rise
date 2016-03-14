@@ -28,8 +28,7 @@ public class CoreRequestInfo {
         return stringActionInvocation;
     }
 
-    public void setStringActionInvocation(
-            ActionInvocation<String> stringActionInvocation) {
+    public void setStringActionInvocation(ActionInvocation<String> stringActionInvocation) {
         this.stringActionInvocation = stringActionInvocation;
     }
 
@@ -89,8 +88,7 @@ public class CoreRequestInfo {
         return objectActionInvocation;
     }
 
-    public void setObjectActionInvocation(
-            ActionInvocation<Object> objectActionInvocation) {
+    public void setObjectActionInvocation(ActionInvocation<Object> objectActionInvocation) {
         this.objectActionInvocation = objectActionInvocation;
     }
 

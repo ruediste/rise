@@ -13,12 +13,9 @@ public class RedirectRenderResult implements HttpRenderResult {
     }
 
     @Override
-    public void sendTo(HttpServletResponse response, HttpRenderResultUtil util)
-            throws IOException {
-        if ("true".equals(util.getCoreRequestInfo().getServletRequest()
-                .getHeader("rise-is-ajax"))) {
-            response.setHeader("rise-redirect-target",
-                    util.getCoreUtil().url(path));
+    public void sendTo(HttpServletResponse response, HttpRenderResultUtil util) throws IOException {
+        if ("true".equals(util.getCoreRequestInfo().getServletRequest().getHeader("rise-is-ajax"))) {
+            response.setHeader("rise-redirect-target", util.getCoreUtil().url(path));
         } else
             response.sendRedirect(util.getCoreUtil().redirectUrl(path));
     }

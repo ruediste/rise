@@ -57,61 +57,50 @@ public class ValidationUtil {
 
         // check for labeled payload
         {
-            Optional<TranslatedString> pattern = violation
-                    .getConstraintDescriptor().getPayload().stream()
-                    .filter(Payload.class::isAssignableFrom)
-                    .map(x -> labelUtil.type(x).tryLabel())
+            Optional<TranslatedString> pattern = violation.getConstraintDescriptor().getPayload().stream()
+                    .filter(Payload.class::isAssignableFrom).map(x -> labelUtil.type(x).tryLabel())
                     .filter(x -> x.isPresent()).map(x -> x.get()).findFirst();
             if (pattern.isPresent())
                 // we found a labeled payload. Use payload label as pattern
-                return new PatternString(patternStringResolver, pattern.get(),
-                        args);
+                return new PatternString(patternStringResolver, pattern.get(), args);
         }
 
         // check for resource key reference
         String messageTemplate = violation.getMessageTemplate();
         if (messageTemplate.startsWith("{") && messageTemplate.endsWith("}")) {
-            return new PatternString(patternStringResolver,
-                    new TranslatedString(translatedStringResolver,
-                            messageTemplate.substring(1,
-                                    messageTemplate.length() - 1)),
-                    args);
+            return new PatternString(patternStringResolver, new TranslatedString(translatedStringResolver,
+                    messageTemplate.substring(1, messageTemplate.length() - 1)), args);
         }
 
         // fallback: just use the string as is as pattern
-        return new PatternString(patternStringResolver, l -> messageTemplate,
-                args);
+        return new PatternString(patternStringResolver, l -> messageTemplate, args);
     }
 
-    public List<ValidationFailure> toFailures(
-            Iterable<? extends ConstraintViolation<?>> violations) {
+    public List<ValidationFailure> toFailures(Iterable<? extends ConstraintViolation<?>> violations) {
         return toFailures(violations, ValidationFailureSeverity.ERROR);
     }
 
-    public List<ValidationFailure> toFailures(
-            Iterable<? extends ConstraintViolation<?>> violations,
+    public List<ValidationFailure> toFailures(Iterable<? extends ConstraintViolation<?>> violations,
             ValidationFailureSeverity severity) {
-        return StreamSupport.stream(violations.spliterator(), false)
-                .<ValidationFailure> map(v -> {
-                    LString message = getMessage(v);
-                    return new ValidationFailure() {
+        return StreamSupport.stream(violations.spliterator(), false).<ValidationFailure> map(v -> {
+            LString message = getMessage(v);
+            return new ValidationFailure() {
 
-                        @Override
-                        public ValidationFailureSeverity getSeverity() {
-                            return severity;
-                        }
+                @Override
+                public ValidationFailureSeverity getSeverity() {
+                    return severity;
+                }
 
-                        @Override
-                        public LString getMessage() {
-                            return message;
-                        }
+                @Override
+                public LString getMessage() {
+                    return message;
+                }
 
-                        @Override
-                        public String toString() {
-                            return "ValidationFailure(" + severity + ";"
-                                    + message + ")";
-                        }
-                    };
-                }).collect(Collectors.toList());
+                @Override
+                public String toString() {
+                    return "ValidationFailure(" + severity + ";" + message + ")";
+                }
+            };
+        }).collect(Collectors.toList());
     }
 }

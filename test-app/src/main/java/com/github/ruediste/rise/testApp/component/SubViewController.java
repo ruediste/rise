@@ -64,9 +64,7 @@ public class SubViewController extends ControllerComponent {
         @Override
         protected Component createComponents() {
             return toComponent(html -> html.span().CLASS("subText")
-                    .add(new CText().CLASS("subText")
-                            .bindTextString(() -> controller.data().getText()))
-                    ._span());
+                    .add(new CText().CLASS("subText").bindTextString(() -> controller.data().getText()))._span());
         }
 
     }

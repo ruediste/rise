@@ -67,8 +67,7 @@ public class TestRestartableApplication extends RestartableApplicationBase {
     @Inject
     ComponentConfiguration componentConfiguration;
 
-    private static class Initializer
-            implements com.github.ruediste.rise.util.Initializer {
+    private static class Initializer implements com.github.ruediste.rise.util.Initializer {
 
         @Inject
         DataBaseLinkRegistry registry;
@@ -83,48 +82,41 @@ public class TestRestartableApplication extends RestartableApplicationBase {
 
     @Override
     protected void startImpl(Injector nonRestartableInjector) {
-        ApplicationStage stage = nonRestartableInjector
-                .getInstance(ApplicationStage.class);
+        ApplicationStage stage = nonRestartableInjector.getInstance(ApplicationStage.class);
         Salta.createInjector(stage.getSaltaStage(), new AbstractModule() {
 
             @Override
             protected void configure() throws Exception {
                 InitializerUtil.register(config(), Initializer.class);
-                MethodAuthorizationManager.get(binder()).addRule(
-                        RequiresRight.class,
+                MethodAuthorizationManager.get(binder()).addRule(RequiresRight.class,
                         a -> new HashSet<>(Arrays.asList(a.value())));
             }
 
-        }, new DynamicIntegrationModule(nonRestartableInjector))
-                .injectMembers(this);
+        }, new DynamicIntegrationModule(nonRestartableInjector)).injectMembers(this);
         index.registerTemplate(CPage.class, CPageTemplate.class);
         config.applicationCanvasFactory = Optional.of(canvasProvider::get);
         config.requestErrorHandler = errorHandler;
-        errorHandler.initialize(
-                util -> util.go(RequestErrorHandlerController.class).index());
+        errorHandler.initialize(util -> util.go(RequestErrorHandlerController.class).index());
         componentConfiguration.heartbeatInterval = Duration.ofSeconds(1);
         componentConfiguration.heartbeatInterval = Duration.ofSeconds(3);
 
         // security
         rememberMeAuthenticationProvider.setDao(rememberMeTokenDao);
-        defaultAuthenticationManager
-                .addProvider(rememberMeAuthenticationProvider);
+        defaultAuthenticationManager.addProvider(rememberMeAuthenticationProvider);
 
         defaultAuthenticationManager
-                .addProvider(new InMemoryAuthenticationProvider<Principal>()
-                        .with("foo", "foo", null));
+                .addProvider(new InMemoryAuthenticationProvider<Principal>().with("foo", "foo", null));
 
-        authorizationManager.setPerformer((Set<? extends Right> rights,
-                Optional<AuthenticationSuccess> authentication) -> {
-            for (Right right : rights) {
+        authorizationManager
+                .setPerformer((Set<? extends Right> rights, Optional<AuthenticationSuccess> authentication) -> {
+                    for (Right right : rights) {
 
-                if (Objects.equals(Rights.ALLOWED, right))
-                    continue;
-                return AuthorizationResult.failure(
-                        new AuthorizationFailure("right was not ALLOWED"));
-            }
-            return AuthorizationResult.authorized();
-        });
+                        if (Objects.equals(Rights.ALLOWED, right))
+                            continue;
+                        return AuthorizationResult.failure(new AuthorizationFailure("right was not ALLOWED"));
+                    }
+                    return AuthorizationResult.authorized();
+                });
 
     }
 

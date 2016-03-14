@@ -10,8 +10,8 @@ import com.google.common.base.Preconditions;
 /**
  * Component showing a list of items and allowing a single one to be selected.
  */
-public class CSingleSelection<T, TSelf extends CSingleSelection<T, TSelf>>
-        extends CItems<T, TSelf> implements LabeledComponentTrait<TSelf> {
+public class CSingleSelection<T, TSelf extends CSingleSelection<T, TSelf>> extends CItems<T, TSelf>
+        implements LabeledComponentTrait<TSelf> {
 
     private Optional<T> selectedItem = Optional.empty();
 
@@ -29,8 +29,7 @@ public class CSingleSelection<T, TSelf extends CSingleSelection<T, TSelf>>
 
     public TSelf setSelectedItem(Optional<T> selectedItem) {
         Preconditions.checkNotNull(selectedItem);
-        boolean invokeHandler = selectionHandler != null
-                && !Objects.equals(this.selectedItem, selectedItem);
+        boolean invokeHandler = selectionHandler != null && !Objects.equals(this.selectedItem, selectedItem);
         this.selectedItem = selectedItem;
         if (invokeHandler)
             selectionHandler.accept(selectedItem);

@@ -74,8 +74,7 @@ public class CMixedRender extends ComponentBase<CMixedRender> {
 
     @Override
     public Iterable<Component> getChildren() {
-        return entries.stream().flatMap(e -> e.getChildren().stream())
-                .collect(toList());
+        return entries.stream().flatMap(e -> e.getChildren().stream()).collect(toList());
     }
 
     @Override

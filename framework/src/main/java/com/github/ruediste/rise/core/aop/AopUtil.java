@@ -46,8 +46,7 @@ public class AopUtil {
         BiPredicate<TypeToken<?>, Method> methodMatcher;
         AroundAdvice advice;
 
-        public AdviceEntry(Predicate<TypeToken<?>> typeMatcher,
-                BiPredicate<TypeToken<?>, Method> methodMatcher,
+        public AdviceEntry(Predicate<TypeToken<?>> typeMatcher, BiPredicate<TypeToken<?>, Method> methodMatcher,
                 AroundAdvice advice) {
             super();
             this.typeMatcher = typeMatcher;
@@ -57,8 +56,7 @@ public class AopUtil {
 
     }
 
-    private static class SubclassRule
-            implements FixedConstructorInstantiationRule {
+    private static class SubclassRule implements FixedConstructorInstantiationRule {
 
         private HashMap<TypeToken<?>, Optional<RecipeInstantiator>> cache = new HashMap<>();
         private ArrayList<AdviceEntry> advices = new ArrayList<>();
@@ -69,23 +67,20 @@ public class AopUtil {
         }
 
         @Override
-        public Optional<RecipeInstantiator> create(TypeToken<?> typeToken,
-                RecipeCreationContext ctx, Constructor<?> constructor) {
-            return cache.computeIfAbsent(typeToken,
-                    x -> createImpl(typeToken, ctx, constructor));
+        public Optional<RecipeInstantiator> create(TypeToken<?> typeToken, RecipeCreationContext ctx,
+                Constructor<?> constructor) {
+            return cache.computeIfAbsent(typeToken, x -> createImpl(typeToken, ctx, constructor));
         }
 
-        private Optional<RecipeInstantiator> createImpl(TypeToken<?> typeToken,
-                RecipeCreationContext ctx, Constructor<?> constructor) {
-            Multimap<Method, AroundAdvice> adviceMap = createAdviceMap(
-                    typeToken, advices);
+        private Optional<RecipeInstantiator> createImpl(TypeToken<?> typeToken, RecipeCreationContext ctx,
+                Constructor<?> constructor) {
+            Multimap<Method, AroundAdvice> adviceMap = createAdviceMap(typeToken, advices);
             if (adviceMap.isEmpty())
                 return Optional.empty();
 
             CompiledSupplier[] argSuppliers = DefaultFixedConstructorInstantiationRule
-                    .resolveArguments(config, typeToken, ctx, constructor)
-                    .stream().map(ctx.getCompiler()::compileSupplier)
-                    .toArray(size -> new CompiledSupplier[size]);
+                    .resolveArguments(config, typeToken, ctx, constructor).stream()
+                    .map(ctx.getCompiler()::compileSupplier).toArray(size -> new CompiledSupplier[size]);
 
             return Optional.of(new RecipeInstantiatorImpl(() -> {
                 AttachedPropertyBearerBase bearer = new AttachedPropertyBearerBase();
@@ -94,25 +89,20 @@ public class AopUtil {
                 e.setCallback(new MethodInterceptor() {
 
                     @Override
-                    public Object intercept(Object obj, Method method,
-                            Object[] args, MethodProxy proxy) throws Throwable {
-                        return enhance(adviceMap.get(method).iterator(), obj,
-                                method, args, proxy);
+                    public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy)
+                            throws Throwable {
+                        return enhance(adviceMap.get(method).iterator(), obj, method, args, proxy);
                     }
 
-                    private Object enhance(Iterator<AroundAdvice> iterator,
-                            Object obj, Method method, Object[] args,
+                    private Object enhance(Iterator<AroundAdvice> iterator, Object obj, Method method, Object[] args,
                             MethodProxy proxy) throws Throwable {
                         if (!iterator.hasNext())
                             return proxy.invokeSuper(obj, args);
-                        return iterator.next()
-                                .intercept(new InterceptedInvocation() {
+                        return iterator.next().intercept(new InterceptedInvocation() {
 
                             @Override
-                            public Object proceed(Object... args)
-                                    throws Throwable {
-                                return enhance(iterator, obj, method, args,
-                                        proxy);
+                            public Object proceed(Object... args) throws Throwable {
+                                return enhance(iterator, obj, method, args, proxy);
                             }
 
                             @Override
@@ -132,8 +122,7 @@ public class AopUtil {
 
                             @Override
                             public Object proceed() throws Throwable {
-                                return enhance(iterator, obj, method, args,
-                                        proxy);
+                                return enhance(iterator, obj, method, args, proxy);
                             }
 
                             @Override
@@ -164,16 +153,12 @@ public class AopUtil {
         private ArrayList<AdviceEntry> advices = new ArrayList<>();
 
         @Override
-        public RecipeEnhancer getEnhancer(RecipeCreationContext ctx,
-                CoreDependencyKey<?> requestedKey) {
-            return cache.computeIfAbsent(requestedKey.getType(),
-                    type -> createImpl(ctx, type)).orElse(null);
+        public RecipeEnhancer getEnhancer(RecipeCreationContext ctx, CoreDependencyKey<?> requestedKey) {
+            return cache.computeIfAbsent(requestedKey.getType(), type -> createImpl(ctx, type)).orElse(null);
         }
 
-        private Optional<RecipeEnhancer> createImpl(RecipeCreationContext ctx,
-                TypeToken<?> typeToken) {
-            Multimap<Method, AroundAdvice> adviceMap = createAdviceMap(
-                    typeToken, advices);
+        private Optional<RecipeEnhancer> createImpl(RecipeCreationContext ctx, TypeToken<?> typeToken) {
+            Multimap<Method, AroundAdvice> adviceMap = createAdviceMap(typeToken, advices);
             if (adviceMap.isEmpty())
                 return Optional.empty();
             return Optional.of(new RecipeEnhancerImpl(delegate -> {
@@ -182,25 +167,20 @@ public class AopUtil {
                 e.setCallback(new MethodInterceptor() {
 
                     @Override
-                    public Object intercept(Object obj, Method method,
-                            Object[] args, MethodProxy proxy) throws Throwable {
-                        return enhance(adviceMap.get(method).iterator(), obj,
-                                method, args, proxy);
+                    public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy)
+                            throws Throwable {
+                        return enhance(adviceMap.get(method).iterator(), obj, method, args, proxy);
                     }
 
-                    private Object enhance(Iterator<AroundAdvice> iterator,
-                            Object obj, Method method, Object[] args,
+                    private Object enhance(Iterator<AroundAdvice> iterator, Object obj, Method method, Object[] args,
                             MethodProxy proxy) throws Throwable {
                         if (!iterator.hasNext())
                             return proxy.invoke(delegate, args);
-                        return iterator.next()
-                                .intercept(new InterceptedInvocation() {
+                        return iterator.next().intercept(new InterceptedInvocation() {
 
                             @Override
-                            public Object proceed(Object... args)
-                                    throws Throwable {
-                                return enhance(iterator, obj, method, args,
-                                        proxy);
+                            public Object proceed(Object... args) throws Throwable {
+                                return enhance(iterator, obj, method, args, proxy);
                             }
 
                             @Override
@@ -220,14 +200,12 @@ public class AopUtil {
 
                             @Override
                             public Object proceed() throws Throwable {
-                                return enhance(iterator, obj, method, args,
-                                        proxy);
+                                return enhance(iterator, obj, method, args, proxy);
                             }
 
                             @Override
                             public AttachedPropertyBearer getPropertyBearer() {
-                                throw new UnsupportedOperationException(
-                                        "Not implemented for proxy enhancement");
+                                throw new UnsupportedOperationException("Not implemented for proxy enhancement");
                             }
                         });
                     }
@@ -243,8 +221,8 @@ public class AopUtil {
 
     }
 
-    private static Multimap<Method, AroundAdvice> createAdviceMap(
-            TypeToken<?> typeToken, ArrayList<AdviceEntry> advices2) {
+    private static Multimap<Method, AroundAdvice> createAdviceMap(TypeToken<?> typeToken,
+            ArrayList<AdviceEntry> advices2) {
         Multimap<Method, AroundAdvice> adviceMap = ArrayListMultimap.create();
         {
             ArrayList<Method> methods = null;
@@ -252,8 +230,7 @@ public class AopUtil {
                 if (entry.typeMatcher.test(typeToken)) {
                     if (methods == null) {
                         methods = new ArrayList<>();
-                        Enhancer.getMethods(typeToken.getRawType(), null,
-                                methods);
+                        Enhancer.getMethods(typeToken.getRawType(), null, methods);
                     }
                     for (Method method : methods) {
                         if (entry.methodMatcher.test(typeToken, method)) {
@@ -270,10 +247,8 @@ public class AopUtil {
     /**
      * Register an advice using a subclass
      */
-    public static void registerSubclass(StandardInjectorConfiguration config,
-            Predicate<TypeToken<?>> typeMatcher,
-            BiPredicate<TypeToken<?>, Method> methodMatcher,
-            AroundAdvice advice) {
+    public static void registerSubclass(StandardInjectorConfiguration config, Predicate<TypeToken<?>> typeMatcher,
+            BiPredicate<TypeToken<?>, Method> methodMatcher, AroundAdvice advice) {
         SubclassRule rule = subclassRuleProperty.setIfAbsent(config, () -> {
             SubclassRule tmp = new SubclassRule(config);
             config.fixedConstructorInstantiatorFactoryRules.add(0, tmp);
@@ -285,10 +260,8 @@ public class AopUtil {
     /**
      * register an advice using a proxy
      */
-    public static void registerProxy(StandardInjectorConfiguration config,
-            Predicate<TypeToken<?>> typeMatcher,
-            BiPredicate<TypeToken<?>, Method> methodMatcher,
-            AroundAdvice advice) {
+    public static void registerProxy(StandardInjectorConfiguration config, Predicate<TypeToken<?>> typeMatcher,
+            BiPredicate<TypeToken<?>, Method> methodMatcher, AroundAdvice advice) {
         ProxyRule rule = proxyRuleProperty.setIfAbsent(config, () -> {
             ProxyRule tmp = new ProxyRule();
             config.config.enhancerFactories.add(0, tmp);

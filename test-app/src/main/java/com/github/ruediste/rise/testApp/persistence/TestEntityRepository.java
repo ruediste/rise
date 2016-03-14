@@ -15,8 +15,7 @@ public class TestEntityRepository {
 
     public List<TestAppEntity> getAll() {
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<TestAppEntity> query = cb
-                .createQuery(TestAppEntity.class);
+        CriteriaQuery<TestAppEntity> query = cb.createQuery(TestAppEntity.class);
         Root<TestAppEntity> root = query.from(TestAppEntity.class);
         query.select(root);
         return em.createQuery(query).getResultList();

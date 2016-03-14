@@ -51,20 +51,17 @@ import net.sf.cglib.proxy.Enhancer;
 public class HttpScopeManager {
     public static final String SESSION_SCOPE_DATA_KEY = "RISE_SESSION_SCOPE_DATA";
     SessionScopeManager sessionScopeManager = new SessionScopeManager();
-    SimpleProxyScopeManager requestScopeHandler = new SimpleProxyScopeManager(
-            "Request");
+    SimpleProxyScopeManager requestScopeHandler = new SimpleProxyScopeManager("Request");
 
     @PostConstruct
-    private void postConstruct(
-            MembersInjector<SessionScopeManager> managerInjector) {
+    private void postConstruct(MembersInjector<SessionScopeManager> managerInjector) {
         managerInjector.injectMembers(sessionScopeManager);
     }
 
     /**
      * Enter the scopes
      */
-    public void enter(HttpServletRequest request,
-            HttpServletResponse response) {
+    public void enter(HttpServletRequest request, HttpServletResponse response) {
         sessionScopeManager.enter(() -> request.getSession());
         requestScopeHandler.setFreshState();
     }
@@ -79,8 +76,7 @@ public class HttpScopeManager {
     }
 
     public void runInSessionScope(HttpSession session, Runnable run) {
-        SessionScopeManager.State old = sessionScopeManager
-                .enter(() -> session);
+        SessionScopeManager.State old = sessionScopeManager.enter(() -> session);
         try {
             run.run();
         } finally {
@@ -90,8 +86,7 @@ public class HttpScopeManager {
 
     public void runInEachSessionScope(Runnable run) {
         for (SessionScopeData data : sessionScopeManager.dataMap.values()) {
-            SessionScopeManager.State old = sessionScopeManager
-                    .enterWithData(() -> data);
+            SessionScopeManager.State old = sessionScopeManager.enterWithData(() -> data);
             try {
                 run.run();
             } finally {
@@ -100,8 +95,7 @@ public class HttpScopeManager {
         }
     }
 
-    static final class SessionScopeManager implements
-            com.github.ruediste.salta.standard.ScopeImpl.ScopeHandler {
+    static final class SessionScopeManager implements com.github.ruediste.salta.standard.ScopeImpl.ScopeHandler {
 
         @Inject
         SessionScopeEvents scopeEvents;
@@ -111,8 +105,7 @@ public class HttpScopeManager {
         private static Object sessionLock = new Object();
 
         @NonReloadable
-        public static class SessionScopeData
-                implements Serializable, HttpSessionBindingListener {
+        public static class SessionScopeData implements Serializable, HttpSessionBindingListener {
             private static final long serialVersionUID = 1L;
             public Map<Binding, Object> sessionDataMap = new HashMap<>();
             public GenericEventManager<HttpSessionBindingEvent> valueUnbound = new GenericEventManager<>();
@@ -177,8 +170,7 @@ public class HttpScopeManager {
         }
 
         public State enter(Supplier<HttpSession> sessionSupplier) {
-            return enterWithData(
-                    () -> getSessionScopeData(sessionSupplier.get()));
+            return enterWithData(() -> getSessionScopeData(sessionSupplier.get()));
         }
 
         private State enterWithData(Supplier<SessionScopeData> dataSupplier) {
@@ -197,26 +189,22 @@ public class HttpScopeManager {
         }
 
         @Override
-        public Supplier<Object> scope(Supplier<Object> supplier,
-                Binding binding, CoreDependencyKey<?> requestedKey) {
+        public Supplier<Object> scope(Supplier<Object> supplier, Binding binding, CoreDependencyKey<?> requestedKey) {
             // create the proxy right away, such that it can be reused
             // afterwards
-            Object proxy = Enhancer.create(requestedKey.getRawType(),
-                    new Dispatcher() {
+            Object proxy = Enhancer.create(requestedKey.getRawType(), new Dispatcher() {
 
-                        @Override
-                        public Object loadObject() throws Exception {
-                            State state = currentState.get();
-                            Preconditions.checkState(state != null,
-                                    "Access to session scoped proxy without active session scope");
-                            Map<Binding, Object> sessionDataMap = state
-                                    .getSessionData().sessionDataMap;
-                            synchronized (sessionDataMap) {
-                                return sessionDataMap.computeIfAbsent(binding,
-                                        b -> supplier.get());
-                            }
-                        }
-                    });
+                @Override
+                public Object loadObject() throws Exception {
+                    State state = currentState.get();
+                    Preconditions.checkState(state != null,
+                            "Access to session scoped proxy without active session scope");
+                    Map<Binding, Object> sessionDataMap = state.getSessionData().sessionDataMap;
+                    synchronized (sessionDataMap) {
+                        return sessionDataMap.computeIfAbsent(binding, b -> supplier.get());
+                    }
+                }
+            });
 
             return new Supplier<Object>() {
 

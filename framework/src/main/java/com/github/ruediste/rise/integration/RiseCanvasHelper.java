@@ -68,8 +68,7 @@ public class RiseCanvasHelper {
         output.forEach(asset -> {
             if (asset.getAssetType() != DefaultAssetTypes.CSS)
                 return;
-            html.link().REL("stylesheet").TYPE("text/css")
-                    .HREF(assetPipelineHelper.url(asset));
+            html.link().REL("stylesheet").TYPE("text/css").HREF(assetPipelineHelper.url(asset));
         });
     }
 
@@ -110,12 +109,10 @@ public class RiseCanvasHelper {
 
     private void checkComponent() {
         if (!isComponent)
-            throw new RuntimeException(
-                    "Canvas was not initialized for component mode. Operation not allowed");
+            throw new RuntimeException("Canvas was not initialized for component mode. Operation not allowed");
     }
 
-    public void initializeForComponent(ByteArrayOutputStream baos,
-            HtmlCanvasTarget target) {
+    public void initializeForComponent(ByteArrayOutputStream baos, HtmlCanvasTarget target) {
         this.baos = baos;
         this.target = target;
         cRender = new CMixedRender();
@@ -125,8 +122,7 @@ public class RiseCanvasHelper {
     /**
      * Initialize the heleper for component rendering
      */
-    public void initializeForOutput(ByteArrayOutputStream baos,
-            HtmlCanvasTarget target) {
+    public void initializeForOutput(ByteArrayOutputStream baos, HtmlCanvasTarget target) {
         this.baos = baos;
         this.target = target;
     }
@@ -174,8 +170,7 @@ public class RiseCanvasHelper {
      * @see RiseCanvas#TEST_NAME(String)
      */
     public void TEST_NAME(String name) {
-        if (coreConfiguration.isRenderTestName()
-                && !Strings.isNullOrEmpty(name)) {
+        if (coreConfiguration.isRenderTestName() && !Strings.isNullOrEmpty(name)) {
             target.addAttribute("data-test-name", name);
         }
     }
@@ -191,8 +186,7 @@ public class RiseCanvasHelper {
         return authz;
     }
 
-    public void ON(RiseCanvas<?> html, JavaScriptEvent event,
-            Runnable eventHandler) {
+    public void ON(RiseCanvas<?> html, JavaScriptEvent event, Runnable eventHandler) {
         checkComponent();
         int handlerId = componentPage.registerEventHandler(eventHandler);
         html.addAttribute("data-rise-reload-on-" + event, handlerId);

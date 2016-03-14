@@ -32,11 +32,7 @@ public class IntegrationTestUtil {
     CoreConfiguration config;
 
     public String url(ActionResult result, Supplier<String> sessionId) {
-        return url(
-                coreUtil.toUrlSpec(
-                        coreUtil.toStringInvocation(
-                                coreUtil.toActionInvocation(result)),
-                        sessionId));
+        return url(coreUtil.toUrlSpec(coreUtil.toStringInvocation(coreUtil.toActionInvocation(result)), sessionId));
     }
 
     public String url(UrlSpec spec) {

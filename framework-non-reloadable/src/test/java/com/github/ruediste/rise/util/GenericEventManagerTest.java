@@ -42,10 +42,8 @@ public class GenericEventManagerTest {
         mgr.fire("foo");
         assertThat(received, contains("foo"));
 
-        WeakReference<Consumer<String>> listenerRef = new WeakReference<Consumer<String>>(
-                listener);
-        WeakReference<AttachedPropertyBearerBase> bearerRef = new WeakReference<AttachedPropertyBearerBase>(
-                bearer);
+        WeakReference<Consumer<String>> listenerRef = new WeakReference<Consumer<String>>(listener);
+        WeakReference<AttachedPropertyBearerBase> bearerRef = new WeakReference<AttachedPropertyBearerBase>(bearer);
         assertThat(listenerRef.get(), equalTo(listener));
         assertThat(bearerRef.get(), equalTo(bearer));
         listener = null;

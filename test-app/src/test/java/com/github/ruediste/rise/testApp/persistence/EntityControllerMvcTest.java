@@ -42,8 +42,7 @@ public class EntityControllerMvcTest extends WebTest {
 
         driver.navigate().to(url(go(EntityControllerMvc.class).index()));
 
-        Set<String> items = driver.findElements(By.cssSelector("li")).stream()
-                .map(e -> e.getText()).collect(toSet());
+        Set<String> items = driver.findElements(By.cssSelector("li")).stream().map(e -> e.getText()).collect(toSet());
 
         assertThat(items, contains(Objects.toString(entity.getId())));
     }
@@ -51,11 +50,9 @@ public class EntityControllerMvcTest extends WebTest {
     @Test
     public void testIndexNoTransaction() throws Exception {
 
-        driver.navigate()
-                .to(url(go(EntityControllerMvc.class).indexNoTransaction()));
+        driver.navigate().to(url(go(EntityControllerMvc.class).indexNoTransaction()));
 
-        assertThat(driver.getPageSource(),
-                containsString("No EntityManagerSet is currently set"));
+        assertThat(driver.getPageSource(), containsString("No EntityManagerSet is currently set"));
     }
 
     @Test
@@ -74,8 +71,7 @@ public class EntityControllerMvcTest extends WebTest {
 
         // delete
         template.executor().execute(() -> {
-            driver.navigate().to(url(
-                    go(EntityControllerMvc.class).delete(em.merge(entity))));
+            driver.navigate().to(url(go(EntityControllerMvc.class).delete(em.merge(entity))));
         });
 
         // check entity has been deleted

@@ -25,8 +25,7 @@ public class MethodImplementationFinder {
         Method method;
         Set<Method> overriddenMethods = new HashSet<>();
 
-        public MethodImplementation(Method method,
-                Set<Method> overriddenMethods) {
+        public MethodImplementation(Method method, Set<Method> overriddenMethods) {
             super();
             this.method = method;
             this.overriddenMethods = overriddenMethods;
@@ -49,8 +48,7 @@ public class MethodImplementationFinder {
         Method declaredMethod = getDeclaredMethod(cls, m);
         if (!cls.isInterface()) {
             if (declaredMethod != null)
-                return new MethodImplementation(declaredMethod,
-                        new HashSet<>());
+                return new MethodImplementation(declaredMethod, new HashSet<>());
             MethodImplementation result = getImpl(cls.getSuperclass(), m);
             if (result != null)
                 return result;
@@ -63,29 +61,24 @@ public class MethodImplementationFinder {
                 methods.put(impl.method, impl.overriddenMethods);
         }
 
-        for (Entry<Method, Set<Method>> entry : new ArrayList<>(
-                methods.entrySet())) {
+        for (Entry<Method, Set<Method>> entry : new ArrayList<>(methods.entrySet())) {
             for (Method x : entry.getValue()) {
                 methods.remove(x);
             }
         }
         if (methods.size() == 0) {
             if (declaredMethod != null)
-                return new MethodImplementation(declaredMethod,
-                        new HashSet<>());
+                return new MethodImplementation(declaredMethod, new HashSet<>());
             else
                 return null;
         }
         if (methods.size() == 1) {
-            Entry<Method, Set<Method>> entry = Iterables
-                    .getOnlyElement(methods.entrySet());
+            Entry<Method, Set<Method>> entry = Iterables.getOnlyElement(methods.entrySet());
             if (declaredMethod != null) {
                 entry.getValue().add(entry.getKey());
-                return new MethodImplementation(declaredMethod,
-                        entry.getValue());
+                return new MethodImplementation(declaredMethod, entry.getValue());
             } else
-                return new MethodImplementation(entry.getKey(),
-                        entry.getValue());
+                return new MethodImplementation(entry.getKey(), entry.getValue());
         } else
             return null;
     }
@@ -96,8 +89,7 @@ public class MethodImplementationFinder {
         Class<?>[] parameterTypes = method.getParameterTypes();
         String name = method.getName();
         for (Method m : cls.getDeclaredMethods()) {
-            if (m.getName().equals(name)
-                    && Arrays.equals(m.getParameterTypes(), parameterTypes)
+            if (m.getName().equals(name) && Arrays.equals(m.getParameterTypes(), parameterTypes)
                     && MethodOverrideIndex.doesOverride(m, method)) {
 
                 return m;

@@ -15,8 +15,7 @@ public class PersistentType {
     private final Class<?> entityClass;
     private final ManagedType<?> type;
 
-    public PersistentType(Class<? extends Annotation> emQualifier,
-            Class<?> entityClass, ManagedType<?> type) {
+    public PersistentType(Class<? extends Annotation> emQualifier, Class<?> entityClass, ManagedType<?> type) {
         super();
         this.emQualifier = emQualifier;
         this.entityClass = entityClass;
@@ -37,8 +36,7 @@ public class PersistentType {
         if (!(obj instanceof PersistentType))
             return false;
         PersistentType other = (PersistentType) obj;
-        return Objects.equal(emQualifier, other.emQualifier)
-                && Objects.equal(entityClass, other.entityClass)
+        return Objects.equal(emQualifier, other.emQualifier) && Objects.equal(entityClass, other.entityClass)
                 && Objects.equal(getType(), other.getType());
     }
 

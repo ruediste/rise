@@ -29,33 +29,24 @@ import com.github.ruediste1.lambdaPegParser.Var;
 @PageScoped
 public class ValidationStatusRepository {
 
-    private Set<Object> validatedComponents = Collections
-            .newSetFromMap(new WeakHashMap<>());
+    private Set<Object> validatedComponents = Collections.newSetFromMap(new WeakHashMap<>());
 
     private Map<Object, Set<ValidationFailure>> componentToFailures = new WeakHashMap<>();
 
     private Map<Object, Map<Object, List<ValidationFailure>>> sourceComponentToFailures = new WeakHashMap<>();
 
-    public void addFailures(Object source, Object component,
-            List<ValidationFailure> failures) {
-        sourceComponentToFailures
-                .computeIfAbsent(source, x -> new WeakHashMap<>())
-                .computeIfAbsent(component, x -> new ArrayList<>())
-                .addAll(failures);
-        componentToFailures
-                .computeIfAbsent(component, x -> new LinkedHashSet<>())
-                .addAll(failures);
+    public void addFailures(Object source, Object component, List<ValidationFailure> failures) {
+        sourceComponentToFailures.computeIfAbsent(source, x -> new WeakHashMap<>())
+                .computeIfAbsent(component, x -> new ArrayList<>()).addAll(failures);
+        componentToFailures.computeIfAbsent(component, x -> new LinkedHashSet<>()).addAll(failures);
     }
 
     public void clearFailures(Object source) {
-        Map<Object, List<ValidationFailure>> removedFailures = sourceComponentToFailures
-                .remove(source);
+        Map<Object, List<ValidationFailure>> removedFailures = sourceComponentToFailures.remove(source);
         if (removedFailures == null)
             return;
-        for (Entry<Object, List<ValidationFailure>> entry : removedFailures
-                .entrySet()) {
-            Set<ValidationFailure> failuresOfComponent = componentToFailures
-                    .get(entry.getKey());
+        for (Entry<Object, List<ValidationFailure>> entry : removedFailures.entrySet()) {
+            Set<ValidationFailure> failuresOfComponent = componentToFailures.get(entry.getKey());
             if (failuresOfComponent != null)
                 failuresOfComponent.removeAll(entry.getValue());
         }
@@ -63,13 +54,11 @@ public class ValidationStatusRepository {
 
     public List<ValidationFailure> getValidationFailures(Object component) {
         ArrayList<ValidationFailure> result = new ArrayList<>();
-        forEachNonPresenterInSubTree(component,
-                c -> result.addAll(getDirectValidationFailures(c)));
+        forEachNonPresenterInSubTree(component, c -> result.addAll(getDirectValidationFailures(c)));
         return result;
     }
 
-    public List<ValidationFailure> getDirectValidationFailures(
-            Object component) {
+    public List<ValidationFailure> getDirectValidationFailures(Object component) {
         Set<ValidationFailure> result = componentToFailures.get(component);
         if (result == null)
             return Collections.emptyList();
@@ -107,8 +96,7 @@ public class ValidationStatusRepository {
 
     public ValidationStatus getValidationStatus(Object component) {
         if (!isValidated(component))
-            return new ValidationStatus(ValidationState.NOT_VALIDATED,
-                    Collections.emptyList());
+            return new ValidationStatus(ValidationState.NOT_VALIDATED, Collections.emptyList());
         List<ValidationFailure> failures = getValidationFailures(component);
         if (failures.isEmpty())
             return new ValidationStatus(ValidationState.SUCCESS, failures);
@@ -129,8 +117,7 @@ public class ValidationStatusRepository {
      * Iterate over all children which are not {@link ValidationStatusPresenter}
      * s.
      */
-    public void forEachNonPresenterInSubTree(Object component,
-            Consumer<Object> action) {
+    public void forEachNonPresenterInSubTree(Object component, Consumer<Object> action) {
         action.accept(component);
         if (component instanceof Component)
             ((Component) component).getChildren().forEach(child -> {

@@ -25,8 +25,7 @@ import com.github.ruediste.salta.jsr330.MembersInjector;
 /**
  * Tests a startup error after injecting the non-restartable application
  */
-public class StartupErrorAfterNonRestartableInjectionTest
-        extends StartupErrorTest {
+public class StartupErrorAfterNonRestartableInjectionTest extends StartupErrorTest {
     private static class App extends TestRestartableApplication {
         @Override
         protected void startImpl(Injector permanentInjector) {
@@ -45,8 +44,7 @@ public class StartupErrorAfterNonRestartableInjectionTest
             @Override
             protected void initImpl() throws Exception {
                 super.initImpl();
-                membersInjector.injectMembers(
-                        StartupErrorAfterNonRestartableInjectionTest.this);
+                membersInjector.injectMembers(StartupErrorAfterNonRestartableInjectionTest.this);
                 throw new RuntimeException("My Error");
             }
         };
@@ -78,8 +76,7 @@ public class StartupErrorAfterNonRestartableInjectionTest
         assertTrue(driver.getTitle().contains("Startup Error"));
 
         DataBaseLink link = registry.getLink(null);
-        EntityManagerFactory emf = link.getPersistenceUnitManager()
-                .getEntityManagerFactory();
+        EntityManagerFactory emf = link.getPersistenceUnitManager().getEntityManagerFactory();
 
         // test without generating schema
         try {

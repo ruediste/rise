@@ -18,8 +18,7 @@ public class DefaultStrackTraceFilter implements StackTraceFilter {
 
     private Predicate<StackTraceElement> shouldInclude;
 
-    public DefaultStrackTraceFilter(
-            Predicate<StackTraceElement> shouldInclude) {
+    public DefaultStrackTraceFilter(Predicate<StackTraceElement> shouldInclude) {
         this.shouldInclude = shouldInclude;
     }
 
@@ -52,8 +51,7 @@ public class DefaultStrackTraceFilter implements StackTraceFilter {
         input.setStackTrace(outputTraces.toArray(new StackTraceElement[] {}));
     }
 
-    private Collection<? extends StackTraceElement> reduceFragment(
-            List<StackTraceElement> fragment) {
+    private Collection<? extends StackTraceElement> reduceFragment(List<StackTraceElement> fragment) {
         ArrayList<StackTraceElement> result = new ArrayList<>();
         if (fragment.size() == 0) {
             // NOP
@@ -63,13 +61,10 @@ public class DefaultStrackTraceFilter implements StackTraceFilter {
             StackTraceElement first = fragment.get(0);
             StackTraceElement last = fragment.get(fragment.size() - 1);
             result.add(first);
-            int lineLength = (first.getClassName().length()
-                    + last.getClassName().length()) / 2;
-            String className = String.format("%" + lineLength + "s", "")
-                    .replace(' ', '-');
-            result.add(new StackTraceElement(className,
-                    "omitting " + (fragment.size() - 2) + " stack frames", null,
-                    0));
+            int lineLength = (first.getClassName().length() + last.getClassName().length()) / 2;
+            String className = String.format("%" + lineLength + "s", "").replace(' ', '-');
+            result.add(
+                    new StackTraceElement(className, "omitting " + (fragment.size() - 2) + " stack frames", null, 0));
             result.add(last);
         }
         fragment.clear();

@@ -38,8 +38,7 @@ public class CInput extends CInputBase<CInput> {
      * </pre>
      */
     public CInput bindValue(Supplier<String> binder) {
-        setLabelProperty(BindingUtil
-                .bind(this, view -> view.setValue(binder.get())).getB());
+        setLabelProperty(BindingUtil.bind(this, view -> view.setValue(binder.get())).getB());
         return self();
     }
 

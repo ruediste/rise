@@ -17,7 +17,6 @@ public class OtherView extends PageView<WelcomeController, String> {
 
     @Override
     public void renderContent(SampleCanvas html) {
-        html.h1().content("TheOther").bButtonA().HREF(go().index())
-                .content("index");
+        html.h1().content("TheOther").bButtonA().HREF(go().index()).content("index");
     }
 }

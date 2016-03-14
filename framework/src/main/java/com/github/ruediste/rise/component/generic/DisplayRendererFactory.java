@@ -9,11 +9,11 @@ import com.github.ruediste.salta.jsr330.ImplementedBy;
 @ImplementedBy(DefaultDisplayRendererFactory.class)
 public interface DisplayRendererFactory extends Strategy {
 
-	/**
-	 * @param info
-	 *            property info to create the component for. Can be null if only
-	 *            the class is known
-	 */
-	Optional<DisplayRenderer<?>> getRenderer(Class<?> cls, Optional<PropertyInfo> info);
+    /**
+     * @param info
+     *            property info to create the component for. Can be null if only
+     *            the class is known
+     */
+    Optional<DisplayRenderer<?>> getRenderer(Class<?> cls, Optional<PropertyInfo> info);
 
 }

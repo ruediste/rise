@@ -22,8 +22,7 @@ import com.google.common.base.Supplier;
 @DefaultTemplate(RenderChildrenTemplate.class)
 public class CValue<T> extends RelationsComponent<CValue<T>> {
 
-    private SingleChildRelation<Component, CValue<T>> child = new SingleChildRelation<>(
-            this);
+    private SingleChildRelation<Component, CValue<T>> child = new SingleChildRelation<>(this);
     private Function<T, Component> childFactory;
     private T value;
 

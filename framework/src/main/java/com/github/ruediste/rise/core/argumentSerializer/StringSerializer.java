@@ -27,12 +27,8 @@ public class StringSerializer implements ArgumentSerializer {
         if (!(value instanceof String))
             return Optional.empty();
 
-        return Optional
-                .of(new String(
-                        Base64.getUrlEncoder()
-                                .encode(((String) value)
-                                        .getBytes(Charsets.UTF_8)),
-                        Charsets.UTF_8));
+        return Optional.of(
+                new String(Base64.getUrlEncoder().encode(((String) value).getBytes(Charsets.UTF_8)), Charsets.UTF_8));
     }
 
     @Override
@@ -41,9 +37,7 @@ public class StringSerializer implements ArgumentSerializer {
             return () -> null;
         }
 
-        String value = new String(
-                Base64.getUrlDecoder().decode(urlPart.getBytes(Charsets.UTF_8)),
-                Charsets.UTF_8);
+        String value = new String(Base64.getUrlDecoder().decode(urlPart.getBytes(Charsets.UTF_8)), Charsets.UTF_8);
         return () -> value;
     }
 

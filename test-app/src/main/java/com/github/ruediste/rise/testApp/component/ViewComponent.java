@@ -7,8 +7,8 @@ import com.github.ruediste.rise.component.ComponentFactory;
 import com.github.ruediste.rise.component.ComponentFactoryUtil;
 import com.github.ruediste.rise.testApp.TestCanvas;
 
-public abstract class ViewComponent<TController> extends
-        ViewComponentBase<TController>implements ComponentFactory<TestCanvas> {
+public abstract class ViewComponent<TController> extends ViewComponentBase<TController>
+        implements ComponentFactory<TestCanvas> {
 
     @Inject
     ComponentFactoryUtil util;

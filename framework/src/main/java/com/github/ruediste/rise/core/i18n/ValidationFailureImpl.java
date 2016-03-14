@@ -11,8 +11,7 @@ public class ValidationFailureImpl implements ValidationFailure {
         this(message, ValidationFailureSeverity.ERROR);
     }
 
-    public ValidationFailureImpl(LString message,
-            ValidationFailureSeverity severity) {
+    public ValidationFailureImpl(LString message, ValidationFailureSeverity severity) {
         super();
         this.message = message;
         this.severity = severity;

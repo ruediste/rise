@@ -32,8 +32,7 @@ public class ContentRenderResult implements HttpRenderResult {
         }
     }
 
-    public ContentRenderResult(byte[] content,
-            HttpServletResponseCustomizer responseCustomizer) {
+    public ContentRenderResult(byte[] content, HttpServletResponseCustomizer responseCustomizer) {
         this.content = content;
         this.responseCustomizer = responseCustomizer;
     }
@@ -45,8 +44,7 @@ public class ContentRenderResult implements HttpRenderResult {
     }
 
     @Override
-    public void sendTo(HttpServletResponse response, HttpRenderResultUtil util)
-            throws IOException {
+    public void sendTo(HttpServletResponse response, HttpRenderResultUtil util) throws IOException {
         response.setCharacterEncoding("UTF-8");
         response.setStatus(HttpServletResponse.SC_OK);
         responseCustomizer.customizeServletResponse(response);

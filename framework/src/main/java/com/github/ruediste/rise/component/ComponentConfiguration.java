@@ -49,10 +49,8 @@ public class ComponentConfiguration {
         mapper.initialize();
         viewFactory = viewFactorySupplier.get();
 
-        this.initialHandler = chainHandlers(initialHandlerSuppliers,
-                finalInitialHandlerSupplier);
-        this.reloadHandler = chainHandlers(reloadHandlerSuppliers,
-                finalReloadHandlerSupplier);
+        this.initialHandler = chainHandlers(initialHandlerSuppliers, finalInitialHandlerSupplier);
+        this.reloadHandler = chainHandlers(reloadHandlerSuppliers, finalReloadHandlerSupplier);
         ajaxParser = ajaxParserSupplier.get();
         reloadParser = reloadParserSupplier.get();
     }
@@ -126,12 +124,9 @@ public class ComponentConfiguration {
     public final InitialChainSupplierRefs initialChain = new InitialChainSupplierRefs();
 
     @PostConstruct
-    public void constructInitialChain(
-            Provider<ComponentRequestMapperImpl> mapper,
-            Provider<ComponentControllerInvoker> invoker,
-            Provider<ActionResultRenderer> actionResultRenderer,
-            Provider<WebRequestAuthenticator> authenticator,
-            Provider<PageCreationHandler> pageCreationHandler,
+    public void constructInitialChain(Provider<ComponentRequestMapperImpl> mapper,
+            Provider<ComponentControllerInvoker> invoker, Provider<ActionResultRenderer> actionResultRenderer,
+            Provider<WebRequestAuthenticator> authenticator, Provider<PageCreationHandler> pageCreationHandler,
             Provider<InitialPagePersistenceHandler> initialPagePersistenceHandler,
             Provider<ViewRenderer> viewRenderer) {
         initialChain.mapperSupplier = mapper::get;
@@ -159,8 +154,7 @@ public class ComponentConfiguration {
     public Supplier<RequestParser> heartbeatRequestParserSupplier;
 
     @PostConstruct
-    public void postConstruct(
-            Provider<ComponentViewRepository> componentViewRepository,
+    public void postConstruct(Provider<ComponentViewRepository> componentViewRepository,
             Provider<HearbeatRequestParser> heartbeatRequestParser) {
         viewFactorySupplier = () -> componentViewRepository.get()::createView;
         heartbeatRequestParserSupplier = heartbeatRequestParser::get;
@@ -182,12 +176,9 @@ public class ComponentConfiguration {
     ReloadChainSupplierRefs reloadChain = new ReloadChainSupplierRefs();
 
     @PostConstruct
-    public void constructReloadChain(
-            Provider<ActionResultRenderer> actionResultRenderer,
-            Provider<ReloadPageScopeHandler> scopeHandler,
-            Provider<ReloadPagePersistenceHandler> persistenceHandler,
-            Provider<ReloadHandler> reloadHandler,
-            Provider<ReloadRequestParser> reloadParser,
+    public void constructReloadChain(Provider<ActionResultRenderer> actionResultRenderer,
+            Provider<ReloadPageScopeHandler> scopeHandler, Provider<ReloadPagePersistenceHandler> persistenceHandler,
+            Provider<ReloadHandler> reloadHandler, Provider<ReloadRequestParser> reloadParser,
             Provider<AjaxRequestParser> ajaxParser) {
         reloadChain.actionResultRendererSupplier = actionResultRenderer::get;
         reloadHandlerSuppliers.add(reloadChain.actionResultRendererSupplier);
@@ -212,8 +203,7 @@ public class ComponentConfiguration {
         return createView(controller, null);
     }
 
-    public ViewComponentBase<?> createView(IControllerComponent controller,
-            Class<? extends IViewQualifier> qualifier) {
+    public ViewComponentBase<?> createView(IControllerComponent controller, Class<? extends IViewQualifier> qualifier) {
         return viewFactory.apply(controller, qualifier);
     }
 
@@ -247,8 +237,7 @@ public class ComponentConfiguration {
         return ajaxPath;
     }
 
-    private ChainedRequestHandler chainHandlers(
-            LinkedList<Supplier<ChainedRequestHandler>> suppliers,
+    private ChainedRequestHandler chainHandlers(LinkedList<Supplier<ChainedRequestHandler>> suppliers,
             Supplier<Runnable> finalSupplier) {
         ChainedRequestHandler result = null;
         ChainedRequestHandler last = null;

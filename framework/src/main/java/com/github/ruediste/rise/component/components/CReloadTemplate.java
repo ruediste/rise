@@ -18,8 +18,7 @@ public class CReloadTemplate extends Html5ComponentTemplateBase<CReload> {
         if (info.isReloadRequest())
             html.renderChildren(component);
         else
-            html.form().CLASS("rise_reload").rCOMPONENT_ATTRIBUTES(component)
-                    .renderChildren(component)._form();
+            html.form().CLASS("rise_reload").rCOMPONENT_ATTRIBUTES(component).renderChildren(component)._form();
     }
 
     @Override

@@ -16,15 +16,13 @@ public class MemberOrderVisitor extends ClassVisitor {
     }
 
     @Override
-    public FieldVisitor visitField(int access, String name, String desc,
-            String signature, Object value) {
+    public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
         getMembers().add("F" + name + ";" + desc);
         return super.visitField(access, name, desc, signature, value);
     }
 
     @Override
-    public MethodVisitor visitMethod(int access, String name, String desc,
-            String signature, String[] exceptions) {
+    public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         getMembers().add("M" + name + ";" + desc);
         return super.visitMethod(access, name, desc, signature, exceptions);
     }

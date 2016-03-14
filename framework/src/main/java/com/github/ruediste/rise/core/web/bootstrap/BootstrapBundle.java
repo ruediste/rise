@@ -9,7 +9,7 @@ public class BootstrapBundle extends AssetBundle {
 
     @Override
     protected void initialize() {
-        out = webJar("bootstrap", "css/bootstrap.css", "js/bootstrap.js",
-                "css/bootstrap-theme.css").insertMinInProd().load();
+        out = webJar("bootstrap", "css/bootstrap.css", "js/bootstrap.js", "css/bootstrap-theme.css").insertMinInProd()
+                .load();
     }
 }

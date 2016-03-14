@@ -61,8 +61,7 @@ public class FileChangeNotifier {
 
         @Override
         public String toString() {
-            return "added: " + addedFiles + "\nremoved: " + removedFiles
-                    + "\nmodified: " + modifiedFiles;
+            return "added: " + addedFiles + "\nremoved: " + removedFiles + "\nmodified: " + modifiedFiles;
         }
     }
 
@@ -70,16 +69,14 @@ public class FileChangeNotifier {
      * Add a listener. Thread safe. The listener will always be invoked in the
      * AET. May not be called after the notifier has been started
      */
-    public synchronized void addListener(
-            Consumer<FileChangeTransaction> listener) {
+    public synchronized void addListener(Consumer<FileChangeTransaction> listener) {
         listeners.add(listener);
     }
 
     /**
      * Remove a listener. Thread safe.
      */
-    public synchronized void removeListener(
-            Consumer<FileChangeTransaction> listener) {
+    public synchronized void removeListener(Consumer<FileChangeTransaction> listener) {
         listeners.remove(listener);
     }
 
@@ -88,17 +85,14 @@ public class FileChangeNotifier {
      * in rootDirs.
      */
     public void start(Set<Path> rootDirs, long settleDelayMs) {
-        log.debug("Starting notifier with dirs\n{}",
-                Joiner.on("\n").join(rootDirs));
+        log.debug("Starting notifier with dirs\n{}", Joiner.on("\n").join(rootDirs));
 
         this.rootDirs = rootDirs;
-        watcher.start(rootDirs, paths -> changeOccurred(paths, false),
-                settleDelayMs);
+        watcher.start(rootDirs, paths -> changeOccurred(paths, false), settleDelayMs);
         changeOccurred(Collections.emptySet(), true);
     }
 
-    public synchronized void changeOccurred(Set<Path> affectedPaths,
-            boolean isInitial) {
+    public synchronized void changeOccurred(Set<Path> affectedPaths, boolean isInitial) {
         HashMap<Pair<Path, Path>, FileTime> newPaths = new HashMap<>();
         FileChangeTransaction trx = new FileChangeTransaction();
         trx.isInitial = isInitial;
@@ -109,22 +103,18 @@ public class FileChangeNotifier {
                 Files.walkFileTree(root, new FileVisitor<Path>() {
 
                     @Override
-                    public FileVisitResult preVisitDirectory(Path dir,
-                            BasicFileAttributes attrs) throws IOException {
+                    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                         return FileVisitResult.CONTINUE;
                     }
 
                     @Override
-                    public FileVisitResult visitFile(Path file,
-                            BasicFileAttributes attrs) throws IOException {
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 
                         // retrieve times
                         FileTime currentTime = Files.getLastModifiedTime(file);
-                        FileTime lastTime = currentPaths
-                                .get(Pair.of(root, file));
+                        FileTime lastTime = currentPaths.get(Pair.of(root, file));
 
-                        log.debug("visiting file {}, {}->{}", file, lastTime,
-                                currentTime);
+                        log.debug("visiting file {}, {}->{}", file, lastTime, currentTime);
 
                         // add file to new paths
                         newPaths.put(Pair.of(root, file), currentTime);
@@ -135,8 +125,7 @@ public class FileChangeNotifier {
                         if (lastTime == null) {
                             // wasn't present last time, so it was added
                             trx.addedFiles.add(Pair.of(root, file));
-                        } else if (affectedPaths.contains(file)
-                                || !lastTime.equals(currentTime)) {
+                        } else if (affectedPaths.contains(file) || !lastTime.equals(currentTime)) {
                             // the modification time changed, so file was
                             // modified
                             trx.modifiedFiles.add(Pair.of(root, file));
@@ -145,20 +134,17 @@ public class FileChangeNotifier {
                     }
 
                     @Override
-                    public FileVisitResult visitFileFailed(Path file,
-                            IOException exc) throws IOException {
+                    public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
                         return FileVisitResult.CONTINUE;
                     }
 
                     @Override
-                    public FileVisitResult postVisitDirectory(Path dir,
-                            IOException exc) throws IOException {
+                    public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
                         return FileVisitResult.CONTINUE;
                     }
                 });
             } catch (IOException e) {
-                throw new RuntimeException(
-                        "error while registering directory tree " + root, e);
+                throw new RuntimeException("error while registering directory tree " + root, e);
             }
         }
 

@@ -51,8 +51,7 @@ public class AssetPipelineConfiguration {
         return assetTypeToDefaultContentTypeMap.get(type);
     }
 
-    public void registerExtension(AssetType assetType, String primaryExtension,
-            String... otherExtensions) {
+    public void registerExtension(AssetType assetType, String primaryExtension, String... otherExtensions) {
         assetTypeToExtensionMap.put(assetType, primaryExtension);
         extensionToAssetTypeMap.put(primaryExtension, assetType);
         for (String extension : otherExtensions) {
@@ -62,12 +61,10 @@ public class AssetPipelineConfiguration {
 
     {
         registerExtension(DefaultAssetTypes.JS, "js");
-        assetTypeToDefaultContentTypeMap.put(DefaultAssetTypes.JS,
-                "application/javascript; ; charset=UTF-8");
+        assetTypeToDefaultContentTypeMap.put(DefaultAssetTypes.JS, "application/javascript; ; charset=UTF-8");
 
         registerExtension(DefaultAssetTypes.CSS, "css");
-        assetTypeToDefaultContentTypeMap.put(DefaultAssetTypes.CSS,
-                "text/css; ; charset=UTF-8");
+        assetTypeToDefaultContentTypeMap.put(DefaultAssetTypes.CSS, "text/css; ; charset=UTF-8");
 
         registerExtension(DefaultAssetTypes.LESS, "less");
         registerExtension(DefaultAssetTypes.SASS, "sass");
@@ -164,18 +161,14 @@ public class AssetPipelineConfiguration {
     @PostConstruct
     void initializeProcessors(Provider<ProcessorWrapper> processorSupplier) {
         defaultProcessors.put(DefaultAssetTypes.LESS,
-                processorSupplier.get().initialize(DefaultAssetTypes.CSS,
-                        () -> new Less4jProcessor()));
+                processorSupplier.get().initialize(DefaultAssetTypes.CSS, () -> new Less4jProcessor()));
         defaultProcessors.put(DefaultAssetTypes.SASS,
-                processorSupplier.get().initialize(DefaultAssetTypes.CSS,
-                        () -> new SassCssProcessor()));
-        defaultProcessors.put(DefaultAssetTypes.SCSS,
-                a -> sassCompiler.get().create("").apply(a));
+                processorSupplier.get().initialize(DefaultAssetTypes.CSS, () -> new SassCssProcessor()));
+        defaultProcessors.put(DefaultAssetTypes.SCSS, a -> sassCompiler.get().create("").apply(a));
         // () -> new RubySassCssProcessor()));
         defaultMinifiers.put(DefaultAssetTypes.CSS,
-                processorSupplier.get().initialize(DefaultAssetTypes.CSS,
-                        () -> new CssCompressorProcessor()));
-        defaultMinifiers.put(DefaultAssetTypes.JS, processorSupplier.get()
-                .initialize(DefaultAssetTypes.JS, () -> new JSMinProcessor()));
+                processorSupplier.get().initialize(DefaultAssetTypes.CSS, () -> new CssCompressorProcessor()));
+        defaultMinifiers.put(DefaultAssetTypes.JS,
+                processorSupplier.get().initialize(DefaultAssetTypes.JS, () -> new JSMinProcessor()));
     }
 }

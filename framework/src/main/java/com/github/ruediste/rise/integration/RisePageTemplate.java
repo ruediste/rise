@@ -20,8 +20,7 @@ import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.front.RestartCountHolder;
 import com.github.ruediste.rise.util.MethodInvocation;
 
-public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>>
-        extends PageTemplateBase {
+public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>> extends PageTemplateBase {
 
     @Inject
     RestartCountHolder holder;
@@ -44,22 +43,16 @@ public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>>
     @Inject
     ApplicationStage stage;
 
-    public void renderOn(TCanvas html,
-            RisePageTemplateParameters<TCanvas> parameters) {
+    public void renderOn(TCanvas html, RisePageTemplateParameters<TCanvas> parameters) {
 
         String testName = null;
         {
-            ActionInvocation<String> invocation = coreRequestInfo
-                    .getStringActionInvocation();
+            ActionInvocation<String> invocation = coreRequestInfo.getStringActionInvocation();
             if (invocation != null) {
                 MethodInvocation<String> methodInvocation = invocation.methodInvocation;
-                String ctrlName = coreConfig
-                        .getRequestMapper(methodInvocation.getInstanceClass())
-                        .getControllerImplementationClass(
-                                methodInvocation.getInstanceClass())
-                        .getName();
-                testName = ctrlName + "."
-                        + methodInvocation.getMethod().getName();
+                String ctrlName = coreConfig.getRequestMapper(methodInvocation.getInstanceClass())
+                        .getControllerImplementationClass(methodInvocation.getInstanceClass()).getName();
+                testName = ctrlName + "." + methodInvocation.getMethod().getName();
             }
         }
         //@formatter:off
@@ -136,18 +129,14 @@ public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>>
      *            produces the link to
      *            {@link StageRibbonControllerBase#index(UrlSpec)}
      */
-    public Renderable<TCanvas> stageRibbon(boolean isFixed,
-            Function<UrlSpec, ActionResult> urlPoducer) {
+    public Renderable<TCanvas> stageRibbon(boolean isFixed, Function<UrlSpec, ActionResult> urlPoducer) {
         return html -> {
-            html.div()
-                    .CLASS("rise-ribbon"
-                            + (isFixed ? " rise-ribbon-fixed" : ""))
+            html.div().CLASS("rise-ribbon" + (isFixed ? " rise-ribbon-fixed" : ""))
                     .STYLE("background: " + stage.backgroundColor)
 
                     .a().STYLE("color: " + stage.color)
-                    .HREF(urlPoducer.apply(
-                            coreRequestInfo.getRequest().createUrlSpec()))
-                    .content(stage.toString())._div();
+                    .HREF(urlPoducer.apply(coreRequestInfo.getRequest().createUrlSpec())).content(stage.toString())
+                    ._div();
         };
     }
 }

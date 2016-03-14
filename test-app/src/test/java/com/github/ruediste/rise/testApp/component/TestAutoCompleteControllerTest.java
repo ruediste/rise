@@ -15,13 +15,11 @@ public class TestAutoCompleteControllerTest extends WebTest {
 
     @Before
     public void before() {
-        autoComplete = pageObject(AutoCompleteEO.class,
-                byDataTestName("entry"));
+        autoComplete = pageObject(AutoCompleteEO.class, byDataTestName("entry"));
     }
 
     private void open(AutoSearchMode mode) {
-        driver.navigate()
-                .to(url(go(TestAutoCompleteController.class).index(mode)));
+        driver.navigate().to(url(go(TestAutoCompleteController.class).index(mode)));
     }
 
     @Test
@@ -60,14 +58,11 @@ public class TestAutoCompleteControllerTest extends WebTest {
 
     private void checkControllerState(String expected) {
         doWait().untilTrue(() -> {
-            return driver.findElement(byDataTestName("chosenEntry")).getText()
-                    .equals(expected);
+            return driver.findElement(byDataTestName("chosenEntry")).getText().equals(expected);
         });
     }
 
     private void push() {
-        driver.findElement(
-                byDataTestName(TestAutoCompleteController.class, x -> x.push()))
-                .click();
+        driver.findElement(byDataTestName(TestAutoCompleteController.class, x -> x.push())).click();
     }
 }

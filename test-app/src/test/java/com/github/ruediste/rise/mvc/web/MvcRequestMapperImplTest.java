@@ -67,11 +67,10 @@ public class MvcRequestMapperImplTest extends WebTest {
         // try to parse the generated info
         RequestParser handler = idx.getHandler(req.getPathInfo());
         assertNotNull("No Handler found for " + req, handler);
-        RequestParseResultImpl result = (RequestParseResultImpl) handler
-                .parse(req);
+        RequestParseResultImpl result = (RequestParseResultImpl) handler.parse(req);
 
         // compare parsed result with invocation
-        assertTrue(invocation.methodInvocation.isCallToSameMethod(coreUtil
-                .toObjectInvocation(result.getInvocation()).methodInvocation));
+        assertTrue(invocation.methodInvocation
+                .isCallToSameMethod(coreUtil.toObjectInvocation(result.getInvocation()).methodInvocation));
     }
 }

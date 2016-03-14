@@ -29,25 +29,21 @@ public class CrudListPO<TSelf extends CrudListPO<TSelf>> extends PageObject {
     }
 
     public List<String> getColumnTestNames() {
-        return driver.findElement(byDataTestName("resultList"))
-                .findElements(By.cssSelector("thead th")).stream()
+        return driver.findElement(byDataTestName("resultList")).findElements(By.cssSelector("thead th")).stream()
                 .map(e -> e.getAttribute("data-test-name")).collect(toList());
     }
 
     public List<String> getColumnHeadingTexts() {
-        return driver.findElement(byDataTestName("resultList"))
-                .findElements(By.cssSelector("thead th")).stream()
+        return driver.findElement(byDataTestName("resultList")).findElements(By.cssSelector("thead th")).stream()
                 .map(e -> e.getText()).collect(toList());
     }
 
     public List<WebElement> getRows() {
-        return driver.findElement(byDataTestName("resultList"))
-                .findElements(By.cssSelector("tbody tr"));
+        return driver.findElement(byDataTestName("resultList")).findElements(By.cssSelector("tbody tr"));
     }
 
     public WebElement getActions(int rowIndex) {
-        return getRows().get(rowIndex)
-                .findElement(By.cssSelector("td:last-child"));
+        return getRows().get(rowIndex).findElement(By.cssSelector("td:last-child"));
     }
 
 }

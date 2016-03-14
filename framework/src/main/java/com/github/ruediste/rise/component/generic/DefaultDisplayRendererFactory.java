@@ -12,18 +12,18 @@ import com.github.ruediste.rise.component.binding.transformers.Transformers;
 @Singleton
 public class DefaultDisplayRendererFactory implements DisplayRendererFactory {
 
-	@Inject
-	Transformers transformers;
+    @Inject
+    Transformers transformers;
 
-	@Override
-	public Optional<DisplayRenderer<?>> getRenderer(Class<?> cls, Optional<PropertyInfo> info) {
+    @Override
+    public Optional<DisplayRenderer<?>> getRenderer(Class<?> cls, Optional<PropertyInfo> info) {
 
-		if (byte[].class.equals(cls)) {
-			return Optional.of((html, value) -> html
-					.write(transformers.byteArrayToHexStringTransformer.transform((byte[]) value)));
+        if (byte[].class.equals(cls)) {
+            return Optional.of((html, value) -> html
+                    .write(transformers.byteArrayToHexStringTransformer.transform((byte[]) value)));
 
-		}
-		return Optional.of((html, value) -> html.write(Objects.toString(value)));
-	}
+        }
+        return Optional.of((html, value) -> html.write(Objects.toString(value)));
+    }
 
 }

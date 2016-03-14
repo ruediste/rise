@@ -56,8 +56,7 @@ public class PageScopeCleaner {
                                 if (handle.getEndOfLife().isAfter(now))
                                     continue;
 
-                                pageScopeManager.inScopeDo(
-                                        handle.pageScopeState, () -> {
+                                pageScopeManager.inScopeDo(handle.pageScopeState, () -> {
                                     page.destroy();
                                 });
                             }

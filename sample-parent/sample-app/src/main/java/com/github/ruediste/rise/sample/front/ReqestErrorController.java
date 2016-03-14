@@ -47,8 +47,7 @@ public class ReqestErrorController extends ControllerMvc<ReqestErrorController>
 
     @Labeled
     @Label("Unexpected Error")
-    private static class View extends PageView<ReqestErrorController, Data>
-            implements HttpServletResponseCustomizer {
+    private static class View extends PageView<ReqestErrorController, Data> implements HttpServletResponseCustomizer {
 
         @Override
         public void renderContent(SampleCanvas html) {

@@ -38,36 +38,30 @@ public class IsolationLevelDataSourceRouter extends DelegatingDataSource {
         DataSource result;
         try {
             if (txm.getStatus() != Status.STATUS_NO_TRANSACTION) {
-                IsolationLevel level = transactionProperties
-                        .getIsolationLevel();
+                IsolationLevel level = transactionProperties.getIsolationLevel();
                 result = dataSources.get(level);
                 if (result == null) {
                     result = dataSources.get(defaultLevel);
                 }
                 if (result == null) {
                     throw new RuntimeException(
-                            "No DataSource registered for level " + level
-                                    + "or default level " + defaultLevel);
+                            "No DataSource registered for level " + level + "or default level " + defaultLevel);
                 }
             } else {
                 result = dataSources.get(defaultLevel);
                 if (result == null) {
-                    throw new RuntimeException(
-                            "No DataSource registered for default level "
-                                    + defaultLevel);
+                    throw new RuntimeException("No DataSource registered for default level " + defaultLevel);
                 }
             }
         } catch (SystemException e) {
-            throw new RuntimeException("Error while getting transaction status",
-                    e);
+            throw new RuntimeException("Error while getting transaction status", e);
         }
         return result;
     }
 
     public void setDataSource(IsolationLevel level, DataSource dataSource) {
         dataSources.put(level, dataSource);
-        log.debug("Registered DataSource for isolation level " + level + ": "
-                + dataSource);
+        log.debug("Registered DataSource for isolation level " + level + ": " + dataSource);
     }
 
     public Class<?> getQualifier() {
@@ -83,8 +77,7 @@ public class IsolationLevelDataSourceRouter extends DelegatingDataSource {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "[" + qualifier == null ? "null"
-                : qualifier.getClass().getName() + "]";
+        return getClass().getSimpleName() + "[" + qualifier == null ? "null" : qualifier.getClass().getName() + "]";
     }
 
     public IsolationLevel getDefaultLevel() {

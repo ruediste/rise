@@ -17,8 +17,8 @@ import com.google.common.base.Charsets;
  * is called from post construct method, so no need to call it yourself. Data is
  * always written to a
  */
-public abstract class RiseCanvasBase<TSelf extends RiseCanvasBase<TSelf>>
-        extends HtmlCanvasBase<TSelf>implements RiseCanvas<TSelf> {
+public abstract class RiseCanvasBase<TSelf extends RiseCanvasBase<TSelf>> extends HtmlCanvasBase<TSelf>
+        implements RiseCanvas<TSelf> {
 
     @Inject
     RiseCanvasHelper helper;

@@ -20,10 +20,8 @@ public class TestSelectControllerTest extends WebTest {
         actions = new Actions(driver);
     }
 
-    private void open(boolean allowEmpty, String initialSelection,
-            boolean addHandler) {
-        driver.navigate().to(url(go(TestSelectController.class)
-                .index(allowEmpty, initialSelection, addHandler)));
+    private void open(boolean allowEmpty, String initialSelection, boolean addHandler) {
+        driver.navigate().to(url(go(TestSelectController.class).index(allowEmpty, initialSelection, addHandler)));
     }
 
     @Test
@@ -72,14 +70,12 @@ public class TestSelectControllerTest extends WebTest {
     }
 
     private void checkViewStatus(Optional<Object> item) {
-        doWait().untilPassing(() -> assertEquals(String.valueOf(item),
-                driver.findElement(byDataTestName("viewStatus")).getText()));
+        doWait().untilPassing(
+                () -> assertEquals(String.valueOf(item), driver.findElement(byDataTestName("viewStatus")).getText()));
     }
 
     private void checkSelection(Optional<String> of) {
-        String selection = driver
-                .findElement(By.cssSelector(
-                        dataTestSelector("selectedItem") + "*[selected]"))
+        String selection = driver.findElement(By.cssSelector(dataTestSelector("selectedItem") + "*[selected]"))
                 .getAttribute("data-test-name");
         Optional<String> current;
         if ("-".equals(selection))
@@ -94,20 +90,17 @@ public class TestSelectControllerTest extends WebTest {
     }
 
     private void checkState(Optional<String> expected) {
-        doWait().untilPassing(() -> assertEquals(expected.toString(), driver
-                .findElement(byDataTestName("controllerStatus")).getText()));
+        doWait().untilPassing(() -> assertEquals(expected.toString(),
+                driver.findElement(byDataTestName("controllerStatus")).getText()));
 
     }
 
     private void pushDown() {
-        driver.findElement(
-                byDataTestName(TestSelectController.class, x -> x.pushDown()))
-                .click();
+        driver.findElement(byDataTestName(TestSelectController.class, x -> x.pushDown())).click();
     }
 
     private void pullUp() {
-        doWait().untilPassing(() -> driver.findElement(
-                byDataTestName(TestSelectController.class, x -> x.pullUp()))
-                .click());
+        doWait().untilPassing(
+                () -> driver.findElement(byDataTestName(TestSelectController.class, x -> x.pullUp())).click());
     }
 }

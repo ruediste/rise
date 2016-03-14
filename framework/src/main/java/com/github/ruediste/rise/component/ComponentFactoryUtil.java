@@ -45,12 +45,11 @@ public class ComponentFactoryUtil {
     /**
      * @see ComponentFactory#toComponentBound(Supplier, Renderable)
      */
-    public Component toComponentBound(Supplier<?> bindingAccessor,
-            Renderable<?> renderable) {
+    public Component toComponentBound(Supplier<?> bindingAccessor, Renderable<?> renderable) {
         CComponentContainer container = new CComponentContainer();
         BindingUtil.bind(container, bindingAccessor, x -> {
             container.child.setChild(renderToCanvas(renderable));
-        } , x -> {
+        }, x -> {
         });
         return container;
     }
@@ -72,8 +71,7 @@ public class ComponentFactoryUtil {
     /**
      * @see ComponentFactory#toSubView(Supplier, Function)
      */
-    public <T> Component toSubView(Supplier<T> bindingGroupAccessor,
-            Function<T, Object> controllerAccessor) {
+    public <T> Component toSubView(Supplier<T> bindingGroupAccessor, Function<T, Object> controllerAccessor) {
         CSubView result = new CSubView();
 
         BindingUtil.bind(result, bindingGroupAccessor, new Consumer<T>() {

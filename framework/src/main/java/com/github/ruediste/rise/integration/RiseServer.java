@@ -43,13 +43,10 @@ public class RiseServer {
      * 
      * @return Url the server can be reached with
      */
-    public String start(Class<? extends FrontServletBase> frontServletClass,
-            int port) {
+    public String start(Class<? extends FrontServletBase> frontServletClass, int port) {
         this.frontServletClass = frontServletClass;
         if (Modifier.isAbstract(frontServletClass.getModifiers()))
-            throw new RuntimeException(
-                    "Front servlet class may not be abstact: "
-                            + frontServletClass.getName());
+            throw new RuntimeException("Front servlet class may not be abstact: " + frontServletClass.getName());
         try {
             return startImpl(new ServletHolder(frontServletClass), port);
         } catch (Exception e) {
@@ -64,8 +61,7 @@ public class RiseServer {
     public String start(FrontServletBase frontServlet, int port) {
         frontServletClass = frontServlet.getClass();
         try {
-            return startImpl(
-                    new ServletHolder("testFrontServlet", frontServlet), port);
+            return startImpl(new ServletHolder("testFrontServlet", frontServlet), port);
         } catch (Exception e) {
             throw new RuntimeException("Error starting Jetty", e);
         }
@@ -82,30 +78,24 @@ public class RiseServer {
         }
     }
 
-    protected String startImpl(ServletHolder holder, int port)
-            throws Exception {
+    protected String startImpl(ServletHolder holder, int port) throws Exception {
         holder.setInitOrder(0);
 
         {
-            MultipartConfig multipartConfig = frontServletClass
-                    .getAnnotation(MultipartConfig.class);
+            MultipartConfig multipartConfig = frontServletClass.getAnnotation(MultipartConfig.class);
             if (multipartConfig != null)
 
-                holder.getRegistration().setMultipartConfig(
-                        new MultipartConfigElement(multipartConfig));
+                holder.getRegistration().setMultipartConfig(new MultipartConfigElement(multipartConfig));
             else
-                holder.getRegistration()
-                        .setMultipartConfig(new MultipartConfigElement(""));
+                holder.getRegistration().setMultipartConfig(new MultipartConfigElement(""));
         }
 
-        ServletContextHandler ctx = new ServletContextHandler(
-                ServletContextHandler.SESSIONS);
+        ServletContextHandler ctx = new ServletContextHandler(ServletContextHandler.SESSIONS);
         ctx.setContextPath("");
         ctx.addServlet(holder, "/*");
 
         ctx.setResourceBase(Paths.get("").toString());
-        ctx.addFilter(GzipFilter.class, "/*",
-                EnumSet.of(DispatcherType.REQUEST));
+        ctx.addFilter(GzipFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
 
         server = new Server();
         ServerConnector connector = new ServerConnector(server);

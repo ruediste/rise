@@ -44,9 +44,7 @@ public class Navigation {
          */
         public final Predicate<ActionInvocation<Object>> selected;
 
-        public NavigationItem(LString text,
-                Optional<Renderable<Html5Canvas<?>>> icon,
-                Optional<ActionResult> target,
+        public NavigationItem(LString text, Optional<Renderable<Html5Canvas<?>>> icon, Optional<ActionResult> target,
                 Predicate<ActionInvocation<Object>> selected) {
             this.text = text;
             this.icon = icon;

@@ -19,26 +19,21 @@ public class BindingUtil {
      * Establish a one-way or two-way binding, depending on the properties
      * involved
      */
-    static public <TView extends AttachedPropertyBearer> Pair<BindingGroup<?>, Binding<?>> bind(
-            TView view, Consumer<TView> expression) {
+    static public <TView extends AttachedPropertyBearer> Pair<BindingGroup<?>, Binding<?>> bind(TView view,
+            Consumer<TView> expression) {
         return bind(view, expression, false);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     static public <TComponent extends AttachedPropertyBearer> Pair<BindingGroup<?>, Binding<?>> bind(
-            TComponent component, Consumer<TComponent> expression,
-            boolean oneWay) {
-        BindingExpressionExecutionRecord info = BindingExpressionExecutionRecorder
-                .collectBindingExpressionLog(() -> {
-                    expression.accept(
-                            BindingUtil.<TComponent> createComponentProxy(
-                                    component.getClass()));
-                });
+            TComponent component, Consumer<TComponent> expression, boolean oneWay) {
+        BindingExpressionExecutionRecord info = BindingExpressionExecutionRecorder.collectBindingExpressionLog(() -> {
+            expression.accept(BindingUtil.<TComponent> createComponentProxy(component.getClass()));
+        });
 
         if (info.getInvolvedBindingGroup() == null) {
-            throw new RuntimeException(
-                    "No binding group was involved in the expression. "
-                            + "Make sure you accsss BindingGroup::proxy() during the execution of the binding expression");
+            throw new RuntimeException("No binding group was involved in the expression. "
+                    + "Make sure you accsss BindingGroup::proxy() during the execution of the binding expression");
         }
 
         Binding<?> binding = new Binding<>();
@@ -46,8 +41,7 @@ public class BindingUtil {
         binding.componentPath = PropertyUtil.toPath(info.componentRecorder);
         binding.modelPath = PropertyUtil.toPath(info.modelRecorder);
 
-        boolean isModelRead = PropertyUtil
-                .getAccessor(info.modelRecorder.getLastInvocation().getMethod())
+        boolean isModelRead = PropertyUtil.getAccessor(info.modelRecorder.getLastInvocation().getMethod())
                 .getType() == AccessorType.GETTER;
 
         boolean doPullUp;
@@ -58,8 +52,7 @@ public class BindingUtil {
             doPullUp = isModelRead;
             doPushDown = !doPullUp;
         } else {
-            doPushDown = binding.componentPath.getAccessedProperty()
-                    .isReadable()
+            doPushDown = binding.componentPath.getAccessedProperty().isReadable()
                     && binding.modelPath.getAccessedProperty().isWriteable();
             doPullUp = binding.componentPath.getAccessedProperty().isWriteable()
                     && binding.modelPath.getAccessedProperty().isReadable();
@@ -71,11 +64,9 @@ public class BindingUtil {
                 Object value = binding.componentPath.evaluate(component);
                 if (info.transformer != null) {
                     if (isModelRead && !info.transformInv) {
-                        value = ((TwoWayBindingTransformer) info.transformer)
-                                .transformInv(value);
+                        value = ((TwoWayBindingTransformer) info.transformer).transformInv(value);
                     } else {
-                        value = ((BindingTransformer) info.transformer)
-                                .transform(value);
+                        value = ((BindingTransformer) info.transformer).transform(value);
                     }
                 }
                 binding.modelPath.set(model, value);
@@ -93,11 +84,9 @@ public class BindingUtil {
                     value = binding.modelPath.evaluate(model);
                 if (info.transformer != null) {
                     if (isModelRead && !info.transformInv) {
-                        value = ((BindingTransformer) info.transformer)
-                                .transform(value);
+                        value = ((BindingTransformer) info.transformer).transform(value);
                     } else {
-                        value = ((TwoWayBindingTransformer) info.transformer)
-                                .transformInv(value);
+                        value = ((TwoWayBindingTransformer) info.transformer).transformInv(value);
                     }
                 }
                 binding.componentPath.set(component, value);
@@ -111,15 +100,13 @@ public class BindingUtil {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private static <TView> TView createComponentProxy(Class<?> viewClass) {
-        return (TView) BindingExpressionExecutionRecorder
-                .getCurrentLog().componentRecorder.getProxy((Class) viewClass);
+        return (TView) BindingExpressionExecutionRecorder.getCurrentLog().componentRecorder.getProxy((Class) viewClass);
     }
 
     /**
      * Establish a one-way binding accoding to the given expression
      */
-    static public <TView extends AttachedPropertyBearer> void bindOneWay(
-            TView view, Consumer<TView> expression) {
+    static public <TView extends AttachedPropertyBearer> void bindOneWay(TView view, Consumer<TView> expression) {
         bind(view, expression, true);
     }
 
@@ -132,12 +119,10 @@ public class BindingUtil {
      * @param binding
      *            the binding to add to the {@link BindingGroup}
      */
-    public static <T> void bind(Supplier<T> bindingGroupAccessor,
-            Binding<T> binding) {
-        BindingExpressionExecutionRecord info = BindingExpressionExecutionRecorder
-                .collectBindingExpressionLog(() -> {
-                    bindingGroupAccessor.get();
-                });
+    public static <T> void bind(Supplier<T> bindingGroupAccessor, Binding<T> binding) {
+        BindingExpressionExecutionRecord info = BindingExpressionExecutionRecorder.collectBindingExpressionLog(() -> {
+            bindingGroupAccessor.get();
+        });
 
         info.getInvolvedBindingGroup().addBindingUntyped(binding);
     }
@@ -145,8 +130,8 @@ public class BindingUtil {
     /**
      * Add a binding to a binding group
      */
-    static public <T> void bind(AttachedPropertyBearer component,
-            BindingGroup<T> group, Consumer<T> pullUp, Consumer<T> pushDown) {
+    static public <T> void bind(AttachedPropertyBearer component, BindingGroup<T> group, Consumer<T> pullUp,
+            Consumer<T> pushDown) {
         Binding<T> binding = new Binding<>();
         binding.setComponent(component);
         binding.setPullUp(pullUp);
@@ -165,8 +150,7 @@ public class BindingUtil {
      *            access {@link BindingGroup#proxy()} of the binding group to
      *            add the binding to
      */
-    static public <T> void bind(AttachedPropertyBearer component,
-            Supplier<T> bindingGroupAccessor, Consumer<T> pullUp,
+    static public <T> void bind(AttachedPropertyBearer component, Supplier<T> bindingGroupAccessor, Consumer<T> pullUp,
             Consumer<T> pushDown) {
 
         Binding<T> binding = new Binding<>();

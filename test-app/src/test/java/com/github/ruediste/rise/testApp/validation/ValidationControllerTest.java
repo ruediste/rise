@@ -16,17 +16,14 @@ public class ValidationControllerTest extends WebTest {
     private ViewPO po;
 
     public static class ViewPO extends PageObject {
-        private WebElement validateButton = lazy(byDataTestName(
-                ValidationController.class, x -> x.pushAndValidate()));
+        private WebElement validateButton = lazy(byDataTestName(ValidationController.class, x -> x.pushAndValidate()));
 
-        private WebElement pullUpButton = lazy(
-                byDataTestName(ValidationController.class, x -> x.pullUp()));
+        private WebElement pullUpButton = lazy(byDataTestName(ValidationController.class, x -> x.pullUp()));
 
-        private WebElement strText = lazy(byDataTestName(
-                ValidationController.TestA.class, x -> x.getStr()));
+        private WebElement strText = lazy(byDataTestName(ValidationController.TestA.class, x -> x.getStr()));
 
-        private WebElement byteArrayText = lazy(byDataTestName(
-                ValidationController.TestA.class, x -> x.getByteArray()));
+        private WebElement byteArrayText = lazy(
+                byDataTestName(ValidationController.TestA.class, x -> x.getByteArray()));
 
         private WebElement helpBlock = lazy(By.cssSelector(".help-block"));
 
@@ -98,14 +95,12 @@ public class ValidationControllerTest extends WebTest {
     @Test
     public void checkCustomMessageWorks() {
         po.validate();
-        doWait().untilPassing(() -> assertEquals(
-                "len must be between 5 and 2147483647", po.getHelpMessage()));
+        doWait().untilPassing(() -> assertEquals("len must be between 5 and 2147483647", po.getHelpMessage()));
     }
 
     @Test
     public void validationErrorDisappearsWithCorrectText() {
-        po.validate().checkErrorStr().setStr("abcdef").validate()
-                .checkValidatedStr();
+        po.validate().checkErrorStr().setStr("abcdef").validate().checkValidatedStr();
     }
 
     @Test
@@ -120,23 +115,21 @@ public class ValidationControllerTest extends WebTest {
         po.setByteArray("123");
         doWait().untilPassing(() -> assertEquals("123", po.getByteArrayText()));
         po.pullUp();
-        doWait().untilPassing(
-                () -> assertEquals("ABCD", po.getByteArrayText()));
+        doWait().untilPassing(() -> assertEquals("ABCD", po.getByteArrayText()));
     }
 
     @Test
     public void byteArrayErrorWhileWritingDown() {
         po.setByteArray("abc").validate();
         doWait().untilTrue(() -> po.getByteArrayEO().hasValidationError());
-        doWait().untilPassing(() -> assertEquals(
-                "Input 'abc' must contain an even number of characters, but length is 3",
-                po.getByteArrayEO().getValidationMessage().get()));
+        doWait().untilPassing(
+                () -> assertEquals("Input 'abc' must contain an even number of characters, but length is 3",
+                        po.getByteArrayEO().getValidationMessage().get()));
     }
 
     @Test
     public void initialViolationsPresent() {
-        driver.navigate()
-                .to(url(go(ValidationController.class).initialValidation()));
+        driver.navigate().to(url(go(ValidationController.class).initialValidation()));
         po.checkErrorStr();
     }
 }

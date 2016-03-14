@@ -18,8 +18,8 @@ public class PersistenceModuleUtil {
      * Factory for {@link DataSource} with a given {@link IsolationLevel}
      */
     public interface DataSourceFactory {
-        DataSource createDataSource(IsolationLevel isolationLevel,
-                Class<?> qualifier, Consumer<Closeable> closeableRegistrar);
+        DataSource createDataSource(IsolationLevel isolationLevel, Class<?> qualifier,
+                Consumer<Closeable> closeableRegistrar);
     }
 
     /**
@@ -30,12 +30,9 @@ public class PersistenceModuleUtil {
      *            factory for data sources with different isolation levels. Will
      *            be injected using the permanent injector
      */
-    public static void bindDataSource(Binder binder,
-            Class<? extends Annotation> qualifier,
-            PersistenceUnitManager persistenceUnitManager,
-            DataSourceFactory dataSourceFactory) {
-        DataBaseLink link = new DataBaseLink(qualifier, dataSourceFactory,
-                persistenceUnitManager);
+    public static void bindDataSource(Binder binder, Class<? extends Annotation> qualifier,
+            PersistenceUnitManager persistenceUnitManager, DataSourceFactory dataSourceFactory) {
+        DataBaseLink link = new DataBaseLink(qualifier, dataSourceFactory, persistenceUnitManager);
 
         binder.requestInjection(link);
 

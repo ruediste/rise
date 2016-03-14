@@ -13,25 +13,25 @@ import com.github.ruediste.salta.jsr330.Salta;
 
 public abstract class SaltaTestBase {
 
-	private Injector permanentInjector;
+    private Injector permanentInjector;
 
-	@Before
-	public void beforeSaltaTest() throws Exception {
-		permanentInjector = Salta.createInjector(new MvcPermanentModule(), new CoreNonRestartableModule(null),
-				new LoggerModule());
-		permanentInjector.getInstance(ApplicationEventQueue.class).submit(this::startInAET).get();
-	}
+    @Before
+    public void beforeSaltaTest() throws Exception {
+        permanentInjector = Salta.createInjector(new MvcPermanentModule(), new CoreNonRestartableModule(null),
+                new LoggerModule());
+        permanentInjector.getInstance(ApplicationEventQueue.class).submit(this::startInAET).get();
+    }
 
-	protected void initialize() {
-	}
+    protected void initialize() {
+    }
 
-	private void startInAET() {
-		initialize();
-		InitializerUtil.runInitializers(permanentInjector);
+    private void startInAET() {
+        initialize();
+        InitializerUtil.runInitializers(permanentInjector);
 
-		Injector instanceInjector = Salta.createInjector(new RestartableApplicationModule(permanentInjector));
+        Injector instanceInjector = Salta.createInjector(new RestartableApplicationModule(permanentInjector));
 
-		InitializerUtil.runInitializers(instanceInjector);
-		instanceInjector.injectMembers(this);
-	}
+        InitializerUtil.runInitializers(instanceInjector);
+        instanceInjector.injectMembers(this);
+    }
 }

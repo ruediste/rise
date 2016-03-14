@@ -12,8 +12,7 @@ import com.github.ruediste1.i18n.lString.LString;
 /**
  * Base class for view displaying {@link Component}s
  */
-public abstract class ViewComponentBase<TController>
-        extends AttachedPropertyBearerBase {
+public abstract class ViewComponentBase<TController> extends AttachedPropertyBearerBase {
 
     @Inject
     ComponentUtil componentUtil;

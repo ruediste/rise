@@ -57,14 +57,12 @@ public class LoginSubController extends SubControllerComponent {
     }
 
     @Labeled
-    public static class LoginView
-            extends FrameworkViewComponent<LoginSubController> {
+    public static class LoginView extends FrameworkViewComponent<LoginSubController> {
 
         @Override
         protected Component createComponents() {
-            return new CGroup()
-                    .add(toComponentBound(() -> controller.data(), html -> {
-                        //@formatter:off
+            return new CGroup().add(toComponentBound(() -> controller.data(), html -> {
+                //@formatter:off
                             if (controller.data().isTokenTheftDetected()) {
                                 html.div().CLASS("panel panel-danger")
                                     .div().CLASS("panel-heading").content(Messages.TOKEN_TEFT_DETECTED_HEADING)
@@ -85,11 +83,8 @@ public class LoginSubController extends SubControllerComponent {
                                     }
                                 }
                             //@formatter:on
-                    }))
-                    .add(new CFormGroup(new CTextField()
-                            .bindText(() -> controller.data().getUserName())))
-                    .add(new CFormGroup(new CTextField().toPassword()
-                            .bindText(() -> controller.data().getPassword())))
+            })).add(new CFormGroup(new CTextField().bindText(() -> controller.data().getUserName())))
+                    .add(new CFormGroup(new CTextField().toPassword().bindText(() -> controller.data().getPassword())))
                     .add(new CButton(controller, c -> c.login()));
         }
     }
@@ -157,8 +152,7 @@ public class LoginSubController extends SubControllerComponent {
         return this;
     }
 
-    public LoginSubController setTokenTheftDetected(
-            boolean tokenTheftDetected) {
+    public LoginSubController setTokenTheftDetected(boolean tokenTheftDetected) {
         data.get().setTokenTheftDetected(tokenTheftDetected);
         return this;
 
@@ -195,13 +189,9 @@ public class LoginSubController extends SubControllerComponent {
             msgs.clear();
             for (AuthenticationFailure failure : result.getFailures()) {
                 if (failure instanceof UserNameNotFoundAuthenticationFailure)
-                    msgs.add(labelUtil
-                            .enumMember(Messages.USERNAME_PASSWORD_INCORRECT)
-                            .label());
+                    msgs.add(labelUtil.enumMember(Messages.USERNAME_PASSWORD_INCORRECT).label());
                 else
-                    msgs.add(
-                            labelUtil.enumMember(Messages.AUTHENTICATION_FAILED)
-                                    .label());
+                    msgs.add(labelUtil.enumMember(Messages.AUTHENTICATION_FAILED).label());
             }
             data.get().setPassword("");
             data.pullUp();

@@ -50,8 +50,7 @@ public class FileChangeNotifierTest {
 
             @Override
             protected void configure() throws Exception {
-                bind(FileChangeNotifier.class).named("classPath")
-                        .in(Singleton.class);
+                bind(FileChangeNotifier.class).named("classPath").in(Singleton.class);
             }
 
         }, new LoggerModule()).injectMembers(this);
@@ -62,9 +61,7 @@ public class FileChangeNotifierTest {
     }
 
     private void startNotifier() throws Exception {
-        queue.submit(
-                () -> notifier.start(new HashSet<>(Arrays.asList(tempDir)), 10))
-                .get();
+        queue.submit(() -> notifier.start(new HashSet<>(Arrays.asList(tempDir)), 10)).get();
     }
 
     @After
@@ -80,8 +77,7 @@ public class FileChangeNotifierTest {
         Thread.sleep(100);
         assertThat(transactions, hasSize(2));
         assertThat(transactions.get(0).addedFiles, hasSize(0));
-        assertThat(transactions.get(1).addedFiles,
-                contains(Pair.of(tempDir, testTxt)));
+        assertThat(transactions.get(1).addedFiles, contains(Pair.of(tempDir, testTxt)));
     }
 
     @Test
@@ -94,8 +90,7 @@ public class FileChangeNotifierTest {
         Files.delete(testTxt);
         Thread.sleep(100);
         assertThat(transactions, hasSize(1));
-        assertThat(transactions.get(0).removedFiles,
-                contains(Pair.of(tempDir, testTxt)));
+        assertThat(transactions.get(0).removedFiles, contains(Pair.of(tempDir, testTxt)));
     }
 
     @Test
@@ -114,7 +109,6 @@ public class FileChangeNotifierTest {
         Files.write(testTxt2, "Hello World".getBytes());
         Thread.sleep(100);
         assertThat(transactions, hasSize(1));
-        assertThat(transactions.get(0).modifiedFiles,
-                contains(Pair.of(tempDir, testTxt2)));
+        assertThat(transactions.get(0).modifiedFiles, contains(Pair.of(tempDir, testTxt2)));
     }
 }

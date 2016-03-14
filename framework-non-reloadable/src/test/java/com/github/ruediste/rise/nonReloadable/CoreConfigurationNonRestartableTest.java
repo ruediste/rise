@@ -12,12 +12,9 @@ public class CoreConfigurationNonRestartableTest {
     @Test
     public void testShouldBeScanned() throws Exception {
         CoreConfigurationNonRestartable config = new CoreConfigurationNonRestartable();
-        config.scannedPrefixes
-                .add(Reflection.getPackageName(getClass()).replace('.', '/'));
-        assertTrue(config.shouldClasspathResourceBeScanned(
-                getClass().getName().replace('.', '/') + ".class"));
-        assertFalse(
-                config.shouldClasspathResourceBeScanned("org/eclipse/Test"));
+        config.scannedPrefixes.add(Reflection.getPackageName(getClass()).replace('.', '/'));
+        assertTrue(config.shouldClasspathResourceBeScanned(getClass().getName().replace('.', '/') + ".class"));
+        assertFalse(config.shouldClasspathResourceBeScanned("org/eclipse/Test"));
     }
 
 }

@@ -10,8 +10,8 @@ import javax.inject.Singleton;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.github.ruediste.rise.nonReloadable.persistence.IsolationLevel;
@@ -85,7 +85,7 @@ public class TransactionalTest extends DbTestBase {
     public void testClassAnnotated() {
         a.test(() -> {
         });
-        verify(trxe).execute(Mockito.<TransactionCallback<Object>> any());
+        verify(trxe).execute(Matchers.<TransactionCallback<Object>> any());
     }
 
     @Test
@@ -93,6 +93,6 @@ public class TransactionalTest extends DbTestBase {
         b.test(() -> {
         });
         verify(trxe).isolation(IsolationLevel.SERIALIZABLE);
-        verify(trxe).execute(Mockito.<TransactionCallback<Object>> any());
+        verify(trxe).execute(Matchers.<TransactionCallback<Object>> any());
     }
 }

@@ -40,13 +40,11 @@ public class SerializerHelperTest {
         SerializerHelper.generatePrefix(Optional.of("fo:o"), "123");
     }
 
-    private void check(Optional<String> prefix, String value,
-            String expectedPrefixed) {
+    private void check(Optional<String> prefix, String value, String expectedPrefixed) {
         String prefixed = SerializerHelper.generatePrefix(prefix, value);
-        Pair<Optional<String>, String> parsed = SerializerHelper
-                .parsePrefix(prefixed);
-        String message = "Difference detected for <" + prefix + ">:<" + value
-                + ">. Prefixed String was <" + prefixed + ">\n";
+        Pair<Optional<String>, String> parsed = SerializerHelper.parsePrefix(prefixed);
+        String message = "Difference detected for <" + prefix + ">:<" + value + ">. Prefixed String was <" + prefixed
+                + ">\n";
         assertEquals(message, expectedPrefixed, prefixed);
         assertEquals(message, prefix, parsed.getA());
         assertEquals(message, value, parsed.getB());

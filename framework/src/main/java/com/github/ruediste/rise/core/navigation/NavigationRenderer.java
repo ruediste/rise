@@ -33,8 +33,7 @@ public class NavigationRenderer {
             return brandRenderer;
         }
 
-        public NavigationRendererOptions setBrandRenderer(
-                Runnable brandRenderer) {
+        public NavigationRendererOptions setBrandRenderer(Runnable brandRenderer) {
             this.brandRenderer = Optional.of(brandRenderer);
             return this;
         }
@@ -80,8 +79,7 @@ public class NavigationRenderer {
         //@formatter:on
     }
 
-    public <T extends BootstrapRiseCanvas<T>> T renderNavItems(T html,
-            Navigation nav) {
+    public <T extends BootstrapRiseCanvas<T>> T renderNavItems(T html, Navigation nav) {
         Ctx ctx = new Ctx();
         ctx.cache = cache.get();
         html.bNavbarNav();
@@ -90,8 +88,7 @@ public class NavigationRenderer {
         return html;
     }
 
-    private void renderNavItems(BootstrapRiseCanvas<?> html, Ctx ctx,
-            Iterable<NavigationItem> items, int level) {
+    private void renderNavItems(BootstrapRiseCanvas<?> html, Ctx ctx, Iterable<NavigationItem> items, int level) {
 
         for (NavigationItem item : items) {
             html.li();
@@ -100,18 +97,13 @@ public class NavigationRenderer {
 
             if (item.getChildren().isEmpty()) {
                 if (item.target.isPresent())
-                    html.a().HREF(item.target.get())
-                            .fIfPresent(item.icon, html::render)
-                            .content(item.text);
+                    html.a().HREF(item.target.get()).fIfPresent(item.icon, html::render).content(item.text);
                 else
                     html.a().HREF("#").content(item.text);
                 html._li();
             } else {
-                html.CLASS("dropdown").a().HREF("#").CLASS("dropdown-toggle")
-                        .DATA("toggle", "dropdown").ROLE("button")
-                        .ARIA_EXPANDED("false")
-                        .fIfPresent(item.icon, html::render).write(item.text)
-                        .bCaret()._a();
+                html.CLASS("dropdown").a().HREF("#").CLASS("dropdown-toggle").DATA("toggle", "dropdown").ROLE("button")
+                        .ARIA_EXPANDED("false").fIfPresent(item.icon, html::render).write(item.text).bCaret()._a();
                 html.ul().CLASS("dropdown-menu").ROLE("menu");
                 renderNavItems(html, ctx, item.getChildren(), level + 1);
                 html._ul()._li();

@@ -25,10 +25,8 @@ public class ValidationStatusRepositoryTest {
     Object source1 = new Object();
     Object source2 = new Object();
 
-    ValidationFailure failure1 = new ValidationFailureImpl(l -> "foo1",
-            ValidationFailureSeverity.INFO);
-    ValidationFailure failure2 = new ValidationFailureImpl(l -> "foo2",
-            ValidationFailureSeverity.INFO);
+    ValidationFailure failure1 = new ValidationFailureImpl(l -> "foo1", ValidationFailureSeverity.INFO);
+    ValidationFailure failure2 = new ValidationFailureImpl(l -> "foo2", ValidationFailureSeverity.INFO);
 
     @Before
     public void before() {

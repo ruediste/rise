@@ -34,8 +34,7 @@ public class Tripple<A, B, C> {
             return false;
         }
         Tripple<?, ?, ?> other = (Tripple<?, ?, ?>) obj;
-        return Objects.equals(a, other.a) && Objects.equals(b, other.b)
-                && Objects.equals(c, other.c);
+        return Objects.equals(a, other.a) && Objects.equals(b, other.b) && Objects.equals(c, other.c);
     }
 
     @Override

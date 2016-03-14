@@ -29,8 +29,7 @@ import com.google.common.base.Strings;
  * Perform authentication based on a remember me cookie contained in the web
  * request.
  */
-public class RememberMeAuthenticationProvider implements
-        AuthenticationProvider<RememberMeCookieAuthenticationRequest> {
+public class RememberMeAuthenticationProvider implements AuthenticationProvider<RememberMeCookieAuthenticationRequest> {
 
     private static final AttachedProperty<AuthenticationSuccess, Long> tokenIdProperty = new AttachedProperty<>(
             "tokenId");
@@ -57,16 +56,12 @@ public class RememberMeAuthenticationProvider implements
             AuthenticationRequest req = pair.getA();
             AuthenticationResult res = pair.getB();
             if (req instanceof RememberMeAwareAuthenticationRequest
-                    && ((RememberMeAwareAuthenticationRequest) req)
-                            .isRememberMe()
-                    && res.isSuccess()) {
+                    && ((RememberMeAwareAuthenticationRequest) req).isRememberMe() && res.isSuccess()) {
                 // set the remember me token with a new series
-                log.debug(
-                        "Successful login with remember me set to true, adding cookie to the response");
+                log.debug("Successful login with remember me set to true, adding cookie to the response");
                 RememberMeToken token = createToken();
                 dao.newToken(token, res.getSuccess().getPrincipal());
-                info.getServletResponse()
-                        .addCookie(createRememberMeCookie(token));
+                info.getServletResponse().addCookie(createRememberMeCookie(token));
                 tokenIdProperty.set(res.getSuccess(), token.getId());
             }
         });
@@ -82,14 +77,11 @@ public class RememberMeAuthenticationProvider implements
     }
 
     @Override
-    public AuthenticationResult authenticate(
-            RememberMeCookieAuthenticationRequest request) {
-        AuthenticationResult failure = AuthenticationResult
-                .failure(new NoRememberMeTokenFoundAuthenticationFailure());
+    public AuthenticationResult authenticate(RememberMeCookieAuthenticationRequest request) {
+        AuthenticationResult failure = AuthenticationResult.failure(new NoRememberMeTokenFoundAuthenticationFailure());
 
         // extract the token from the request
-        Cookie cookie = getCookie(info.getServletRequest(),
-                config.rememberMeCookieName);
+        Cookie cookie = getCookie(info.getServletRequest(), config.rememberMeCookieName);
         if (cookie == null) {
             log.debug("No remember me token found in request");
             return failure;
@@ -113,8 +105,7 @@ public class RememberMeAuthenticationProvider implements
 
         // compare series
         if (!Arrays.equals(storedToken.getSeries(), token.getSeries())) {
-            log.warn(
-                    "Series of remember me token did not match series in token. Is someone attacking?");
+            log.warn("Series of remember me token did not match series in token. Is someone attacking?");
             return failure;
         }
 
@@ -127,10 +118,8 @@ public class RememberMeAuthenticationProvider implements
             random.nextBytes(tmp);
             RememberMeToken updatedToken = token.withToken(tmp);
             dao.updateToken(updatedToken);
-            info.getServletResponse()
-                    .addCookie(createRememberMeCookie(updatedToken));
-            RemberMeAuthenticationSuccess success = new RemberMeAuthenticationSuccess(
-                    principal);
+            info.getServletResponse().addCookie(createRememberMeCookie(updatedToken));
+            RemberMeAuthenticationSuccess success = new RemberMeAuthenticationSuccess(principal);
             tokenIdProperty.set(success, token.getId());
             return AuthenticationResult.success(success);
         } else {
@@ -138,8 +127,7 @@ public class RememberMeAuthenticationProvider implements
             // have been a token theft
             log.warn("token theft detected, principal is " + principal);
             dao.delete(token.getId());
-            return AuthenticationResult
-                    .failure(new RememberMeTokenTheftFailure(principal));
+            return AuthenticationResult.failure(new RememberMeTokenTheftFailure(principal));
         }
 
     }
@@ -154,8 +142,7 @@ public class RememberMeAuthenticationProvider implements
 
     private Cookie createRememberMeCookie(RememberMeToken token) {
 
-        String value = token.getId() + "~"
-                + Base64.getEncoder().encodeToString(token.getSeries()) + "~"
+        String value = token.getId() + "~" + Base64.getEncoder().encodeToString(token.getSeries()) + "~"
                 + Base64.getEncoder().encodeToString(token.getToken());
         Cookie result = new Cookie(config.rememberMeCookieName, value);
         String path = info.getServletContext().getContextPath();
@@ -185,8 +172,7 @@ public class RememberMeAuthenticationProvider implements
             byte[] token = Base64.getDecoder().decode(parts[2]);
             return new RememberMeToken(id, series, token);
         } catch (Exception e) {
-            throw new RuntimeException("Error while decoding remember me token "
-                    + Arrays.toString(parts), e);
+            throw new RuntimeException("Error while decoding remember me token " + Arrays.toString(parts), e);
         }
     }
 

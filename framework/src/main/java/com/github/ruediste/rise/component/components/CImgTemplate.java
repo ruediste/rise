@@ -18,10 +18,8 @@ public class CImgTemplate extends ComponentTemplateBase<CImg> {
     CoreRequestInfo info;
 
     @Override
-    public HttpRenderResult handleAjaxRequest(CImg component, String suffix)
-            throws Throwable {
+    public HttpRenderResult handleAjaxRequest(CImg component, String suffix) throws Throwable {
 
-        return new ContentRenderResult(component.getSource().get(),
-                "image/jpeg");
+        return new ContentRenderResult(component.getSource().get(), "image/jpeg");
     };
 }

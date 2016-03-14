@@ -39,8 +39,7 @@ public class InjectorsHolder {
         return holder.get().nonRestartableInjector;
     }
 
-    public static void withInjectors(Injector nonRestartableInjector,
-            Injector restartableInjector, Runnable run) {
+    public static void withInjectors(Injector nonRestartableInjector, Injector restartableInjector, Runnable run) {
         Holder old = setInjectors(nonRestartableInjector, restartableInjector);
         try {
             run.run();
@@ -56,8 +55,7 @@ public class InjectorsHolder {
             holder.set(old);
     }
 
-    public static Holder setInjectors(Injector nonRestartableInjector,
-            Injector restartableInjector) {
+    public static Holder setInjectors(Injector nonRestartableInjector, Injector restartableInjector) {
         Holder old = holder.get();
         holder.set(new Holder(nonRestartableInjector, restartableInjector));
         return old;

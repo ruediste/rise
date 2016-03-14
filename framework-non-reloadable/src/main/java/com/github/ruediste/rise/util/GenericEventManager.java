@@ -56,8 +56,7 @@ public class GenericEventManager<T> {
     private Set<Consumer<T>> listeningConsumers = new LinkedHashSet<>();
 
     private Object placeHolder = new Object();
-    private Map<AttachedPropertyBearer, Object> listeningBearers = new MapMaker()
-            .weakKeys().makeMap();
+    private Map<AttachedPropertyBearer, Object> listeningBearers = new MapMaker().weakKeys().makeMap();
     private static AttachedProperty<AttachedPropertyBearer, Multimap<GenericEventManager<?>, Consumer<?>>> consumersProperty = new AttachedProperty<>(
             "WeakConsumers");
     private static AttachedProperty<AttachedPropertyBearer, Multimap<GenericEventManager<?>, Runnable>> runnablesProperty = new AttachedProperty<>(
@@ -74,13 +73,11 @@ public class GenericEventManager<T> {
         return listeningRunnables.add(listener);
     }
 
-    public synchronized boolean addListener(Runnable listener,
-            AttachedPropertyBearer bearer) {
+    public synchronized boolean addListener(Runnable listener, AttachedPropertyBearer bearer) {
         listeningBearers.put(bearer, placeHolder);
 
-        Multimap<GenericEventManager<?>, Runnable> map = runnablesProperty
-                .setIfAbsent(bearer, () -> MultimapBuilder.hashKeys()
-                        .linkedHashSetValues().build());
+        Multimap<GenericEventManager<?>, Runnable> map = runnablesProperty.setIfAbsent(bearer,
+                () -> MultimapBuilder.hashKeys().linkedHashSetValues().build());
         synchronized (map) {
             return map.put(this, listener);
         }
@@ -93,13 +90,11 @@ public class GenericEventManager<T> {
         return listeningConsumers.add(listener);
     }
 
-    public synchronized boolean addListener(Consumer<T> listener,
-            AttachedPropertyBearer bearer) {
+    public synchronized boolean addListener(Consumer<T> listener, AttachedPropertyBearer bearer) {
         listeningBearers.put(bearer, placeHolder);
 
-        Multimap<GenericEventManager<?>, Consumer<?>> map = consumersProperty
-                .setIfAbsent(bearer, () -> MultimapBuilder.hashKeys()
-                        .linkedHashSetValues().build());
+        Multimap<GenericEventManager<?>, Consumer<?>> map = consumersProperty.setIfAbsent(bearer,
+                () -> MultimapBuilder.hashKeys().linkedHashSetValues().build());
         synchronized (map) {
             return map.put(this, listener);
         }
@@ -112,10 +107,8 @@ public class GenericEventManager<T> {
         return listeningRunnables.remove(listener);
     }
 
-    public synchronized boolean removeListener(Runnable listener,
-            AttachedPropertyBearer bearer) {
-        Multimap<GenericEventManager<?>, Runnable> map = runnablesProperty
-                .get(bearer);
+    public synchronized boolean removeListener(Runnable listener, AttachedPropertyBearer bearer) {
+        Multimap<GenericEventManager<?>, Runnable> map = runnablesProperty.get(bearer);
         if (map != null)
             return map.remove(this, listener);
         else
@@ -129,10 +122,8 @@ public class GenericEventManager<T> {
         return listeningConsumers.remove(listener);
     }
 
-    public synchronized boolean removeListener(Consumer<T> listener,
-            AttachedPropertyBearer bearer) {
-        Multimap<GenericEventManager<?>, Consumer<?>> map = consumersProperty
-                .get(bearer);
+    public synchronized boolean removeListener(Consumer<T> listener, AttachedPropertyBearer bearer) {
+        Multimap<GenericEventManager<?>, Consumer<?>> map = consumersProperty.get(bearer);
         if (map != null)
             return map.remove(this, listener);
         else
@@ -155,14 +146,11 @@ public class GenericEventManager<T> {
             listeningConsumersCopy = new ArrayList<>(listeningConsumers);
             listeningRunnablesCopy = new ArrayList<>(listeningRunnables);
             for (AttachedPropertyBearer bearer : listeningBearers.keySet()) {
-                Multimap<GenericEventManager<?>, Consumer<?>> consumerMap = consumersProperty
-                        .get(bearer);
+                Multimap<GenericEventManager<?>, Consumer<?>> consumerMap = consumersProperty.get(bearer);
                 if (consumerMap != null) {
-                    listeningConsumersCopy
-                            .addAll((Collection) consumerMap.get(this));
+                    listeningConsumersCopy.addAll((Collection) consumerMap.get(this));
                 }
-                Multimap<GenericEventManager<?>, Runnable> runnableMap = runnablesProperty
-                        .get(bearer);
+                Multimap<GenericEventManager<?>, Runnable> runnableMap = runnablesProperty.get(bearer);
                 if (runnableMap != null) {
                     listeningRunnablesCopy.addAll(runnableMap.get(this));
                 }

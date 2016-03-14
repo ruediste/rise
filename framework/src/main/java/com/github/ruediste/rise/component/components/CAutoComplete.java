@@ -22,8 +22,7 @@ import com.github.ruediste.c3java.invocationRecording.TerminalType;
  * equal to the current text.
  */
 @DefaultTemplate(CAutoCompleteTemplate.class)
-public class CAutoComplete<Titem, Tid>
-        extends CInputBase<CAutoComplete<Titem, Tid>> {
+public class CAutoComplete<Titem, Tid> extends CInputBase<CAutoComplete<Titem, Tid>> {
 
     public enum AutoSearchMode {
         NONE, SINGLE, SINGLE_MATCHING, SINGLE_MATCHING_IGNORE_CASE;
@@ -63,8 +62,7 @@ public class CAutoComplete<Titem, Tid>
 
         @Override
         public String toString() {
-            return "AutoCompleteValue("
-                    + (isItemChosen ? "item=" + item : "text=" + text) + ")";
+            return "AutoCompleteValue(" + (isItemChosen ? "item=" + item : "text=" + text) + ")";
         }
     }
 
@@ -141,8 +139,7 @@ public class CAutoComplete<Titem, Tid>
         List<Titem> items = getParameters().search(value.getText());
         if (items.size() == 1) {
             Titem singleItem = items.get(0);
-            AutoCompleteValue<Titem> singleValue = AutoCompleteValue
-                    .ofItem(singleItem);
+            AutoCompleteValue<Titem> singleValue = AutoCompleteValue.ofItem(singleItem);
             switch (autoSearchMode) {
             case SINGLE: {
                 return singleValue;
@@ -152,8 +149,7 @@ public class CAutoComplete<Titem, Tid>
                     return singleValue;
                 break;
             case SINGLE_MATCHING_IGNORE_CASE:
-                if (value.getText()
-                        .equalsIgnoreCase(parameters.getValue(singleItem)))
+                if (value.getText().equalsIgnoreCase(parameters.getValue(singleItem)))
                     return singleValue;
                 break;
             default:
@@ -206,8 +202,7 @@ public class CAutoComplete<Titem, Tid>
         return autoSearchMode;
     }
 
-    public CAutoComplete<Titem, Tid> setAutoSearchMode(
-            AutoSearchMode autoSearchMode) {
+    public CAutoComplete<Titem, Tid> setAutoSearchMode(AutoSearchMode autoSearchMode) {
         this.autoSearchMode = autoSearchMode;
         return this;
     }

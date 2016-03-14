@@ -15,8 +15,7 @@ import org.openqa.selenium.support.pagefactory.ElementLocatorFactory;
 
 public class PageObjectFactory {
 
-    public static <T extends PageObject> T createPageObject(WebDriver driver,
-            Class<T> cls,
+    public static <T extends PageObject> T createPageObject(WebDriver driver, Class<T> cls,
             Supplier<? extends SearchContext> rootSearchContextSupplier) {
         try {
             T result = cls.newInstance();
@@ -43,20 +42,16 @@ public class PageObjectFactory {
                         if (field.get(result) != null)
                             return null;
                         else
-                            return new DefaultElementLocator(searchContext,
-                                    field);
+                            return new DefaultElementLocator(searchContext, field);
                     } catch (Exception e) {
-                        throw new RuntimeException(
-                                "Error while determining if page object field is already set",
-                                e);
+                        throw new RuntimeException("Error while determining if page object field is already set", e);
                     }
                 }
             }, result);
             result.initialize();
             return result;
         } catch (Exception e) {
-            throw new RuntimeException(
-                    "Error wile instantiating page object " + cls, e);
+            throw new RuntimeException("Error wile instantiating page object " + cls, e);
         }
     }
 }

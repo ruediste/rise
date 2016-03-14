@@ -8,12 +8,15 @@ import com.google.common.collect.Iterables;
  * Implements the parent-child relation using {@link ChildRelation}s.
  *
  * <p>
- * To add a child relation, simply declare a field: <pre> 
- *  {@code
- *    public final MultiChildrenRelation<Component, TSelf> children = new MultiChildrenRelation<>(
- *          self());
- *  }
- *  </pre>
+ * To add a child relation, simply declare a field:
+ * 
+ * <pre>
+ * 
+ * {
+ *     &#64;code
+ *     public final MultiChildrenRelation<Component, TSelf> children = new MultiChildrenRelation<>(self());
+ * }
+ * </pre>
  * 
  * <p>
  * <img src="doc-files/childRelation.png" alt="class hierarchy overview">
@@ -21,8 +24,7 @@ import com.google.common.collect.Iterables;
  * @param <TSelf>
  *            type of this component
  */
-public class RelationsComponent<TSelf extends RelationsComponent<TSelf>>
-        extends ComponentBase<TSelf> {
+public class RelationsComponent<TSelf extends RelationsComponent<TSelf>> extends ComponentBase<TSelf> {
 
     ArrayList<ChildRelation<?>> childRelations = new ArrayList<>();
 

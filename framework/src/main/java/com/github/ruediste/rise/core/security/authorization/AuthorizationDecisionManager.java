@@ -56,20 +56,16 @@ public class AuthorizationDecisionManager {
 
     private AuthorizationDecisionPerformer authorizationPerformer;
 
-    public void checkAuthorization(Right right,
-            Optional<AuthenticationSuccess> authentication) {
+    public void checkAuthorization(Right right, Optional<AuthenticationSuccess> authentication) {
         checkAuthorization(Collections.singleton(right), authentication);
     }
 
-    public void checkAuthorization(Set<? extends Right> rights,
-            Optional<AuthenticationSuccess> authentication) {
+    public void checkAuthorization(Set<? extends Right> rights, Optional<AuthenticationSuccess> authentication) {
         performAuthorization(rights, authentication).checkAuthorized();
     }
 
-    public AuthorizationResult performAuthorization(Right right,
-            Optional<AuthenticationSuccess> authentication) {
-        return performAuthorization(Collections.singleton(right),
-                authentication);
+    public AuthorizationResult performAuthorization(Right right, Optional<AuthenticationSuccess> authentication) {
+        return performAuthorization(Collections.singleton(right), authentication);
     }
 
     /**
@@ -84,8 +80,7 @@ public class AuthorizationDecisionManager {
             Optional<AuthenticationSuccess> authentication) {
         if (authorizationPerformer == null)
             return AuthorizationResult.authorized();
-        return authorizationPerformer.performAuthorization(rights,
-                authentication);
+        return authorizationPerformer.performAuthorization(rights, authentication);
     }
 
     public void checkAuthorization(Right right) {
@@ -103,10 +98,8 @@ public class AuthorizationDecisionManager {
     /**
      * Check if the current authentication implies all specified rights
      */
-    public AuthorizationResult performAuthorization(
-            Set<? extends Right> rights) {
-        return performAuthorization(rights,
-                authenticationHolder.tryGetCurrentAuthentication());
+    public AuthorizationResult performAuthorization(Set<? extends Right> rights) {
+        return performAuthorization(rights, authenticationHolder.tryGetCurrentAuthentication());
     }
 
     public AuthorizationDecisionPerformer getAuthorizationPerformer() {

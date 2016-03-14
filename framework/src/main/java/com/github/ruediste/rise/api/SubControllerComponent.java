@@ -1,12 +1,8 @@
 package com.github.ruediste.rise.api;
 
-import java.util.Set;
-
 import javax.inject.Inject;
-import javax.validation.ConstraintViolation;
 
 import com.github.ruediste.rise.component.ComponentUtil;
-import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
@@ -30,8 +26,7 @@ public class SubControllerComponent {
         return util.go(controllerClass);
     }
 
-    public <T extends IController> ActionInvocationBuilderKnownController<T> path(
-            Class<T> controllerClass) {
+    public <T extends IController> ActionInvocationBuilderKnownController<T> path(Class<T> controllerClass) {
         return util.path(controllerClass);
     }
 

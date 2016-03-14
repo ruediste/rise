@@ -24,8 +24,7 @@ public abstract class NavigationsContainer {
         return util.go(controllerClass);
     }
 
-    public <T extends IController> ActionInvocationBuilderKnownController<T> path(
-            Class<T> controllerClass) {
+    public <T extends IController> ActionInvocationBuilderKnownController<T> path(Class<T> controllerClass) {
         return util.path(controllerClass);
     }
 

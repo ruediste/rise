@@ -37,18 +37,14 @@ public class SampleBundle extends AssetBundle {
 
     @Override
     public void initialize() {
-        AssetGroup assets = join(jQueryAssetBundle.out, jQueryUiAssetBundle.out,
-                bootstrap.out, core.out, fileinputAssetBundle.out,
-                locations("/assets/welcome.css", "/assets/welcome.js").load()
-                        .ifProd(g -> g.min()));
+        AssetGroup assets = join(jQueryAssetBundle.out, jQueryUiAssetBundle.out, bootstrap.out, core.out,
+                fileinputAssetBundle.out,
+                locations("/assets/welcome.css", "/assets/welcome.js").load().ifProd(g -> g.min()));
 
         assets.select(DefaultAssetTypes.CSS)
-                .split(css.process("{name}{hash}.{extT}",
-                        a -> a.name("{ext}/{name}-{hash}.{ext}")))
-                .ifProd(g -> g
-                        .select(DefaultAssetTypes.CSS, DefaultAssetTypes.JS)
-                        .split(g1 -> g1.combine().min()
-                                .name("all-{hash}.{extT}")))
+                .split(css.process("{name}{hash}.{extT}", a -> a.name("{ext}/{name}-{hash}.{ext}")))
+                .ifProd(g -> g.select(DefaultAssetTypes.CSS, DefaultAssetTypes.JS)
+                        .split(g1 -> g1.combine().min().name("all-{hash}.{extT}")))
                 .send(out);
     }
 }

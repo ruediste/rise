@@ -36,8 +36,7 @@ public class AuthzTest {
     }
 
     private void checkFail() {
-        throw new AuthorizationException(
-                Arrays.asList(new AuthorizationFailure("failed")));
+        throw new AuthorizationException(Arrays.asList(new AuthorizationFailure("failed")));
     }
 
     boolean executed;
@@ -63,32 +62,28 @@ public class AuthzTest {
                 MethodAuthorizationManager mgr = new MethodAuthorizationManager();
                 AopUtil.registerSubclass(config().standardConfig, t1 -> {
                     Class<?> cls = t1.getRawType();
-                    return mgr.entries.stream()
-                            .anyMatch(e -> e.typeMatcher.test(cls));
-                } , (t2, m1) -> mgr.entries.stream().anyMatch(e -> {
+                    return mgr.entries.stream().anyMatch(e -> e.typeMatcher.test(cls));
+                }, (t2, m1) -> mgr.entries.stream().anyMatch(e -> {
                     Class<?> cls = t2.getRawType();
                     return e.methodMatcher.test(cls, m1);
                 }), i -> {
                     Object target1 = i.getTarget();
                     Method method1 = i.getMethod();
                     Object[] arguments = i.getArguments();
-                    mgr.entries.forEach(r -> r.rule.getRequiredRights(target1,
-                            method1, arguments));
+                    mgr.entries.forEach(r -> r.rule.getRequiredRights(target1, method1, arguments));
                     return i.proceed();
                 });
-                mgr.addRule(t -> true,
-                        (t, m) -> m.isAnnotationPresent(RequireRight.class),
+                mgr.addRule(t -> true, (t, m) -> m.isAnnotationPresent(RequireRight.class),
                         new MethodAuthorizationRule() {
 
-                    @Override
-                    public Set<? extends Right> getRequiredRights(Object target,
-                            Method method, Object[] args) {
-                        if (!rightPresent)
-                            return Collections.singleton(new Right() {
-                            });
-                        return Collections.emptySet();
-                    }
-                });
+                            @Override
+                            public Set<? extends Right> getRequiredRights(Object target, Method method, Object[] args) {
+                                if (!rightPresent)
+                                    return Collections.singleton(new Right() {
+                                    });
+                                return Collections.emptySet();
+                            }
+                        });
                 bind(MethodAuthorizationManager.class).toInstance(mgr);
             }
         });
@@ -101,12 +96,10 @@ public class AuthzTest {
         authManager.setPerformer(new AuthorizationDecisionPerformer() {
 
             @Override
-            public AuthorizationResult performAuthorization(
-                    Set<? extends Right> rights,
+            public AuthorizationResult performAuthorization(Set<? extends Right> rights,
                     Optional<AuthenticationSuccess> authentication) {
                 if (!rights.isEmpty() && !rightPresent)
-                    return AuthorizationResult.failure(
-                            new AuthorizationFailure("rightPresent is false"));
+                    return AuthorizationResult.failure(new AuthorizationFailure("rightPresent is false"));
                 return AuthorizationResult.authorized();
             }
         });
@@ -204,22 +197,14 @@ public class AuthzTest {
 
     @Test
     public void authorizationCall_inheritanceTest() {
-        Method mBase = MethodInvocationRecorder
-                .getLastInvocation(Base.class, x -> x.m()).getMethod();
-        Method mDerived = MethodInvocationRecorder
-                .getLastInvocation(Derived2.class, x -> x.m()).getMethod();
-        assertFalse(
-                AuthorizationInspector.callsDoAuthChecks(Base.class, mBase));
-        assertTrue(AuthorizationInspector.callsDoAuthChecks(Derived1.class,
-                mBase));
-        assertTrue(AuthorizationInspector.callsDoAuthChecks(Derived2.class,
-                mBase));
-        assertFalse(
-                AuthorizationInspector.callsDoAuthChecks(Base.class, mDerived));
-        assertTrue(AuthorizationInspector.callsDoAuthChecks(Derived1.class,
-                mDerived));
-        assertTrue(AuthorizationInspector.callsDoAuthChecks(Derived2.class,
-                mDerived));
+        Method mBase = MethodInvocationRecorder.getLastInvocation(Base.class, x -> x.m()).getMethod();
+        Method mDerived = MethodInvocationRecorder.getLastInvocation(Derived2.class, x -> x.m()).getMethod();
+        assertFalse(AuthorizationInspector.callsDoAuthChecks(Base.class, mBase));
+        assertTrue(AuthorizationInspector.callsDoAuthChecks(Derived1.class, mBase));
+        assertTrue(AuthorizationInspector.callsDoAuthChecks(Derived2.class, mBase));
+        assertFalse(AuthorizationInspector.callsDoAuthChecks(Base.class, mDerived));
+        assertTrue(AuthorizationInspector.callsDoAuthChecks(Derived1.class, mDerived));
+        assertTrue(AuthorizationInspector.callsDoAuthChecks(Derived2.class, mDerived));
     }
 
     boolean executedDelegate;

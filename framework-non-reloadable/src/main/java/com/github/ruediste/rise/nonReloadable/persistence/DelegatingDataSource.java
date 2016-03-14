@@ -64,8 +64,7 @@ public abstract class DelegatingDataSource implements DataSource {
     }
 
     @Override
-    public Connection getConnection(String username, String password)
-            throws SQLException {
+    public Connection getConnection(String username, String password) throws SQLException {
         return getDelegate().getConnection(username, password);
     }
 

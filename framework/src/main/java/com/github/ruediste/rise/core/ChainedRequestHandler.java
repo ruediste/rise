@@ -84,10 +84,8 @@ public abstract class ChainedRequestHandler extends ChainedRunnable {
     public final SupplierRefs supplierRefs = new SupplierRefs();
 
     @PostConstruct
-    public void postConstruct(Provider<MvcRequestMapperImpl> mapper,
-            Provider<MvcControllerInvoker> invoker,
-            Provider<ActionResultRenderer> actionResultRenderer,
-            Provider<MvcPersistenceHandler> persistenceHandler) {
+    public void postConstruct(Provider<MvcRequestMapperImpl> mapper, Provider<MvcControllerInvoker> invoker,
+            Provider<ActionResultRenderer> actionResultRenderer, Provider<MvcPersistenceHandler> persistenceHandler) {
         supplierRefs.mapperSupplier = mapper::get;
         this.mapperSupplier = supplierRefs.mapperSupplier;
 

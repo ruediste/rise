@@ -9,8 +9,7 @@ import com.github.ruediste.rise.component.ComponentFactoryUtil;
 /**
  * Base class for views for the component framework.
  */
-public abstract class ViewComponent<TController>
-        extends ViewComponentBase<TController>
+public abstract class ViewComponent<TController> extends ViewComponentBase<TController>
         implements ComponentFactory<SampleCanvas> {
 
     @Inject

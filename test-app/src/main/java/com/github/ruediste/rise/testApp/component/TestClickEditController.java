@@ -32,70 +32,59 @@ public class TestClickEditController extends ControllerComponent {
 
         @Override
         protected Component createComponents() {
-            return new CPage(label(this)).add(new CClickEdit<String>(
-                    v -> new CText(v).TEST_NAME("viewText"), (v, c) -> {
+            return new CPage(label(this))
+                    .add(new CClickEdit<String>(v -> new CText(v).TEST_NAME("viewText"), (v, c) -> {
                         CTextField tf = new CTextField().setText(v);
                         c.setEditComponent(tf, () -> tf.getText(), tf);
                     }).bindValue(() -> controller.data().getTestLine()))
                     .add(new CClickEdit<AutoCompleteValue<TestClickEditController.Entry>>(
-                            v -> new CText(v.isItemChosen() ? v.getItem().name
-                                    : v.getText()).TEST_NAME("viewText"),
+                            v -> new CText(v.isItemChosen() ? v.getItem().name : v.getText()).TEST_NAME("viewText"),
                             (v, c) -> {
                                 CAutoComplete<Entry, Integer> auto = new CAutoComplete<>(
                                         new CAutoCompleteParameters<Entry, Integer>() {
 
-                                    @Override
-                                    public List<Entry> search(String term) {
-                                        return controller.entries.stream()
-                                                .filter(e -> e.name
-                                                        .contains(term))
-                                                .collect(toList());
-                                    }
+                                            @Override
+                                            public List<Entry> search(String term) {
+                                                return controller.entries.stream().filter(e -> e.name.contains(term))
+                                                        .collect(toList());
+                                            }
 
-                                    @Override
-                                    public String getSuggestion(Entry item) {
-                                        return item.name;
-                                    }
+                                            @Override
+                                            public String getSuggestion(Entry item) {
+                                                return item.name;
+                                            }
 
-                                    @Override
-                                    public String getValue(Entry item) {
-                                        return item.name;
-                                    }
+                                            @Override
+                                            public String getValue(Entry item) {
+                                                return item.name;
+                                            }
 
-                                    @Override
-                                    public Integer getId(Entry item) {
-                                        return item.id;
-                                    }
+                                            @Override
+                                            public Integer getId(Entry item) {
+                                                return item.id;
+                                            }
 
-                                    @Override
-                                    public Entry load(Integer id) {
-                                        return controller.entries.stream()
-                                                .filter(e -> e.id == id)
-                                                .findFirst().orElse(null);
-                                    }
+                                            @Override
+                                            public Entry load(Integer id) {
+                                                return controller.entries.stream().filter(e -> e.id == id).findFirst()
+                                                        .orElse(null);
+                                            }
 
-                                    @Override
-                                    public String getTestName(Entry item) {
-                                        return item.name;
-                                    }
-                                }).setValue(v).setAutoSearchMode(
-                                        AutoSearchMode.SINGLE);
-                                c.setEditComponent(auto, () -> auto.getValue(),
-                                        auto);
-                            }).bindValue(
-                                    () -> controller.data().getAutoComplete()))
-                    .add(new CText("clickTarget").TEST_NAME("clickTarget"))
-                    .add(new CButton(controller, x -> x.push()))
-                    .add(new CButton(controller, x -> x.pull())).add(
-                            toComponentDirect(
-                                    html -> html.write("Line: ").span()
-                                            .TEST_NAME("testLine")
-                                            .content(String.valueOf(controller
-                                                    .data().getTestLine()))
-                                    .write("AutoCompleteValue: ").span()
-                                    .TEST_NAME("autoCompleteValue")
-                                    .content(String.valueOf(controller.data()
-                                            .getAutoComplete()))));
+                                            @Override
+                                            public String getTestName(Entry item) {
+                                                return item.name;
+                                            }
+                                        }).setValue(v).setAutoSearchMode(AutoSearchMode.SINGLE);
+                                c.setEditComponent(auto, () -> auto.getValue(), auto);
+                            }).bindValue(() -> controller.data().getAutoComplete()))
+                    .add(new CText("clickTarget").TEST_NAME("clickTarget")).add(
+                            new CButton(controller,
+                                    x -> x.push()))
+                    .add(new CButton(controller, x -> x.pull()))
+                    .add(toComponentDirect(html -> html.write("Line: ").span().TEST_NAME("testLine")
+                            .content(String.valueOf(controller.data().getTestLine())).write("AutoCompleteValue: ")
+                            .span().TEST_NAME("autoCompleteValue")
+                            .content(String.valueOf(controller.data().getAutoComplete()))));
 
         }
 
@@ -126,13 +115,12 @@ public class TestClickEditController extends ControllerComponent {
         }
     }
 
-    List<Entry> entries = new ArrayList<>(Arrays.asList(new Entry("Java", 0),
-            new Entry("Ruby", 1), new Entry("JavaScript", 2)));
+    List<Entry> entries = new ArrayList<>(
+            Arrays.asList(new Entry("Java", 0), new Entry("Ruby", 1), new Entry("JavaScript", 2)));
 
     public static class Data {
         private String testLine;
-        private AutoCompleteValue<Entry> autoComplete = AutoCompleteValue
-                .ofText("autocomplete");
+        private AutoCompleteValue<Entry> autoComplete = AutoCompleteValue.ofText("autocomplete");
 
         public String getTestLine() {
             return testLine;

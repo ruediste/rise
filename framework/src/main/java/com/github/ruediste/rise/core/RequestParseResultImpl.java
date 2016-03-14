@@ -9,8 +9,7 @@ public class RequestParseResultImpl implements RequestParseResult {
     private Consumer<ActionInvocation<String>> handler;
     private final ActionInvocation<String> invocation;
 
-    public RequestParseResultImpl(ActionInvocation<String> invocation,
-            Consumer<ActionInvocation<String>> handler) {
+    public RequestParseResultImpl(ActionInvocation<String> invocation, Consumer<ActionInvocation<String>> handler) {
         this.invocation = invocation;
         this.handler = handler;
     }

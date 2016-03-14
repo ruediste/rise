@@ -15,8 +15,7 @@ import com.github.ruediste.rise.nonReloadable.front.reload.NonReloadable;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD,
-        ElementType.TYPE })
+@Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD, ElementType.TYPE })
 @NonReloadable
 public @interface NonRestartable {
 

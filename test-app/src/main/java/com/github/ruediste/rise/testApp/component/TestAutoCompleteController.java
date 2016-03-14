@@ -31,47 +31,42 @@ public class TestAutoCompleteController extends ControllerComponent {
         protected Component createComponents() {
             return new CPage(label(this))
 
-                    .add(new CAutoComplete<>(
-                            new CAutoCompleteParameters<Entry, Integer>() {
+                    .add(new CAutoComplete<>(new CAutoCompleteParameters<Entry, Integer>() {
 
-                                @Override
-                                public List<Entry> search(String term) {
-                                    return controller.search(term);
-                                }
+                        @Override
+                        public List<Entry> search(String term) {
+                            return controller.search(term);
+                        }
 
-                                @Override
-                                public String getSuggestion(Entry item) {
-                                    return item.getValue();
-                                }
+                        @Override
+                        public String getSuggestion(Entry item) {
+                            return item.getValue();
+                        }
 
-                                @Override
-                                public String getValue(Entry item) {
-                                    return item.getValue();
-                                }
+                        @Override
+                        public String getValue(Entry item) {
+                            return item.getValue();
+                        }
 
-                                @Override
-                                public Integer getId(Entry item) {
-                                    return item.getId();
-                                }
+                        @Override
+                        public Integer getId(Entry item) {
+                            return item.getId();
+                        }
 
-                                @Override
-                                public Entry load(Integer id) {
-                                    return controller.getEntryById(id);
-                                }
+                        @Override
+                        public Entry load(Integer id) {
+                            return controller.getEntryById(id);
+                        }
 
-                                @Override
-                                public String getTestName(Entry item) {
-                                    return String.valueOf(item.getId());
-                                }
-                            }).setAutoSearchMode(controller.autoSearchMode)
-                                    .bindItem(
-                                            () -> controller.data().getEntry()))
-                    .add(new CButton(controller, x -> x.pushPull()))
-                    .add(new CButton(controller, x -> x.push()))
+                        @Override
+                        public String getTestName(Entry item) {
+                            return String.valueOf(item.getId());
+                        }
+                    }).setAutoSearchMode(controller.autoSearchMode).bindItem(() -> controller.data().getEntry()))
+                    .add(new CButton(controller, x -> x.pushPull())).add(new CButton(controller, x -> x.push()))
                     .add(new CButton(controller, x -> x.pull()))
-                    .add(toComponentDirect(html -> html.write("Chosen Entry: ")
-                            .span().TEST_NAME("chosenEntry").content(String
-                                    .valueOf(controller.data().getEntry()))));
+                    .add(toComponentDirect(html -> html.write("Chosen Entry: ").span().TEST_NAME("chosenEntry")
+                            .content(String.valueOf(controller.data().getEntry()))));
 
         }
 
@@ -119,13 +114,11 @@ public class TestAutoCompleteController extends ControllerComponent {
         availableEntries.add(new Entry(1, "JavaScript"));
         availableEntries.add(new Entry(2, "Ruby"));
         availableEntries.add(new Entry(3, "C++"));
-        availableEntries
-                .add(new Entry(4, "<script> alert(\"boom\") </script>"));
+        availableEntries.add(new Entry(4, "<script> alert(\"boom\") </script>"));
     }
 
     public Entry getEntryById(int id) {
-        return Iterables.getOnlyElement(availableEntries.stream()
-                .filter(e -> e.getId() == id).collect(toList()), null);
+        return Iterables.getOnlyElement(availableEntries.stream().filter(e -> e.getId() == id).collect(toList()), null);
     }
 
     @Labeled
@@ -145,8 +138,7 @@ public class TestAutoCompleteController extends ControllerComponent {
     }
 
     public List<Entry> search(String term) {
-        return availableEntries.stream().filter(
-                e -> e.getValue().toLowerCase().contains(term.toLowerCase()))
+        return availableEntries.stream().filter(e -> e.getValue().toLowerCase().contains(term.toLowerCase()))
                 .collect(toList());
     }
 

@@ -30,8 +30,7 @@ public class ClassHierarchyIndexTest {
 
     @Before
     public void before() throws IOException {
-        readClasses(IA.class, A.class, IB.class, B.class, Base.class,
-                Derived1.class, Derived2.class);
+        readClasses(IA.class, A.class, IB.class, B.class, Base.class, Derived1.class, Derived2.class);
     }
 
     private void readClasses(Class<?>... classes) {
@@ -100,17 +99,14 @@ public class ClassHierarchyIndexTest {
     }
 
     protected boolean isSubtype(Class<?> sub, Class<?> parent) {
-        return cache.isAssignableFrom(Type.getType(parent).getInternalName(),
-                Type.getType(sub).getInternalName());
+        return cache.isAssignableFrom(Type.getType(parent).getInternalName(), Type.getType(sub).getInternalName());
     }
 
     @Test
     public void testResolve() {
         assertEquals("java/lang/String",
-                cache.resolve(Type.getInternalName(Derived2.class),
-                        Type.getInternalName(Base.class), "T"));
-        assertNull(cache.resolve(Type.getInternalName(Derived1.class),
-                Type.getInternalName(Base.class), "T"));
+                cache.resolve(Type.getInternalName(Derived2.class), Type.getInternalName(Base.class), "T"));
+        assertNull(cache.resolve(Type.getInternalName(Derived1.class), Type.getInternalName(Base.class), "T"));
     }
 
 }

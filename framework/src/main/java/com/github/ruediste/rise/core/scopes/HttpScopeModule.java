@@ -19,10 +19,8 @@ public class HttpScopeModule extends AbstractModule {
         bind(HttpScopeManager.class).toInstance(scopeManager);
 
         // bind scopes
-        bindScope(SessionScoped.class,
-                new ScopeImpl(scopeManager.sessionScopeManager));
-        bindScope(RequestScoped.class,
-                new ScopeImpl(scopeManager.requestScopeHandler));
+        bindScope(SessionScoped.class, new ScopeImpl(scopeManager.sessionScopeManager));
+        bindScope(RequestScoped.class, new ScopeImpl(scopeManager.requestScopeHandler));
     }
 
 }

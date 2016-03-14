@@ -50,8 +50,7 @@ public class ReloadRequestParser implements RequestParser {
         try {
             request.setComponentNr(Long.parseLong(req.getParameter("nr")));
         } catch (Throwable t) {
-            log.warn(
-                    "no component nr parameter sent along with reload request");
+            log.warn("no component nr parameter sent along with reload request");
             throw t;
         }
         return new ReloadParseResult();

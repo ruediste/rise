@@ -23,13 +23,11 @@ public class ProcessorWrapper implements Function<Asset, Asset> {
 
     private AssetType targetAssetType;
 
-    public ProcessorWrapper initialize(AssetType targetAssetType,
-            ResourcePostProcessor processor) {
+    public ProcessorWrapper initialize(AssetType targetAssetType, ResourcePostProcessor processor) {
         return initialize(targetAssetType, () -> processor);
     }
 
-    public ProcessorWrapper initialize(AssetType targetAssetType,
-            Supplier<ResourcePostProcessor> processorSupplier) {
+    public ProcessorWrapper initialize(AssetType targetAssetType, Supplier<ResourcePostProcessor> processorSupplier) {
         this.targetAssetType = targetAssetType;
         this.processorSupplier = processorSupplier;
         return this;
@@ -83,8 +81,7 @@ public class ProcessorWrapper implements Function<Asset, Asset> {
 
             @Override
             public String toString() {
-                return t + "." + getProcessor().getClass().getSimpleName()
-                        + "()";
+                return t + "." + getProcessor().getClass().getSimpleName() + "()";
             }
 
         };

@@ -44,8 +44,7 @@ public class HearbeatRequestParser implements RequestParser {
         try {
             pageNr = Long.parseLong(req.getParameter("nr"));
         } catch (Throwable t) {
-            log.warn(
-                    "no page number parameter sent along with heartbeat request");
+            log.warn("no page number parameter sent along with heartbeat request");
             throw t;
         }
         return new HeartbeatParseResult(pageNr);

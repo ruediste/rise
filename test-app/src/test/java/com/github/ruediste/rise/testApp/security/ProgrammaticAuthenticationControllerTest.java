@@ -22,10 +22,8 @@ public class ProgrammaticAuthenticationControllerTest extends WebTest {
 
     @Test
     public void testNoAuthenticationRequired() throws Exception {
-        driver.navigate().to(url(go(ProgrammaticAuthenticationController.class)
-                .noAuthenticationRequired()));
-        assertPage(ProgrammaticAuthenticationController.class,
-                x -> x.noAuthenticationRequired());
+        driver.navigate().to(url(go(ProgrammaticAuthenticationController.class).noAuthenticationRequired()));
+        assertPage(ProgrammaticAuthenticationController.class, x -> x.noAuthenticationRequired());
     }
 
     @Test
@@ -33,8 +31,7 @@ public class ProgrammaticAuthenticationControllerTest extends WebTest {
         deleteAllCookies();
         loadAuthRequired();
         pageObject(LoginPO.class).defaultLogin();
-        assertPage(ProgrammaticAuthenticationController.class,
-                x -> x.authenticationRequired());
+        assertPage(ProgrammaticAuthenticationController.class, x -> x.authenticationRequired());
     }
 
     @Test
@@ -44,15 +41,13 @@ public class ProgrammaticAuthenticationControllerTest extends WebTest {
         pageObject(LoginPO.class).defaultLogin();
 
         // modify stored token
-        Cookie cookie = driver.manage()
-                .getCookieNamed(config.rememberMeCookieName);
+        Cookie cookie = driver.manage().getCookieNamed(config.rememberMeCookieName);
         String value = cookie.getValue();
         if (value.startsWith("\""))
             value = value.substring(1);
         if (value.endsWith("\""))
             value = value.substring(0, value.length() - 1);
-        RememberMeToken token = RememberMeAuthenticationProvider
-                .parseToken(value);
+        RememberMeToken token = RememberMeAuthenticationProvider.parseToken(value);
         dao.updateToken(token.withToken(new byte[] { 1 }));
 
         // try remember me
@@ -67,14 +62,12 @@ public class ProgrammaticAuthenticationControllerTest extends WebTest {
         deleteAllCookies();
         loadAuthRequired();
         pageObject(LoginPO.class).defaultLogin();
-        assertPage(ProgrammaticAuthenticationController.class,
-                x -> x.authenticationRequired());
+        assertPage(ProgrammaticAuthenticationController.class, x -> x.authenticationRequired());
 
         // clear session, uses remember me
         clearSession();
         loadAuthRequired();
-        assertPage(ProgrammaticAuthenticationController.class,
-                x -> x.authenticationRequired());
+        assertPage(ProgrammaticAuthenticationController.class, x -> x.authenticationRequired());
 
         deleteAllCookies();
         loadAuthRequired();
@@ -92,8 +85,7 @@ public class ProgrammaticAuthenticationControllerTest extends WebTest {
 
     private void loadAuthRequired() {
         // startSession();
-        driver.navigate().to(url(go(ProgrammaticAuthenticationController.class)
-                .authenticationRequired()));
+        driver.navigate().to(url(go(ProgrammaticAuthenticationController.class).authenticationRequired()));
     }
 
 }

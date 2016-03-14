@@ -37,8 +37,7 @@ public class DefaultAuthenticationManager implements AuthenticationManager {
         ArrayList<AuthenticationFailure> failures = new ArrayList<>();
         for (Pair<Class<?>, AuthenticationProvider<?>> pair : getProviders()) {
             if (pair.getA().isAssignableFrom(request.getClass())) {
-                result = ((AuthenticationProvider) pair.getB())
-                        .authenticate(request);
+                result = ((AuthenticationProvider) pair.getB()).authenticate(request);
                 if (result.isSuccess())
                     break;
                 else
@@ -58,17 +57,14 @@ public class DefaultAuthenticationManager implements AuthenticationManager {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void addProvider(
-            AuthenticationProvider<? extends AuthenticationRequest> provider) {
-        Class type = TypeToken.of(provider.getClass())
-                .resolveType(
-                        AuthenticationProvider.class.getTypeParameters()[0])
+    public void addProvider(AuthenticationProvider<? extends AuthenticationRequest> provider) {
+        Class type = TypeToken.of(provider.getClass()).resolveType(AuthenticationProvider.class.getTypeParameters()[0])
                 .getRawType();
         addProvider(type, (AuthenticationProvider) provider);
     }
 
-    public <T extends AuthenticationRequest> void addProvider(
-            Class<T> requestClass, AuthenticationProvider<? super T> provider) {
+    public <T extends AuthenticationRequest> void addProvider(Class<T> requestClass,
+            AuthenticationProvider<? super T> provider) {
         providers.add(Pair.of(requestClass, provider));
         provider.initialize(this);
     }

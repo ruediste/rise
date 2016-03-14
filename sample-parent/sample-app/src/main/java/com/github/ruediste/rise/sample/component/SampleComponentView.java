@@ -15,8 +15,7 @@ import com.github.ruediste1.i18n.message.TMessageUtil;
 import com.github.ruediste1.i18n.message.TMessages;
 
 @Labeled
-public class SampleComponentView
-        extends ViewComponent<SampleComponentController> {
+public class SampleComponentView extends ViewComponent<SampleComponentController> {
 
     @Inject
     TMessageUtil messageUtil;
@@ -32,14 +31,9 @@ public class SampleComponentView
 
     @Override
     protected Component createComponents() {
-        return new CPage(label(this))
-                .add(toComponent(
-                        html -> html
-                                .add(toComponentDirect(x -> x.write(messages
-                                        .theCounterIs(controller.counter))))
-                        .add(new CButton("ClickMe")
-                                .setHandler(() -> controller.inc()))
-                .add(new CFormGroup(new CTextField()
-                        .bindText(() -> controller.getData().getText())))));
+        return new CPage(label(this)).add(
+                toComponent(html -> html.add(toComponentDirect(x -> x.write(messages.theCounterIs(controller.counter))))
+                        .add(new CButton("ClickMe").setHandler(() -> controller.inc()))
+                        .add(new CFormGroup(new CTextField().bindText(() -> controller.getData().getText())))));
     }
 }

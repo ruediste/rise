@@ -9,7 +9,6 @@ public class FileinputAssetBundle extends AssetBundle {
 
     @Override
     public void initialize() {
-        out = locations("./css/fileinput.css", "./js/fileinput.js",
-                "./riseFileinput.js").load();
+        out = locations("./css/fileinput.css", "./js/fileinput.js", "./riseFileinput.js").load();
     }
 }

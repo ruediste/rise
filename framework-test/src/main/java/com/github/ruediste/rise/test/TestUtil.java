@@ -31,36 +31,29 @@ public interface TestUtil {
     WebDriver internal_getDriver();
 
     default RiseWait<WebDriver> doWait() {
-        return new RiseWait<>(internal_getDriver())
-                .withTimeout(Duration.ofSeconds(defaultWaitSeconds));
+        return new RiseWait<>(internal_getDriver()).withTimeout(Duration.ofSeconds(defaultWaitSeconds));
     }
 
     default RiseWait<WebDriver> doWait(long timeOutInSeconds) {
-        return new RiseWait<>(internal_getDriver())
-                .withTimeout(Duration.ofSeconds(timeOutInSeconds));
+        return new RiseWait<>(internal_getDriver()).withTimeout(Duration.ofSeconds(timeOutInSeconds));
     }
 
     default <T> void assertPage(Class<T> cls, Consumer<T> methodAccessor) {
-        MethodInvocation<Object> invocation = MethodInvocationRecorder
-                .getLastInvocation(cls, methodAccessor);
+        MethodInvocation<Object> invocation = MethodInvocationRecorder.getLastInvocation(cls, methodAccessor);
 
         Class<?> declaredController = invocation.getInstanceType().getRawType();
-        Class<?> controllerImplementation = InjectorsHolder
-                .getRestartableInjector().getInstance(CoreConfiguration.class)
-                .getRequestMapper(declaredController)
+        Class<?> controllerImplementation = InjectorsHolder.getRestartableInjector()
+                .getInstance(CoreConfiguration.class).getRequestMapper(declaredController)
                 .getControllerImplementationClass(declaredController);
 
         Method method = invocation.getMethod();
-        String expectedPageName = controllerImplementation.getName() + "."
-                + method.getName();
+        String expectedPageName = controllerImplementation.getName() + "." + method.getName();
 
         doWait().untilPassing(new Runnable() {
 
             @Override
             public void run() {
-                assertThat(
-                        internal_getDriver().findElement(By.tagName("body"))
-                                .getAttribute("data-test-name"),
+                assertThat(internal_getDriver().findElement(By.tagName("body")).getAttribute("data-test-name"),
                         equalTo(expectedPageName));
 
             }
@@ -89,12 +82,9 @@ public interface TestUtil {
     }
 
     default <T> String dataTestName(Class<T> cls, Consumer<T> accessor) {
-        MethodInvocation<Object> invocation = MethodInvocationRecorder
-                .getLastInvocation(cls, accessor);
-        Optional<PropertyInfo> property = PropertyUtil
-                .tryGetAccessedProperty(invocation);
-        return property.map(p -> p.getName())
-                .orElseGet(() -> invocation.getMethod().getName());
+        MethodInvocation<Object> invocation = MethodInvocationRecorder.getLastInvocation(cls, accessor);
+        Optional<PropertyInfo> property = PropertyUtil.tryGetAccessedProperty(invocation);
+        return property.map(p -> p.getName()).orElseGet(() -> invocation.getMethod().getName());
     }
 
     /**
@@ -122,27 +112,22 @@ public interface TestUtil {
         WebElement body = internal_getDriver().findElement(By.tagName("body"));
         String initialReloadCount = body.getAttribute("data-rise-reload-count");
         action.run();
-        doWait(timeoutSeconds)
-                .untilTrue(new java.util.function.Predicate<WebDriver>() {
-                    @Override
-                    public boolean test(WebDriver d) {
-                        String currentReloadCount = body
-                                .getAttribute("data-rise-reload-count");
-                        return !Objects.equals(initialReloadCount,
-                                currentReloadCount);
-                    }
+        doWait(timeoutSeconds).untilTrue(new java.util.function.Predicate<WebDriver>() {
+            @Override
+            public boolean test(WebDriver d) {
+                String currentReloadCount = body.getAttribute("data-rise-reload-count");
+                return !Objects.equals(initialReloadCount, currentReloadCount);
+            }
 
-                    @Override
-                    public String toString() {
-                        return "reload";
-                    }
-                });
+            @Override
+            public String toString() {
+                return "reload";
+            }
+        });
     }
 
-    default <T extends WebElement> WebElement getContainingReloadElement(
-            T element) {
-        WebElement reload = element.findElement(
-                By.xpath("ancestor::*[contains(@class,'rise_reload')]"));
+    default <T extends WebElement> WebElement getContainingReloadElement(T element) {
+        WebElement reload = element.findElement(By.xpath("ancestor::*[contains(@class,'rise_reload')]"));
         return reload;
     }
 
@@ -152,8 +137,7 @@ public interface TestUtil {
 
     default <T extends PageObject> T pageObject(Class<T> cls,
             Supplier<? extends SearchContext> rootSearchContextSupplier) {
-        return PageObjectFactory.createPageObject(internal_getDriver(), cls,
-                rootSearchContextSupplier);
+        return PageObjectFactory.createPageObject(internal_getDriver(), cls, rootSearchContextSupplier);
     }
 
     default <T extends PageObject> T pageObject(Class<T> cls, By by) {
@@ -161,8 +145,7 @@ public interface TestUtil {
     }
 
     default <T extends PageObject> T pageObject(Class<T> cls,
-            Supplier<? extends SearchContext> rootSearchContextSupplier,
-            By by) {
+            Supplier<? extends SearchContext> rootSearchContextSupplier, By by) {
         return PageObjectFactory.createPageObject(internal_getDriver(), cls,
                 () -> by.findElement(rootSearchContextSupplier.get()));
     }

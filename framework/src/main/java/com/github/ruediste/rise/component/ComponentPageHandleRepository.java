@@ -69,8 +69,7 @@ public class ComponentPageHandleRepository {
         events.getScopeDestroyedEvent().addListener(session -> {
             for (PageHandle handle : pageHandles.values()) {
                 synchronized (handle.lock) {
-                    ScopeState old = pageScopeManager
-                            .setState(handle.pageScopeState);
+                    ScopeState old = pageScopeManager.setState(handle.pageScopeState);
                     try {
                         destroyCurrentPage();
                     } catch (Throwable e) {
@@ -87,8 +86,7 @@ public class ComponentPageHandleRepository {
     public PageHandle createPageHandle() {
         PageHandle handle = new PageHandle();
         handle.id = nextPageId.getAndIncrement();
-        handle.setEndOfLife(
-                x -> Instant.now().plus(config.getHeartbeatInterval()));
+        handle.setEndOfLife(x -> Instant.now().plus(config.getHeartbeatInterval()));
         pageHandles.put(handle.id, handle);
         return handle;
     }
@@ -114,8 +112,7 @@ public class ComponentPageHandleRepository {
         PageHandle handle = pageHandles.get(pageNr);
         if (handle != null)
             handle.setEndOfLife(x -> {
-                Instant newEOL = Instant.now()
-                        .plus(config.getHeartbeatInterval());
+                Instant newEOL = Instant.now().plus(config.getHeartbeatInterval());
                 return newEOL.isAfter(x) ? newEOL : x;
             });
     }

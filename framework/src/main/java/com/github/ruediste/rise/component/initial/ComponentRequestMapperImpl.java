@@ -36,8 +36,7 @@ public class ComponentRequestMapperImpl extends RequestMapperBase {
     }
 
     @Override
-    protected RequestParseResult createParseResult(
-            ActionInvocation<String> path) {
+    protected RequestParseResult createParseResult(ActionInvocation<String> path) {
         return new RequestParseResultImpl(path, actionInvocation -> {
             componentRequestInfo.setComponentRequest(true);
             componentRequestInfo.setInitialRequest(true);

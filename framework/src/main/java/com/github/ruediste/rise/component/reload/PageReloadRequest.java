@@ -44,8 +44,7 @@ public class PageReloadRequest {
     }
 
     public Optional<Object> getParameterObject(String key) {
-        return Optional
-                .ofNullable(Iterables.getFirst(parameterData.get(key), null));
+        return Optional.ofNullable(Iterables.getFirst(parameterData.get(key), null));
     }
 
     public Optional<String> getParameterValue(String key) {
@@ -57,8 +56,7 @@ public class PageReloadRequest {
     }
 
     public List<String> getParameterValues(String key) {
-        return getParameterObjects(key).stream().map(x -> (String) x)
-                .collect(toList());
+        return getParameterObjects(key).stream().map(x -> (String) x).collect(toList());
     }
 
     public boolean isParameterDefined(String key) {

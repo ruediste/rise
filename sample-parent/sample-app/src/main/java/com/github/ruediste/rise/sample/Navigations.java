@@ -26,11 +26,8 @@ public class Navigations extends NavigationsContainer {
     @Override
     protected void initializeImpl() {
         topNavigation = build().add(go(WelcomeController.class).index())
-                .add(go(SampleComponentController.class).index())
-                .group(GroupLabels.CRUD)
-                .add(go(CrudController.class).showTodos())
-                .add(go(CrudController.class).showTodoCategories())
-                .add(go(CrudController.class).browse(User.class, null), "Users")
-                ._group().getResult();
+                .add(go(SampleComponentController.class).index()).group(GroupLabels.CRUD)
+                .add(go(CrudController.class).showTodos()).add(go(CrudController.class).showTodoCategories())
+                .add(go(CrudController.class).browse(User.class, null), "Users")._group().getResult();
     }
 }

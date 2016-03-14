@@ -8,12 +8,12 @@ import javax.transaction.TransactionSynchronizationRegistry;
 
 import org.eclipse.persistence.sessions.ExternalTransactionController;
 
-import bitronix.tm.TransactionManagerServices;
-
 import com.github.ruediste.rise.nonReloadable.front.StartupTimeLogger;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Provides;
 import com.google.common.base.Stopwatch;
+
+import bitronix.tm.TransactionManagerServices;
 
 public class BitronixModule extends AbstractModule {
     public BitronixModule() {
@@ -37,15 +37,13 @@ public class BitronixModule extends AbstractModule {
     @Provides
     @Singleton
     TransactionManager transactionManager() {
-        return withStartupTimeLogging(
-                () -> TransactionManagerServices.getTransactionManager());
+        return withStartupTimeLogging(() -> TransactionManagerServices.getTransactionManager());
     }
 
     @Provides
     @Singleton
     TransactionSynchronizationRegistry transactionSynchronizationRegistry() {
-        return withStartupTimeLogging(() -> TransactionManagerServices
-                .getTransactionSynchronizationRegistry());
+        return withStartupTimeLogging(() -> TransactionManagerServices.getTransactionSynchronizationRegistry());
     }
 
     @Provides

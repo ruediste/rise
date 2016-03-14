@@ -20,8 +20,7 @@ public class ApplicationEventQueue extends ScheduledThreadPoolExecutor {
     private Thread queueThread;
 
     public ApplicationEventQueue() {
-        super(1, new ThreadFactoryBuilder().setDaemon(true).setNameFormat("AET")
-                .build());
+        super(1, new ThreadFactoryBuilder().setDaemon(true).setNameFormat("AET").build());
         setRemoveOnCancelPolicy(true);
         setThreadFactory(getThreadFactory());
         try {

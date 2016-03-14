@@ -18,21 +18,18 @@ public class TestHelpers {
      * Delete a directory tree recursively
      */
     public static void deleteDirTree(Path directory) throws IOException {
-        java.nio.file.Files.walkFileTree(directory,
-                new SimpleFileVisitor<Path>() {
-                    @Override
-                    public FileVisitResult visitFile(Path file,
-                            BasicFileAttributes attrs) throws IOException {
-                        java.nio.file.Files.delete(file);
-                        return FileVisitResult.CONTINUE;
-                    }
+        java.nio.file.Files.walkFileTree(directory, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                java.nio.file.Files.delete(file);
+                return FileVisitResult.CONTINUE;
+            }
 
-                    @Override
-                    public FileVisitResult postVisitDirectory(Path dir,
-                            IOException exc) throws IOException {
-                        java.nio.file.Files.delete(dir);
-                        return FileVisitResult.CONTINUE;
-                    }
-                });
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                java.nio.file.Files.delete(dir);
+                return FileVisitResult.CONTINUE;
+            }
+        });
     }
 }

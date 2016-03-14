@@ -28,131 +28,131 @@ import com.github.ruediste.salta.jsr330.Injector;
 import com.google.common.base.Stopwatch;
 
 public class AssetDirRequestMapper {
-	@Inject
-	Logger log;
+    @Inject
+    Logger log;
 
-	private final static class AssetDirRequestParseResult implements RequestParseResult {
+    private final static class AssetDirRequestParseResult implements RequestParseResult {
 
-		@Inject
-		CoreRequestInfo info;
+        @Inject
+        CoreRequestInfo info;
 
-		@Inject
-		ClasspathResourceRenderResultFactory factory;
+        @Inject
+        ClasspathResourceRenderResultFactory factory;
 
-		@Inject
-		HttpRenderResultUtil httpRenderResultUtil;
+        @Inject
+        HttpRenderResultUtil httpRenderResultUtil;
 
-		private String absoluteLocation;
+        private String absoluteLocation;
 
-		private String pathInfoPrefix;
+        private String pathInfoPrefix;
 
-		public AssetDirRequestParseResult initialize(String absoluteLocation, String pathInfoPrefix) {
-			this.absoluteLocation = absoluteLocation;
-			this.pathInfoPrefix = pathInfoPrefix;
-			return this;
-		}
+        public AssetDirRequestParseResult initialize(String absoluteLocation, String pathInfoPrefix) {
+            this.absoluteLocation = absoluteLocation;
+            this.pathInfoPrefix = pathInfoPrefix;
+            return this;
+        }
 
-		@Override
-		public void handle() {
-			// determine location
-			HttpRequest request = info.getRequest();
-			String classpath = absoluteLocation + request.getPathInfo().substring(pathInfoPrefix.length());
+        @Override
+        public void handle() {
+            // determine location
+            HttpRequest request = info.getRequest();
+            String classpath = absoluteLocation + request.getPathInfo().substring(pathInfoPrefix.length());
 
-			if (classpath.endsWith("/")) {
-				throw new RuntimeException("Not serving directory listings");
-			}
+            if (classpath.endsWith("/")) {
+                throw new RuntimeException("Not serving directory listings");
+            }
 
-			try {
-				factory.create(classpath).sendTo(info.getServletResponse(), httpRenderResultUtil);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
+            try {
+                factory.create(classpath).sendTo(info.getServletResponse(), httpRenderResultUtil);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
-		}
+        }
 
-	}
+    }
 
-	@Inject
-	ClassHierarchyIndex cache;
+    @Inject
+    ClassHierarchyIndex cache;
 
-	@Inject
-	CoreConfiguration coreConfiguration;
+    @Inject
+    CoreConfiguration coreConfiguration;
 
-	@Inject
-	AssetPipelineConfiguration pipelineConfiguration;
+    @Inject
+    AssetPipelineConfiguration pipelineConfiguration;
 
-	@Inject
-	Injector injector;
+    @Inject
+    Injector injector;
 
-	@Inject
-	PathInfoIndex index;
+    @Inject
+    PathInfoIndex index;
 
-	@Inject
-	javax.inject.Provider<AssetDirRequestParseResult> resultProvider;
+    @Inject
+    javax.inject.Provider<AssetDirRequestParseResult> resultProvider;
 
-	@Inject
-	CurrentRestartableApplicationHolder appHolder;
+    @Inject
+    CurrentRestartableApplicationHolder appHolder;
 
-	@Inject
-	ClassLoader classLoader;
+    @Inject
+    ClassLoader classLoader;
 
-	private List<AssetDir> dirs = new ArrayList<>();
+    private List<AssetDir> dirs = new ArrayList<>();
 
-	public void initialize() {
-		Stopwatch watch = Stopwatch.createStarted();
-		String internalName = Type.getInternalName(AssetDir.class);
-		registerChilDirs(internalName);
-		registerDirs(dirs);
-		StartupTimeLogger.stopAndLog("Asset Directory Registration", watch);
-	}
+    public void initialize() {
+        Stopwatch watch = Stopwatch.createStarted();
+        String internalName = Type.getInternalName(AssetDir.class);
+        registerChilDirs(internalName);
+        registerDirs(dirs);
+        StartupTimeLogger.stopAndLog("Asset Directory Registration", watch);
+    }
 
-	void registerDirs(List<AssetDir> dirs) {
+    void registerDirs(List<AssetDir> dirs) {
 
-		for (AssetDir dir : dirs) {
-			String location = dir.getLocation();
-			String absoluteLocation = AssetHelper.calculateAbsoluteLocation(location,
-					pipelineConfiguration.getAssetBasePath(), dir.getClass());
+        for (AssetDir dir : dirs) {
+            String location = dir.getLocation();
+            String absoluteLocation = AssetHelper.calculateAbsoluteLocation(location,
+                    pipelineConfiguration.getAssetBasePath(), dir.getClass());
 
-			String pathInfoPrefix = dir.getName();
-			if (pathInfoPrefix == null)
-				pathInfoPrefix = absoluteLocation;
-			else {
-				if (!pathInfoPrefix.startsWith("/"))
-					pathInfoPrefix = pipelineConfiguration.assetPathInfoPrefix + pathInfoPrefix;
+            String pathInfoPrefix = dir.getName();
+            if (pathInfoPrefix == null)
+                pathInfoPrefix = absoluteLocation;
+            else {
+                if (!pathInfoPrefix.startsWith("/"))
+                    pathInfoPrefix = pipelineConfiguration.assetPathInfoPrefix + pathInfoPrefix;
 
-			}
+            }
 
-			String pathInfoPrefixFinal = pathInfoPrefix;
+            String pathInfoPrefixFinal = pathInfoPrefix;
 
-			dir.pathInfoPrefix = pathInfoPrefix;
+            dir.pathInfoPrefix = pathInfoPrefix;
 
-			index.registerPrefix(pathInfoPrefix,
-					request -> resultProvider.get().initialize(absoluteLocation, pathInfoPrefixFinal));
-			log.debug("Registered asset directory {} ({} -> {})", dir.getClass().getSimpleName(), absoluteLocation,
-					pathInfoPrefix);
-		}
-	}
+            index.registerPrefix(pathInfoPrefix,
+                    request -> resultProvider.get().initialize(absoluteLocation, pathInfoPrefixFinal));
+            log.debug("Registered asset directory {} ({} -> {})", dir.getClass().getSimpleName(), absoluteLocation,
+                    pathInfoPrefix);
+        }
+    }
 
-	public String getPathInfoString(AssetDir dir, String subPath) {
-		return dir.pathInfoPrefix + subPath;
-	}
+    public String getPathInfoString(AssetDir dir, String subPath) {
+        return dir.pathInfoPrefix + subPath;
+    }
 
-	public PathInfo getPathInfo(AssetDir dir, String subPath) {
-		return new PathInfo(getPathInfoString(dir, subPath));
-	}
+    public PathInfo getPathInfo(AssetDir dir, String subPath) {
+        return new PathInfo(getPathInfoString(dir, subPath));
+    }
 
-	void registerChilDirs(String internalName) {
-		for (ClassNode child : cache.getChildren(internalName)) {
-			registerBundle(child);
-			registerChilDirs(child.name);
-		}
-	}
+    void registerChilDirs(String internalName) {
+        for (ClassNode child : cache.getChildren(internalName)) {
+            registerBundle(child);
+            registerChilDirs(child.name);
+        }
+    }
 
-	void registerBundle(ClassNode cls) {
-		Class<?> dirClass;
-		dirClass = AsmUtil.loadClass(Type.getObjectType(cls.name), classLoader);
+    void registerBundle(ClassNode cls) {
+        Class<?> dirClass;
+        dirClass = AsmUtil.loadClass(Type.getObjectType(cls.name), classLoader);
 
-		AssetDir dir = (AssetDir) injector.getInstance(dirClass);
-		dirs.add(dir);
-	}
+        AssetDir dir = (AssetDir) injector.getInstance(dirClass);
+        dirs.add(dir);
+    }
 }

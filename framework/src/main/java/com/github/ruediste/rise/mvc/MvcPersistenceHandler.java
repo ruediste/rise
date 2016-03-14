@@ -30,8 +30,7 @@ public class MvcPersistenceHandler extends ChainedRequestHandler {
     @Override
     public void run(Runnable next) {
         // determine transaction isolation
-        ActionInvocation<String> invocation = coreRequestInfo
-                .getStringActionInvocation();
+        ActionInvocation<String> invocation = coreRequestInfo.getStringActionInvocation();
         Method method = invocation.methodInvocation.getMethod();
 
         if (method.isAnnotationPresent(NoTransaction.class)) {

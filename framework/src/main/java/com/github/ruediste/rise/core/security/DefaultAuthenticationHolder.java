@@ -31,8 +31,7 @@ public class DefaultAuthenticationHolder implements AuthenticationHolder {
     }
 
     @Override
-    public void withAuthentication(AuthenticationSuccess authentication,
-            Runnable action) {
+    public void withAuthentication(AuthenticationSuccess authentication, Runnable action) {
         withAuthentication(authentication, () -> {
             action.run();
             return null;
@@ -40,8 +39,7 @@ public class DefaultAuthenticationHolder implements AuthenticationHolder {
     }
 
     @Override
-    public <T> T withAuthentication(AuthenticationSuccess authentication,
-            Supplier<T> action) {
+    public <T> T withAuthentication(AuthenticationSuccess authentication, Supplier<T> action) {
         AuthenticationSuccess old = currentAuthentication.get();
         try {
             currentAuthentication.set(authentication);

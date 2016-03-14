@@ -39,8 +39,7 @@ public class AssetLocationGroup {
      * Merge the locations in this group with the locations in the other group
      */
     public AssetLocationGroup merge(AssetLocationGroup other) {
-        return new AssetLocationGroup(bundle, Stream.concat(locations.stream(),
-                other.getLocations().stream()));
+        return new AssetLocationGroup(bundle, Stream.concat(locations.stream(), other.getLocations().stream()));
     }
 
     public AssetLocationGroup insertMinInProd() {
@@ -64,24 +63,21 @@ public class AssetLocationGroup {
      * Load the resources from the classpath
      */
     public AssetGroup load() {
-        return new AssetGroup(bundle,
-                locations.stream().map(bundle::loadAssetFromClasspath));
+        return new AssetGroup(bundle, locations.stream().map(bundle::loadAssetFromClasspath));
     }
 
     /**
      * Modify all paths in this group
      */
     public AssetLocationGroup map(Function<String, String> mapper) {
-        return new AssetLocationGroup(bundle,
-                getLocations().stream().map(mapper));
+        return new AssetLocationGroup(bundle, getLocations().stream().map(mapper));
     }
 
     /**
      * Only keep the paths matching the filter in the location group.
      */
     public AssetLocationGroup filter(Predicate<String> filter) {
-        return new AssetLocationGroup(bundle,
-                getLocations().stream().filter(filter));
+        return new AssetLocationGroup(bundle, getLocations().stream().filter(filter));
     }
 
     String insertMin(String location) {
@@ -89,18 +85,15 @@ public class AssetLocationGroup {
         if (parts.length == 1) {
             return location;
         } else {
-            return Arrays.asList(parts).subList(0, parts.length - 1).stream()
-                    .collect(Collectors.joining(".")) + ".min."
+            return Arrays.asList(parts).subList(0, parts.length - 1).stream().collect(Collectors.joining(".")) + ".min."
                     + parts[parts.length - 1];
         }
     }
 
     public AssetLocationGroup remove(String glob) {
-        String l = bundle.helper.calculateAbsoluteLocation(glob,
-                bundle.getClass());
+        String l = bundle.helper.calculateAbsoluteLocation(glob, bundle.getClass());
         Pattern pattern = Pattern.compile(RiseUtil.toRegex(l));
-        return new AssetLocationGroup(bundle, locations.stream()
-                .filter(loc -> !pattern.matcher(loc).matches()));
+        return new AssetLocationGroup(bundle, locations.stream().filter(loc -> !pattern.matcher(loc).matches()));
     }
 
 }

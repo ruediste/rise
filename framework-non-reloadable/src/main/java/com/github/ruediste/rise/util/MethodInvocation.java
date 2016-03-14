@@ -78,8 +78,7 @@ public class MethodInvocation<T> {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("method", method)
-                .add("arguments", arguments).toString();
+        return MoreObjects.toStringHelper(this).add("method", method).add("arguments", arguments).toString();
     }
 
     public Method getMethod() {
@@ -90,11 +89,9 @@ public class MethodInvocation<T> {
         return instanceClass;
     }
 
-    public <R> MethodInvocation<R> map(
-            BiFunction<AnnotatedType, ? super T, R> func) {
+    public <R> MethodInvocation<R> map(BiFunction<AnnotatedType, ? super T, R> func) {
         MethodInvocation<R> invocation = new MethodInvocation<>(this);
-        Iterator<AnnotatedType> pit = Arrays
-                .asList(getMethod().getAnnotatedParameterTypes()).iterator();
+        Iterator<AnnotatedType> pit = Arrays.asList(getMethod().getAnnotatedParameterTypes()).iterator();
         Iterator<T> ait = getArguments().iterator();
         while (pit.hasNext() && ait.hasNext()) {
             invocation.getArguments().add(func.apply(pit.next(), ait.next()));

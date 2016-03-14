@@ -13,11 +13,9 @@ import com.github.ruediste.rise.component.tree.SingleChildRelation;
  * back to the display view when the focus on the edit view is lost.
  */
 @DefaultTemplate(CCLickEditTemplate.class)
-public class CClickEdit<T> extends RelationsComponent<CClickEdit<T>>
-        implements LabeledComponentTrait<CClickEdit<T>> {
+public class CClickEdit<T> extends RelationsComponent<CClickEdit<T>> implements LabeledComponentTrait<CClickEdit<T>> {
 
-    private SingleChildRelation<Component, CClickEdit<T>> child = new SingleChildRelation<>(
-            this);
+    private SingleChildRelation<Component, CClickEdit<T>> child = new SingleChildRelation<>(this);
     private T value;
 
     private BiConsumer<T, EditComponentConsumer<T>> editComponentFactory;
@@ -46,12 +44,10 @@ public class CClickEdit<T> extends RelationsComponent<CClickEdit<T>>
          * @param focusComponent
          *            component to focus on
          */
-        void setEditComponent(Component component, Supplier<T> valueExtractor,
-                Component focusComponent);
+        void setEditComponent(Component component, Supplier<T> valueExtractor, Component focusComponent);
     }
 
-    private static class EditComponentConsumerImpl<T>
-            implements EditComponentConsumer<T> {
+    private static class EditComponentConsumerImpl<T> implements EditComponentConsumer<T> {
 
         Component component;
         Supplier<T> valueExtractor;
@@ -59,8 +55,7 @@ public class CClickEdit<T> extends RelationsComponent<CClickEdit<T>>
         boolean setEditComponentCalled;
 
         @Override
-        public void setEditComponent(Component component,
-                Supplier<T> valueExtractor, Component focusComponent) {
+        public void setEditComponent(Component component, Supplier<T> valueExtractor, Component focusComponent) {
             setEditComponentCalled = true;
             this.component = component;
             this.valueExtractor = valueExtractor;
@@ -151,8 +146,7 @@ public class CClickEdit<T> extends RelationsComponent<CClickEdit<T>>
         return tmp;
     }
 
-    public void setFocusEditComponentOnReload(
-            boolean focusEditComponentOnReload) {
+    public void setFocusEditComponentOnReload(boolean focusEditComponentOnReload) {
         this.focusEditComponentOnReload = focusEditComponentOnReload;
     }
 

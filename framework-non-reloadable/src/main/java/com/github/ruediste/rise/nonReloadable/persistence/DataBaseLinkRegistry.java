@@ -24,8 +24,7 @@ public class DataBaseLinkRegistry {
     @Inject
     CoreConfigurationNonRestartable configurationNonRestartable;
 
-    final private BiMap<Class<? extends Annotation>, Integer> linkNrs = HashBiMap
-            .create();
+    final private BiMap<Class<? extends Annotation>, Integer> linkNrs = HashBiMap.create();
 
     private final ArrayList<DataBaseLink> links = new ArrayList<>();
     final private HashMap<Class<? extends Annotation>, DataBaseLink> linkMap = new HashMap<>();
@@ -66,12 +65,10 @@ public class DataBaseLinkRegistry {
     }
 
     public void dropAndCreateSchemas() {
-        linkMap.values().forEach(
-                link -> link.getPersistenceUnitManager().dropAndCreateSchema());
+        linkMap.values().forEach(link -> link.getPersistenceUnitManager().dropAndCreateSchema());
     }
 
     public void closePersistenceUnitManagers() {
-        linkMap.values()
-                .forEach(link -> link.getPersistenceUnitManager().close());
+        linkMap.values().forEach(link -> link.getPersistenceUnitManager().close());
     }
 }

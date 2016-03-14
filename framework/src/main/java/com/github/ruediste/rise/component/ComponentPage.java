@@ -35,8 +35,7 @@ public class ComponentPage {
 
     private final GenericEventManager<Object> destroyEvent = new GenericEventManager<>();
 
-    private final Map<Long, Component> componentNrMap = new MapMaker()
-            .weakValues().makeMap();
+    private final Map<Long, Component> componentNrMap = new MapMaker().weakValues().makeMap();
     private long maxComponentNr = 0;
 
     private int nextEventHandlerId = 0;

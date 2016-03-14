@@ -24,8 +24,7 @@ public class DefaultCrudCreateController extends SubControllerComponent {
     @Inject
     CrudReflectionUtil reflectionUtil;
 
-    static class View
-            extends FrameworkViewComponent<DefaultCrudCreateController> {
+    static class View extends FrameworkViewComponent<DefaultCrudCreateController> {
         @Inject
         CrudReflectionUtil util;
 
@@ -35,19 +34,13 @@ public class DefaultCrudCreateController extends SubControllerComponent {
         @Override
         protected Component createComponents() {
             return toComponent(html -> {
-                for (CrudPropertyInfo p : util
-                        .getEditProperties(controller.type)) {
-                    html.add(
-                            editComponents.createEditComponent(
-                                    CrudPropertyHandle.create(p,
-                                            () -> controller.entityGroup.get(),
-                                            () -> controller.entityGroup
-                                                    .proxy(),
-                                    controller.entityGroup)));
+                for (CrudPropertyInfo p : util.getEditProperties(controller.type)) {
+                    html.add(editComponents
+                            .createEditComponent(CrudPropertyHandle.create(p, () -> controller.entityGroup.get(),
+                                    () -> controller.entityGroup.proxy(), controller.entityGroup)));
                 }
                 html.add(new CButton(controller, c -> c.create()));
-                html.rButtonA(go(CrudControllerBase.class).browse(
-                        controller.entityGroup.get().getClass(),
+                html.rButtonA(go(CrudControllerBase.class).browse(controller.entityGroup.get().getClass(),
                         controller.emQualifier));
 
             });
@@ -65,14 +58,13 @@ public class DefaultCrudCreateController extends SubControllerComponent {
 
     PersistentType type;
 
-    public DefaultCrudCreateController initialize(Class<?> entityClass,
-            Class<? extends Annotation> emQualifier) {
+    public DefaultCrudCreateController initialize(Class<?> entityClass, Class<? extends Annotation> emQualifier) {
         type = reflectionUtil.getPersistentType(emQualifier, entityClass);
         try {
             entityGroup.initialize(entityClass.newInstance());
         } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException("Error while creating instance of "
-                    + entityClass + " for default create CRUD controller");
+            throw new RuntimeException(
+                    "Error while creating instance of " + entityClass + " for default create CRUD controller");
         }
         this.emQualifier = emQualifier;
         return this;

@@ -69,13 +69,11 @@ public class DirectoryChangeWatcher {
      * @param settleDelayMs
      *            delay in milli seconds before changes are reported.
      */
-    public void start(Collection<? extends Path> rootDirs,
-            Consumer<Set<Path>> listener, long settleDelayMs) {
+    public void start(Collection<? extends Path> rootDirs, Consumer<Set<Path>> listener, long settleDelayMs) {
         queue.checkAET();
 
         Preconditions.checkNotNull(listener, "listener");
-        Preconditions.checkArgument(settleDelayMs >= 0,
-                "settleDealy needs to be positive: %s", settleDelayMs);
+        Preconditions.checkArgument(settleDelayMs >= 0, "settleDealy needs to be positive: %s", settleDelayMs);
         this.listener = listener;
         this.settleDelayMs = settleDelayMs;
         this.rootDirs.addAll(rootDirs);
@@ -133,10 +131,8 @@ public class DirectoryChangeWatcher {
             log.debug("Registering " + dir);
 
             try {
-                WatchKey watchKey = dir.register(watchService,
-                        StandardWatchEventKinds.ENTRY_CREATE,
-                        StandardWatchEventKinds.ENTRY_DELETE,
-                        StandardWatchEventKinds.ENTRY_MODIFY,
+                WatchKey watchKey = dir.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
+                        StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY,
                         StandardWatchEventKinds.OVERFLOW);
                 watchKeys.put(dir, watchKey);
             } catch (IOException e) {
@@ -156,33 +152,28 @@ public class DirectoryChangeWatcher {
             Files.walkFileTree(root, new FileVisitor<Path>() {
 
                 @Override
-                public FileVisitResult preVisitDirectory(Path dir,
-                        BasicFileAttributes attrs) throws IOException {
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                     registerDir(dir);
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
-                public FileVisitResult visitFile(Path file,
-                        BasicFileAttributes attrs) throws IOException {
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
-                public FileVisitResult visitFileFailed(Path file,
-                        IOException exc) throws IOException {
+                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
                     return FileVisitResult.CONTINUE;
                 }
 
                 @Override
-                public FileVisitResult postVisitDirectory(Path dir,
-                        IOException exc) throws IOException {
+                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
                     return FileVisitResult.CONTINUE;
                 }
             });
         } catch (IOException e) {
-            throw new RuntimeException(
-                    "error while registering directory tree " + root, e);
+            throw new RuntimeException("error while registering directory tree " + root, e);
         }
     }
 
@@ -224,8 +215,7 @@ public class DirectoryChangeWatcher {
                     if (task != null) {
                         task.cancel(false);
                     }
-                    task = queue.schedule(() -> timerElapsed(), settleDelayMs,
-                            TimeUnit.MILLISECONDS);
+                    task = queue.schedule(() -> timerElapsed(), settleDelayMs, TimeUnit.MILLISECONDS);
 
                 } catch (InterruptedException e) {
                     isRunning = false;

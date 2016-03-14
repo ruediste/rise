@@ -41,10 +41,8 @@ public class AssetHelper {
      * asset from the classpath. Rules see
      * {@link AssetBundle#locations(String...)}
      */
-    public String calculateAbsoluteLocation(String location,
-            Class<?> bundleClass) {
-        return calculateAbsoluteLocation(location,
-                pipelineConfiguration.getAssetBasePath(), bundleClass);
+    public String calculateAbsoluteLocation(String location, Class<?> bundleClass) {
+        return calculateAbsoluteLocation(location, pipelineConfiguration.getAssetBasePath(), bundleClass);
     }
 
     public Asset loadAssetFromClasspath(String path, Class<?> bundleClass) {
@@ -58,21 +56,16 @@ public class AssetHelper {
      *            supplier for the text shown in error messages if the asset
      *            could not be loaded
      */
-    public Asset loadAssetFromClasspath(String fullPath,
-            Supplier<String> referenceTextSupplier) {
-        AssetType type = pipelineConfiguration
-                .getDefaultAssetType(getExtension(fullPath));
+    public Asset loadAssetFromClasspath(String fullPath, Supplier<String> referenceTextSupplier) {
+        AssetType type = pipelineConfiguration.getDefaultAssetType(getExtension(fullPath));
         return new Asset() {
 
             @Override
             public byte[] getData() {
-                byte[] result = RiseUtil.readFromClasspath(fullPath,
-                        getClass().getClassLoader());
+                byte[] result = RiseUtil.readFromClasspath(fullPath, getClass().getClassLoader());
                 if (result == null)
-                    throw new RuntimeException(
-                            "Unable to find resource on classpath: " + fullPath
-                                    + ", reference from "
-                                    + referenceTextSupplier.get());
+                    throw new RuntimeException("Unable to find resource on classpath: " + fullPath + ", reference from "
+                            + referenceTextSupplier.get());
                 return result;
             }
 
@@ -99,8 +92,7 @@ public class AssetHelper {
             @Override
             public String getName() {
                 String basePath = pipelineConfiguration.getAssetBasePath();
-                if (!Strings.isNullOrEmpty(fullPath)
-                        && fullPath.startsWith(basePath))
+                if (!Strings.isNullOrEmpty(fullPath) && fullPath.startsWith(basePath))
                     return fullPath.substring(basePath.length());
                 return fullPath;
             }
@@ -120,13 +112,11 @@ public class AssetHelper {
      * asset from the classpath. Rules see
      * {@link AssetBundle#locations(String...)}
      */
-    public static String calculateAbsoluteLocation(String location,
-            String basePath, Class<?> cls) {
+    public static String calculateAbsoluteLocation(String location, String basePath, Class<?> cls) {
         if (location.startsWith("/"))
             return location.substring(1);
         if (location.startsWith("./"))
-            return AssetHelper.getPackageName(cls).replace('.', '/')
-                    + location.substring(1);
+            return AssetHelper.getPackageName(cls).replace('.', '/') + location.substring(1);
         if (location.startsWith("."))
             return cls.getName().replace('.', '/') + location.substring(1);
         return basePath + location;
@@ -139,8 +129,7 @@ public class AssetHelper {
      */
     public String resolveNameTemplate(Asset asset, String template) {
         String name = asset.getName();
-        Pattern p = Pattern.compile(
-                "(?<context>\\A|[^\\\\]|\\G)\\{(?<placeholder>[^\\}]*)\\}");
+        Pattern p = Pattern.compile("(?<context>\\A|[^\\\\]|\\G)\\{(?<placeholder>[^\\}]*)\\}");
         Matcher m = p.matcher(template);
         StringBuilder sb = new StringBuilder();
         int lastEnd = 0;
@@ -151,33 +140,23 @@ public class AssetHelper {
             String placeholder = m.group("placeholder");
             switch (placeholder) {
             case "hash": {
-                String hash = BaseEncoding.base64Url().encode(
-                        Hashing.sha256().hashBytes(asset.getData()).asBytes());
-                sb.append(hash.substring(0, Integer.min(hash.length(),
-                        pipelineConfiguration.getDefaultHashLength())));
+                String hash = BaseEncoding.base64Url().encode(Hashing.sha256().hashBytes(asset.getData()).asBytes());
+                sb.append(hash.substring(0, Integer.min(hash.length(), pipelineConfiguration.getDefaultHashLength())));
             }
                 break;
             case "name": {
                 String[] parts = name.split("/");
                 parts = parts[parts.length - 1].split("\\.");
 
-                sb.append(
-                        Arrays.asList(parts)
-                                .subList(0,
-                                        parts.length == 1 ? 1
-                                                : parts.length - 1)
-                                .stream().collect(Collectors.joining(".")));
+                sb.append(Arrays.asList(parts).subList(0, parts.length == 1 ? 1 : parts.length - 1).stream()
+                        .collect(Collectors.joining(".")));
             }
                 break;
             case "qname": {
                 String[] parts = name.split("\\.");
 
-                sb.append(
-                        Arrays.asList(parts)
-                                .subList(0,
-                                        parts.length == 1 ? 1
-                                                : parts.length - 1)
-                                .stream().collect(Collectors.joining(".")));
+                sb.append(Arrays.asList(parts).subList(0, parts.length == 1 ? 1 : parts.length - 1).stream()
+                        .collect(Collectors.joining(".")));
             }
                 break;
             case "ext": {
@@ -186,13 +165,11 @@ public class AssetHelper {
             }
                 break;
             case "extT": {
-                sb.append(pipelineConfiguration
-                        .getExtension(asset.getAssetType()));
+                sb.append(pipelineConfiguration.getExtension(asset.getAssetType()));
             }
                 break;
             default:
-                throw new RuntimeException("Unknown placeholder " + placeholder
-                        + " in name template " + template);
+                throw new RuntimeException("Unknown placeholder " + placeholder + " in name template " + template);
             }
         }
         sb.append(template.substring(lastEnd, template.length()));

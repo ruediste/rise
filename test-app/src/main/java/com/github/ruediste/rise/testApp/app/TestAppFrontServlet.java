@@ -21,8 +21,7 @@ public class TestAppFrontServlet extends FrontServletBase {
         this(TestRestartableApplication.class);
     }
 
-    public TestAppFrontServlet(
-            Class<? extends RestartableApplication> restartableApplicationClass) {
+    public TestAppFrontServlet(Class<? extends RestartableApplication> restartableApplicationClass) {
         super(restartableApplicationClass, true);
     }
 
@@ -32,21 +31,17 @@ public class TestAppFrontServlet extends FrontServletBase {
 
             @Override
             protected void configure() throws Exception {
-                bind(LabelUtil.class).toInstance(
-                        new LabelUtil((str, locale) -> str.getFallback()));
-                PersistenceModuleUtil.bindDataSource(binder(), null,
-                        new EclipseLinkPersistenceUnitManager(),
-                        new BitronixDataSourceFactory(
-                                new H2DatabaseIntegrationInfo()) {
+                bind(LabelUtil.class).toInstance(new LabelUtil((str, locale) -> str.getFallback()));
+                PersistenceModuleUtil.bindDataSource(binder(), null, new EclipseLinkPersistenceUnitManager(),
+                        new BitronixDataSourceFactory(new H2DatabaseIntegrationInfo()) {
 
-                    @Override
-                    protected void initializeProperties(Properties props) {
-                        props.setProperty("URL",
-                                "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MVCC=false");
-                        props.setProperty("user", "sa");
-                        props.setProperty("password", "sa");
-                    }
-                });
+                            @Override
+                            protected void initializeProperties(Properties props) {
+                                props.setProperty("URL", "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MVCC=false");
+                                props.setProperty("user", "sa");
+                                props.setProperty("password", "sa");
+                            }
+                        });
             }
 
         }, new BitronixModule(), new IntegrationModuleNonRestartable(this));

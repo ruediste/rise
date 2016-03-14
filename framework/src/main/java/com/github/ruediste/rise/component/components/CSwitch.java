@@ -32,8 +32,7 @@ public class CSwitch<T> extends ComponentBase<CSwitch<T>> {
 
     @Override
     public Iterable<Component> getChildren() {
-        return cases.values().stream().map(Case::getComponent)
-                .filter(x -> x != null).collect(toList());
+        return cases.values().stream().map(Case::getComponent).filter(x -> x != null).collect(toList());
     }
 
     @Override
@@ -94,8 +93,7 @@ public class CSwitch<T> extends ComponentBase<CSwitch<T>> {
         this.option = option;
         this.currentCase = cases.get(option);
         if (currentCase == null)
-            throw new RuntimeException(
-                    "No case for option " + option + " registered");
+            throw new RuntimeException("No case for option " + option + " registered");
         currentCase.onEnter();
     }
 

@@ -14,10 +14,9 @@ import org.slf4j.Logger;
 
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassChangeNotifier;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassChangeNotifier.ClassChangeTransaction;
-import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndexTest;
 import com.github.ruediste.rise.nonReloadable.front.reload.Reloadable;
-import com.github.ruediste.rise.nonReloadable.front.reload.ReloadableClassesIndexTestHelper;
 import com.github.ruediste.rise.nonReloadable.front.reload.ReloadableClassesIndex;
+import com.github.ruediste.rise.nonReloadable.front.reload.ReloadableClassesIndexTestHelper;
 import com.github.ruediste.rise.util.AsmUtil;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -39,8 +38,7 @@ public class ReloadableClassesIndexTest {
         tst = new Object() {
         };
         ClassChangeTransaction trx = new ClassChangeNotifier.ClassChangeTransaction();
-        trx.addedClasses
-                .add(AsmUtil.readClass(ReloadableClassesIndexTest.class));
+        trx.addedClasses.add(AsmUtil.readClass(ReloadableClassesIndexTest.class));
         trx.addedClasses.add(AsmUtil.readClass(A.class));
         trx.addedClasses.add(AsmUtil.readClass(tst.getClass()));
         ReloadableClassesIndexTestHelper.callOnChange(cache, trx);

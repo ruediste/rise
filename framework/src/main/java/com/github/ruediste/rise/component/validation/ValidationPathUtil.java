@@ -11,8 +11,7 @@ public class ValidationPathUtil {
      * Convert a javax.validation path to a beanutils property
      */
     public static String toPathString(Path path) {
-        return StreamSupport.stream(path.spliterator(), false)
-                .map(ValidationPathUtil::toPathString)
+        return StreamSupport.stream(path.spliterator(), false).map(ValidationPathUtil::toPathString)
                 .collect(Collectors.joining("."));
     }
 

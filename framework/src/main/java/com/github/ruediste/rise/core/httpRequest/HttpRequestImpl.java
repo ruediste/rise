@@ -23,14 +23,12 @@ public class HttpRequestImpl extends HttpRequestBase {
 
     public HttpRequestImpl(UrlSpec spec) {
         this.pathInfo = spec.getPathInfo().getValue();
-        Multimap<String, String> tmp = MultimapBuilder.hashKeys()
-                .arrayListValues().build();
+        Multimap<String, String> tmp = MultimapBuilder.hashKeys().arrayListValues().build();
         for (Pair<String, String> pair : spec.getParameters()) {
             tmp.put(pair.getA(), pair.getB());
         }
         for (Entry<String, Collection<String>> entry : tmp.asMap().entrySet()) {
-            parameterMap.put(entry.getKey(),
-                    entry.getValue().toArray(new String[] {}));
+            parameterMap.put(entry.getKey(), entry.getValue().toArray(new String[] {}));
         }
     }
 
@@ -71,7 +69,6 @@ public class HttpRequestImpl extends HttpRequestBase {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("path", pathInfo)
-                .add("parameters", parameterMap).toString();
+        return MoreObjects.toStringHelper(this).add("path", pathInfo).add("parameters", parameterMap).toString();
     }
 }

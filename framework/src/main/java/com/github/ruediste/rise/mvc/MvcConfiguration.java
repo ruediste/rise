@@ -104,10 +104,8 @@ public class MvcConfiguration {
     public final SupplierRefs supplierRefs = new SupplierRefs();
 
     @PostConstruct
-    public void postConstruct(Provider<WebRequestAuthenticator> authenticator,
-            Provider<MvcRequestMapperImpl> mapper,
-            Provider<MvcControllerInvoker> invoker,
-            Provider<ActionResultRenderer> actionResultRenderer,
+    public void postConstruct(Provider<WebRequestAuthenticator> authenticator, Provider<MvcRequestMapperImpl> mapper,
+            Provider<MvcControllerInvoker> invoker, Provider<ActionResultRenderer> actionResultRenderer,
             Provider<MvcPersistenceHandler> persistenceHandler) {
         supplierRefs.mapperSupplier = mapper::get;
         this.mapperSupplier = supplierRefs.mapperSupplier;

@@ -11,7 +11,6 @@ public class CLinkHtmlTemplate extends Html5ComponentTemplateBase<CLink> {
 
     @Override
     public void doRender(CLink component, RiseCanvas<?> html) {
-        html.a().HREF(component.getDestination()).renderChildren(component)
-                ._a();
+        html.a().HREF(component.getDestination()).renderChildren(component)._a();
     }
 }

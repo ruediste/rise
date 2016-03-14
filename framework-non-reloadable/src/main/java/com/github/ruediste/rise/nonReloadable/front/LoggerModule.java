@@ -10,8 +10,7 @@ public class LoggerModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bindCreationRule(
-                new LoggerCreationRule(Logger.class, LoggerFactory::getLogger));
+        bindCreationRule(new LoggerCreationRule(Logger.class, LoggerFactory::getLogger));
         bindCreationRule(new LoggerCreationRule(java.util.logging.Logger.class,
                 cls -> java.util.logging.Logger.getLogger(cls.getName())));
     }

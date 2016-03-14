@@ -10,8 +10,7 @@ public class CrudDeletePO extends PageObject {
     }
 
     public CrudBrowserPO delete() {
-        findElement(byDataTestName(DefaultCrudDeleteController.class,
-                x -> x.delete())).click();
+        findElement(byDataTestName(DefaultCrudDeleteController.class, x -> x.delete())).click();
         return pageObject(CrudBrowserPO.class);
     }
 }

@@ -19,15 +19,13 @@ public class TestCrudController extends CrudControllerBase {
         @Override
         protected Component createComponents() {
             return new CPage(label(this))
-                    .add(new CComponentStack(toSubView(() -> controller.data(),
-                            x -> x.getSubController())));
+                    .add(new CComponentStack(toSubView(() -> controller.data(), x -> x.getSubController())));
         }
     }
 
     @UrlUnsigned
     @Override
-    public ActionResult browse(Class<?> entityClass,
-            Class<? extends Annotation> emQualifier) {
+    public ActionResult browse(Class<?> entityClass, Class<? extends Annotation> emQualifier) {
         return super.browse(entityClass, emQualifier);
     }
 }

@@ -13,8 +13,7 @@ import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.web.HttpRenderResult;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 
-public class CFileUploadTemplate
-        extends BootstrapComponentTemplateBase<CFileUpload> {
+public class CFileUploadTemplate extends BootstrapComponentTemplateBase<CFileUpload> {
 
     @Inject
     CoreRequestInfo coreRequestInfo;
@@ -25,17 +24,15 @@ public class CFileUploadTemplate
     @Override
     public void doRender(CFileUpload component, BootstrapRiseCanvas<?> html) {
 
-        html.input().rCOMPONENT_ATTRIBUTES(component).TYPE("file")
-                .CLASS("rise_fileinput").MULTIPLE("multiple")
+        html.input().rCOMPONENT_ATTRIBUTES(component).TYPE("file").CLASS("rise_fileinput").MULTIPLE("multiple")
                 .DATA("upload-url", getAjaxUrl(component) + "/upload")
                 .DATA("delete-url", getAjaxUrl(component) + "/delete")
-                // .DATA("show-upload", "false")
-                ;
+        // .DATA("show-upload", "false")
+        ;
         if (!component.getUploadedFiles().isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (UploadedFile file : component.getUploadedFiles())
-                sb.append("<div class='file-preview-text'>"
-                        + "<h2><i class='glyphicon glyphicon-file'></i></h2>"
+                sb.append("<div class='file-preview-text'>" + "<h2><i class='glyphicon glyphicon-file'></i></h2>"
                         + file.getSubmittedFileName() + "</div>");
             html.DATA("initial-preview", sb.toString());
         }
@@ -54,8 +51,7 @@ public class CFileUploadTemplate
     }
 
     @Override
-    public HttpRenderResult handleAjaxRequest(CFileUpload component,
-            String suffix) throws Throwable {
+    public HttpRenderResult handleAjaxRequest(CFileUpload component, String suffix) throws Throwable {
         if ("upload".equals(suffix)) {
             // read submitted files
             for (Part part : coreRequestInfo.getServletRequest().getParts()) {

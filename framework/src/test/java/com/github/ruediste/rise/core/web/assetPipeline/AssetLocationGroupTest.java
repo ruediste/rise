@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.github.ruediste.rise.core.web.assetPipeline.AssetLocationGroup;
-
 public class AssetLocationGroupTest {
     @Test
     public void testInsertMin() throws Exception {

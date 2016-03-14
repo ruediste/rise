@@ -12,8 +12,7 @@ public class AuthorizationException extends RuntimeException {
 
     private final List<AuthorizationFailure> authorizationFailures;
 
-    public AuthorizationException(
-            List<AuthorizationFailure> authorizationFailures) {
+    public AuthorizationException(List<AuthorizationFailure> authorizationFailures) {
         this.authorizationFailures = authorizationFailures;
     }
 

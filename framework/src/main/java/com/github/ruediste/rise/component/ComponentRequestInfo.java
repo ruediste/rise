@@ -77,22 +77,19 @@ public class ComponentRequestInfo {
 
     @FunctionalInterface
     public interface InitialConstraintViolationConsumer {
-        <T> void accept(BindingGroup<T> group,
-                Set<ConstraintViolation<T>> violations);
+        <T> void accept(BindingGroup<T> group, Set<ConstraintViolation<T>> violations);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void forEachInitialConstraintViolation(
-            InitialConstraintViolationConsumer consumer) {
+    public void forEachInitialConstraintViolation(InitialConstraintViolationConsumer consumer) {
         if (initialConstraintViolationsMap != null) {
-            initialConstraintViolationsMap.entrySet().forEach(e -> consumer
-                    .accept((BindingGroup) e.getKey(), (Set) e.getValue()));
+            initialConstraintViolationsMap.entrySet()
+                    .forEach(e -> consumer.accept((BindingGroup) e.getKey(), (Set) e.getValue()));
         }
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <T> void addInitialContraintViolation(BindingGroup<T> group,
-            Set<ConstraintViolation<T>> violations) {
+    public <T> void addInitialContraintViolation(BindingGroup<T> group, Set<ConstraintViolation<T>> violations) {
         if (initialConstraintViolationsMap == null)
             initialConstraintViolationsMap = new HashMap<>();
         initialConstraintViolationsMap.put(group, (Set) violations);

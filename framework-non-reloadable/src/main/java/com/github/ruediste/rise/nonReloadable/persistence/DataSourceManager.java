@@ -25,8 +25,7 @@ public class DataSourceManager {
     private final ArrayList<Closeable> closeables = new ArrayList<>();
     private boolean isOpen;
 
-    public DataSourceManager(Class<? extends Annotation> qualifier,
-            DataSourceFactory dataSourceFactory) {
+    public DataSourceManager(Class<? extends Annotation> qualifier, DataSourceFactory dataSourceFactory) {
         super();
         this.qualifier = qualifier;
         this.dataSourceFactory = dataSourceFactory;
@@ -54,14 +53,13 @@ public class DataSourceManager {
         if (isOpen)
             return;
         isOpen = true;
-        DataSource serializable = dataSourceFactory.createDataSource(
-                IsolationLevel.SERIALIZABLE, qualifier, closeables::add);
+        DataSource serializable = dataSourceFactory.createDataSource(IsolationLevel.SERIALIZABLE, qualifier,
+                closeables::add);
         dataSource.setDataSource(IsolationLevel.SERIALIZABLE, serializable);
 
-        DataSource repeatableRead = dataSourceFactory.createDataSource(
-                IsolationLevel.REPEATABLE_READ, qualifier, closeables::add);
-        dataSource.setDataSource(IsolationLevel.REPEATABLE_READ,
-                repeatableRead);
+        DataSource repeatableRead = dataSourceFactory.createDataSource(IsolationLevel.REPEATABLE_READ, qualifier,
+                closeables::add);
+        dataSource.setDataSource(IsolationLevel.REPEATABLE_READ, repeatableRead);
 
     }
 
@@ -72,9 +70,7 @@ public class DataSourceManager {
                 try {
                     c.close();
                 } catch (IOException e) {
-                    log.error(
-                            "Error while closing DB connection, continuing...",
-                            e);
+                    log.error("Error while closing DB connection, continuing...", e);
                 }
             }
         }

@@ -36,8 +36,7 @@ public class SamplePageTemplate extends PageTemplateBase {
     @Inject
     AuthenticationHolder authHolder;
 
-    public void renderOn(SampleCanvas canvas,
-            SamplePageTemplateParameters parameters) {
+    public void renderOn(SampleCanvas canvas, SamplePageTemplateParameters parameters) {
         // your drawing code
         // @formatter:off
         risePageTemplate.renderOn(canvas,

@@ -14,8 +14,7 @@ import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.google.common.collect.Iterables;
 
-public class CFormGroupTemplate
-        extends BootstrapComponentTemplateBase<CFormGroup> {
+public class CFormGroupTemplate extends BootstrapComponentTemplateBase<CFormGroup> {
 
     @Inject
     LabelUtil labelUtil;
@@ -26,8 +25,7 @@ public class CFormGroupTemplate
     @Override
     public void doRender(CFormGroup component, BootstrapRiseCanvas<?> html) {
 
-        LString label = ComponentTreeUtil
-                .componentOfTypeIfSingle(component, LabeledComponent.class)
+        LString label = ComponentTreeUtil.componentOfTypeIfSingle(component, LabeledComponent.class)
                 .map(x -> x.getLabel(labelUtil)).orElse(null);
         ValidationStatus violationStatus = repo.getValidationStatus(component);
 
@@ -46,27 +44,20 @@ public class CFormGroupTemplate
 
         // add label
         if (label != null)
-            html.bControlLabel().FOR(util.getComponentId(component))
-                    .content(label);
+            html.bControlLabel().FOR(util.getComponentId(component)).content(label);
 
         // add children
         html.renderChildren(component);
 
         // render constraint violation
         if (violationStatus != null) {
-            Collection<ValidationFailure> constraintViolations = violationStatus
-                    .getFailures();
-            if (constraintViolations != null
-                    && !constraintViolations.isEmpty()) {
+            Collection<ValidationFailure> constraintViolations = violationStatus.getFailures();
+            if (constraintViolations != null && !constraintViolations.isEmpty()) {
                 if (constraintViolations.size() == 1) {
-                    html.span().BhelpBlock().content(Iterables
-                            .getOnlyElement(constraintViolations).getMessage());
+                    html.span().BhelpBlock().content(Iterables.getOnlyElement(constraintViolations).getMessage());
                 }
                 if (constraintViolations.size() > 1) {
-                    html.ul().BhelpBlock()
-                            .fForEach(constraintViolations,
-                                    v -> html.li().content(v.getMessage()))
-                            ._ul();
+                    html.ul().BhelpBlock().fForEach(constraintViolations, v -> html.li().content(v.getMessage()))._ul();
                 }
             }
         }

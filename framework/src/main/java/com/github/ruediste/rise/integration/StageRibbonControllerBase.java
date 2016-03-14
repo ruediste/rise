@@ -39,20 +39,14 @@ public abstract class StageRibbonControllerBase<TSelf extends StageRibbonControl
         public void renderDefaultView(BootstrapRiseCanvas<?> html) {
             Data data = this;
             html.bContainer().bRow().bCol(x -> x.xs(12)).h1().BtextCenter()
-                    .STYLE("color:" + stage.color + ";background:"
-                            + stage.backgroundColor)
-                    .content(getTitleString())._bCol()._bRow().bRow()
-                    .bCol(x -> x.xs(12).sm(6)).BtextCenter().a()
-                    .CLASS("btn btn-primary").HREF(data.returnUrl).span()
-                    .CLASS("glyphicon glyphicon-arrow-left")._span()
-                    .content("Go Back")._bCol();
+                    .STYLE("color:" + stage.color + ";background:" + stage.backgroundColor).content(getTitleString())
+                    ._bCol()._bRow().bRow().bCol(x -> x.xs(12).sm(6)).BtextCenter().a().CLASS("btn btn-primary")
+                    .HREF(data.returnUrl).span().CLASS("glyphicon glyphicon-arrow-left")._span().content("Go Back")
+                    ._bCol();
             if (stage == ApplicationStage.DEVELOPMENT)
-                html.div().CLASS("col-xs-12 col-sm-6 text-center").a()
-                        .CLASS("btn btn-danger")
-                        .HREF(util.go(StageRibbonControllerBase.class)
-                                .dropAndCreateDataBase(data.returnUrl))
-                        .span().CLASS("glyphicon glyphicon-refresh")._span()
-                        .content("Drop-and-Create Database")._div();
+                html.div().CLASS("col-xs-12 col-sm-6 text-center").a().CLASS("btn btn-danger")
+                        .HREF(util.go(StageRibbonControllerBase.class).dropAndCreateDataBase(data.returnUrl)).span()
+                        .CLASS("glyphicon glyphicon-refresh")._span().content("Drop-and-Create Database")._div();
             html._bRow()._bContainer();
         }
 

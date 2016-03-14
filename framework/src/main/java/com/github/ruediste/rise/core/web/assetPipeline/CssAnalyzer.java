@@ -19,14 +19,11 @@ public class CssAnalyzer {
                 + "(url\\s*\\(\\s*(?<ref2>\"(.+?)\"|'(.+?)'|(.+?))\\s*\\))"//
                 + "|(?<ref3>(\"(.+?)\")|(\\'(.+?)\\')|(.+?))" //
                 + ")\\s*(?<media>[^;]*?)\\s*;";
-        urlRewritePattern = Pattern
-                .compile("(?is)(src\\\\s*=\\\\s*['\"](?<ref1>(.*?))['\"])"
-                        + "|(" + imp + ")"//
-                        + "|(url\\s*\\(\\s*(?<ref4>(\\\"(.+?)\\\")|(\\\\'(.+?)\\\\')|(.+?))\\s*\\))");
+        urlRewritePattern = Pattern.compile("(?is)(src\\\\s*=\\\\s*['\"](?<ref1>(.*?))['\"])" + "|(" + imp + ")"//
+                + "|(url\\s*\\(\\s*(?<ref4>(\\\"(.+?)\\\")|(\\\\'(.+?)\\\\')|(.+?))\\s*\\))");
     }
 
-    public void process(String content, StringBuffer sb,
-            CssProcessorHandler handler) {
+    public void process(String content, StringBuffer sb, CssProcessorHandler handler) {
         Matcher matcher = urlRewritePattern.matcher(content);
         int appendPos = 0;
         while (matcher.find()) {
@@ -55,9 +52,8 @@ public class CssAnalyzer {
                 }
                 ref = trimQuotes(ref);
                 String media = matcher.group("media");
-                appendPos = replaceImport(sb, content, ref, media, appendPos,
-                        matcher.start(), matcher.start(refName), matcher.end(),
-                        matcher.end(refName), handler);
+                appendPos = replaceImport(sb, content, ref, media, appendPos, matcher.start(), matcher.start(refName),
+                        matcher.end(), matcher.end(refName), handler);
             }
         }
         sb.append(content.substring(appendPos, content.length()));
@@ -86,9 +82,8 @@ public class CssAnalyzer {
         void performInline(StringBuffer sb, String ref, String media);
     }
 
-    private int replaceImport(StringBuffer sb, String content, String ref,
-            String media, int appendPos, int start, int startRef, int end,
-            int endRef, CssProcessorHandler handler) {
+    private int replaceImport(StringBuffer sb, String content, String ref, String media, int appendPos, int start,
+            int startRef, int end, int endRef, CssProcessorHandler handler) {
         if (handler.shouldInline(ref, media)) {
             sb.append(content.substring(appendPos, start));
             handler.performInline(sb, ref, media);

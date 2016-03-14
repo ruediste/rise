@@ -57,8 +57,7 @@ public abstract class LoginControllerBase extends LoginController {
      */
     @Override
     public ActionResult tokenTheftDetected(UrlSpec redirectUrl) {
-        loginSubController.setRedirectUrl(redirectUrl)
-                .setTokenTheftDetected(true);
+        loginSubController.setRedirectUrl(redirectUrl).setTokenTheftDetected(true);
         return null;
     }
 

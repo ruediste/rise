@@ -38,8 +38,7 @@ public class ActionInvocation<T> extends AttachedPropertyBearerBase {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).addValue(methodInvocation)
-                .toString();
+        return MoreObjects.toStringHelper(this).addValue(methodInvocation).toString();
     }
 
     /**
@@ -47,14 +46,13 @@ public class ActionInvocation<T> extends AttachedPropertyBearerBase {
      * method. The parameters values are ignored.
      */
     public boolean isCallToSameActionMethod(ActionInvocation<?> other) {
-        return isCallToSameActionMethod(other,
-                new MethodInvocation.ParameterValueEquality<Object, Object>() {
+        return isCallToSameActionMethod(other, new MethodInvocation.ParameterValueEquality<Object, Object>() {
 
-                    @Override
-                    public boolean equals(Object a, Object b) {
-                        return true;
-                    }
-                });
+            @Override
+            public boolean equals(Object a, Object b) {
+                return true;
+            }
+        });
     }
 
     /**
@@ -64,8 +62,7 @@ public class ActionInvocation<T> extends AttachedPropertyBearerBase {
     public <O> boolean isCallToSameActionMethod(ActionInvocation<O> other,
             MethodInvocation.ParameterValueEquality<? super T, ? super O> comparator) {
 
-        return methodInvocation.isCallToSameMethod(other.methodInvocation,
-                comparator);
+        return methodInvocation.isCallToSameMethod(other.methodInvocation, comparator);
     }
 
     /**
@@ -77,8 +74,7 @@ public class ActionInvocation<T> extends AttachedPropertyBearerBase {
         return mapWithType((a, b) -> func.apply(b));
     }
 
-    public <P> ActionInvocation<P> mapWithType(
-            BiFunction<AnnotatedType, ? super T, P> func) {
+    public <P> ActionInvocation<P> mapWithType(BiFunction<AnnotatedType, ? super T, P> func) {
         ActionInvocation<P> result = new ActionInvocation<>();
         result.getParameters().putAll(getParameters());
         result.getAttachedPropertyMap().putAll(this);

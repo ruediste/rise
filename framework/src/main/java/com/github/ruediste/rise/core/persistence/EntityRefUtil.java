@@ -21,19 +21,16 @@ public class EntityRefUtil {
 
     @SuppressWarnings("unchecked")
     public <T> EntityRef<T> toEntityRef(T entity) {
-        Entry<Class<? extends Annotation>, EntityManager> emEntry = holder
-                .getEmEntry(entity).get();
+        Entry<Class<? extends Annotation>, EntityManager> emEntry = holder.getEmEntry(entity).get();
         Class<? extends Annotation> emQualifier = emEntry.getKey();
         EntityRef<T> ref = new EntityRef<>();
         ref.emQualifier = emQualifier;
         ref.entityClass = (Class<T>) entity.getClass();
-        ref.key = emEntry.getValue().getEntityManagerFactory()
-                .getPersistenceUnitUtil().getIdentifier(entity);
+        ref.key = emEntry.getValue().getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity);
         return ref;
     }
 
     public <T> T load(EntityRef<T> ref) {
-        return holder.getEntityManager(ref.emQualifier).find(ref.entityClass,
-                ref.key);
+        return holder.getEntityManager(ref.emQualifier).find(ref.entityClass, ref.key);
     }
 }

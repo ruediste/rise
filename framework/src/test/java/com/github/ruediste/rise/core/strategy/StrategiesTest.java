@@ -66,8 +66,7 @@ public class StrategiesTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testGetStrategyClasses() throws Exception {
-        assertThat(strategies.getStrategyClasses(TestStrategyImpl.class),
-                containsInAnyOrder(TestStrategy.class));
+        assertThat(strategies.getStrategyClasses(TestStrategyImpl.class), containsInAnyOrder(TestStrategy.class));
         assertThat(strategies.getStrategyClasses(SubTestStrategyImpl.class),
                 containsInAnyOrder(TestStrategy.class, TestStrategyImpl.class));
     }
@@ -76,13 +75,11 @@ public class StrategiesTest {
     public void testGetStrategies() {
         TestStrategyImpl strategy = new TestStrategyImpl();
         strategies.putStrategy(strategy);
-        assertThat(strategies.getStrategies(TestStrategy.class).collect(
-                Collectors.toList()), contains(strategy, strategyImpl));
+        assertThat(strategies.getStrategies(TestStrategy.class).collect(Collectors.toList()),
+                contains(strategy, strategyImpl));
         SubTestStrategyImpl subStrategy = new SubTestStrategyImpl();
         strategies.putStrategyFirst(subStrategy);
-        assertThat(
-                strategies.getStrategies(TestStrategy.class)
-                        .collect(Collectors.toList()),
+        assertThat(strategies.getStrategies(TestStrategy.class).collect(Collectors.toList()),
                 contains(subStrategy, strategy, strategyImpl));
     }
 
@@ -94,15 +91,12 @@ public class StrategiesTest {
     public void testGetCachedStrategy() {
         strategies.putStrategy(subStrategy);
         assertEquals(Optional.of("foo"),
-                strategies.getStrategy(TestStrategy.class).cached(null)
-                        .get(TestStrategy::get));
+                strategies.getStrategy(TestStrategy.class).cached(null).get(TestStrategy::get));
         assertEquals(1, SubTestStrategyImpl.invocationCount);
         assertEquals(Optional.of("foo"),
-                strategies.getStrategy(TestStrategy.class).cached(null)
-                        .get(TestStrategy::get));
+                strategies.getStrategy(TestStrategy.class).cached(null).get(TestStrategy::get));
         assertEquals(1, SubTestStrategyImpl.invocationCount);
-        assertEquals(Optional.of("foo"), strategies
-                .getStrategy(TestStrategy.class).get(TestStrategy::get));
+        assertEquals(Optional.of("foo"), strategies.getStrategy(TestStrategy.class).get(TestStrategy::get));
         assertEquals(2, SubTestStrategyImpl.invocationCount);
     }
 
@@ -111,19 +105,11 @@ public class StrategiesTest {
         TestStrategyImpl strategy = new TestStrategyImpl();
         strategies.putStrategy(strategy);
 
-        assertThat(
-                strategies
-                        .getStrategies(TestStrategy.class,
-                                TestEnum.class.getField(TestEnum.VALUE2.name()))
-                        .collect(Collectors.toList()),
-                contains(strategy, strategyImpl));
+        assertThat(strategies.getStrategies(TestStrategy.class, TestEnum.class.getField(TestEnum.VALUE2.name()))
+                .collect(Collectors.toList()), contains(strategy, strategyImpl));
 
-        assertThat(
-                strategies
-                        .getStrategies(TestStrategy.class,
-                                TestEnum.class.getField(TestEnum.VALUE1.name()))
-                        .collect(Collectors.toList()),
-                contains(subStrategy, strategy, strategyImpl));
+        assertThat(strategies.getStrategies(TestStrategy.class, TestEnum.class.getField(TestEnum.VALUE1.name()))
+                .collect(Collectors.toList()), contains(subStrategy, strategy, strategyImpl));
     }
 
 }

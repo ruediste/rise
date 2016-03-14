@@ -24,48 +24,38 @@ public class Authz {
     IsAuthorizingHelper helper;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <T> AuthorizationResult performAuthorization(T target,
-            Consumer<T> invoker) {
-        return performAuthorization(target, MethodInvocationRecorder
-                .getLastInvocation((Class) target.getClass(), invoker));
+    public <T> AuthorizationResult performAuthorization(T target, Consumer<T> invoker) {
+        return performAuthorization(target,
+                MethodInvocationRecorder.getLastInvocation((Class) target.getClass(), invoker));
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public <T> boolean isAuthorized(T target, Consumer<T> invoker) {
-        return isAuthorized(target, MethodInvocationRecorder
-                .getLastInvocation((Class) target.getClass(), invoker));
+        return isAuthorized(target, MethodInvocationRecorder.getLastInvocation((Class) target.getClass(), invoker));
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public <T> void checkAuthorized(T target, Consumer<T> invoker) {
-        checkAuthorized(target, MethodInvocationRecorder
-                .getLastInvocation((Class) target.getClass(), invoker));
+        checkAuthorized(target, MethodInvocationRecorder.getLastInvocation((Class) target.getClass(), invoker));
     }
 
-    public boolean isAuthorized(Object target,
-            MethodInvocation<Object> lastInvocation) {
-        return isAuthorized(target, lastInvocation.getMethod(),
-                lastInvocation.getArguments().toArray());
+    public boolean isAuthorized(Object target, MethodInvocation<Object> lastInvocation) {
+        return isAuthorized(target, lastInvocation.getMethod(), lastInvocation.getArguments().toArray());
     }
 
-    public void checkAuthorized(Object target,
-            MethodInvocation<Object> lastInvocation) {
-        checkAuthorized(target, lastInvocation.getMethod(),
-                lastInvocation.getArguments().toArray());
+    public void checkAuthorized(Object target, MethodInvocation<Object> lastInvocation) {
+        checkAuthorized(target, lastInvocation.getMethod(), lastInvocation.getArguments().toArray());
     }
 
-    public AuthorizationResult performAuthorization(Object target,
-            MethodInvocation<Object> lastInvocation) {
-        return performAuthorization(target, lastInvocation.getMethod(),
-                lastInvocation.getArguments().toArray());
+    public AuthorizationResult performAuthorization(Object target, MethodInvocation<Object> lastInvocation) {
+        return performAuthorization(target, lastInvocation.getMethod(), lastInvocation.getArguments().toArray());
     }
 
     public boolean isAuthorized(Object target, Method m, List<?> args) {
         return isAuthorized(target, m, args.toArray());
     }
 
-    public AuthorizationResult performAuthorization(Object target, Method m,
-            Object[] args) {
+    public AuthorizationResult performAuthorization(Object target, Method m, Object[] args) {
         try {
             checkAuthorized(target, m, args);
         } catch (AuthorizationException e) {

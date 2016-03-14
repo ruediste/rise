@@ -6,8 +6,7 @@ import com.github.ruediste.rise.core.security.authentication.core.Authentication
  * Interface for {@link AuthenticationSuccess}es which are aware of the concept
  * of a "rememeber-me" functionality.
  */
-public interface RememberMeAwareAuthenticationSuccess
-        extends AuthenticationSuccess {
+public interface RememberMeAwareAuthenticationSuccess extends AuthenticationSuccess {
 
     /**
      * return true if this authentication success succeeded using some

@@ -92,13 +92,11 @@ public class MethodImplementationFinderTest {
         }
 
         public void expectSelf() {
-            assertEquals(calledMethod, MethodImplementationFinder
-                    .findImplementation(instanceClass, calledMethod));
+            assertEquals(calledMethod, MethodImplementationFinder.findImplementation(instanceClass, calledMethod));
         }
 
         public void expect(Class<?> cls, String name) {
-            assertEquals(method(cls, name), MethodImplementationFinder
-                    .findImplementation(instanceClass, calledMethod));
+            assertEquals(method(cls, name), MethodImplementationFinder.findImplementation(instanceClass, calledMethod));
         }
 
         public void expect(Class<Derived> cls) {
@@ -132,11 +130,9 @@ public class MethodImplementationFinderTest {
     public void testDefault() throws Exception {
         when(IBase.class, "def_ib").calledOn(Base.class).expectSelf();
         when(IBase.class, "def_ib").calledOn(Derived.class).expectSelf();
-        when(Derived.class.getMethod("def_ib")).calledOn(Derived.class)
-                .expect(IBase.class, "def_ib");
+        when(Derived.class.getMethod("def_ib")).calledOn(Derived.class).expect(IBase.class, "def_ib");
         when(IBase.class, "def_ib_d").calledOn(Base.class).expectSelf();
-        when(IBase.class, "def_ib_d").calledOn(Derived.class)
-                .expectOnInstance();
+        when(IBase.class, "def_ib_d").calledOn(Derived.class).expectOnInstance();
     }
 
     private Method method(Class<?> cls, String name) {

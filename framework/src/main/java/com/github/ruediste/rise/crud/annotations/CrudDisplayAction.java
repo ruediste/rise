@@ -23,8 +23,8 @@ import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
  * 
  * <p>
  * There is no special transaction handling performed by the framework. Use the
- * {@link TransactionControl} to do that. The view is refreshed after the
- * method returns.
+ * {@link TransactionControl} to do that. The view is refreshed after the method
+ * returns.
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

@@ -25,8 +25,7 @@ public class TestPageDestructionControllerTest extends WebTest {
 
     @Test
     public void createDestroyImmediately() throws Exception {
-        driver.navigate()
-                .to(url(go(TestPageDestructionController.class).index(1)));
+        driver.navigate().to(url(go(TestPageDestructionController.class).index(1)));
         assertPage(TestPageDestructionController.class, x -> x.index(1));
 
         driver.close();
@@ -37,21 +36,17 @@ public class TestPageDestructionControllerTest extends WebTest {
 
     @Test
     public void createNavigateAway() throws Exception {
-        driver.navigate()
-                .to(url(go(TestPageDestructionController.class).index(1)));
+        driver.navigate().to(url(go(TestPageDestructionController.class).index(1)));
         assertPage(TestPageDestructionController.class, x -> x.index(1));
-        driver.findElement(byDataTestName(TestPageDestructionController.class,
-                x -> x.navigateAway())).click();
+        driver.findElement(byDataTestName(TestPageDestructionController.class, x -> x.navigateAway())).click();
         assertPage(TestPageDestructionController.class, x -> x.index2());
         assertTrue(mgr.destroyed.contains(1));
     }
 
     @Test
     public void createInvalidateSession() throws Exception {
-        driver.navigate().to(url(go(TestPageDestructionController.class)
-                .indexInvalidateSession(1)));
-        assertPage(TestPageDestructionController.class,
-                x -> x.indexInvalidateSession(1));
+        driver.navigate().to(url(go(TestPageDestructionController.class).indexInvalidateSession(1)));
+        assertPage(TestPageDestructionController.class, x -> x.indexInvalidateSession(1));
         assertTrue(mgr.destroyed.contains(1));
     }
 }

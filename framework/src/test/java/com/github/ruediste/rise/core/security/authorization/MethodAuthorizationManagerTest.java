@@ -40,8 +40,7 @@ public class MethodAuthorizationManagerTest {
 
             @Override
             protected void configure() throws Exception {
-                MethodAuthorizationManager.get(binder()).addRule(
-                        RequiresRight.class,
+                MethodAuthorizationManager.get(binder()).addRule(RequiresRight.class,
                         r -> Collections.singleton(r.value()));
             }
         });
@@ -51,8 +50,7 @@ public class MethodAuthorizationManagerTest {
             for (com.github.ruediste.rise.core.security.authorization.Right right : rights) {
                 if (allowedRights.contains(right))
                     continue;
-                builder.add(new AuthorizationFailure(
-                        "Right " + right + " not allowed"));
+                builder.add(new AuthorizationFailure("Right " + right + " not allowed"));
             }
             return builder.build();
         });
@@ -134,11 +132,8 @@ public class MethodAuthorizationManagerTest {
 
     @Test
     public void protectedMultiple() {
-        System.out
-                .println(Arrays.toString(MethodInvocationRecorder
-                        .getLastInvocation(Service.class,
-                                x -> x.protectedMultiple())
-                        .getMethod().getAnnotations()));
+        System.out.println(Arrays.toString(MethodInvocationRecorder
+                .getLastInvocation(Service.class, x -> x.protectedMultiple()).getMethod().getAnnotations()));
         assertFalse(authz.isAuthorized(service, x -> x.protectedMultiple()));
         allowedRights.add(TestRightRight.TEST_RIGHT);
         assertFalse(authz.isAuthorized(service, x -> x.protectedMultiple()));

@@ -35,10 +35,8 @@ public class SassCompiler {
             URI base = previous.getBase();
             if ("classpath".equals(base.getScheme())) {
 
-                String path = RiseUtil.resolvePath(base.getPath(), url)
-                        .substring(1);
-                String data = RiseUtil.readFromClasspathAsString(path,
-                        getClass().getClassLoader());
+                String path = RiseUtil.resolvePath(base.getPath(), url).substring(1);
+                String data = RiseUtil.readFromClasspathAsString(path, getClass().getClassLoader());
                 if (data != null)
                     result = new Import(toUri(path), toUri(path), data);
             }
@@ -49,8 +47,7 @@ public class SassCompiler {
 
     public Function<Asset, Asset> create(String targetNamePattern) {
         return sass -> {
-            String targetPathInfo = helper
-                    .getAssetPathInfo(getTargetName(targetNamePattern, sass));
+            String targetPathInfo = helper.getAssetPathInfo(getTargetName(targetNamePattern, sass));
             Compiler compiler = new Compiler();
             Options options = new Options();
             options.setImporters(Arrays.asList(new ClasspathImporter()));
@@ -58,9 +55,8 @@ public class SassCompiler {
             options.setOutputStyle(OutputStyle.EXPANDED);
             try {
                 String classpathLocation = sass.getClasspathLocation();
-                StringContext ctx = new StringContext(sass.getDataString(),
-                        toUri(classpathLocation), new URI(targetPathInfo),
-                        options);
+                StringContext ctx = new StringContext(sass.getDataString(), toUri(classpathLocation),
+                        new URI(targetPathInfo), options);
                 Output output = compiler.compile(ctx);
                 if (output.getErrorStatus() != 0)
                     throw new RuntimeException(output.getErrorMessage());
@@ -78,8 +74,7 @@ public class SassCompiler {
 
                     @Override
                     public String getContentType() {
-                        return config
-                                .getDefaultContentType(DefaultAssetTypes.CSS);
+                        return config.getDefaultContentType(DefaultAssetTypes.CSS);
                     }
 
                     @Override
@@ -137,8 +132,7 @@ public class SassCompiler {
         try {
             return new URI("classpath:/" + classpathLocation);
         } catch (URISyntaxException e) {
-            throw new RuntimeException(
-                    "Error while creating URI from " + classpathLocation, e);
+            throw new RuntimeException("Error while creating URI from " + classpathLocation, e);
         }
     }
 

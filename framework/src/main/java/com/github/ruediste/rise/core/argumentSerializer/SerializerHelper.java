@@ -17,12 +17,10 @@ public class SerializerHelper {
      */
     public static String generatePrefix(Optional<String> prefix, String value) {
         if (Optional.of("").equals(prefix))
-            throw new IllegalArgumentException(
-                    "Prefix may not be the empty string");
+            throw new IllegalArgumentException("Prefix may not be the empty string");
 
         if (prefix.filter(s -> s.contains(":")).isPresent())
-            throw new IllegalArgumentException(
-                    "Prefix may not contain a colon (:)");
+            throw new IllegalArgumentException("Prefix may not contain a colon (:)");
 
         if (value.contains(":"))
             return prefix.orElse("") + ":" + value;
@@ -38,9 +36,6 @@ public class SerializerHelper {
         if (idx < 0)
             return Pair.of(Optional.empty(), value);
         else
-            return Pair.of(
-                    Optional.ofNullable(
-                            Strings.emptyToNull(value.substring(0, idx))),
-                    value.substring(idx + 1));
+            return Pair.of(Optional.ofNullable(Strings.emptyToNull(value.substring(0, idx))), value.substring(idx + 1));
     }
 }

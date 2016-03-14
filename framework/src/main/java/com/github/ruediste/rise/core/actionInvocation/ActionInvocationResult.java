@@ -7,7 +7,6 @@ import com.github.ruediste.rise.core.ActionResult;
  * {@link ActionInvocationBuilder} to create {@link ActionInvocation}s,
  * instances of this class is used to represent the result.
  */
-public class ActionInvocationResult extends ActionInvocation<Object>
-        implements ActionResult {
+public class ActionInvocationResult extends ActionInvocation<Object> implements ActionResult {
 
 }

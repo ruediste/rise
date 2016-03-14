@@ -46,8 +46,7 @@ public class ViewRenderer extends ChainedRequestHandler {
 
         // handle page closing in initial requests
         if (componentRequestInfo.getClosePageResult() != null) {
-            coreRequestInfo
-                    .setActionResult(componentRequestInfo.getClosePageResult());
+            coreRequestInfo.setActionResult(componentRequestInfo.getClosePageResult());
             return;
         }
 
@@ -56,23 +55,21 @@ public class ViewRenderer extends ChainedRequestHandler {
         page.setView(view);
 
         // apply constraint violations to view
-        componentRequestInfo.forEachInitialConstraintViolation(
-                new ComponentRequestInfo.InitialConstraintViolationConsumer() {
+        componentRequestInfo
+                .forEachInitialConstraintViolation(new ComponentRequestInfo.InitialConstraintViolationConsumer() {
 
                     @Override
-                    public <T> void accept(BindingGroup<T> group,
-                            Set<ConstraintViolation<T>> violations) {
+                    public <T> void accept(BindingGroup<T> group, Set<ConstraintViolation<T>> violations) {
                         group.applyConstraintViolations(violations);
                     }
                 });
 
         // set action result
-        coreRequestInfo.setActionResult(new ContentRenderResult(
-                util.renderComponents(page, view.getRootComponent()), r -> {
+        coreRequestInfo
+                .setActionResult(new ContentRenderResult(util.renderComponents(page, view.getRootComponent()), r -> {
                     r.setContentType(coreConfiguration.htmlContentType);
                     if (view instanceof HttpServletResponseCustomizer) {
-                        ((HttpServletResponseCustomizer) view)
-                                .customizeServletResponse(r);
+                        ((HttpServletResponseCustomizer) view).customizeServletResponse(r);
                     }
                 }));
     }

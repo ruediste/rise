@@ -9,8 +9,7 @@ import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
  * {@link ViewComponentBase} implementation used for component views provided by
  * the framework.
  */
-public abstract class FrameworkViewComponent<TController>
-        extends ViewComponentBase<TController>
+public abstract class FrameworkViewComponent<TController> extends ViewComponentBase<TController>
         implements ComponentFactory<BootstrapRiseCanvas<?>> {
 
     @Inject

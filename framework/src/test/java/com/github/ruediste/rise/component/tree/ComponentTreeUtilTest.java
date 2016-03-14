@@ -44,23 +44,16 @@ public class ComponentTreeUtilTest {
         grandChild = new CGroup();
         child = new CGroup().add(grandChild);
         parent = new CGroup().add(child);
-        ComponentTreeUtil.registerEventListener(parent, TestEvent.class,
-                parentListener);
-        ComponentTreeUtil.registerEventListener(TestEvent.class, parent,
-                parentListenerToo, true);
+        ComponentTreeUtil.registerEventListener(parent, TestEvent.class, parentListener);
+        ComponentTreeUtil.registerEventListener(TestEvent.class, parent, parentListenerToo, true);
 
-        ComponentTreeUtil.registerEventListener(child, TestEvent.class,
-                childListener);
-        ComponentTreeUtil.registerEventListener(TestEvent.class, child,
-                childListenerToo, true);
+        ComponentTreeUtil.registerEventListener(child, TestEvent.class, childListener);
+        ComponentTreeUtil.registerEventListener(TestEvent.class, child, childListenerToo, true);
 
-        ComponentTreeUtil.registerEventListener(grandChild, TestEvent.class,
-                grandChildListener);
-        ComponentTreeUtil.registerEventListener(TestEvent.class, grandChild,
-                grandChildListenerToo, true);
-        listeners = new Object[] { parentListener, parentListenerToo,
-                childListener, childListenerToo, grandChildListener,
-                grandChildListenerToo };
+        ComponentTreeUtil.registerEventListener(grandChild, TestEvent.class, grandChildListener);
+        ComponentTreeUtil.registerEventListener(TestEvent.class, grandChild, grandChildListenerToo, true);
+        listeners = new Object[] { parentListener, parentListenerToo, childListener, childListenerToo,
+                grandChildListener, grandChildListenerToo };
         cancelAnswer = i -> {
             ((ComponentEvent) i.getArguments()[0]).cancel();
             return null;

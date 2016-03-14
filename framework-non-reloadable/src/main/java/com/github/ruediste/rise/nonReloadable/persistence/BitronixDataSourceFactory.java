@@ -6,32 +6,28 @@ import java.util.function.Consumer;
 
 import javax.sql.DataSource;
 
-import bitronix.tm.resource.jdbc.PoolingDataSource;
-
 import com.github.ruediste.rise.nonReloadable.persistence.PersistenceModuleUtil.DataSourceFactory;
 import com.p6spy.engine.spy.P6DataSource;
+
+import bitronix.tm.resource.jdbc.PoolingDataSource;
 
 public abstract class BitronixDataSourceFactory implements DataSourceFactory {
 
     private DatabaseIntegrationInfo databaseIntegrationInfo;
 
-    public BitronixDataSourceFactory(
-            DatabaseIntegrationInfo databaseIntegrationInfo) {
+    public BitronixDataSourceFactory(DatabaseIntegrationInfo databaseIntegrationInfo) {
         this.databaseIntegrationInfo = databaseIntegrationInfo;
     }
 
     @Override
-    public DataSource createDataSource(IsolationLevel isolationLevel,
-            Class<?> qualifier, Consumer<Closeable> closeableRegistrar) {
+    public DataSource createDataSource(IsolationLevel isolationLevel, Class<?> qualifier,
+            Consumer<Closeable> closeableRegistrar) {
         Properties props = new Properties();
         initializeProperties(props);
 
         PoolingDataSource btmDataSource = new PoolingDataSource();
-        btmDataSource.setUniqueName(
-                (qualifier == null ? "" : qualifier.getSimpleName()) + "_"
-                        + isolationLevel.name());
-        btmDataSource.setClassName(
-                databaseIntegrationInfo.getDataSourceClass().getName());
+        btmDataSource.setUniqueName((qualifier == null ? "" : qualifier.getSimpleName()) + "_" + isolationLevel.name());
+        btmDataSource.setClassName(databaseIntegrationInfo.getDataSourceClass().getName());
         btmDataSource.setIsolationLevel(isolationLevel.name());
         btmDataSource.setDriverProperties(props);
         btmDataSource.setShareTransactionConnections(true);

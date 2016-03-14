@@ -4,8 +4,7 @@ import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.security.urlSigning.UrlUnsigned;
 
-public class RequestHandlingErrorController
-        extends ControllerMvc<RequestHandlingErrorController> {
+public class RequestHandlingErrorController extends ControllerMvc<RequestHandlingErrorController> {
 
     @UrlUnsigned
     public ActionResult index() {

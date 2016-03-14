@@ -113,7 +113,7 @@ public abstract class WebTestBase implements TestUtil {
             if (
             // server was started for a different test with separate server
             (serverTestCase != null && serverTestCase != this) ||
-                    // request separate test case
+            // request separate test case
                     (runWithSeparateServer && serverTestCase != this)) {
                 if (server != null)
                     server.stop();
@@ -132,8 +132,7 @@ public abstract class WebTestBase implements TestUtil {
                 } else {
                     server = startServer();
 
-                    injector = server.getServlet()
-                            .getCurrentRestartableInjector();
+                    injector = server.getServlet().getCurrentRestartableInjector();
                     isRunningLocally = true;
                     if (runWithSeparateServer)
                         serverTestCase = this;
@@ -156,10 +155,8 @@ public abstract class WebTestBase implements TestUtil {
 
                 @Override
                 public void evaluate() throws Throwable {
-                    Holder holder = InjectorsHolder.setInjectors(
-                            server.getServlet().getNonRestartableInjector(),
-                            server.getServlet()
-                                    .getCurrentRestartableInjector());
+                    Holder holder = InjectorsHolder.setInjectors(server.getServlet().getNonRestartableInjector(),
+                            server.getServlet().getCurrentRestartableInjector());
                     try {
                         base.evaluate();
                     } finally {

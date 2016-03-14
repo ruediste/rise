@@ -14,8 +14,7 @@ public class CSortable<T> extends CItems<T, CSortable<T>> {
      * Reorder the items in the given order
      */
     public void applyItemOrder(List<Integer> idxList) {
-        setItems(idxList.stream().map(idx -> getItems().get(idx))
-                .collect(toList()));
+        setItems(idxList.stream().map(idx -> getItems().get(idx)).collect(toList()));
     }
 
 }

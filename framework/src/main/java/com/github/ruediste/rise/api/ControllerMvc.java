@@ -8,8 +8,7 @@ import com.github.ruediste.rise.mvc.IControllerMvc;
 import com.github.ruediste.rise.mvc.MvcUtil;
 import com.google.common.reflect.TypeToken;
 
-public class ControllerMvc<TSelf extends ControllerMvc<TSelf>>
-        implements IControllerMvc {
+public class ControllerMvc<TSelf extends ControllerMvc<TSelf>> implements IControllerMvc {
 
     @Inject
     MvcUtil util;
@@ -17,13 +16,11 @@ public class ControllerMvc<TSelf extends ControllerMvc<TSelf>>
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public ControllerMvc() {
-        controllerClass = (Class) TypeToken.of(getClass())
-                .resolveType(ControllerMvc.class.getTypeParameters()[0])
+        controllerClass = (Class) TypeToken.of(getClass()).resolveType(ControllerMvc.class.getTypeParameters()[0])
                 .getRawType();
     }
 
-    protected <TView extends ViewMvcBase<?, TData, ?>, TData> ActionResult view(
-            Class<TView> viewClass, TData data) {
+    protected <TView extends ViewMvcBase<?, TData, ?>, TData> ActionResult view(Class<TView> viewClass, TData data) {
         return util.view(viewClass, data);
     }
 

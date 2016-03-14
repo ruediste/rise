@@ -27,8 +27,7 @@ public class SwitchableTargetProxyFactoryTest {
         assertEquals("x",
                 MethodInvocationRecorder
                         .getLastInvocation(A.class,
-                                a -> SwitchableTargetProxyFactory
-                                        .withTarget(proxy, a, () -> proxy.x()))
+                                a -> SwitchableTargetProxyFactory.withTarget(proxy, a, () -> proxy.x()))
                         .getMethod().getName());
     }
 }

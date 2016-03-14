@@ -7,8 +7,7 @@ import com.github.ruediste.rise.test.PageObject;
 public class TodoItemPO extends PageObject {
 
     private WebElement name = lazy(byDataTestName("name"));
-    private WebElement delete = lazy(
-            byDataTestName(TodoController.class, x -> x.delete(null)));
+    private WebElement delete = lazy(byDataTestName(TodoController.class, x -> x.delete(null)));
 
     public String getName() {
         return name.getText();

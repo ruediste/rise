@@ -12,8 +12,7 @@ public class LoginController extends LoginControllerBase {
 
         @Override
         protected Component createComponents() {
-            return new CPage()
-                    .add(new CController(controller.getLoginSubController()));
+            return new CPage().add(new CController(controller.getLoginSubController()));
         }
 
     }

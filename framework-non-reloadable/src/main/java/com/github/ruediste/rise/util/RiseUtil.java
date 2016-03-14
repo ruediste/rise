@@ -17,16 +17,14 @@ public class RiseUtil {
     private RiseUtil() {
     }
 
-    public static String readFromClasspathAsString(String fullPath,
-            ClassLoader classLoader) {
+    public static String readFromClasspathAsString(String fullPath, ClassLoader classLoader) {
         byte[] data = readFromClasspath(fullPath, classLoader);
         if (data == null)
             return null;
         return new String(data, Charsets.UTF_8);
     }
 
-    public static byte[] readFromClasspath(String fullPath,
-            ClassLoader classLoader) {
+    public static byte[] readFromClasspath(String fullPath, ClassLoader classLoader) {
         InputStream in = classLoader.getResourceAsStream(fullPath);
         if (in == null) {
             return null;
@@ -40,9 +38,7 @@ public class RiseUtil {
             try {
                 in.close();
             } catch (IOException e) {
-                throw new RuntimeException(
-                        "unable to close stream used to load resource from classpath",
-                        e);
+                throw new RuntimeException("unable to close stream used to load resource from classpath", e);
             }
         }
     }
@@ -65,8 +61,7 @@ public class RiseUtil {
         int idx = 0;
 
         // skip common prefix
-        while (idx < baseParts.length - 1 && idx < targetParts.length
-                && baseParts[idx].equals(targetParts[idx])) {
+        while (idx < baseParts.length - 1 && idx < targetParts.length && baseParts[idx].equals(targetParts[idx])) {
             idx++;
         }
 
@@ -135,8 +130,7 @@ public class RiseUtil {
     }
 
     public static String toRegex(Pair<String, String> prefixAndRegex) {
-        return "^" + Pattern.quote(prefixAndRegex.getA())
-                + prefixAndRegex.getB() + "$";
+        return "^" + Pattern.quote(prefixAndRegex.getA()) + prefixAndRegex.getB() + "$";
     }
 
     public static Pair<String, String> toPrefixAndRegex(String glob) {
@@ -154,13 +148,13 @@ public class RiseUtil {
             String pattern = ZeroOrMore(() -> FirstOf(() -> {
                 String("**/");
                 return ".*";
-            } , () -> {
+            }, () -> {
                 String("**");
                 return ".*";
-            } , () -> {
+            }, () -> {
                 String("*");
                 return "[^/]*";
-            } , () -> {
+            }, () -> {
                 return Pattern.quote(OneOrMoreChars(x -> x != '*', "non *"));
             })).stream().collect(joining(""));
             EOI();

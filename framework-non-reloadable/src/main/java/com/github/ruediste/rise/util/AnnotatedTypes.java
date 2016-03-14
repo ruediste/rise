@@ -30,8 +30,7 @@ public class AnnotatedTypes {
 
         @SuppressWarnings("unchecked")
         @Override
-        public <T extends Annotation> T getAnnotation(
-                Class<T> annotationClass) {
+        public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
             for (Annotation a : annotations) {
                 if (annotationClass.equals(a.annotationType()))
                     return (T) a;

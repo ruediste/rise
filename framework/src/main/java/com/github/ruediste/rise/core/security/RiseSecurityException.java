@@ -10,8 +10,8 @@ public class RiseSecurityException extends RuntimeException {
     public RiseSecurityException() {
     }
 
-    public RiseSecurityException(String message, Throwable cause,
-            boolean enableSuppression, boolean writableStackTrace) {
+    public RiseSecurityException(String message, Throwable cause, boolean enableSuppression,
+            boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 

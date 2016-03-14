@@ -7,8 +7,7 @@ import com.github.ruediste1.i18n.lString.LString;
 
 public class CPage extends RelationsComponent<CPage> {
     private LString title;
-    private final SingleChildRelation<Component, CPage> child = new SingleChildRelation<Component, CPage>(
-            this);
+    private final SingleChildRelation<Component, CPage> child = new SingleChildRelation<Component, CPage>(this);
 
     private CReload reload = new CReload();
 

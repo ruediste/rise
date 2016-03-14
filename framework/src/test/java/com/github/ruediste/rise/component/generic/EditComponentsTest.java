@@ -28,102 +28,103 @@ import com.github.ruediste1.i18n.lString.TranslatedStringResolver;
 
 public class EditComponentsTest {
 
-	@Inject
-	EditComponents components;
+    @Inject
+    EditComponents components;
 
-	static class SpecialFactory implements EditComponentFactory {
+    static class SpecialFactory implements EditComponentFactory {
 
-		@Override
-		public Optional<EditComponentWrapper<?>> getComponent(Class<?> cls, Optional<String> name, Optional<PropertyInfo> info) {
-			return Optional.of(new EditComponentWrapper<Object>() {
+        @Override
+        public Optional<EditComponentWrapper<?>> getComponent(Class<?> cls, Optional<String> name,
+                Optional<PropertyInfo> info) {
+            return Optional.of(new EditComponentWrapper<Object>() {
 
-				@Override
-				public Component getComponent() {
-					return null;
-				}
+                @Override
+                public Component getComponent() {
+                    return null;
+                }
 
-				@Override
-				public Object getValue() {
-					return "yeah";
-				}
+                @Override
+                public Object getValue() {
+                    return "yeah";
+                }
 
-				@Override
-				public EditComponentWrapper<Object> setValue(Object value) {
-					return null;
-				}
+                @Override
+                public EditComponentWrapper<Object> setValue(Object value) {
+                    return null;
+                }
 
-				@Override
-				public EditComponentWrapper<Object> bindValue(Supplier<Object> accessor) {
-					return null;
-				}
-			});
-		}
+                @Override
+                public EditComponentWrapper<Object> bindValue(Supplier<Object> accessor) {
+                    return null;
+                }
+            });
+        }
 
-	}
+    }
 
-	interface TestA {
-		int getA();
+    interface TestA {
+        int getA();
 
-		String getString();
+        String getString();
 
-		@UseStrategy(SpecialFactory.class)
-		String getStringSpecial();
-	}
+        @UseStrategy(SpecialFactory.class)
+        String getStringSpecial();
+    }
 
-	class TestController {
-		@Inject
-		BindingGroup<TestA> data;
+    class TestController {
+        @Inject
+        BindingGroup<TestA> data;
 
-		TestA data() {
-			return data.proxy();
-		}
-	}
+        TestA data() {
+            return data.proxy();
+        }
+    }
 
-	@Before
-	public void before() {
-		Salta.createInjector(new AbstractModule() {
+    @Before
+    public void before() {
+        Salta.createInjector(new AbstractModule() {
 
-			@Override
-			protected void configure() throws Exception {
-				bindCreationRule(CoreRestartableModule.createMessagesRule());
-			}
+            @Override
+            protected void configure() throws Exception {
+                bindCreationRule(CoreRestartableModule.createMessagesRule());
+            }
 
-			@Provides
-			TranslatedStringResolver tsr() {
-				return null;
-			}
+            @Provides
+            TranslatedStringResolver tsr() {
+                return null;
+            }
 
-			@Provides
-			PatternStringResolver resolver() {
-				return null;
-			}
-		}).injectMembers(this);
+            @Provides
+            PatternStringResolver resolver() {
+                return null;
+            }
+        }).injectMembers(this);
 
-	}
+    }
 
-	void testApi() {
-		TestController controller = new TestController();
-		new CGroup().add(components.property(TestA.class, x -> x.getA()).get().getComponent());
-		new CGroup().add(components.instance(controller, c -> c.data().getA()).get().getComponent());
-	}
+    void testApi() {
+        TestController controller = new TestController();
+        new CGroup().add(components.property(TestA.class, x -> x.getA()).get().getComponent());
+        new CGroup().add(components.instance(controller, c -> c.data().getA()).get().getComponent());
+    }
 
-	@Test
-	public void testString() {
-		EditComponentWrapper<String> wrapper = components.property(TestA.class, x -> x.getString()).get();
-		CTextField component = (CTextField) wrapper.getComponent();
-		wrapper.setValue("foo");
-		Assert.assertEquals("foo", component.getText());
-		component.setText("bar");
-		assertEquals("bar", wrapper.getValue());
-	}
+    @Test
+    public void testString() {
+        EditComponentWrapper<String> wrapper = components.property(TestA.class, x -> x.getString()).get();
+        CTextField component = (CTextField) wrapper.getComponent();
+        wrapper.setValue("foo");
+        Assert.assertEquals("foo", component.getText());
+        component.setText("bar");
+        assertEquals("bar", wrapper.getValue());
+    }
 
-	@Test
-	public void testStringSpecial() {
-		assertEquals("yeah", components.property(TestA.class, x -> x.getStringSpecial()).get().getValue());
-	}
+    @Test
+    public void testStringSpecial() {
+        assertEquals("yeah", components.property(TestA.class, x -> x.getStringSpecial()).get().getValue());
+    }
 
-	@Test
-	public void testType() {
-		assertThat(components.type(String.class).get().getComponent(), instanceOf(CTextField.class));
-	}
+    @Test
+    public void testType() {
+        assertThat(components.type(String.class).get().getComponent(), instanceOf(CTextField.class));
+    }
 }

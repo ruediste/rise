@@ -13,8 +13,7 @@ import com.google.common.base.Stopwatch;
  */
 public class StartupTimeLogger {
 
-    private static final Logger log = LoggerFactory
-            .getLogger(StartupTimeLogger.class);
+    private static final Logger log = LoggerFactory.getLogger(StartupTimeLogger.class);
     private static final ArrayList<Pair<String, Stopwatch>> logs = new ArrayList<>();
 
     public static void stopAndLog(String title, Stopwatch watch) {

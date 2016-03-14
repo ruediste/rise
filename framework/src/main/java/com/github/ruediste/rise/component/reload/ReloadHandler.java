@@ -65,21 +65,17 @@ public class ReloadHandler implements Runnable {
 
         ViewComponentBase<?> view = page.getView();
 
-        Component reloadComponent = util.getComponent(view,
-                request.getComponentNr());
+        Component reloadComponent = util.getComponent(view, request.getComponentNr());
 
         // parse the data
         List<Map<String, Object>> rawData;
-        try (Reader in = new InputStreamReader(
-                coreRequestInfo.getServletRequest().getInputStream(),
-                Charsets.UTF_8)) {
+        try (Reader in = new InputStreamReader(coreRequestInfo.getServletRequest().getInputStream(), Charsets.UTF_8)) {
             rawData = (List<Map<String, Object>>) new JSONParser().parse(in);
         } catch (Exception e) {
             throw new RuntimeException("Error while parsing request data", e);
         }
 
-        Multimap<String, Object> data = MultimapBuilder.hashKeys()
-                .arrayListValues().build();
+        Multimap<String, Object> data = MultimapBuilder.hashKeys().arrayListValues().build();
         for (Map<String, Object> entry : rawData) {
             data.put((String) entry.get("name"), entry.get("value"));
         }
@@ -104,18 +100,15 @@ public class ReloadHandler implements Runnable {
         // check if a destination has been defined
         if (componentRequestInfo.getClosePageResult() != null) {
             componentSessionInfo.destroyCurrentPage();
-            coreRequestInfo
-                    .setActionResult(componentRequestInfo.getClosePageResult());
+            coreRequestInfo.setActionResult(componentRequestInfo.getClosePageResult());
         } else if (coreRequestInfo.getActionResult() == null) {
             // render result
-            coreRequestInfo.setActionResult(new ContentRenderResult(
-                    util.renderComponents(page, reloadComponent), r -> {
-                        r.setContentType(coreConfiguration.htmlContentType);
-                        if (view instanceof HttpServletResponseCustomizer) {
-                            ((HttpServletResponseCustomizer) view)
-                                    .customizeServletResponse(r);
-                        }
-                    }));
+            coreRequestInfo.setActionResult(new ContentRenderResult(util.renderComponents(page, reloadComponent), r -> {
+                r.setContentType(coreConfiguration.htmlContentType);
+                if (view instanceof HttpServletResponseCustomizer) {
+                    ((HttpServletResponseCustomizer) view).customizeServletResponse(r);
+                }
+            }));
         }
     }
 }

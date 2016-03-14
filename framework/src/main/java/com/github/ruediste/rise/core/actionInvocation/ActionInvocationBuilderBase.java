@@ -6,14 +6,14 @@ import java.util.Arrays;
 
 import javax.inject.Inject;
 
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
-
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.rise.core.ControllerReflectionUtil;
 import com.github.ruediste.rise.util.MethodInvocation;
 import com.google.common.base.Joiner;
+
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
 
 /**
  * Builder to create {@link ActionInvocation}s for controller method invocations
@@ -47,8 +47,7 @@ public class ActionInvocationBuilderBase<TSelf extends ActionInvocationBuilderBa
      * Set an {@link AttachedProperty} of the {@link ActionInvocation} to be
      * created.
      */
-    public <T> TSelf set(AttachedProperty<ActionInvocation<?>, T> property,
-            T value) {
+    public <T> TSelf set(AttachedProperty<ActionInvocation<?>, T> property, T value) {
         property.set(invocation, value);
         return self();
     }
@@ -65,16 +64,14 @@ public class ActionInvocationBuilderBase<TSelf extends ActionInvocationBuilderBa
      * action method is called on the returned instance, the invoked invocation
      * is appended to the path.
      */
-    protected @SuppressWarnings("unchecked") <T> T createActionPath(
-            final Class<T> controllerClass) {
+    protected @SuppressWarnings("unchecked") <T> T createActionPath(final Class<T> controllerClass) {
         Enhancer enhancer = new Enhancer();
         enhancer.setSuperclass(controllerClass);
 
         enhancer.setCallback(new MethodInterceptor() {
 
             @Override
-            public Object intercept(Object obj, Method thisMethod,
-                    Object[] args, MethodProxy proxy) throws Throwable {
+            public Object intercept(Object obj, Method thisMethod, Object[] args, MethodProxy proxy) throws Throwable {
 
                 if (!util.isActionMethod(thisMethod)) {
                     // collect methods for error message
@@ -84,17 +81,14 @@ public class ActionInvocationBuilderBase<TSelf extends ActionInvocationBuilderBa
                             methods.add(method.toString());
                         }
                     }
-                    throw new RuntimeException(
-                            "The method " + thisMethod.getName()
-                                    + " wich is no action method has been called on a controller of type "
-                                    + controllerClass.getName()
-                                    + " while generating an ActionPath. Available Methods:\n"
-                                    + Joiner.on("\n").join(methods));
+                    throw new RuntimeException("The method " + thisMethod.getName()
+                            + " wich is no action method has been called on a controller of type "
+                            + controllerClass.getName() + " while generating an ActionPath. Available Methods:\n"
+                            + Joiner.on("\n").join(methods));
                 }
 
                 // create invocation
-                MethodInvocation<Object> methodInvocation = new MethodInvocation<>(
-                        controllerClass, thisMethod);
+                MethodInvocation<Object> methodInvocation = new MethodInvocation<>(controllerClass, thisMethod);
                 methodInvocation.getArguments().addAll(Arrays.asList(args));
                 invocation.methodInvocation = methodInvocation;
                 return invocation;

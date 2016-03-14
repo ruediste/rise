@@ -69,12 +69,9 @@ public class WebRequestAuthenticator extends ChainedRequestHandler {
             } else {
                 for (AuthenticationFailure failure : result.getFailures()) {
                     if (failure instanceof RememberMeTokenTheftFailure) {
-                        coreRequestInfo.setActionResult(
-                                new RedirectRenderResult(util.toUrlSpec(util
-                                        .go(LoginController.class)
-                                        .tokenTheftDetected(
-                                                coreRequestInfo.getRequest()
-                                                        .createUrlSpec()))));
+                        coreRequestInfo
+                                .setActionResult(new RedirectRenderResult(util.toUrlSpec(util.go(LoginController.class)
+                                        .tokenTheftDetected(coreRequestInfo.getRequest().createUrlSpec()))));
                         if (coreRequestInfo.getActionResult() != null)
                             return;
                     }
@@ -98,14 +95,10 @@ public class WebRequestAuthenticator extends ChainedRequestHandler {
             // redirecto to the LoginController
             Throwable t = e;
             while (t != null) {
-                if (t instanceof NoAuthenticationException
-                        || t instanceof RememberMeNotSufficientException
-                        || (success == null
-                                && t instanceof AuthorizationException)) {
-                    coreRequestInfo.setActionResult(new RedirectRenderResult(
-                            util.toUrlSpec(util.go(LoginController.class)
-                                    .index(coreRequestInfo.getRequest()
-                                            .createUrlSpec()))));
+                if (t instanceof NoAuthenticationException || t instanceof RememberMeNotSufficientException
+                        || (success == null && t instanceof AuthorizationException)) {
+                    coreRequestInfo.setActionResult(new RedirectRenderResult(util.toUrlSpec(
+                            util.go(LoginController.class).index(coreRequestInfo.getRequest().createUrlSpec()))));
                     return;
                 }
                 Throwable cause = t.getCause();

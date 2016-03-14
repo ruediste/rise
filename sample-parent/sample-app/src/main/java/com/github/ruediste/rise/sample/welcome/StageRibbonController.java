@@ -10,8 +10,7 @@ import com.github.ruediste.rise.sample.SamplePageTemplate.SamplePageTemplatePara
 import com.github.ruediste.rise.sample.ViewMvc;
 import com.github.ruediste1.i18n.lString.LString;
 
-public class StageRibbonController
-        extends StageRibbonControllerBase<StageRibbonController> {
+public class StageRibbonController extends StageRibbonControllerBase<StageRibbonController> {
 
     private static class View extends ViewMvc<StageRibbonController, Data> {
 

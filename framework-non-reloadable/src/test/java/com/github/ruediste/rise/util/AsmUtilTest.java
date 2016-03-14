@@ -30,8 +30,7 @@ public class AsmUtilTest {
 
     @Test
     public void testLoadClassTypeClassLoader() throws Exception {
-        assertEquals(A.class,
-                AsmUtil.loadClass(Type.getType(A.class), classLoader));
+        assertEquals(A.class, AsmUtil.loadClass(Type.getType(A.class), classLoader));
     }
 
     @Test
@@ -47,8 +46,7 @@ public class AsmUtilTest {
 
     private void check(String desc, Class<?>... paramTypes) throws Exception {
         assertEquals(A.class.getDeclaredMethod("m", paramTypes),
-                AsmUtil.loadMethod(Type.getInternalName(A.class), "m", desc,
-                        classLoader));
+                AsmUtil.loadMethod(Type.getInternalName(A.class), "m", desc, classLoader));
     }
 
     void i(Integer a) {
@@ -56,12 +54,10 @@ public class AsmUtilTest {
 
     @Test
     public void testGetOverrideDesc() throws Exception {
-        assertEquals(AsmUtil.getOverrideDesc("foo", "()I").getDesc(),
-                AsmUtil.getOverrideDesc("foo", "()J").getDesc());
+        assertEquals(AsmUtil.getOverrideDesc("foo", "()I").getDesc(), AsmUtil.getOverrideDesc("foo", "()J").getDesc());
         assertNotEquals(AsmUtil.getOverrideDesc("foo", "()I").getDesc(),
                 AsmUtil.getOverrideDesc("bar", "()I").getDesc());
-        assertNotEquals(
-                AsmUtil.getOverrideDesc("foo", "(Ljava/lang/Integer;)V").getDesc(),
+        assertNotEquals(AsmUtil.getOverrideDesc("foo", "(Ljava/lang/Integer;)V").getDesc(),
                 AsmUtil.getOverrideDesc("foo", "(Ljava/lang/Boolean;)V").getDesc());
     }
 }

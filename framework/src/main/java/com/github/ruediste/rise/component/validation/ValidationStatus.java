@@ -9,8 +9,7 @@ public class ValidationStatus {
     private final ValidationState state;
     private final List<ValidationFailure> failures;
 
-    public ValidationStatus(ValidationState state,
-            List<ValidationFailure> failures) {
+    public ValidationStatus(ValidationState state, List<ValidationFailure> failures) {
         super();
         this.state = state;
         this.failures = failures;

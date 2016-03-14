@@ -17,8 +17,7 @@ import com.google.common.reflect.TypeToken;
 public class SerializableArgumentSerializer implements ArgumentSerializer {
     @Override
     public HandleStatement canHandle(AnnotatedType type) {
-        if (Serializable.class
-                .isAssignableFrom(TypeToken.of(type.getType()).getRawType()))
+        if (Serializable.class.isAssignableFrom(TypeToken.of(type.getType()).getRawType()))
             return HandleStatement.WILL_HANDLE;
         return HandleStatement.MIGHT_HANDLE;
     }
@@ -36,9 +35,7 @@ public class SerializableArgumentSerializer implements ArgumentSerializer {
         } catch (IOException e) {
             throw new RuntimeException("Error while serializing " + value, e);
         }
-        return Optional.of(
-                new String(Base64.getUrlEncoder().encode(baos.toByteArray()),
-                        Charsets.UTF_8));
+        return Optional.of(new String(Base64.getUrlEncoder().encode(baos.toByteArray()), Charsets.UTF_8));
     }
 
     @Override
@@ -47,16 +44,13 @@ public class SerializableArgumentSerializer implements ArgumentSerializer {
             return () -> null;
         }
 
-        byte[] input = Base64.getUrlDecoder()
-                .decode(urlPart.getBytes(Charsets.UTF_8));
+        byte[] input = Base64.getUrlDecoder().decode(urlPart.getBytes(Charsets.UTF_8));
 
         Object result;
         try {
-            result = new ObjectInputStream(new ByteArrayInputStream(input))
-                    .readObject();
+            result = new ObjectInputStream(new ByteArrayInputStream(input)).readObject();
         } catch (Exception e) {
-            throw new RuntimeException(
-                    "Error while decoding serialized parameter " + type, e);
+            throw new RuntimeException("Error while decoding serialized parameter " + type, e);
         }
         return () -> result;
     }

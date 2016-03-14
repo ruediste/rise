@@ -32,13 +32,11 @@ public class ShowAllController extends ControllerMvc<ShowAllController> {
             }
             Collections.sort(pathInfos);
             for (String pathInfo : pathInfos)
-                html.li().a().HREF(new UrlSpec(new PathInfo(pathInfo)))
-                        .content(pathInfo)._li();
+                html.li().a().HREF(new UrlSpec(new PathInfo(pathInfo))).content(pathInfo)._li();
 
             html._ul().h1().content("Prefixes").ul();
             for (String pathInfo : idx.getRegisteredPrefixes()) {
-                html.li().a().HREF(new UrlSpec(new PathInfo(pathInfo)))
-                        .content(pathInfo)._li();
+                html.li().a().HREF(new UrlSpec(new PathInfo(pathInfo))).content(pathInfo)._li();
             }
             html._ul();
         }

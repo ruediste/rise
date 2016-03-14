@@ -13,7 +13,6 @@ import com.github.ruediste.rise.core.security.authentication.core.Authentication
  * {@link AuthProvider} as well. This keeps all cookie handling in one place
  * (the provider)
  */
-public class RememberMeCookieAuthenticationRequest
-        implements AuthenticationRequest {
+public class RememberMeCookieAuthenticationRequest implements AuthenticationRequest {
 
 }

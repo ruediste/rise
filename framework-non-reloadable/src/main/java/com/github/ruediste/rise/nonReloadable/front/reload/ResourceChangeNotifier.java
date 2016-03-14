@@ -106,8 +106,7 @@ public class ResourceChangeNotifier {
         listeners.forEach(x -> x.accept(resourceTrx));
     }
 
-    private void processFiles(Set<Pair<Path, Path>> in,
-            Map<String, byte[]> out) {
+    private void processFiles(Set<Pair<Path, Path>> in, Map<String, byte[]> out) {
         for (Pair<Path, Path> addedFile : in) {
             try {
                 String name = resourceName(addedFile);
@@ -115,17 +114,14 @@ public class ResourceChangeNotifier {
                     out.put(name, Files.readAllBytes(addedFile.getB()));
                 }
             } catch (IOException e) {
-                throw new RuntimeException(
-                        "Error while reading " + addedFile.getB(), e);
+                throw new RuntimeException("Error while reading " + addedFile.getB(), e);
             }
         }
     }
 
     private String resourceName(Pair<Path, Path> rootPathPair) {
-        Path path = rootPathPair.getA().normalize()
-                .relativize(rootPathPair.getB().normalize());
-        String resourceName = StreamSupport.stream(path.spliterator(), false)
-                .map(Path::toString).collect(joining("/"));
+        Path path = rootPathPair.getA().normalize().relativize(rootPathPair.getB().normalize());
+        String resourceName = StreamSupport.stream(path.spliterator(), false).map(Path::toString).collect(joining("/"));
         return resourceName;
     }
 
@@ -136,50 +132,42 @@ public class ResourceChangeNotifier {
         log.debug("Start Classpath scanning ...");
         Stopwatch watch = Stopwatch.createStarted();
         jarResources = new ConcurrentHashMap<>();
-        Set<Path> rootDirs = Collections
-                .newSetFromMap(new ConcurrentHashMap<>());
+        Set<Path> rootDirs = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-        ClassPathWalker.scan(Thread.currentThread().getContextClassLoader(),
-                new ClassPathVisitor() {
+        ClassPathWalker.scan(Thread.currentThread().getContextClassLoader(), new ClassPathVisitor() {
 
-                    @Override
-                    public ClassPathVisitResult visitRootDirectory(
-                            Path rootDirectory, ClassLoader classloader) {
-                        rootDirs.add(rootDirectory);
-                        // directories will be scanned by the FileChangeNotifier
-                        return ClassPathVisitResult.SKIP_CONTENTS;
+            @Override
+            public ClassPathVisitResult visitRootDirectory(Path rootDirectory, ClassLoader classloader) {
+                rootDirs.add(rootDirectory);
+                // directories will be scanned by the FileChangeNotifier
+                return ClassPathVisitResult.SKIP_CONTENTS;
+            }
+
+            @Override
+            public void visitResource(String name, ClassLoader classLoader, Supplier<InputStream> inputStreamSupplier) {
+                // only visited for resources in jar files
+                if (config.shouldClasspathResourceBeScanned(name)) {
+                    byte[] bb = null;
+                    try (InputStream in = inputStreamSupplier.get()) {
+                        bb = ByteStreams.toByteArray(in);
+                    } catch (IOException e) {
+                        log.error("Unable to read resource " + name, e);
                     }
+                    jarResources.put(name, bb);
+                }
+            }
 
-                    @Override
-                    public void visitResource(String name,
-                            ClassLoader classLoader,
-                            Supplier<InputStream> inputStreamSupplier) {
-                        // only visited for resources in jar files
-                        if (config.shouldClasspathResourceBeScanned(name)) {
-                            byte[] bb = null;
-                            try (InputStream in = inputStreamSupplier.get()) {
-                                bb = ByteStreams.toByteArray(in);
-                            } catch (IOException e) {
-                                log.error("Unable to read resource " + name, e);
-                            }
-                            jarResources.put(name, bb);
-                        }
-                    }
+            @Override
+            public ClassPathVisitResult visitJarFile(Path path, JarFile jarFile, ClassLoader classloader) {
+                return ClassPathVisitResult.CONTINUE;
+            }
 
-                    @Override
-                    public ClassPathVisitResult visitJarFile(Path path,
-                            JarFile jarFile, ClassLoader classloader) {
-                        return ClassPathVisitResult.CONTINUE;
-                    }
-
-                    @Override
-                    public void visitClass(String resourceName,
-                            String className, ClassLoader classLoader,
-                            Supplier<InputStream> inputStreamSupplier) {
-                        visitResource(resourceName, classLoader,
-                                inputStreamSupplier);
-                    }
-                });
+            @Override
+            public void visitClass(String resourceName, String className, ClassLoader classLoader,
+                    Supplier<InputStream> inputStreamSupplier) {
+                visitResource(resourceName, classLoader, inputStreamSupplier);
+            }
+        });
 
         // start notifier
         fileChangeNotifier.start(rootDirs, config.fileChangeSettleDelayMs);

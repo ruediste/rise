@@ -41,12 +41,10 @@ public class ComponentRestartableModule extends AbstractModule {
 
     static {
         try {
-            bindingGroupConstructor = BindingGroup.class
-                    .getDeclaredConstructor();
-            bindingGroupValueTypeTokenInitialize = BindingGroup.class
-                    .getMethod("initialize", Object.class, TypeToken.class);
-            bindingGroupTypeTokenInitialize = BindingGroup.class
-                    .getMethod("initialize", TypeToken.class);
+            bindingGroupConstructor = BindingGroup.class.getDeclaredConstructor();
+            bindingGroupValueTypeTokenInitialize = BindingGroup.class.getMethod("initialize", Object.class,
+                    TypeToken.class);
+            bindingGroupTypeTokenInitialize = BindingGroup.class.getMethod("initialize", TypeToken.class);
         } catch (NoSuchMethodException | SecurityException e) {
             throw new RuntimeException(e);
         }
@@ -61,8 +59,7 @@ public class ComponentRestartableModule extends AbstractModule {
         bindScope(PageScoped.class, new ScopeImpl(scopeHandler));
         bind(PageScopeManager.class).toInstance(scopeHandler);
 
-        InitializerUtil.register(config(),
-                ComponentRestartableInitializer.class);
+        InitializerUtil.register(config(), ComponentRestartableInitializer.class);
     }
 
     protected void bindBindingGroupCreationRule() {
@@ -70,43 +67,32 @@ public class ComponentRestartableModule extends AbstractModule {
         bindCreationRule(new CreationRule() {
 
             @Override
-            public Optional<Function<RecipeCreationContext, SupplierRecipe>> apply(
-                    CoreDependencyKey<?> key, CoreInjector injector) {
+            public Optional<Function<RecipeCreationContext, SupplierRecipe>> apply(CoreDependencyKey<?> key,
+                    CoreInjector injector) {
                 if (!key.getRawType().equals(BindingGroup.class))
                     return Optional.empty();
 
                 return Optional.of(ctx -> {
-                    TypeToken<?> dataType = key.getType().resolveType(
-                            BindingGroup.class.getTypeParameters()[0]);
+                    TypeToken<?> dataType = key.getType().resolveType(BindingGroup.class.getTypeParameters()[0]);
 
                     SupplierRecipe constructionRecipe = config.standardConfig.construction
-                            .createConcreteConstructionRecipe(key.getType(),
-                                    ctx);
+                            .createConcreteConstructionRecipe(key.getType(), ctx);
 
                     if (TypeToken.of(Object.class).equals(dataType)) {
                         return constructionRecipe;
                     }
 
-                    FixedMethodInvocationFunctionRecipe initializeRecipe = ctx
-                            .tryGetRecipe(DependencyKey.of(dataType))
-                            .map(arg -> new FixedMethodInvocationFunctionRecipe(
-                                    bindingGroupValueTypeTokenInitialize,
+                    FixedMethodInvocationFunctionRecipe initializeRecipe = ctx.tryGetRecipe(DependencyKey.of(dataType))
+                            .map(arg -> new FixedMethodInvocationFunctionRecipe(bindingGroupValueTypeTokenInitialize,
                                     Arrays.asList(arg,
-                                            new ConstantSupplierRecipe<TypeToken<?>>(
-                                                    TypeToken.class,
-                                                    dataType))))
-                            .orElseGet(
-                                    () -> new FixedMethodInvocationFunctionRecipe(
-                                            bindingGroupTypeTokenInitialize,
-                                            Arrays.asList(
-                                                    new ConstantSupplierRecipe<TypeToken<?>>(
-                                                            TypeToken.class,
-                                                            dataType))));
+                                            new ConstantSupplierRecipe<TypeToken<?>>(TypeToken.class, dataType))))
+                            .orElseGet(() -> new FixedMethodInvocationFunctionRecipe(bindingGroupTypeTokenInitialize,
+                                    Arrays.asList(
+                                            new ConstantSupplierRecipe<TypeToken<?>>(TypeToken.class, dataType))));
                     return new SupplierRecipe() {
 
                         @Override
-                        protected Class<?> compileImpl(GeneratorAdapter mv,
-                                MethodCompilationContext ctx) {
+                        protected Class<?> compileImpl(GeneratorAdapter mv, MethodCompilationContext ctx) {
                             Class<?> t = constructionRecipe.compile(ctx);
                             mv.dup();
                             initializeRecipe.compile(t, ctx);

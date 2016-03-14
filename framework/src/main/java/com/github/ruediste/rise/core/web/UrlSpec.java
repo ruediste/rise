@@ -32,9 +32,8 @@ public class UrlSpec implements Serializable {
 
     public UrlSpec(PathInfo pathInfo, Map<String, String[]> parameterMap) {
         this.pathInfo = pathInfo;
-        this.parameters = parameterMap.entrySet()
-                .stream().<Pair<String, String>> flatMap(e -> Arrays
-                        .stream(e.getValue()).map(v -> Pair.of(e.getKey(), v)))
+        this.parameters = parameterMap.entrySet().stream()
+                .<Pair<String, String>> flatMap(e -> Arrays.stream(e.getValue()).map(v -> Pair.of(e.getKey(), v)))
                 .collect(toList());
     }
 
@@ -50,8 +49,7 @@ public class UrlSpec implements Serializable {
         String url = getPathInfo().getValue();
         if (!getParameters().isEmpty()) {
             url += "?";
-            url += getParameters().stream().map(p -> p.getA() + "=" + p.getB())
-                    .collect(joining("&"));
+            url += getParameters().stream().map(p -> p.getA() + "=" + p.getB()).collect(joining("&"));
         }
         return url;
     }

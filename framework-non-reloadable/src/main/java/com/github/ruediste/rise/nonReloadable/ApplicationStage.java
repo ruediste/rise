@@ -36,8 +36,7 @@ public enum ApplicationStage {
      */
     public String backgroundColor;
 
-    private ApplicationStage(Stage saltaStage, String color,
-            String backgroundColor) {
+    private ApplicationStage(Stage saltaStage, String color, String backgroundColor) {
         this.saltaStage = saltaStage;
         this.color = color;
         this.backgroundColor = backgroundColor;

@@ -137,10 +137,8 @@ public class SignatureHelper {
         // check signature
         Mac mac = createHasher();
         contextHasher.accept(mac);
-        byte[] calcSign = mac.doFinal(
-                Arrays.copyOfRange(bb, 0, bb.length - SIGNATURE_LENGTH));
-        if (!slowEquals(calcSign, Arrays.copyOfRange(bb,
-                bb.length - SIGNATURE_LENGTH, bb.length)))
+        byte[] calcSign = mac.doFinal(Arrays.copyOfRange(bb, 0, bb.length - SIGNATURE_LENGTH));
+        if (!slowEquals(calcSign, Arrays.copyOfRange(bb, bb.length - SIGNATURE_LENGTH, bb.length)))
             throw new RuntimeException("Signature did not match");
 
         // deserialize

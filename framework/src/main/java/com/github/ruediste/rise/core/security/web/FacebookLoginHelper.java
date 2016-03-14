@@ -16,21 +16,17 @@ public class FacebookLoginHelper {
 
     public SignedRequest parseRequest(String signedRequest, String secret) {
         int idx = signedRequest.indexOf('.');
-        byte[] expectedSignature = BaseEncoding.base64Url()
-                .decode(signedRequest.substring(0, idx));
+        byte[] expectedSignature = BaseEncoding.base64Url().decode(signedRequest.substring(0, idx));
         String encodedEnvelope = signedRequest.substring(idx + 1);
 
         SignatureHelper helper = new SignatureHelper();
-        byte[] actualSignature = helper
-                .createHasher(secret.getBytes(Charsets.UTF_8))
+        byte[] actualSignature = helper.createHasher(secret.getBytes(Charsets.UTF_8))
                 .doFinal(encodedEnvelope.getBytes(Charsets.UTF_8));
 
         if (!helper.slowEquals(expectedSignature, actualSignature)) {
             throw new RuntimeException("Signatures don't match");
         }
-        String envelope = new String(
-                BaseEncoding.base64Url().decode(encodedEnvelope),
-                Charsets.UTF_8);
+        String envelope = new String(BaseEncoding.base64Url().decode(encodedEnvelope), Charsets.UTF_8);
 
         JSONObject parsed = (JSONObject) JSONValue.parse(envelope);
         SignedRequest result = new SignedRequest();

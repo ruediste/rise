@@ -13,8 +13,7 @@ public class JsonRenderResultFactory {
     ObjectMapper objectMapper;
 
     public HttpRenderResult jsonRenderResult(Object result) {
-        return new ContentRenderResult(
-                JSONValue.toJSONString(result).getBytes(Charsets.UTF_8),
+        return new ContentRenderResult(JSONValue.toJSONString(result).getBytes(Charsets.UTF_8),
                 "application/json; charset=UTF-8");
 
     }

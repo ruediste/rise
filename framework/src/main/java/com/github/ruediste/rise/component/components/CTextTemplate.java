@@ -6,8 +6,7 @@ public class CTextTemplate extends Html5ComponentTemplateBase<CText> {
 
     @Override
     public void doRender(CText component, RiseCanvas<?> html) {
-        html.span().CLASS("rise_ctext").rCOMPONENT_ATTRIBUTES(component)
-                .content(component.getText());
+        html.span().CLASS("rise_ctext").rCOMPONENT_ATTRIBUTES(component).content(component.getText());
     }
 
 }

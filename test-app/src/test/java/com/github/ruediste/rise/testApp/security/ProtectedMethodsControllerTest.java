@@ -20,17 +20,15 @@ public class ProtectedMethodsControllerTest extends WebTest {
 
     @Test
     public void testAllowed() {
-        driver.findElement(byDataTestName(ProtectedMethodsController.class,
-                x -> x.methodAllowed())).click();
+        driver.findElement(byDataTestName(ProtectedMethodsController.class, x -> x.methodAllowed())).click();
         assertPage(ProtectedMethodsController.class, x -> x.methodAllowed());
-        assertEquals("success",
-                driver.findElement(byDataTestName("data")).getText());
+        assertEquals("success", driver.findElement(byDataTestName("data")).getText());
     }
 
     @Test
     public void testForbidden() {
-        WebElement button = driver.findElement(byDataTestName(
-                ProtectedMethodsController.class, x -> x.methodForbidden()));
+        WebElement button = driver
+                .findElement(byDataTestName(ProtectedMethodsController.class, x -> x.methodForbidden()));
         assertThat(button.getAttribute("class"), containsString("disabled"));
     }
 }

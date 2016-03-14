@@ -27,10 +27,7 @@ public class AuthorizationInspectorTest {
 
     @Test
     public void defaultMethodSupported() {
-        assertTrue(
-                AuthorizationInspector.callsDoAuthChecks(A.class,
-                        MethodInvocationRecorder
-                                .getLastInvocation(IA.class, x -> x.ia())
-                                .getMethod()));
+        assertTrue(AuthorizationInspector.callsDoAuthChecks(A.class,
+                MethodInvocationRecorder.getLastInvocation(IA.class, x -> x.ia()).getMethod()));
     }
 }

@@ -160,8 +160,7 @@ public class BindingGroup<T> implements Serializable {
     }
 
     public Stream<Binding<T>> getBindings() {
-        return components.keySet().stream()
-                .flatMap(c -> bindings.get(c).stream());
+        return components.keySet().stream().flatMap(c -> bindings.get(c).stream());
     }
 
     public interface SuccessActions<T> {
@@ -192,23 +191,20 @@ public class BindingGroup<T> implements Serializable {
      */
     public void pullUp() {
         validationStatusRepository.clearFailures(this);
-        getBindings().forEach(b -> validationStatusRepository
-                .setValidated(b.getComponent(), false));
+        getBindings().forEach(b -> validationStatusRepository.setValidated(b.getComponent(), false));
         getBindings().collect(Collectors.toList()).forEach(b -> {
             if (b.getPullUp() != null)
                 b.getPullUp().accept(data);
         });
     }
 
-    public interface ValidateActions<T>
-            extends SuccessActions<ValidateActions<T>> {
+    public interface ValidateActions<T> extends SuccessActions<ValidateActions<T>> {
 
         Set<ConstraintViolation<T>> violations();
 
     }
 
-    private static abstract class SuccessActionsImpl<T>
-            implements SuccessActions<T> {
+    private static abstract class SuccessActionsImpl<T> implements SuccessActions<T> {
 
         private boolean success;
 
@@ -244,14 +240,12 @@ public class BindingGroup<T> implements Serializable {
 
     }
 
-    private static class ValidateActionsImpl<T>
-            extends SuccessActionsImpl<ValidateActions<T>>
+    private static class ValidateActionsImpl<T> extends SuccessActionsImpl<ValidateActions<T>>
             implements ValidateActions<T> {
 
         private Set<ConstraintViolation<T>> violations;
 
-        public ValidateActionsImpl(boolean success,
-                Set<ConstraintViolation<T>> violations) {
+        public ValidateActionsImpl(boolean success, Set<ConstraintViolation<T>> violations) {
             super(success && violations.isEmpty());
             this.violations = violations;
         }
@@ -271,8 +265,7 @@ public class BindingGroup<T> implements Serializable {
      * Set constraint violations for this binding group. Defers applying until
      * the components have been constructed during initial page requests.
      */
-    public void addConstraintViolations(
-            Set<ConstraintViolation<T>> violations) {
+    public void addConstraintViolations(Set<ConstraintViolation<T>> violations) {
 
         if (componentRequestInfo.isInitialRequest())
             componentRequestInfo.addInitialContraintViolation(this, violations);
@@ -298,15 +291,13 @@ public class BindingGroup<T> implements Serializable {
      * components
      */
     public ValidateActions<T> validate(Class<?>... groups) {
-        Set<ConstraintViolation<T>> violations = validator.validate(data,
-                groups);
+        Set<ConstraintViolation<T>> violations = validator.validate(data, groups);
         validationStatusRepository.clearFailures(this);
         addConstraintViolations(violations);
         return new ValidateActionsImpl<>(true, violations);
     }
 
-    public interface PushDownActions<T>
-            extends SuccessActions<PushDownActions<T>> {
+    public interface PushDownActions<T> extends SuccessActions<PushDownActions<T>> {
 
         /**
          * Validate the value of this group, both if the push down was
@@ -323,9 +314,7 @@ public class BindingGroup<T> implements Serializable {
         ValidateActions<T> validate(Class<?>... groups);
     }
 
-    private class PushDownActionsImpl
-            extends SuccessActionsImpl<PushDownActions<T>>
-            implements PushDownActions<T> {
+    private class PushDownActionsImpl extends SuccessActionsImpl<PushDownActions<T>> implements PushDownActions<T> {
 
         public PushDownActionsImpl(boolean success) {
             super(success);
@@ -340,8 +329,7 @@ public class BindingGroup<T> implements Serializable {
 
         @Override
         public ValidateActions<T> validate(Class<?>... groups) {
-            Set<ConstraintViolation<T>> violations = validator.validate(data,
-                    groups);
+            Set<ConstraintViolation<T>> violations = validator.validate(data, groups);
             addConstraintViolations(violations);
             return new ValidateActionsImpl<>(success(), violations);
         }
@@ -384,8 +372,7 @@ public class BindingGroup<T> implements Serializable {
                 b.getPushDown().accept(data);
             } catch (ValidationException e) {
                 success.setValue(false);
-                validationStatusRepository.addFailures(this, component,
-                        e.getFailures());
+                validationStatusRepository.addFailures(this, component, e.getFailures());
             }
             validationStatusRepository.setValidated(component, true);
         });
@@ -396,8 +383,7 @@ public class BindingGroup<T> implements Serializable {
      * Push the data of all bindings down from the view to the model
      */
     public void pushDown() {
-        getBindings().filter(b -> b.getPushDown() != null)
-                .forEach(b -> b.getPushDown().accept(data));
+        getBindings().filter(b -> b.getPushDown() != null).forEach(b -> b.getPushDown().accept(data));
     }
 
     /**
@@ -419,8 +405,7 @@ public class BindingGroup<T> implements Serializable {
      * Otherwise return {@link #data}.
      */
     public T proxy() {
-        BindingExpressionExecutionRecord log = BindingExpressionExecutionRecorder
-                .getCurrentLog();
+        BindingExpressionExecutionRecord log = BindingExpressionExecutionRecorder.getCurrentLog();
         if (log == null) {
             return data;
         }
@@ -430,8 +415,7 @@ public class BindingGroup<T> implements Serializable {
 
     @SuppressWarnings("unchecked")
     private <TModel> TModel createModelProxy(Class<?> modelClass) {
-        return (TModel) BindingExpressionExecutionRecorder
-                .getCurrentLog().modelRecorder.getProxy(tTypeToken);
+        return (TModel) BindingExpressionExecutionRecorder.getCurrentLog().modelRecorder.getProxy(tTypeToken);
 
     }
 
@@ -461,21 +445,17 @@ public class BindingGroup<T> implements Serializable {
      * during an initial page request. Usually, it is better to use
      * {@link #addConstraintViolations(Set)}.
      */
-    public void applyConstraintViolations(
-            Set<ConstraintViolation<T>> violations) {
+    public void applyConstraintViolations(Set<ConstraintViolation<T>> violations) {
 
-        Multimap<String, ConstraintViolation<?>> violationMap = MultimapBuilder
-                .hashKeys().arrayListValues().build();
+        Multimap<String, ConstraintViolation<?>> violationMap = MultimapBuilder.hashKeys().arrayListValues().build();
 
         for (ConstraintViolation<?> v : violations) {
-            violationMap.put(
-                    ValidationPathUtil.toPathString(v.getPropertyPath()), v);
+            violationMap.put(ValidationPathUtil.toPathString(v.getPropertyPath()), v);
         }
 
         getBindings().forEach(b -> {
             validationStatusRepository.addFailures(this, b.getComponent(),
-                    validationUtil.toFailures(
-                            violationMap.get(b.modelPath.getPath())));
+                    validationUtil.toFailures(violationMap.get(b.modelPath.getPath())));
             validationStatusRepository.setValidated(b.getComponent(), true);
         });
     }

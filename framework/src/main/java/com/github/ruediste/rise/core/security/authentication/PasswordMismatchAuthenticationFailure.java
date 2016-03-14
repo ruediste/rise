@@ -7,7 +7,6 @@ import com.github.ruediste.rise.core.security.authentication.core.Authentication
  * Idicates that the password passed in an {@link AuthenticationRequest} did not
  * match the expected password.
  */
-public class PasswordMismatchAuthenticationFailure
-        extends AuthenticationFailure {
+public class PasswordMismatchAuthenticationFailure extends AuthenticationFailure {
 
 }

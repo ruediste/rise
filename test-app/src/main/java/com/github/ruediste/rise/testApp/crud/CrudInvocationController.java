@@ -8,8 +8,7 @@ import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.persistence.Updating;
 import com.github.ruediste.rise.core.security.urlSigning.UrlUnsigned;
 
-public class CrudInvocationController
-        extends ControllerMvc<CrudInvocationController> {
+public class CrudInvocationController extends ControllerMvc<CrudInvocationController> {
 
     @Inject
     EntityManager em;
@@ -21,8 +20,7 @@ public class CrudInvocationController
         e.setStringValue("Hello World");
         em.persist(e);
 
-        return redirect(go(TestCrudController.class)
-                .browse(TestCrudEntityA.class, null));
+        return redirect(go(TestCrudController.class).browse(TestCrudEntityA.class, null));
     }
 
     @UrlUnsigned
@@ -32,7 +30,6 @@ public class CrudInvocationController
         e.setValue("Hello World2");
         em.persist(e);
 
-        return redirect(go(TestCrudController.class)
-                .browse(TestCrudEntityB.class, null));
+        return redirect(go(TestCrudController.class).browse(TestCrudEntityB.class, null));
     }
 }

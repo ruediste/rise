@@ -26,19 +26,18 @@ public class TestSortableControllerTest extends WebTest {
         changeOrder();
         pushDown();
         doWait().untilTrue(
-                () -> driver.findElement(byDataTestName("controllerStatus"))
-                        .getText().equals("[bar, foo, fooBar]"));
+                () -> driver.findElement(byDataTestName("controllerStatus")).getText().equals("[bar, foo, fooBar]"));
     }
 
     @Test
     public void testChangeOrderAndPullUp_orderRestored() {
         changeOrder();
         pullUp();
-        doWait().untilTrue(() -> contains("foo", "bar", "fooBar").matches(driver
-                .findElements(By.cssSelector(
-                        dataTestSelector(TestSortableController.Data.class,
-                                x -> x.getItems()) + "> li"))
-                .stream().map(e -> e.getText()).collect(toList())));
+        doWait().untilTrue(
+                () -> contains("foo", "bar", "fooBar").matches(driver
+                        .findElements(By.cssSelector(
+                                dataTestSelector(TestSortableController.Data.class, x -> x.getItems()) + "> li"))
+                        .stream().map(e -> e.getText()).collect(toList())));
     }
 
     @Test
@@ -47,30 +46,24 @@ public class TestSortableControllerTest extends WebTest {
 
         executeAndWaitForRefresh(() -> pushDown());
         executeAndWaitForRefresh(() -> pullUp());
-        doWait().untilTrue(() -> contains("bar", "foo", "fooBar").matches(driver
-                .findElements(By.cssSelector(
-                        dataTestSelector(TestSortableController.Data.class,
-                                x -> x.getItems()) + "> li"))
-                .stream().map(e -> e.getText()).collect(toList())));
+        doWait().untilTrue(
+                () -> contains("bar", "foo", "fooBar").matches(driver
+                        .findElements(By.cssSelector(
+                                dataTestSelector(TestSortableController.Data.class, x -> x.getItems()) + "> li"))
+                        .stream().map(e -> e.getText()).collect(toList())));
     }
 
     private void pullUp() {
-        driver.findElement(
-                byDataTestName(TestSortableController.class, x -> x.pullUp()))
-                .click();
+        driver.findElement(byDataTestName(TestSortableController.class, x -> x.pullUp())).click();
     }
 
     private void pushDown() {
-        driver.findElement(
-                byDataTestName(TestSortableController.class, x -> x.pushDown()))
-                .click();
+        driver.findElement(byDataTestName(TestSortableController.class, x -> x.pushDown())).click();
     }
 
     private void changeOrder() {
         WebElement foo = driver.findElement(byDataTestName("foo"));
         WebElement bar = driver.findElement(byDataTestName("bar"));
-        actions.clickAndHold(bar)
-                .moveByOffset(0, foo.getLocation().y - bar.getLocation().y - 10)
-                .release().perform();
+        actions.clickAndHold(bar).moveByOffset(0, foo.getLocation().y - bar.getLocation().y - 10).release().perform();
     }
 }

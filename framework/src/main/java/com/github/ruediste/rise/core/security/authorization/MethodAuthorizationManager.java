@@ -44,8 +44,7 @@ public class MethodAuthorizationManager {
         /**
          * Return the rights required to call the given method
          */
-        Set<? extends Right> getRequiredRights(Object target, Method method,
-                Object[] args);
+        Set<? extends Right> getRequiredRights(Object target, Method method, Object[] args);
     }
 
     @VisibleForTesting
@@ -74,8 +73,7 @@ public class MethodAuthorizationManager {
     /**
      * Add a {@link MethodAuthorizationRule} for the given binder
      */
-    public static void addRule(Binder binder, MethodAuthorizationRule rule,
-            Predicate<Class<?>> typeMatcher,
+    public static void addRule(Binder binder, MethodAuthorizationRule rule, Predicate<Class<?>> typeMatcher,
             BiPredicate<Class<?>, Method> methodMatcher) {
         get(binder).addRule(typeMatcher, methodMatcher, rule);
     }
@@ -85,8 +83,7 @@ public class MethodAuthorizationManager {
      * manager is associated yet, create a new one and register it.
      */
     public static MethodAuthorizationManager get(Binder binder) {
-        MethodAuthorizationManager result = managerProperty
-                .get(binder.config());
+        MethodAuthorizationManager result = managerProperty.get(binder.config());
         if (result == null) {
             result = new MethodAuthorizationManager();
             result.register(binder);
@@ -102,8 +99,7 @@ public class MethodAuthorizationManager {
      *            annotation. If the annotation is repeated, the extractor is
      *            invoked multiple times. The return value may be null
      */
-    public static <T extends Annotation> void addRule(Binder binder,
-            Class<T> annotationClass,
+    public static <T extends Annotation> void addRule(Binder binder, Class<T> annotationClass,
             Function<T, Collection<Right>> extractor) {
         get(binder).addRule(annotationClass, extractor);
     }
@@ -117,20 +113,15 @@ public class MethodAuthorizationManager {
      *            invoked multiple times. The return value may be null
      * @return
      */
-    public <T extends Annotation> MethodAuthorizationManager addRule(
-            Class<T> annotationClass,
+    public <T extends Annotation> MethodAuthorizationManager addRule(Class<T> annotationClass,
             Function<T, Collection<Right>> extractor) {
-        addRule(t -> true,
-                (t, m) -> m.getDeclaredAnnotationsByType(
-                        annotationClass).length > 0,
+        addRule(t -> true, (t, m) -> m.getDeclaredAnnotationsByType(annotationClass).length > 0,
                 new MethodAuthorizationRule() {
 
                     @Override
-                    public Set<? extends Right> getRequiredRights(Object target,
-                            Method method, Object[] args) {
+                    public Set<? extends Right> getRequiredRights(Object target, Method method, Object[] args) {
                         HashSet<Right> result = new HashSet<>();
-                        for (T annotation : method.getDeclaredAnnotationsByType(
-                                annotationClass)) {
+                        for (T annotation : method.getDeclaredAnnotationsByType(annotationClass)) {
                             Collection<Right> tmp = extractor.apply(annotation);
                             if (tmp != null)
                                 result.addAll(tmp);
@@ -142,8 +133,7 @@ public class MethodAuthorizationManager {
     }
 
     public MethodAuthorizationManager addRule(Predicate<Class<?>> typeMatcher,
-            BiPredicate<Class<?>, Method> methodMatcher,
-            MethodAuthorizationRule rule) {
+            BiPredicate<Class<?>, Method> methodMatcher, MethodAuthorizationRule rule) {
         RuleEntry entry = new RuleEntry();
         entry.methodMatcher = methodMatcher;
         entry.typeMatcher = typeMatcher;
@@ -156,9 +146,8 @@ public class MethodAuthorizationManager {
         managerProperty.set(binder.config(), this);
         AopUtil.registerSubclass(binder.config().standardConfig, t -> {
             Class<?> cls = t.getRawType();
-            return entries.stream().anyMatch(
-                    e -> e.typeMatcher == null || e.typeMatcher.test(cls));
-        } , (t, m) -> entries.stream().anyMatch(e -> {
+            return entries.stream().anyMatch(e -> e.typeMatcher == null || e.typeMatcher.test(cls));
+        }, (t, m) -> entries.stream().anyMatch(e -> {
             Class<?> cls = t.getRawType();
             return e.methodMatcher == null || e.methodMatcher.test(cls, m);
         }), i -> {
@@ -167,13 +156,9 @@ public class MethodAuthorizationManager {
                 Class<? extends Object> targetClass = target.getClass();
                 Method method = i.getMethod();
                 Object[] arguments = i.getArguments();
-                Set<? extends Right> requiredRights = entries.stream()
-                        .filter(e -> {
-                    return e.typeMatcher.test(targetClass)
-                            && e.methodMatcher.test(targetClass, method);
-                }).flatMap(r -> r.rule
-                        .getRequiredRights(target, method, arguments).stream())
-                        .collect(toSet());
+                Set<? extends Right> requiredRights = entries.stream().filter(e -> {
+                    return e.typeMatcher.test(targetClass) && e.methodMatcher.test(targetClass, method);
+                }).flatMap(r -> r.rule.getRequiredRights(target, method, arguments).stream()).collect(toSet());
                 authorizationManager.checkAuthorization(requiredRights);
             }
             return i.proceed();
@@ -207,8 +192,7 @@ public class MethodAuthorizationManager {
                     } catch (Exception e1) {
                         throw new RuntimeException(e1);
                     }
-                    throw new RuntimeException(
-                            "Authorization check did not invoke authorize");
+                    throw new RuntimeException("Authorization check did not invoke authorize");
                 } catch (AuthorizationIntrospectionCompleted e11) {
                     // swallow
                 }
@@ -218,11 +202,8 @@ public class MethodAuthorizationManager {
             // rules
             Class<? extends Object> clsFinal = cls;
             Set<? extends Right> requiredRights = entries.stream()
-                    .filter(e -> e.typeMatcher.test(clsFinal)
-                            && e.methodMatcher.test(clsFinal, m))
-                    .flatMap(e -> e.rule.getRequiredRights(target, m, args)
-                            .stream())
-                    .collect(toSet());
+                    .filter(e -> e.typeMatcher.test(clsFinal) && e.methodMatcher.test(clsFinal, m))
+                    .flatMap(e -> e.rule.getRequiredRights(target, m, args).stream()).collect(toSet());
             authorizationManager.checkAuthorization(requiredRights);
         }
     }

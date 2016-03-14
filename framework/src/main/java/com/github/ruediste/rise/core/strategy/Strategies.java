@@ -33,37 +33,31 @@ public class Strategies {
     private final ListMultimap<Pair<Class<?>, AnnotatedElement>, Strategy> perElementStrategies = MultimapBuilder
             .hashKeys().arrayListValues().build();
 
-    private final ListMultimap<Class<?>, Strategy> strategies = MultimapBuilder
-            .hashKeys().arrayListValues().build();
+    private final ListMultimap<Class<?>, Strategy> strategies = MultimapBuilder.hashKeys().arrayListValues().build();
 
     public void putStrategy(Strategy strategy) {
-        getStrategyClasses(strategy.getClass())
-                .forEach(s -> strategies.put(s, strategy));
+        getStrategyClasses(strategy.getClass()).forEach(s -> strategies.put(s, strategy));
     }
 
     public void putStrategy(Strategy strategy, AnnotatedElement element) {
-        getStrategyClasses(strategy.getClass()).forEach(
-                s -> perElementStrategies.put(Pair.of(s, element), strategy));
+        getStrategyClasses(strategy.getClass()).forEach(s -> perElementStrategies.put(Pair.of(s, element), strategy));
     }
 
     public <T extends Strategy> void putStrategy(Class<T> cls, T strategy) {
         strategies.put(cls, strategy);
     }
 
-    public <T extends Strategy> void putStrategyFirst(Class<T> cls,
-            T strategy) {
+    public <T extends Strategy> void putStrategyFirst(Class<T> cls, T strategy) {
         strategies.get(cls).add(0, strategy);
     }
 
     public void putStrategyFirst(Strategy strategy) {
-        getStrategyClasses(strategy.getClass())
-                .forEach(s -> strategies.get(s).add(0, strategy));
+        getStrategyClasses(strategy.getClass()).forEach(s -> strategies.get(s).add(0, strategy));
     }
 
     public void putStrategyFirst(Strategy strategy, AnnotatedElement element) {
         getStrategyClasses(strategy.getClass())
-                .forEach(s -> perElementStrategies.get(Pair.of(s, element))
-                        .add(0, strategy));
+                .forEach(s -> perElementStrategies.get(Pair.of(s, element)).add(0, strategy));
     }
 
     HashSet<Class<?>> getStrategyClasses(Class<?> strategyClass) {
@@ -89,34 +83,26 @@ public class Strategies {
     }
 
     @SuppressWarnings({ "unchecked" })
-    public <T extends Strategy> Stream<T> getStrategies(
-            Class<T> strategyClass) {
+    public <T extends Strategy> Stream<T> getStrategies(Class<T> strategyClass) {
 
         return Stream.concat((Stream<T>) strategies.get(strategyClass).stream(),
-                Stream.of((Supplier<Optional<T>>) () -> injector
-                        .tryGetInstance(strategyClass)).map(x -> x.get())
-                        .flatMap(x -> x.isPresent() ? Stream.of(x.get())
-                                : Stream.of()));
+                Stream.of((Supplier<Optional<T>>) () -> injector.tryGetInstance(strategyClass)).map(x -> x.get())
+                        .flatMap(x -> x.isPresent() ? Stream.of(x.get()) : Stream.of()));
     }
 
     @SuppressWarnings({ "unchecked" })
-    public <T extends Strategy> Stream<T> getStrategies(Class<T> strategyClass,
-            AnnotatedElement element) {
+    public <T extends Strategy> Stream<T> getStrategies(Class<T> strategyClass, AnnotatedElement element) {
         if (element == null)
             return getStrategies(strategyClass);
         // use per element strategies
-        Stream<Strategy> perElementStrategyStream = perElementStrategies
-                .get(Pair.of(strategyClass, element)).stream();
+        Stream<Strategy> perElementStrategyStream = perElementStrategies.get(Pair.of(strategyClass, element)).stream();
 
         // check annotation
-        Stream<Object> annotationStream = Arrays
-                .stream(element.getAnnotationsByType(UseStrategy.class))
-                .map(UseStrategy::value).filter(strategyClass::isAssignableFrom)
-                .map(injector::getInstance);
+        Stream<Object> annotationStream = Arrays.stream(element.getAnnotationsByType(UseStrategy.class))
+                .map(UseStrategy::value).filter(strategyClass::isAssignableFrom).map(injector::getInstance);
 
         // use default strategies
-        return (Stream<T>) Stream.concat(
-                Stream.concat(perElementStrategyStream, annotationStream),
+        return (Stream<T>) Stream.concat(Stream.concat(perElementStrategyStream, annotationStream),
                 getStrategies(strategyClass));
     }
 
@@ -143,24 +129,17 @@ public class Strategies {
             return this;
         }
 
-        private <R> Optional<Pair<T, R>> getUncached(
-                Function<T, Optional<R>> filter) {
-            return element.map(e -> getStrategies(strategyClass, e))
-                    .orElseGet(() -> getStrategies(strategyClass))
-                    .flatMap(s -> filter.apply(s)
-                            .map(r -> Stream.of(Pair.of(s, r)))
-                            .orElse(Stream.of()))
-                    .findFirst();
+        private <R> Optional<Pair<T, R>> getUncached(Function<T, Optional<R>> filter) {
+            return element.map(e -> getStrategies(strategyClass, e)).orElseGet(() -> getStrategies(strategyClass))
+                    .flatMap(s -> filter.apply(s).map(r -> Stream.of(Pair.of(s, r))).orElse(Stream.of())).findFirst();
         }
 
         public <R> Optional<R> get(Function<T, Optional<R>> filter) {
             if (isCached) {
-                Object key = Pair
-                        .of(element.map(x -> (Object) Pair.of(strategyClass, x))
-                                .orElseGet(() -> strategyClass), cacheKey);
+                Object key = Pair.of(
+                        element.map(x -> (Object) Pair.of(strategyClass, x)).orElseGet(() -> strategyClass), cacheKey);
 
-                return strategyCache.getOrDefault(key, Optional.empty())
-                        .map(s -> filter.apply(strategyClass.cast(s)))
+                return strategyCache.getOrDefault(key, Optional.empty()).map(s -> filter.apply(strategyClass.cast(s)))
                         .orElseGet(() -> {
                             Optional<Pair<T, R>> pair = getUncached(filter);
                             strategyCache.put(key, pair.map(Pair::getA));
@@ -172,8 +151,7 @@ public class Strategies {
         }
     }
 
-    public <T extends Strategy> GetStrategyApi<T> getStrategy(
-            Class<T> strategyClass) {
+    public <T extends Strategy> GetStrategyApi<T> getStrategy(Class<T> strategyClass) {
         return new GetStrategyApi<>(strategyClass);
     }
 }

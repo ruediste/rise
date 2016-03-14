@@ -19,10 +19,8 @@ import com.github.ruediste.rise.util.Pair;
  * Base class for components displaying a set of items. Null items are not
  * allowed.
  */
-public class CItems<T, TSelf extends CItems<T, TSelf>>
-        extends ComponentBase<TSelf> {
-    private Function<T, Component> childComponentFactory = i -> new CText(
-            String.valueOf(i));
+public class CItems<T, TSelf extends CItems<T, TSelf>> extends ComponentBase<TSelf> {
+    private Function<T, Component> childComponentFactory = i -> new CText(String.valueOf(i));
     private Function<T, String> testNameExtractor;
 
     private Map<T, Component> children = Collections.emptyMap();
@@ -39,8 +37,7 @@ public class CItems<T, TSelf extends CItems<T, TSelf>>
 
     public Iterable<Pair<T, Component>> getItemsAndChildren() {
         updateChildren();
-        return getItems().stream().map(i -> Pair.of(i, children.get(i)))
-                .collect(toList());
+        return getItems().stream().map(i -> Pair.of(i, children.get(i))).collect(toList());
     }
 
     public Optional<String> getTestName(T item) {
@@ -100,8 +97,7 @@ public class CItems<T, TSelf extends CItems<T, TSelf>>
         return childComponentFactory;
     }
 
-    public TSelf setChildComponentFactory(
-            Function<T, Component> childComponentFactory) {
+    public TSelf setChildComponentFactory(Function<T, Component> childComponentFactory) {
         this.childComponentFactory = childComponentFactory;
         return self();
     }

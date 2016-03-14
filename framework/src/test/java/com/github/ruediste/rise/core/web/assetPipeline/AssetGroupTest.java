@@ -48,8 +48,7 @@ public class AssetGroupTest {
     public void testCache() {
 
         AssetGroup cached = group.cache();
-        assertEquals("AssetGroup[testAsset(foo,Hello).cache()]",
-                cached.toString());
+        assertEquals("AssetGroup[testAsset(foo,Hello).cache()]", cached.toString());
 
         checkAccessCount(0);
 
@@ -81,9 +80,7 @@ public class AssetGroupTest {
         // test with hash in the middle
         AssetGroup name = group.name("{name}/{hash}");
 
-        assertEquals(
-                "AssetGroup[testAsset(foo,Hello).cache().name({name}/{hash}).cache()]",
-                name.toString());
+        assertEquals("AssetGroup[testAsset(foo,Hello).cache().name({name}/{hash}).cache()]", name.toString());
 
         checkAccessCount(0);
         name.assets.forEach(this::access);
@@ -116,9 +113,7 @@ public class AssetGroupTest {
         Asset r2 = new TestAsset("foo2", "bar2");
         group = new AssetGroup(bundle, Arrays.asList(r1, r2));
         AssetGroup collect = group.combine();
-        assertEquals(
-                "AssetGroup[combine[testAsset(foo1,bar1), testAsset(foo2,bar2)]]",
-                collect.toString());
+        assertEquals("AssetGroup[combine[testAsset(foo1,bar1), testAsset(foo2,bar2)]]", collect.toString());
         assertEquals(1, collect.assets.size());
         Asset r = Iterables.getOnlyElement(collect.assets);
         assertArrayEquals(byteArray("bar1\nbar2\n"), r.getData());
@@ -126,13 +121,9 @@ public class AssetGroupTest {
 
     @Test
     public void testForkJoin() throws Exception {
-        AssetGroup forkJoin = group.forkJoin(x -> x.name("foo"),
-                x -> x.name("bar"));
-        assertEquals(
-                "AssetGroup[testAsset(foo,Hello).name(foo), testAsset(foo,Hello).name(bar)]",
-                forkJoin.toString());
-        Set<String> names = forkJoin.assets.stream().map(x -> x.getName())
-                .collect(toSet());
+        AssetGroup forkJoin = group.forkJoin(x -> x.name("foo"), x -> x.name("bar"));
+        assertEquals("AssetGroup[testAsset(foo,Hello).name(foo), testAsset(foo,Hello).name(bar)]", forkJoin.toString());
+        Set<String> names = forkJoin.assets.stream().map(x -> x.getName()).collect(toSet());
         assertThat(names, containsInAnyOrder("foo", "bar"));
     }
 

@@ -17,7 +17,6 @@ public interface StartupErrorHandler {
      * Render the error response. To trigger the error handling of the
      * container, just throw an exception.
      */
-    void handle(Throwable startupError, HttpServletRequest request,
-            HttpServletResponse response);
+    void handle(Throwable startupError, HttpServletRequest request, HttpServletResponse response);
 
 }

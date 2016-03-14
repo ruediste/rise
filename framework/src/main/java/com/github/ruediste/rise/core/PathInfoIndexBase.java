@@ -30,8 +30,7 @@ public class PathInfoIndexBase<T> {
         T existing = pathInfoMap.put(pathInfo, handler);
         if (existing != null) {
             throw new IllegalArgumentException(
-                    "Registered duplicate path info:\n" + pathInfo + "\n"
-                            + existing + "\n" + handler);
+                    "Registered duplicate path info:\n" + pathInfo + "\n" + existing + "\n" + handler);
         }
         log.debug("registered exact " + pathInfo);
     }
@@ -78,19 +77,14 @@ public class PathInfoIndexBase<T> {
         Entry<String, T> floorEntry = prefixMap.floorEntry(prefix);
         Entry<String, T> ceilingEntry = prefixMap.ceilingEntry(prefix);
 
-        if (floorEntry != null && (floorEntry.getKey().startsWith(prefix)
-                || prefix.startsWith(floorEntry.getKey()))) {
-            throw new IllegalArgumentException(
-                    "Attempt to register ambigous prefix:\n" + prefix + "->"
-                            + handler + "\n" + floorEntry.getKey() + "->"
-                            + floorEntry.getValue());
+        if (floorEntry != null && (floorEntry.getKey().startsWith(prefix) || prefix.startsWith(floorEntry.getKey()))) {
+            throw new IllegalArgumentException("Attempt to register ambigous prefix:\n" + prefix + "->" + handler + "\n"
+                    + floorEntry.getKey() + "->" + floorEntry.getValue());
         }
-        if (ceilingEntry != null && (ceilingEntry.getKey().startsWith(prefix)
-                || prefix.startsWith(ceilingEntry.getKey()))) {
-            throw new IllegalArgumentException(
-                    "Attempt to register ambigous prefix:\n" + prefix + "->"
-                            + handler + "\n" + ceilingEntry.getKey() + "->"
-                            + ceilingEntry.getValue());
+        if (ceilingEntry != null
+                && (ceilingEntry.getKey().startsWith(prefix) || prefix.startsWith(ceilingEntry.getKey()))) {
+            throw new IllegalArgumentException("Attempt to register ambigous prefix:\n" + prefix + "->" + handler + "\n"
+                    + ceilingEntry.getKey() + "->" + ceilingEntry.getValue());
         }
 
         prefixMap.put(prefix, handler);

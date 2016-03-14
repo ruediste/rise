@@ -45,8 +45,7 @@ public class CSubView extends ComponentBase<CSubView> {
         this.view = view;
         if (this.view != null) {
             if (view.getRootComponent().getParent() != null)
-                view.getRootComponent().getParent()
-                        .childRemoved(view.getRootComponent());
+                view.getRootComponent().getParent().childRemoved(view.getRootComponent());
             view.getRootComponent().parentChanged(this);
         }
     }

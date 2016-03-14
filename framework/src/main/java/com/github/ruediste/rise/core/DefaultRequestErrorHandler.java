@@ -20,8 +20,7 @@ public class DefaultRequestErrorHandler implements RequestErrorHandler {
 
     private Function<CoreUtil, ActionResult> errorHandlerPathGenerator;
 
-    public DefaultRequestErrorHandler initialize(
-            Function<CoreUtil, ActionResult> errorHandlerPathGenerator) {
+    public DefaultRequestErrorHandler initialize(Function<CoreUtil, ActionResult> errorHandlerPathGenerator) {
         this.errorHandlerPathGenerator = errorHandlerPathGenerator;
 
         return this;
@@ -30,10 +29,8 @@ public class DefaultRequestErrorHandler implements RequestErrorHandler {
     @Override
     public void handle() {
         // fake a request forward to the error handler
-        PathInfo errorHandlerPath = util
-                .toPathInfo(errorHandlerPathGenerator.apply(util));
-        DelegatingHttpRequest errorHandlerRequest = new DelegatingHttpRequest(
-                info.getServletRequest()) {
+        PathInfo errorHandlerPath = util.toPathInfo(errorHandlerPathGenerator.apply(util));
+        DelegatingHttpRequest errorHandlerRequest = new DelegatingHttpRequest(info.getServletRequest()) {
             @Override
             public String getPathInfo() {
                 return errorHandlerPath.getValue();

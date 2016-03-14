@@ -48,12 +48,10 @@ public class PageObject {
             return (WebElement) ctx;
         else if (ctx instanceof WebDriver)
             return ctx.findElement(By.cssSelector("html"));
-        throw new RuntimeException(
-                "Unable to determine root element for search context " + ctx);
+        throw new RuntimeException("Unable to determine root element for search context " + ctx);
     }
 
-    public void setRootElementSupplier(
-            Supplier<? extends SearchContext> rootSearchContextSupplier) {
+    public void setRootElementSupplier(Supplier<? extends SearchContext> rootSearchContextSupplier) {
         this.rootSearchContextSupplier = rootSearchContextSupplier;
     }
 
@@ -66,13 +64,11 @@ public class PageObject {
     }
 
     protected WebElement lazy(By by) {
-        return (WebElement) Proxy.newProxyInstance(
-                WebElement.class.getClassLoader(),
+        return (WebElement) Proxy.newProxyInstance(WebElement.class.getClassLoader(),
                 new Class<?>[] { WebElement.class }, new InvocationHandler() {
 
                     @Override
-                    public Object invoke(Object proxy, Method method,
-                            Object[] args) throws Throwable {
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                         return method.invoke(findElement(by), args);
                     }
                 });
@@ -80,28 +76,24 @@ public class PageObject {
 
     @SuppressWarnings("unchecked")
     protected List<WebElement> lazys(By by) {
-        return (List<WebElement>) Proxy.newProxyInstance(
-                WebElement.class.getClassLoader(),
+        return (List<WebElement>) Proxy.newProxyInstance(WebElement.class.getClassLoader(),
                 new Class<?>[] { List.class }, new InvocationHandler() {
 
                     @Override
-                    public Object invoke(Object proxy, Method method,
-                            Object[] args) throws Throwable {
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                         return method.invoke(findElements(by), args);
                     }
                 });
     }
 
     protected WebElement cached(By by) {
-        return (WebElement) Proxy.newProxyInstance(
-                WebElement.class.getClassLoader(),
+        return (WebElement) Proxy.newProxyInstance(WebElement.class.getClassLoader(),
                 new Class<?>[] { WebElement.class }, new InvocationHandler() {
 
                     WebElement element;
 
                     @Override
-                    public Object invoke(Object proxy, Method method,
-                            Object[] args) throws Throwable {
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                         synchronized (this) {
                             if (element == null)
                                 element = findElement(by);
@@ -113,15 +105,13 @@ public class PageObject {
 
     @SuppressWarnings("unchecked")
     protected List<WebElement> cacheds(By by) {
-        return (List<WebElement>) Proxy.newProxyInstance(
-                WebElement.class.getClassLoader(),
+        return (List<WebElement>) Proxy.newProxyInstance(WebElement.class.getClassLoader(),
                 new Class<?>[] { List.class }, new InvocationHandler() {
 
                     List<WebElement> element;
 
                     @Override
-                    public Object invoke(Object proxy, Method method,
-                            Object[] args) throws Throwable {
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                         synchronized (this) {
                             if (element == null)
                                 element = findElements(by);
@@ -175,13 +165,11 @@ public class PageObject {
         testUtil.executeAndWaitForRefresh(action);
     }
 
-    protected void executeAndWaitForRefresh(Runnable action,
-            int timeoutSeconds) {
+    protected void executeAndWaitForRefresh(Runnable action, int timeoutSeconds) {
         testUtil.executeAndWaitForRefresh(action, timeoutSeconds);
     }
 
-    protected <T extends WebElement> WebElement getContainingReloadElement(
-            T element) {
+    protected <T extends WebElement> WebElement getContainingReloadElement(T element) {
         return testUtil.getContainingReloadElement(element);
     }
 
@@ -189,13 +177,11 @@ public class PageObject {
         return testUtil.pageObject(cls, rootSearchContextSupplier);
     }
 
-    protected <T extends PageObject> T pageObject(Class<T> cls,
-            WebElement rootElement) {
+    protected <T extends PageObject> T pageObject(Class<T> cls, WebElement rootElement) {
         return pageObject(cls, () -> rootElement);
     }
 
-    protected <T extends PageObject> T pageObject(Class<T> cls,
-            Supplier<WebElement> rootElementSupplier) {
+    protected <T extends PageObject> T pageObject(Class<T> cls, Supplier<WebElement> rootElementSupplier) {
         return testUtil.pageObject(cls, rootElementSupplier);
     }
 
@@ -209,8 +195,7 @@ public class PageObject {
      * {@link WebElement#sendKeys(CharSequence...)}
      */
     protected void setText(WebElement element, String text) {
-        actions.click(element).sendKeys(Keys.END).keyDown(Keys.SHIFT)
-                .sendKeys(Keys.HOME).keyUp(Keys.SHIFT).sendKeys(Keys.BACK_SPACE)
-                .sendKeys(text).perform();
+        actions.click(element).sendKeys(Keys.END).keyDown(Keys.SHIFT).sendKeys(Keys.HOME).keyUp(Keys.SHIFT)
+                .sendKeys(Keys.BACK_SPACE).sendKeys(text).perform();
     }
 }

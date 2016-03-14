@@ -35,14 +35,12 @@ public class DataBaseLink {
 
     private final Class<? extends Annotation> qualifier;
 
-    public DataBaseLink(Class<? extends Annotation> qualifier,
-            DataSourceFactory dataSourceFactory,
+    public DataBaseLink(Class<? extends Annotation> qualifier, DataSourceFactory dataSourceFactory,
             PersistenceUnitManager persistenceUnitManager) {
         super();
         this.qualifier = qualifier;
         this.persistenceUnitManager = persistenceUnitManager;
-        this.dataSourceManager = new DataSourceManager(qualifier,
-                dataSourceFactory);
+        this.dataSourceManager = new DataSourceManager(qualifier, dataSourceFactory);
         persistenceUnitManager.initialize(qualifier, dataSourceManager);
 
     }
@@ -81,8 +79,7 @@ public class DataBaseLink {
 
         Flyway flyway = new Flyway();
         flyway.setDataSource(dataSourceManager.getDataSource());
-        flyway.setLocations("db/migration/" + qualifier == null ? "default"
-                : qualifier.getSimpleName());
+        flyway.setLocations("db/migration/" + qualifier == null ? "default" : qualifier.getSimpleName());
         flyway.migrate();
 
         log.info("DB schema migration complete");

@@ -8,8 +8,7 @@ public class AdditionalResourceKeys implements AdditionalResourceKeyProvider {
 
     @Override
     public void provideKeys(KeyReceiver receiver) {
-        receiver.addMessage(Length.class,
-                "len must be between {min} and {max}");
+        receiver.addMessage(Length.class, "len must be between {min} and {max}");
     }
 
 }

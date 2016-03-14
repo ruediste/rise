@@ -63,12 +63,9 @@ public class CoreUtil implements ICoreUtil {
     }
 
     @Override
-    public UrlSpec toUrlSpec(ActionInvocation<String> invocation,
-            Supplier<String> sessionId) {
-        return coreConfiguration
-                .getRequestMapper(
-                        invocation.methodInvocation.getInstanceClass())
-                .generate(invocation, sessionId);
+    public UrlSpec toUrlSpec(ActionInvocation<String> invocation, Supplier<String> sessionId) {
+        return coreConfiguration.getRequestMapper(invocation.methodInvocation.getInstanceClass()).generate(invocation,
+                sessionId);
     }
 
     @Override
@@ -78,37 +75,31 @@ public class CoreUtil implements ICoreUtil {
 
     @Override
     public PathInfo toPathInfo(ActionResult invocation) {
-        return getCoreUtil()
-                .toPathInfo(toStringInvocation(toActionInvocation(invocation)));
+        return getCoreUtil().toPathInfo(toStringInvocation(toActionInvocation(invocation)));
     }
 
     @Override
-    public ActionInvocation<Object> toActionInvocation(
-            ActionResult invocation) {
+    public ActionInvocation<Object> toActionInvocation(ActionResult invocation) {
         return ((ActionInvocationResult) invocation);
     }
 
     @Override
-    public ActionInvocation<Object> toObjectInvocation(
-            ActionInvocation<String> stringInvocation) {
+    public ActionInvocation<Object> toObjectInvocation(ActionInvocation<String> stringInvocation) {
         return toSupplierInvocation(stringInvocation).map(Supplier::get);
     }
 
     @Override
-    public ActionInvocation<Supplier<Object>> toSupplierInvocation(
-            ActionInvocation<String> stringInvocation) {
+    public ActionInvocation<Supplier<Object>> toSupplierInvocation(ActionInvocation<String> stringInvocation) {
         return stringInvocation.mapWithType(coreConfiguration::parseArgument);
     }
 
     @Override
-    public ActionInvocation<String> toStringInvocation(
-            ActionInvocation<Object> invocation) {
+    public ActionInvocation<String> toStringInvocation(ActionInvocation<Object> invocation) {
 
         try {
             return invocation.mapWithType(coreConfiguration::generateArgument);
         } catch (Throwable t) {
-            throw new RuntimeException(
-                    "Error while generating arguments of " + invocation, t);
+            throw new RuntimeException("Error while generating arguments of " + invocation, t);
         }
     }
 
@@ -139,14 +130,12 @@ public class CoreUtil implements ICoreUtil {
     public String redirectUrl(UrlSpec path) {
         String prefix = coreRequestInfo.getServletRequest().getContextPath();
         prefix += coreRequestInfo.getServletRequest().getServletPath();
-        return coreRequestInfo.getServletResponse()
-                .encodeRedirectURL(prefix + path.urlSuffix());
+        return coreRequestInfo.getServletResponse().encodeRedirectURL(prefix + path.urlSuffix());
     }
 
     @Override
     public HttpRequest toHttpRequest(ActionInvocation<Object> invocation) {
-        return new HttpRequestImpl(
-                getCoreUtil().toPathInfo(toStringInvocation(invocation)));
+        return new HttpRequestImpl(getCoreUtil().toPathInfo(toStringInvocation(invocation)));
     }
 
     @Override
@@ -156,10 +145,8 @@ public class CoreUtil implements ICoreUtil {
 
     @Override
     public String combineCssClasses(String... classes) {
-        return Arrays.asList(classes).stream()
-                .filter(x -> !Strings.isNullOrEmpty(x))
-                .map(CharMatcher.WHITESPACE::trimFrom)
-                .collect(Collectors.joining(" "));
+        return Arrays.asList(classes).stream().filter(x -> !Strings.isNullOrEmpty(x))
+                .map(CharMatcher.WHITESPACE::trimFrom).collect(Collectors.joining(" "));
     }
 
     @Override
@@ -168,10 +155,8 @@ public class CoreUtil implements ICoreUtil {
     }
 
     @Override
-    public <T extends IController> ActionInvocationBuilderKnownController<T> path(
-            Class<T> controllerClass) {
-        return actionPathBuilderKnownController.get()
-                .initialize(controllerClass);
+    public <T extends IController> ActionInvocationBuilderKnownController<T> path(Class<T> controllerClass) {
+        return actionPathBuilderKnownController.get().initialize(controllerClass);
     }
 
     @Override

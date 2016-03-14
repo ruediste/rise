@@ -30,10 +30,8 @@ public class SignatureHelperTest {
 
     @Test(expected = RuntimeException.class)
     public void serializationRoundTrip_differentContext_fails() {
-        byte[] bb = helper.serializeSigned("foo",
-                mac -> mac.update("ctx".getBytes(Charsets.UTF_8)));
-        assertEquals("foo", helper.deserializeSigned(bb,
-                mac -> mac.update("cty".getBytes(Charsets.UTF_8))));
+        byte[] bb = helper.serializeSigned("foo", mac -> mac.update("ctx".getBytes(Charsets.UTF_8)));
+        assertEquals("foo", helper.deserializeSigned(bb, mac -> mac.update("cty".getBytes(Charsets.UTF_8))));
     }
 
     @Test(expected = RuntimeException.class)

@@ -19,8 +19,7 @@ import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.util.MethodInvocation;
 import com.github.ruediste1.i18n.lString.LString;
 
-public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
-        extends Html5Canvas<TSelf>, FuncCanvas<TSelf> {
+public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends Html5Canvas<TSelf>, FuncCanvas<TSelf> {
 
     RiseCanvasHelper internal_riseHelper();
 
@@ -81,8 +80,7 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
     }
 
     default TSelf content(Enum<?> value) {
-        return content(
-                internal_riseHelper().getLabelUtil().enumMember(value).label());
+        return content(internal_riseHelper().getLabelUtil().enumMember(value).label());
     }
 
     default TSelf write(LString value) {
@@ -120,24 +118,20 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
     }
 
     default TSelf TEST_NAME(ActionResult name) {
-        return TEST_NAME(((ActionInvocationResult) name).methodInvocation
-                .getMethod().getName());
+        return TEST_NAME(((ActionInvocationResult) name).methodInvocation.getMethod().getName());
     }
 
-    default TSelf rIfAuthorized(ActionResult target,
-            Consumer<ActionResult> ifTrue) {
+    default TSelf rIfAuthorized(ActionResult target, Consumer<ActionResult> ifTrue) {
         return rIfAuthorized(target, ifTrue, x -> {
         });
     }
 
-    default TSelf rIfAuthorized(ActionResult target,
-            Consumer<ActionResult> ifTrue, Consumer<ActionResult> ifFalse) {
+    default TSelf rIfAuthorized(ActionResult target, Consumer<ActionResult> ifTrue, Consumer<ActionResult> ifFalse) {
         MethodInvocation<Object> invocation = internal_riseHelper().getUtil()
                 .toActionInvocation(target).methodInvocation;
-        Object targetObj = internal_riseHelper()
-                .getControllerAuthzInstance(invocation.getInstanceClass());
-        if (internal_riseHelper().getAuthz().isAuthorized(targetObj,
-                invocation.getMethod(), invocation.getArguments().toArray()))
+        Object targetObj = internal_riseHelper().getControllerAuthzInstance(invocation.getInstanceClass());
+        if (internal_riseHelper().getAuthz().isAuthorized(targetObj, invocation.getMethod(),
+                invocation.getArguments().toArray()))
             ifTrue.accept(target);
         else
             ifFalse.accept(target);
@@ -159,9 +153,8 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
 
     default TSelf rCOMPONENT_ATTRIBUTES(ComponentBase<?> component) {
         ComponentUtil componentUtil = internal_riseHelper().getComponentUtil();
-        return self().ID(componentUtil.getComponentId(component))
-                .CLASS(component.CLASS()).TEST_NAME(component.TEST_NAME())
-                .DATA(CoreAssetBundle.componentAttributeNr, String
-                        .valueOf(componentUtil.getComponentNr(component)));
+        return self().ID(componentUtil.getComponentId(component)).CLASS(component.CLASS())
+                .TEST_NAME(component.TEST_NAME())
+                .DATA(CoreAssetBundle.componentAttributeNr, String.valueOf(componentUtil.getComponentNr(component)));
     }
 }

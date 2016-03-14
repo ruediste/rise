@@ -53,8 +53,7 @@ public interface ComponentEvent {
             }
         };
 
-        public abstract Iterable<Component> getComponentsToVisit(
-                Component target);
+        public abstract Iterable<Component> getComponentsToVisit(Component target);
     }
 
     ComponentEvent.ComponentEventType getType();

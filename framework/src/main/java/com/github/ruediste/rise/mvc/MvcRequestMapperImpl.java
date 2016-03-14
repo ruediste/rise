@@ -6,10 +6,10 @@ import javax.inject.Inject;
 
 import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.CoreRequestInfo;
-import com.github.ruediste.rise.core.RequestParseResultImpl;
 import com.github.ruediste.rise.core.PathInfoIndex;
 import com.github.ruediste.rise.core.RequestMapperBase;
 import com.github.ruediste.rise.core.RequestParseResult;
+import com.github.ruediste.rise.core.RequestParseResultImpl;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 
 /**
@@ -29,8 +29,7 @@ public class MvcRequestMapperImpl extends RequestMapperBase {
     }
 
     @Override
-    protected RequestParseResult createParseResult(
-            ActionInvocation<String> path) {
+    protected RequestParseResult createParseResult(ActionInvocation<String> path) {
         return new RequestParseResultImpl(path, actionInvocation -> {
             requestInfo.setStringActionInvocation(actionInvocation);
             mvcWebConfig.handleRequest();

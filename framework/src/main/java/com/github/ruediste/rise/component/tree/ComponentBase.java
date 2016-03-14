@@ -8,8 +8,7 @@ import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
 import com.github.ruediste.rise.component.binding.Binding;
 import com.github.ruediste.rise.component.binding.BindingUtil;
 
-public abstract class ComponentBase<TSelf extends ComponentBase<TSelf>>
-        extends AttachedPropertyBearerBase
+public abstract class ComponentBase<TSelf extends ComponentBase<TSelf>> extends AttachedPropertyBearerBase
         implements TestNamedComponent<TSelf>, Component {
 
     private Component parent;
@@ -50,8 +49,8 @@ public abstract class ComponentBase<TSelf extends ComponentBase<TSelf>>
     /**
      * Establish an explicit binding
      */
-    public <T> TSelf bind(Supplier<T> bindingGroupAccessor,
-            BiConsumer<TSelf, T> pullUp, BiConsumer<TSelf, T> pushDown) {
+    public <T> TSelf bind(Supplier<T> bindingGroupAccessor, BiConsumer<TSelf, T> pullUp,
+            BiConsumer<TSelf, T> pushDown) {
 
         Binding<T> binding = new Binding<>();
         binding.setComponent(this);
@@ -83,8 +82,7 @@ public abstract class ComponentBase<TSelf extends ComponentBase<TSelf>>
      */
     public TSelf bindTestNameProperty(Consumer<TSelf> binder) {
         TSelf self = self();
-        TEST_NAME(BindingUtil.bind(self, binder).getB().modelPath
-                .getAccessedProperty().getName());
+        TEST_NAME(BindingUtil.bind(self, binder).getB().modelPath.getAccessedProperty().getName());
         return self;
     }
 

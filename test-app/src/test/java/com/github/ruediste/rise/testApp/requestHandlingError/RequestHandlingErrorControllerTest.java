@@ -11,8 +11,7 @@ public class RequestHandlingErrorControllerTest extends WebTest {
 
     @Test
     public void test() {
-        driver.navigate()
-                .to(url(go(RequestHandlingErrorController.class).index()));
+        driver.navigate().to(url(go(RequestHandlingErrorController.class).index()));
         assertThat(driver.getPageSource(), containsString("Boom!"));
     }
 }

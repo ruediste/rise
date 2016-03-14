@@ -45,10 +45,9 @@ public class AssetGroup {
         this(bundle, resources.collect(Collectors.toList()));
     }
 
-    public static Function<Asset, Asset> toSingleAssetFunction(
-            AssetBundle bundle, Function<AssetGroup, AssetGroup> func) {
-        return a -> Iterables.getOnlyElement(
-                func.apply(new AssetGroup(bundle, Arrays.asList(a))).assets);
+    public static Function<Asset, Asset> toSingleAssetFunction(AssetBundle bundle,
+            Function<AssetGroup, AssetGroup> func) {
+        return a -> Iterables.getOnlyElement(func.apply(new AssetGroup(bundle, Arrays.asList(a))).assets);
     }
 
     @Override
@@ -71,8 +70,7 @@ public class AssetGroup {
                     @Override
                     public String getName() {
                         String pathInfo = asset.getName();
-                        if (!Strings.isNullOrEmpty(pathInfo)
-                                && pathInfo.startsWith(prefix)) {
+                        if (!Strings.isNullOrEmpty(pathInfo) && pathInfo.startsWith(prefix)) {
                             return pathInfo.substring(prefix.length());
                         } else
                             return pathInfo;
@@ -80,8 +78,7 @@ public class AssetGroup {
 
                     @Override
                     public String toString() {
-                        return asset.toString() + ".removePathInfoPrefix("
-                                + prefix + ")";
+                        return asset.toString() + ".removePathInfoPrefix(" + prefix + ")";
                     }
 
                 };
@@ -101,8 +98,7 @@ public class AssetGroup {
 
                     @Override
                     public String toString() {
-                        return asset.toString() + ".addPathInfoPrefix(" + prefix
-                                + ")";
+                        return asset.toString() + ".addPathInfoPrefix(" + prefix + ")";
                     }
 
                 };
@@ -114,8 +110,7 @@ public class AssetGroup {
      * Map all assets of the group
      */
     public AssetGroup mapAssets(Function<Asset, Asset> processor) {
-        return new AssetGroup(bundle,
-                assets.stream().map(processor).collect(Collectors.toList()));
+        return new AssetGroup(bundle, assets.stream().map(processor).collect(Collectors.toList()));
     }
 
     /**
@@ -131,11 +126,8 @@ public class AssetGroup {
                 try {
                     return minifier.apply(asset);
                 } catch (Exception e) {
-                    throw new RuntimeException(
-                            "Error while minifying " + asset.getAssetType()
-                                    + " <" + asset.getClasspathLocation() + "=>"
-                                    + asset.getName() + ">",
-                            e);
+                    throw new RuntimeException("Error while minifying " + asset.getAssetType() + " <"
+                            + asset.getClasspathLocation() + "=>" + asset.getName() + ">", e);
                 }
             } else
                 return asset;
@@ -169,26 +161,22 @@ public class AssetGroup {
         if (assets.size() == 0)
             throw new RuntimeException("Asset group is emtpy");
         if (assets.size() > 1)
-            throw new RuntimeException(
-                    "Asset group contains more than a single asset: "
-                            + assets.stream().map(Object::toString)
-                                    .collect(joining(", ")));
+            throw new RuntimeException("Asset group contains more than a single asset: "
+                    + assets.stream().map(Object::toString).collect(joining(", ")));
         return assets.get(0);
     }
 
     /**
      * map the asset group to a consumer if a condition is true.
      */
-    public AssetGroup if_(boolean condition,
-            Function<AssetGroup, AssetGroup> func) {
+    public AssetGroup if_(boolean condition, Function<AssetGroup, AssetGroup> func) {
         if (condition)
             return func.apply(this);
         else
             return this;
     }
 
-    public AssetGroup if_(AssetMode mode,
-            Function<AssetGroup, AssetGroup> func) {
+    public AssetGroup if_(AssetMode mode, Function<AssetGroup, AssetGroup> func) {
         return if_(bundle.getAssetMode() == mode, func);
     }
 
@@ -216,8 +204,7 @@ public class AssetGroup {
      * Evaluate each branch with this group and join the resulting groups
      */
     @SafeVarargs
-    final public AssetGroup forkJoin(
-            Function<AssetGroup, AssetGroup>... branches) {
+    final public AssetGroup forkJoin(Function<AssetGroup, AssetGroup>... branches) {
         ArrayList<Asset> list = new ArrayList<>();
         for (Function<AssetGroup, AssetGroup> branch : branches) {
             list.addAll(branch.apply(this).assets);
@@ -277,20 +264,18 @@ public class AssetGroup {
         // data multiple times if hashing is used
         AssetGroup underlying = usesHash ? cache() : this;
 
-        AssetGroup result = underlying
-                .mapAssets(asset -> new DelegatingAsset(asset) {
+        AssetGroup result = underlying.mapAssets(asset -> new DelegatingAsset(asset) {
 
-                    @Override
-                    public String getName() {
-                        return bundle.helper.resolveNameTemplate(asset,
-                                template);
-                    }
+            @Override
+            public String getName() {
+                return bundle.helper.resolveNameTemplate(asset, template);
+            }
 
-                    @Override
-                    public String toString() {
-                        return asset + ".name(" + template + ")";
-                    };
-                });
+            @Override
+            public String toString() {
+                return asset + ".name(" + template + ")";
+            };
+        });
 
         // cache again to avoid calculating the name multiple time
         // when hashing is used
@@ -312,8 +297,7 @@ public class AssetGroup {
             return split(match, x -> x);
         }
 
-        public AssetGroup split(Function<AssetGroup, AssetGroup> match,
-                Function<AssetGroup, AssetGroup> noMatch) {
+        public AssetGroup split(Function<AssetGroup, AssetGroup> match, Function<AssetGroup, AssetGroup> noMatch) {
             ArrayList<Asset> matching = new ArrayList<>();
             ArrayList<Asset> nonMatching = new ArrayList<>();
             for (Asset asset : assets) {
@@ -346,8 +330,7 @@ public class AssetGroup {
     }
 
     public FluentSelect selectPathInfo(Predicate<String> predicate) {
-        return select(
-                (Predicate<? super Asset>) r -> predicate.test(r.getName()));
+        return select((Predicate<? super Asset>) r -> predicate.test(r.getName()));
     }
 
     /**
@@ -364,24 +347,18 @@ public class AssetGroup {
      * Asset group where the data in the assets get's cached.
      */
     public AssetGroup cache() {
-        return new AssetGroup(bundle,
-                assets.stream().<Asset> map(r -> new CachingAsset(r, bundle)));
+        return new AssetGroup(bundle, assets.stream().<Asset> map(r -> new CachingAsset(r, bundle)));
     }
 
     /**
      * Asset caching the results of a delegate
      */
     private static class CachingAsset implements Asset {
-        AttachedProperty<AttachedPropertyBearer, String> pathInfo = new AttachedProperty<>(
-                "name");
-        AttachedProperty<AttachedPropertyBearer, String> location = new AttachedProperty<>(
-                "name");
-        AttachedProperty<AttachedPropertyBearer, String> contentType = new AttachedProperty<>(
-                "contentType");
-        AttachedProperty<AttachedPropertyBearer, AssetType> assetType = new AttachedProperty<>(
-                "assetType");
-        AttachedProperty<AttachedPropertyBearer, byte[]> data = new AttachedProperty<>(
-                "byte[]");
+        AttachedProperty<AttachedPropertyBearer, String> pathInfo = new AttachedProperty<>("name");
+        AttachedProperty<AttachedPropertyBearer, String> location = new AttachedProperty<>("name");
+        AttachedProperty<AttachedPropertyBearer, String> contentType = new AttachedProperty<>("contentType");
+        AttachedProperty<AttachedPropertyBearer, AssetType> assetType = new AttachedProperty<>("assetType");
+        AttachedProperty<AttachedPropertyBearer, byte[]> data = new AttachedProperty<>("byte[]");
 
         private Asset delegate;
 
@@ -432,16 +409,12 @@ public class AssetGroup {
      * {@link Asset#getContentType()}.
      */
     public AssetGroup combine() {
-        Multimap<Pair<AssetType, String>, Asset> map = ArrayListMultimap
-                .create();
+        Multimap<Pair<AssetType, String>, Asset> map = ArrayListMultimap.create();
         for (Asset asset : assets) {
-            map.put(Pair.of(asset.getAssetType(), asset.getContentType()),
-                    asset);
+            map.put(Pair.of(asset.getAssetType(), asset.getContentType()), asset);
         }
-        return new AssetGroup(bundle,
-                map.asMap().entrySet().stream()
-                        .map(entry -> new ConcatAsset(entry.getValue(),
-                                entry.getKey().getA(), entry.getKey().getB())));
+        return new AssetGroup(bundle, map.asMap().entrySet().stream()
+                .map(entry -> new ConcatAsset(entry.getValue(), entry.getKey().getA(), entry.getKey().getB())));
 
     }
 
@@ -453,8 +426,7 @@ public class AssetGroup {
         private AssetType assetType;
         private String contentType;
 
-        public ConcatAsset(Collection<Asset> assets, AssetType assetType,
-                String contentType) {
+        public ConcatAsset(Collection<Asset> assets, AssetType assetType, String contentType) {
             this.assets = assets;
             this.assetType = assetType;
             this.contentType = contentType;
@@ -517,8 +489,7 @@ public class AssetGroup {
      * Replace each occurence of target with replacement in the data of the
      * assets.
      */
-    public AssetGroup replace(String target, String replacement,
-            Charset charset) {
+    public AssetGroup replace(String target, String replacement, Charset charset) {
         return mapData(new Function<String, String>() {
             @Override
             public String apply(String s) {
@@ -541,8 +512,7 @@ public class AssetGroup {
             return new DelegatingAsset(asset) {
                 @Override
                 public byte[] getData() {
-                    return func.apply(new String(asset.getData(), charset))
-                            .getBytes(charset);
+                    return func.apply(new String(asset.getData(), charset)).getBytes(charset);
                 }
 
                 @Override

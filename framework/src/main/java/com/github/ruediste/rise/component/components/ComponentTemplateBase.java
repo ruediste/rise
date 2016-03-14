@@ -4,19 +4,15 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.tree.Component;
-import com.github.ruediste.rise.component.tree.ComponentBase;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
 import com.github.ruediste.rise.core.web.HttpRenderResult;
-import com.github.ruediste.rise.integration.RiseCanvas;
 
-public abstract class ComponentTemplateBase<T extends Component>
-        implements IComponentTemplate<T> {
+public abstract class ComponentTemplateBase<T extends Component> implements IComponentTemplate<T> {
 
     @Inject
     protected ComponentUtil util;
@@ -32,8 +28,7 @@ public abstract class ComponentTemplateBase<T extends Component>
     }
 
     @Override
-    public HttpRenderResult handleAjaxRequest(T component, String suffix)
-            throws Throwable {
+    public HttpRenderResult handleAjaxRequest(T component, String suffix) throws Throwable {
         throw new UnsupportedOperationException();
     }
 
@@ -49,8 +44,7 @@ public abstract class ComponentTemplateBase<T extends Component>
         return util.go(controllerClass);
     }
 
-    public <P extends IController> ActionInvocationBuilderKnownController<P> path(
-            Class<P> controllerClass) {
+    public <P extends IController> ActionInvocationBuilderKnownController<P> path(Class<P> controllerClass) {
         return util.path(controllerClass);
     }
 
@@ -74,8 +68,7 @@ public abstract class ComponentTemplateBase<T extends Component>
         return util.getParameterValue(component, key);
     }
 
-    public Optional<Object> getParameterObject(Component component,
-            String key) {
+    public Optional<Object> getParameterObject(Component component, String key) {
         return util.getParameterObject(component, key);
     }
 

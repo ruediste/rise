@@ -15,8 +15,7 @@ public class AssetReferencingControllerTest extends WebTest {
 
     @Test
     public void simple() {
-        assertEquals("Hello",
-                driver.findElement(By.cssSelector("#data")).getText());
+        assertEquals("Hello", driver.findElement(By.cssSelector("#data")).getText());
     }
 
     @Test
@@ -28,7 +27,6 @@ public class AssetReferencingControllerTest extends WebTest {
     }
 
     private void checkCssPresent(String id) {
-        assertEquals("right", driver.findElement(By.cssSelector(id))
-                .getCssValue("text-align"));
+        assertEquals("right", driver.findElement(By.cssSelector(id)).getCssValue("text-align"));
     }
 }

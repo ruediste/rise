@@ -3,8 +3,7 @@ package com.github.ruediste.rise.core.security.authentication;
 /**
  * Request for an authentication (login) using username/password
  */
-public class UsernamePasswordAuthenticationRequest
-        implements RememberMeAwareAuthenticationRequest {
+public class UsernamePasswordAuthenticationRequest implements RememberMeAwareAuthenticationRequest {
     private String userName;
     private String password;
     private boolean rememberMe;
@@ -12,8 +11,7 @@ public class UsernamePasswordAuthenticationRequest
     public UsernamePasswordAuthenticationRequest() {
     }
 
-    public UsernamePasswordAuthenticationRequest(String userName,
-            String password) {
+    public UsernamePasswordAuthenticationRequest(String userName, String password) {
         this.userName = userName;
         this.password = password;
     }

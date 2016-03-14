@@ -29,13 +29,9 @@ public class ValidationController extends ControllerComponent {
         @Override
         protected Component createComponents() {
 
-            return new CPage()
-                    .add(new CFormGroup().add(new CTextField()
-                            .bindText(() -> controller.data().getStr())))
+            return new CPage().add(new CFormGroup().add(new CTextField().bindText(() -> controller.data().getStr())))
                     .add(new CFormGroup().add(new CTextField().bindText(
-                            () -> new ByteArrayToHexStringTransformer()
-                                    .transform(
-                                            controller.data().getByteArray()))))
+                            () -> new ByteArrayToHexStringTransformer().transform(controller.data().getByteArray()))))
                     .add(new CButton(controller, x -> x.pushAndValidate()))
                     .add(new CButton(controller, x -> x.pullUp()));
         }

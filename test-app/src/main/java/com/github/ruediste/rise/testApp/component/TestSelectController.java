@@ -25,37 +25,26 @@ public class TestSelectController extends ControllerComponent {
 
         @Override
         protected Component createComponents() {
-            CText selectedItemText = new CText(
-                    String.valueOf(controller.data().getSelectedItem()))
-                            .TEST_NAME("viewStatus");
-            return new CPage()
-                    .add(new CSelect<String>().CLASS("list-group")
-                            .bindItems(() -> controller.data().getItems())
-                            .setAllowEmpty(controller.allowEmpty)
-                            .bindSelectedItem(
-                                    () -> controller.data().getSelectedItem())
-                    .setChildComponentFactory(x -> new CText(x))
-                    .setTestNameExtractor(x -> x).apply(x -> {
+            CText selectedItemText = new CText(String.valueOf(controller.data().getSelectedItem()))
+                    .TEST_NAME("viewStatus");
+            return new CPage().add(new CSelect<String>().CLASS("list-group")
+                    .bindItems(() -> controller.data().getItems()).setAllowEmpty(controller.allowEmpty)
+                    .bindSelectedItem(() -> controller.data().getSelectedItem())
+                    .setChildComponentFactory(x -> new CText(x)).setTestNameExtractor(x -> x).apply(x -> {
                         if (controller.addSelectionHandler) {
-                            x.setSelectionHandler(i -> selectedItemText
-                                    .setTextString(String.valueOf(i)));
+                            x.setSelectionHandler(i -> selectedItemText.setTextString(String.valueOf(i)));
                         }
-                    })).add(new CButton(controller, x -> x.pullUp()))
-                    .add(new CButton(controller, x -> x.pushDown()))
+                    })).add(new CButton(controller, x -> x.pullUp())).add(new CButton(controller, x -> x.pushDown()))
                     .add(new CButton(controller, x -> x.reload()))
-                    .add(toComponentDirect(
-                            html -> html.span().TEST_NAME("controllerStatus")
-                                    .write(String.valueOf(controller.data.get()
-                                            .getSelectedItem()))
-                                    ._span()))
+                    .add(toComponentDirect(html -> html.span().TEST_NAME("controllerStatus")
+                            .write(String.valueOf(controller.data.get().getSelectedItem()))._span()))
                     .add(selectedItemText);
         }
     }
 
     public static class Data {
         private Optional<String> selectedItem = Optional.empty();
-        private List<String> items = new ArrayList<>(
-                Arrays.asList("foo", "bar", "fooBar"));
+        private List<String> items = new ArrayList<>(Arrays.asList("foo", "bar", "fooBar"));
 
         public List<String> getItems() {
             return items;
@@ -111,8 +100,7 @@ public class TestSelectController extends ControllerComponent {
     }
 
     @UrlUnsigned
-    public ActionResult index(boolean allowEmpty, String initialSelection,
-            boolean addHandler) {
+    public ActionResult index(boolean allowEmpty, String initialSelection, boolean addHandler) {
         this.allowEmpty = allowEmpty;
         this.addSelectionHandler = addHandler;
         data.get().setSelectedItem(Optional.ofNullable(initialSelection));

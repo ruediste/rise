@@ -23,8 +23,7 @@ public class CrudController extends CrudControllerBase {
         @Override
         protected Component createComponents() {
             return new CPage(label(this))
-                    .add(new CComponentStack(toSubView(() -> controller.data(),
-                            x -> x.getSubController())));
+                    .add(new CComponentStack(toSubView(() -> controller.data(), x -> x.getSubController())));
         }
     }
 

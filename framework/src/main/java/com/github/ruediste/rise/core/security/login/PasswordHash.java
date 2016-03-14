@@ -26,8 +26,7 @@ public class PasswordHash {
         hash = null;
     }
 
-    public PasswordHash(String algorithm, int iterations, byte[] salt,
-            byte[] hash) {
+    public PasswordHash(String algorithm, int iterations, byte[] salt, byte[] hash) {
         super();
         this.iterations = iterations;
         this.algorithm = algorithm;

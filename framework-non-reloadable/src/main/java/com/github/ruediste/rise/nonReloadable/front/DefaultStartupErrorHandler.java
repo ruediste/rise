@@ -18,8 +18,7 @@ import com.google.common.base.Throwables;
 
 public class DefaultStartupErrorHandler implements StartupErrorHandler {
 
-    private static final Logger log = LoggerFactory
-            .getLogger(DefaultStartupErrorHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(DefaultStartupErrorHandler.class);
 
     @Inject
     private DataBaseLinkRegistry registry;
@@ -36,8 +35,7 @@ public class DefaultStartupErrorHandler implements StartupErrorHandler {
         this.dropAndCreatePathInfo = dropAndCreatePathInfo;
     }
 
-    private static class SimpleCanvas extends HtmlCanvasBase<SimpleCanvas>
-            implements Html5Canvas<SimpleCanvas> {
+    private static class SimpleCanvas extends HtmlCanvasBase<SimpleCanvas> implements Html5Canvas<SimpleCanvas> {
 
         public SimpleCanvas(PrintWriter writer) {
             initialize(writer);
@@ -51,10 +49,8 @@ public class DefaultStartupErrorHandler implements StartupErrorHandler {
     }
 
     @Override
-    public void handle(Throwable t, HttpServletRequest request,
-            HttpServletResponse response) {
-        if (stage == ApplicationStage.DEVELOPMENT
-                && dropAndCreatePathInfo.equals(request.getPathInfo())) {
+    public void handle(Throwable t, HttpServletRequest request, HttpServletResponse response) {
+        if (stage == ApplicationStage.DEVELOPMENT && dropAndCreatePathInfo.equals(request.getPathInfo())) {
             dropAndCreateDb(request, response);
         }
         try {
@@ -95,19 +91,16 @@ public class DefaultStartupErrorHandler implements StartupErrorHandler {
         }
     }
 
-    protected void dropAndCreateDb(HttpServletRequest request,
-            HttpServletResponse response) {
+    protected void dropAndCreateDb(HttpServletRequest request, HttpServletResponse response) {
         if (registry == null) {
-            log.error(
-                    "Cannot drop-and-create the database since the NonRestartable Application could not be started");
+            log.error("Cannot drop-and-create the database since the NonRestartable Application could not be started");
         }
         log.info("Dropping and Creating DB schemas ...");
         registry.dropAndCreateSchemas();
         redirectToReferer(request, response);
     }
 
-    protected void redirectToReferer(HttpServletRequest request,
-            HttpServletResponse response) {
+    protected void redirectToReferer(HttpServletRequest request, HttpServletResponse response) {
         try {
             response.sendRedirect(request.getHeader("Referer"));
         } catch (IOException e) {

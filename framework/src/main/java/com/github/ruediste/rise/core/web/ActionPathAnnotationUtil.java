@@ -19,27 +19,23 @@ public class ActionPathAnnotationUtil {
         public String primaryPathInfo;
     }
 
-    public static MethodPathInfos getPathInfos(MethodNode m,
-            Supplier<String> defaultPathInfoSupplier) {
+    public static MethodPathInfos getPathInfos(MethodNode m, Supplier<String> defaultPathInfoSupplier) {
         MethodPathInfos result = new MethodPathInfos();
         String primaryPath = null;
 
         if (m.visibleAnnotations != null)
-            for (AnnotationNode path : AsmUtil.getAnnotationsByType(
-                    m.visibleAnnotations, ActionPath.class)) {
+            for (AnnotationNode path : AsmUtil.getAnnotationsByType(m.visibleAnnotations, ActionPath.class)) {
                 String pathValue = AsmUtil.getString(path, "value");
                 result.pathInfos.add(pathValue);
                 if (AsmUtil.tryGetBoolean(path, "primary").orElse(false)) {
                     if (primaryPath != null) {
                         throw new RuntimeException(
-                                "Multiple ActionPath annotations with primary=true found on method "
-                                        + m);
+                                "Multiple ActionPath annotations with primary=true found on method " + m);
                     }
                     primaryPath = pathValue;
                 }
             }
-        if (!AsmUtil.getAnnotationsByType(m.visibleAnnotations,
-                NoDefaultActionPath.class).isEmpty()) {
+        if (!AsmUtil.getAnnotationsByType(m.visibleAnnotations, NoDefaultActionPath.class).isEmpty()) {
             if (primaryPath == null) {
                 throw new RuntimeException(
                         "No ActionPath marked as primaryPath, but NoDefaultActionPath annotation present");

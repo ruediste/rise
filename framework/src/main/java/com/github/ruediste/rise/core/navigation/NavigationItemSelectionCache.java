@@ -18,8 +18,7 @@ public class NavigationItemSelectionCache {
         return isSelected(item, info.getObjectActionInvocation());
     }
 
-    public boolean isSelected(NavigationItem item,
-            ActionInvocation<Object> currentActionInvocation) {
+    public boolean isSelected(NavigationItem item, ActionInvocation<Object> currentActionInvocation) {
         return cache.computeIfAbsent(item, x -> {
             if (x.selected.test(currentActionInvocation))
                 return true;

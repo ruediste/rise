@@ -3,16 +3,14 @@ package com.github.ruediste.rise.component.binding;
 /**
  * Two-way transformation between two representations of a value
  */
-public abstract class TwoWayBindingTransformer<TSource, TTarget>
-        extends BindingTransformer<TSource, TTarget> {
+public abstract class TwoWayBindingTransformer<TSource, TTarget> extends BindingTransformer<TSource, TTarget> {
 
     /**
      * Perform the inverse transformation
      */
     public final TSource transformInv(TTarget target) {
 
-        BindingExpressionExecutionRecord info = BindingExpressionExecutionRecorder
-                .getCurrentLog();
+        BindingExpressionExecutionRecord info = BindingExpressionExecutionRecorder.getCurrentLog();
         if (info == null) {
             return transformInvImpl(target);
         } else {

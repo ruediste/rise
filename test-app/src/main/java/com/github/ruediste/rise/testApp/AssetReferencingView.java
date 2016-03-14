@@ -7,8 +7,7 @@ import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste1.i18n.label.Labeled;
 
 @Labeled
-public class AssetReferencingView
-        extends ViewMvc<AssetReferencingController, String> {
+public class AssetReferencingView extends ViewMvc<AssetReferencingController, String> {
 
     static class Bundle extends AssetBundle {
 
@@ -16,9 +15,8 @@ public class AssetReferencingView
 
         @Override
         public void initialize() {
-            locations("./assetReferencing.css", ".-test.css",
-                    "/assetReferencing/test.css", "assetReferencing.css").load()
-                            .send(out);
+            locations("./assetReferencing.css", ".-test.css", "/assetReferencing/test.css", "assetReferencing.css")
+                    .load().send(out);
         }
 
     }

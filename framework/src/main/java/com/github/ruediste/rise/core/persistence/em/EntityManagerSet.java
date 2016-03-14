@@ -23,8 +23,7 @@ public class EntityManagerSet {
 
     private HashMap<Class<? extends Annotation>, EntityManager> managers = new HashMap<>();
 
-    public EntityManager getOrCreateEntityManager(
-            Class<? extends Annotation> qualifier) {
+    public EntityManager getOrCreateEntityManager(Class<? extends Annotation> qualifier) {
         return managers.computeIfAbsent(qualifier, q -> {
             EntityManagerFactory unit = registry.getUnit(qualifier).get();
             log.debug("Creating EntityManager from " + unit);
@@ -40,11 +39,9 @@ public class EntityManagerSet {
         return managers.entrySet();
     }
 
-    public Optional<Entry<Class<? extends Annotation>, EntityManager>> getEmEntry(
-            Object entity) {
+    public Optional<Entry<Class<? extends Annotation>, EntityManager>> getEmEntry(Object entity) {
         for (Entry<Class<? extends Annotation>, EntityManager> entry : getManagerEntries()) {
-            Map<Class<?>, ManagedType<?>> managedTypeMap = registry
-                    .getManagedTypeMap(entry.getKey()).get();
+            Map<Class<?>, ManagedType<?>> managedTypeMap = registry.getManagedTypeMap(entry.getKey()).get();
             ManagedType<?> managedType = managedTypeMap.get(entity.getClass());
             if (managedType != null && entry.getValue().contains(entity))
                 return Optional.of(entry);

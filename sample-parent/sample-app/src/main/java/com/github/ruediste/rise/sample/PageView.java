@@ -6,8 +6,7 @@ import com.github.ruediste.rise.mvc.IControllerMvc;
 import com.github.ruediste.rise.sample.SamplePageTemplate.SamplePageTemplateParameters;
 import com.github.ruediste1.i18n.lString.LString;
 
-public abstract class PageView<TController extends IControllerMvc, TData>
-        extends ViewMvc<TController, TData>
+public abstract class PageView<TController extends IControllerMvc, TData> extends ViewMvc<TController, TData>
         implements SamplePageTemplateParameters {
 
     @Inject

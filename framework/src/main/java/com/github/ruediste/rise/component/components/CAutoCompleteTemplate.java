@@ -24,8 +24,7 @@ import com.github.ruediste.rise.nonReloadable.SignatureHelper;
 import com.google.common.base.Charsets;
 import com.google.common.io.BaseEncoding;
 
-public class CAutoCompleteTemplate
-        extends BootstrapComponentTemplateBase<CAutoComplete<?, ?>> {
+public class CAutoCompleteTemplate extends BootstrapComponentTemplateBase<CAutoComplete<?, ?>> {
 
     @Inject
     SignatureHelper signatureHelper;
@@ -37,36 +36,27 @@ public class CAutoCompleteTemplate
     ComponentRequestInfo componentRequestInfo;
 
     @Override
-    public void doRender(CAutoComplete<?, ?> component,
-            BootstrapRiseCanvas<?> html) {
+    public void doRender(CAutoComplete<?, ?> component, BootstrapRiseCanvas<?> html) {
         doRenderImpl(component, html);
     }
 
     private Consumer<Mac> hashContext(Component component) {
         return mac -> {
             mac.update(info.getSessionId().getBytes(Charsets.UTF_8));
-            mac.update(String.valueOf(componentRequestInfo.getPageHandle().id)
-                    .getBytes(Charsets.UTF_8));
+            mac.update(String.valueOf(componentRequestInfo.getPageHandle().id).getBytes(Charsets.UTF_8));
             mac.update(getComponentId(component).getBytes(Charsets.UTF_8));
         };
     }
 
-    public <T> void doRenderImpl(CAutoComplete<T, ?> component,
-            BootstrapRiseCanvas<?> html) {
-        html.input().TYPE("text").BformControl().CLASS("rise_autocomplete")
-                .rCOMPONENT_ATTRIBUTES(component)
-                .NAME(util.getKey(component, "text"))
-                .DATA("rise-int-source", getAjaxUrl(component));
+    public <T> void doRenderImpl(CAutoComplete<T, ?> component, BootstrapRiseCanvas<?> html) {
+        html.input().TYPE("text").BformControl().CLASS("rise_autocomplete").rCOMPONENT_ATTRIBUTES(component)
+                .NAME(util.getKey(component, "text")).DATA("rise-int-source", getAjaxUrl(component));
 
         if (component.isItemChosen()) {
             T item = component.getValue().getItem();
-            html.VALUE(component.getParameters().getValue(item))
-                    .DATA("rise-int-chosen-item",
-                            BaseEncoding.base64()
-                                    .encode(signatureHelper.serializeSigned(
-                                            component.getParameters()
-                                                    .getId(item),
-                                            hashContext(component))));
+            html.VALUE(component.getParameters().getValue(item)).DATA("rise-int-chosen-item",
+                    BaseEncoding.base64().encode(signatureHelper.serializeSigned(component.getParameters().getId(item),
+                            hashContext(component))));
         } else {
             html.VALUE(component.getText());
         }
@@ -76,18 +66,10 @@ public class CAutoCompleteTemplate
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public void applyValues(CAutoComplete component) {
-        Optional<String> chosenItem = getParameterValue(component,
-                "riseIntChosenItem");
+        Optional<String> chosenItem = getParameterValue(component, "riseIntChosenItem");
         if (chosenItem.isPresent()) {
-            component
-                    .setValue(
-                            AutoCompleteValue.ofItem(component.getParameters()
-                                    .load(signatureHelper
-                                            .deserializeSigned(
-                                                    BaseEncoding.base64()
-                                                            .decode(chosenItem
-                                                                    .get()),
-                                            hashContext(component)))));
+            component.setValue(AutoCompleteValue.ofItem(component.getParameters().load(signatureHelper
+                    .deserializeSigned(BaseEncoding.base64().decode(chosenItem.get()), hashContext(component)))));
         } else {
             component.setText(getParameterValue(component, "text").get());
         }
@@ -101,8 +83,7 @@ public class CAutoCompleteTemplate
 
     private <T> HttpRenderResult search(CAutoComplete<T, ?> component) {
         CAutoCompleteParameters<T, ?> parameters = component.getParameters();
-        List<T> items = parameters
-                .search(info.getRequest().getParameter("term"));
+        List<T> items = parameters.search(info.getRequest().getParameter("term"));
         return resultFactory.jsonRenderResult(items.stream().map(i -> {
             Map<String, Object> result = new HashMap<>();
             result.put("label", parameters.getSuggestion(i));
@@ -110,18 +91,14 @@ public class CAutoCompleteTemplate
             if (config.isRenderTestName()) {
                 result.put("testName", parameters.getTestName(i));
             }
-            result.put("id",
-                    BaseEncoding.base64()
-                            .encode(signatureHelper.serializeSigned(
-                                    parameters.getId(i),
-                                    hashContext(component))));
+            result.put("id", BaseEncoding.base64()
+                    .encode(signatureHelper.serializeSigned(parameters.getId(i), hashContext(component))));
             return result;
         }).collect(toList()));
     };
 
     @Override
-    public HttpRenderResult handleAjaxRequest(CAutoComplete<?, ?> component,
-            String suffix) throws Throwable {
+    public HttpRenderResult handleAjaxRequest(CAutoComplete<?, ?> component, String suffix) throws Throwable {
         return search(component);
     }
 }

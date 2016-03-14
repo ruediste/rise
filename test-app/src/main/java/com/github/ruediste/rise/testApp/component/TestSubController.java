@@ -24,18 +24,13 @@ public class TestSubController {
         protected Component createComponents() {
             return toComponent(html -> html
 
-            .span().CLASS("value")
-                    .add(toComponentDirect(
-                            x -> x.write(controller.entity().getValue())))
-                    ._span()
+                    .span().CLASS("value").add(toComponentDirect(x -> x.write(controller.entity().getValue())))._span()
 
-            .add(new CButton("refresh").CLASS("refresh")
-                    .setHandler(controller::refresh))
+                    .add(new CButton("refresh").CLASS("refresh").setHandler(controller::refresh))
 
-            .add(new CButton("save").CLASS("save").setHandler(controller::save))
+                    .add(new CButton("save").CLASS("save").setHandler(controller::save))
 
-            .add(new CFormGroup(new CTextField()
-                    .bind(g -> g.setText(controller.entity().getValue())))));
+                    .add(new CFormGroup(new CTextField().bind(g -> g.setText(controller.entity().getValue())))));
         }
     }
 

@@ -41,14 +41,12 @@ public class TodoControllerTest extends WebTest {
     }
 
     private void checkTodoItemPresent(String name) {
-        doWait().untilPassing(() -> assertThat(
-                po.getTodos().stream().map(x -> x.getName()).collect(toList()),
-                hasItem(name)));
+        doWait().untilPassing(
+                () -> assertThat(po.getTodos().stream().map(x -> x.getName()).collect(toList()), hasItem(name)));
     }
 
     private void checkTodoItemNotPresent(String name) {
-        doWait().untilPassing(() -> assertThat(
-                po.getTodos().stream().map(x -> x.getName()).collect(toList()),
-                not(hasItem(name))));
+        doWait().untilPassing(
+                () -> assertThat(po.getTodos().stream().map(x -> x.getName()).collect(toList()), not(hasItem(name))));
     }
 }

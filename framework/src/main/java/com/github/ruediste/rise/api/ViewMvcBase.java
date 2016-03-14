@@ -45,13 +45,11 @@ public abstract class ViewMvcBase<TController extends IControllerMvc, TData, TCa
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected ViewMvcBase() {
-        controllerClass = (Class) TypeToken.of(getClass())
-                .resolveType(ViewMvcBase.class.getTypeParameters()[0])
+        controllerClass = (Class) TypeToken.of(getClass()).resolveType(ViewMvcBase.class.getTypeParameters()[0])
                 .getRawType();
     }
 
-    public void setControllerClass(
-            Class<? extends TController> controllerClass) {
+    public void setControllerClass(Class<? extends TController> controllerClass) {
         this.controllerClass = controllerClass;
     }
 
@@ -76,8 +74,7 @@ public abstract class ViewMvcBase<TController extends IControllerMvc, TData, TCa
         return util.path(controllerClass);
     }
 
-    public <T extends IController> ActionInvocationBuilderKnownController<T> path(
-            Class<T> controllerClass) {
+    public <T extends IController> ActionInvocationBuilderKnownController<T> path(Class<T> controllerClass) {
         return util.path(controllerClass);
     }
 

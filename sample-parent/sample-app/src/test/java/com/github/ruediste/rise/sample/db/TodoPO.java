@@ -14,8 +14,7 @@ public class TodoPO extends PageObject {
 
     private WebElement addName;
 
-    private WebElement addButton = lazy(
-            byDataTestName(TodoController.class, x -> x.add()));
+    private WebElement addButton = lazy(byDataTestName(TodoController.class, x -> x.add()));
 
     @FindBy(css = "[data-test-name=itemList]>div")
     private List<WebElement> todos;
@@ -28,12 +27,10 @@ public class TodoPO extends PageObject {
     }
 
     public Optional<TodoItemPO> getTodo(String name) {
-        return getTodos().stream().filter(i -> i.getName().equals(name))
-                .findFirst();
+        return getTodos().stream().filter(i -> i.getName().equals(name)).findFirst();
     }
 
     public List<TodoItemPO> getTodos() {
-        return todos.stream().map(e -> pageObject(TodoItemPO.class, e))
-                .collect(toList());
+        return todos.stream().map(e -> pageObject(TodoItemPO.class, e)).collect(toList());
     }
 }

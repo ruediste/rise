@@ -63,8 +63,7 @@ public class AjaxRequestParser implements RequestParser {
             componentRequestInfo.setComponentRequest(true);
             componentRequestInfo.setAjaxRequest(true);
             try {
-                String suffix = req.getPathInfo()
-                        .substring(config.getAjaxPath().length());
+                String suffix = req.getPathInfo().substring(config.getAjaxPath().length());
                 if (suffix.startsWith("/"))
                     suffix = suffix.substring(1);
                 long pageNr;
@@ -91,27 +90,20 @@ public class AjaxRequestParser implements RequestParser {
                 IComponentTemplate<Component> template;
                 Component component;
                 synchronized (page.lock) {
-                    ScopeState old = pageScopeHandler
-                            .setState(page.pageScopeState);
+                    ScopeState old = pageScopeHandler.setState(page.pageScopeState);
                     try {
-                        component = componentUtil
-                                .getComponent(pageInfo.getView(), componentNr);
-                        template = componentTemplateIndex
-                                .getTemplate(component);
+                        component = componentUtil.getComponent(pageInfo.getView(), componentNr);
+                        template = componentTemplateIndex.getTemplate(component);
                     } finally {
                         pageScopeHandler.setState(old);
                     }
                 }
                 try {
-                    HttpRenderResult renderResult = template
-                            .handleAjaxRequest(component, suffix);
+                    HttpRenderResult renderResult = template.handleAjaxRequest(component, suffix);
                     if (renderResult != null)
-                        renderResult.sendTo(
-                                coreRequestInfo.getServletResponse(),
-                                httpRenderResultUtil);
+                        renderResult.sendTo(coreRequestInfo.getServletResponse(), httpRenderResultUtil);
                 } catch (Throwable e) {
-                    throw new RuntimeException(
-                            "Error while handling ajax request", e);
+                    throw new RuntimeException("Error while handling ajax request", e);
                 }
             } finally {
                 componentRequestInfo.setComponentRequest(false);

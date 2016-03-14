@@ -35,19 +35,17 @@ public class TestAssetDirTest extends WebTest {
         check("function testJavascript(){}", "test.js");
 
         CloseableHttpClient client = HttpClients.createDefault();
-        HttpResponse response = client
-                .execute(new HttpGet(url(mapper.getPathInfo(dir, ""))));
+        HttpResponse response = client.execute(new HttpGet(url(mapper.getPathInfo(dir, ""))));
         assertEquals(404, response.getStatusLine().getStatusCode());
         client.close();
     }
 
-    private void check(String expected, String subPath) throws IOException,
-            UnsupportedEncodingException, MalformedURLException {
+    private void check(String expected, String subPath)
+            throws IOException, UnsupportedEncodingException, MalformedURLException {
         String url = url(mapper.getPathInfo(dir, subPath));
         try (InputStream in = new URL(url).openStream()) {
 
-            assertEquals(expected,
-                    CharStreams.toString(new InputStreamReader(in, "utf-8")));
+            assertEquals(expected, CharStreams.toString(new InputStreamReader(in, "utf-8")));
         }
     }
 }

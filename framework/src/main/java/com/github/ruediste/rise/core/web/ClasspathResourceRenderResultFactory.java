@@ -13,51 +13,51 @@ import com.github.ruediste.rise.core.web.assetPipeline.AssetPipelineConfiguratio
 import com.google.common.io.ByteStreams;
 
 public class ClasspathResourceRenderResultFactory {
-	@Inject
-	CoreConfiguration coreConfiguration;
+    @Inject
+    CoreConfiguration coreConfiguration;
 
-	@Inject
-	AssetPipelineConfiguration pipelineConfig;
+    @Inject
+    AssetPipelineConfiguration pipelineConfig;
 
-	@Inject
-	CoreRequestInfo info;
+    @Inject
+    CoreRequestInfo info;
 
-	@Inject
-	Logger log;
+    @Inject
+    Logger log;
 
-	@Inject
-	ClassLoader classLoader;
+    @Inject
+    ClassLoader classLoader;
 
-	public HttpRenderResult create(String classpath) {
-		// access resource
-		InputStream in = classLoader.getResourceAsStream(classpath);
+    public HttpRenderResult create(String classpath) {
+        // access resource
+        InputStream in = classLoader.getResourceAsStream(classpath);
 
-		if (in == null) {
-			throw new RuntimeException("Asset " + classpath + " not found");
-		}
+        if (in == null) {
+            throw new RuntimeException("Asset " + classpath + " not found");
+        }
 
-		// set content type
-		String contentType = null;
-		{
-			int idx = classpath.lastIndexOf('.');
-			if (idx >= 0) {
-				String tmp = pipelineConfig.getContentType(classpath.substring(idx + 1));
-				if (tmp != null)
-					contentType = tmp;
-			}
-		}
+        // set content type
+        String contentType = null;
+        {
+            int idx = classpath.lastIndexOf('.');
+            if (idx >= 0) {
+                String tmp = pipelineConfig.getContentType(classpath.substring(idx + 1));
+                if (tmp != null)
+                    contentType = tmp;
+            }
+        }
 
-		try {
-			return new ContentRenderResult(ByteStreams.toByteArray(in), contentType);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} finally {
-			try {
-				in.close();
-			} catch (IOException e) {
-				log.warn("error while closing input");
-			}
-		}
-	}
+        try {
+            return new ContentRenderResult(ByteStreams.toByteArray(in), contentType);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                in.close();
+            } catch (IOException e) {
+                log.warn("error while closing input");
+            }
+        }
+    }
 
 }

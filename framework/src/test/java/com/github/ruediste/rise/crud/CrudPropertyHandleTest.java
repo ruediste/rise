@@ -39,8 +39,7 @@ public class CrudPropertyHandleTest extends DbTestBase {
     public void before() {
         util.persistenceUtil = persistenceUtil;
         when(index.orderMembers(any(Class.class), any(Collection.class)))
-                .thenAnswer(invocation -> new ArrayList<>(
-                        (Collection) invocation.getArguments()[1]));
+                .thenAnswer(invocation -> new ArrayList<>((Collection) invocation.getArguments()[1]));
     }
 
     @Test
@@ -48,8 +47,7 @@ public class CrudPropertyHandleTest extends DbTestBase {
         PersistentType type = util.getPersistentType(null, TestEntity.class);
         CrudPropertyInfo info = util.getAllPropertiesMap(type).get("value");
         TestEntity e = new TestEntity();
-        CrudPropertyHandle p = CrudPropertyHandle.create(info, () -> e, () -> e,
-                null);
+        CrudPropertyHandle p = CrudPropertyHandle.create(info, () -> e, () -> e, null);
         e.setValue("foo");
         assertEquals("foo", p.getValue());
         p.setValue("bar");

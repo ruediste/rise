@@ -71,8 +71,7 @@ public class CssProcessor {
      *            will only be processed once.
      */
     public Function<AssetGroup, AssetGroup> process(String namePattern,
-            Function<AssetGroup, AssetGroup> referencedAssetProcessor,
-            boolean inline) {
+            Function<AssetGroup, AssetGroup> referencedAssetProcessor, boolean inline) {
         if (inline)
             return inlineStyleSheets(namePattern, referencedAssetProcessor);
         else
@@ -90,26 +89,22 @@ public class CssProcessor {
      *            included in the returned assets. The same classpath location
      *            will only be processed once.
      */
-    public Function<AssetGroup, AssetGroup> relocateStyleSheets(
-            String namePattern,
+    public Function<AssetGroup, AssetGroup> relocateStyleSheets(String namePattern,
             Function<AssetGroup, AssetGroup> refencedAssetProcessor) {
         return group -> {
             Ctx ctx = new Ctx();
-            ctx.referencedAssetProcessor = AssetGroup.toSingleAssetFunction(
-                    group.bundle, refencedAssetProcessor);
+            ctx.referencedAssetProcessor = AssetGroup.toSingleAssetFunction(group.bundle, refencedAssetProcessor);
             ctx.nameTemplate = namePattern;
 
             for (Asset style : group.assets) {
                 String content = new String(style.getData(), Charsets.UTF_8);
-                relocateStyleSheetImpl(ctx, content,
-                        style.getClasspathLocation());
+                relocateStyleSheetImpl(ctx, content, style.getClasspathLocation());
             }
             return new AssetGroup(group.bundle, ctx.result);
         };
     }
 
-    private Asset relocateStyleSheetImpl(Ctx ctx, String content,
-            String styleLocation) {
+    private Asset relocateStyleSheetImpl(Ctx ctx, String content, String styleLocation) {
         Map<String, Asset> processedAssets = ctx.processedAssets;
 
         // check if the style sheet has already been processed
@@ -121,14 +116,11 @@ public class CssProcessor {
 
         // break endless loops
         if (!ctx.startedAssets.add(styleLocation)) {
-            throw new RuntimeException(
-                    "Import loop detected. Involved style sheets: "
-                            + ctx.startedAssets);
+            throw new RuntimeException("Import loop detected. Involved style sheets: " + ctx.startedAssets);
         }
 
         // determine final name
-        String targetStyleLocation = getTargetStyleLocation(ctx.nameTemplate,
-                styleLocation);
+        String targetStyleLocation = getTargetStyleLocation(ctx.nameTemplate, styleLocation);
         StringBuffer sb = new StringBuffer();
         analyzer.process(content, sb, new CssProcessorHandler() {
 
@@ -144,18 +136,15 @@ public class CssProcessor {
                 if (!splitRef.isPresent())
                     return ref;
 
-                String location = RiseUtil.resolvePath(styleLocation,
-                        splitRef.get().getA());
+                String location = RiseUtil.resolvePath(styleLocation, splitRef.get().getA());
                 Asset asset = processedAssets.get(location);
                 if (asset == null) {
-                    asset = helper.loadAssetFromClasspath(location,
-                            () -> "style sheet " + styleLocation);
+                    asset = helper.loadAssetFromClasspath(location, () -> "style sheet " + styleLocation);
                     asset = ctx.referencedAssetProcessor.apply(asset);
                     processedAssets.put(location, asset);
                     ctx.result.add(asset);
                 }
-                return RiseUtil.getShortestPath(targetStyleLocation,
-                        asset.getName()) + splitRef.get().getB();
+                return RiseUtil.getShortestPath(targetStyleLocation, asset.getName()) + splitRef.get().getB();
             }
 
             @Override
@@ -163,24 +152,19 @@ public class CssProcessor {
                 String location = RiseUtil.resolvePath(styleLocation, ref);
                 Asset asset = processedAssets.get(location);
                 if (asset == null) {
-                    byte[] refData = RiseUtil.readFromClasspath(location,
-                            getClass().getClassLoader());
+                    byte[] refData = RiseUtil.readFromClasspath(location, getClass().getClassLoader());
                     if (refData == null) {
                         throw new RuntimeException(
-                                "Style sheet " + location + " imported from "
-                                        + styleLocation + " not found");
+                                "Style sheet " + location + " imported from " + styleLocation + " not found");
                     }
-                    asset = relocateStyleSheetImpl(ctx,
-                            new String(refData, Charsets.UTF_8), location);
+                    asset = relocateStyleSheetImpl(ctx, new String(refData, Charsets.UTF_8), location);
                     processedAssets.put(location, asset);
                 }
-                return RiseUtil.getShortestPath(targetStyleLocation,
-                        asset.getName());
+                return RiseUtil.getShortestPath(targetStyleLocation, asset.getName());
             }
 
             @Override
-            public void performInline(StringBuffer sb, String ref,
-                    String media) {
+            public void performInline(StringBuffer sb, String ref, String media) {
                 throw new UnsupportedOperationException();
             }
         });
@@ -195,16 +179,12 @@ public class CssProcessor {
 
     private Optional<Pair<String, String>> normalizeRef(String ref) {
         Optional<Pair<String, String>> splitRef;
-        if (ref.startsWith("data:") || ref.startsWith("http://")
-                || ref.startsWith("https://"))
+        if (ref.startsWith("data:") || ref.startsWith("http://") || ref.startsWith("https://"))
             splitRef = Optional.empty();
         else {
-            int idx = Arrays
-                    .asList(ref.indexOf('?'), ref.indexOf('#'), ref.length())
-                    .stream().filter(x -> x >= 0)
+            int idx = Arrays.asList(ref.indexOf('?'), ref.indexOf('#'), ref.length()).stream().filter(x -> x >= 0)
                     .collect(minBy(Comparator.naturalOrder())).get();
-            splitRef = Optional
-                    .of(Pair.of(ref.substring(0, idx), ref.substring(idx)));
+            splitRef = Optional.of(Pair.of(ref.substring(0, idx), ref.substring(idx)));
         }
         return splitRef;
     }
@@ -229,27 +209,22 @@ public class CssProcessor {
      *            included in the returned assets. The same classpath location
      *            will only be processed once.
      */
-    public Function<AssetGroup, AssetGroup> inlineStyleSheets(
-            String nameTemplate,
+    public Function<AssetGroup, AssetGroup> inlineStyleSheets(String nameTemplate,
             Function<AssetGroup, AssetGroup> refencedAssetProcessor) {
         return assetGroup -> {
             InlineCtx ctx = new InlineCtx();
-            ctx.referencedAssetProcessor = AssetGroup.toSingleAssetFunction(
-                    assetGroup.bundle, refencedAssetProcessor);
+            ctx.referencedAssetProcessor = AssetGroup.toSingleAssetFunction(assetGroup.bundle, refencedAssetProcessor);
             ctx.nameTemplate = nameTemplate;
 
             for (Asset style : assetGroup.assets) {
                 ctx.sb = new StringBuffer();
                 String content = new String(style.getData(), Charsets.UTF_8);
                 String styleLocation = style.getName();
-                String targetStyleLocation = getTargetStyleLocation(
-                        ctx.nameTemplate, styleLocation);
-                inlineStyleSheetImpl(ctx, content, styleLocation,
-                        targetStyleLocation);
+                String targetStyleLocation = getTargetStyleLocation(ctx.nameTemplate, styleLocation);
+                inlineStyleSheetImpl(ctx, content, styleLocation, targetStyleLocation);
 
                 byte[] data = ctx.sb.toString().getBytes(Charsets.UTF_8);
-                Asset result = createCssAsset(style.getClasspathLocation(),
-                        targetStyleLocation, data);
+                Asset result = createCssAsset(style.getClasspathLocation(), targetStyleLocation, data);
                 ctx.processedAssets.put(styleLocation, result);
                 ctx.result.add(result);
             }
@@ -257,8 +232,7 @@ public class CssProcessor {
         };
     }
 
-    private Asset createCssAsset(String classpathLocation, String name,
-            byte[] data) {
+    private Asset createCssAsset(String classpathLocation, String name, byte[] data) {
         return new Asset() {
 
             @Override
@@ -293,15 +267,12 @@ public class CssProcessor {
         };
     }
 
-    private void inlineStyleSheetImpl(InlineCtx ctx, String content,
-            String styleLocation, String targetStyleLocation) {
+    private void inlineStyleSheetImpl(InlineCtx ctx, String content, String styleLocation, String targetStyleLocation) {
         Map<String, Asset> processedAssets = ctx.processedAssets;
 
         // break endless loops
         if (!ctx.startedAssets.add(styleLocation)) {
-            throw new RuntimeException(
-                    "Import loop detected. Involved style sheets: "
-                            + ctx.startedAssets);
+            throw new RuntimeException("Import loop detected. Involved style sheets: " + ctx.startedAssets);
         }
 
         // determine final name
@@ -320,18 +291,15 @@ public class CssProcessor {
                 if (!splitRef.isPresent())
                     return ref;
 
-                String location = RiseUtil.resolvePath(styleLocation,
-                        splitRef.get().getA());
+                String location = RiseUtil.resolvePath(styleLocation, splitRef.get().getA());
                 Asset asset = processedAssets.get(location);
                 if (asset == null) {
-                    asset = helper.loadAssetFromClasspath(location,
-                            () -> "style sheet " + styleLocation);
+                    asset = helper.loadAssetFromClasspath(location, () -> "style sheet " + styleLocation);
                     asset = ctx.referencedAssetProcessor.apply(asset);
                     processedAssets.put(location, asset);
                     ctx.result.add(asset);
                 }
-                return RiseUtil.getShortestPath(targetStyleLocation,
-                        asset.getName()) + splitRef.get().getB();
+                return RiseUtil.getShortestPath(targetStyleLocation, asset.getName()) + splitRef.get().getB();
             }
 
             @Override
@@ -340,17 +308,14 @@ public class CssProcessor {
             }
 
             @Override
-            public void performInline(StringBuffer sb, String ref,
-                    String media) {
+            public void performInline(StringBuffer sb, String ref, String media) {
                 String location = RiseUtil.resolvePath(styleLocation, ref);
-                byte[] refData = RiseUtil.readFromClasspath(location,
-                        getClass().getClassLoader());
+                byte[] refData = RiseUtil.readFromClasspath(location, getClass().getClassLoader());
                 if (refData == null) {
-                    throw new RuntimeException("Style sheet " + location
-                            + " imported from " + styleLocation + " not found");
+                    throw new RuntimeException(
+                            "Style sheet " + location + " imported from " + styleLocation + " not found");
                 }
-                inlineStyleSheetImpl(ctx, new String(refData, Charsets.UTF_8),
-                        location, targetStyleLocation);
+                inlineStyleSheetImpl(ctx, new String(refData, Charsets.UTF_8), location, targetStyleLocation);
 
             }
         });
@@ -358,8 +323,7 @@ public class CssProcessor {
 
     }
 
-    private String getTargetStyleLocation(String nameTemplate,
-            String styleLocation) {
+    private String getTargetStyleLocation(String nameTemplate, String styleLocation) {
         String targetStyleLocation = helper.resolveNameTemplate(new Asset() {
 
             @Override

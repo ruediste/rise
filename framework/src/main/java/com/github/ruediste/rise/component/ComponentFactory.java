@@ -49,10 +49,8 @@ public interface ComponentFactory<TCanvas extends HtmlCanvas<?>> {
      * reevaluated whenever the given binding group is
      * {@link BindingGroup#pullUp() pulled up}.
      */
-    default Component toComponentBound(Supplier<?> bindingAccessor,
-            Renderable<TCanvas> renderable) {
-        return internal_componentFactoryUtil().toComponentBound(bindingAccessor,
-                renderable);
+    default Component toComponentBound(Supplier<?> bindingAccessor, Renderable<TCanvas> renderable) {
+        return internal_componentFactoryUtil().toComponentBound(bindingAccessor, renderable);
     }
 
     /**
@@ -73,10 +71,8 @@ public interface ComponentFactory<TCanvas extends HtmlCanvas<?>> {
      * Create a sub view always displaying the view corresponding to the
      * specified controller.
      */
-    default <T> Component toSubView(Supplier<T> bindingGroupAccessor,
-            Function<T, Object> controllerAccessor) {
+    default <T> Component toSubView(Supplier<T> bindingGroupAccessor, Function<T, Object> controllerAccessor) {
 
-        return internal_componentFactoryUtil().toSubView(bindingGroupAccessor,
-                controllerAccessor);
+        return internal_componentFactoryUtil().toSubView(bindingGroupAccessor, controllerAccessor);
     }
 }

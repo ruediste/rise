@@ -40,12 +40,8 @@ public class CPageTemplate extends ComponentTemplateBase<CPage> {
 
         @Override
         public void initialize() {
-            jQueryAssetBundle.out
-                    .join(jQueryUiAssetBundle.out, bootstrapBundle.out,
-                            coreBundle.out)
-                    .select(DefaultAssetTypes.CSS)
-                    .split(g -> g.map(css.process("{qname}.{ext}", x -> x)))
-                    .send(out);
+            jQueryAssetBundle.out.join(jQueryUiAssetBundle.out, bootstrapBundle.out, coreBundle.out)
+                    .select(DefaultAssetTypes.CSS).split(g -> g.map(css.process("{qname}.{ext}", x -> x))).send(out);
         }
 
     }

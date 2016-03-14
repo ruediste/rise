@@ -45,8 +45,7 @@ public class ValidationUtilTest {
         util.labelUtil = new LabelUtil(util.translatedStringResolver);
         when(currentLocale.getCurrentLocale()).thenReturn(Locale.ENGLISH);
         validator = Validation.byDefaultProvider().configure()
-                .messageInterpolator(new RiseValidationMessageInterpolator())
-                .buildValidatorFactory().getValidator();
+                .messageInterpolator(new RiseValidationMessageInterpolator()).buildValidatorFactory().getValidator();
 
     }
 
@@ -57,8 +56,7 @@ public class ValidationUtilTest {
 
     void checkMessage(String expected, Class<?> classToValidate) {
 
-        Set<ConstraintViolation<TestA>> violations = validator
-                .validate(new TestA());
+        Set<ConstraintViolation<TestA>> violations = validator.validate(new TestA());
         assertEquals(1, violations.size());
         ConstraintViolation<?> violation = violations.iterator().next();
         assertEquals("org.hibernate.validator.constraints.Length.message;null",
@@ -67,8 +65,7 @@ public class ValidationUtilTest {
 
     @Test
     public void testDefaultMessage() {
-        checkMessage("org.hibernate.validator.constraints.Length.message;null",
-                TestA.class);
+        checkMessage("org.hibernate.validator.constraints.Length.message;null", TestA.class);
     }
 
     @Label("length of {validatedValue} must be between {min} and {max}")

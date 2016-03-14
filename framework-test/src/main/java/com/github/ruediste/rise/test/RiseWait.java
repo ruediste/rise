@@ -84,20 +84,13 @@ public class RiseWait<T> {
         untilSucessful(() -> {
             passes.accept(input);
             return null;
-        } , x -> true,
-                lastThrowable -> new TimeoutException(
-                        String.format(
-                                "Timed out after waiting %.2f seconds for %s%s",
-                                timeout.toMillis() / 1000.0,
-                                message == null ? passes : message,
-                                lastThrowable == null ? ""
-                                        : ". Cause:\n"
-                                                + lastThrowable.toString()),
-                        lastThrowable));
+        }, x -> true,
+                lastThrowable -> new TimeoutException(String.format("Timed out after waiting %.2f seconds for %s%s",
+                        timeout.toMillis() / 1000.0, message == null ? passes : message,
+                        lastThrowable == null ? "" : ". Cause:\n" + lastThrowable.toString()), lastThrowable));
     }
 
-    private <V> V untilSucessful(final Supplier<V> operation,
-            Predicate<V> isSuccessful,
+    private <V> V untilSucessful(final Supplier<V> operation, Predicate<V> isSuccessful,
             Function<Throwable, RuntimeException> exceptionProducer) {
         Instant end = Instant.now().plus(interval);
         Throwable lastThrowable;
@@ -167,10 +160,8 @@ public class RiseWait<T> {
     public void untilTrue(final Predicate<T> isTrue) {
         untilSucessful(() -> isTrue.test(input), x -> x,
                 lastThrowable -> new TimeoutException(
-                        String.format(
-                                "Timed out after waiting %d seconds for %s to return true",
-                                timeout.toMillis() / 1000.0,
-                                message == null ? isTrue : message),
+                        String.format("Timed out after waiting %d seconds for %s to return true",
+                                timeout.toMillis() / 1000.0, message == null ? isTrue : message),
                         lastThrowable));
 
     }
@@ -195,14 +186,10 @@ public class RiseWait<T> {
      *             If the timeout expires.
      */
     public <V> V untilValue(Function<? super T, V> isTrue) {
-        return untilSucessful(() -> isTrue.apply(input),
-                x -> x != null && x != Boolean.FALSE,
-                lastThrowable -> new TimeoutException(
-                        String.format(
-                                "Timed out after waiting %d seconds for %s to return a value other than null or false",
-                                timeout.toMillis() / 1000.0,
-                                message == null ? isTrue : message),
-                        lastThrowable));
+        return untilSucessful(() -> isTrue.apply(input), x -> x != null && x != Boolean.FALSE,
+                lastThrowable -> new TimeoutException(String.format(
+                        "Timed out after waiting %d seconds for %s to return a value other than null or false",
+                        timeout.toMillis() / 1000.0, message == null ? isTrue : message), lastThrowable));
     }
 
 }

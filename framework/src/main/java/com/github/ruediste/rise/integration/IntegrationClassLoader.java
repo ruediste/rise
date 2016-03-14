@@ -23,22 +23,19 @@ public class IntegrationClassLoader extends ClassLoader {
         registerAsParallelCapable();
     }
 
-    public static <T> T loadAndInstantiate(Class<T> interfaceClass,
-            Class<? extends T> implementationClass,
+    public static <T> T loadAndInstantiate(Class<T> interfaceClass, Class<? extends T> implementationClass,
             Class<?>... notDelegatedClasses) {
 
         String prefix = interfaceClass.getPackage().getName().replace('.', '/');
 
-        Class<?>[] tmp = Arrays.copyOf(notDelegatedClasses,
-                notDelegatedClasses.length + 1);
+        Class<?>[] tmp = Arrays.copyOf(notDelegatedClasses, notDelegatedClasses.length + 1);
         tmp[tmp.length - 1] = implementationClass;
 
-        IntegrationClassLoader cl = new IntegrationClassLoader(
-                Thread.currentThread().getContextClassLoader(), prefix, tmp);
+        IntegrationClassLoader cl = new IntegrationClassLoader(Thread.currentThread().getContextClassLoader(), prefix,
+                tmp);
 
         try {
-            return interfaceClass.cast(
-                    cl.loadClass(implementationClass.getName()).newInstance());
+            return interfaceClass.cast(cl.loadClass(implementationClass.getName()).newInstance());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -50,8 +47,7 @@ public class IntegrationClassLoader extends ClassLoader {
      */
     public HashMap<String, String> resources = new HashMap<>();
 
-    public IntegrationClassLoader(ClassLoader parent, String prefix,
-            Class<?>... notDelegated) {
+    public IntegrationClassLoader(ClassLoader parent, String prefix, Class<?>... notDelegated) {
         super(parent);
         this.notDelegated = new HashSet<>();
         for (Class<?> cls : notDelegated) {
@@ -82,9 +78,8 @@ public class IntegrationClassLoader extends ClassLoader {
                 }
             }
 
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(
-                    getClass().getResourceAsStream("resourceFiles.list"),
-                    Charsets.UTF_8))) {
+            try (BufferedReader br = new BufferedReader(
+                    new InputStreamReader(getClass().getResourceAsStream("resourceFiles.list"), Charsets.UTF_8))) {
                 String name;
                 while ((name = br.readLine()) != null) {
                     String root = rootPaths.floor(name);
@@ -102,12 +97,10 @@ public class IntegrationClassLoader extends ClassLoader {
     }
 
     @Override
-    protected Class<?> loadClass(String name, boolean resolve)
-            throws ClassNotFoundException {
+    protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
         if (notDelegated.contains(name)) {
             synchronized (getClassLoadingLock(name)) {
-                try (InputStream in = getParent().getResourceAsStream(
-                        name.replace('.', '/') + ".class")) {
+                try (InputStream in = getParent().getResourceAsStream(name.replace('.', '/') + ".class")) {
                     byte[] bb = ByteStreams.toByteArray(in);
                     Class<?> result = defineClass(name, bb, 0, bb.length);
                     if (resolve)

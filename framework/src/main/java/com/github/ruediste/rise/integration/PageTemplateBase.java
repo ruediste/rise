@@ -46,8 +46,7 @@ public class PageTemplateBase {
         return util.go(controllerClass);
     }
 
-    protected <T extends IController> ActionInvocationBuilderKnownController<T> path(
-            Class<T> controllerClass) {
+    protected <T extends IController> ActionInvocationBuilderKnownController<T> path(Class<T> controllerClass) {
         return util.path(controllerClass);
     }
 
