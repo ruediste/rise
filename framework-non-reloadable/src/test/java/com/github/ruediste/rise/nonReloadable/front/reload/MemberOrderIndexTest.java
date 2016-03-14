@@ -1,17 +1,15 @@
 package com.github.ruediste.rise.nonReloadable.front.reload;
 
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.lang.reflect.Member;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,109 +26,106 @@ import com.github.ruediste.rise.util.Pair;
 @RunWith(MockitoJUnitRunner.class)
 public class MemberOrderIndexTest {
 
-    @Mock
-    Logger log;
+	@Mock
+	Logger log;
 
-    @InjectMocks
-    MemberOrderIndex index;
+	@InjectMocks
+	MemberOrderIndex index;
 
-    @SuppressWarnings("unused")
-    private static class Base {
-        public int foobar;
+	@SuppressWarnings("unused")
+	private static class Base {
+		public int foobar;
 
-        public void foobar() {
-        }
+		public void foobar() {
+		}
 
-        public int foo;
+		public int foo;
 
-        public void foo() {
-        }
+		public void foo() {
+		}
 
-    }
+	}
 
-    @SuppressWarnings("unused")
-    private static class Derived1 extends Base {
+	@SuppressWarnings("unused")
+	private static class Derived1 extends Base {
 
-        public int bar1;
+		public int bar1;
 
-        public void bar1() {
-        }
+		public void bar1() {
+		}
 
-        public int bar;
+		public int bar;
 
-        public void bar() {
-        }
-    }
+		public void bar() {
+		}
+	}
 
-    @SuppressWarnings("unused")
-    private static class Derived2 extends Derived1 {
+	@SuppressWarnings("unused")
+	private static class Derived2 extends Derived1 {
 
-        public int foo;
+		public int foo;
 
-        @Override
-        public void foo() {
-        }
+		@Override
+		public void foo() {
+		}
 
-        public int bar;
+		public int bar;
 
-        @Override
-        public void bar() {
-        }
+		@Override
+		public void bar() {
+		}
 
-        public int foobar;
+		public int foobar;
 
-        @Override
-        public void foobar() {
-        }
-    }
+		@Override
+		public void foobar() {
+		}
+	}
 
-    private void readClasses(Class<?>... classes) {
-        ClassChangeTransaction trx = new ClassChangeNotifier.ClassChangeTransaction();
-        for (Class<?> cls : classes) {
-            Pair<ClassNode, List<String>> pair = AsmUtil
-                    .readClassWithMembers(cls);
-            trx.addedClasses.add(pair.getA());
-            trx.addedClassesMembers.put(pair.getA().name, pair.getB());
-        }
-        index.onChange(trx);
-    }
+	private void readClasses(Class<?>... classes) {
+		ClassChangeTransaction trx = new ClassChangeNotifier.ClassChangeTransaction();
+		for (Class<?> cls : classes) {
+			Pair<ClassNode, List<String>> pair = AsmUtil.readClassWithMembers(cls);
+			trx.addedClasses.add(pair.getA());
+			trx.addedClassesMembers.put(pair.getA().name, pair.getB());
+		}
+		index.onChange(trx);
+	}
 
-    @Before
-    public void before() throws IOException {
-        readClasses(Base.class, Derived2.class, Derived1.class);
-    }
+	@Before
+	public void before() throws IOException {
+		readClasses(Base.class, Derived2.class, Derived1.class, Object.class);
+	}
 
-    @Test
-    public void testOrderMembers() throws Exception {
-        checkOrder(Derived2.class, new String[] { "foo", "bar", "foobar" },
-                false);
-        checkOrder(Derived1.class, new String[] { "bar1", "bar" }, false);
-        checkOrder(Base.class, new String[] { "foobar", "foo" }, false);
-    }
+	@Test
+	public void testOrderMembers() throws Exception {
+		checkOrder(Derived2.class, names("foo", "bar", "foobar"), Derived2.class.getDeclaredMethods());
+		checkOrder(Derived2.class, names("foo", "bar", "foobar", "foo", "bar", "foobar"),
+				Derived2.class.getDeclaredFields(), Derived2.class.getDeclaredMethods());
+		checkOrder(Derived2.class, names("bar1", "bar", "foo", "bar", "foobar"), Derived2.class.getDeclaredFields(),
+				Derived1.class.getDeclaredFields());
+		checkOrder(Derived2.class, names("foobar", "foo", "bar1", "bar", "foo", "bar", "foobar"),
+				Derived2.class.getDeclaredFields(), Derived1.class.getDeclaredFields(), Base.class.getDeclaredFields());
+		checkOrder(Derived2.class, names("foobar", "foo", "bar1", "bar", "foo", "bar", "foobar"),
+				Derived2.class.getDeclaredMethods(), Derived1.class.getDeclaredMethods(),
+				Base.class.getDeclaredMethods());
+	}
 
-    private void checkOrder(Class<?> cls, String[] names,
-            boolean checkNoOrder) {
-        checkOrder(cls, names, checkNoOrder, Arrays.asList(cls.getMethods()));
-        checkOrder(cls, names, checkNoOrder, Arrays.asList(cls.getFields()));
-    }
+	private String[] names(String... names) {
+		return names;
+	}
 
-    private void checkOrder(Class<?> cls, String[] names, boolean checkNoOrder,
-            List<Member> members) {
-        List<Member> filteredMembers = members.stream()
-                .filter(x -> cls.equals(x.getDeclaringClass()))
-                .collect(toList());
+	private void checkOrder(Class<?> cls, String[] names, Member[]... members) {
 
-        List<Member> ordered = index.orderMembers(cls, filteredMembers);
+		List<Member> orderedMembers = index.orderMembers(cls,
+				Arrays.stream(members).flatMap(Arrays::stream).collect(toList()));
 
-        checkOrder(ordered, contains(names));
-        if (checkNoOrder)
-            checkOrder(filteredMembers, not(contains(names)));
-    }
-
-    public void checkOrder(Collection<Member> members,
-            Matcher<Iterable<? extends String>> matcher) {
-
-        assertThat(members.stream().map(x -> x.getName()).collect(toList()),
-                matcher);
-    }
+		List<String> memberNames = orderedMembers.stream().map(Member::getName).collect(toList());
+		assertThat(
+				"\n" + orderedMembers.stream()
+						.map(x -> x.getClass().getSimpleName() + " " + x.getDeclaringClass().getSimpleName() + "."
+								+ x.getName())
+						.collect(joining(", ")) + "\n" + memberNames,
+				memberNames, contains(names));
+	}
 }

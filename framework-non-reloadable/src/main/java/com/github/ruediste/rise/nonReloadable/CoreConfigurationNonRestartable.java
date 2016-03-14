@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.nonReloadable;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -97,6 +98,7 @@ public class CoreConfigurationNonRestartable {
 	{
 		scannedPrefixes.add("com/github/ruediste/rise/");
 		scannedPrefixes.add("assets/");
+		scannedPrefixes.add("java/lang/Object.class");
 	}
 
 	public void addScannedPackage(Class<?> cls) {
@@ -147,6 +149,15 @@ public class CoreConfigurationNonRestartable {
 			return e -> {
 			};
 		return stackTraceFilter;
+	}
+
+	public final Set<Class<?>> additionalScannedClasses = new HashSet<>();
+	{
+		additionalScannedClasses.add(Object.class);
+	}
+
+	public Collection<Class<?>> getAdditionalScannedClasses() {
+		return additionalScannedClasses;
 	}
 
 }

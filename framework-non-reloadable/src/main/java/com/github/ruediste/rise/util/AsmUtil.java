@@ -259,7 +259,10 @@ public class AsmUtil {
 	public static Pair<ClassNode, List<String>> readClassWithMembers(Class<?> cls) {
 		ClassNode node = new ClassNode();
 		MemberOrderVisitor orderVisitor = new MemberOrderVisitor(node);
-		try (InputStream in = cls.getClassLoader().getResourceAsStream(cls.getName().replace('.', '/') + ".class")) {
+		ClassLoader classLoader = cls.getClassLoader();
+		if (classLoader == null)
+			classLoader = AsmUtil.class.getClassLoader();
+		try (InputStream in = classLoader.getResourceAsStream(cls.getName().replace('.', '/') + ".class")) {
 			new ClassReader(in).accept(orderVisitor, 0);
 			return Pair.of(node, orderVisitor.getMembers());
 		} catch (IOException e) {
