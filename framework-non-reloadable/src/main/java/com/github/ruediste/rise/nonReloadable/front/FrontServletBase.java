@@ -191,10 +191,11 @@ public abstract class FrontServletBase extends HttpServlet {
 
                 instance = (RestartableApplication) reloadableClassLoader.loadClass(applicationInstanceClassName)
                         .newInstance();
+                RestartableApplicationInfo info = new RestartableApplicationInfo(instance, reloadableClassLoader);
+                appHolder.setCurrentApplication(info);
 
                 instance.start(nonRestartableInjector);
-
-                appHolder.setCurrentApplication(new RestartableApplicationInfo(instance, reloadableClassLoader));
+                info.started = true;
 
             } finally {
                 currentThread.setContextClassLoader(old);
@@ -233,7 +234,8 @@ public abstract class FrontServletBase extends HttpServlet {
         }
 
         RestartableApplicationInfo info = appHolder.info();
-        if (info != null) {
+        if (info != null || !info.started) {
+
             Thread currentThread = Thread.currentThread();
             Holder oldInjectors = InjectorsHolder.setInjectors(nonRestartableInjector,
                     info.application.getRestartableInjector());
@@ -247,7 +249,9 @@ public abstract class FrontServletBase extends HttpServlet {
             }
         } else {
             log.error("current application info is null");
-            RuntimeException e = new RuntimeException("current application info is null");
+
+            RuntimeException e = info == null ? new RuntimeException("current application info is null")
+                    : new RuntimeException("Current application is not started");
             if (configurationNonRestartable != null)
                 configurationNonRestartable.getStackTraceFilter().filter(e);
             startupErrorHandler.handle(e, req, resp);

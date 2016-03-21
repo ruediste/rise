@@ -81,7 +81,7 @@ public class FileChangeNotifier {
     }
 
     /**
-     * Start the listener. The initial transaction will contain all files found
+     * Start the notifier. The initial transaction will contain all files found
      * in rootDirs.
      */
     public void start(Set<Path> rootDirs, long settleDelayMs) {

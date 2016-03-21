@@ -12,6 +12,7 @@ import javax.inject.Singleton;
 import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.github.ruediste.rise.component.binding.TwoWayBindingTransformer;
 import com.github.ruediste.rise.component.binding.transformers.Transformers;
+import com.github.ruediste.rise.component.components.CCheckBox;
 import com.github.ruediste.rise.component.components.CInput;
 import com.github.ruediste.rise.component.components.CTextField;
 import com.github.ruediste.rise.component.components.InputType;
@@ -33,6 +34,42 @@ public class DefaultEditComponentFactory implements EditComponentFactory {
         addTransformerFactory(Short.class, InputType.number, transformers.shortToStringTransformer);
         addStringTransformerFactory(byte[].class, transformers.byteArrayToHexStringTransformer);
         addStringTransformerFactory(String.class, transformers.identityTransformer());
+        addCheckBoxFactory();
+    }
+
+    private void addCheckBoxFactory() {
+
+        factories.add((cls, testName, info) -> {
+            if (Boolean.class.equals(Primitives.wrap(cls))) {
+                CCheckBox checkBox = new CCheckBox();
+                return Optional.<EditComponentWrapper<?>> of(new EditComponentWrapper<Boolean>() {
+
+                    @Override
+                    public Component getComponent() {
+                        return checkBox;
+                    }
+
+                    @Override
+                    public Boolean getValue() {
+                        return checkBox.isChecked();
+                    }
+
+                    @Override
+                    public EditComponentWrapper<Boolean> setValue(Boolean value) {
+                        checkBox.setChecked(value);
+                        return this;
+                    }
+
+                    @Override
+                    public EditComponentWrapper<Boolean> bindValue(Supplier<Boolean> accessor) {
+                        checkBox.bindLabelProperty(c -> c.setChecked(accessor.get()));
+                        return this;
+                    }
+
+                });
+            } else
+                return Optional.empty();
+        });
     }
 
     private <T> void addTransformerFactory(Class<T> propertyType, InputType inputType,

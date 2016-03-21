@@ -13,6 +13,7 @@ public class CurrentRestartableApplicationHolder {
 
         public RestartableApplication application;
         public ClassLoader reloadableClassLoader;
+        public volatile boolean started;
 
         public RestartableApplicationInfo(RestartableApplication application, ClassLoader reloadableClassLoader) {
             super();

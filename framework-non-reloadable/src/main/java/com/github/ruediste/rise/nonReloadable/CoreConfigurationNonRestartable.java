@@ -1,7 +1,12 @@
 package com.github.ruediste.rise.nonReloadable;
 
+import static java.util.stream.Collectors.toList;
+
+import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -13,11 +18,14 @@ import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.persistence.config.SessionCustomizer;
 import org.objectweb.asm.ClassReader;
 
 import com.github.ruediste.rise.nonReloadable.front.DefaultStartupErrorHandler;
 import com.github.ruediste.rise.nonReloadable.front.StartupErrorHandler;
 import com.github.ruediste.rise.nonReloadable.front.reload.FileChangeNotifier.FileChangeTransaction;
+import com.github.ruediste.rise.nonReloadable.persistence.CompositeSessionCustomizer;
+import com.github.ruediste.rise.nonReloadable.persistence.EmbeddedFieldNamesSessionCustomizer;
 import com.github.ruediste.salta.standard.Stage;
 import com.google.common.base.Strings;
 import com.google.common.reflect.Reflection;
@@ -88,7 +96,8 @@ public class CoreConfigurationNonRestartable {
                     stackTraceFilter = e -> {
                     };
         }
-
+        sessionCustomizers = sessionCustomizerProviders.stream().map(Provider::get).collect(toList());
+        CompositeSessionCustomizer.customizers = sessionCustomizers;
     }
 
     public long restartQueryTimeout = 30000;
@@ -159,5 +168,22 @@ public class CoreConfigurationNonRestartable {
     public Collection<Class<?>> getAdditionalScannedClasses() {
         return additionalScannedClasses;
     }
+
+    public static class SessionCustomizerProviderRefs {
+        @Inject
+        Provider<EmbeddedFieldNamesSessionCustomizer> embeddedFieldNamesCustomizer;
+    }
+
+    @Inject
+    public SessionCustomizerProviderRefs sessionCustomizerRefs;
+
+    public Deque<Provider<? extends SessionCustomizer>> sessionCustomizerProviders = new ArrayDeque<>();
+
+    @PostConstruct
+    private void setupSessionCustomizerProviders() {
+        sessionCustomizerProviders.add(sessionCustomizerRefs.embeddedFieldNamesCustomizer);
+    }
+
+    public List<SessionCustomizer> sessionCustomizers;
 
 }

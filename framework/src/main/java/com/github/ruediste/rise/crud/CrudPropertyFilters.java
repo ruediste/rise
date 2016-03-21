@@ -2,6 +2,9 @@ package com.github.ruediste.rise.crud;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -17,8 +20,11 @@ import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.github.ruediste.rise.component.ComponentFactoryUtil;
 import com.github.ruediste.rise.component.components.CFormGroup;
 import com.github.ruediste.rise.component.components.CInput;
+import com.github.ruediste.rise.component.components.CSelect;
+import com.github.ruediste.rise.component.components.CText;
 import com.github.ruediste.rise.component.components.CTextField;
 import com.github.ruediste.rise.component.components.InputType;
+import com.github.ruediste.rise.component.generic.EditComponents;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.strategy.Strategies;
 import com.github.ruediste.rise.core.strategy.Strategy;
@@ -28,6 +34,7 @@ import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.lString.PatternString;
 import com.github.ruediste1.i18n.lString.TranslatedString;
 import com.github.ruediste1.i18n.label.LabelUtil;
+import com.github.ruediste1.i18n.label.MembersLabeled;
 import com.github.ruediste1.i18n.message.TMessage;
 import com.github.ruediste1.i18n.message.TMessages;
 import com.google.common.base.Strings;
@@ -48,6 +55,9 @@ public class CrudPropertyFilters {
 
     @Inject
     CrudReflectionUtil reflectionUtil;
+
+    @Inject
+    EditComponents editComponents;
 
     @TMessages
     public interface Messages {
@@ -116,11 +126,60 @@ public class CrudPropertyFilters {
         addNumberFactory(Long.class, Long::parseLong);
         addNumberFactory(Integer.class, Integer::parseInt);
         addNumberFactory(Short.class, Short::parseShort);
+        addBooleanFactory();
+        addDurationFactory();
+        addZoneIdFactory();
+        addLocalTimeFactory();
+    }
+
+    private void addDurationFactory() {
+        InputType.time
+    }
+
+    private Predicate<CrudPropertyInfo> isOfType(Class<?> cls) {
+        return p -> cls.equals(Primitives.wrap(p.getAttribute().getJavaType()));
+    }
+
+    @MembersLabeled
+    enum EnumChoices {
+        NULL(null), TRUE(true), FALSE(false);
+        final Boolean value;
+
+        private EnumChoices(Boolean value) {
+            this.value = value;
+        }
+    }
+
+    private void addBooleanFactory() {
+        addFactory(isOfType(Boolean.class), p -> {
+            SingularAttribute<?, ?> singularAttribute = (SingularAttribute<?, ?>) p.getAttribute();
+            List<EnumChoices> choices = new ArrayList<>();
+            if (singularAttribute.isOptional())
+                choices.add(EnumChoices.NULL);
+            choices.addAll(Arrays.asList(EnumChoices.TRUE, EnumChoices.FALSE));
+
+            CSelect<EnumChoices> select = new CSelect<EnumChoices>().setItems(choices).setAllowEmpty(true)
+                    .setChildComponentFactory(choice -> new CText(labelUtil.enumMember(choice).label()));
+            return new CrudPropertyFilter() {
+
+                @Override
+                public Component getComponent() {
+                    return select;
+                }
+
+                @Override
+                public void applyFilter(PersistenceFilterContext<?> ctx) {
+                    select.getSelectedItem()
+                            .ifPresent(choice -> ctx.addWhere(ctx.cb().equal(ctx.root().get(p.getName()), choice)));
+                }
+            };
+        });
+
     }
 
     private <T extends Comparable> void addNumberFactory(Class<T> boxCls, Function<String, T> parse) {
 
-        addFactory(p -> boxCls.equals(Primitives.wrap(p.getAttribute().getJavaType())), p -> {
+        addFactory(isOfType(boxCls), p -> {
             PropertyInfo property = p.getProperty();
             LString propertyLabel = labelUtil.property(property).label();
             CInput min = new CInput(InputType.number).setLabel(messages.minNumber(propertyLabel)).setValue("")

@@ -66,6 +66,7 @@ public class Transformers {
 
     public final TwoWayBindingTransformer<Long, String> longToStringTransformer = new NumberTransformer<>(
             Long::parseLong);
+
     public final TwoWayBindingTransformer<Short, String> shortToStringTransformer = new NumberTransformer<>(
             Short::parseShort);
 

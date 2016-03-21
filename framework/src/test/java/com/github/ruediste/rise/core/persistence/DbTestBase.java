@@ -3,10 +3,12 @@ package com.github.ruediste.rise.core.persistence;
 import org.junit.After;
 import org.junit.Before;
 
+import com.github.ruediste.rise.FrameworkTestBasePackage;
 import com.github.ruediste.salta.jsr330.SaltaModule;
 
 public class DbTestBase {
-    protected PersistenceTestHelper helper = new PersistenceTestHelper(this);
+    protected PersistenceTestHelper helper = new PersistenceTestHelper(this, FrameworkTestBasePackage.class)
+            .setQualifiers(null, Unit1.class);
 
     @Before
     final public void beforeDbTestBase() {
