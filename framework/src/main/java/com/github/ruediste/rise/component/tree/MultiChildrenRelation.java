@@ -7,6 +7,10 @@ import java.util.Iterator;
 
 /**
  * Relation of a component to multiple children.
+ * 
+ * <p>
+ * The children can either be given explicitely, or by binding them to a source
+ * collection
  */
 public class MultiChildrenRelation<TChild extends Component, TContainingComponent extends RelationsComponent<TContainingComponent>>
         extends ChildRelation<TContainingComponent> {
@@ -49,17 +53,30 @@ public class MultiChildrenRelation<TChild extends Component, TContainingComponen
 
     /**
      * remove a child
+     * 
+     * @return
      */
-    public void remove(TChild component) {
+    public TContainingComponent remove(TChild component) {
         children.remove(component);
         postRemove(component);
+        return containingComponent;
+    }
+
+    /**
+     * Return an unmodifiable view to the children of this relation
+     */
+    public Collection<TChild> getChildren() {
+        return Collections.unmodifiableCollection(children);
     }
 
     /**
      * remove a child
+     * 
+     * @return
      */
-    public void remove(int index) {
+    public TContainingComponent remove(int index) {
         postRemove(children.remove(index));
+        return containingComponent;
     }
 
     private void postRemove(Component component) {
@@ -71,13 +88,6 @@ public class MultiChildrenRelation<TChild extends Component, TContainingComponen
             component.getParent().childRemoved(component);
         }
         component.parentChanged(containingComponent);
-    }
-
-    /**
-     * Return an unmodifiable view to the children of this relation
-     */
-    public Collection<TChild> getChildren() {
-        return Collections.unmodifiableCollection(children);
     }
 
 }

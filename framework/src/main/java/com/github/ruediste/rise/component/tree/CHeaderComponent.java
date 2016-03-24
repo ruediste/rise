@@ -1,20 +1,9 @@
 package com.github.ruediste.rise.component.tree;
 
 /**
- * Base class for components showing headers and
+ * Component consisting of a {@link #child()} and a corresponding
+ * {@link #header()}. Used for example in TabPanels.
  */
-public class CHeaderComponent extends ComponentBase<CHeaderComponent> {
-
-    @Override
-    public Iterable<Component> getChildren() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void childRemoved(Component child) {
-        // TODO Auto-generated method stub
-
-    }
+public class CHeaderComponent extends CHeaderComponentBase<CHeaderComponent> {
 
 }

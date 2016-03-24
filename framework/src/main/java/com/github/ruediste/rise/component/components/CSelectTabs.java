@@ -1,19 +1,22 @@
 package com.github.ruediste.rise.component.components;
 
-import java.util.Map;
+import java.util.Objects;
 
-import com.github.ruediste.rise.component.tree.Component;
-import com.github.ruediste.rise.component.tree.MultiChildrenRelation;
+import com.github.ruediste.rise.component.tree.CHeaderComponent;
 
 /**
  * Component showing a select input and displaying a different component for
  * each possible selection
  */
-public class CSelectTabs<T> extends CSingleSelection<T, CSelectTabs<T>> {
+@DefaultTemplate(CSelectTabsTemplate.class)
+public class CSelectTabs<T> extends CSingleSelection<T, CHeaderComponent, CSelectTabs<T>> {
 
-    Map<T, Component> components
+    public CSelectTabs() {
+        setChildComponentFactory(i -> new CHeaderComponent().header().set(new CText(Objects.toString(i))).child()
+                .set(new CText(Objects.toString(i))));
+    }
 
-    public CSelectTabs<T> setComponent(T choice, Component component) {
-        return this;
+    public CSelectTabsPresenter createPresenter() {
+        return new CSelectTabsPresenter(this);
     }
 }

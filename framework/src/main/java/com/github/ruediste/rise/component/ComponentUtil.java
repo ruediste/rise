@@ -117,7 +117,7 @@ public class ComponentUtil implements ICoreUtil {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void render(Component component, RiseCanvas<?> canvas) {
-        ((IComponentTemplate) componentTemplateIndex.getTemplate(component.getClass())).doRender(component, canvas);
+        ((IComponentTemplate) componentTemplateIndex.getTemplate(component.getClass()).get()).doRender(component, canvas);
     }
 
     /**

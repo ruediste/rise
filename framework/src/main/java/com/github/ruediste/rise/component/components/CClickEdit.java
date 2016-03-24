@@ -120,11 +120,11 @@ public class CClickEdit<T> extends RelationsComponent<CClickEdit<T>> implements 
             if (!consumer.setEditComponentCalled)
                 throw new RuntimeException(
                         "EditComponentFactory has the set the component on the supplied EditComponentConsumer");
-            child.setChild(consumer.component);
+            child.set(consumer.component);
             valueExtractor = consumer.valueExtractor;
             focusComponent = consumer.focusComponent;
         } else {
-            child.setChild(viewComponentFactory.apply(value));
+            child.set(viewComponentFactory.apply(value));
         }
     }
 

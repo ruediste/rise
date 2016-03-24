@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.component.tree;
 
+import java.util.Collections;
 import java.util.Iterator;
 
 import com.google.common.collect.Iterators;
@@ -16,11 +17,11 @@ public class SingleChildRelation<TChild extends Component, TContainingComponent 
         super(containingComponent);
     }
 
-    public Component getChild() {
+    public Component get() {
         return child;
     }
 
-    public TChild setChild(TChild newChild) {
+    public TContainingComponent set(TChild newChild) {
         if (child != null && child.getParent() != null) {
             child.getParent().childRemoved(child);
             child.parentChanged(null);
@@ -31,7 +32,7 @@ public class SingleChildRelation<TChild extends Component, TContainingComponent 
         if (child != null) {
             child.parentChanged(containingComponent);
         }
-        return newChild;
+        return containingComponent;
     }
 
     @Override
@@ -44,7 +45,7 @@ public class SingleChildRelation<TChild extends Component, TContainingComponent 
     @Override
     public Iterator<Component> iterator() {
         if (child == null) {
-            return Iterators.emptyIterator();
+            return Collections.emptyIterator();
         }
         return Iterators.<Component> singletonIterator(child);
     }

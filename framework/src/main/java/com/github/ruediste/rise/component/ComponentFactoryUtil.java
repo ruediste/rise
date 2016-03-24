@@ -48,7 +48,7 @@ public class ComponentFactoryUtil {
     public Component toComponentBound(Supplier<?> bindingAccessor, Renderable<?> renderable) {
         CComponentContainer container = new CComponentContainer();
         BindingUtil.bind(container, bindingAccessor, x -> {
-            container.child.setChild(renderToCanvas(renderable));
+            container.child.set(renderToCanvas(renderable));
         }, x -> {
         });
         return container;

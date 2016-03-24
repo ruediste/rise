@@ -49,7 +49,7 @@ public class CValue<T> extends RelationsComponent<CValue<T>> {
 
     public void updateChild() {
         if (childFactory != null)
-            child.setChild(childFactory.apply(value));
+            child.set(childFactory.apply(value));
     }
 
     public Function<T, Component> getChildFactory() {

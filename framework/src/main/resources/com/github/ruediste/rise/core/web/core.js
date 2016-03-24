@@ -145,9 +145,17 @@ var rise = (function() {
 			return false;
 		});
 		
-		$(document).on("change", ".rise_c_select._selectionHandler", function() {
-			triggerViewReload(this);
-			return false;
+		[".rise_c_select._selectionHandler", ".rise_c_selectTabs" ].forEach(function(selector) {
+			$(document).on("change", selector, function() {
+				setExtractData(this, function(data) {
+					data.push({
+						name : rise.generateKey(this, "changed"),
+						value : "true"
+					})
+				});
+				triggerViewReload(this);
+				return false;
+			})
 		});
 
 		// support for generic event handlers

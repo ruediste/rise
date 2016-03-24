@@ -132,8 +132,20 @@ public class CrudPropertyFilters {
         addLocalTimeFactory();
     }
 
+    private void addLocalTimeFactory() {
+        // TODO Auto-generated method stub
+
+        throw new UnsupportedOperationException();
+    }
+
+    private void addZoneIdFactory() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
+
+    }
+
     private void addDurationFactory() {
-        InputType.time
+        throw new UnsupportedOperationException();
     }
 
     private Predicate<CrudPropertyInfo> isOfType(Class<?> cls) {

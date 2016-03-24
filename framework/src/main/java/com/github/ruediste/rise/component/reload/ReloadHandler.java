@@ -86,7 +86,7 @@ public class ReloadHandler implements Runnable {
         List<Component> components = ComponentTreeUtil.subTree(reloadComponent);
 
         for (Component c : components) {
-            componentTemplateIndex.getTemplate(c).applyValues(c);
+            componentTemplateIndex.getTemplate(c).ifPresent(t -> t.applyValues(c));
         }
 
         // raise events
@@ -94,7 +94,7 @@ public class ReloadHandler implements Runnable {
             page.getEventHandler(Integer.valueOf(nrStr)).run();
         });
         for (Component c : components) {
-            componentTemplateIndex.getTemplate(c).raiseEvents(c);
+            componentTemplateIndex.getTemplate(c).ifPresent(t -> t.raiseEvents(c));
         }
 
         // check if a destination has been defined

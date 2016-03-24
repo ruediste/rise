@@ -5,13 +5,14 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import com.github.ruediste.rise.component.tree.Component;
 import com.google.common.base.Preconditions;
 
 /**
  * Component showing a list of items and allowing a single one to be selected.
  */
-public class CSingleSelection<T, TSelf extends CSingleSelection<T, TSelf>> extends CItems<T, TSelf>
-        implements LabeledComponentTrait<TSelf> {
+public class CSingleSelection<T, TChild extends Component, TSelf extends CSingleSelection<T, TChild, TSelf>>
+        extends CItems<T, TChild, TSelf> implements LabeledComponentTrait<TSelf> {
 
     private Optional<T> selectedItem = Optional.empty();
 
@@ -25,6 +26,10 @@ public class CSingleSelection<T, TSelf extends CSingleSelection<T, TSelf>> exten
 
     public Optional<T> getSelectedItem() {
         return selectedItem;
+    }
+
+    public T getSelectedItemOrElseFirst() {
+        return selectedItem.orElseGet(() -> getItems().get(0));
     }
 
     public TSelf setSelectedItem(Optional<T> selectedItem) {

@@ -17,7 +17,7 @@ public class CPage extends RelationsComponent<CPage> {
     }
 
     public CPage() {
-        child.setChild(reload);
+        child.set(reload);
     }
 
     public CPage add(Component c) {
