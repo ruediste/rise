@@ -32,6 +32,10 @@ public class CSingleSelection<T, TChild extends Component, TSelf extends CSingle
         return selectedItem.orElseGet(() -> getItems().get(0));
     }
 
+    public TSelf selectFirst() {
+        return setSelectedItem(Optional.of(getItems().get(0)));
+    }
+
     public TSelf setSelectedItem(Optional<T> selectedItem) {
         Preconditions.checkNotNull(selectedItem);
         boolean invokeHandler = selectionHandler != null && !Objects.equals(this.selectedItem, selectedItem);
