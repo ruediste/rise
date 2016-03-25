@@ -27,11 +27,12 @@ import com.github.ruediste.rise.component.components.CDataGrid.Cell;
 import com.github.ruediste.rise.component.components.CDataGrid.Column;
 import com.github.ruediste.rise.component.components.CText;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.core.persistence.EMUtil.PersistenceFilterContext;
 import com.github.ruediste.rise.core.persistence.PersistentType;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
 import com.github.ruediste.rise.crud.CrudUtil.CrudList;
-import com.github.ruediste.rise.crud.CrudUtil.PersistenceFilterContext;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
+import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.github.ruediste1.i18n.label.Labeled;
 import com.github.ruediste1.i18n.label.MembersLabeled;
@@ -79,7 +80,7 @@ public class DefaultCrudListController extends SubControllerComponent implements
             // @formatter:off
             return toComponent(html -> html.div().CLASS("panel panel-default").div().CLASS("panel-heading")
                     .content(Labels.FILTER).div().CLASS("panel-body").fForEach(controller.filterList, filter -> {
-                        html.add(filter.getComponent());
+                        html.bFormGroup().label().content(labelUtil.property(filter.getA().getProperty()).label()).add(filter.getB().getComponent())._bFormGroup();
                     })._div()._div().add(new CButton(controller, x -> x.search()))
                     .add(new CDataGrid<Object>().TEST_NAME("resultList").setColumns(columns)
                             .bindOneWay(g -> g.setItems(controller.data().getItems())))
@@ -125,7 +126,7 @@ public class DefaultCrudListController extends SubControllerComponent implements
 
     List<CrudPropertyInfo> columnProperties;
 
-    List<CrudPropertyFilter> filterList;
+    List<Pair<CrudPropertyInfo, CrudPropertyFilter>> filterList;
 
     private Consumer<PersistenceFilterContext<?>> constantFilter;
 
@@ -144,9 +145,7 @@ public class DefaultCrudListController extends SubControllerComponent implements
         TypedQuery<Object> q = crudUtil.queryWithFilters(type, getEm(), ctx -> {
             if (constantFilter != null)
                 constantFilter.accept(ctx);
-            for (CrudPropertyFilter filter : filterList) {
-                filter.applyFilter(ctx);
-            }
+            filterList.stream().map(x -> x.getB()).forEach(filter -> filter.applyFilter(ctx));
         });
 
         data.get().setItems(q.getResultList());
@@ -160,7 +159,7 @@ public class DefaultCrudListController extends SubControllerComponent implements
         type = crudReflectionUtil.getPersistentType(emQualifier, entityClass);
 
         columnProperties = crudReflectionUtil.getBrowserProperties(type);
-        filterList = columnProperties.stream().map(filters::create).collect(toList());
+        filterList = columnProperties.stream().map(p -> Pair.of(p, filters.create(p))).collect(toList());
 
         search();
 

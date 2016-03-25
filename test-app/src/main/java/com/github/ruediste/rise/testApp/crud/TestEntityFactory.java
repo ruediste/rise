@@ -21,6 +21,11 @@ public class TestEntityFactory {
         return save(result);
     }
 
+    public TestCrudEntityTypes testCrudEntityTypes() {
+        TestCrudEntityTypes result = new TestCrudEntityTypes();
+        return save(result);
+    }
+
     public TestCrudEntityB testCrudEntityB() {
         TestCrudEntityB result = new TestCrudEntityB();
         result.setValue(RandomStringUtils.randomAlphanumeric(10));

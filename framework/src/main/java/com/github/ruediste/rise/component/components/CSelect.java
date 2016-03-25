@@ -1,6 +1,8 @@
 package com.github.ruediste.rise.component.components;
 
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
+import com.github.ruediste1.i18n.label.LabelUtil;
 
 /**
  * Component showing a {@code <select>} element
@@ -11,7 +13,8 @@ public class CSelect<T> extends CSingleSelection<T, Component, CSelect<T>> {
     private boolean allowEmpty;
 
     public CSelect() {
-        setChildComponentFactory(i -> new CText(String.valueOf(i)));
+        LabelUtil labelUtil = InjectorsHolder.getInstance(LabelUtil.class);
+        setChildComponentFactory(i -> new CText(labelUtil.getLabel(i)));
     }
 
     public boolean isAllowEmpty() {

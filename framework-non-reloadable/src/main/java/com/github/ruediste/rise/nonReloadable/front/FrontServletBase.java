@@ -167,7 +167,11 @@ public abstract class FrontServletBase extends HttpServlet {
             // close old application instance
 
             if (appHolder.info() != null) {
-                appHolder.info().application.close();
+                try {
+                    appHolder.info().application.close();
+                } catch (Throwable t) {
+                    log.error("Error while closing application instance", t);
+                }
                 appHolder.clearCurrentApplication();
                 dataBaseLinkRegistry.closePersistenceUnitManagers();
             }

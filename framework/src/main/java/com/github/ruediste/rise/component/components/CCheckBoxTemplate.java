@@ -12,12 +12,13 @@ public class CCheckBoxTemplate extends BootstrapComponentTemplateBase<CCheckBox>
 
     @Override
     public void applyValues(CCheckBox component) {
-        getParameterValue(component, "value").ifPresent(value -> component.setChecked("true".equals(value)));
+        getParameterObject(component, "isChecked").ifPresent(value -> component.setChecked((boolean) value));
     }
 
     @Override
     public void doRender(CCheckBox component, BootstrapRiseCanvas<?> html) {
-        html.input().TYPE(InputType.checkbox.toString()).BformControl().VALUE(Boolean.toString(component.isChecked()))
+        html.input().TYPE(InputType.checkbox.toString()).BformControl().CLASS("rise_c_checkbox")
+                .fIf(component.isChecked(), () -> html.CHECKED("checked")).VALUE("true")
                 .NAME(util.getKey(component, "value")).rCOMPONENT_ATTRIBUTES(component);
     }
 }

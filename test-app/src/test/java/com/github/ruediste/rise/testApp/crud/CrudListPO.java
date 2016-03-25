@@ -28,6 +28,10 @@ public class CrudListPO<TSelf extends CrudListPO<TSelf>> extends PageObject {
         return self();
     }
 
+    public CrudFilterLongPO getFilterLong(String fieldName) {
+        return pageObject(CrudFilterLongPO.class, byDataTestName(fieldName));
+    }
+
     public List<String> getColumnTestNames() {
         return driver.findElement(byDataTestName("resultList")).findElements(By.cssSelector("thead th")).stream()
                 .map(e -> e.getAttribute("data-test-name")).collect(toList());

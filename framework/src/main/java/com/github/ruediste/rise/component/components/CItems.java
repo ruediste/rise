@@ -17,8 +17,7 @@ import com.github.ruediste.rise.util.Pair;
 public class CItems<T, TChild extends Component, TSelf extends CItems<T, TChild, TSelf>>
         extends RelationsComponent<TSelf> {
 
-    private final ItemsChildrenRelation<T, TChild, TSelf> childRelation = new ItemsChildrenRelation<>(
-            self());
+    private final ItemsChildrenRelation<T, TChild, TSelf> childRelation = new ItemsChildrenRelation<>(self());
 
     private Function<T, String> testNameExtractor;
 
@@ -63,6 +62,11 @@ public class CItems<T, TChild extends Component, TSelf extends CItems<T, TChild,
 
     public ItemsChildrenRelation<T, TChild, TSelf> childRelation() {
         return childRelation;
+    }
+
+    public TSelf addItem(T item) {
+        childRelation.add(item);
+        return self();
     }
 
 }

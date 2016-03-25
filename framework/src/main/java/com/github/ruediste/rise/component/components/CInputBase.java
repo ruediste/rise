@@ -5,7 +5,7 @@ import com.github.ruediste.rise.component.tree.RelationsComponent;
 /**
  * Base class for input components. Provides a violationStatus and labels
  */
-public class CInputBase<T extends CInputBase<T>> extends RelationsComponent<T> implements LabeledComponentTrait<T> {
+public class CInputBase<TSelf extends CInputBase<TSelf>> extends RelationsComponent<TSelf> implements LabeledComponentTrait<TSelf> {
 
     private boolean renderFormGroup = true;
 
@@ -20,7 +20,7 @@ public class CInputBase<T extends CInputBase<T>> extends RelationsComponent<T> i
         return renderFormGroup;
     }
 
-    public T setRenderFormGroup(boolean renderFormGroup) {
+    public TSelf setRenderFormGroup(boolean renderFormGroup) {
         this.renderFormGroup = renderFormGroup;
         return self();
     }

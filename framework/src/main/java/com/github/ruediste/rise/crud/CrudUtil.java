@@ -21,6 +21,7 @@ import com.github.ruediste.rise.api.ControllerComponent;
 import com.github.ruediste.rise.component.IControllerComponent;
 import com.github.ruediste.rise.component.components.CDataGrid.Cell;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.core.persistence.EMUtil.PersistenceFilterContext;
 import com.github.ruediste.rise.core.persistence.PersistentType;
 import com.github.ruediste.rise.core.strategy.Strategies;
 import com.github.ruediste.rise.core.strategy.Strategy;
@@ -80,16 +81,6 @@ public class CrudUtil {
 
         q.where(whereClauses.toArray(new Predicate[] {}));
         return em.createQuery(filterContext.query());
-    }
-
-    interface PersistenceFilterContext<T> {
-        CriteriaBuilder cb();
-
-        CriteriaQuery<T> query();
-
-        Root<T> root();
-
-        void addWhere(Predicate predicate);
     }
 
     /**

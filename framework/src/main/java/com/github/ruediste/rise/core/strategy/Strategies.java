@@ -39,6 +39,11 @@ public class Strategies {
         getStrategyClasses(strategy.getClass()).forEach(s -> strategies.put(s, strategy));
     }
 
+    public <T extends Strategy> void putStrategy(Class<T> strategy) {
+        T instance = injector.getInstance(strategy);
+        getStrategyClasses(strategy).forEach(s -> strategies.put(s, instance));
+    }
+
     public void putStrategy(Strategy strategy, AnnotatedElement element) {
         getStrategyClasses(strategy.getClass()).forEach(s -> perElementStrategies.put(Pair.of(s, element), strategy));
     }

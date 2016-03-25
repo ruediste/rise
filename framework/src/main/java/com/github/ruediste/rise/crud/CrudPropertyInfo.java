@@ -1,8 +1,12 @@
 package com.github.ruediste.rise.crud;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
 
+import javax.persistence.Column;
 import javax.persistence.metamodel.Attribute;
+import javax.validation.constraints.NotNull;
 
 import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.google.common.base.Objects;
@@ -63,5 +67,19 @@ public class CrudPropertyInfo {
 
     public Class<? extends Annotation> getEmQualifier() {
         return emQualifier;
+    }
+
+    public boolean isOptional() {
+        boolean result = true;
+        Member javaMember = attribute.getJavaMember();
+        if (javaMember instanceof AnnotatedElement) {
+            AnnotatedElement element = (AnnotatedElement) javaMember;
+            if (element.isAnnotationPresent(NotNull.class))
+                result = false;
+            Column column = element.getAnnotation(Column.class);
+            if (column != null && !column.nullable())
+                result = false;
+        }
+        return result;
     }
 }

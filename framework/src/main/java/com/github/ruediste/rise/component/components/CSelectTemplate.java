@@ -4,14 +4,11 @@ import java.util.Optional;
 
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 
-public class CSelectTemplate extends BootstrapComponentTemplateBase<CSelect<?>> {
+public class CSelectTemplate<T> extends BootstrapComponentTemplateBase<CSelect<T>> {
 
     @Override
-    public void doRender(CSelect<?> select, BootstrapRiseCanvas<?> html) {
-        doRenderImpl(select, html);
-    }
+    public void doRender(CSelect<T> select, BootstrapRiseCanvas<?> html) {
 
-    public <T> void doRenderImpl(CSelect<T> select, BootstrapRiseCanvas<?> html) {
         if (!select.isAllowEmpty() && !select.getSelectedItem().isPresent())
             throw new RuntimeException("CSelect does not allow an empty selection, but no item is selected");
         html.select().BformControl().CLASS("rise_c_select").rCOMPONENT_ATTRIBUTES(select)
@@ -28,11 +25,7 @@ public class CSelectTemplate extends BootstrapComponentTemplateBase<CSelect<?>> 
     }
 
     @Override
-    public void applyValues(CSelect<?> component) {
-        applyValuesImpl(component);
-    }
-
-    public <T> void applyValuesImpl(CSelect<T> component) {
+    public void applyValues(CSelect<T> component) {
         getParameterValue(component, "value").ifPresent(idxStr -> {
             if (component.isAllowEmpty() && "-".equals(idxStr))
                 component.setSelectedItem(Optional.empty());
@@ -41,11 +34,4 @@ public class CSelectTemplate extends BootstrapComponentTemplateBase<CSelect<?>> 
         });
     }
 
-    @Override
-    public void raiseEvents(CSelect<?> component) {
-        raiseEventsImpl(component);
-    }
-
-    public <T> void raiseEventsImpl(CSelect<T> select) {
-    }
 }

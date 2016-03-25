@@ -27,9 +27,12 @@ public class CrudEditPO extends PageObject {
     }
 
     public WebElement getPropertyElement(String propertyName) {
-        WebElement element = driver
-                .findElement(By.cssSelector(dataTestSelector("properties") + dataTestSelector(propertyName)));
+        WebElement element = driver.findElement(getPropertyElementSelector(propertyName));
         return element;
+    }
+
+    private By getPropertyElementSelector(String propertyName) {
+        return By.cssSelector(dataTestSelector("properties") + dataTestSelector(propertyName));
     }
 
     public List<String> getPropertyTestNames() {
@@ -67,4 +70,9 @@ public class CrudEditPO extends PageObject {
         element.sendKeys(value);
         return this;
     }
+
+    public CrudEditBooleanPO getPropertyBoolean(String dataTestName) {
+        return pageObject(CrudEditBooleanPO.class, getPropertyElementSelector(dataTestName));
+    }
+
 }

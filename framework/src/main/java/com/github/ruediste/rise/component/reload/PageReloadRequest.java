@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.github.ruediste.rise.core.scopes.RequestScoped;
@@ -48,7 +49,7 @@ public class PageReloadRequest {
     }
 
     public Optional<String> getParameterValue(String key) {
-        return getParameterObject(key).map(x -> (String) x);
+        return getParameterObject(key).map(x -> Objects.toString(x));
     }
 
     public Collection<Object> getParameterObjects(String key) {

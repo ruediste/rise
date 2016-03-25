@@ -46,8 +46,9 @@ public class CInput extends CInputBase<CInput> {
         return inputType;
     }
 
-    public void setInputType(InputType inputType) {
+    public CInput setInputType(InputType inputType) {
         this.inputType = inputType;
+        return self();
     }
 
 }

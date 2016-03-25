@@ -1,6 +1,5 @@
 package com.github.ruediste.rise.crud;
 
-import java.lang.reflect.Method;
 import java.util.function.Supplier;
 
 import com.github.ruediste.rise.component.binding.BindingGroup;
@@ -60,28 +59,13 @@ public interface CrudPropertyHandle {
 
             @Override
             public void setValue(Object value) {
-                Method setter = propertyInfo.getProperty().getSetter();
-                if (setter == null)
-                    throw new RuntimeException(
-                            "No setter defined for " + propertyInfo.getProperty() + ". Cannot set value");
-                try {
-                    setter.invoke(objectSupplier.get(), value);
-                } catch (Exception e) {
-                    throw new RuntimeException("Error while setting property using " + setter);
-                }
+                propertyInfo.getProperty().setValue(objectSupplier.get(), value);
+
             }
 
             @Override
             public Object getValue() {
-                Method getter = propertyInfo.getProperty().getGetter();
-                if (getter == null)
-                    throw new RuntimeException(
-                            "No getter defined for " + propertyInfo.getProperty() + ". Cannot read value");
-                try {
-                    return getter.invoke(objectSupplier.get());
-                } catch (Exception e) {
-                    throw new RuntimeException("Error while getting property using " + getter);
-                }
+                return propertyInfo.getProperty().getValue(objectSupplier.get());
             }
         };
         return handle;

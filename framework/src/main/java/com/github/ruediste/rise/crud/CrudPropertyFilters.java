@@ -3,7 +3,6 @@ package com.github.ruediste.rise.crud;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -18,7 +17,6 @@ import javax.persistence.metamodel.SingularAttribute;
 
 import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.github.ruediste.rise.component.ComponentFactoryUtil;
-import com.github.ruediste.rise.component.components.CFormGroup;
 import com.github.ruediste.rise.component.components.CInput;
 import com.github.ruediste.rise.component.components.CSelect;
 import com.github.ruediste.rise.component.components.CText;
@@ -26,13 +24,15 @@ import com.github.ruediste.rise.component.components.CTextField;
 import com.github.ruediste.rise.component.components.InputType;
 import com.github.ruediste.rise.component.generic.EditComponents;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.core.persistence.EMUtil.PersistenceFilterContext;
 import com.github.ruediste.rise.core.strategy.Strategies;
 import com.github.ruediste.rise.core.strategy.Strategy;
-import com.github.ruediste.rise.crud.CrudUtil.PersistenceFilterContext;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
+import com.github.ruediste.rise.util.NOptional;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.lString.PatternString;
 import com.github.ruediste1.i18n.lString.TranslatedString;
+import com.github.ruediste1.i18n.label.Label;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.github.ruediste1.i18n.label.MembersLabeled;
 import com.github.ruediste1.i18n.message.TMessage;
@@ -103,16 +103,32 @@ public class CrudPropertyFilters {
      */
     @PostConstruct
     public void initialize() {
+        addStringFactory();
+        addNumberFactory(Long.class, Long::parseLong);
+        addNumberFactory(Integer.class, Integer::parseInt);
+        addNumberFactory(Short.class, Short::parseShort);
+        addBooleanFactory();
+        addDurationFactory();
+        addZoneIdFactory();
+        addLocalTimeFactory();
+    }
+
+    private void addZonedTimeSpanFactory() {
+        // TODO Auto-generated method stub
+
+    }
+
+    private void addStringFactory() {
         addFactory(p -> String.class.equals(p.getAttribute().getJavaType()), p -> {
             PropertyInfo property = p.getProperty();
             CTextField textField = new CTextField().setText("").TEST_NAME(property.getName())
-                    .setLabel(labelUtil.property(property).label());
-            CFormGroup component = new CFormGroup(textField);
+                    .setLabel(labelUtil.property(property).label()).setRenderFormGroup(false);
+
             return new CrudPropertyFilter() {
 
                 @Override
                 public Component getComponent() {
-                    return component;
+                    return textField;
                 }
 
                 @Override
@@ -123,29 +139,19 @@ public class CrudPropertyFilters {
                 }
             };
         });
-        addNumberFactory(Long.class, Long::parseLong);
-        addNumberFactory(Integer.class, Integer::parseInt);
-        addNumberFactory(Short.class, Short::parseShort);
-        addBooleanFactory();
-        addDurationFactory();
-        addZoneIdFactory();
-        addLocalTimeFactory();
     }
 
     private void addLocalTimeFactory() {
         // TODO Auto-generated method stub
-
-        throw new UnsupportedOperationException();
     }
 
     private void addZoneIdFactory() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
 
     }
 
     private void addDurationFactory() {
-        throw new UnsupportedOperationException();
+        // TODO Auto-generated method stub
     }
 
     private Predicate<CrudPropertyInfo> isOfType(Class<?> cls) {
@@ -154,23 +160,25 @@ public class CrudPropertyFilters {
 
     @MembersLabeled
     enum EnumChoices {
-        NULL(null), TRUE(true), FALSE(false);
-        final Boolean value;
+        @Label("-") NONE(NOptional.empty()), NULL(NOptional.of(null)), TRUE(NOptional.of(true)), FALSE(
+                NOptional.of(false));
+        final NOptional<Boolean> value;
 
-        private EnumChoices(Boolean value) {
+        private EnumChoices(NOptional<Boolean> value) {
             this.value = value;
         }
     }
 
     private void addBooleanFactory() {
         addFactory(isOfType(Boolean.class), p -> {
-            SingularAttribute<?, ?> singularAttribute = (SingularAttribute<?, ?>) p.getAttribute();
             List<EnumChoices> choices = new ArrayList<>();
-            if (singularAttribute.isOptional())
+            choices.add(EnumChoices.NONE);
+            if (p.isOptional())
                 choices.add(EnumChoices.NULL);
-            choices.addAll(Arrays.asList(EnumChoices.TRUE, EnumChoices.FALSE));
+            choices.add(EnumChoices.TRUE);
+            choices.add(EnumChoices.FALSE);
 
-            CSelect<EnumChoices> select = new CSelect<EnumChoices>().setItems(choices).setAllowEmpty(true)
+            CSelect<EnumChoices> select = new CSelect<EnumChoices>().setItems(choices).selectFirst()
                     .setChildComponentFactory(choice -> new CText(labelUtil.enumMember(choice).label()));
             return new CrudPropertyFilter() {
 
@@ -181,8 +189,8 @@ public class CrudPropertyFilters {
 
                 @Override
                 public void applyFilter(PersistenceFilterContext<?> ctx) {
-                    select.getSelectedItem()
-                            .ifPresent(choice -> ctx.addWhere(ctx.cb().equal(ctx.root().get(p.getName()), choice)));
+                    select.getSelectedItem().ifPresent(choice -> choice.value
+                            .ifPresent(value -> ctx.addWhere(ctx.cb().equal(ctx.root().get(p.getName()), value))));
                 }
             };
         });
@@ -195,27 +203,25 @@ public class CrudPropertyFilters {
             PropertyInfo property = p.getProperty();
             LString propertyLabel = labelUtil.property(property).label();
             CInput min = new CInput(InputType.number).setLabel(messages.minNumber(propertyLabel)).setValue("")
-                    .setRenderFormGroup(false);
+                    .setRenderFormGroup(false).TEST_NAME("min");
 
             CInput max = new CInput(InputType.number).setLabel(messages.maxNumber(propertyLabel)).setValue("")
-                    .setRenderFormGroup(false);
+                    .setRenderFormGroup(false).TEST_NAME("max");
 
             // @formatter:off
                         Component component = componentFactoryUtil.toComponent((BootstrapRiseCanvas<?> html) ->
                           html
-                          .bFormGroup()
-                            .label().content(labelUtil.property(property).label())
-                              .div().BformInline()
-                                .bInputGroup().CLASS(x->x.sm(6))
+                              .div().BformInline().TEST_NAME(p.getName())
+                                .bInputGroup()//.CLASS(x->x.sm(6))
                                   .span().BinputGroupAddon().content(messages.min())
                                   .add(min)
                                 ._bInputGroup()
-                                .bInputGroup().CLASS(x->x.sm(6))
+                                .bInputGroup()//LASS(x->x.sm(6))
                                   .span().BinputGroupAddon().content(messages.max())
                                   .add(max)
                                 ._bInputGroup()
                             ._div()
-                          ._bFormGroup());
+                         );
                         // @formatter:on
 
             return new CrudPropertyFilter() {

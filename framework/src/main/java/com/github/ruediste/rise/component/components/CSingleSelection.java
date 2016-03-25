@@ -63,4 +63,9 @@ public class CSingleSelection<T, TChild extends Component, TSelf extends CSingle
         return selectionHandler;
     }
 
+    public TSelf addItemAndSelect(T item) {
+        addItem(item);
+        setSelectedItem(Optional.of(item));
+        return self();
+    }
 }

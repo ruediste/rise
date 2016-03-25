@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.util;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -67,4 +68,22 @@ public class Try<T> {
         else
             return Try.failure(failureSupplier.get());
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(exception, value);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Try<?> other = (Try<?>) obj;
+        return Objects.equals(exception, other.exception) && Objects.equals(value, other.value);
+    }
+
 }

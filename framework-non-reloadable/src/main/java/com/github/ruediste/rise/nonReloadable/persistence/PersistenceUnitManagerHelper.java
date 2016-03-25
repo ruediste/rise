@@ -9,6 +9,8 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Qualifier;
 import javax.inject.Singleton;
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
@@ -60,37 +62,62 @@ public class PersistenceUnitManagerHelper {
 
         result.addProperty(PersistenceUnitProperties.SESSION_CUSTOMIZER, CompositeSessionCustomizer.class.getName());
 
-        Set<Class<?>> jpaAnnotations = new HashSet<>(
-                Arrays.asList(Entity.class, MappedSuperclass.class, Embeddable.class));
-        for (ClassNode classNode : index.getAllNodes()) {
-            String className = Type.getObjectType(classNode.name).getClassName();
+        // search for entities
+        {
+            Set<Class<?>> jpaAnnotations = new HashSet<>(
+                    Arrays.asList(Entity.class, MappedSuperclass.class, Embeddable.class));
+            for (ClassNode classNode : index.getAllNodes()) {
+                String className = Type.getObjectType(classNode.name).getClassName();
 
-            if (classNode.visibleAnnotations == null)
-                continue;
-            boolean anyQualifierFound = false;
-            boolean requiredPUAnnotationFound = false;
-            boolean jpaAnnotationFound = false;
-            for (AnnotationNode annotation : classNode.visibleAnnotations) {
-                Type annotationType = Type.getType(annotation.desc);
-                Class<?> annotationClass = AsmUtil.loadClass(annotationType, classLoader);
-                anyQualifierFound |= annotationClass.isAnnotationPresent(Qualifier.class);
-                requiredPUAnnotationFound |= AnyUnit.class.equals(annotationClass);
-                if (qualifier == null) {
-                    requiredPUAnnotationFound |= NullUnit.class.equals(annotationClass);
-                } else {
-                    requiredPUAnnotationFound |= qualifier.equals(annotationClass);
+                if (classNode.visibleAnnotations == null)
+                    continue;
+
+                boolean jpaAnnotationFound = false;
+                for (AnnotationNode annotation : classNode.visibleAnnotations) {
+                    Class<?> annotationClass = AsmUtil.loadClass(Type.getType(annotation.desc), classLoader);
+
+                    // test if the annotation is one of the jpa annotations
+                    if (jpaAnnotations.contains(annotationClass))
+                        jpaAnnotationFound = true;
+
                 }
 
-                // test if the annotation is one of the jpa annotations
-                if (jpaAnnotations.contains(annotationClass))
-                    jpaAnnotationFound = true;
+                if (jpaAnnotationFound && isPartOfPU(classNode, qualifier, classLoader)) {
+                    result.addManagedClassName(className);
+                }
             }
+        }
 
-            if (jpaAnnotationFound && (requiredPUAnnotationFound || (qualifier == null && !anyQualifierFound))) {
-                result.addManagedClassName(className);
+        // search converters
+        {
+            index.getAllChildren(AttributeConverter.class).stream()
+                    .filter(node -> isPartOfPU(node, qualifier, classLoader))
+                    .map(node -> AsmUtil.loadClass(Type.getObjectType(node.name), classLoader)).forEach(cls -> {
+                        Converter converter = cls.getAnnotation(Converter.class);
+                        if (converter != null && converter.autoApply())
+                            result.addManagedClassName(cls.getName());
+                    });
+        }
+        return result;
+    }
+
+    private static boolean isPartOfPU(ClassNode classNode, Class<? extends Annotation> qualifier,
+            ClassLoader classLoader) {
+        boolean anyQualifierFound = false;
+        boolean requiredPUAnnotationFound = false;
+        for (AnnotationNode annotation : classNode.visibleAnnotations) {
+            Class<?> annotationClass = AsmUtil.loadClass(Type.getType(annotation.desc), classLoader);
+            anyQualifierFound |= annotationClass.isAnnotationPresent(Qualifier.class);
+            requiredPUAnnotationFound |= AnyUnit.class.equals(annotationClass);
+            if (qualifier == null) {
+                requiredPUAnnotationFound |= NullUnit.class.equals(annotationClass);
+            } else {
+                requiredPUAnnotationFound |= qualifier.equals(annotationClass);
             }
 
         }
-        return result;
+
+        return requiredPUAnnotationFound || (qualifier == null && !anyQualifierFound);
+
     }
 }

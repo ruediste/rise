@@ -32,4 +32,13 @@ public class CrudInvocationController extends ControllerMvc<CrudInvocationContro
 
         return redirect(go(TestCrudController.class).browse(TestCrudEntityB.class, null));
     }
+
+    @UrlUnsigned
+    @Updating
+    public ActionResult browseTestEntiesTypes() {
+        TestCrudEntityTypes e = new TestCrudEntityTypes();
+        em.persist(e);
+
+        return redirect(go(TestCrudController.class).browse(TestCrudEntityTypes.class, null));
+    }
 }

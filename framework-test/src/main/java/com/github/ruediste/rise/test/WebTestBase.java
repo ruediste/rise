@@ -73,6 +73,8 @@ public abstract class WebTestBase implements TestUtil {
         return false;
     }
 
+    protected boolean closeDriver = true;
+
     /**
      * In case the remote server is not reachable, start the server and return
      * it
@@ -80,7 +82,7 @@ public abstract class WebTestBase implements TestUtil {
     protected abstract RiseServer startServer();
 
     @Rule
-    public final TestRule closeDriverOnSuccess() {
+    public final TestRule openAndCloseDriver() {
         return (base, description) -> new Statement() {
 
             @Override
@@ -89,11 +91,12 @@ public abstract class WebTestBase implements TestUtil {
                 try {
                     base.evaluate();
                 } finally {
-                    try {
-                        driver.close();
-                    } catch (Throwable t) {
-                        // swallow
-                    }
+                    if (closeDriver)
+                        try {
+                            driver.close();
+                        } catch (Throwable t) {
+                            // swallow
+                        }
                 }
             }
         };

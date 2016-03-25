@@ -225,6 +225,15 @@ rise.onReload.add(function(reloaded) {
 				})
 		});
 	});
+	
+	reloaded.find(".rise_c_checkbox").each(function(idx, element) {
+		rise.setExtractData(element, function(data) {
+			data.push({
+				name : rise.generateKey(this, "isChecked"),
+				value : this.get(0).checked
+			})
+		});
+	});
 
 	reloaded.find(".rise_autocomplete").each(function(idx, element) {
 		element = $(element);
