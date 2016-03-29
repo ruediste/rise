@@ -1,4 +1,4 @@
-package com.github.ruediste.rise.core.web.fileinput;
+package com.github.ruediste.rise.core.web.assetBundles;
 
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetGroup;
@@ -9,6 +9,7 @@ public class FileinputAssetBundle extends AssetBundle {
 
     @Override
     public void initialize() {
-        out = locations("./css/fileinput.css", "./js/fileinput.js", "./riseFileinput.js").load();
+        out = locations("./fileinput/css/fileinput.css", "./fileinput/js/fileinput.js", "./fileinput/riseFileinput.js")
+                .load();
     }
 }

@@ -1,4 +1,4 @@
-package com.github.ruediste.rise.core.web.jQuery;
+package com.github.ruediste.rise.core.web.assetBundles;
 
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetGroup;

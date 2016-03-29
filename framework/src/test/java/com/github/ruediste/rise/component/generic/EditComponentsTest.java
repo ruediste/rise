@@ -25,6 +25,7 @@ import com.github.ruediste.salta.jsr330.Provides;
 import com.github.ruediste.salta.jsr330.Salta;
 import com.github.ruediste1.i18n.lString.PatternStringResolver;
 import com.github.ruediste1.i18n.lString.TranslatedStringResolver;
+import com.google.common.reflect.TypeToken;
 
 public class EditComponentsTest {
 
@@ -34,7 +35,7 @@ public class EditComponentsTest {
     static class SpecialFactory implements EditComponentFactory {
 
         @Override
-        public Optional<EditComponentWrapper<?>> getComponent(Class<?> cls, Optional<String> name,
+        public Optional<EditComponentWrapper<?>> getComponent(TypeToken<?> type, Optional<String> name,
                 Optional<PropertyInfo> info) {
             return Optional.of(new EditComponentWrapper<Object>() {
 

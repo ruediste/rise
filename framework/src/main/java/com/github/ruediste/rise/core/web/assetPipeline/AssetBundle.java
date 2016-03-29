@@ -128,15 +128,22 @@ public abstract class AssetBundle {
 
     public AssetLocationGroup webJar(String name, String... locations) {
         String pomPropsLocation = "META-INF/maven/org.webjars/" + name + "/pom.properties";
+        String pomBowerPropsLocation = "META-INF/maven/org.webjars.bower/" + name + "/pom.properties";
         Properties pomProps = new Properties();
-        InputStream in = getClass().getClassLoader().getResourceAsStream(pomPropsLocation);
+        String location = pomPropsLocation;
+        InputStream in = getClass().getClassLoader().getResourceAsStream(location);
         if (in == null) {
-            throw new RuntimeException("unable to find " + pomPropsLocation + " on classpath");
+            location = pomBowerPropsLocation;
+            in = getClass().getClassLoader().getResourceAsStream(location);
+        }
+        if (in == null) {
+            throw new RuntimeException(
+                    "unable to find " + pomPropsLocation + " or " + pomBowerPropsLocation + "on classpath");
         }
         try {
             pomProps.load(in);
         } catch (IOException e) {
-            throw new RuntimeException("error while loading " + pomPropsLocation + " from classpath", e);
+            throw new RuntimeException("error while loading " + location + " from classpath", e);
         }
         String version = pomProps.getProperty("version");
         String prefix = "META-INF/resources/webjars/" + name + "/" + version + "/";

@@ -3,11 +3,11 @@ package com.github.ruediste.rise.testApp;
 import javax.inject.Inject;
 
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
+import com.github.ruediste.rise.core.web.assetBundles.BootstrapBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.assetPipeline.CssProcessor;
 import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
-import com.github.ruediste.rise.core.web.bootstrap.BootstrapBundle;
 
 public class MvcAssetBundle extends AssetBundle {
 

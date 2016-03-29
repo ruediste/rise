@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Path;
+import javax.persistence.metamodel.Attribute.PersistentAttributeType;
 import javax.persistence.metamodel.SingularAttribute;
 
 import com.github.ruediste.c3java.properties.PropertyInfo;
@@ -107,10 +108,26 @@ public class CrudPropertyFilters {
         addNumberFactory(Long.class, Long::parseLong);
         addNumberFactory(Integer.class, Integer::parseInt);
         addNumberFactory(Short.class, Short::parseShort);
+        addNumberFactory(Byte.class, Byte::parseByte);
         addBooleanFactory();
         addDurationFactory();
         addZoneIdFactory();
         addLocalTimeFactory();
+        addOneToManyFactory();
+    }
+
+    @MembersLabeled
+    private enum OneToManyChoices {
+        @Label("-") NONE, EMPTY, ALL_OF, ANY_OF, NONE_OF;
+
+    }
+
+    private void addOneToManyFactory() {
+        addFactory(info -> info.getAttribute().getPersistentAttributeType() == PersistentAttributeType.ONE_TO_MANY,
+                info -> {
+
+                    return null;
+                });
     }
 
     private void addZonedTimeSpanFactory() {
@@ -133,9 +150,13 @@ public class CrudPropertyFilters {
 
                 @Override
                 public void applyFilter(PersistenceFilterContext ctx) {
-                    CriteriaBuilder cb = ctx.cb();
-                    Path<String> path = ctx.root().get((SingularAttribute) p.getAttribute());
-                    ctx.addWhere(cb.or(path.isNull(), cb.like(path, "%" + textField.getText() + "%")));
+
+                    String text = textField.getText();
+                    if (!Strings.isNullOrEmpty(text)) {
+                        CriteriaBuilder cb = ctx.cb();
+                        Path<String> path = ctx.root().get((SingularAttribute) p.getAttribute());
+                        ctx.addWhere(cb.or(path.isNull(), cb.like(path, "%" + text + "%")));
+                    }
                 }
             };
         });

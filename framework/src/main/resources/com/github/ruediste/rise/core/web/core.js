@@ -145,7 +145,8 @@ var rise = (function() {
 			return false;
 		});
 		
-		[".rise_c_select._selectionHandler", ".rise_c_selectTabs" ].forEach(function(selector) {
+		
+		[".rise_c_select._selectionHandler"].forEach(function(selector) {
 			$(document).on("change", selector, function() {
 				setExtractData(this, function(data) {
 					data.push({
@@ -233,6 +234,9 @@ rise.onReload.add(function(reloaded) {
 				value : this.get(0).checked
 			})
 		});
+	});
+	reloaded.find(".rise_c_select").each(function(idx, element) {
+		$(element).chosen({search_contains:true});
 	});
 
 	reloaded.find(".rise_autocomplete").each(function(idx, element) {

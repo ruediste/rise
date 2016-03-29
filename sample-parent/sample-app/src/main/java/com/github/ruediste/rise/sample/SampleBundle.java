@@ -3,15 +3,16 @@ package com.github.ruediste.rise.sample;
 import javax.inject.Inject;
 
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
+import com.github.ruediste.rise.core.web.assetBundles.BootstrapBundle;
+import com.github.ruediste.rise.core.web.assetBundles.ChosenBundle;
+import com.github.ruediste.rise.core.web.assetBundles.FileinputAssetBundle;
+import com.github.ruediste.rise.core.web.assetBundles.JQueryAssetBundle;
+import com.github.ruediste.rise.core.web.assetBundles.JQueryUiAssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetGroup;
 import com.github.ruediste.rise.core.web.assetPipeline.CssProcessor;
 import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
-import com.github.ruediste.rise.core.web.bootstrap.BootstrapBundle;
-import com.github.ruediste.rise.core.web.fileinput.FileinputAssetBundle;
-import com.github.ruediste.rise.core.web.jQuery.JQueryAssetBundle;
-import com.github.ruediste.rise.core.web.jQueryUi.JQueryUiAssetBundle;
 
 public class SampleBundle extends AssetBundle {
 
@@ -33,12 +34,15 @@ public class SampleBundle extends AssetBundle {
     FileinputAssetBundle fileinputAssetBundle;
 
     @Inject
+    ChosenBundle chosen;
+
+    @Inject
     CssProcessor css;
 
     @Override
     public void initialize() {
         AssetGroup assets = join(jQueryAssetBundle.out, jQueryUiAssetBundle.out, bootstrap.out, core.out,
-                fileinputAssetBundle.out,
+                fileinputAssetBundle.out, chosen.out,
                 locations("/assets/welcome.css", "/assets/welcome.js").load().ifProd(g -> g.min()));
 
         assets.select(DefaultAssetTypes.CSS)
