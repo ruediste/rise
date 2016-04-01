@@ -100,4 +100,15 @@ public class CComponentStack extends ComponentBase<CComponentStack> {
         return tos;
     }
 
+    public static void raisePop(Component start) {
+        ComponentTreeUtil.raiseEvent(start, new CComponentStack.PopComponentEvent());
+    }
+
+    public static void raisePush(Component start, Object controller) {
+        raisePush(start, new CController(controller));
+    }
+
+    public static void raisePush(Component start, Component componentToPush) {
+        ComponentTreeUtil.raiseEvent(start, new CComponentStack.PushComponentEvent(componentToPush));
+    }
 }

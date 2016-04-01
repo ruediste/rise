@@ -10,6 +10,9 @@ import java.lang.annotation.Target;
 
 import javax.inject.Scope;
 
+/**
+ * Indicates that a type is to be placed in the session scope
+ */
 @Target({ TYPE, METHOD })
 @Retention(RUNTIME)
 @Scope

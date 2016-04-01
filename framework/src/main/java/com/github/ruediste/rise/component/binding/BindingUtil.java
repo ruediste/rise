@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
 import com.github.ruediste.c3java.properties.PropertyAccessor.AccessorType;
+import com.github.ruediste.c3java.properties.PropertyPath;
 import com.github.ruediste.c3java.properties.PropertyUtil;
 import com.github.ruediste.rise.util.Pair;
 
@@ -128,7 +129,14 @@ public class BindingUtil {
     }
 
     /**
-     * Add a binding to a binding group
+     * Add a binding to a binding group.
+     * 
+     * @param pullUp
+     *            executed for a pull up. The current value of the binding group
+     *            is passed as argument
+     * @param pushDown
+     *            executedfor a push down. The current value of the binding
+     *            group is passed as argument
      */
     static public <T> void bind(AttachedPropertyBearer component, BindingGroup<T> group, Consumer<T> pullUp,
             Consumer<T> pushDown) {
@@ -159,5 +167,77 @@ public class BindingUtil {
         binding.setPushDown(pushDown);
 
         bind(bindingGroupAccessor, binding);
+    }
+
+    /**
+     * Bind a model property to a component property.
+     * 
+     * @param component
+     *            component determining the life cycle of the binding
+     * @param modelPropertyAccessor
+     *            accessor of the model property
+     * @param pullUp
+     *            passed the value of the property during pull up
+     * @param pushDown
+     *            supplier of the new property value for push down
+     */
+    @SuppressWarnings("unchecked")
+    static public <T> void bindModelProperty(AttachedPropertyBearer component, Supplier<T> modelPropertyAccessor,
+            Consumer<T> pullUp, Supplier<T> pushDown) {
+        BindingExpressionExecutionRecord info = BindingExpressionExecutionRecorder.collectBindingExpressionLog(() -> {
+            modelPropertyAccessor.get();
+        });
+
+        Binding<Object> binding = new Binding<>();
+        binding.setComponent(component);
+        PropertyPath modelPath = PropertyUtil.toPath(info.modelRecorder.getInvocations());
+        binding.modelPath = modelPath;
+        binding.setPullUp(data -> {
+            Object propertyValue = modelPath.evaluate(data);
+            pullUp.accept((T) propertyValue);
+        });
+
+        binding.setPushDown(data -> {
+            T value = pushDown.get();
+            modelPath.set(data, value);
+        });
+
+        info.getInvolvedBindingGroup().addBindingUntyped(binding);
+    }
+
+    /**
+     * Bind a model property to a component property.
+     * 
+     * @param component
+     *            component determining the life cycle of the binding
+     * @param modelPropertyAccessor
+     *            accessor of the model property
+     * @param pullUp
+     *            passed the value of the property during pull up
+     * @param pushDown
+     *            passed the falue of the porperty during push down
+     */
+    @SuppressWarnings("unchecked")
+    static public <T> void bindModelProperty(AttachedPropertyBearer component, Supplier<T> modelPropertyAccessor,
+            Consumer<T> pullUp, Consumer<T> pushDown) {
+        BindingExpressionExecutionRecord info = BindingExpressionExecutionRecorder.collectBindingExpressionLog(() -> {
+            modelPropertyAccessor.get();
+        });
+
+        Binding<Object> binding = new Binding<>();
+        binding.setComponent(component);
+        PropertyPath modelPath = PropertyUtil.toPath(info.modelRecorder.getInvocations());
+        binding.modelPath = modelPath;
+        binding.setPullUp(data -> {
+            Object propertyValue = modelPath.evaluate(data);
+            pullUp.accept((T) propertyValue);
+        });
+
+        binding.setPushDown(data -> {
+            Object propertyValue = modelPath.evaluate(data);
+            pushDown.accept((T) propertyValue);
+        });
+
+        info.getInvolvedBindingGroup().addBindingUntyped(binding);
     }
 }

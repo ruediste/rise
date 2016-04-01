@@ -419,11 +419,17 @@ public class BindingGroup<T> implements Serializable {
 
     }
 
+    /**
+     * Add a binding and reference it from the component
+     */
     @SuppressWarnings({ "unchecked" })
     void addBindingUntyped(Binding<?> binding) {
         addBinding((Binding<T>) binding);
     }
 
+    /**
+     * Add a binding and reference it from the component
+     */
     void addBinding(Binding<T> binding) {
         AttachedPropertyBearer component = binding.getComponent();
         Set<Binding<T>> set = bindings.get(component);

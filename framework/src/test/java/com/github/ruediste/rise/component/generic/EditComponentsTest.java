@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import java.lang.annotation.Annotation;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -12,6 +13,8 @@ import javax.inject.Inject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.github.ruediste.rise.component.binding.BindingGroup;
@@ -20,9 +23,11 @@ import com.github.ruediste.rise.component.components.CTextField;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.CoreRestartableModule;
 import com.github.ruediste.rise.core.strategy.UseStrategy;
+import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Provides;
 import com.github.ruediste.salta.jsr330.Salta;
+import com.github.ruediste.salta.jsr330.util.LoggerCreationRule;
 import com.github.ruediste1.i18n.lString.PatternStringResolver;
 import com.github.ruediste1.i18n.lString.TranslatedStringResolver;
 import com.google.common.reflect.TypeToken;
@@ -35,8 +40,8 @@ public class EditComponentsTest {
     static class SpecialFactory implements EditComponentFactory {
 
         @Override
-        public Optional<EditComponentWrapper<?>> getComponent(TypeToken<?> type, Optional<String> name,
-                Optional<PropertyInfo> info) {
+        public Optional<EditComponentWrapper<?>> getComponent(TypeToken<?> type, Optional<String> testName,
+                Optional<PropertyInfo> info, Optional<Class<? extends Annotation>> qualifier) {
             return Optional.of(new EditComponentWrapper<Object>() {
 
                 @Override
@@ -88,6 +93,9 @@ public class EditComponentsTest {
             @Override
             protected void configure() throws Exception {
                 bindCreationRule(CoreRestartableModule.createMessagesRule());
+                binder().bindCreationRule(new LoggerCreationRule(Logger.class, LoggerFactory::getLogger));
+                bind(ApplicationStage.class).toInstance(ApplicationStage.DEVELOPMENT);
+                bind(ClassLoader.class).toInstance(getClass().getClassLoader());
             }
 
             @Provides

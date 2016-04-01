@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.github.ruediste.rise.core.strategy.Strategy;
 import com.github.ruediste.salta.jsr330.ImplementedBy;
+import com.google.common.reflect.TypeToken;
 
 @ImplementedBy(DefaultDisplayRendererFactory.class)
 public interface DisplayRendererFactory extends Strategy {
@@ -14,6 +15,6 @@ public interface DisplayRendererFactory extends Strategy {
      *            property info to create the component for. Can be null if only
      *            the class is known
      */
-    Optional<DisplayRenderer<?>> getRenderer(Class<?> cls, Optional<PropertyInfo> info);
+    <T> Optional<DisplayRenderer<T>> getRenderer(TypeToken<T> type, Optional<PropertyInfo> info);
 
 }

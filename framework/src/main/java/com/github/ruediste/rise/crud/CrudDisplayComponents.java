@@ -37,7 +37,6 @@ import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.github.ruediste1.i18n.label.Labeled;
-import com.google.common.reflect.TypeToken;
 
 @Singleton
 public class CrudDisplayComponents {
@@ -127,7 +126,7 @@ public class CrudDisplayComponents {
 
                     Object value = handle.getValue();
                     if (value == null) {
-                        Class<?> rawType = TypeToken.of(handle.info().getProperty().getPropertyType()).getRawType();
+                        Class<?> rawType = handle.info().getProperty().getPropertyType().getRawType();
                         try {
                             value = rawType.newInstance();
                         } catch (Exception e) {

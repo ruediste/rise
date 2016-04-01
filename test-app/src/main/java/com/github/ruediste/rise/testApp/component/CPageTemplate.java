@@ -4,7 +4,6 @@ import javax.inject.Inject;
 
 import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.component.components.ComponentTemplateBase;
-import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
 import com.github.ruediste.rise.core.web.assetBundles.BootstrapBundle;
 import com.github.ruediste.rise.core.web.assetBundles.JQueryAssetBundle;
@@ -48,6 +47,7 @@ public class CPageTemplate extends ComponentTemplateBase<CPage> {
 
     @Inject
     Bundle bundle;
+
     @Inject
     RisePageTemplate<TestCanvas> renderer;
 
@@ -77,8 +77,7 @@ public class CPageTemplate extends ComponentTemplateBase<CPage> {
 
             @Override
             protected void renderBody(TestCanvas html) {
-                for (Component child : component.getChildren())
-                    util.render(child, html);
+                html.renderChildren(component);
             }
         });
     }

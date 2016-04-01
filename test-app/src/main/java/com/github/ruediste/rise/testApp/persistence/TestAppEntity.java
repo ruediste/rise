@@ -5,6 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import com.github.ruediste.rise.crud.annotations.CrudBrowserColumn;
+import com.github.ruediste.rise.crud.annotations.CrudIdentifying;
 import com.github.ruediste1.i18n.label.PropertiesLabeled;
 
 @Entity
@@ -15,6 +16,7 @@ public class TestAppEntity {
     @GeneratedValue
     private long id;
 
+    @CrudIdentifying
     @CrudBrowserColumn
     private String value;
 

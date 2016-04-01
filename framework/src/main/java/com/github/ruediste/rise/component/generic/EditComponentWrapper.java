@@ -13,4 +13,5 @@ public interface EditComponentWrapper<T> {
     EditComponentWrapper<T> setValue(T value);
 
     EditComponentWrapper<T> bindValue(Supplier<T> accessor);
+
 }

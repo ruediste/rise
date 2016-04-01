@@ -3,8 +3,10 @@ package com.github.ruediste.rise.component.binding;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import org.junit.Before;
@@ -14,12 +16,13 @@ import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
 import com.github.ruediste.rise.component.binding.transformers.DateToStringTransformer;
 import com.github.ruediste.rise.component.binding.transformers.Transformers;
 import com.github.ruediste.rise.component.validation.ValidationStatusRepository;
+import com.github.ruediste1.lambdaPegParser.Var;
 
 public class BindingUtilTest {
 
     public static class TestA extends AttachedPropertyBearerBase {
         private int valueA;
-        private int valueRO;
+        private int valueROx;
         private String valueString;
 
         @SuppressWarnings("unused")
@@ -43,7 +46,7 @@ public class BindingUtilTest {
         }
 
         public int getValueRO() {
-            return valueRO;
+            return valueROx;
         }
 
         public void setValueWO(int valueWO) {
@@ -65,6 +68,8 @@ public class BindingUtilTest {
         private TestC c;
 
         private Date valueDate;
+
+        private List<Integer> list = new ArrayList<>();
 
         public int getValueB() {
             return valueB;
@@ -89,6 +94,15 @@ public class BindingUtilTest {
         public void setValueDate(Date valueDate) {
             this.valueDate = valueDate;
         }
+
+        public List<Integer> getList() {
+            return list;
+        }
+
+        public void setList(List<Integer> list) {
+            this.list = list;
+        }
+
     }
 
     public static class TestC {
@@ -105,6 +119,8 @@ public class BindingUtilTest {
 
     BindingGroup<TestB> groupB;
     Transformers transformers;
+    private TestA a;
+    private TestB b;
 
     @Before
     public void before() {
@@ -113,14 +129,13 @@ public class BindingUtilTest {
         groupB.initialize(TestB.class);
         transformers = new Transformers();
         transformers.dateToStringTransformer = new DateToStringTransformer();
+        a = new TestA();
+        b = new TestB();
+        groupB.set(b);
     }
 
     @Test
     public void simple() {
-        TestA a = new TestA();
-        TestB b = new TestB();
-
-        groupB.set(b);
 
         // establish binding
         BindingUtil.bind(a, x -> x.setValueA(groupB.proxy().getValueB()));
@@ -138,10 +153,6 @@ public class BindingUtilTest {
 
     @Test
     public void simpleTransformer() {
-        TestA a = new TestA();
-        TestB b = new TestB();
-
-        groupB.set(b);
 
         // establish binding
         BindingUtil.bind(a, x -> x.setValueString(transformers.dateToString(groupB.proxy().getValueDate())));
@@ -163,10 +174,6 @@ public class BindingUtilTest {
 
     @Test
     public void simpleOneWay() {
-        TestA a = new TestA();
-        TestB b = new TestB();
-
-        groupB.set(b);
 
         // establish binding
         BindingUtil.bindOneWay(a, x -> x.setValueA(groupB.proxy().getValueB()));
@@ -184,8 +191,6 @@ public class BindingUtilTest {
 
     @Test(expected = RuntimeException.class)
     public void noProxyAccessed() {
-        TestA a = new TestA();
-
         // establish binding
         BindingUtil.bind(a, x -> x.setValueA(4));
 
@@ -193,33 +198,24 @@ public class BindingUtilTest {
 
     @Test
     public void simpleRO() {
-        TestA a = new TestA();
-        TestB b = new TestB();
-
-        groupB.set(b);
-
         // establish binding
         BindingUtil.bind(a, x -> groupB.proxy().setValueB(x.getValueRO()));
 
         // pull up
         b.valueB = 2;
         groupB.pullUp();
-        assertEquals(0, a.valueRO);
+        assertEquals(0, a.valueROx);
 
         // push down
-        a.valueRO = 3;
+        a.valueROx = 3;
         groupB.pushDown();
         assertEquals(3, b.valueB);
     }
 
     @Test
     public void nested() {
-        TestA a = new TestA();
-        TestB b = new TestB();
         TestC c = new TestC();
         b.setC(c);
-
-        groupB.set(b);
 
         // establish binding
         BindingUtil.bind(a, x -> x.setValueA(groupB.proxy().getC().getValueC()));
@@ -237,13 +233,9 @@ public class BindingUtilTest {
 
     @Test
     public void explicit() {
-        TestA a = new TestA();
-        TestB b = new TestB();
-
-        groupB.set(b);
 
         // establish binding
-        BindingUtil.<TestB> bind(a, () -> groupB.proxy(), data -> a.valueA = data.valueB + 1,
+        BindingUtil.bind(a, () -> groupB.proxy(), data -> a.valueA = data.valueB + 1,
                 data -> data.valueB = a.valueA - 1);
 
         // pull up
@@ -255,5 +247,36 @@ public class BindingUtilTest {
         a.valueA = 5;
         groupB.pushDown();
         assertEquals(4, b.valueB);
+    }
+
+    @Test
+    public void testBindModelPropertySetter() {
+        Var<Integer> var = new Var<>();
+        BindingUtil.bindModelProperty(a, () -> groupB.proxy().getValueB(), var::setValue, var::getValue);
+
+        b.setValueB(4);
+        groupB.pullUp();
+        assertEquals((Object) 4, var.getValue());
+        var.setValue(5);
+        groupB.pushDown();
+        assertEquals(5, b.getValueB());
+    }
+
+    @Test
+    public void testBindModelPropertyUpdateCollection() {
+        Var<Integer> var = new Var<>();
+        b.getList().add(4);
+        BindingUtil.bindModelProperty(a, () -> groupB.proxy().getList(), x -> {
+            var.setValue(x.get(0));
+        }, x -> {
+            x.clear();
+            x.add(var.getValue());
+        });
+
+        groupB.pullUp();
+        assertEquals((Object) 4, var.getValue());
+        var.setValue(5);
+        groupB.pushDown();
+        assertEquals((Object) 5, b.getList().get(0));
     }
 }

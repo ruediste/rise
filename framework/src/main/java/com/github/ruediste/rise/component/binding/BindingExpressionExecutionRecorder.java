@@ -15,7 +15,7 @@ import java.util.Date;
  * 
  * <img src="doc-files/bindingPropertyAccessRecording.png" alt="">
  */
-class BindingExpressionExecutionRecorder {
+public class BindingExpressionExecutionRecorder {
 
     static class MethodInvocation {
         Method method;

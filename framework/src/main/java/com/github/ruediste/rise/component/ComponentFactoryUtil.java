@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.api.ViewComponentBase;
+import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.binding.BindingUtil;
 import com.github.ruediste.rise.component.components.CComponentContainer;
 import com.github.ruediste.rise.component.components.CMixedRender;
@@ -17,6 +18,9 @@ import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.integration.RiseCanvasBase;
 
+/**
+ * Utility class to create components
+ */
 public class ComponentFactoryUtil {
 
     @Inject
@@ -26,6 +30,9 @@ public class ComponentFactoryUtil {
     ComponentViewRepository repository;
 
     /**
+     * Create a component containing a rendered form of the given renderable.
+     * The renderable will be evaluated only once.
+     * 
      * @see ComponentFactory#toComponent(Renderable)
      */
     public Component toComponent(Renderable<?> renderable) {
@@ -43,6 +50,10 @@ public class ComponentFactoryUtil {
     }
 
     /**
+     * Create a component rendering the given renderable. The renderable is
+     * reevaluated whenever the given binding group is
+     * {@link BindingGroup#pullUp() pulled up}.
+     * 
      * @see ComponentFactory#toComponentBound(Supplier, Renderable)
      */
     public Component toComponentBound(Supplier<?> bindingAccessor, Renderable<?> renderable) {

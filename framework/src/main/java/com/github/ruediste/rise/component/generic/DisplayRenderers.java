@@ -10,6 +10,7 @@ import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.github.ruediste.c3java.properties.PropertyPath;
 import com.github.ruediste.c3java.properties.PropertyUtil;
 import com.github.ruediste.rise.core.strategy.Strategies;
+import com.google.common.reflect.TypeToken;
 
 @Singleton
 public class DisplayRenderers {
@@ -54,25 +55,29 @@ public class DisplayRenderers {
 
     public class TypeApi<T> {
 
-        private Class<T> cls;
+        private TypeToken<T> type;
 
-        private TypeApi(Class<T> cls) {
-            this.cls = cls;
+        private TypeApi(TypeToken<T> type) {
+            this.type = type;
         }
 
         public DisplayRenderer<T> get() {
-            return tryGet().orElseThrow(() -> new RuntimeException("No display renderer found for type " + cls));
+            return tryGet().orElseThrow(() -> new RuntimeException("No display renderer found for type " + type));
         }
 
         @SuppressWarnings({ "unchecked", "rawtypes" })
         public Optional<DisplayRenderer<T>> tryGet() {
-            return (Optional) strategies.getStrategy(DisplayRendererFactory.class).cached(cls)
-                    .get(f -> f.getRenderer(cls, Optional.empty()));
+            return (Optional) strategies.getStrategy(DisplayRendererFactory.class).cached(type)
+                    .get(f -> f.getRenderer(type, Optional.empty()));
         }
     }
 
     public <T> TypeApi<T> type(Class<T> cls) {
-        return new TypeApi<>(cls);
+        return new TypeApi<>(TypeToken.of(cls));
+    }
+
+    public <T> TypeApi<T> type(TypeToken<T> type) {
+        return new TypeApi<>(type);
     }
 
 }

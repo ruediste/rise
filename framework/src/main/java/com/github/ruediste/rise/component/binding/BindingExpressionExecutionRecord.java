@@ -2,7 +2,7 @@ package com.github.ruediste.rise.component.binding;
 
 import com.github.ruediste.c3java.invocationRecording.MethodInvocationRecorder;
 
-class BindingExpressionExecutionRecord {
+public class BindingExpressionExecutionRecord {
     private BindingGroup<?> involvedBindingGroup;
     MethodInvocationRecorder modelRecorder = new MethodInvocationRecorder();
     MethodInvocationRecorder componentRecorder = new MethodInvocationRecorder();
