@@ -19,10 +19,24 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
 
 /**
- * Contains {@link Strategy strategies} and allows to retrieve them. Strategies
- * can be added on a per Java-element (method, field, ...) level using
- * {@link UseStrategy}. If no strategy is registered explicitely, an instance of
- * the strategy interface requested is used (if possible to instantiate)
+ * Contains {@link Strategy strategies} and allows to retrieve them.
+ * 
+ * <p>
+ * Strategies can be added on a per Java-element (method, field, ...) level
+ * using {@link UseStrategy}. If no strategy is registered explicitly, an
+ * instance of the strategy interface requested is used (if possible to
+ * instantiate) <br/>
+ * <img src="doc-files/strategies.png" alt="">
+ * </p>
+ * 
+ * <p>
+ * <b>Alternatieve Pattern</b> <br/>
+ * An alternative is to create a helper class, registering the default (or all)
+ * strategies with {@link Strategies} and providing public convenience methods
+ * to use the strategy. The strategy may only be used through the helper class.
+ * Otherwise the strategies might not get initialized. <br/>
+ * <img src="doc-files/strategiesAlternativePattern.png" alt="">
+ * </p>
  */
 @Singleton
 public class Strategies {

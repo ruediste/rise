@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0.201604041725">
+  <zoom_level>13</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>221</x>
+      <y>208</y>
+      <w>208</w>
+      <h>39</h>
+    </coordinates>
+    <panel_attributes>DefaultStrategyImpl</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>299</x>
+      <y>91</y>
+      <w>130</w>
+      <h>39</h>
+    </coordinates>
+    <panel_attributes>Strategy</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>13</x>
+      <y>91</y>
+      <w>130</w>
+      <h>39</h>
+    </coordinates>
+    <panel_attributes>Strategies</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>351</x>
+      <y>117</y>
+      <w>39</w>
+      <h>117</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>416</x>
+      <y>91</y>
+      <w>234</w>
+      <h>169</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.
+implemented
+by
+</panel_attributes>
+    <additional_attributes>10.0;110.0;70.0;110.0;70.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>130</x>
+      <y>78</y>
+      <w>195</w>
+      <h>65</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+explicit
+strategies
+m1=*
+m1pos=5,0</panel_attributes>
+    <additional_attributes>130.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+</diagram>

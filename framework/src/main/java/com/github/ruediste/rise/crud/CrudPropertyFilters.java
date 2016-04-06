@@ -73,6 +73,19 @@ public class CrudPropertyFilters {
         TranslatedString max();
     }
 
+    /**
+     * A component defining a filter on a property.
+     */
+    public interface CrudPropertyFilter {
+        Component getComponent();
+
+        void applyFilter(PersistenceFilterContext<?> ctx);
+    }
+
+    /**
+     * Strategy to create a filter for a property. Use
+     * {@link CrudPropertyFilters} to retrieve instances.
+     */
     public interface CrudPropertyFilterFactory extends Strategy {
         Optional<CrudPropertyFilter> createFilter(CrudPropertyInfo property);
     }
@@ -103,7 +116,7 @@ public class CrudPropertyFilters {
      * <img src="doc-files/hello.png" alt=""> t
      */
     @PostConstruct
-    public void initialize() {
+    void initialize() {
         addStringFactory();
         addNumberFactory(Long.class, Long::parseLong);
         addNumberFactory(Integer.class, Integer::parseInt);

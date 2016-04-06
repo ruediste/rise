@@ -30,6 +30,7 @@ import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.persistence.EMUtil.PersistenceFilterContext;
 import com.github.ruediste.rise.core.persistence.PersistentType;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
+import com.github.ruediste.rise.crud.CrudPropertyFilters.CrudPropertyFilter;
 import com.github.ruediste.rise.crud.CrudUtil.CrudList;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
 import com.github.ruediste.rise.util.Pair;
