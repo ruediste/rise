@@ -12,13 +12,22 @@ public class CCheckBoxTemplate extends BootstrapComponentTemplateBase<CCheckBox>
 
     @Override
     public void applyValues(CCheckBox component) {
-        getParameterObject(component, "isChecked").ifPresent(value -> component.setChecked((boolean) value));
+        component.setChecked(getParameterValue(component, "value").map(x -> "true".equals(x)).orElse(false));
+    }
+
+    @Override
+    public void raiseEvents(CCheckBox component) {
+        if (isParameterDefined(component, "changed"))
+            component.getToggledHandler().ifPresent(h -> h.accept(component.isChecked()));
     }
 
     @Override
     public void doRender(CCheckBox component, BootstrapRiseCanvas<?> html) {
-        html.input().TYPE(InputType.checkbox.toString()).BformControl().CLASS("rise_c_checkbox")
-                .fIf(component.isChecked(), () -> html.CHECKED("checked")).VALUE("true")
-                .NAME(util.getKey(component, "value")).rCOMPONENT_ATTRIBUTES(component);
+        html.input().TYPE(InputType.checkbox.toString())
+                .fIf(!(component.getParent() instanceof CInputGroupAddon), () -> html.BformControl())
+                .CLASS("rise_c_checkbox")
+                .fIf(component.getToggledHandler().isPresent(), () -> html.CLASS("_handlerPresent"))
+                .fIf(component.isChecked(), () -> html.CHECKED()).VALUE("true").NAME(util.getKey(component, "value"))
+                .rCOMPONENT_ATTRIBUTES(component).fIf(component.isInline(), () -> html.BcheckboxInline());
     }
 }

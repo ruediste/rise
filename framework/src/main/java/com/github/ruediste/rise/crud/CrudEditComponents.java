@@ -180,7 +180,7 @@ public class CrudEditComponents {
                 return false;
             PluralAttribute<?, ?, ?> pluralAttribute = (PluralAttribute<?, ?, ?>) p.getAttribute();
             return pluralAttribute.getElementType().getJavaType().isEnum();
-        }, (decl) -> {
+        } , (decl) -> {
             PluralAttribute<?, ?, ?> pluralAttribute = (PluralAttribute<?, ?, ?>) decl.info().getAttribute();
             Class<?> enumType = pluralAttribute.getElementType().getJavaType();
             return toComponent(new Renderable<BootstrapRiseCanvas<?>>() {
@@ -191,18 +191,17 @@ public class CrudEditComponents {
                     grid.addColumn(() -> new CDataGrid.Cell(r -> "Name"),
                             o -> new CDataGrid.Cell(r -> String.valueOf(o)))
 
-                            .addColumn(() -> new CDataGrid.Cell(r -> ""),
-                                    o -> new CDataGrid.Cell(new CButton(CrudEditComponents.this,
-                                            x -> x.remove(() -> grid.updateItems(i -> i.remove(o))))))
+                    .addColumn(() -> new CDataGrid.Cell(r -> ""),
+                            o -> new CDataGrid.Cell(new CButton(CrudEditComponents.this,
+                                    x -> x.remove(() -> grid.updateItems(i -> i.remove(o))))))
 
-                            .bind(() -> decl.proxy(),
-                                    (g, obj) -> g
-                                            .setItems(new ArrayList<Object>(castToObjectCollection(decl.getValue()))),
-                                    (g, obj) -> {
-                                        castToObjectCollection(decl.getValue()).clear();
-                                        castToObjectCollection(decl.getValue()).addAll(g.getItems());
+                    .bind(() -> decl.proxy(),
+                            (g, obj) -> g.setItems(new ArrayList<Object>(castToObjectCollection(decl.getValue()))),
+                            (g, obj) -> {
+                        castToObjectCollection(decl.getValue()).clear();
+                        castToObjectCollection(decl.getValue()).addAll(g.getItems());
 
-                                    });
+                    });
                     CSelect<Object> select = new CSelect<>().setItems(Arrays.asList(enumType.getEnumConstants()))
                             .setAllowEmpty(true);
                     html.add(grid).add(select).add(new CButton(CrudEditComponents.this,
@@ -223,7 +222,7 @@ public class CrudEditComponents {
                                     .bindValue(() -> decl.getValue());
 
                     // @formatter:off
-					return toComponent(html -> html.bInputGroup().span().BformControl().DISABLED("disbled")
+					return toComponent(html -> html.bInputGroup().span().BformControl().DISABLED()
 							.TEST_NAME(decl.info().getAttribute().getName()).add(cValue)._span().bInputGroupBtn()
 							.add(new CButton(this, (btn, c) -> c.pick(() -> {
 								CrudPicker picker = crudUtil.getStrategy(CrudPickerFactory.class, cls)

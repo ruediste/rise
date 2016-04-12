@@ -40,6 +40,10 @@ public class EditComponentsTest {
     static class SpecialFactory implements EditComponentFactory {
 
         @Override
+        public Optional<EditComponentWrapper<?>> getComponent(EditComponentSpecification spec) {
+            return getComponent(spec.type, spec.testName, spec.info, spec.qualifier);
+        }
+
         public Optional<EditComponentWrapper<?>> getComponent(TypeToken<?> type, Optional<String> testName,
                 Optional<PropertyInfo> info, Optional<Class<? extends Annotation>> qualifier) {
             return Optional.of(new EditComponentWrapper<Object>() {

@@ -85,9 +85,9 @@ public class CSwitch<T> extends ComponentBase<CSwitch<T>> {
         return option;
     }
 
-    public void setOption(T option) {
+    public CSwitch<T> setOption(T option) {
         if (Objects.equal(option, this.option))
-            return;
+            return this;
         if (getCurrentCase() != null)
             getCurrentCase().onLeave();
         this.option = option;
@@ -95,6 +95,7 @@ public class CSwitch<T> extends ComponentBase<CSwitch<T>> {
         if (currentCase == null)
             throw new RuntimeException("No case for option " + option + " registered");
         currentCase.onEnter();
+        return this;
     }
 
     public CSwitch<T> bind(Supplier<T> supplier) {

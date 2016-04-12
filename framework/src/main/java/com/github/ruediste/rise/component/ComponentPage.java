@@ -41,6 +41,12 @@ public class ComponentPage {
     private int nextEventHandlerId = 0;
     private Map<Integer, Runnable> eventHandlers = new HashMap<>();
 
+    /**
+     * Incremented at the start of each render phase. Use to detect if a
+     * component was rendered or not in the last render phase.
+     */
+    private long renderNr;
+
     public IControllerComponent getController() {
         return controller;
     }
@@ -116,5 +122,13 @@ public class ComponentPage {
 
     public long getNextComponentNr() {
         return maxComponentNr++;
+    }
+
+    public long getRenderNr() {
+        return renderNr;
+    }
+
+    public void incrementRenderNr() {
+        this.renderNr++;
     }
 }

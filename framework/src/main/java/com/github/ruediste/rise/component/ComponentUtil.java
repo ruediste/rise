@@ -13,11 +13,9 @@ import org.slf4j.Logger;
 
 import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
-import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.components.IComponentTemplate;
 import com.github.ruediste.rise.component.reload.PageReloadRequest;
 import com.github.ruediste.rise.component.tree.Component;
-import com.github.ruediste.rise.component.tree.ComponentTreeUtil;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.CoreUtil;
@@ -37,6 +35,8 @@ public class ComponentUtil implements ICoreUtil {
     Logger log;
 
     private final AttachedProperty<Component, Long> componentNr = new AttachedProperty<>();
+
+    private final AttachedProperty<Component, Long> renderNr = new AttachedProperty<>();
 
     @Inject
     ComponentPage pageInfo;
@@ -76,10 +76,19 @@ public class ComponentUtil implements ICoreUtil {
     }
 
     public long getComponentNr(Component component) {
-        return componentNr.get(component);
+        Long result = componentNr.get(component);
+        if (result == null) {
+            // lazily set the component numbers. This allows components to
+            // reference each other without caring about
+            // the rendering order.
+            result = pageInfo.getNextComponentNr();
+            componentNr.set(component, result);
+            pageInfo.getComponentNrMap().put(result, component);
+        }
+        return result;
     }
 
-    public Component getComponent(ViewComponentBase<?> view, long componentId) {
+    public Component getComponent(long componentId) {
         return pageInfo.getComponentNrMap().get(componentId);
     }
 
@@ -87,22 +96,9 @@ public class ComponentUtil implements ICoreUtil {
      * Render a component and all its children
      */
     public byte[] renderComponents(ComponentPage page, Component rootComponent) {
-        // Set the component number of all children of the root component which
-        // do not have a number yet. This allows components to reference each
-        // other in the generated view without caring about the rendering order.
-        {
-            // set the component IDs
-            ComponentPage p = page.self();
-            for (Component c : ComponentTreeUtil.subTree(rootComponent)) {
-                if (!componentNr.isSet(c)) {
-                    long nr = p.getNextComponentNr();
-                    p.getComponentNrMap().put(nr, c);
-                    componentNr.set(c, nr++);
-                }
-            }
-        }
-        // render the view first, to detect possible errors
-        // before rendering the result
+
+        // render the view to a buffer to detect errors before starting to send
+        // the response
         ByteArrayOutputStream stream = new ByteArrayOutputStream(1000);
         RiseCanvasBase<?> html = coreConfiguration.createApplicationCanvas();
         html.initializeForOutput(stream);
@@ -115,9 +111,14 @@ public class ComponentUtil implements ICoreUtil {
         return stream.toByteArray();
     }
 
+    /**
+     * Render a component to the given canvas
+     */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void render(Component component, RiseCanvas<?> canvas) {
-        ((IComponentTemplate) componentTemplateIndex.getTemplate(component.getClass()).get()).doRender(component, canvas);
+        renderNr.set(component, pageInfo.getRenderNr());
+        ((IComponentTemplate) componentTemplateIndex.getTemplate(component.getClass()).get()).doRender(component,
+                canvas);
     }
 
     /**
@@ -244,4 +245,11 @@ public class ComponentUtil implements ICoreUtil {
         }
     }
 
+    /**
+     * Return true if the page has been rendered in the last render phase
+     */
+    public boolean wasRendered(Component component) {
+        // renderNr of the page is incremented immediately before rendering
+        return ((Long) pageInfo.getRenderNr()).equals(renderNr.get(component));
+    }
 }

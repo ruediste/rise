@@ -92,7 +92,7 @@ public class AjaxRequestParser implements RequestParser {
                 synchronized (page.lock) {
                     ScopeState old = pageScopeHandler.setState(page.pageScopeState);
                     try {
-                        component = componentUtil.getComponent(pageInfo.getView(), componentNr);
+                        component = componentUtil.getComponent(componentNr);
                         template = componentTemplateIndex.getTemplate(component).get();
                     } finally {
                         pageScopeHandler.setState(old);

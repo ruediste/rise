@@ -24,11 +24,11 @@ public class CFileUploadTemplate extends BootstrapComponentTemplateBase<CFileUpl
     @Override
     public void doRender(CFileUpload component, BootstrapRiseCanvas<?> html) {
 
-        html.input().rCOMPONENT_ATTRIBUTES(component).TYPE("file").CLASS("rise_fileinput").MULTIPLE("multiple")
+        html.input().rCOMPONENT_ATTRIBUTES(component).TYPE("file").CLASS("rise_fileinput").MULTIPLE()
                 .DATA("upload-url", getAjaxUrl(component) + "/upload")
                 .DATA("delete-url", getAjaxUrl(component) + "/delete")
-        // .DATA("show-upload", "false")
-        ;
+                // .DATA("show-upload", "false")
+                ;
         if (!component.getUploadedFiles().isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (UploadedFile file : component.getUploadedFiles())

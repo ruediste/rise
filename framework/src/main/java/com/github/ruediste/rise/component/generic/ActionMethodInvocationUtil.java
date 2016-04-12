@@ -145,12 +145,12 @@ public class ActionMethodInvocationUtil {
             return toComponent(html -> html.h1().write("Provide Arguments for ")
                     .content(labelUtil.method(controller.method).label())
 
-                    .div().TEST_NAME("properties")
+            .div().TEST_NAME("properties")
                     .fForEach(controller.argumentComponents, pair -> html.bFormGroup().label()
                             .content(labelUtil.methodParameter(pair.getB()).label()).add(pair.getA())._bFormGroup())
                     ._div()
 
-                    .add(new CButton(controller, x -> x.invoke())).add(new CButton(controller, x -> x.cancel())));
+            .add(new CButton(controller, x -> x.invoke())).add(new CButton(controller, x -> x.cancel())));
         }
 
     }
@@ -206,16 +206,16 @@ public class ActionMethodInvocationUtil {
             return toComponent(
                     html -> html.h1().write("Result of ").content(labelUtil.method(controller.method).label())
 
-                            .div().TEST_NAME("properties")
+            .div().TEST_NAME("properties")
                             .fForEach(controller.properties,
                                     p -> html.bFormGroup().label().content(labelUtil.property(p).label()).span()
-                                            .BformControl().DISABLED("disabled").TEST_NAME(p.getName())
+                                            .BformControl().DISABLED().TEST_NAME(p.getName())
                                             .render(((DisplayRenderer) renderers.property(p).get())
                                                     .renderable(p.getValue(controller.result)))
                                             ._span()._bFormGroup())
                             ._div()
 
-                            .add(new CButton(controller, x -> x.ok())));
+            .add(new CButton(controller, x -> x.ok())));
         }
 
     }

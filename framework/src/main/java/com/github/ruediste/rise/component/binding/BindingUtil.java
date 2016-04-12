@@ -182,8 +182,8 @@ public class BindingUtil {
      *            supplier of the new property value for push down
      */
     @SuppressWarnings("unchecked")
-    static public <T> void bindModelProperty(AttachedPropertyBearer component, Supplier<T> modelPropertyAccessor,
-            Consumer<T> pullUp, Supplier<T> pushDown) {
+    static public <T> Pair<BindingGroup<?>, Binding<?>> bindModelProperty(AttachedPropertyBearer component,
+            Supplier<T> modelPropertyAccessor, Consumer<T> pullUp, Supplier<T> pushDown) {
         BindingExpressionExecutionRecord info = BindingExpressionExecutionRecorder.collectBindingExpressionLog(() -> {
             modelPropertyAccessor.get();
         });
@@ -203,6 +203,7 @@ public class BindingUtil {
         });
 
         info.getInvolvedBindingGroup().addBindingUntyped(binding);
+        return Pair.of(info.getInvolvedBindingGroup(), binding);
     }
 
     /**
@@ -216,10 +217,11 @@ public class BindingUtil {
      *            passed the value of the property during pull up
      * @param pushDown
      *            passed the falue of the porperty during push down
+     * @return
      */
     @SuppressWarnings("unchecked")
-    static public <T> void bindModelProperty(AttachedPropertyBearer component, Supplier<T> modelPropertyAccessor,
-            Consumer<T> pullUp, Consumer<T> pushDown) {
+    static public <T> Pair<?, Binding<?>> bindModelProperty(AttachedPropertyBearer component,
+            Supplier<T> modelPropertyAccessor, Consumer<T> pullUp, Consumer<T> pushDown) {
         BindingExpressionExecutionRecord info = BindingExpressionExecutionRecorder.collectBindingExpressionLog(() -> {
             modelPropertyAccessor.get();
         });
@@ -239,5 +241,6 @@ public class BindingUtil {
         });
 
         info.getInvolvedBindingGroup().addBindingUntyped(binding);
+        return Pair.of(info.getInvolvedBindingGroup(), binding);
     }
 }

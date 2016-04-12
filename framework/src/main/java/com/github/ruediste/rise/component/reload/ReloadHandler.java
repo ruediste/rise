@@ -65,7 +65,7 @@ public class ReloadHandler implements Runnable {
 
         ViewComponentBase<?> view = page.getView();
 
-        Component reloadComponent = util.getComponent(view, request.getComponentNr());
+        Component reloadComponent = util.getComponent(request.getComponentNr());
 
         // parse the data
         List<Map<String, Object>> rawData;
@@ -86,7 +86,8 @@ public class ReloadHandler implements Runnable {
         List<Component> components = ComponentTreeUtil.subTree(reloadComponent);
 
         for (Component c : components) {
-            componentTemplateIndex.getTemplate(c).ifPresent(t -> t.applyValues(c));
+            if (util.wasRendered(c))
+                componentTemplateIndex.getTemplate(c).ifPresent(t -> t.applyValues(c));
         }
 
         // raise events
@@ -94,7 +95,8 @@ public class ReloadHandler implements Runnable {
             page.getEventHandler(Integer.valueOf(nrStr)).run();
         });
         for (Component c : components) {
-            componentTemplateIndex.getTemplate(c).ifPresent(t -> t.raiseEvents(c));
+            if (util.wasRendered(c))
+                componentTemplateIndex.getTemplate(c).ifPresent(t -> t.raiseEvents(c));
         }
 
         // check if a destination has been defined
@@ -103,7 +105,9 @@ public class ReloadHandler implements Runnable {
             coreRequestInfo.setActionResult(componentRequestInfo.getClosePageResult());
         } else if (coreRequestInfo.getActionResult() == null) {
             // render result
-            coreRequestInfo.setActionResult(new ContentRenderResult(util.renderComponents(page, reloadComponent), r -> {
+            page.incrementRenderNr();
+            byte[] buffer = util.renderComponents(page, reloadComponent);
+            coreRequestInfo.setActionResult(new ContentRenderResult(buffer, r -> {
                 r.setContentType(coreConfiguration.htmlContentType);
                 if (view instanceof HttpServletResponseCustomizer) {
                     ((HttpServletResponseCustomizer) view).customizeServletResponse(r);

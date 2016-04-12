@@ -16,11 +16,10 @@ public class CSelectTemplate<T> extends BootstrapComponentTemplateBase<CSelect<T
                 .fIf(select.getSelectionHandler() != null, () -> html.CLASS("_selectionHandler"))
                 .fIf(select.isAllowEmpty(),
                         () -> html.option().VALUE("-").TEST_NAME("-")
-                                .fIf(!select.getSelectedItem().isPresent(), () -> html.SELECTED("selected"))._option())
+                                .fIf(!select.getSelectedItem().isPresent(), () -> html.SELECTED())._option())
                 .fForEach(select.getItemsAndChildren(), (idx, p) -> {
                     html.option().VALUE(String.valueOf(idx)).TEST_NAME(select.getTestName(p.getA()))
-                            .fIf(select.isItemSelected(p.getA()), () -> html.SELECTED("selected")).render(p.getB())
-                            ._option();
+                            .fIf(select.isItemSelected(p.getA()), () -> html.SELECTED()).render(p.getB())._option();
                 })._select();
     }
 

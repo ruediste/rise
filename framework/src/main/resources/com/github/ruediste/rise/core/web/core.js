@@ -102,8 +102,6 @@ var rise = (function() {
 					window.location = redirectTarget;
 				} else {
 					receiver.get(0).innerHTML = data;
-					$("body").attr("data-rise-reload-count",
-							1 + $("body").attr("data-rise-reload-count"));
 					onReload.fire(receiver);
 				}
 			},
@@ -305,4 +303,15 @@ rise.onReload.add(function(reloaded) {
 		if (focusId)
 			$(document.getElementById(focusId)).focus();
 	});
+});
+
+// ccheckbox
+$(document).on("change", "input.rise_c_checkbox._handlerPresent", function(event) {
+	rise.setExtractData(this, function(data) {
+		data.push({
+			name : rise.generateKey(this, "changed")
+		});
+	});
+	rise.triggerViewReload(this);
+	return false;
 });

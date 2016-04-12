@@ -154,7 +154,7 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends Html5Canvas
     default TSelf rCOMPONENT_ATTRIBUTES(ComponentBase<?> component) {
         ComponentUtil componentUtil = internal_riseHelper().getComponentUtil();
         return self().ID(componentUtil.getComponentId(component)).CLASS(component.CLASS())
-                .TEST_NAME(component.TEST_NAME())
+                .TEST_NAME(component.TEST_NAME()).fIf(component.isDisabled(), () -> DISABLED())
                 .DATA(CoreAssetBundle.componentAttributeNr, String.valueOf(componentUtil.getComponentNr(component)));
     }
 }

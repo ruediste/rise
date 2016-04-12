@@ -22,7 +22,10 @@ public class ActionResultRenderer extends ChainedRequestHandler {
     public void run(Runnable next) {
         next.run();
         try {
-            coreInfo.getActionResult().sendTo(coreInfo.getServletResponse(), util);
+            HttpRenderResult actionResult = coreInfo.getActionResult();
+            if (actionResult == null)
+                throw new RuntimeException("Action result is null. Did you return null from your MVC Controller?");
+            actionResult.sendTo(coreInfo.getServletResponse(), util);
         } catch (IOException e) {
             throw new RuntimeException("Error while sending result", e);
         }

@@ -12,19 +12,19 @@ public class CLocalTimeTemplate extends BootstrapComponentTemplateBase<CLocalTim
     public void doRender(CLocalTime component, BootstrapRiseCanvas<?> html) {
         html.bInputGroup()
 
-                .span().BinputGroupAddon().content("Hour").input().NAME(util.getKey(component, "hour"))
+        .bInputGroupAddon().content("Hour").input().NAME(util.getKey(component, "hour"))
                 .VALUE(component.getValue().map(t -> t.getHour()).map(Objects::toString).orElse(""))
                 .TYPE(InputType.number.toString()).BformControl()
 
-                .span().BinputGroupAddon().content("Minute").input().NAME(util.getKey(component, "minute"))
+        .bInputGroupAddon().content("Minute").input().NAME(util.getKey(component, "minute"))
                 .VALUE(component.getValue().map(t -> t.getMinute()).map(Objects::toString).orElse(""))
                 .TYPE(InputType.number.toString()).BformControl()
 
-                .span().BinputGroupAddon().content("Second").input().NAME(util.getKey(component, "second"))
+        .bInputGroupAddon().content("Second").input().NAME(util.getKey(component, "second"))
                 .VALUE(component.getValue().map(t -> t.getSecond()).map(Objects::toString).orElse(""))
                 .TYPE(InputType.number.toString()).BformControl()
 
-                ._bInputGroup();
+        ._bInputGroup();
         // html.input().TYPE(InputType.text.toString()).BformControl()
         // .VALUE(component.getValue().map(Objects::toString).orElse("")).rCOMPONENT_ATTRIBUTES(component)
         // .NAME(util.getKey(component, "value"));

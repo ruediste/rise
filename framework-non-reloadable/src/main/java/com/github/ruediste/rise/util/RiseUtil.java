@@ -6,6 +6,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.regex.Pattern;
 
+import javax.persistence.Column;
+import javax.validation.constraints.NotNull;
+
+import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.github.ruediste1.lambdaPegParser.DefaultParser;
 import com.github.ruediste1.lambdaPegParser.DefaultParsingContext;
 import com.github.ruediste1.lambdaPegParser.ParserFactory;
@@ -129,10 +133,16 @@ public class RiseUtil {
         return toRegex(prefixAndRegex);
     }
 
+    /**
+     * Create a regex from a prefix and a regualr expression
+     */
     public static String toRegex(Pair<String, String> prefixAndRegex) {
         return "^" + Pattern.quote(prefixAndRegex.getA()) + prefixAndRegex.getB() + "$";
     }
 
+    /**
+     * Turn a glob into a regex
+     */
     public static Pair<String, String> toPrefixAndRegex(String glob) {
         return ParserFactory.create(GlobParser.class, glob).glob();
     }
@@ -148,17 +158,29 @@ public class RiseUtil {
             String pattern = ZeroOrMore(() -> FirstOf(() -> {
                 String("**/");
                 return ".*";
-            }, () -> {
+            } , () -> {
                 String("**");
                 return ".*";
-            }, () -> {
+            } , () -> {
                 String("*");
                 return "[^/]*";
-            }, () -> {
+            } , () -> {
                 return Pattern.quote(OneOrMoreChars(x -> x != '*', "non *"));
             })).stream().collect(joining(""));
             EOI();
             return Pair.of(prefix, pattern);
         }
+    }
+
+    /**
+     * Determine if a property is nullable, based on annotations present
+     */
+    public static boolean isNullable(PropertyInfo property) {
+        Column column = property.getAnnotation(Column.class);
+        if (column != null && !column.nullable())
+            return false;
+        if (property.isAnnotationPresent(NotNull.class))
+            return false;
+        return true;
     }
 }

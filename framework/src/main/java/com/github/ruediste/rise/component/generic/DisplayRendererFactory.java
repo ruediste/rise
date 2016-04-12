@@ -4,10 +4,8 @@ import java.util.Optional;
 
 import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.github.ruediste.rise.core.strategy.Strategy;
-import com.github.ruediste.salta.jsr330.ImplementedBy;
 import com.google.common.reflect.TypeToken;
 
-@ImplementedBy(DefaultDisplayRendererFactory.class)
 public interface DisplayRendererFactory extends Strategy {
 
     /**

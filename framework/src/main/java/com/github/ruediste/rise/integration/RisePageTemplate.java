@@ -70,8 +70,7 @@ public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>> extends PageT
                     .DATA(CoreAssetBundle.bodyAttributeReloadUrl,url(componentConfig.getReloadPath()))
                     .DATA(CoreAssetBundle.bodyAttributeHeartbeatUrl,url(componentConfig.getHeartbeatPath()))
                     .DATA(CoreAssetBundle.bodyAttributeHeartbeatInterval, Objects.toString(componentConfig.getHeartbeatInterval()))
-                    .DATA(CoreAssetBundle.bodyAttributeAjaxUrl,url(componentConfig.getAjaxPath()))
-                    .DATA(CoreAssetBundle.bodyAttributeReloadNr,"0");
+                    .DATA(CoreAssetBundle.bodyAttributeAjaxUrl,url(componentConfig.getAjaxPath()));
 	        }
 		    parameters.addBodyAttributes(html);
 			parameters.renderBody(html);
@@ -134,9 +133,8 @@ public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>> extends PageT
             html.div().CLASS("rise-ribbon" + (isFixed ? " rise-ribbon-fixed" : ""))
                     .STYLE("background: " + stage.backgroundColor)
 
-                    .a().STYLE("color: " + stage.color)
-                    .HREF(urlPoducer.apply(coreRequestInfo.getRequest().createUrlSpec())).content(stage.toString())
-                    ._div();
+            .a().STYLE("color: " + stage.color).HREF(urlPoducer.apply(coreRequestInfo.getRequest().createUrlSpec()))
+                    .content(stage.toString())._div();
         };
     }
 }

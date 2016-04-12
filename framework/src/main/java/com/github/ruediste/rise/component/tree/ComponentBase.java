@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.component.tree;
 
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -14,6 +15,7 @@ public abstract class ComponentBase<TSelf extends ComponentBase<TSelf>> extends 
     private Component parent;
     private String class_;
     private String testName;
+    private Optional<Boolean> disabled = Optional.empty();
 
     public ComponentBase() {
         super();
@@ -107,4 +109,36 @@ public abstract class ComponentBase<TSelf extends ComponentBase<TSelf>> extends 
         consumer.accept(self);
         return self;
     }
+
+    /**
+     * Return true if this component is disabled, either directly or through
+     * inheritance
+     */
+    public boolean isDisabled() {
+        if (disabled.isPresent()) {
+            return disabled.get();
+        }
+        if (parent instanceof ComponentBase)
+            return ((ComponentBase<?>) parent).isDisabled();
+        return false;
+    }
+
+    /**
+     * Return the disabled flag of this component without taking inheritance
+     * into account
+     */
+    public Optional<Boolean> getDisabled() {
+        return disabled;
+    }
+
+    public TSelf setDisabled(Optional<Boolean> disabled) {
+        this.disabled = disabled;
+        return self();
+    }
+
+    public TSelf disable() {
+        this.disabled = Optional.of(true);
+        return self();
+    }
+
 }

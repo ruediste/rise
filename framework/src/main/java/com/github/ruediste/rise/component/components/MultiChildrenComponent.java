@@ -10,4 +10,11 @@ public class MultiChildrenComponent<TSelf extends RelationsComponent<TSelf>> ext
     public TSelf add(Component child) {
         return children.add(child);
     }
+
+    public TSelf add(Component... children) {
+        for (Component child : children) {
+            this.children.add(child);
+        }
+        return self();
+    }
 }

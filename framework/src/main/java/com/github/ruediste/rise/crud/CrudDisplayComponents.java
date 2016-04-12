@@ -113,10 +113,10 @@ public class CrudDisplayComponents {
         strategies.putStrategy(CrudDisplayComponentFactory.class, handle -> {
             return displayRenderers.property(handle.info().getProperty()).tryGet()
                     .map(renderer -> toComponentBound(() -> handle.proxy(), html -> {
-                        html.span().BformControl().DISABLED("disabled").TEST_NAME(handle.info().getName());
-                        ((DisplayRenderer) renderer).render(html, handle.getValue());
-                        html._span();
-                    }));
+                html.span().BformControl().DISABLED().TEST_NAME(handle.info().getName());
+                ((DisplayRenderer) renderer).render(html, handle.getValue());
+                html._span();
+            }));
         });
     }
 
@@ -181,7 +181,7 @@ public class CrudDisplayComponents {
             // @formatter:off
 			return toComponentBound(() -> p.proxy(), html -> {
 				Object value = p.getValue();
-				html.fIf(value != null, () -> html.bInputGroup()).span().BformControl().DISABLED("disabled")
+				html.fIf(value != null, () -> html.bInputGroup()).span().BformControl().DISABLED()
 						.TEST_NAME(p.info().getName())
 						.render(x -> crudUtil
 								.getStrategy(IdentificationRenderer.class, p.info().getAttribute().getJavaType())

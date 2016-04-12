@@ -247,11 +247,11 @@ public class CrudPropertyFilters {
                           html
                               .div().BformInline().TEST_NAME(p.getName())
                                 .bInputGroup()//.CLASS(x->x.sm(6))
-                                  .span().BinputGroupAddon().content(messages.min())
+                                  .bInputGroupAddon().content(messages.min())
                                   .add(min)
                                 ._bInputGroup()
                                 .bInputGroup()//LASS(x->x.sm(6))
-                                  .span().BinputGroupAddon().content(messages.max())
+                                  .bInputGroupAddon().content(messages.max())
                                   .add(max)
                                 ._bInputGroup()
                             ._div()
