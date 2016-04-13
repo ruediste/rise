@@ -6,7 +6,7 @@ import com.google.common.base.Supplier;
 @DefaultTemplate(CInputTemplate.class)
 public class CInput extends CInputBase<CInput> {
 
-    private String value;
+    private String value = "";
     private InputType inputType;
 
     public CInput() {

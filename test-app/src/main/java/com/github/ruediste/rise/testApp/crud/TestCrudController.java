@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 
 import com.github.ruediste.rise.component.components.CComponentStack;
 import com.github.ruediste.rise.component.components.CPage;
+import com.github.ruediste.rise.component.components.CValidationStatusPresenter;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.security.urlSigning.UrlUnsigned;
@@ -18,8 +19,8 @@ public class TestCrudController extends CrudControllerBase {
 
         @Override
         protected Component createComponents() {
-            return new CPage(label(this))
-                    .add(new CComponentStack(toSubView(() -> controller.data(), x -> x.getSubController())));
+            return new CPage(label(this)).add(new CValidationStatusPresenter()
+                    .add(new CComponentStack(toSubView(() -> controller.data(), x -> x.getSubController()))));
         }
     }
 

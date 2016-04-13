@@ -93,7 +93,7 @@ public class DisplayRenderers {
             @Override
             public <T> Optional<DisplayRenderer<T>> getRenderer(TypeToken<T> type, Optional<PropertyInfo> info) {
 
-                if (byte[].class.equals(type)) {
+                if (byte[].class.equals(type.getType())) {
                     return Optional.of((html, value) -> html
                             .write(transformers.byteArrayToHexStringTransformer.transform((byte[]) value)));
                 }

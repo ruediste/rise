@@ -49,7 +49,7 @@ public class Transformers {
         @Override
         protected T transformInvImpl(String target) {
             try {
-                return "<null>".equals(target) ? null : parser.apply(target);
+                return target == null ? null : parser.apply(target);
             } catch (NumberFormatException e) {
                 throw new ValidationException(new ValidationFailureImpl(messages.mustBeAnInteger(target)));
             }
@@ -57,7 +57,7 @@ public class Transformers {
 
         @Override
         protected String transformImpl(T source) {
-            return source == null ? "<null>" : source.toString();
+            return source == null ? null : source.toString();
         }
     }
 

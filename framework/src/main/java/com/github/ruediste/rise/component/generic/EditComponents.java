@@ -204,8 +204,8 @@ public class EditComponents {
         addTransformerFactory(Integer.class, InputType.number, transformers.intToStringTransformer);
         addTransformerFactory(Long.class, InputType.number, transformers.longToStringTransformer);
         addTransformerFactory(Short.class, InputType.number, transformers.shortToStringTransformer);
-        addStringTransformerFactory(byte[].class, transformers.byteArrayToHexStringTransformer);
-        addStringTransformerFactory(String.class, transformers.identityTransformer());
+        addTransformerFactory(byte[].class, InputType.text, transformers.byteArrayToHexStringTransformer);
+        addTransformerFactory(String.class, InputType.text, transformers.identityTransformer());
         addCheckBoxFactory();
         addCollectionFactory();
     }
@@ -330,14 +330,19 @@ public class EditComponents {
         strategies.putStrategy(EditComponentFactory.class, new EditComponentFactory() {
             @Override
             public Optional<EditComponentWrapper<?>> getComponent(EditComponentSpecification spec) {
-                return getComponent(spec.type, spec.testName, spec.info, spec.qualifier);
-            }
 
-            public Optional<EditComponentWrapper<?>> getComponent(TypeToken<?> type, Optional<String> testName,
-                    Optional<PropertyInfo> info, Optional<Class<? extends Annotation>> qualifier) {
-                if (propertyType.equals(Primitives.wrap(type.getRawType()))) {
-                    CInput component = new CInput(inputType);
-                    testName.ifPresent(x -> component.TEST_NAME(x));
+                if (propertyType.equals(Primitives.wrap(spec.type.getRawType()))) {
+                    CInput input = new CInput(inputType);
+                    spec.testName.ifPresent(x -> input.TEST_NAME(x));
+                    CCheckBox nullCheckBox = new CCheckBox().add(new CText("null"));
+                    Component component;
+                    if (spec.nullable) {
+                        nullCheckBox.setToggledHandler(checked -> input.setDisabled(checked)).setChecked(true);
+                        input.disable();
+                        component = new CInputGroup().add(new CInputGroupAddon().add(nullCheckBox)).add(input);
+                    } else {
+                        component = input;
+                    }
                     return Optional.<EditComponentWrapper<?>> of(new EditComponentWrapper<T>() {
 
                         @Override
@@ -347,18 +352,32 @@ public class EditComponents {
 
                         @Override
                         public T getValue() {
-                            return transformer.transformInv(component.getValue());
+                            return transformer.transformInv(input.getValue());
                         }
 
                         @Override
                         public EditComponentWrapper<T> setValue(T value) {
-                            component.setValue(transformer.transform(value));
+                            if (spec.nullable) {
+                                String transformedValue = transformer.transform(value);
+                                if (transformedValue == null) {
+                                    nullCheckBox.setChecked(true);
+                                    input.setDisabled(true);
+                                    input.setValue("");
+                                } else {
+                                    input.setValue(transformedValue);
+                                    input.setDisabled(false);
+                                    nullCheckBox.setChecked(false);
+                                }
+                            } else
+                                input.setValue(transformer.transform(value));
                             return this;
                         }
 
                         @Override
                         public EditComponentWrapper<T> bindValue(Supplier<T> accessor) {
-                            component.bindValue(() -> transformer.transform(accessor.get()));
+                            Pair<BindingGroup<?>, Binding<?>> pair = BindingUtil.bindModelProperty(component, accessor,
+                                    x -> setValue(x), () -> getValue());
+                            input.setLabelProperty(pair.getB());
                             return this;
                         }
                     });
@@ -377,16 +396,12 @@ public class EditComponents {
                 if (propertyType.equals(Primitives.wrap(spec.type.getRawType()))) {
                     Component component;
                     CTextField textField = new CTextField();
-                    CCheckBox nullCheckBox = new CCheckBox();
+                    CCheckBox nullCheckBox = new CCheckBox().add(new CText("null"));
                     spec.testName.ifPresent(x -> textField.TEST_NAME(x));
                     if (spec.nullable) {
-                        nullCheckBox.setToggledHandler(checked -> {
-                            if (checked) {
-                                textField.setText("");
-                            }
-                        }).setChecked(true);
-                        component = new CInputGroup().add(new CInputGroupAddon().add(nullCheckBox, new CText("null")))
-                                .add(textField);
+                        nullCheckBox.setToggledHandler(checked -> textField.setDisabled(checked)).setChecked(true);
+                        textField.disable();
+                        component = new CInputGroup().add(new CInputGroupAddon().add(nullCheckBox)).add(textField);
                     } else {
                         component = textField;
                     }
@@ -409,10 +424,12 @@ public class EditComponents {
                         public EditComponentWrapper<T> setValue(T value) {
                             if (spec.nullable) {
                                 if (transformer.transform(value) == null) {
-                                    textField.setText("");
                                     nullCheckBox.setChecked(true);
+                                    textField.setDisabled(true);
+                                    textField.setText("");
                                 } else {
                                     textField.setText(transformer.transform(value));
+                                    textField.setDisabled(false);
                                     nullCheckBox.setChecked(false);
                                 }
                             } else

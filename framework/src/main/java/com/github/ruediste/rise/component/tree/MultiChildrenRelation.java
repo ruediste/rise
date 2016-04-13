@@ -41,6 +41,14 @@ public class MultiChildrenRelation<TChild extends Component, TContainingComponen
         return containingComponent;
     }
 
+    public TContainingComponent add(@SuppressWarnings("unchecked") TChild... components) {
+        for (TChild component : components) {
+            children.add(component);
+            postAdd(component);
+        }
+        return containingComponent;
+    }
+
     /**
      * Add the given component to the children referenced by this relation at a
      * given index

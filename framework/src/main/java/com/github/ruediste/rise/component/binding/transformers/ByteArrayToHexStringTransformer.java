@@ -20,7 +20,7 @@ public class ByteArrayToHexStringTransformer extends TwoWayBindingTransformer<by
     @Override
     protected String transformImpl(byte[] target) {
         if (target == null)
-            return "<null>";
+            return null;
         return BaseEncoding.base16().encode(target);
     }
 
@@ -41,7 +41,7 @@ public class ByteArrayToHexStringTransformer extends TwoWayBindingTransformer<by
 
     @Override
     protected byte[] transformInvImpl(String source) {
-        if ("<null>".equals(source))
+        if (source == null)
             return null;
         if ((source.length() % 2) != 0) {
             throw new ValidationException(

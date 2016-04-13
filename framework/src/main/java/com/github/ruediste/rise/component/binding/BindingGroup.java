@@ -314,7 +314,7 @@ public class BindingGroup<T> implements Serializable {
         ValidateActions<T> validate(Class<?>... groups);
     }
 
-    private class PushDownActionsImpl extends SuccessActionsImpl<PushDownActions<T>> implements PushDownActions<T> {
+    private class PushDownActionsImpl extends SuccessActionsImpl<PushDownActions<T>>implements PushDownActions<T> {
 
         public PushDownActionsImpl(boolean success) {
             super(success);
@@ -359,8 +359,9 @@ public class BindingGroup<T> implements Serializable {
     }
 
     /**
-     * Push down and show errors in the components. The returned value can be
-     * used to determine if the attempt was successful or if there were errors.
+     * Push down and show validation errors during push down in the components.
+     * The returned value can be used to determine if the attempt was successful
+     * or if there were errors.
      */
     public PushDownActions<T> tryPushDown() {
         validationStatusRepository.clearFailures(this);

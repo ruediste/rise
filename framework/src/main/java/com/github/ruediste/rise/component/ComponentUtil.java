@@ -72,7 +72,7 @@ public class ComponentUtil implements ICoreUtil {
     }
 
     public String getKey(Component component, String key) {
-        return "c_" + componentNr.get(component) + "_" + key;
+        return "c_" + getComponentNr(component) + "_" + key;
     }
 
     public long getComponentNr(Component component) {

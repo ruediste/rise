@@ -136,6 +136,14 @@ public abstract class ComponentBase<TSelf extends ComponentBase<TSelf>> extends 
         return self();
     }
 
+    public TSelf setDisabled(Boolean disabled) {
+        if (disabled)
+            this.disabled = Optional.of(true);
+        else
+            this.disabled = Optional.empty();
+        return self();
+    }
+
     public TSelf disable() {
         this.disabled = Optional.of(true);
         return self();

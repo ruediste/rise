@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.component.components;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -25,8 +26,11 @@ public class CFormGroupTemplate extends BootstrapComponentTemplateBase<CFormGrou
     @Override
     public void doRender(CFormGroup component, BootstrapRiseCanvas<?> html) {
 
-        LString label = ComponentTreeUtil.componentOfTypeIfSingle(component, LabeledComponent.class)
-                .map(x -> x.getLabel(labelUtil)).orElse(null);
+        Optional<? extends LString> label = component.getLabel();
+        if (!label.isPresent()) {
+            label = ComponentTreeUtil.componentOfTypeIfSingle(component, LabeledComponent.class)
+                    .map(x -> x.getLabel(labelUtil));
+        }
         ValidationStatus violationStatus = repo.getValidationStatus(component);
 
         html.bFormGroup().CLASS(component.CLASS());
@@ -43,8 +47,7 @@ public class CFormGroupTemplate extends BootstrapComponentTemplateBase<CFormGrou
         }
 
         // add label
-        if (label != null)
-            html.bControlLabel().FOR(util.getComponentId(component)).content(label);
+        label.ifPresent(l -> html.bControlLabel().FOR(util.getComponentId(component)).content(l));
 
         // add children
         html.renderChildren(component);

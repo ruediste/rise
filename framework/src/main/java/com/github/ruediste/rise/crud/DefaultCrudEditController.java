@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.crud;
 
 import java.lang.annotation.Annotation;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -10,11 +11,15 @@ import com.github.ruediste.rise.api.ButtonStyle;
 import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.component.FrameworkViewComponent;
 import com.github.ruediste.rise.component.binding.BindingGroup;
+import com.github.ruediste.rise.component.binding.BindingGroup.PushDownActions;
+import com.github.ruediste.rise.component.binding.BindingGroup.SuccessActions;
 import com.github.ruediste.rise.component.components.CButton;
+import com.github.ruediste.rise.component.components.CFormGroup;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.persistence.PersistentType;
 import com.github.ruediste.rise.core.persistence.RisePersistenceUtil;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
+import com.github.ruediste.rise.crud.annotations.CrudValidationGroup;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.github.ruediste1.i18n.label.Labeled;
@@ -43,10 +48,9 @@ public class DefaultCrudEditController extends SubControllerComponent {
             return toComponent(html -> {
                 html.div().TEST_NAME("properties");
                 for (CrudPropertyInfo p : util.getEditProperties(controller.type)) {
-                    CrudPropertyHandle hadle = CrudPropertyHandle.create(p, () -> controller.entityGroup.get(),
+                    CrudPropertyHandle handle = CrudPropertyHandle.create(p, () -> controller.entityGroup.get(),
                             () -> controller.entityGroup.proxy(), controller.entityGroup);
-                    html.bFormGroup().label().content(labelUtil.property(p.getProperty()).label())
-                            .add(editComponents.createEditComponent(hadle))._bFormGroup();
+                    html.add(new CFormGroup(editComponents.createEditComponent(handle)).setLabel(Optional.of(labelUtil.property(p.getProperty()).label())));
                 }
                 html._div().div().TEST_NAME("buttons").add(new CButton(controller, c -> c.save()))
                         .rButtonA(go(CrudControllerBase.class).display(controller.entityGroup.get()))
@@ -84,8 +88,22 @@ public class DefaultCrudEditController extends SubControllerComponent {
     @GlyphiconIcon(Glyphicon.save)
     @ButtonStyle(B_ButtonStyle.PRIMARY)
     public void save() {
-        entityGroup.pushDown();
-        commit();
-        redirect(go(CrudControllerBase.class).display(entityGroup.get()));
+
+        PushDownActions<Object> pushDown = entityGroup.tryPushDown();
+        CrudValidationGroup group = type.getType().getJavaType().getAnnotation(CrudValidationGroup.class);
+
+        SuccessActions<?> action = pushDown;
+        if (group.value().length == 0)
+            action = pushDown.validate();
+        else if (group.value().length != 1 || !group.value()[0].equals(Void.class))
+            action = pushDown.validate(group.value());
+        else
+            // NOP
+            ;
+
+        action.onSuccess(() -> {
+            commit();
+            redirect(go(CrudControllerBase.class).display(entityGroup.get()));
+        });
     }
 }

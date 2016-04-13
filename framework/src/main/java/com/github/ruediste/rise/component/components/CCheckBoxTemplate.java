@@ -23,11 +23,15 @@ public class CCheckBoxTemplate extends BootstrapComponentTemplateBase<CCheckBox>
 
     @Override
     public void doRender(CCheckBox component, BootstrapRiseCanvas<?> html) {
+        boolean hasLabel = !component.label.getChildren().isEmpty();
+        html.fIf(hasLabel, () -> html.label());
+
         html.input().TYPE(InputType.checkbox.toString())
                 .fIf(!(component.getParent() instanceof CInputGroupAddon), () -> html.BformControl())
                 .CLASS("rise_c_checkbox")
                 .fIf(component.getToggledHandler().isPresent(), () -> html.CLASS("_handlerPresent"))
                 .fIf(component.isChecked(), () -> html.CHECKED()).VALUE("true").NAME(util.getKey(component, "value"))
                 .rCOMPONENT_ATTRIBUTES(component).fIf(component.isInline(), () -> html.BcheckboxInline());
+        html.fIf(hasLabel, () -> html.renderChildren(component)._label());
     }
 }
