@@ -31,6 +31,7 @@ public class TestCrudEntityA {
     @CrudBrowserColumn
     private String stringValue;
 
+    @CrudBrowserColumn
     @ManyToOne
     private TestCrudEntityB entityB;
 

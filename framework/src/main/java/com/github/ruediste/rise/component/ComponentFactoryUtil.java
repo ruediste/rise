@@ -12,6 +12,7 @@ import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.binding.BindingUtil;
 import com.github.ruediste.rise.component.components.CComponentContainer;
+import com.github.ruediste.rise.component.components.CDirectRender;
 import com.github.ruediste.rise.component.components.CMixedRender;
 import com.github.ruediste.rise.component.components.CSubView;
 import com.github.ruediste.rise.component.tree.Component;
@@ -39,6 +40,10 @@ public class ComponentFactoryUtil {
         return renderToCanvas(renderable);
     }
 
+    public Component toComponentDirect(Renderable<?> renderable) {
+        return new CDirectRender(renderable);
+    }
+
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected CMixedRender renderToCanvas(Renderable<?> renderable) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream(1000);
@@ -60,7 +65,7 @@ public class ComponentFactoryUtil {
         CComponentContainer container = new CComponentContainer();
         BindingUtil.bind(container, bindingAccessor, x -> {
             container.child.set(renderToCanvas(renderable));
-        }, x -> {
+        } , x -> {
         });
         return container;
     }

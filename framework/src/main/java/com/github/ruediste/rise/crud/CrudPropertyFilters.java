@@ -3,6 +3,7 @@ package com.github.ruediste.rise.crud;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -17,12 +18,18 @@ import javax.persistence.metamodel.Attribute.PersistentAttributeType;
 import javax.persistence.metamodel.SingularAttribute;
 
 import com.github.ruediste.c3java.properties.PropertyInfo;
+import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.component.ComponentFactoryUtil;
+import com.github.ruediste.rise.component.ComponentUtil;
+import com.github.ruediste.rise.component.components.CGroup;
 import com.github.ruediste.rise.component.components.CInput;
 import com.github.ruediste.rise.component.components.CSelect;
+import com.github.ruediste.rise.component.components.CSwitch;
 import com.github.ruediste.rise.component.components.CText;
 import com.github.ruediste.rise.component.components.CTextField;
 import com.github.ruediste.rise.component.components.InputType;
+import com.github.ruediste.rise.component.generic.DisplayRenderers;
+import com.github.ruediste.rise.component.generic.EditComponentWrapper;
 import com.github.ruediste.rise.component.generic.EditComponents;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.persistence.EMUtil.PersistenceFilterContext;
@@ -30,11 +37,13 @@ import com.github.ruediste.rise.core.strategy.Strategies;
 import com.github.ruediste.rise.core.strategy.Strategy;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.util.NOptional;
+import com.github.ruediste.rise.util.RiseUtil;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.lString.PatternString;
 import com.github.ruediste1.i18n.lString.TranslatedString;
 import com.github.ruediste1.i18n.label.Label;
 import com.github.ruediste1.i18n.label.LabelUtil;
+import com.github.ruediste1.i18n.label.Labeled;
 import com.github.ruediste1.i18n.label.MembersLabeled;
 import com.github.ruediste1.i18n.message.TMessage;
 import com.github.ruediste1.i18n.message.TMessages;
@@ -59,6 +68,15 @@ public class CrudPropertyFilters {
 
     @Inject
     EditComponents editComponents;
+
+    @Inject
+    DisplayRenderers displayRenderers;
+
+    @Inject
+    CrudUtil crudUtil;
+
+    @Inject
+    ComponentUtil componentUtil;
 
     @TMessages
     public interface Messages {
@@ -127,6 +145,7 @@ public class CrudPropertyFilters {
         addZoneIdFactory();
         addLocalTimeFactory();
         addOneToManyFactory();
+        addManyToOneFactory();
     }
 
     @MembersLabeled
@@ -136,11 +155,123 @@ public class CrudPropertyFilters {
     }
 
     private void addOneToManyFactory() {
-        addFactory(info -> info.getAttribute().getPersistentAttributeType() == PersistentAttributeType.ONE_TO_MANY,
-                info -> {
+        // TODO Auto-generated method stub
 
-                    return null;
+    }
+
+    @MembersLabeled
+    enum ManyToOneChoice {
+        NO_FILTER {
+            @Override
+            void applyFilter(CrudPropertyInfo info, PersistenceFilterContext<?> ctx,
+                    LinkedHashSet<Object> selectedEntities) {
+                // NOP
+
+            }
+        },
+        NULL {
+            @Override
+            void applyFilter(CrudPropertyInfo info, PersistenceFilterContext<?> ctx,
+                    LinkedHashSet<Object> selectedEntities) {
+                ctx.addWhere(ctx.cb().isNull(ctx.root().get(info.getAttribute().getName())));
+
+            }
+        },
+        ONE_OF {
+            @Override
+            void applyFilter(CrudPropertyInfo info, PersistenceFilterContext<?> ctx,
+                    LinkedHashSet<Object> selectedEntities) {
+                // TODO Auto-generated method stub
+
+            }
+        },
+        NONE_OF {
+
+            @Override
+            void applyFilter(CrudPropertyInfo info, PersistenceFilterContext<?> ctx,
+                    LinkedHashSet<Object> selectedEntities) {
+                // TODO Auto-generated method stub
+
+            }
+        };
+
+        abstract void applyFilter(CrudPropertyInfo info, PersistenceFilterContext<?> ctx,
+                LinkedHashSet<Object> selectedEntities);
+    }
+
+    private Component toComponent(Renderable<BootstrapRiseCanvas<?>> renderer) {
+        return componentFactoryUtil.toComponent(renderer);
+    }
+
+    private void addManyToOneFactory() {
+        addFactory(info -> info.getAttribute().getPersistentAttributeType() == PersistentAttributeType.MANY_TO_ONE,
+                info -> {
+                    LinkedHashSet<Object> selectedEntities = new LinkedHashSet<>();
+
+                    EditComponentWrapper oneOf = editComponents
+                            .type(RiseUtil.collectionTypeToken(info.getAttribute().getJavaType()))
+                            .qualifier(info.getEmQualifier()).get();
+                    oneOf.setValue(selectedEntities);
+
+                    EditComponentWrapper noneOf = editComponents
+                            .type(RiseUtil.collectionTypeToken(info.getAttribute().getJavaType()))
+                            .qualifier(info.getEmQualifier()).get();
+                    noneOf.setValue(selectedEntities);
+
+                    CSwitch<ManyToOneChoice> cSwitch = new CSwitch<ManyToOneChoice>()
+                            .put(ManyToOneChoice.NO_FILTER, new CGroup()).put(ManyToOneChoice.NULL, new CText("null"))
+                            .put(ManyToOneChoice.ONE_OF, oneOf.getComponent())
+                            .put(ManyToOneChoice.NONE_OF, noneOf.getComponent());
+
+                    CSelect<ManyToOneChoice> cSelect = new CSelect<ManyToOneChoice>()
+                            .addItemAndSelect(ManyToOneChoice.NO_FILTER);
+                    if (RiseUtil.isNullable(info.getProperty())) {
+                        cSelect.addItem(ManyToOneChoice.NULL);
+                    }
+                    cSelect.addItem(ManyToOneChoice.ONE_OF);
+                    cSelect.addItem(ManyToOneChoice.NONE_OF);
+                    cSelect.setSelectionHandler(selected -> selected.ifPresent(cSwitch::setOption));
+
+                    return new CrudPropertyFilter() {
+
+                        @Override
+                        public Component getComponent() {
+                            return toComponent(html -> html.div().bInputGroup().add(cSelect.CLASS("input-group-addon"))
+                                    .add(cSwitch)._bInputGroup());
+                        }
+
+                        @Override
+                        public void applyFilter(PersistenceFilterContext<?> ctx) {
+                            // cSwitch.getOption().applyFilter(info, ctx,
+                            // selectedEntities);
+                        }
+                    };
                 });
+    }
+
+    @Labeled
+    void back(Runnable callback) {
+        callback.run();
+    }
+
+    @Labeled
+    void add(Runnable callback) {
+        callback.run();
+    }
+
+    @Labeled
+    void remove(Runnable callback) {
+        callback.run();
+    }
+
+    @Labeled
+    void pick(Runnable callback) {
+        callback.run();
+    }
+
+    @Labeled
+    void clear(Runnable callback) {
+        callback.run();
     }
 
     private void addZonedTimeSpanFactory() {

@@ -19,7 +19,6 @@ import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.persistence.PersistentType;
 import com.github.ruediste.rise.core.persistence.RisePersistenceUtil;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerHolder;
-import com.github.ruediste.rise.crud.annotations.CrudValidationGroup;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.github.ruediste1.i18n.label.Labeled;
@@ -90,16 +89,14 @@ public class DefaultCrudEditController extends SubControllerComponent {
     public void save() {
 
         PushDownActions<Object> pushDown = entityGroup.tryPushDown();
-        CrudValidationGroup group = type.getType().getJavaType().getAnnotation(CrudValidationGroup.class);
-
-        SuccessActions<?> action = pushDown;
-        if (group.value().length == 0)
-            action = pushDown.validate();
-        else if (group.value().length != 1 || !group.value()[0].equals(Void.class))
-            action = pushDown.validate(group.value());
-        else
-            // NOP
-            ;
+        Class<?>[] validationGroups = reflectionUtil.validationGroups(type.getType().getJavaType());
+        SuccessActions<?> action;
+        if (validationGroups == null) {
+            // no validation
+            action = pushDown;
+        } else {
+            action = pushDown.validate(validationGroups);
+        }
 
         action.onSuccess(() -> {
             commit();

@@ -237,9 +237,9 @@ public class CrudUtil {
 
         PersistentType getType();
 
-        DefaultCrudListController setItemActionsFactory(Function<Object, Cell> itemActionsFactory);
+        CrudList setItemActionsFactory(Function<Object, Cell> itemActionsFactory);
 
-        DefaultCrudListController setBottomActions(Component bottomActions);
+        CrudList setBottomActions(Component bottomActions);
 
         void refresh();
 

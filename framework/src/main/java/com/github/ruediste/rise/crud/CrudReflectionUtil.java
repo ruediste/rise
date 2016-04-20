@@ -28,6 +28,7 @@ import com.github.ruediste.rise.crud.annotations.CrudBrowseAction;
 import com.github.ruediste.rise.crud.annotations.CrudBrowserColumn;
 import com.github.ruediste.rise.crud.annotations.CrudDisplayAction;
 import com.github.ruediste.rise.crud.annotations.CrudIdentifying;
+import com.github.ruediste.rise.crud.annotations.CrudValidationGroup;
 import com.github.ruediste.rise.nonReloadable.front.reload.MemberOrderIndex;
 import com.google.common.base.Preconditions;
 
@@ -137,5 +138,24 @@ public class CrudReflectionUtil {
                 .filter(m -> m.isAnnotationPresent(annotationClass)).collect(Collectors.toList());
         memberOrderIndex.orderMembers(cls, result);
         return result;
+    }
+
+    /**
+     * determine the validation groups to be used for a certain type. Return
+     * null if no validation should be performed
+     */
+    public Class<?>[] validationGroups(Class<?> type) {
+        CrudValidationGroup group = type.getAnnotation(CrudValidationGroup.class);
+
+        if (group == null || group.value().length == 0) {
+            // no annotation or nothing set
+            return new Class<?>[] {};
+        } else if (group.value().length == 1 && group.value()[0].equals(Void.class)) {
+            // group set to void, no validation
+            return null;
+        } else {
+            // There is an annotation and some groups have been set. Use them.
+            return group.value();
+        }
     }
 }

@@ -16,9 +16,13 @@ public class CrudInvocationController extends ControllerMvc<CrudInvocationContro
     @UrlUnsigned
     @Updating
     public ActionResult browseTestEnties() {
-        TestCrudEntityA e = new TestCrudEntityA();
-        e.setStringValue("Hello World");
-        em.persist(e);
+        TestCrudEntityA a = new TestCrudEntityA();
+        a.setStringValue("Hello World");
+        em.persist(a);
+
+        TestCrudEntityB b = new TestCrudEntityB();
+        b.setValue("Yeah");
+        em.persist(b);
 
         return redirect(go(TestCrudController.class).browse(TestCrudEntityA.class, null));
     }

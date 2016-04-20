@@ -15,9 +15,9 @@ import javax.persistence.metamodel.ManagedType;
 import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.github.ruediste.c3java.properties.PropertyPath;
 import com.github.ruediste.c3java.properties.PropertyUtil;
-import com.github.ruediste.rendersnakeXT.canvas.Glyphicon;
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.component.ComponentFactoryUtil;
+import com.github.ruediste.rise.component.DefaultActions;
 import com.github.ruediste.rise.component.binding.Binding;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.binding.BindingUtil;
@@ -43,10 +43,8 @@ import com.github.ruediste.rise.crud.CrudUtil;
 import com.github.ruediste.rise.crud.CrudUtil.CrudList;
 import com.github.ruediste.rise.crud.CrudUtil.IdentificationRenderer;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
-import com.github.ruediste.rise.integration.GlyphiconIcon;
 import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste.rise.util.RiseUtil;
-import com.github.ruediste1.i18n.label.Labeled;
 import com.github.ruediste1.lambdaPegParser.Var;
 import com.google.common.primitives.Primitives;
 import com.google.common.reflect.TypeToken;
@@ -83,7 +81,12 @@ public class EditComponents {
         }
 
         public PropertyApi<T> qualifier(Class<? extends Annotation> qualifier) {
-            this.qualifier = Optional.of(qualifier);
+            this.qualifier = Optional.ofNullable(qualifier);
+            return this;
+        }
+
+        public PropertyApi<T> qualifier(Optional<Class<? extends Annotation>> qualifier) {
+            this.qualifier = qualifier;
             return this;
         }
 
@@ -175,7 +178,7 @@ public class EditComponents {
         }
 
         public TypeApi<T> qualifier(Class<? extends Annotation> qualifier) {
-            this.qualifier = Optional.of(qualifier);
+            this.qualifier = Optional.ofNullable(qualifier);
             return this;
         }
 
@@ -230,28 +233,28 @@ public class EditComponents {
                     entityType.getRawType());
 
             Var<Collection<?>> collection = Var.of(new ArrayList<>());
+
             Component component = util.toComponent((Renderable<BootstrapRiseCanvas<?>>) html -> html.div()
                     .add(new CDirectRender((Renderable<BootstrapRiseCanvas<?>>) x2 -> collection.getValue().stream()
                             .forEach(entity -> renderer.renderIdenification(x2, entity))))
-                    .add(new CButton(EditComponents.this, (btn, x3) -> x3.chooseItems(() -> {
+                    .add(new CButton(defaultActions, (btn, x3) -> x3.chooseItems(() -> {
 
                 CrudList list = crudUtil.getStrategy(CrudUtil.CrudListFactory.class, entityType.getRawType())
                         .createList(spec.qualifier.orElse(null), entityType.getRawType(), null);
                 list.setItemActionsFactory(obj -> {
                     CSwitch<Boolean> cswitch = new CSwitch<>();
-                    cswitch.put(true, new CButton(EditComponents.this, c1 -> c1.remove(() -> {
+                    cswitch.put(true, new CButton(defaultActions, c1 -> c1.remove(() -> {
                         collection.getValue().remove(obj);
                         cswitch.setOption(false);
                     })));
-                    cswitch.put(false, new CButton(EditComponents.this, c2 -> c2.add(() -> {
+                    cswitch.put(false, new CButton(defaultActions, c2 -> c2.add(() -> {
                         ((Collection) collection.getValue()).add(obj);
                         cswitch.setOption(true);
                     })));
                     cswitch.setOption(collection.getValue().contains(obj));
                     return new CDataGrid.Cell(cswitch);
                 });
-                list.setBottomActions(
-                        new CButton(EditComponents.this, x1 -> x1.back(() -> CComponentStack.raisePop(btn))));
+                list.setBottomActions(new CButton(defaultActions, x1 -> x1.back(() -> CComponentStack.raisePop(btn))));
 
                 CComponentStack.raisePush(btn, list);
             })))._div());
@@ -452,27 +455,7 @@ public class EditComponents {
 
     }
 
-    @Labeled
-    @GlyphiconIcon(Glyphicon.plus)
-    void add(Runnable callback) {
-        callback.run();
-    }
+    @Inject
+    DefaultActions defaultActions;
 
-    @Labeled
-    @GlyphiconIcon(Glyphicon.minus)
-    void remove(Runnable callback) {
-        callback.run();
-    }
-
-    @Labeled
-    @GlyphiconIcon(Glyphicon.edit)
-    void chooseItems(Runnable callback) {
-        callback.run();
-    }
-
-    @Labeled
-    @GlyphiconIcon(Glyphicon.arrow_left)
-    void back(Runnable callback) {
-        callback.run();
-    }
 }

@@ -41,6 +41,7 @@ public class CSwitch<T> extends ComponentBase<CSwitch<T>> {
     }
 
     public CSwitch<T> put(T option, Component component) {
+        addComponent(component);
         cases.put(option, new Case() {
 
             @Override
@@ -66,6 +67,7 @@ public class CSwitch<T> extends ComponentBase<CSwitch<T>> {
             @Override
             public void onEnter() {
                 component = componentSupplier.get();
+                addComponent(component);
             }
 
             @Override
@@ -79,6 +81,12 @@ public class CSwitch<T> extends ComponentBase<CSwitch<T>> {
             }
         });
         return this;
+    }
+
+    private void addComponent(Component child) {
+        if (child.getParent() != null)
+            child.getParent().childRemoved(child);
+        child.parentChanged(this);
     }
 
     public T getOption() {

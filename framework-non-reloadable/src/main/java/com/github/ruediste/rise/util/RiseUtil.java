@@ -4,9 +4,11 @@ import static java.util.stream.Collectors.joining;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.regex.Pattern;
 
 import javax.persistence.Column;
+import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 
 import com.github.ruediste.c3java.properties.PropertyInfo;
@@ -15,6 +17,8 @@ import com.github.ruediste1.lambdaPegParser.DefaultParsingContext;
 import com.github.ruediste1.lambdaPegParser.ParserFactory;
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
+import com.google.common.reflect.TypeParameter;
+import com.google.common.reflect.TypeToken;
 
 public class RiseUtil {
 
@@ -181,6 +185,16 @@ public class RiseUtil {
             return false;
         if (property.isAnnotationPresent(NotNull.class))
             return false;
+        if (property.isAnnotationPresent(Id.class))
+            return false;
         return true;
     }
+
+    public static <T> TypeToken<Collection<T>> collectionTypeToken(Class<T> memberClass) {
+        return new TypeToken<Collection<T>>() {
+            private static final long serialVersionUID = 1L;
+        }.where(new TypeParameter<T>() {
+        }, memberClass);
+    }
+
 }
