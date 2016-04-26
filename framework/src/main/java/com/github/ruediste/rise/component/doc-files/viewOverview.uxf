@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0.201604080409">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>140</x>
+      <y>70</y>
+      <w>140</w>
+      <h>50</h>
+    </coordinates>
+    <panel_attributes>ViewComponent</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>270</x>
+      <y>80</y>
+      <w>170</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+rootFragment</panel_attributes>
+    <additional_attributes>150.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>420</x>
+      <y>70</y>
+      <w>160</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>HtmlFragment
+--
+rendered
+--
+render()
+applyValues()
+raiseEvents()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>450</x>
+      <y>170</y>
+      <w>100</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=*
+children</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0;80.0;40.0;80.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>210</x>
+      <y>290</y>
+      <w>100</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>ViewVar&lt;T&gt;</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>450</x>
+      <y>290</y>
+      <w>100</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>BindingGroup</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>300</x>
+      <y>290</y>
+      <w>170</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=.
+binding</panel_attributes>
+    <additional_attributes>10.0;20.0;150.0;20.0</additional_attributes>
+  </element>
+</diagram>
