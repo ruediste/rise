@@ -8,6 +8,9 @@ public class BindingExpressionExecutionRecord {
     MethodInvocationRecorder componentRecorder = new MethodInvocationRecorder();
     BindingTransformer<?, ?> transformer;
 
+    /**
+     * True when the transformer should be used in reverse direction
+     */
     boolean transformInv;
 
     public BindingGroup<?> getInvolvedBindingGroup() {

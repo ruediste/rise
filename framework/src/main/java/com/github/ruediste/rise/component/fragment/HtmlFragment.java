@@ -1,6 +1,8 @@
 package com.github.ruediste.rise.component.fragment;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.function.Consumer;
 
 import com.github.ruediste.rendersnakeXT.canvas.HtmlConsumer;
 import com.github.ruediste.rendersnakeXT.canvas.HtmlProducer;
@@ -107,5 +109,30 @@ public abstract class HtmlFragment {
 
     public final void render(HtmlConsumer consumer) {
         getHtmlProducer().produce(consumer);
+    }
+
+    private static class EventRegistration<T> {
+        Class<T> eventType;
+        Consumer<T> handler;
+
+        public EventRegistration(Class<T> eventType, Consumer<T> handler) {
+            super();
+            this.eventType = eventType;
+            this.handler = handler;
+        }
+
+    }
+
+    ArrayList<EventRegistration<?>> eventRegistrations = new ArrayList<>();
+
+    public <T> void register(Class<T> eventType, Consumer<T> handler) {
+        eventRegistrations.add(new EventRegistration<>(eventType, handler));
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public void raiseEvent(Object event) {
+        Class<? extends Object> eventType = event.getClass();
+        eventRegistrations.stream().filter(r -> r.eventType.isAssignableFrom(eventType)).map(r -> r.handler)
+                .forEach((Consumer handler) -> handler.accept(event));
     }
 }

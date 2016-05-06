@@ -160,4 +160,5 @@ public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Htm
         };
         return addAttribute("VALUE", value).DATA("rise-bind-value", /* TODO: */ "0");
     }
+
 }
