@@ -21,7 +21,7 @@ import com.github.ruediste.rise.component.validation.ValidationException;
 import com.github.ruediste.rise.component.validation.ValidationPathUtil;
 import com.github.ruediste.rise.component.validation.ValidationStatusRepository;
 import com.github.ruediste.rise.core.i18n.ValidationUtil;
-import com.github.ruediste1.lambdaPegParser.Var;
+import com.github.ruediste.rise.util.Var;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.reflect.TypeToken;

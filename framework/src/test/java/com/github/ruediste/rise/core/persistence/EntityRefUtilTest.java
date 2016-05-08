@@ -7,7 +7,7 @@ import javax.persistence.EntityManager;
 
 import org.junit.Test;
 
-import com.github.ruediste1.lambdaPegParser.Var;
+import com.github.ruediste.rise.util.Var;
 
 public class EntityRefUtilTest extends DbTestBase {
 

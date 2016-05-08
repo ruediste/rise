@@ -16,7 +16,7 @@ import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
 import com.github.ruediste.rise.component.binding.transformers.DateToStringTransformer;
 import com.github.ruediste.rise.component.binding.transformers.Transformers;
 import com.github.ruediste.rise.component.validation.ValidationStatusRepository;
-import com.github.ruediste1.lambdaPegParser.Var;
+import com.github.ruediste.rise.util.Var;
 
 public class BindingUtilTest {
 

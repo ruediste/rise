@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 import com.github.ruediste.rise.component.PageScoped;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.i18n.ValidationFailure;
-import com.github.ruediste1.lambdaPegParser.Var;
+import com.github.ruediste.rise.util.Var;
 
 /**
  * Repository of the validation status of all {@link Component}s.

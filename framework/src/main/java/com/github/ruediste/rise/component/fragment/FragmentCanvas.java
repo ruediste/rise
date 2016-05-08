@@ -146,11 +146,22 @@ public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Htm
         });
     }
 
+    default TSelf RonClick(Runnable handler) {
+        new HtmlFragment(internal_target().getParentFragment()) {
+            @Override
+            public void processActions() {
+                // TODO check if handler should be executed
+                handler.run();
+            }
+        };
+        return DATA("rise-on-click", "0");
+    }
+
     default TSelf VALUE(Supplier<String> value) {
         return self();
     }
 
-    default TSelf VALUE(IViewValue<String> value) {
+    default TSelf VALUE(ValueHandle<String> value) {
         new HtmlFragment(internal_target().getParentFragment()) {
             @Override
             public void applyValues() {
@@ -158,7 +169,7 @@ public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Htm
                 value.set("abc");
             }
         };
-        return addAttribute("VALUE", value).DATA("rise-bind-value", /* TODO: */ "0");
+        return addAttribute("VALUE", value).DATA("rise-send-value", /* TODO: */ "0");
     }
 
 }

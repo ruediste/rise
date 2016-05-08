@@ -2,7 +2,9 @@ package com.github.ruediste.rise.component.fragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import com.github.ruediste.rendersnakeXT.canvas.HtmlConsumer;
 import com.github.ruediste.rendersnakeXT.canvas.HtmlProducer;
@@ -61,9 +63,9 @@ public abstract class HtmlFragment {
     }
 
     /**
-     * Raise the events of this fragment only
+     * Process actions for this fragment
      */
-    public void raiseEvents() {
+    public void processActions() {
         // NOP
     }
 
@@ -113,26 +115,135 @@ public abstract class HtmlFragment {
 
     private static class EventRegistration<T> {
         Class<T> eventType;
-        Consumer<T> handler;
+        Function<T, EventHandlingOutcome> handler;
+        boolean handlesToo;
 
-        public EventRegistration(Class<T> eventType, Consumer<T> handler) {
+        public EventRegistration(Class<T> eventType, Function<T, EventHandlingOutcome> handler, boolean handlesToo) {
             super();
             this.eventType = eventType;
             this.handler = handler;
+            this.handlesToo = handlesToo;
         }
 
     }
 
-    ArrayList<EventRegistration<?>> eventRegistrations = new ArrayList<>();
-
-    public <T> void register(Class<T> eventType, Consumer<T> handler) {
-        eventRegistrations.add(new EventRegistration<>(eventType, handler));
+    public enum EventHandlingOutcome {
+        HANDLED, NOT_HANDLED
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void raiseEvent(Object event) {
-        Class<? extends Object> eventType = event.getClass();
-        eventRegistrations.stream().filter(r -> r.eventType.isAssignableFrom(eventType)).map(r -> r.handler)
-                .forEach((Consumer handler) -> handler.accept(event));
+    ArrayList<EventRegistration<?>> eventRegistrations = new ArrayList<>();
+
+    private <T> Function<T, EventHandlingOutcome> toHandler(Consumer<T> handler) {
+        return e -> {
+            handler.accept(e);
+            return EventHandlingOutcome.HANDLED;
+        };
+    }
+
+    /**
+     * Register an event handler. Does not handle already handled events
+     */
+    public <T> void register(Class<T> eventType, Consumer<T> handler) {
+        register(eventType, toHandler(handler), false);
+    }
+
+    /**
+     * Register an event handler. Does not handle already handled events
+     */
+    public <T> void register(Class<T> eventType, Function<T, EventHandlingOutcome> handler) {
+        register(eventType, handler, false);
+    }
+
+    public <T> void register(Class<T> eventType, Consumer<T> handler, boolean handlesToo) {
+        eventRegistrations.add(new EventRegistration<>(eventType, toHandler(handler), handlesToo));
+    }
+
+    public <T> void register(Class<T> eventType, Function<T, EventHandlingOutcome> handler, boolean handlesToo) {
+        eventRegistrations.add(new EventRegistration<>(eventType, handler, handlesToo));
+    }
+
+    /**
+     * Raise an event starting with this fragment, continuing towards the root
+     */
+    public void raiseEventBubbling(Object event) {
+        raiseEvents(parents(), event);
+    }
+
+    /**
+     * Raise an event starting with the root, continuing towards and ending with
+     * this
+     */
+    public void raiseEventTunneling(Object event) {
+        raiseEvents(path(), event);
+    }
+
+    /**
+     * Raise an event directly and only on this
+     */
+    public void raiseEventDirect(Object event) {
+        raiseEvents(Collections.singletonList(this), event);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void raiseEvents(List<HtmlFragment> htmlFragments, Object event) {
+        boolean handled = false;
+        for (HtmlFragment fragment : htmlFragments) {
+            for (EventRegistration<?> registration : fragment.eventRegistrations) {
+                if (!registration.eventType.isAssignableFrom(event.getClass()))
+                    continue;
+                if (handled && !registration.handlesToo)
+                    continue;
+                EventHandlingOutcome outcome = ((Function<Object, EventHandlingOutcome>) registration.handler)
+                        .apply(event);
+                if (outcome == null)
+                    throw new RuntimeException("Event handler may not return null");
+                handled |= (outcome == EventHandlingOutcome.HANDLED);
+            }
+
+        }
+    }
+
+    /**
+     * Return the path of a fragment, starting with the root and ending with the
+     * target fragment
+     */
+    public List<HtmlFragment> path() {
+        List<HtmlFragment> result = parents();
+        Collections.reverse(result);
+        return result;
+    }
+
+    /**
+     * Return the start fragments followed by all ancestors, ending with the
+     * root fragment
+     */
+    public List<HtmlFragment> parents() {
+        ArrayList<HtmlFragment> result = new ArrayList<>();
+        HtmlFragment f = this;
+        while (f != null) {
+            result.add(f);
+            f = f.getParent();
+        }
+        return result;
+    }
+
+    public List<HtmlFragment> subTree() {
+        ArrayList<HtmlFragment> result = new ArrayList<>();
+        subTree(result, this);
+        return result;
+    }
+
+    private static void subTree(ArrayList<HtmlFragment> result, HtmlFragment fragment) {
+        result.add(fragment);
+        fragment.getChildren().forEach(child -> subTree(result, child));
+    }
+
+    public void forSubTree(Consumer<HtmlFragment> consumer) {
+        forSubTree(this, consumer);
+    }
+
+    private static void forSubTree(HtmlFragment fragment, Consumer<HtmlFragment> consumer) {
+        consumer.accept(fragment);
+        fragment.getChildren().forEach(x -> forSubTree(x, consumer));
     }
 }

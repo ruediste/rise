@@ -45,7 +45,7 @@ import com.github.ruediste.rise.crud.CrudUtil.IdentificationRenderer;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste.rise.util.RiseUtil;
-import com.github.ruediste1.lambdaPegParser.Var;
+import com.github.ruediste.rise.util.Var;
 import com.google.common.primitives.Primitives;
 import com.google.common.reflect.TypeToken;
 

@@ -2,29 +2,12 @@ package com.github.ruediste.rise.component.fragment;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import com.github.ruediste.rise.component.fragment.HtmlFragment.UpdateStructureArg;
 
 public class HtmlFragmentUtil {
 
     private HtmlFragmentUtil() {
-    }
-
-    public static List<HtmlFragment> subTree(HtmlFragment fragment) {
-        ArrayList<HtmlFragment> result = new ArrayList<>();
-        subTree(result, fragment);
-        return result;
-    }
-
-    private static void subTree(ArrayList<HtmlFragment> result, HtmlFragment fragment) {
-        result.add(fragment);
-        fragment.getChildren().forEach(child -> subTree(result, child));
-    }
-
-    public static void forSubTree(HtmlFragment fragment, Consumer<HtmlFragment> consumer) {
-        consumer.accept(fragment);
-        fragment.getChildren().forEach(x -> forSubTree(x, consumer));
     }
 
     private static class UpdateStructureArgImpl implements UpdateStructureArg {
@@ -50,7 +33,7 @@ public class HtmlFragmentUtil {
     }
 
     public static void updateStructure(HtmlFragment root) {
-        List<HtmlFragment> fragments = subTree(root);
+        List<HtmlFragment> fragments = root.subTree();
         UpdateStructureArgImpl arg = new UpdateStructureArgImpl();
 
         while (true) {

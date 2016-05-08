@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.github.ruediste.rendersnakeXT.canvas.StringHtmlConsumer;
-import com.github.ruediste1.lambdaPegParser.Var;
+import com.github.ruediste.rise.util.Var;
 
 public class FragmentCanvasTest {
 
