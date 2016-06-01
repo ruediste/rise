@@ -18,6 +18,7 @@ import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.i18n.ValidationFailure;
 import com.github.ruediste.rise.core.web.HttpRenderResult;
 import com.github.ruediste.rise.util.Var;
+import com.github.ruediste1.i18n.lString.LString;
 
 /**
  * A HTML fragment. Examples: ifFragment, forEachFragment, mixedFragment
@@ -33,6 +34,20 @@ public class HtmlFragment {
     private long fragmentNr = -1;
     private final Set<Binding> bindings = new HashSet<>();
     private boolean isValidationPresenter;
+    private List<LString> labels = new ArrayList<>();
+
+    public void addLabel(LString label) {
+        labels.add(label);
+    }
+
+    /**
+     * get all labels, recursively
+     */
+    public List<LString> getLabels() {
+        ArrayList<LString> result = new ArrayList<>();
+        forSubTree(f -> result.addAll(f.labels));
+        return labels;
+    }
 
     public HtmlFragment() {
     }
@@ -285,13 +300,11 @@ public class HtmlFragment {
         fragment.getChildren().forEach(x -> forSubTree(x, consumer));
     }
 
-    // TODO: make package visible
-    public long getFragmentNr() {
+    long getFragmentNr() {
         return fragmentNr;
     }
 
-    // TODO: make package visible
-    public void setFragmentNr(long fragmentNr) {
+    void setFragmentNr(long fragmentNr) {
         this.fragmentNr = fragmentNr;
     }
 

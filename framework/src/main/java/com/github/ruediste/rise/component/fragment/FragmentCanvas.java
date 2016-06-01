@@ -16,6 +16,7 @@ import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.binding.Binding;
 import com.github.ruediste.rise.component.binding.BindingUtil;
 import com.github.ruediste.rise.nonReloadable.lambda.Capture;
+import com.github.ruediste1.i18n.lString.LString;
 
 public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Html5Canvas<TSelf> {
 
@@ -216,6 +217,10 @@ public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Htm
         return DATA("rise-on-click", util.getParameterKey(fragment, "clicked")).render(fragment);
     }
 
+    default TSelf VALUE(@Capture Supplier<String> value) {
+        return VALUE(value, true);
+    }
+
     /**
      * Add a value attribute to an input object. If the provided supplier
      * accesses a controller property, a binding to this controller property is
@@ -225,8 +230,12 @@ public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Htm
      * Otherwise the value is read directly from the view state for each render
      * pass.
      */
-    default TSelf VALUE(@Capture Supplier<String> value) {
+    default TSelf VALUE(@Capture Supplier<String> value, boolean isLabelProperty) {
         BindingUtil.tryExtractBindingInfo(value).ifPresent(info -> {
+            if (isLabelProperty && info.modelProperty != null) {
+                internal_target().getLabelUtil().property(info.modelProperty).tryLabel()
+                        .ifPresent(label -> fMarkLabel(label));
+            }
             if (info.accessesController) {
                 // bind to the controller
                 ValueHandleImpl<String> viewVal = new ValueHandleImpl<>();
@@ -258,4 +267,12 @@ public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Htm
         return addAttribute("value", value).NAME(util.getParameterKey(fragment, "value")).render(fragment);
     }
 
+    /**
+     * Add a label to the current parent fragment Can be retrieved afterwards
+     * using {@link HtmlFragment#getLabels()} on any of the parent labels.
+     */
+    default TSelf fMarkLabel(LString label) {
+        internal_target().getParentFragment().addLabel(label);
+        return self();
+    }
 }

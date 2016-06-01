@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.github.ruediste.rise.component.fragment.FragmentJumpPad;
 import com.github.ruediste.rise.component.fragment.HtmlFragment;
 import com.github.ruediste.rise.component.reload.PageReloadRequest;
 import com.github.ruediste.rise.core.CoreUtil;
@@ -49,13 +50,13 @@ public class ComponentUtil implements ICoreUtil {
 
     public long getFragmentNr(HtmlFragment fragment) {
 
-        long result = fragment.getFragmentNr();
+        long result = FragmentJumpPad.getFragmentNr(fragment);
         if (result == -1) {
             // lazily set the component numbers. This allows components to
             // reference each other without caring about
             // the rendering order.
             result = pageInfo.getNextFragmentNr();
-            fragment.setFragmentNr(result);
+            FragmentJumpPad.setFragmentNr(fragment, result);
             pageInfo.getFragmentNrMap().put(result, fragment);
         }
         return result;

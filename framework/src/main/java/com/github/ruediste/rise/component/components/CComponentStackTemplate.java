@@ -6,7 +6,7 @@ public class CComponentStackTemplate extends ComponentTemplateBase<CComponentSta
 
     @Override
     public void doRender(CComponentStack component, RiseCanvas<?> html) {
-        html.render(component.peek());
+        html.addFragmentAndRender(component.getContainerFragment());
     }
 
 }

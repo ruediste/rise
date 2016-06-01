@@ -18,6 +18,7 @@ import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.component.ComponentTemplateIndex;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.fragment.HtmlFragment;
+import com.github.ruediste.rise.component.fragment.HtmlFragmentUtil;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.web.ContentRenderResult;
@@ -106,6 +107,10 @@ public class ReloadHandler implements Runnable {
             componentSessionInfo.destroyCurrentPage();
             coreRequestInfo.setActionResult(componentRequestInfo.getClosePageResult());
         } else if (coreRequestInfo.getActionResult() == null) {
+
+            // update structure
+            HtmlFragmentUtil.updateStructure(view.getRootFragment());
+
             // render result
             ByteArrayHtmlConsumer out = new ByteArrayHtmlConsumer();
             reloadFragment.getHtmlProducer().produce(out);

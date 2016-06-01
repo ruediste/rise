@@ -11,11 +11,15 @@ import com.github.ruediste.rendersnakeXT.canvas.HtmlProducer;
 import com.github.ruediste.rendersnakeXT.canvas.HtmlProducerHtmlCanvasTarget;
 import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.component.ComponentUtil;
+import com.github.ruediste1.i18n.label.LabelUtil;
 
 public class FragmentCanvasTarget extends DelegatingHtmlCanvasTarget {
 
     @Inject
     public ComponentUtil util;
+
+    @Inject
+    private LabelUtil labelUtil;
 
     private HtmlProducerHtmlCanvasTarget delegate = new HtmlProducerHtmlCanvasTarget();
     private GroupHtmlFragment parentFragment;
@@ -116,6 +120,7 @@ public class FragmentCanvasTarget extends DelegatingHtmlCanvasTarget {
     public void direct(Runnable runnable) {
         addProducer(cosumer -> {
             HtmlFragment fragment = toFragment(runnable, null);
+            HtmlFragmentUtil.updateStructure(fragment);
             fragment.getHtmlProducer().produce(cosumer);
         } , true);
     }
@@ -126,5 +131,9 @@ public class FragmentCanvasTarget extends DelegatingHtmlCanvasTarget {
 
     public SubControllerComponent getController() {
         return controller;
+    }
+
+    public LabelUtil getLabelUtil() {
+        return labelUtil;
     }
 }

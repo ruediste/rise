@@ -7,6 +7,7 @@ import javax.inject.Provider;
 
 import com.github.ruediste.rendersnakeXT.canvas.ByteArrayHtmlConsumer;
 import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvas;
+import com.github.ruediste.rise.component.fragment.HtmlFragmentUtil;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CurrentLocale;
 import com.github.ruediste.rise.core.IController;
@@ -66,6 +67,7 @@ public abstract class ViewMvcBase<TController extends IControllerMvc, TData, TCa
         TCanvas canvas = canvasProvider.get();
         render(canvas);
         canvas.flush();
+        HtmlFragmentUtil.updateStructure(canvas.internal_target().getParentFragment());
         ByteArrayHtmlConsumer consumer = new ByteArrayHtmlConsumer(out);
         canvas.internal_target().getProducers().forEach(p -> p.produce(consumer));
     }

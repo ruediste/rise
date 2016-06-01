@@ -1,13 +1,13 @@
 package com.github.ruediste.rise.component.components;
 
+import java.awt.event.ComponentEvent;
 import java.util.Deque;
 import java.util.LinkedList;
 
+import com.github.ruediste.rise.component.fragment.HtmlFragment;
+import com.github.ruediste.rise.component.fragment.HtmlFragment.EventHandlingOutcome;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ComponentBase;
-import com.github.ruediste.rise.component.tree.ComponentEvent;
-import com.github.ruediste.rise.component.tree.ComponentEventBase;
-import com.github.ruediste.rise.component.tree.ComponentTreeUtil;
 
 /**
  * Contains a stack of {@link Component}s. The components can be pushed and
@@ -23,92 +23,78 @@ import com.github.ruediste.rise.component.tree.ComponentTreeUtil;
 @DefaultTemplate(CComponentStackTemplate.class)
 public class CComponentStack extends ComponentBase<CComponentStack> {
 
-    Deque<Component> stack = new LinkedList<>();
+    Deque<HtmlFragment> stack = new LinkedList<>();
 
     /**
      * Pop the top component from the next containing {@link CComponentStack}
      */
-    public static class PopComponentEvent extends ComponentEventBase {
+    public static class PopComponentEvent {
 
-        public PopComponentEvent() {
-            super(ComponentEventType.BUBBLE);
-        }
     }
 
     /**
      * Push a component to the next containing {@link CComponentStack}
      */
-    public static class PushComponentEvent extends ComponentEventBase {
+    public static class PushComponentEvent {
 
-        final private Component component;
+        final private HtmlFragment fragment;
 
-        public PushComponentEvent(Component component) {
-            super(ComponentEventType.BUBBLE);
-            this.component = component;
+        public PushComponentEvent(HtmlFragment fragment) {
+            this.fragment = fragment;
         }
 
-        public Component getComponent() {
-            return component;
+        public HtmlFragment getFragment() {
+            return fragment;
         }
     }
+
+    HtmlFragment containerFragment;
 
     public CComponentStack() {
-        ComponentTreeUtil.registerEventListener(this, PopComponentEvent.class, e -> {
-            e.cancel();
+        containerFragment = new HtmlFragment();
+        containerFragment.register(PopComponentEvent.class, e -> {
             pop();
+            return EventHandlingOutcome.HANDLED;
         });
-        ComponentTreeUtil.registerEventListener(this, PushComponentEvent.class, e -> {
-            e.cancel();
-            push(e.getComponent());
+        containerFragment.register(PushComponentEvent.class, e -> {
+            push(e.getFragment());
+            return EventHandlingOutcome.HANDLED;
         });
     }
 
-    public CComponentStack(Component component) {
+    public CComponentStack(HtmlFragment fragment) {
         this();
-        push(component);
+        push(fragment);
     }
 
-    @Override
-    public Iterable<Component> getChildren() {
-        return stack;
-    }
-
-    @Override
-    public void childRemoved(Component child) {
-        stack.remove(child);
-    }
-
-    public Component peek() {
+    public HtmlFragment peek() {
         return stack.peek();
     }
 
     /**
      * @return the component stack (this)
      */
-    public CComponentStack push(Component e) {
-
+    public CComponentStack push(HtmlFragment e) {
         stack.push(e);
-        if (e.getParent() != null)
-            e.getParent().childRemoved(e);
-        e.parentChanged(this);
+        e.setParent(containerFragment);
         return this;
     }
 
-    public Component pop() {
-        Component tos = stack.pop();
-        tos.parentChanged(null);
+    public HtmlFragment pop() {
+        HtmlFragment tos = stack.pop();
+        tos.setParent(null);
         return tos;
     }
 
-    public static void raisePop(Component start) {
-        ComponentTreeUtil.raiseEvent(start, new CComponentStack.PopComponentEvent());
+    public HtmlFragment getContainerFragment() {
+        return containerFragment;
     }
 
-    public static void raisePush(Component start, Object controller) {
-        raisePush(start, new CController(controller));
+    public static void raisePop(HtmlFragment start) {
+        start.raiseEventBubbling(new CComponentStack.PopComponentEvent());
     }
 
-    public static void raisePush(Component start, Component componentToPush) {
-        ComponentTreeUtil.raiseEvent(start, new CComponentStack.PushComponentEvent(componentToPush));
+    public static void raisePush(HtmlFragment start, HtmlFragment fragmentToPush) {
+        start.raiseEventBubbling(new CComponentStack.PushComponentEvent(fragmentToPush));
     }
 }

@@ -12,6 +12,7 @@ import com.github.ruediste.rise.component.ComponentConfiguration;
 import com.github.ruediste.rise.component.ComponentPage;
 import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.component.ComponentUtil;
+import com.github.ruediste.rise.component.fragment.HtmlFragmentUtil;
 import com.github.ruediste.rise.core.ChainedRequestHandler;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
@@ -64,6 +65,9 @@ public class ViewRenderer extends ChainedRequestHandler {
                         ((SubControllerComponent) controller).applyConstraintViolations(violations);
                     }
                 });
+
+        // update structure
+        HtmlFragmentUtil.updateStructure(view.getRootFragment());
 
         // render result
         ByteArrayHtmlConsumer consumer = new ByteArrayHtmlConsumer();
