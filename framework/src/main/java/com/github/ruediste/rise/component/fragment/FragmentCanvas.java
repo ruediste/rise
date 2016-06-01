@@ -11,25 +11,78 @@ import java.util.function.Supplier;
 import com.github.ruediste.rendersnakeXT.canvas.Html5Canvas;
 import com.github.ruediste.rendersnakeXT.canvas.HtmlConsumer;
 import com.github.ruediste.rendersnakeXT.canvas.HtmlProducer;
+import com.github.ruediste.rise.api.ApiJumpPad;
+import com.github.ruediste.rise.component.ComponentUtil;
+import com.github.ruediste.rise.component.binding.Binding;
+import com.github.ruediste.rise.component.binding.BindingUtil;
+import com.github.ruediste.rise.nonReloadable.lambda.Capture;
 
 public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Html5Canvas<TSelf> {
 
     @Override
     FragmentCanvasTarget internal_target();
 
-    default TSelf write(HtmlProducer producer) {
-        internal_target().commitAttributes();
-        internal_target().addProducer(producer);
+    default TSelf render(HtmlProducer producer, boolean commitAttributes) {
+        internal_target().addProducer(producer, commitAttributes);
         return self();
     }
 
-    default TSelf write(HtmlFragment fragment) {
-        fragment.setParent(internal_target().getParentFragment());
-        return write(fragment.getHtmlProducer());
+    /**
+     * Add a fragment to the current parent fragment and render the producers of
+     * the fragment
+     */
+    default TSelf addFragmentAndRender(HtmlFragment fragment) {
+        internal_target().addFragmentAndRender(fragment);
+        return self();
     }
 
-    default HtmlFragment toFragment(HtmlFragment parent, Runnable renderer) {
-        return internal_target().toFragment(parent, renderer);
+    default TSelf render(HtmlFragment fragment) {
+        internal_target().render(fragment);
+        return self();
+    }
+
+    /**
+     * Execute the given runnable whenever the page is rendered.
+     */
+    default TSelf direct(Runnable runnable) {
+        internal_target().direct(runnable);
+        return self();
+    }
+
+    /**
+     * create a new fragment with the current parent of the canvas as parent
+     */
+    default TSelf toFragmentAndRender(Runnable renderer) {
+        HtmlFragment fragment = internal_target().toFragment(renderer);
+        return render(fragment);
+    }
+
+    /**
+     * create a new fragment with the current parent of the canvas as parent
+     */
+    default HtmlFragment toFragment(Runnable renderer) {
+        return internal_target().toFragment(renderer);
+    }
+
+    /**
+     * Create a fragment from the given renderer and set the specified parent
+     * fragment
+     * 
+     * @param parent
+     *            parent fragment to add the created fragment to, can be null
+     */
+    default HtmlFragment toFragment(Runnable renderer, HtmlFragment parent) {
+        return internal_target().toFragment(renderer, parent);
+    }
+
+    /**
+     * Render ifTru, depending on the condition.
+     * 
+     * the fragment is always present in the html structure.
+     */
+    default TSelf fIf(Supplier<Boolean> condition, Runnable ifTrue) {
+        return fIf(condition, ifTrue, () -> {
+        });
     }
 
     /**
@@ -38,10 +91,10 @@ public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Htm
      * Both cases are always present in the html structure.
      */
     default TSelf fIf(Supplier<Boolean> condition, Runnable ifTrue, Runnable ifFalse) {
-        return write(new HtmlFragment() {
+        return addFragmentAndRender(new HtmlFragment() {
             boolean currentState;
-            HtmlFragment trueFragment = toFragment(this, ifTrue);
-            HtmlFragment falseFragment = toFragment(this, ifFalse);
+            HtmlFragment trueFragment = toFragment(ifTrue, this);
+            HtmlFragment falseFragment = toFragment(ifFalse, this);
 
             @Override
             public Iterable<HtmlFragment> getChildren() {
@@ -72,7 +125,7 @@ public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Htm
      * recreated.
      */
     default TSelf fIfT(Supplier<Boolean> condition, Runnable ifTrue, Runnable ifFalse) {
-        return write(new HtmlFragment() {
+        return addFragmentAndRender(new HtmlFragment() {
             HtmlFragment currentFragment;
             boolean currentState;
 
@@ -94,7 +147,7 @@ public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Htm
                 Boolean newState = condition.get();
                 if (newState != currentState) {
                     currentState = newState;
-                    currentFragment = currentState ? toFragment(this, ifTrue) : toFragment(this, ifFalse);
+                    currentFragment = currentState ? toFragment(ifTrue, this) : toFragment(ifFalse, this);
                     arg.structureUpdated();
                 }
             }
@@ -107,7 +160,7 @@ public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Htm
     }
 
     default <T> TSelf fForEach(Supplier<Iterable<T>> items, Consumer<T> fragmentFactory) {
-        return write(new HtmlFragment() {
+        return addFragmentAndRender(new HtmlFragment() {
             Map<T, HtmlFragment> fragments = new HashMap<>();
             ArrayList<HtmlFragment> fragmentList = new ArrayList<>();
 
@@ -128,7 +181,7 @@ public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Htm
                 for (T item : items.get()) {
                     HtmlFragment fragment = fragments.remove(item);
                     if (fragment == null) {
-                        fragment = toFragment(this, () -> fragmentFactory.accept(item));
+                        fragment = toFragment(() -> fragmentFactory.accept(item), this);
                         arg.structureUpdated();
                     }
                     newFragments.put(item, fragment);
@@ -147,29 +200,62 @@ public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Htm
     }
 
     default TSelf RonClick(Runnable handler) {
-        new HtmlFragment(internal_target().getParentFragment()) {
+        ComponentUtil util = internal_target().util();
+        HtmlFragment fragment = new HtmlFragment(internal_target().getParentFragment()) {
             @Override
             public void processActions() {
-                // TODO check if handler should be executed
-                handler.run();
+                if (util.isParameterDefined(this, "clicked"))
+                    handler.run();
+            }
+
+            @Override
+            public String toString() {
+                return "onClick-clicked";
             }
         };
-        return DATA("rise-on-click", "0");
+        return DATA("rise-on-click", util.getParameterKey(fragment, "clicked")).render(fragment);
     }
 
-    default TSelf VALUE(Supplier<String> value) {
+    /**
+     * Add a value attribute to an input object. If the provided supplier
+     * accesses a controller property, a binding to this controller property is
+     * set up, with an intermediate value object as view state.
+     * 
+     * <p>
+     * Otherwise the value is read directly from the view state for each render
+     * pass.
+     */
+    default TSelf VALUE(@Capture Supplier<String> value) {
+        BindingUtil.tryExtractBindingInfo(value).ifPresent(info -> {
+            if (info.accessesController) {
+                // bind to the controller
+                ValueHandleImpl<String> viewVal = new ValueHandleImpl<>();
+                Binding binding = info.createBinding(viewVal);
+                ApiJumpPad.registerBinding(internal_target().getController(), binding);
+                internal_target().getParentFragment().getBindings().add(binding);
+                binding.pullUp();
+                VALUE(viewVal);
+            } else {
+                addAttribute("value", value);
+            }
+        }).ifFailure(() -> addAttribute("value", value));
         return self();
     }
 
     default TSelf VALUE(ValueHandle<String> value) {
-        new HtmlFragment(internal_target().getParentFragment()) {
+        ComponentUtil util = internal_target().util();
+        HtmlFragment fragment = new HtmlFragment(internal_target().getParentFragment()) {
             @Override
             public void applyValues() {
-                // TODO extract from parameters
-                value.set("abc");
+                util.getParameterValue(this, "value").ifPresent(value::set);
+            }
+
+            @Override
+            public String toString() {
+                return "value";
             }
         };
-        return addAttribute("VALUE", value).DATA("rise-send-value", /* TODO: */ "0");
+        return addAttribute("value", value).NAME(util.getParameterKey(fragment, "value")).render(fragment);
     }
 
 }

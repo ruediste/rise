@@ -18,7 +18,7 @@ public class TestEventController extends ControllerComponent {
             return new CPage()
                     .add(toComponent(html -> html.span().TEST_NAME("eventSpan").rON(JavaScriptEvent.click, () -> {
                         controller.eventCount++;
-                    }).content("fooBar"))).add(toComponentDirect(html -> html.write("eventCount: ").span()
+                    }).content("fooBar"))).add(toComponentDirect(html -> html.addFragmentAndRender("eventCount: ").span()
                             .TEST_NAME("eventCount").content(String.valueOf(controller.eventCount))));
 
         }

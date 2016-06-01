@@ -6,7 +6,6 @@ import javax.persistence.EntityManager;
 import com.github.ruediste.rise.api.ControllerComponent;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.core.ActionResult;
-import com.github.ruediste.rise.core.security.urlSigning.UrlUnsigned;
 import com.github.ruediste.rise.testApp.persistence.TestAppEntity;
 
 public class TestComponentController extends ControllerComponent {
@@ -25,7 +24,6 @@ public class TestComponentController extends ControllerComponent {
 
     TestAppEntity entity;
 
-    @UrlUnsigned
     public ActionResult initialize(long id) {
         entity = em.find(TestAppEntity.class, id);
         subControllerA.initialize(id);

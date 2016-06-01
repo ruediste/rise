@@ -2,21 +2,37 @@ package com.github.ruediste.rise.component.fragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.github.ruediste.rendersnakeXT.canvas.HtmlConsumer;
 import com.github.ruediste.rendersnakeXT.canvas.HtmlProducer;
+import com.github.ruediste.rise.component.binding.Binding;
+import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.component.validation.ValidationState;
+import com.github.ruediste.rise.component.validation.ValidationStatus;
+import com.github.ruediste.rise.core.CoreRequestInfo;
+import com.github.ruediste.rise.core.i18n.ValidationFailure;
+import com.github.ruediste.rise.core.web.HttpRenderResult;
+import com.github.ruediste.rise.util.Var;
 
 /**
  * A HTML fragment. Examples: ifFragment, forEachFragment, mixedFragment
  */
-public abstract class HtmlFragment {
+public class HtmlFragment {
 
     private HtmlFragment parent;
     private boolean rendered;
-    private HtmlProducer producer = this::produceHtml;
+    private HtmlProducer producer = (c) -> {
+        rendered = true;
+        produceHtml(c);
+    };
+    private long fragmentNr = -1;
+    private final Set<Binding> bindings = new HashSet<>();
+    private boolean isValidationPresenter;
 
     public HtmlFragment() {
     }
@@ -67,6 +83,28 @@ public abstract class HtmlFragment {
      */
     public void processActions() {
         // NOP
+    }
+
+    /**
+     * Handle an ajax request targeted at the given component.
+     * 
+     * <p>
+     * To create the corresponding URL use
+     * {@link HtmlFragmentBase#getAjaxUrl(Component)} . Anything you append to
+     * the url (prefixed with a "/") will be available as suffix.
+     * 
+     * <p>
+     * To handle the request you can either return a {@link HttpRenderResult} or
+     * handle the request in the method by using
+     * {@link CoreRequestInfo#getServletResponse()} and returning null
+     * 
+     * @return a {@link HttpRenderResult} which will be used to send the
+     *         response, or null if the response has already be sent.
+     * 
+     */
+
+    public HttpRenderResult handleAjaxRequest(String suffix) throws Throwable {
+        throw new UnsupportedOperationException();
     }
 
     public interface UpdateStructureArg {
@@ -174,7 +212,7 @@ public abstract class HtmlFragment {
      * this
      */
     public void raiseEventTunneling(Object event) {
-        raiseEvents(path(), event);
+        raiseEvents(pathFromRoot(), event);
     }
 
     /**
@@ -207,7 +245,7 @@ public abstract class HtmlFragment {
      * Return the path of a fragment, starting with the root and ending with the
      * target fragment
      */
-    public List<HtmlFragment> path() {
+    public List<HtmlFragment> pathFromRoot() {
         List<HtmlFragment> result = parents();
         Collections.reverse(result);
         return result;
@@ -245,5 +283,68 @@ public abstract class HtmlFragment {
     private static void forSubTree(HtmlFragment fragment, Consumer<HtmlFragment> consumer) {
         consumer.accept(fragment);
         fragment.getChildren().forEach(x -> forSubTree(x, consumer));
+    }
+
+    // TODO: make package visible
+    public long getFragmentNr() {
+        return fragmentNr;
+    }
+
+    // TODO: make package visible
+    public void setFragmentNr(long fragmentNr) {
+        this.fragmentNr = fragmentNr;
+    }
+
+    public Set<Binding> getBindings() {
+        return bindings;
+    }
+
+    private void forEachNonValidationPresenterInSubTree(Consumer<HtmlFragment> consumer) {
+        consumer.accept(this);
+        for (HtmlFragment child : getChildren()) {
+            if (!child.isValidationPresenter())
+                child.forEachNonValidationPresenterInSubTree(consumer);
+        }
+    }
+
+    public List<ValidationFailure> getValidationFailures() {
+        ArrayList<ValidationFailure> result = new ArrayList<>();
+        forEachNonValidationPresenterInSubTree(f -> result.addAll(f.getValidationFailures()));
+        return result;
+    }
+
+    public boolean isValidated() {
+        Var<Boolean> result = new Var<Boolean>(false);
+        forEachNonValidationPresenterInSubTree(c -> {
+            if (c.getValidationStateBearer().isDirectlyValidated())
+                result.setValue(true);
+        });
+        return result.getValue();
+    }
+
+    public ValidationStatus getValidationState() {
+        if (!isValidated())
+            return new ValidationStatus(ValidationState.NOT_VALIDATED, Collections.emptyList());
+        else {
+            List<ValidationFailure> failures = getValidationFailures();
+            if (failures.isEmpty())
+                return new ValidationStatus(ValidationState.SUCCESS, failures);
+            else
+                return new ValidationStatus(ValidationState.FAILED, failures);
+        }
+    }
+
+    private final ValidationStateBearer validationStateBearer = new ValidationStateBearer();
+
+    public boolean isValidationPresenter() {
+        return isValidationPresenter;
+    }
+
+    public void setValidationPresenter(boolean isValidationPresenter) {
+        this.isValidationPresenter = isValidationPresenter;
+    }
+
+    public ValidationStateBearer getValidationStateBearer() {
+        return validationStateBearer;
     }
 }

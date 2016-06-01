@@ -72,19 +72,10 @@ public class CButtonTemplate extends BootstrapComponentTemplateBase<CButton> {
         if (isLink) {
             html.bButtonA(argSupplier).CLASS("rise_button_link").rCOMPONENT_ATTRIBUTES(button)
                     .fIf(button.isDisabled(), () -> html.HREF("#"), () -> html.HREF(button.getTarget()))
-                    .renderChildren(button)._bButtonA();
+                    .add(button.getBody())._bButtonA();
         } else {
-            html.bButton(argSupplier).CLASS("rise_button").rCOMPONENT_ATTRIBUTES(button).renderChildren(button)
-                    ._bButton();
-        }
-    }
-
-    @Override
-    public void raiseEvents(CButton component) {
-        if (component.isDisabled())
-            return;
-        if (util.isParameterDefined(component, "clicked") && component.getHandler() != null) {
-            component.getHandler().run();
+            html.bButton(argSupplier).CLASS("rise_button").rCOMPONENT_ATTRIBUTES(button).RonClick(button.getHandler())
+                    .add(button.getBody())._bButton();
         }
     }
 

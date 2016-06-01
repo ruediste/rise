@@ -5,13 +5,14 @@ import java.util.function.Consumer;
 
 import com.github.ruediste.rendersnakeXT.canvas.FuncCanvas;
 import com.github.ruediste.rendersnakeXT.canvas.Html5Canvas;
-import com.github.ruediste.rise.component.ComponentUtil;
+import com.github.ruediste.rise.api.ViewComponentBase;
+import com.github.ruediste.rise.component.IViewQualifier;
+import com.github.ruediste.rise.component.fragment.FragmentCanvas;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ComponentBase;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
-import com.github.ruediste.rise.core.web.CoreAssetBundle;
 import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
@@ -19,7 +20,8 @@ import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.util.MethodInvocation;
 import com.github.ruediste1.i18n.lString.LString;
 
-public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends Html5Canvas<TSelf>, FuncCanvas<TSelf> {
+public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
+        extends Html5Canvas<TSelf>, FuncCanvas<TSelf>, FragmentCanvas<TSelf> {
 
     RiseCanvasHelper internal_riseHelper();
 
@@ -57,20 +59,6 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends Html5Canvas
         return ACTION(internal_riseHelper().getUtil().url(destination));
     }
 
-    default TSelf add(Component c) {
-        internal_riseHelper().add(c);
-        return self();
-    }
-
-    /**
-     * Write the supplied buffer directly to the output, but commit attributes
-     * beforehand
-     */
-    default TSelf writeRaw(byte[] buffer) {
-        internal_riseHelper().writeRaw(buffer);
-        return self();
-    }
-
     default TSelf TITLE(LString value) {
         return TITLE(value.resolve(internal_riseHelper().getCurrentLocale()));
     }
@@ -87,14 +75,13 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends Html5Canvas
         return write(value.resolve(internal_riseHelper().getCurrentLocale()));
     }
 
+    @Deprecated
     default TSelf render(Component c) {
-        internal_riseHelper().renderComponent(c, this);
         return self();
     }
 
+    @Deprecated
     default TSelf renderChildren(Component parent) {
-        for (Component c : parent.getChildren())
-            internal_riseHelper().renderComponent(c, this);
         return self();
     }
 
@@ -109,7 +96,7 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends Html5Canvas
      *            omitted
      */
     default TSelf TEST_NAME(String name) {
-        internal_riseHelper().TEST_NAME(name);
+        internal_riseHelper().TEST_NAME(this, name);
         return self();
     }
 
@@ -143,18 +130,28 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends Html5Canvas
         focusin, focusout, click
     }
 
-    /**
-     * Register an event handler on the current tag
-     */
-    default TSelf rON(JavaScriptEvent event, Runnable eventHandler) {
-        internal_riseHelper().ON(this, event, eventHandler);
+    default TSelf rCOMPONENT_ATTRIBUTES(ComponentBase<?> component) {
+        return self().CLASS(component.CLASS()).TEST_NAME(component.TEST_NAME()).fIf(component.isDisabled(),
+                () -> DISABLED());
+    }
+
+    default TSelf addView(ViewComponentBase<?> view) {
+        internal_target().addFragmentAndRender(view.getRootFragment());
         return self();
     }
 
-    default TSelf rCOMPONENT_ATTRIBUTES(ComponentBase<?> component) {
-        ComponentUtil componentUtil = internal_riseHelper().getComponentUtil();
-        return self().ID(componentUtil.getComponentId(component)).CLASS(component.CLASS())
-                .TEST_NAME(component.TEST_NAME()).fIf(component.isDisabled(), () -> DISABLED())
-                .DATA(CoreAssetBundle.componentAttributeNr, String.valueOf(componentUtil.getComponentNr(component)));
+    default TSelf addController(Object controller) {
+        internal_riseHelper().addController(this, controller);
+        return self();
+    }
+
+    default TSelf addController(Object controller, Class<? extends IViewQualifier> viewQualifier) {
+        internal_riseHelper().addController(this, controller, viewQualifier);
+        return self();
+    }
+
+    default TSelf add(Component c) {
+        internal_riseHelper().add(this, c);
+        return self();
     }
 }

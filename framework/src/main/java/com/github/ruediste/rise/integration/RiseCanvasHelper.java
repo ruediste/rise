@@ -1,15 +1,15 @@
 package com.github.ruediste.rise.integration;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.Locale;
 
 import javax.inject.Inject;
 
-import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasTarget;
+import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.component.ComponentPage;
+import com.github.ruediste.rise.component.ComponentTemplateIndex;
 import com.github.ruediste.rise.component.ComponentUtil;
-import com.github.ruediste.rise.component.components.CMixedRender;
+import com.github.ruediste.rise.component.ComponentViewRepository;
+import com.github.ruediste.rise.component.IViewQualifier;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreUtil;
@@ -19,7 +19,6 @@ import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetHelper;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetRequestMapper;
 import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
-import com.github.ruediste.rise.integration.RiseCanvas.JavaScriptEvent;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.google.common.base.Strings;
@@ -59,10 +58,11 @@ public class RiseCanvasHelper {
     @Inject
     Authz authz;
 
-    private ByteArrayOutputStream baos;
-    private HtmlCanvasTarget target;
-    private boolean isComponent;
-    private CMixedRender cRender;
+    @Inject
+    ComponentTemplateIndex componentTemplateIndex;
+
+    @Inject
+    ComponentViewRepository componentViewRepository;
 
     public void rCssLinks(RiseCanvas<?> html, AssetBundleOutput output) {
         output.forEach(asset -> {
@@ -84,68 +84,6 @@ public class RiseCanvasHelper {
         return util;
     }
 
-    /**
-     * Add a component to the canvas. Only available in component mode.
-     */
-    public void add(Component c) {
-        checkComponent();
-        target.commitAttributes();
-        commitBuffer();
-        cRender.add(c);
-    }
-
-    /**
-     * Commit the current content of the output stream to the
-     * {@link #getcRender()}
-     */
-    public void commitBuffer() {
-        checkComponent();
-        target.flush();
-        if (baos.size() > 0) {
-            cRender.add(baos.toByteArray());
-            baos.reset();
-        }
-    }
-
-    private void checkComponent() {
-        if (!isComponent)
-            throw new RuntimeException("Canvas was not initialized for component mode. Operation not allowed");
-    }
-
-    public void initializeForComponent(ByteArrayOutputStream baos, HtmlCanvasTarget target) {
-        this.baos = baos;
-        this.target = target;
-        cRender = new CMixedRender();
-        isComponent = true;
-    }
-
-    /**
-     * Initialize the heleper for component rendering
-     */
-    public void initializeForOutput(ByteArrayOutputStream baos, HtmlCanvasTarget target) {
-        this.baos = baos;
-        this.target = target;
-    }
-
-    public void writeRaw(byte[] buffer) {
-        target.commitAttributes();
-        target.flush();
-        try {
-            baos.write(buffer);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public CMixedRender getcRender() {
-        checkComponent();
-        return cRender;
-    }
-
-    public boolean isComponent() {
-        return isComponent;
-    }
-
     public Locale getCurrentLocale() {
         return currentLocale.getCurrentLocale();
     }
@@ -158,10 +96,6 @@ public class RiseCanvasHelper {
         return iconUtil;
     }
 
-    public void renderComponent(Component c, RiseCanvas<?> html) {
-        componentUtil.render(c, html);
-    }
-
     public ComponentUtil getComponentUtil() {
         return componentUtil;
     }
@@ -169,9 +103,9 @@ public class RiseCanvasHelper {
     /**
      * @see RiseCanvas#TEST_NAME(String)
      */
-    public void TEST_NAME(String name) {
+    public void TEST_NAME(RiseCanvas<?> html, String name) {
         if (coreConfiguration.isRenderTestName() && !Strings.isNullOrEmpty(name)) {
-            target.addAttribute("data-test-name", name);
+            html.DATA("test-name", name);
         }
     }
 
@@ -186,9 +120,16 @@ public class RiseCanvasHelper {
         return authz;
     }
 
-    public void ON(RiseCanvas<?> html, JavaScriptEvent event, Runnable eventHandler) {
-        checkComponent();
-        int handlerId = componentPage.registerEventHandler(eventHandler);
-        html.addAttribute("data-rise-reload-on-" + event, handlerId);
+    public void add(RiseCanvas<?> html, Component c) {
+        componentTemplateIndex.getTemplate(c).get().doRender(c, html);
     }
+
+    public void addController(RiseCanvas<?> html, Object controller, Class<? extends IViewQualifier> viewQualifier) {
+        html.addView(componentViewRepository.createView((SubControllerComponent) controller, viewQualifier));
+    }
+
+    public void addController(RiseCanvas<?> html, Object controller) {
+        html.addView(componentViewRepository.createView((SubControllerComponent) controller));
+    }
+
 }

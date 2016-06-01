@@ -20,7 +20,7 @@ import javax.inject.Singleton;
 import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 
-import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasTarget;
+import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvas;
 import com.github.ruediste.rise.core.argumentSerializer.ArgumentSerializer;
 import com.github.ruediste.rise.core.argumentSerializer.ClassArgumentSerializer;
 import com.github.ruediste.rise.core.argumentSerializer.EntityArgumentSerializer;
@@ -31,9 +31,7 @@ import com.github.ruediste.rise.core.argumentSerializer.SerializerHelper;
 import com.github.ruediste.rise.core.argumentSerializer.StringSerializer;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.web.PathInfo;
-import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.integration.RiseCanvas;
-import com.github.ruediste.rise.integration.RiseCanvasBase;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.CoreConfigurationNonRestartable;
 import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
@@ -260,18 +258,11 @@ public class CoreConfiguration {
     /**
      * Factory for the {@link RiseCanvas} subtype used by the application
      */
-    public Optional<Supplier<RiseCanvasBase<?>>> applicationCanvasFactory = Optional.empty();
+    public Optional<Supplier<HtmlCanvas<?>>> applicationCanvasFactory = Optional.empty();
 
-    public RiseCanvasBase<?> createApplicationCanvas() {
+    public HtmlCanvas<?> createApplicationCanvas() {
         return applicationCanvasFactory.map(f -> f.get()).orElseThrow(
                 () -> new RuntimeException("Initialize applicationCanvasFactory from your restartable application"));
-    }
-
-    public Optional<Function<HtmlCanvasTarget, BootstrapRiseCanvas<?>>> bootstrapCanvasFactory = Optional.empty();
-
-    public BootstrapRiseCanvas<?> createBootstrapCanvas(HtmlCanvasTarget target) {
-        return bootstrapCanvasFactory.map(f -> f.apply(target)).orElseThrow(
-                () -> new RuntimeException("Initialize bootstrapCanvasFactory from your restartable application"));
     }
 
     /**

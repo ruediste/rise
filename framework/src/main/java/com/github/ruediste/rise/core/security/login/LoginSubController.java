@@ -9,12 +9,7 @@ import org.slf4j.Logger;
 
 import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.component.FrameworkViewComponent;
-import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CButton;
-import com.github.ruediste.rise.component.components.CFormGroup;
-import com.github.ruediste.rise.component.components.CGroup;
-import com.github.ruediste.rise.component.components.CTextField;
-import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.security.authentication.UserNameNotFoundAuthenticationFailure;
 import com.github.ruediste.rise.core.security.authentication.UsernamePasswordAuthenticationRequest;
@@ -24,6 +19,7 @@ import com.github.ruediste.rise.core.security.authentication.core.Authentication
 import com.github.ruediste.rise.core.security.web.LoginManager;
 import com.github.ruediste.rise.core.web.RedirectRenderResult;
 import com.github.ruediste.rise.core.web.UrlSpec;
+import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.Label;
 import com.github.ruediste1.i18n.label.LabelUtil;
@@ -60,81 +56,36 @@ public class LoginSubController extends SubControllerComponent {
     public static class LoginView extends FrameworkViewComponent<LoginSubController> {
 
         @Override
-        protected Component createComponents() {
-            return new CGroup().add(toComponentBound(() -> controller.data(), html -> {
-                //@formatter:off
-                            if (controller.data().isTokenTheftDetected()) {
-                                html.div().CLASS("panel panel-danger")
-                                    .div().CLASS("panel-heading").content(Messages.TOKEN_TEFT_DETECTED_HEADING)
-                                    .div().CLASS("panel-body").content(Messages.TOKEN_TEFT_DETECTED_BODY)
-                                ._div();
-                            }
-                            else{
-                                List<LString> msgs=controller.data().getMessages();
-                                        if (!msgs.isEmpty()) {
-                                    html.div().CLASS("panel panel-warning")
-                                      .div().CLASS("panel-heading").content(Messages.LOGIN_FAILED)
-                                      .div().CLASS("panel-body")
-                                          .ul()
-                                          .fForEach(msgs, msg->html.li().content(msg))
-                                          ._ul()
-                                      ._div()
-                                    ._div();
-                                    }
-                                }
-                            //@formatter:on
-            })).add(new CFormGroup(new CTextField().bindText(() -> controller.data().getUserName())))
-                    .add(new CFormGroup(new CTextField().toPassword().bindText(() -> controller.data().getPassword())))
-                    .add(new CButton(controller, c -> c.login()));
+        protected void renderImpl(BootstrapRiseCanvas<?> html) {
+            html.bFormGroup();
+            if (controller.data.tokenTheftDetected) {
+                html.div().CLASS("panel panel-danger").div().CLASS("panel-heading")
+                        .content(Messages.TOKEN_TEFT_DETECTED_HEADING).div().CLASS("panel-body")
+                        .content(Messages.TOKEN_TEFT_DETECTED_BODY)._div();
+            } else {
+                List<LString> msgs = controller.data.messages;
+                if (!msgs.isEmpty()) {
+                    html.div().CLASS("panel panel-warning").div().CLASS("panel-heading").content(Messages.LOGIN_FAILED)
+                            .div().CLASS("panel-body").ul().fForEach(msgs, msg -> html.li().content(msg))._ul()._div()
+                            ._div();
+                }
+            }
+            html.span().write("userName")._span().input_text().VALUE(() -> controller.data.userName);
+            html.span().write("password")._span().input_text().VALUE(() -> controller.data.password);
+            html.add(new CButton(controller, c -> c.login()));
+
         }
     }
 
     @PropertiesLabeled
     public static class LoginData {
-        private String userName = "";
-        private String password = "";
-        private List<LString> messages = new ArrayList<>();
-        private boolean tokenTheftDetected;
-
-        public String getUserName() {
-            return userName;
-        }
-
-        public void setUserName(String userName) {
-            this.userName = userName;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public void setPassword(String password) {
-            this.password = password;
-        }
-
-        public List<LString> getMessages() {
-            return messages;
-        }
-
-        public void setMessage(List<LString> message) {
-            this.messages = message;
-        }
-
-        public boolean isTokenTheftDetected() {
-            return tokenTheftDetected;
-        }
-
-        public void setTokenTheftDetected(boolean tokenTheftDetected) {
-            this.tokenTheftDetected = tokenTheftDetected;
-        }
+        public String userName = "";
+        public String password = "";
+        public List<LString> messages = new ArrayList<>();
+        public boolean tokenTheftDetected;
     }
 
-    @Inject
-    BindingGroup<LoginData> data;
-
-    public LoginData data() {
-        return data.proxy();
-    }
+    LoginData data = new LoginData();
 
     @Inject
     CoreRequestInfo requestInfo;
@@ -153,14 +104,14 @@ public class LoginSubController extends SubControllerComponent {
     }
 
     public LoginSubController setTokenTheftDetected(boolean tokenTheftDetected) {
-        data.get().setTokenTheftDetected(tokenTheftDetected);
+        data.tokenTheftDetected = tokenTheftDetected;
         return this;
 
     }
 
     public LoginSubController setUserPwd(String userName, String password) {
-        data.get().setUserName(userName);
-        data.get().setPassword(password);
+        data.userName = userName;
+        data.password = password;
         return this;
     }
 
@@ -170,10 +121,10 @@ public class LoginSubController extends SubControllerComponent {
      */
     @Labeled
     public void login() {
-        data.pushDown();
-        data.get().setTokenTheftDetected(false);
-        UsernamePasswordAuthenticationRequest request = new UsernamePasswordAuthenticationRequest(
-                data.get().getUserName(), data.get().getPassword());
+        pushDown();
+        data.tokenTheftDetected = false;
+        UsernamePasswordAuthenticationRequest request = new UsernamePasswordAuthenticationRequest(data.userName,
+                data.password);
         request.setRememberMe(true);
 
         log.debug("Attempt to log in " + request.getUserName());
@@ -185,7 +136,7 @@ public class LoginSubController extends SubControllerComponent {
             closePage(new RedirectRenderResult(redirectUrl));
         } else {
             log.debug("Login failed");
-            List<LString> msgs = data.get().getMessages();
+            List<LString> msgs = data.messages;
             msgs.clear();
             for (AuthenticationFailure failure : result.getFailures()) {
                 if (failure instanceof UserNameNotFoundAuthenticationFailure)
@@ -193,8 +144,8 @@ public class LoginSubController extends SubControllerComponent {
                 else
                     msgs.add(labelUtil.enumMember(Messages.AUTHENTICATION_FAILED).label());
             }
-            data.get().setPassword("");
-            data.pullUp();
+            data.password = "";
+            pullUp();
         }
     }
 }

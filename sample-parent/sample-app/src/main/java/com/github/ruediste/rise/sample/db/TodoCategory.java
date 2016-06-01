@@ -8,7 +8,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
-import com.github.ruediste.rise.crud.annotations.CrudIdentifying;
 import com.github.ruediste1.i18n.label.Labeled;
 import com.github.ruediste1.i18n.label.PropertiesLabeled;
 
@@ -21,7 +20,6 @@ public class TodoCategory {
     @Id
     private long id;
 
-    @CrudIdentifying
     private String name;
 
     @OneToMany(mappedBy = "category")

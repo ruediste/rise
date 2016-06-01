@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 
 import com.github.ruediste.c3java.invocationRecording.MethodInvocationRecorder;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.component.tree.ComponentBase;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
 
@@ -20,21 +21,22 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
  * present on that method are shown.
  */
 @DefaultTemplate(CButtonTemplate.class)
-public class CButton extends MultiChildrenComponent<CButton> {
+public class CButton extends ComponentBase<CButton> {
     private Runnable handler;
     private ActionResult target;
     private Method invokedMethod;
     private boolean isDisabled;
+    private Component body;
 
     public CButton() {
     }
 
     public CButton(String text) {
-        add(new CText(text));
+        this.body = new CText(text);
     }
 
-    public CButton(Component child) {
-        add(child);
+    public CButton(Runnable body) {
+        this.body = new CRunnable(body);
     }
 
     /**
@@ -90,7 +92,7 @@ public class CButton extends MultiChildrenComponent<CButton> {
         setTarget(target);
         if (invokedMethod != null)
             TEST_NAME(invokedMethod.getName());
-        add(new CIconLabel().setMethod(invokedMethod).setShowIconOnly(showIconOnly));
+        body = new CIconLabel().setMethod(invokedMethod).setShowIconOnly(showIconOnly);
     }
 
     /**
@@ -105,7 +107,7 @@ public class CButton extends MultiChildrenComponent<CButton> {
         invokedMethod = MethodInvocationRecorder
                 .getLastInvocation((Class<T>) target.getClass(), t -> handler.accept(this, t)).getMethod();
         TEST_NAME(invokedMethod.getName());
-        add(new CIconLabel().setMethod(invokedMethod).setShowIconOnly(showIconOnly));
+        body = new CIconLabel().setMethod(invokedMethod).setShowIconOnly(showIconOnly);
     }
 
     public CButton setHandler(Runnable handler) {
@@ -140,6 +142,7 @@ public class CButton extends MultiChildrenComponent<CButton> {
         return this;
     }
 
+    @Override
     public boolean isDisabled() {
         return isDisabled;
     }
@@ -161,4 +164,7 @@ public class CButton extends MultiChildrenComponent<CButton> {
         this.invokedMethod = invokedMethod;
     }
 
+    public Component getBody() {
+        return body;
+    }
 }

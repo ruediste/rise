@@ -4,8 +4,6 @@ import javax.inject.Singleton;
 
 import com.github.ruediste.rise.core.navigation.Navigation;
 import com.github.ruediste.rise.core.navigation.NavigationsContainer;
-import com.github.ruediste.rise.sample.component.SampleComponentController;
-import com.github.ruediste.rise.sample.crud.CrudController;
 import com.github.ruediste.rise.sample.welcome.WelcomeController;
 import com.github.ruediste1.i18n.label.MembersLabeled;
 
@@ -26,8 +24,13 @@ public class Navigations extends NavigationsContainer {
     @Override
     protected void initializeImpl() {
         topNavigation = build().add(go(WelcomeController.class).index())
-                .add(go(SampleComponentController.class).index()).group(GroupLabels.CRUD)
-                .add(go(CrudController.class).showTodos()).add(go(CrudController.class).showTodoCategories())
-                .add(go(CrudController.class).browse(User.class, null), "Users")._group().getResult();
+                // .add(go(SampleComponentController.class).index())
+                //
+                // .group(GroupLabels.CRUD)
+                // .add(go(CrudController.class).showTodos()).add(go(CrudController.class).showTodoCategories())
+                // .add(go(CrudController.class).browse(User.class, null),
+                // "Users")._group()
+
+        .getResult();
     }
 }

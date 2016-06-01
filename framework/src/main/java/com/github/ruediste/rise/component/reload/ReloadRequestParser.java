@@ -48,7 +48,7 @@ public class ReloadRequestParser implements RequestParser {
             throw t;
         }
         try {
-            request.setComponentNr(Long.parseLong(req.getParameter("nr")));
+            request.setFragmentNr(Long.parseLong(req.getParameter("fragmentNr")));
         } catch (Throwable t) {
             log.warn("no component nr parameter sent along with reload request");
             throw t;

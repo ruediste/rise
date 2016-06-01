@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import com.github.ruediste.rendersnakeXT.canvas.ByteArrayHtmlConsumer;
 import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvas;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CurrentLocale;
@@ -63,9 +64,10 @@ public abstract class ViewMvcBase<TController extends IControllerMvc, TData, TCa
 
     public void render(ByteArrayOutputStream out) {
         TCanvas canvas = canvasProvider.get();
-        canvas.initializeForOutput(out);
         render(canvas);
         canvas.flush();
+        ByteArrayHtmlConsumer consumer = new ByteArrayHtmlConsumer(out);
+        canvas.internal_target().getProducers().forEach(p -> p.produce(consumer));
     }
 
     protected abstract void render(TCanvas html);

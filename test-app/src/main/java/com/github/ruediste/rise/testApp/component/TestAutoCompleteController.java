@@ -65,7 +65,7 @@ public class TestAutoCompleteController extends ControllerComponent {
                     }).setAutoSearchMode(controller.autoSearchMode).bindItem(() -> controller.data().getEntry()))
                     .add(new CButton(controller, x -> x.pushPull())).add(new CButton(controller, x -> x.push()))
                     .add(new CButton(controller, x -> x.pull()))
-                    .add(toComponentDirect(html -> html.write("Chosen Entry: ").span().TEST_NAME("chosenEntry")
+                    .add(toComponentDirect(html -> html.addFragmentAndRender("Chosen Entry: ").span().TEST_NAME("chosenEntry")
                             .content(String.valueOf(controller.data().getEntry()))));
 
         }

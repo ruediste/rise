@@ -1,54 +1,38 @@
 package com.github.ruediste.rise.component.components;
 
-import java.util.Collections;
-
+import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.api.ViewComponentBase;
-import com.github.ruediste.rise.component.ComponentViewRepository;
-import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.component.ComponentConfiguration;
 import com.github.ruediste.rise.component.tree.ComponentBase;
 import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
 
 /**
  * Embeds the view of a controller
  */
-@DefaultTemplate(RenderChildrenTemplate.class)
+@DefaultTemplate(CControllerTemplate.class)
 public class CController extends ComponentBase<CController> {
 
-    private Component rootComponent;
+    private ViewComponentBase<?> view;
 
     public CController() {
     }
 
-    public CController(Object controller) {
-        this();
-        setController(controller);
+    public CController(SubControllerComponent ctrl) {
+        setController(ctrl);
     }
 
-    public CController setController(Object controller) {
-        if (rootComponent != null)
-            rootComponent.parentChanged(null);
+    public CController setController(SubControllerComponent controller) {
         if (controller == null)
-            rootComponent = null;
+            view = null;
         else {
-            ViewComponentBase<Object> view = InjectorsHolder.getRestartableInjector()
-                    .getInstance(ComponentViewRepository.class).createView(controller);
-            rootComponent = view.getRootComponent();
-            rootComponent.parentChanged(this);
+            view = InjectorsHolder.getRestartableInjector().getInstance(ComponentConfiguration.class)
+                    .createView(controller, false);
         }
         return this;
     }
 
-    @Override
-    public Iterable<Component> getChildren() {
-        if (rootComponent == null)
-            return Collections.emptyList();
-        else
-            return Collections.singletonList(rootComponent);
-    }
-
-    @Override
-    public void childRemoved(Component child) {
-        throw new RuntimeException("Should not happen");
+    public ViewComponentBase<?> getView() {
+        return view;
     }
 
 }

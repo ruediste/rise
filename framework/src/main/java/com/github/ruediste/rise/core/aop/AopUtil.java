@@ -230,7 +230,12 @@ public class AopUtil {
                 if (entry.typeMatcher.test(typeToken)) {
                     if (methods == null) {
                         methods = new ArrayList<>();
-                        Enhancer.getMethods(typeToken.getRawType(), null, methods);
+                        Class<?> rawType = typeToken.getRawType();
+                        try {
+                            Enhancer.getMethods(rawType, null, methods);
+                        } catch (Throwable t) {
+                            throw new RuntimeException("Error while reading overrideable methods of " + rawType, t);
+                        }
                     }
                     for (Method method : methods) {
                         if (entry.methodMatcher.test(typeToken, method)) {

@@ -1,282 +1,153 @@
 package com.github.ruediste.rise.component.binding;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.Objects;
+import java.util.function.Supplier;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
-import com.github.ruediste.rise.component.binding.transformers.DateToStringTransformer;
-import com.github.ruediste.rise.component.binding.transformers.Transformers;
-import com.github.ruediste.rise.component.validation.ValidationStatusRepository;
-import com.github.ruediste.rise.util.Var;
+import com.github.ruediste.rise.api.ControllerComponent;
+import com.github.ruediste.rise.api.ViewComponentBase;
+import com.github.ruediste.rise.component.fragment.FragmentCanvas;
+import com.github.ruediste.rise.component.fragment.ValueHandle;
+import com.github.ruediste.rise.component.fragment.ValueHandleImpl;
+import com.github.ruediste.rise.nonReloadable.lambda.Capture;
+import com.github.ruediste.rise.nonReloadable.lambda.LambdaRunner;
 
+@RunWith(LambdaRunner.class)
 public class BindingUtilTest {
 
-    public static class TestA extends AttachedPropertyBearerBase {
-        private int valueA;
-        private int valueROx;
-        private String valueString;
+    private static class TestModel extends ControllerComponent {
+        public String str;
 
-        @SuppressWarnings("unused")
-        private int valueWO;
-        private TestB b;
-
-        public int getValueA() {
-            return valueA;
-        }
-
-        public void setValueA(int valueA) {
-            this.valueA = valueA;
-        }
-
-        public TestB getB() {
-            return b;
-        }
-
-        public void setB(TestB b) {
-            this.b = b;
-        }
-
-        public int getValueRO() {
-            return valueROx;
-        }
-
-        public void setValueWO(int valueWO) {
-            this.valueWO = valueWO;
-        }
-
-        public String getValueString() {
-            return valueString;
-        }
-
-        public void setValueString(String valueString) {
-            this.valueString = valueString;
-        }
-
-    }
-
-    public static class TestB {
-        private int valueB;
-        private TestC c;
-
-        private Date valueDate;
-
-        private List<Integer> list = new ArrayList<>();
-
-        public int getValueB() {
-            return valueB;
-        }
-
-        public void setValueB(int valueB) {
-            this.valueB = valueB;
-        }
-
-        public TestC getC() {
-            return c;
-        }
-
-        public void setC(TestC c) {
-            this.c = c;
-        }
-
-        public Date getValueDate() {
-            return valueDate;
-        }
-
-        public void setValueDate(Date valueDate) {
-            this.valueDate = valueDate;
-        }
-
-        public List<Integer> getList() {
-            return list;
-        }
-
-        public void setList(List<Integer> list) {
-            this.list = list;
-        }
-
-    }
-
-    public static class TestC {
-        private int valueC;
-
-        public int getValueC() {
-            return valueC;
-        }
-
-        public void setValueC(int valueC) {
-            this.valueC = valueC;
+        public String getStrReadonly() {
+            return "foo";
         }
     }
 
-    BindingGroup<TestB> groupB;
-    Transformers transformers;
-    private TestA a;
-    private TestB b;
+    private TestModel model;
+    private TestView view;
+
+    <T> T capture(@Capture T value) {
+        return value;
+    }
 
     @Before
     public void before() {
-        groupB = new BindingGroup<>();
-        groupB.validationStatusRepository = mock(ValidationStatusRepository.class);
-        groupB.initialize(TestB.class);
-        transformers = new Transformers();
-        transformers.dateToStringTransformer = new DateToStringTransformer();
-        a = new TestA();
-        b = new TestB();
-        groupB.set(b);
+        model = new TestModel();
+        view = new TestView();
+        view.setController(model);
     }
 
     @Test
     public void simple() {
-
-        // establish binding
-        BindingUtil.bind(a, x -> x.setValueA(groupB.proxy().getValueB()));
-
-        // pull up
-        b.valueB = 2;
-        groupB.pullUp();
-        assertEquals(2, a.valueA);
-
-        // push down
-        a.valueA = 3;
-        groupB.pushDown();
-        assertEquals(3, b.valueB);
+        BindingInfo<String> info = BindingUtil.extractBindingInfo(capture(() -> model.str), null);
+        assertEquals("str", info.modelProperty.getName());
+        assertTrue(info.isTwoWay);
     }
 
     @Test
-    public void simpleTransformer() {
-
-        // establish binding
-        BindingUtil.bind(a, x -> x.setValueString(transformers.dateToString(groupB.proxy().getValueDate())));
-
-        // pull up
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        cal.clear();
-        cal.set(2014, 0, 1);
-        b.valueDate = cal.getTime();
-        groupB.pullUp();
-        assertEquals("1/1/14", a.valueString);
-
-        // push down
-        a.valueString = "1/2/14";
-        groupB.pushDown();
-        cal.set(2014, 0, 2);
-        assertEquals(cal.getTime(), b.valueDate);
+    public void oneWay() {
+        BindingInfo<String> info = BindingUtil.extractBindingInfo(capture(() -> model.getStrReadonly()), null);
+        assertFalse(info.isTwoWay);
     }
 
     @Test
-    public void simpleOneWay() {
+    public void simpleBinding() {
+        ValueHandle<String> value = new ValueHandleImpl<>();
 
-        // establish binding
-        BindingUtil.bindOneWay(a, x -> x.setValueA(groupB.proxy().getValueB()));
+        BindingInfo<String> info = BindingUtil.extractBindingInfo(capture(() -> model.str), value);
 
-        // pull up
-        b.valueB = 2;
-        groupB.pullUp();
-        assertEquals(2, a.valueA);
+        model.str = "bar";
+        Binding binding = info.createBinding(value);
+        binding.pullUp();
+        assertEquals("bar", value.get());
 
-        // push down, nothing should happen
-        a.valueA = 3;
-        groupB.pushDown();
-        assertEquals(2, b.valueB);
+        value.set("Hello");
+        binding.pushDown();
+        assertEquals("Hello", model.str);
     }
 
-    @Test(expected = RuntimeException.class)
-    public void noProxyAccessed() {
-        // establish binding
-        BindingUtil.bind(a, x -> x.setValueA(4));
+    TwoWayBindingTransformer<String, Integer> stringToIntTransformer = new TwoWayBindingTransformer<String, Integer>() {
 
+        @Override
+        protected Integer transformImpl(String source) {
+            return Integer.valueOf(source);
+        }
+
+        @Override
+        protected String transformInvImpl(Integer target) {
+            return Objects.toString(target);
+        }
+    };
+
+    BindingTransformer<String, Integer> stringToIntTransformerOneWay = new BindingTransformer<String, Integer>() {
+
+        @Override
+        protected Integer transformImpl(String source) {
+            return Integer.valueOf(source);
+        }
+    };
+
+    @Test
+    public void withTransformer() {
+        TestModel model = new TestModel();
+        BindingInfo<Integer> info = BindingUtil
+                .extractBindingInfo(capture(() -> stringToIntTransformer.transform(model.str)), null);
+        assertEquals("str", info.modelProperty.getName());
+        assertEquals(stringToIntTransformer, info.transformer);
+        assertTrue(info.isTwoWay);
     }
 
     @Test
-    public void simpleRO() {
-        // establish binding
-        BindingUtil.bind(a, x -> groupB.proxy().setValueB(x.getValueRO()));
+    public void withTransformerBinding() {
+        TestModel model = new TestModel();
+        ValueHandleImpl<Integer> value = new ValueHandleImpl<>();
+        BindingInfo<Integer> info = BindingUtil
+                .extractBindingInfo(capture(() -> stringToIntTransformer.transform(model.str)), value);
 
-        // pull up
-        b.valueB = 2;
-        groupB.pullUp();
-        assertEquals(0, a.valueROx);
+        model.str = "1";
+        Binding binding = info.createBinding(value);
+        binding.pullUp();
+        assertEquals(1, (int) value.get());
 
-        // push down
-        a.valueROx = 3;
-        groupB.pushDown();
-        assertEquals(3, b.valueB);
+        value.set(5);
+        binding.pushDown();
+        assertEquals("5", model.str);
     }
 
     @Test
-    public void nested() {
-        TestC c = new TestC();
-        b.setC(c);
+    public void withTransformerOneWay() {
+        TestModel model = new TestModel();
+        BindingInfo<Integer> info = BindingUtil
+                .extractBindingInfo(capture(() -> stringToIntTransformerOneWay.transform(model.str)), null);
+        assertFalse(info.isTwoWay);
+    }
 
-        // establish binding
-        BindingUtil.bind(a, x -> x.setValueA(groupB.proxy().getC().getValueC()));
+    private class TestView extends ViewComponentBase<TestModel> {
 
-        // pull up
-        c.valueC = 2;
-        groupB.pullUp();
-        assertEquals(2, a.valueA);
+        void setController(TestModel ctrl) {
+            this.controller = ctrl;
+        }
 
-        // push down
-        a.valueA = 3;
-        groupB.pushDown();
-        assertEquals(3, c.valueC);
+        Supplier<String> str() {
+            return capture(() -> controller.str);
+        }
+
+        @Override
+        protected void render(FragmentCanvas<?> html) {
+
+        }
     }
 
     @Test
-    public void explicit() {
-
-        // establish binding
-        BindingUtil.bind(a, () -> groupB.proxy(), data -> a.valueA = data.valueB + 1,
-                data -> data.valueB = a.valueA - 1);
-
-        // pull up
-        b.valueB = 2;
-        groupB.pullUp();
-        assertEquals(3, a.valueA);
-
-        // push down
-        a.valueA = 5;
-        groupB.pushDown();
-        assertEquals(4, b.valueB);
-    }
-
-    @Test
-    public void testBindModelPropertySetter() {
-        Var<Integer> var = new Var<>();
-        BindingUtil.bindModelProperty(a, () -> groupB.proxy().getValueB(), var::setValue, var::getValue);
-
-        b.setValueB(4);
-        groupB.pullUp();
-        assertEquals((Object) 4, var.getValue());
-        var.setValue(5);
-        groupB.pushDown();
-        assertEquals(5, b.getValueB());
-    }
-
-    @Test
-    public void testBindModelPropertyUpdateCollection() {
-        Var<Integer> var = new Var<>();
-        b.getList().add(4);
-        BindingUtil.bindModelProperty(a, () -> groupB.proxy().getList(), x -> {
-            var.setValue(x.get(0));
-        }, x -> {
-            x.clear();
-            x.add(var.getValue());
-        });
-
-        groupB.pullUp();
-        assertEquals((Object) 4, var.getValue());
-        var.setValue(5);
-        groupB.pushDown();
-        assertEquals((Object) 5, b.getList().get(0));
+    public void testAccessController() {
+        BindingInfo<String> info = BindingUtil.extractBindingInfo(view.str(), null);
+        assertTrue(info.accessesController);
     }
 }

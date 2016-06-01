@@ -11,16 +11,16 @@ import java.util.function.Supplier;
  */
 public class Try<T> {
 
-    RuntimeException exception;
+    Supplier<RuntimeException> exception;
     T value;
 
-    private Try(RuntimeException exception, T value) {
+    private Try(Supplier<RuntimeException> exception, T value) {
         super();
         this.exception = exception;
         this.value = value;
     }
 
-    public static <T> Try<T> failure(RuntimeException exception) {
+    public static <T> Try<T> failure(Supplier<RuntimeException> exception) {
         return new Try<>(exception, null);
     }
 
@@ -30,7 +30,7 @@ public class Try<T> {
 
     public T get() {
         if (exception != null)
-            throw exception;
+            throw exception.get();
         return value;
     }
 
@@ -52,21 +52,29 @@ public class Try<T> {
         return exception == null;
     }
 
-    public void ifPresent(Consumer<T> consumer) {
+    public Try<T> ifPresent(Consumer<T> consumer) {
         if (exception == null)
             consumer.accept(value);
+        return this;
     }
 
-    public void ifFailure(Consumer<RuntimeException> consumer) {
+    public Try<T> ifFailure(Runnable action) {
         if (exception != null)
-            consumer.accept(exception);
+            action.run();
+        return this;
+    }
+
+    public Try<T> ifFailure(Consumer<RuntimeException> consumer) {
+        if (exception != null)
+            consumer.accept(exception.get());
+        return this;
     }
 
     public static <T> Try<T> of(Optional<T> optional, Supplier<RuntimeException> failureSupplier) {
         if (optional.isPresent())
             return Try.of(optional.get());
         else
-            return Try.failure(failureSupplier.get());
+            return Try.failure(failureSupplier);
     }
 
     @Override

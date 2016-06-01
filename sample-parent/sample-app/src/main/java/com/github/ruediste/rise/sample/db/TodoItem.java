@@ -5,7 +5,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
-import com.github.ruediste.rise.crud.annotations.CrudBrowserColumn;
 import com.github.ruediste1.i18n.label.Label;
 import com.github.ruediste1.i18n.label.Labeled;
 import com.github.ruediste1.i18n.label.PropertiesLabeled;
@@ -20,7 +19,6 @@ public class TodoItem {
     @Id
     private long id;
 
-    @CrudBrowserColumn
     private String name;
 
     @ManyToOne

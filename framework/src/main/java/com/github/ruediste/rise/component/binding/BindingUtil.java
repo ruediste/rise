@@ -1,246 +1,114 @@
 package com.github.ruediste.rise.component.binding;
 
-import java.util.function.Consumer;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
-import com.github.ruediste.c3java.properties.PropertyAccessor.AccessorType;
-import com.github.ruediste.c3java.properties.PropertyPath;
-import com.github.ruediste.c3java.properties.PropertyUtil;
-import com.github.ruediste.rise.util.Pair;
+import javax.inject.Singleton;
 
-/**
- * Interface to define bindings.
- *
- * @see BindingGroup
- */
+import com.github.ruediste.c3java.properties.PropertyInfo;
+import com.github.ruediste.c3java.properties.PropertyUtil;
+import com.github.ruediste.rise.api.ViewComponentBase;
+import com.github.ruediste.rise.component.fragment.ValueHandle;
+import com.github.ruediste.rise.nonReloadable.lambda.LambdaExpression;
+import com.github.ruediste.rise.nonReloadable.lambda.expression.MemberExpression;
+import com.github.ruediste.rise.nonReloadable.lambda.expression.MemberExpressionType;
+import com.github.ruediste.rise.nonReloadable.lambda.expression.NullExpressionVisitor;
+import com.github.ruediste.rise.nonReloadable.lambda.expression.ThisExpression;
+import com.github.ruediste.rise.nonReloadable.lambda.expression.UnaryExpression;
+import com.github.ruediste.rise.nonReloadable.lambda.expression.UnaryExpressionType;
+import com.github.ruediste.rise.util.Try;
+
+@Singleton
 public class BindingUtil {
 
-    /**
-     * Establish a one-way or two-way binding, depending on the properties
-     * involved
-     */
-    static public <TView extends AttachedPropertyBearer> Pair<BindingGroup<?>, Binding<?>> bind(TView view,
-            Consumer<TView> expression) {
-        return bind(view, expression, false);
+    private static final MemberExpressionExtractor MEMBER_EXPRESSION_EXTRACTOR = new MemberExpressionExtractor();
+    private static final Method transformMethod;
+    private static final Field controllerField;
+
+    static {
+        try {
+            transformMethod = BindingTransformer.class.getMethod("transform", Object.class);
+            controllerField = ViewComponentBase.class.getDeclaredField("controller");
+        } catch (NoSuchMethodException | SecurityException | NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    static public <TComponent extends AttachedPropertyBearer> Pair<BindingGroup<?>, Binding<?>> bind(
-            TComponent component, Consumer<TComponent> expression, boolean oneWay) {
-        BindingExpressionExecutionRecord info = BindingExpressionExecutionRecorder.collectBindingExpressionLog(() -> {
-            expression.accept(BindingUtil.<TComponent> createComponentProxy(component.getClass()));
-        });
+    public static <T> BindingInfo<T> extractBindingInfo(Supplier<T> lambda, ValueHandle<T> viewValueHandle) {
+        return tryExtractBindingInfo(lambda).get();
+    }
 
-        if (info.getInvolvedBindingGroup() == null) {
-            throw new RuntimeException("No binding group was involved in the expression. "
-                    + "Make sure you accsss BindingGroup::proxy() during the execution of the binding expression");
+    public static <T> Try<BindingInfo<T>> tryExtractBindingInfo(Supplier<T> lambda) {
+        BindingInfo<T> info = new BindingInfo<T>();
+        info.lambda = lambda;
+        LambdaExpression<Object> exp = LambdaExpression.parse(lambda);
+        MemberExpression memberExp = exp.getBody().accept(MEMBER_EXPRESSION_EXTRACTOR);
+        // check for a transformer
+        if (transformMethod.equals(memberExp.getMember())) {
+            info.transformer = (BindingTransformer<?, ?>) exp.withBody(memberExp.getInstance()).compile()
+                    .apply(new Object[] {});
+            memberExp = memberExp.getArguments().get(0).accept(MEMBER_EXPRESSION_EXTRACTOR);
         }
 
-        Binding<?> binding = new Binding<>();
-        binding.setComponent(component);
-        binding.componentPath = PropertyUtil.toPath(info.componentRecorder);
-        binding.modelPath = PropertyUtil.toPath(info.modelRecorder);
-
-        boolean isModelRead = PropertyUtil.getAccessor(info.modelRecorder.getLastInvocation().getMethod())
-                .getType() == AccessorType.GETTER;
-
-        boolean doPullUp;
-        boolean doPushDown;
-
-        // determine binding direction
-        if (oneWay) {
-            doPullUp = isModelRead;
-            doPushDown = !doPullUp;
-        } else {
-            doPushDown = binding.componentPath.getAccessedProperty().isReadable()
-                    && binding.modelPath.getAccessedProperty().isWriteable();
-            doPullUp = binding.componentPath.getAccessedProperty().isWriteable()
-                    && binding.modelPath.getAccessedProperty().isReadable();
+        // get accessed property
+        Optional<PropertyInfo> modelProperty = PropertyUtil.tryGetProperty(memberExp.getMember());
+        if (!modelProperty.isPresent()) {
+            MemberExpression tmp = memberExp;
+            return Try.failure(() -> new RuntimeException("Unable to get property for " + tmp.getMember()));
         }
-        // set push down lambda if possible
-        if (doPushDown) {
+        info.modelProperty = modelProperty.get();
 
-            binding.setPushDown(model -> {
-                Object value = binding.componentPath.evaluate(component);
-                if (info.transformer != null) {
-                    if (isModelRead && !info.transformInv) {
-                        value = ((TwoWayBindingTransformer) info.transformer).transformInv(value);
-                    } else {
-                        value = ((BindingTransformer) info.transformer).transform(value);
-                    }
-                }
-                binding.modelPath.set(model, value);
-            });
+        // determine writeability
+        if (info.modelProperty.isWriteable()) {
+            // might be two way, but take transformer into account
+            info.isTwoWay = info.transformer == null || info.transformer instanceof TwoWayBindingTransformer;
         }
 
-        // set pull up lambda if possible
-        if (doPullUp) {
+        // determine if the controller is accessed
+        info.accessesController = Boolean.TRUE
+                .equals(memberExp.getInstance().accept(new IsControllerAccessedVisitor()));
 
-            binding.setPullUp(model -> {
-                Object value;
-                if (model == null)
-                    value = null;
-                else
-                    value = binding.modelPath.evaluate(model);
-                if (info.transformer != null) {
-                    if (isModelRead && !info.transformInv) {
-                        value = ((BindingTransformer) info.transformer).transform(value);
-                    } else {
-                        value = ((TwoWayBindingTransformer) info.transformer).transformInv(value);
-                    }
-                }
-                binding.componentPath.set(component, value);
-            });
+        // create binding
+        Function<Object[], ?> instanceFunction = exp.withBody(memberExp.getInstance()).compile();
+        info.propertyOwnerSupplier = () -> instanceFunction.apply(new Object[] {});
+
+        return Try.of(info);
+    }
+
+    private static class IsControllerAccessedVisitor extends NullExpressionVisitor<Boolean> {
+
+        @Override
+        public Boolean visit(MemberExpression e) {
+            if (e.getExpressionType() == MemberExpressionType.FieldAccess && controllerField.equals(e.getMember())
+                    && e.getInstance() instanceof ThisExpression)
+                return true;
+            return e.getInstance().accept(this);
         }
 
-        // register binding
-        info.getInvolvedBindingGroup().addBindingUntyped(binding);
-        return Pair.of(info.getInvolvedBindingGroup(), binding);
+        @Override
+        public Boolean visit(UnaryExpression e) {
+            if (e.getExpressionType() == UnaryExpressionType.Convert)
+                return e.getFirst().accept(this);
+            return null;
+        }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static <TView> TView createComponentProxy(Class<?> viewClass) {
-        return (TView) BindingExpressionExecutionRecorder.getCurrentLog().componentRecorder.getProxy((Class) viewClass);
+    private static class MemberExpressionExtractor extends NullExpressionVisitor<MemberExpression> {
+        @Override
+        public MemberExpression visit(MemberExpression e) {
+            return e;
+        }
+
+        @Override
+        public MemberExpression visit(UnaryExpression e) {
+            if (e.getExpressionType() == UnaryExpressionType.Convert)
+                return e.getFirst().accept(this);
+            return null;
+        }
+
     }
 
-    /**
-     * Establish a one-way binding accoding to the given expression
-     */
-    static public <TView extends AttachedPropertyBearer> void bindOneWay(TView view, Consumer<TView> expression) {
-        bind(view, expression, true);
-    }
-
-    /**
-     * Add a binding to a binding group, sepecified by an accessor
-     * 
-     * @param bindingGroupAccessor
-     *            access {@link BindingGroup#proxy()} of the binding group to
-     *            add the binding to
-     * @param binding
-     *            the binding to add to the {@link BindingGroup}
-     */
-    public static <T> void bind(Supplier<T> bindingGroupAccessor, Binding<T> binding) {
-        BindingExpressionExecutionRecord info = BindingExpressionExecutionRecorder.collectBindingExpressionLog(() -> {
-            bindingGroupAccessor.get();
-        });
-
-        info.getInvolvedBindingGroup().addBindingUntyped(binding);
-    }
-
-    /**
-     * Add a binding to a binding group.
-     * 
-     * @param pullUp
-     *            executed for a pull up. The current value of the binding group
-     *            is passed as argument
-     * @param pushDown
-     *            executedfor a push down. The current value of the binding
-     *            group is passed as argument
-     */
-    static public <T> void bind(AttachedPropertyBearer component, BindingGroup<T> group, Consumer<T> pullUp,
-            Consumer<T> pushDown) {
-        Binding<T> binding = new Binding<>();
-        binding.setComponent(component);
-        binding.setPullUp(pullUp);
-        binding.setPushDown(pushDown);
-        group.addBinding(binding);
-    }
-
-    /**
-     * Add a binding to a binding group sepecified by an accessor.
-     * 
-     * @param <T>
-     *            type of the {@link BindingGroup}
-     * @param component
-     *            component determining the life cycle of the component
-     * @param bindingGroupAccessor
-     *            access {@link BindingGroup#proxy()} of the binding group to
-     *            add the binding to
-     */
-    static public <T> void bind(AttachedPropertyBearer component, Supplier<T> bindingGroupAccessor, Consumer<T> pullUp,
-            Consumer<T> pushDown) {
-
-        Binding<T> binding = new Binding<>();
-        binding.setComponent(component);
-        binding.setPullUp(pullUp);
-        binding.setPushDown(pushDown);
-
-        bind(bindingGroupAccessor, binding);
-    }
-
-    /**
-     * Bind a model property to a component property.
-     * 
-     * @param component
-     *            component determining the life cycle of the binding
-     * @param modelPropertyAccessor
-     *            accessor of the model property
-     * @param pullUp
-     *            passed the value of the property during pull up
-     * @param pushDown
-     *            supplier of the new property value for push down
-     */
-    @SuppressWarnings("unchecked")
-    static public <T> Pair<BindingGroup<?>, Binding<?>> bindModelProperty(AttachedPropertyBearer component,
-            Supplier<T> modelPropertyAccessor, Consumer<T> pullUp, Supplier<T> pushDown) {
-        BindingExpressionExecutionRecord info = BindingExpressionExecutionRecorder.collectBindingExpressionLog(() -> {
-            modelPropertyAccessor.get();
-        });
-
-        Binding<Object> binding = new Binding<>();
-        binding.setComponent(component);
-        PropertyPath modelPath = PropertyUtil.toPath(info.modelRecorder.getInvocations());
-        binding.modelPath = modelPath;
-        binding.setPullUp(data -> {
-            Object propertyValue = modelPath.evaluate(data);
-            pullUp.accept((T) propertyValue);
-        });
-
-        binding.setPushDown(data -> {
-            T value = pushDown.get();
-            modelPath.set(data, value);
-        });
-
-        info.getInvolvedBindingGroup().addBindingUntyped(binding);
-        return Pair.of(info.getInvolvedBindingGroup(), binding);
-    }
-
-    /**
-     * Bind a model property to a component property.
-     * 
-     * @param component
-     *            component determining the life cycle of the binding
-     * @param modelPropertyAccessor
-     *            accessor of the model property
-     * @param pullUp
-     *            passed the value of the property during pull up
-     * @param pushDown
-     *            passed the falue of the porperty during push down
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    static public <T> Pair<?, Binding<?>> bindModelProperty(AttachedPropertyBearer component,
-            Supplier<T> modelPropertyAccessor, Consumer<T> pullUp, Consumer<T> pushDown) {
-        BindingExpressionExecutionRecord info = BindingExpressionExecutionRecorder.collectBindingExpressionLog(() -> {
-            modelPropertyAccessor.get();
-        });
-
-        Binding<Object> binding = new Binding<>();
-        binding.setComponent(component);
-        PropertyPath modelPath = PropertyUtil.toPath(info.modelRecorder.getInvocations());
-        binding.modelPath = modelPath;
-        binding.setPullUp(data -> {
-            Object propertyValue = modelPath.evaluate(data);
-            pullUp.accept((T) propertyValue);
-        });
-
-        binding.setPushDown(data -> {
-            Object propertyValue = modelPath.evaluate(data);
-            pushDown.accept((T) propertyValue);
-        });
-
-        info.getInvolvedBindingGroup().addBindingUntyped(binding);
-        return Pair.of(info.getInvolvedBindingGroup(), binding);
-    }
 }

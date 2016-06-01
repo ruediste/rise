@@ -81,8 +81,8 @@ public class TestClickEditController extends ControllerComponent {
                             new CButton(controller,
                                     x -> x.push()))
                     .add(new CButton(controller, x -> x.pull()))
-                    .add(toComponentDirect(html -> html.write("Line: ").span().TEST_NAME("testLine")
-                            .content(String.valueOf(controller.data().getTestLine())).write("AutoCompleteValue: ")
+                    .add(toComponentDirect(html -> html.addFragmentAndRender("Line: ").span().TEST_NAME("testLine")
+                            .content(String.valueOf(controller.data().getTestLine())).addFragmentAndRender("AutoCompleteValue: ")
                             .span().TEST_NAME("autoCompleteValue")
                             .content(String.valueOf(controller.data().getAutoComplete()))));
 

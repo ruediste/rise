@@ -10,14 +10,14 @@ import javax.inject.Inject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 
+import com.github.ruediste.rendersnakeXT.canvas.ByteArrayHtmlConsumer;
 import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.ComponentPage;
 import com.github.ruediste.rise.component.ComponentPageHandleRepository;
 import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.component.ComponentTemplateIndex;
 import com.github.ruediste.rise.component.ComponentUtil;
-import com.github.ruediste.rise.component.tree.Component;
-import com.github.ruediste.rise.component.tree.ComponentTreeUtil;
+import com.github.ruediste.rise.component.fragment.HtmlFragment;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.web.ContentRenderResult;
@@ -65,7 +65,7 @@ public class ReloadHandler implements Runnable {
 
         ViewComponentBase<?> view = page.getView();
 
-        Component reloadComponent = util.getComponent(request.getComponentNr());
+        HtmlFragment reloadFragment = util.getFragment(request.getFragmentNr());
 
         // parse the data
         List<Map<String, Object>> rawData;
@@ -83,20 +83,22 @@ public class ReloadHandler implements Runnable {
         request.setParameterData(data);
 
         // apply request values
-        List<Component> components = ComponentTreeUtil.subTree(reloadComponent);
+        List<HtmlFragment> reloadedFragments = reloadFragment.subTree();
 
-        for (Component c : components) {
-            if (util.wasRendered(c))
-                componentTemplateIndex.getTemplate(c).ifPresent(t -> t.applyValues(c));
+        for (HtmlFragment fragment : reloadedFragments) {
+            if (fragment.isRendered())
+                fragment.applyValues();
         }
 
-        // raise events
-        request.getParameterValue("event_triggered").ifPresent(nrStr -> {
-            page.getEventHandler(Integer.valueOf(nrStr)).run();
-        });
-        for (Component c : components) {
-            if (util.wasRendered(c))
-                componentTemplateIndex.getTemplate(c).ifPresent(t -> t.raiseEvents(c));
+        // process actions
+        for (HtmlFragment fragment : reloadedFragments) {
+            if (fragment.isRendered())
+                fragment.processActions();
+        }
+
+        // clear rendered flags
+        for (HtmlFragment fragment : reloadedFragments) {
+            fragment.setRendered(false);
         }
 
         // check if a destination has been defined
@@ -105,9 +107,9 @@ public class ReloadHandler implements Runnable {
             coreRequestInfo.setActionResult(componentRequestInfo.getClosePageResult());
         } else if (coreRequestInfo.getActionResult() == null) {
             // render result
-            page.incrementRenderNr();
-            byte[] buffer = util.renderComponents(page, reloadComponent);
-            coreRequestInfo.setActionResult(new ContentRenderResult(buffer, r -> {
+            ByteArrayHtmlConsumer out = new ByteArrayHtmlConsumer();
+            reloadFragment.getHtmlProducer().produce(out);
+            coreRequestInfo.setActionResult(new ContentRenderResult(out.getByteArray(), r -> {
                 r.setContentType(coreConfiguration.htmlContentType);
                 if (view instanceof HttpServletResponseCustomizer) {
                     ((HttpServletResponseCustomizer) view).customizeServletResponse(r);

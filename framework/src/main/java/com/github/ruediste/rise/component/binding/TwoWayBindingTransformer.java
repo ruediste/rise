@@ -9,15 +9,7 @@ public abstract class TwoWayBindingTransformer<TSource, TTarget> extends Binding
      * Perform the inverse transformation
      */
     public final TSource transformInv(TTarget target) {
-
-        BindingExpressionExecutionRecord info = BindingExpressionExecutionRecorder.getCurrentLog();
-        if (info == null) {
-            return transformInvImpl(target);
-        } else {
-            info.transformer = this;
-            info.transformInv = true;
-            return null;
-        }
+        return transformInvImpl(target);
     }
 
     protected abstract TSource transformInvImpl(TTarget target);

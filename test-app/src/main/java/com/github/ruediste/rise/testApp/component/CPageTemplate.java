@@ -3,6 +3,7 @@ package com.github.ruediste.rise.testApp.component;
 import javax.inject.Inject;
 
 import com.github.ruediste.rise.component.components.CPage;
+import com.github.ruediste.rise.component.components.CReload;
 import com.github.ruediste.rise.component.components.ComponentTemplateBase;
 import com.github.ruediste.rise.core.web.CoreAssetBundle;
 import com.github.ruediste.rise.core.web.assetBundles.BootstrapBundle;
@@ -77,7 +78,11 @@ public class CPageTemplate extends ComponentTemplateBase<CPage> {
 
             @Override
             protected void renderBody(TestCanvas html) {
-                html.renderChildren(component);
+                Runnable body = component.body();
+                if (body == null)
+                    throw new RuntimeException("Body of page is null");
+
+                html.add(new CReload(body));
             }
         });
     }

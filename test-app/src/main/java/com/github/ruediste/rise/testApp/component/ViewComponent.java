@@ -1,20 +1,21 @@
 package com.github.ruediste.rise.testApp.component;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import com.github.ruediste.rise.api.ViewComponentBase;
-import com.github.ruediste.rise.component.ComponentFactory;
-import com.github.ruediste.rise.component.ComponentFactoryUtil;
+import com.github.ruediste.rise.component.fragment.FragmentCanvas;
 import com.github.ruediste.rise.testApp.TestCanvas;
 
-public abstract class ViewComponent<TController> extends ViewComponentBase<TController>
-        implements ComponentFactory<TestCanvas> {
+public abstract class ViewComponent<TController extends SubViewController> extends ViewComponentBase<TController> {
 
     @Inject
-    ComponentFactoryUtil util;
+    Provider<TestCanvas> canvasProvider;
 
     @Override
-    public ComponentFactoryUtil internal_componentFactoryUtil() {
-        return util;
+    protected void render(FragmentCanvas<?> html) {
+        renderImpl((TestCanvas) html);
     }
+
+    protected abstract void renderImpl(TestCanvas html);
 }

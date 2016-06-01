@@ -29,7 +29,7 @@ public class TestSortableController extends ControllerComponent {
                             .setChildComponentFactory(CText::new).setTestNameExtractor(x -> x))
                     .add(new CButton(controller, x -> x.pullUp())).add(new CButton(controller, x -> x.pushDown()))
                     .add(toComponentDirect(html -> html.span().TEST_NAME("controllerStatus")
-                            .write(String.valueOf(controller.data.get().items))._span()));
+                            .addFragmentAndRender(String.valueOf(controller.data.get().items))._span()));
         }
     }
 

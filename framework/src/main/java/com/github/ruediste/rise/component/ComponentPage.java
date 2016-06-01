@@ -1,11 +1,10 @@
 package com.github.ruediste.rise.component;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.github.ruediste.rise.api.ControllerComponent;
 import com.github.ruediste.rise.api.ViewComponentBase;
-import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.component.fragment.HtmlFragment;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerSet;
 import com.github.ruediste.rise.util.GenericEvent;
 import com.github.ruediste.rise.util.GenericEventManager;
@@ -35,17 +34,8 @@ public class ComponentPage {
 
     private final GenericEventManager<Object> destroyEvent = new GenericEventManager<>();
 
-    private final Map<Long, Component> componentNrMap = new MapMaker().weakValues().makeMap();
-    private long maxComponentNr = 0;
-
-    private int nextEventHandlerId = 0;
-    private Map<Integer, Runnable> eventHandlers = new HashMap<>();
-
-    /**
-     * Incremented at the start of each render phase. Use to detect if a
-     * component was rendered or not in the last render phase.
-     */
-    private long renderNr;
+    private final Map<Long, HtmlFragment> fragmentNrMap = new MapMaker().weakValues().makeMap();
+    private long maxFragmentNr = 0;
 
     public IControllerComponent getController() {
         return controller;
@@ -100,35 +90,12 @@ public class ComponentPage {
         destroyEvent.fire(null);
     }
 
-    /**
-     * Get an event handler based on it's id
-     */
-    public Runnable getEventHandler(int handlerId) {
-        return eventHandlers.get(handlerId);
+    public Map<Long, HtmlFragment> getFragmentNrMap() {
+        return fragmentNrMap;
     }
 
-    /**
-     * Register an event handler.
-     */
-    public int registerEventHandler(Runnable handler) {
-        int id = nextEventHandlerId++;
-        eventHandlers.put(id, handler);
-        return id;
+    public long getNextFragmentNr() {
+        return maxFragmentNr++;
     }
 
-    public Map<Long, Component> getComponentNrMap() {
-        return componentNrMap;
-    }
-
-    public long getNextComponentNr() {
-        return maxComponentNr++;
-    }
-
-    public long getRenderNr() {
-        return renderNr;
-    }
-
-    public void incrementRenderNr() {
-        this.renderNr++;
-    }
 }

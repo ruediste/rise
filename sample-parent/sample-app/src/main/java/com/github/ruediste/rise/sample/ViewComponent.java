@@ -1,22 +1,18 @@
 package com.github.ruediste.rise.sample;
 
-import javax.inject.Inject;
-
+import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.api.ViewComponentBase;
-import com.github.ruediste.rise.component.ComponentFactory;
-import com.github.ruediste.rise.component.ComponentFactoryUtil;
+import com.github.ruediste.rise.component.fragment.FragmentCanvas;
 
 /**
  * Base class for views for the component framework.
  */
-public abstract class ViewComponent<TController> extends ViewComponentBase<TController>
-        implements ComponentFactory<SampleCanvas> {
-
-    @Inject
-    ComponentFactoryUtil util;
+public abstract class ViewComponent<TController extends SubControllerComponent> extends ViewComponentBase<TController> {
 
     @Override
-    public ComponentFactoryUtil internal_componentFactoryUtil() {
-        return util;
+    protected final void render(FragmentCanvas<?> html) {
+        doRender((SampleCanvas) html);
     }
+
+    protected abstract void doRender(SampleCanvas html);
 }

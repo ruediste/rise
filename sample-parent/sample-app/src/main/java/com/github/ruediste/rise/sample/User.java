@@ -14,8 +14,6 @@ import com.github.ruediste.rise.api.InjectParameter;
 import com.github.ruediste.rise.core.persistence.Updating;
 import com.github.ruediste.rise.core.security.login.PasswordHash;
 import com.github.ruediste.rise.core.security.login.PasswordHashingService;
-import com.github.ruediste.rise.crud.annotations.CrudBrowserColumn;
-import com.github.ruediste.rise.crud.annotations.CrudDisplayAction;
 import com.github.ruediste.rise.integration.GlyphiconIcon;
 import com.github.ruediste.rise.sample.front.SampleRight;
 import com.github.ruediste1.i18n.label.Labeled;
@@ -30,7 +28,6 @@ public class User {
     @Id
     private long id;
 
-    @CrudBrowserColumn
     private String name;
 
     @Embedded
@@ -71,7 +68,6 @@ public class User {
         this.hash = hash;
     }
 
-    @CrudDisplayAction
     @Labeled
     @GlyphiconIcon(Glyphicon.bullhorn)
     @Updating

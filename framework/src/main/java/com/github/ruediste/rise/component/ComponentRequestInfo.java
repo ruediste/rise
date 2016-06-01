@@ -1,12 +1,12 @@
 package com.github.ruediste.rise.component;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
-import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.core.scopes.RequestScoped;
 import com.github.ruediste.rise.core.web.HttpRenderResult;
 
@@ -17,7 +17,7 @@ public class ComponentRequestInfo {
 
     private HttpRenderResult closePageResult;
 
-    Map<BindingGroup<?>, Set<ConstraintViolation<?>>> initialConstraintViolationsMap;
+    Map<Object, Set<ConstraintViolation<?>>> initialConstraintViolationsMap;
 
     private boolean isComponentRequest;
 
@@ -77,21 +77,18 @@ public class ComponentRequestInfo {
 
     @FunctionalInterface
     public interface InitialConstraintViolationConsumer {
-        <T> void accept(BindingGroup<T> group, Set<ConstraintViolation<T>> violations);
+        void accept(Object controller, Set<ConstraintViolation<?>> violations);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void forEachInitialConstraintViolation(InitialConstraintViolationConsumer consumer) {
         if (initialConstraintViolationsMap != null) {
-            initialConstraintViolationsMap.entrySet()
-                    .forEach(e -> consumer.accept((BindingGroup) e.getKey(), (Set) e.getValue()));
+            initialConstraintViolationsMap.entrySet().forEach(e -> consumer.accept(e.getKey(), e.getValue()));
         }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <T> void addInitialContraintViolation(BindingGroup<T> group, Set<ConstraintViolation<T>> violations) {
+    public void addInitialContraintViolations(Object controller, Set<? extends ConstraintViolation<?>> violations) {
         if (initialConstraintViolationsMap == null)
             initialConstraintViolationsMap = new HashMap<>();
-        initialConstraintViolationsMap.put(group, (Set) violations);
+        initialConstraintViolationsMap.computeIfAbsent(controller, x -> new HashSet<>()).addAll(violations);
     }
 }

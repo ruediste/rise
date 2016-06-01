@@ -1,12 +1,10 @@
 package com.github.ruediste.rise.component.components;
 
-import java.util.function.Supplier;
-
-import com.github.ruediste.rise.component.tree.RelationsComponent;
+import com.github.ruediste.rise.component.tree.ComponentBase;
 import com.github.ruediste1.i18n.lString.LString;
 
 @DefaultTemplate(CTextTemplate.class)
-public class CText extends RelationsComponent<CText> {
+public class CText extends ComponentBase<CText> {
 
     private LString text;
 
@@ -37,13 +35,4 @@ public class CText extends RelationsComponent<CText> {
         return this;
     }
 
-    public CText bindTextString(Supplier<String> supplier) {
-        bind(x -> x.setTextString(supplier.get()));
-        return this;
-    }
-
-    public CText bindText(Supplier<LString> supplier) {
-        bind(x -> x.setText(supplier.get()));
-        return this;
-    }
 }

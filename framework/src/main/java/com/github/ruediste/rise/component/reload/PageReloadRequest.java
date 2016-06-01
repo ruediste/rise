@@ -14,7 +14,7 @@ import com.google.common.collect.Multimap;
 @RequestScoped
 public class PageReloadRequest {
     private long pageNr;
-    private long componentNr;
+    private long fragmentNr;
     private Multimap<String, Object> parameterData;
 
     public long getPageNr() {
@@ -25,12 +25,12 @@ public class PageReloadRequest {
         this.pageNr = pageNr;
     }
 
-    public long getComponentNr() {
-        return componentNr;
+    public long getFragmentNr() {
+        return fragmentNr;
     }
 
-    public void setComponentNr(long componentNr) {
-        this.componentNr = componentNr;
+    public void setFragmentNr(long componentNr) {
+        this.fragmentNr = componentNr;
     }
 
     /**

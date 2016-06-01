@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.core.i18n;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,6 +83,8 @@ public class ValidationUtil {
 
     public List<ValidationFailure> toFailures(Iterable<? extends ConstraintViolation<?>> violations,
             ValidationFailureSeverity severity) {
+        if (violations == null)
+            return Collections.emptyList();
         return StreamSupport.stream(violations.spliterator(), false).<ValidationFailure> map(v -> {
             LString message = getMessage(v);
             return new ValidationFailure() {

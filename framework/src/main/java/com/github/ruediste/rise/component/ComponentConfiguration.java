@@ -3,7 +3,6 @@ package com.github.ruediste.rise.component;
 import java.time.Duration;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;
@@ -12,6 +11,7 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletResponse;
 
+import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.initial.ComponentControllerInvoker;
 import com.github.ruediste.rise.component.initial.ComponentRequestMapperImpl;
@@ -196,15 +196,16 @@ public class ComponentConfiguration {
         ajaxParserSupplier = ajaxParser::get;
     }
 
-    public Supplier<BiFunction<IControllerComponent, Class<? extends IViewQualifier>, ViewComponentBase<?>>> viewFactorySupplier;
-    public BiFunction<IControllerComponent, Class<? extends IViewQualifier>, ViewComponentBase<?>> viewFactory;
+    public Supplier<ViewFactory> viewFactorySupplier;
+    public ViewFactory viewFactory;
 
-    public ViewComponentBase<?> createView(IControllerComponent controller) {
-        return createView(controller, null);
+    public ViewComponentBase<?> createView(SubControllerComponent controller, boolean setAsRootView) {
+        return createView(controller, setAsRootView, null);
     }
 
-    public ViewComponentBase<?> createView(IControllerComponent controller, Class<? extends IViewQualifier> qualifier) {
-        return viewFactory.apply(controller, qualifier);
+    public ViewComponentBase<?> createView(SubControllerComponent controller, boolean setAsRootView,
+            Class<? extends IViewQualifier> qualifier) {
+        return viewFactory.createView(controller, setAsRootView, qualifier);
     }
 
     public String reloadPath = "/~component/reload";

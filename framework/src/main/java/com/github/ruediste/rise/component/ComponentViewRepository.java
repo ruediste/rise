@@ -13,6 +13,7 @@ import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 
+import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndex;
@@ -40,6 +41,9 @@ public class ComponentViewRepository {
 
     @Inject
     ClassLoader classLoader;
+
+    @Inject
+    ComponentPage componentPage;
 
     Map<Pair<String, String>, ViewEntry> viewMap = new HashMap<>();
 
@@ -86,20 +90,14 @@ public class ComponentViewRepository {
     }
 
     /**
-     * Create a view for the given controller
-     */
-    public <T> ViewComponentBase<T> createView(T controller) {
-        return createView(controller, null);
-    }
-
-    /**
      * Create a view for the given controller and qualifier.
      * 
      * @param qualifier
      *            qualifier class, or null if no qualifier is set
      */
     @SuppressWarnings("unchecked")
-    public <T> ViewComponentBase<T> createView(T controller, Class<? extends IViewQualifier> qualifier) {
+    public <T extends SubControllerComponent> ViewComponentBase<T> createView(T controller, boolean setAsRootView,
+            Class<? extends IViewQualifier> qualifier) {
         // get view, trying super classes
         ViewEntry entry = null;
         {
@@ -121,6 +119,8 @@ public class ComponentViewRepository {
         // create view instance
         Class<?> viewClass = AsmUtil.loadClass(Type.getObjectType(entry.viewClassInternalName), classLoader);
         ViewComponentBase<T> result = (ViewComponentBase<T>) injector.getInstance(viewClass);
+        if (setAsRootView)
+            componentPage.setView(result);
         result.initialize(controller);
         return result;
     }

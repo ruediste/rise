@@ -4,7 +4,10 @@ import javax.inject.Inject;
 
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
 import com.github.ruediste.rise.component.ComponentUtil;
+import com.github.ruediste.rise.component.fragment.FragmentCanvas;
+import com.github.ruediste.rise.component.fragment.HtmlFragment;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste1.i18n.lString.LString;
@@ -12,13 +15,16 @@ import com.github.ruediste1.i18n.lString.LString;
 /**
  * Base class for view displaying {@link Component}s
  */
-public abstract class ViewComponentBase<TController> extends AttachedPropertyBearerBase {
+public abstract class ViewComponentBase<TController extends SubControllerComponent> extends AttachedPropertyBearerBase {
 
     @Inject
     ComponentUtil componentUtil;
 
+    @Inject
+    public CoreConfiguration config;
+
     protected TController controller;
-    private Component rootComponent;
+    private HtmlFragment rootFragment;
 
     public TController getController() {
         return controller;
@@ -29,23 +35,19 @@ public abstract class ViewComponentBase<TController> extends AttachedPropertyBea
      */
     public final void initialize(TController controller) {
         this.controller = controller;
-        rootComponent = createComponents();
+        FragmentCanvas<?> html = (FragmentCanvas<?>) config.createApplicationCanvas();
+        html.internal_target().setController(controller);
+        render(html);
+        html.internal_target().commitAttributes();
+        html.internal_target().flush();
+        rootFragment = html.internal_target().getParentFragment();
     }
 
     /**
-     * Create the components of this view and return the root component. This
-     * method is called after the instantiation of the view. The result is
-     * written to {@link #rootComponent}.
+     * Render this view to the provided canvas. This method is called after the
+     * instantiation of the view. The result is used to initialize
      */
-    abstract protected Component createComponents();
-
-    /**
-     * Return the root component of this view. The root component does not
-     * change after initialization.
-     */
-    public Component getRootComponent() {
-        return rootComponent;
-    }
+    abstract protected void render(FragmentCanvas<?> html);
 
     protected LString label(Class<?> clazz) {
         return componentUtil.labelUtil().type(clazz).label();
@@ -71,4 +73,9 @@ public abstract class ViewComponentBase<TController> extends AttachedPropertyBea
     protected ActionInvocationBuilder path() {
         return componentUtil.path();
     }
+
+    public HtmlFragment getRootFragment() {
+        return rootFragment;
+    }
+
 }

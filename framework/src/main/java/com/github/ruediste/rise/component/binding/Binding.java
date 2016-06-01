@@ -1,44 +1,26 @@
 package com.github.ruediste.rise.component.binding;
 
-import java.util.function.Consumer;
-
-import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
-import com.github.ruediste.c3java.properties.PropertyPath;
+import com.github.ruediste.rise.component.fragment.ValidationStateBearer;
 
 /**
- * A binding between a model and a component property
+ * Represents a general binding
  * 
- * @see BindingGroup
+ * <img src="doc-files/bindingOverview.png" alt="">
  */
-public class Binding<TData> {
-    private AttachedPropertyBearer component;
-    private Consumer<TData> pullUp;
-    private Consumer<TData> pushDown;
-    public PropertyPath componentPath;
-    public PropertyPath modelPath;
+public interface Binding {
 
-    public Consumer<TData> getPullUp() {
-        return pullUp;
-    }
+    void pullUp();
 
-    public void setPullUp(Consumer<TData> pullUp) {
-        this.pullUp = pullUp;
-    }
+    void pushDown();
 
-    public Consumer<TData> getPushDown() {
-        return pushDown;
-    }
+    /**
+     * Return the validation state bearer for this binding, used to propagate
+     * validation failures. Null if no bearer is available.
+     */
+    ValidationStateBearer getValidationStateBearer();
 
-    public void setPushDown(Consumer<TData> pushDown) {
-        this.pushDown = pushDown;
-    }
-
-    public AttachedPropertyBearer getComponent() {
-        return component;
-    }
-
-    public void setComponent(AttachedPropertyBearer component) {
-        this.component = component;
-    }
-
+    /**
+     * Return the property path of the bound model path, null if not known.
+     */
+    String getModelPath();
 }

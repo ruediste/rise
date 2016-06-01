@@ -37,7 +37,7 @@ public class TestSelectController extends ControllerComponent {
                     })).add(new CButton(controller, x -> x.pullUp())).add(new CButton(controller, x -> x.pushDown()))
                     .add(new CButton(controller, x -> x.reload()))
                     .add(toComponentDirect(html -> html.span().TEST_NAME("controllerStatus")
-                            .write(String.valueOf(controller.data.get().getSelectedItem()))._span()))
+                            .addFragmentAndRender(String.valueOf(controller.data.get().getSelectedItem()))._span()))
                     .add(selectedItemText);
         }
     }

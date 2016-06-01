@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<diagram program="umlet" version="14.3.0.201604041725">
-  <zoom_level>15</zoom_level>
+<diagram program="umlet" version="14.3.0.201605060429">
+  <zoom_level>10</zoom_level>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>345</x>
-      <y>135</y>
-      <w>150</w>
-      <h>45</h>
+      <x>110</x>
+      <y>180</y>
+      <w>140</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>HtmlFragment</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>120</x>
+      <y>90</y>
+      <w>100</w>
+      <h>30</h>
     </coordinates>
     <panel_attributes>View</panel_attributes>
     <additional_attributes/>
@@ -15,10 +26,10 @@
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>660</x>
-      <y>135</y>
-      <w>180</w>
-      <h>45</h>
+      <x>320</x>
+      <y>90</y>
+      <w>100</w>
+      <h>30</h>
     </coordinates>
     <panel_attributes>Controller</panel_attributes>
     <additional_attributes/>
@@ -26,23 +37,39 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>480</x>
-      <y>135</y>
-      <w>210</w>
-      <h>45</h>
+      <x>210</x>
+      <y>90</y>
+      <w>130</w>
+      <h>40</h>
     </coordinates>
-    <panel_attributes>lt=&lt;-</panel_attributes>
-    <additional_attributes>120.0;10.0;10.0;10.0</additional_attributes>
+    <panel_attributes>lt=&lt;-
+m1=1</panel_attributes>
+    <additional_attributes>110.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>160</x>
+      <y>110</y>
+      <w>120</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1
+r1=rootFragment
+
+</panel_attributes>
+    <additional_attributes>10.0;70.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>660</x>
-      <y>225</y>
-      <w>180</w>
-      <h>90</h>
+      <x>330</x>
+      <y>180</y>
+      <w>110</w>
+      <h>70</h>
     </coordinates>
-    <panel_attributes>BindingGroup
+    <panel_attributes>Binding
 --
 pullUp()
 pushDown()</panel_attributes>
@@ -51,73 +78,50 @@ pushDown()</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>735</x>
-      <y>165</y>
-      <w>45</w>
+      <x>240</x>
+      <y>180</y>
+      <w>110</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=*</panel_attributes>
+    <additional_attributes>90.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>340</x>
+      <y>110</y>
+      <w>30</w>
       <h>90</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
-    <additional_attributes>10.0;40.0;10.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>300</x>
-      <y>330</y>
-      <w>330</w>
-      <h>105</h>
-    </coordinates>
-    <panel_attributes>Binding
---
-modelPath: PropertyPath
-componentPath: PropertyPath</panel_attributes>
-    <additional_attributes/>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>405</x>
-      <y>165</y>
-      <w>255</w>
-      <h>195</h>
+      <x>140</x>
+      <y>200</y>
+      <w>110</w>
+      <h>70</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
-&lt;&lt;attachedProperty&gt;&gt;</panel_attributes>
-    <additional_attributes>10.0;110.0;10.0;10.0</additional_attributes>
+m1=*
+children</panel_attributes>
+    <additional_attributes>90.0;10.0;90.0;50.0;10.0;50.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>480</x>
-      <y>165</y>
-      <w>210</w>
-      <h>105</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;.
-&lt;&lt;weak&gt;&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;120.0;50.0</additional_attributes>
-  </element>
-  <element>
-    <id>UMLClass</id>
-    <coordinates>
-      <x>660</x>
-      <y>375</y>
-      <w>180</w>
-      <h>45</h>
-    </coordinates>
-    <panel_attributes>Object</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>735</x>
-      <y>300</y>
-      <w>105</w>
-      <h>105</h>
+      <x>390</x>
+      <y>110</y>
+      <w>80</w>
+      <h>90</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
-value</panel_attributes>
-    <additional_attributes>10.0;50.0;10.0;10.0</additional_attributes>
+r1=&lt;&lt;weak&gt;&gt;
+m1=*</panel_attributes>
+    <additional_attributes>10.0;70.0;10.0;10.0</additional_attributes>
   </element>
 </diagram>

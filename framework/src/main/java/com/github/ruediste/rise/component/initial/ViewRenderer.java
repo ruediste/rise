@@ -5,12 +5,13 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 
+import com.github.ruediste.rendersnakeXT.canvas.ByteArrayHtmlConsumer;
+import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.ComponentConfiguration;
 import com.github.ruediste.rise.component.ComponentPage;
 import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.component.ComponentUtil;
-import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.core.ChainedRequestHandler;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
@@ -51,7 +52,7 @@ public class ViewRenderer extends ChainedRequestHandler {
         }
 
         // create view
-        ViewComponentBase<?> view = config.createView(page.getController());
+        ViewComponentBase<?> view = config.createView((SubControllerComponent) page.getController(), true);
         page.setView(view);
 
         // apply constraint violations to view
@@ -59,18 +60,21 @@ public class ViewRenderer extends ChainedRequestHandler {
                 .forEachInitialConstraintViolation(new ComponentRequestInfo.InitialConstraintViolationConsumer() {
 
                     @Override
-                    public <T> void accept(BindingGroup<T> group, Set<ConstraintViolation<T>> violations) {
-                        group.applyConstraintViolations(violations);
+                    public void accept(Object controller, Set<ConstraintViolation<?>> violations) {
+                        ((SubControllerComponent) controller).applyConstraintViolations(violations);
                     }
                 });
 
+        // render result
+        ByteArrayHtmlConsumer consumer = new ByteArrayHtmlConsumer();
+        view.getRootFragment().getHtmlProducer().produce(consumer);
+
         // set action result
-        coreRequestInfo
-                .setActionResult(new ContentRenderResult(util.renderComponents(page, view.getRootComponent()), r -> {
-                    r.setContentType(coreConfiguration.htmlContentType);
-                    if (view instanceof HttpServletResponseCustomizer) {
-                        ((HttpServletResponseCustomizer) view).customizeServletResponse(r);
-                    }
-                }));
+        coreRequestInfo.setActionResult(new ContentRenderResult(consumer.getByteArray(), servletResponse -> {
+            servletResponse.setContentType(coreConfiguration.htmlContentType);
+            if (view instanceof HttpServletResponseCustomizer) {
+                ((HttpServletResponseCustomizer) view).customizeServletResponse(servletResponse);
+            }
+        }));
     }
 }

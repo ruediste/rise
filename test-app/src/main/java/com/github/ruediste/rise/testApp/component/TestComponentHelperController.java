@@ -6,6 +6,7 @@ import javax.persistence.EntityManager;
 import com.github.ruediste.rise.api.ControllerMvc;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.persistence.Updating;
+import com.github.ruediste.rise.core.security.urlSigning.UrlUnsigned;
 import com.github.ruediste.rise.testApp.persistence.TestAppEntity;
 
 public class TestComponentHelperController extends ControllerMvc<TestComponentHelperController> {
@@ -14,6 +15,7 @@ public class TestComponentHelperController extends ControllerMvc<TestComponentHe
     EntityManager em;
 
     @Updating
+    @UrlUnsigned
     public ActionResult index() {
 
         TestAppEntity e = new TestAppEntity();

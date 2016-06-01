@@ -1,10 +1,4 @@
 var rise = (function() {
-	var getComponentNr = function(element) {
-		return element.data("rise-component-nr");
-	}
-	var generateKey = function(element, key) {
-		return "c_" + getComponentNr(element) + "_" + key;
-	};
 
 	var getPageNr = function() {
 		return $("body").data("rise-page-nr");
@@ -44,6 +38,7 @@ var rise = (function() {
 			});
 		}
 	};
+	
 	/**
 	 * Enters an endless loop sending the heart beat to the server
 	 */
@@ -68,30 +63,35 @@ var rise = (function() {
 
 	var onReload = $.Callbacks();
 
-	var extractData = function(data, element) {
+	var extractData = function(data, $element) {
 
-		var extractFunc = element.data("riseExtractData");
+		var extractFunc = $element.data("riseExtractData");
 		if (extractFunc !== undefined) {
-			extractFunc.call(element, data);
+			extractFunc.call($element, data);
 		}
+		
+		/*var key=$element.data("riseSendValue");
+		if (key){
+		  data.push({name:key, value:$element.attr("value")});
+		}*/
 
-		element.children().each(function(idx, e) {
+		$element.children().each(function(idx, e) {
 			extractData(data, $(e));
 		});
 	}
 
 	var reload = function(receiver) {
-		receiver = $(receiver);
+		var $receiver = $(receiver);
 
 		// extract data
-		var data = receiver.serializeArray();
-		extractData(data, receiver);
+		var data = $receiver.serializeArray();
+		extractData(data, $receiver);
 
 		// perform request
 		$.ajax({
 			method : "POST",
 			url : $("body").data("rise-reload-url") + "?page=" + getPageNr()
-					+ "&nr=" + getComponentNr(receiver),
+					+ "&fragmentNr=" + $receiver.data("riseFragmentnr"),
 			data : JSON.stringify(data),
 			contentType : "text/json; charset=UTF-8",
 			processData : false,
@@ -101,8 +101,8 @@ var rise = (function() {
 				if (redirectTarget) {
 					window.location = redirectTarget;
 				} else {
-					receiver.get(0).innerHTML = data;
-					onReload.fire(receiver);
+					receiver.innerHTML = data;
+					onReload.fire($receiver);
 				}
 			},
 			error : function(jqXHR, testStatus, errorThrown){
@@ -130,49 +130,31 @@ var rise = (function() {
 			event.stopPropagation();
 		});
 
-		// clicks on rise_buttons trigger a view reload
-		$(document).on("click", ".rise_button", function() {
-			setExtractData(this, function(data) {
-				data.push({
-					name : rise.generateKey(this, "clicked"),
-					value : "clicked"
-				})
-			});
-
-			triggerViewReload(this);
-			return false;
-		});
-		
-		
-		[".rise_c_select._selectionHandler"].forEach(function(selector) {
-			$(document).on("change", selector, function() {
+		// register generic event handlers
+		[ "focusin", "focusout", "click" ].forEach(function(event) {
+			$(document).on(event, "*[data-rise-on-" + event + "]",
+					event, 
+			function(evt) {
 				setExtractData(this, function(data) {
-					data.push({
-						name : rise.generateKey(this, "changed"),
-						value : "true"
-					})
+					var $this=$(this);
+					var kvp=$this.data("rise-on-"+event);
+					var idx=kvp.indexOf("=");
+					if (idx==-1){
+						data.push({
+							name : kvp,
+							value : "triggered"
+						});
+					}
+					else {
+						data.push({
+							name : kvp.substring(0,idx),
+							value : kvp.substring(idx+1)
+						});
+					}
 				});
 				triggerViewReload(this);
 				return false;
-			})
-		});
-
-		// support for generic event handlers
-		var eventHandler = function(evt) {
-			setExtractData(this, function(data) {
-				data.push({
-					name : "event_triggered",
-					value : $(this).attr("data-rise-reload-on-" + evt.data)
-				})
 			});
-			triggerViewReload(this);
-			return false;
-		};
-
-		// register generic event handlers
-		[ "focusin", "focusout", "click" ].forEach(function(event) {
-			$(document).on(event, "*[data-rise-reload-on-" + event + "]",
-					event, eventHandler);
 		});
 		
 		
@@ -186,132 +168,8 @@ var rise = (function() {
 
 	return {
 		onReload : onReload,
-		generateKey : generateKey,
 		setExtractData : setExtractData,
 		triggerViewReload : triggerViewReload
 	};
 
 })();
-
-$.widget("rise.riseAutocomplete", $.ui.autocomplete, {
-	_renderItem : function(ul, item) {
-		var result = $("<li>");
-		if (item.testName)
-			result.attr("data-test-name", item.testName);
-		result.append($("<a>").text(item.label));
-		result.appendTo(ul);
-		return result;
-	},
-	_renderMenu : function(ul, items) {
-		var that = this;
-		if (this.element.attr("data-test-name"))
-			$(ul).attr("data-test-name",
-					"rise_autocomplete_" + this.element.attr("data-test-name"))
-		$.each(items, function(index, item) {
-			that._renderItemData(ul, item);
-		});
-	}
-});
-
-// register components for reload
-rise.onReload.add(function(reloaded) {
-	reloaded.find(".rise_button").each(function(idx, element) {
-		rise.setExtractData(element, function(data) {
-			if (this.data("rise-button-clicked"))
-				data.push({
-					name : rise.generateKey(this, "clicked"),
-					value : "clicked"
-				})
-		});
-	});
-	
-	reloaded.find(".rise_c_checkbox").each(function(idx, element) {
-		rise.setExtractData(element, function(data) {
-			data.push({
-				name : rise.generateKey(this, "isChecked"),
-				value : this.get(0).checked
-			})
-		});
-	});
-	reloaded.find(".rise_c_select").each(function(idx, element) {
-		$(element).chosen({search_contains:true});
-	});
-
-	reloaded.find(".rise_autocomplete").each(function(idx, element) {
-		element = $(element);
-		rise.setExtractData(element, function(data) {
-			if (element.data("riseIntChosenItem"))
-				data.push({
-					name : rise.generateKey(element, "riseIntChosenItem"),
-					value : element.data("riseIntChosenItem")
-				})
-		});
-		element.riseAutocomplete({
-			source : element.data("riseIntSource"),
-			change : function(event, ui) {
-				if (ui.item)
-					element.data("riseIntChosenItem", ui.item.id);
-				else
-					element.data("riseIntChosenItem", null);
-			}
-		});
-	});
-
-	reloaded.find(".rise_sortable").each(function(idx, element) {
-		element = $(element);
-		element.children().each(function(childIdx, child) {
-			$(child).attr("data-rise-sortable-index", childIdx);
-		});
-		element.sortable();
-		rise.setExtractData(element, function(data) {
-			data.push({
-				name : rise.generateKey(this, "order"),
-				value : this.sortable("toArray", {
-					attribute : "data-rise-sortable-index"
-				}).toString()
-			})
-		});
-	});
-});
-
-// click edit
-$(document).on("focusout", ".rise_click_edit._edit", function(event) {
-	var callback = function(element) {
-		rise.setExtractData(element, function(data) {
-			data.push({
-				name : rise.generateKey(element, "view")
-			});
-		});
-		rise.triggerViewReload(element);
-	}
-	window.setTimeout(callback,0,$(this));
-	return true;
-});
-$(document).on("click", ".rise_click_edit._view", function() {
-	rise.setExtractData(this, function(data) {
-		data.push({
-			name : rise.generateKey(this, "edit")
-		});
-	});
-	rise.triggerViewReload(this);
-	return false;
-});
-
-rise.onReload.add(function(reloaded) {
-	reloaded.find(".rise_click_edit._edit").each(function() {
-		var focusId = $(this).data("rise-click-edit-focus-on-reload");
-		if (focusId)
-			$(document.getElementById(focusId)).focus();
-	});
-});
-
-// ccheckbox
-$(document).on("change", "input.rise_c_checkbox._handlerPresent", function(event) {
-	rise.setExtractData(this, function(data) {
-		data.push({
-			name : rise.generateKey(this, "changed")
-		});
-	});
-	rise.triggerViewReload(this);
-	return false;
-});
