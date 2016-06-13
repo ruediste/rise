@@ -22,9 +22,9 @@ public class SubViewController extends ControllerComponent {
         protected Component createComponents() {
             // @formatter:off
             return new CPage(label(this))
-                    .add(toSubView(() -> controller.data(),x->x.getSubController()))
-                    .add(new CButton("Sub1").CLASS("sub1").setHandler(() -> controller.showController1()))
-                    .add(new CButton("Sub2").CLASS("sub2").setHandler(() -> controller.showController2()));
+                    .render(toSubView(() -> controller.data(),x->x.getSubController()))
+                    .render(new CButton("Sub1").CLASS("sub1").setHandler(() -> controller.showController1()))
+                    .render(new CButton("Sub2").CLASS("sub2").setHandler(() -> controller.showController2()));
             // @formatter:on
         }
     }
@@ -64,7 +64,7 @@ public class SubViewController extends ControllerComponent {
         @Override
         protected Component createComponents() {
             return toComponent(html -> html.span().CLASS("subText")
-                    .add(new CText().CLASS("subText").bindTextString(() -> controller.data().getText()))._span());
+                    .render(new CText().CLASS("subText").bindTextString(() -> controller.data().getText()))._span());
         }
 
     }

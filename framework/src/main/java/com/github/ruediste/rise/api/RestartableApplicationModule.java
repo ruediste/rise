@@ -1,11 +1,18 @@
 package com.github.ruediste.rise.api;
 
+import javax.inject.Singleton;
+
 import com.github.ruediste.rise.component.ComponentRestartableModule;
 import com.github.ruediste.rise.core.CoreRestartableModule;
+import com.github.ruediste.rise.integration.Stereotype;
 import com.github.ruediste.rise.mvc.MvcRestartableModule;
 import com.github.ruediste.rise.nonReloadable.front.LoggerModule;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Injector;
+import com.github.ruediste.salta.jsr330.Provides;
+import com.github.ruediste1.i18n.lString.TranslatedStringResolver;
+import com.github.ruediste1.i18n.label.LabelUtil;
+import com.github.ruediste1.i18n.label.StereotypeAdditionalLabelExtractor;
 
 public class RestartableApplicationModule extends AbstractModule {
 
@@ -39,6 +46,14 @@ public class RestartableApplicationModule extends AbstractModule {
 
     protected void installLoggerModule() {
         install(new LoggerModule());
+    }
+
+    @Provides
+    @Singleton
+    public LabelUtil labelUtil(TranslatedStringResolver resolver) {
+        LabelUtil result = new LabelUtil(resolver);
+        result.setAdditionalLabelsExtractor(new StereotypeAdditionalLabelExtractor(Stereotype.class, result));
+        return result;
     }
 
 }

@@ -64,6 +64,8 @@ public class ReloadHandler implements Runnable {
 
         log.debug("reloading page " + page.getPageId());
 
+        coreRequestInfo.setObjectActionInvocation(page.getObjectActionInvocation());
+
         ViewComponentBase<?> view = page.getView();
 
         HtmlFragment reloadFragment = util.getFragment(request.getFragmentNr());

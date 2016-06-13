@@ -1,10 +1,12 @@
 package com.github.ruediste.rise.component.components;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import com.github.ruediste.c3java.invocationRecording.MethodInvocationRecorder;
+import com.github.ruediste.rendersnakeXT.canvas.BootstrapCanvasCss.B_ButtonArgs;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ComponentBase;
 import com.github.ruediste.rise.core.ActionResult;
@@ -27,6 +29,7 @@ public class CButton extends ComponentBase<CButton> {
     private Method invokedMethod;
     private boolean isDisabled;
     private Component body;
+    private Consumer<B_ButtonArgs<?>> args = null;
 
     public CButton() {
     }
@@ -67,6 +70,16 @@ public class CButton extends ComponentBase<CButton> {
      */
     public <T> CButton(T target, Consumer<T> handler, boolean showIconOnly) {
         this(target, (btn, t) -> handler.accept(t), showIconOnly);
+    }
+
+    public <T> CButton(Class<? extends Annotation> actionAnnotation, Runnable handler) {
+        this(actionAnnotation, handler, false);
+    }
+
+    public <T> CButton(Class<? extends Annotation> actionAnnotation, Runnable handler, boolean showIconOnly) {
+        this.handler = handler;
+        TEST_NAME(actionAnnotation.getSimpleName());
+        body = new CIconLabel().setActionAnnotation(actionAnnotation).setShowIconOnly(showIconOnly);
     }
 
     /**
@@ -167,4 +180,14 @@ public class CButton extends ComponentBase<CButton> {
     public Component getBody() {
         return body;
     }
+
+    public Consumer<B_ButtonArgs<?>> getArgs() {
+        return args;
+    }
+
+    public CButton args(Consumer<B_ButtonArgs<?>> args) {
+        this.args = args;
+        return this;
+    }
+
 }

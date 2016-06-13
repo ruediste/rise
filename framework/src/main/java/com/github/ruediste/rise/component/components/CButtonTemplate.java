@@ -5,7 +5,6 @@ import java.util.function.Supplier;
 
 import javax.inject.Inject;
 
-import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.rendersnakeXT.canvas.BootstrapCanvasCss;
 import com.github.ruediste.rendersnakeXT.canvas.BootstrapCanvasCss.B_ButtonArgs;
 import com.github.ruediste.rise.api.ButtonStyle;
@@ -28,11 +27,8 @@ public class CButtonTemplate extends BootstrapComponentTemplateBase<CButton> {
     @Inject
     IconUtil iconUtil;
 
-    public static AttachedProperty<CButton, Consumer<B_ButtonArgs<?>>> args = new AttachedProperty<>(
-            "buttonCustomizer");
-
     public static Consumer<CButton> setArgs(Consumer<B_ButtonArgs<?>> args) {
-        return button -> CButtonTemplate.args.set(button, args);
+        return button -> button.args(args);
     }
 
     private static class ButtonArgs extends B_ButtonArgs<ButtonArgs> {
@@ -56,9 +52,9 @@ public class CButtonTemplate extends BootstrapComponentTemplateBase<CButton> {
         boolean isLink = button.getTarget() != null;
         Supplier<B_ButtonArgs<?>> argSupplier = () -> {
             ButtonArgs argsInst = new ButtonArgs(html, isLink);
-            Consumer<B_ButtonArgs<?>> tmp = args.get(button);
-            if (tmp != null)
-                tmp.accept(argsInst);
+            Consumer<B_ButtonArgs<?>> args = button.getArgs();
+            if (args != null)
+                args.accept(argsInst);
             if (button.isDisabled())
                 argsInst.disabled_internal();
             if (button.getInvokedMethod() != null) {
@@ -72,10 +68,10 @@ public class CButtonTemplate extends BootstrapComponentTemplateBase<CButton> {
         if (isLink) {
             html.bButtonA(argSupplier).CLASS("rise_button_link").rCOMPONENT_ATTRIBUTES(button)
                     .fIf(button.isDisabled(), () -> html.HREF("#"), () -> html.HREF(button.getTarget()))
-                    .add(button.getBody())._bButtonA();
+                    .render(button.getBody())._bButtonA();
         } else {
             html.bButton(argSupplier).CLASS("rise_button").rCOMPONENT_ATTRIBUTES(button).RonClick(button.getHandler())
-                    .add(button.getBody())._bButton();
+                    .render(button.getBody())._bButton();
         }
     }
 

@@ -87,6 +87,14 @@ public class LambdaInformationWeaverTest {
     public static class Api {
         private Supplier<String> supplier;
 
+        public Api() {
+        }
+
+        public Api(@Capture Supplier<String> supplier) {
+            this.supplier = supplier;
+
+        }
+
         public void invoke(@Capture Supplier<String> supplier) {
             this.supplier = supplier;
 
@@ -97,6 +105,13 @@ public class LambdaInformationWeaverTest {
     public void testCaptureSupplier() throws Exception {
         Api api = new Api();
         api.invoke(() -> "Hello World");
+        LambdaExpression<?> lamda = LambdaInformationWeaver.getLambdaExpression(api.supplier);
+        assertEquals("()->{Hello World}", lamda.toString());
+    }
+
+    @Test
+    public void testCaptureConstructor() throws Exception {
+        Api api = new Api(() -> "Hello World");
         LambdaExpression<?> lamda = LambdaInformationWeaver.getLambdaExpression(api.supplier);
         assertEquals("()->{Hello World}", lamda.toString());
     }

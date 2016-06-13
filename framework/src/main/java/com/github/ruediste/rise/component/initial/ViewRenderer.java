@@ -1,9 +1,6 @@
 package com.github.ruediste.rise.component.initial;
 
-import java.util.Set;
-
 import javax.inject.Inject;
-import javax.validation.ConstraintViolation;
 
 import com.github.ruediste.rendersnakeXT.canvas.ByteArrayHtmlConsumer;
 import com.github.ruediste.rise.api.SubControllerComponent;
@@ -55,16 +52,6 @@ public class ViewRenderer extends ChainedRequestHandler {
         // create view
         ViewComponentBase<?> view = config.createView((SubControllerComponent) page.getController(), true);
         page.setView(view);
-
-        // apply constraint violations to view
-        componentRequestInfo
-                .forEachInitialConstraintViolation(new ComponentRequestInfo.InitialConstraintViolationConsumer() {
-
-                    @Override
-                    public void accept(Object controller, Set<ConstraintViolation<?>> violations) {
-                        ((SubControllerComponent) controller).applyConstraintViolations(violations);
-                    }
-                });
 
         // update structure
         HtmlFragmentUtil.updateStructure(view.getRootFragment());

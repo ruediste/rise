@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.component.components;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
@@ -25,6 +26,7 @@ public class CIconLabel extends ComponentBase<CIconLabel> {
     private Method method;
 
     private boolean showIconOnly;
+    private Class<? extends Annotation> actionAnnotation;
 
     public CIconLabel() {
     }
@@ -73,5 +75,14 @@ public class CIconLabel extends ComponentBase<CIconLabel> {
     public <T> CIconLabel setMethod(Class<T> cls, Consumer<T> target) {
         method = MethodInvocationRecorder.getLastInvocation(cls, target).getMethod();
         return this;
+    }
+
+    public CIconLabel setActionAnnotation(Class<? extends Annotation> actionAnnotation) {
+        this.actionAnnotation = actionAnnotation;
+        return this;
+    }
+
+    public Class<? extends Annotation> getActionAnnotation() {
+        return actionAnnotation;
     }
 }

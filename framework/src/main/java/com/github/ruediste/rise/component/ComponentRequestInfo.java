@@ -1,8 +1,5 @@
 package com.github.ruediste.rise.component;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -16,8 +13,6 @@ public class ComponentRequestInfo {
     private PageHandle pageHandle;
 
     private HttpRenderResult closePageResult;
-
-    Map<Object, Set<ConstraintViolation<?>>> initialConstraintViolationsMap;
 
     private boolean isComponentRequest;
 
@@ -80,15 +75,4 @@ public class ComponentRequestInfo {
         void accept(Object controller, Set<ConstraintViolation<?>> violations);
     }
 
-    public void forEachInitialConstraintViolation(InitialConstraintViolationConsumer consumer) {
-        if (initialConstraintViolationsMap != null) {
-            initialConstraintViolationsMap.entrySet().forEach(e -> consumer.accept(e.getKey(), e.getValue()));
-        }
-    }
-
-    public void addInitialContraintViolations(Object controller, Set<? extends ConstraintViolation<?>> violations) {
-        if (initialConstraintViolationsMap == null)
-            initialConstraintViolationsMap = new HashMap<>();
-        initialConstraintViolationsMap.computeIfAbsent(controller, x -> new HashSet<>()).addAll(violations);
-    }
 }

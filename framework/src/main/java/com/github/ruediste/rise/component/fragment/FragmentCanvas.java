@@ -5,16 +5,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.github.ruediste.rendersnakeXT.canvas.Html5Canvas;
 import com.github.ruediste.rendersnakeXT.canvas.HtmlConsumer;
 import com.github.ruediste.rendersnakeXT.canvas.HtmlProducer;
-import com.github.ruediste.rise.api.ApiJumpPad;
 import com.github.ruediste.rise.component.ComponentUtil;
-import com.github.ruediste.rise.component.binding.Binding;
-import com.github.ruediste.rise.component.binding.BindingUtil;
 import com.github.ruediste.rise.nonReloadable.lambda.Capture;
 import com.github.ruediste1.i18n.lString.LString;
 
@@ -29,17 +28,44 @@ public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Htm
     }
 
     /**
-     * Add a fragment to the current parent fragment and render the producers of
-     * the fragment
+     * Add a fragment to the current parent fragment
      */
-    default TSelf addFragmentAndRender(HtmlFragment fragment) {
-        internal_target().addFragmentAndRender(fragment);
+    default TSelf addFragment(HtmlFragment fragment) {
+        fragment.setParent(getParentFragment());
         return self();
     }
 
+    /**
+     * Render the given fragment. Does NOT add the fragment as child of the
+     * parent fragment of the canvas.
+     */
     default TSelf render(HtmlFragment fragment) {
         internal_target().render(fragment);
         return self();
+    }
+
+    default TSelf addFragmentAndRender(HtmlFragment fragment) {
+        return addFragment(fragment).render(fragment);
+    }
+
+    /**
+     * Create a new fragment. The fragment is created detached (not a child of
+     * any other fragment)
+     */
+    default HtmlFragment toFragment(Runnable renderer) {
+        return internal_target().toFragment(renderer);
+    }
+
+    default HtmlFragment toFragmentAndAdd(Runnable renderer) {
+        HtmlFragment result = internal_target().toFragment(renderer);
+        result.setParent(getParentFragment());
+        return result;
+    }
+
+    default HtmlFragment toFragment(Runnable renderer, HtmlFragment parent) {
+        HtmlFragment result = internal_target().toFragment(renderer);
+        result.setParent(parent);
+        return result;
     }
 
     /**
@@ -48,32 +74,6 @@ public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Htm
     default TSelf direct(Runnable runnable) {
         internal_target().direct(runnable);
         return self();
-    }
-
-    /**
-     * create a new fragment with the current parent of the canvas as parent
-     */
-    default TSelf toFragmentAndRender(Runnable renderer) {
-        HtmlFragment fragment = internal_target().toFragment(renderer);
-        return render(fragment);
-    }
-
-    /**
-     * create a new fragment with the current parent of the canvas as parent
-     */
-    default HtmlFragment toFragment(Runnable renderer) {
-        return internal_target().toFragment(renderer);
-    }
-
-    /**
-     * Create a fragment from the given renderer and set the specified parent
-     * fragment
-     * 
-     * @param parent
-     *            parent fragment to add the created fragment to, can be null
-     */
-    default HtmlFragment toFragment(Runnable renderer, HtmlFragment parent) {
-        return internal_target().toFragment(renderer, parent);
     }
 
     /**
@@ -156,11 +156,15 @@ public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Htm
         });
     }
 
-    default <T> TSelf fForEach(Iterable<T> items, Consumer<T> fragmentFactory) {
-        return fForEach(() -> items, fragmentFactory);
+    default <T> TSelf fForEach(Supplier<Iterable<T>> items, Consumer<T> fragmentFactory) {
+        return fForEach(items, (idx, i) -> fragmentFactory.accept(i));
     }
 
-    default <T> TSelf fForEach(Supplier<Iterable<T>> items, Consumer<T> fragmentFactory) {
+    /**
+     * Apply the fragment for each item in the list. The list is updated when
+     * items is updated
+     */
+    default <T> TSelf fForEach(Supplier<Iterable<T>> items, BiConsumer<Integer, T> fragmentFactory) {
         return addFragmentAndRender(new HtmlFragment() {
             Map<T, HtmlFragment> fragments = new HashMap<>();
             ArrayList<HtmlFragment> fragmentList = new ArrayList<>();
@@ -179,10 +183,12 @@ public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Htm
             public void updateStructure(UpdateStructureArg arg) {
                 Map<T, HtmlFragment> newFragments = new HashMap<>();
                 fragmentList.clear();
+                int idx = 0;
                 for (T item : items.get()) {
                     HtmlFragment fragment = fragments.remove(item);
                     if (fragment == null) {
-                        fragment = toFragment(() -> fragmentFactory.accept(item), this);
+                        int idxFinal = idx;
+                        fragment = toFragment(() -> fragmentFactory.accept(idxFinal, item), this);
                         arg.structureUpdated();
                     }
                     newFragments.put(item, fragment);
@@ -196,13 +202,14 @@ public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Htm
                 fragments.values().forEach(f -> f.setParent(null));
 
                 fragments = newFragments;
+                idx++;
             }
         });
     }
 
     default TSelf RonClick(Runnable handler) {
         ComponentUtil util = internal_target().util();
-        HtmlFragment fragment = new HtmlFragment(internal_target().getParentFragment()) {
+        HtmlFragment fragment = new HtmlFragment(getParentFragment()) {
             @Override
             public void processActions() {
                 if (util.isParameterDefined(this, "clicked"))
@@ -215,6 +222,10 @@ public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Htm
             }
         };
         return DATA("rise-on-click", util.getParameterKey(fragment, "clicked")).render(fragment);
+    }
+
+    default GroupHtmlFragment getParentFragment() {
+        return internal_target().getParentFragment();
     }
 
     default TSelf VALUE(@Capture Supplier<String> value) {
@@ -231,29 +242,20 @@ public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Htm
      * pass.
      */
     default TSelf VALUE(@Capture Supplier<String> value, boolean isLabelProperty) {
-        BindingUtil.tryExtractBindingInfo(value).ifPresent(info -> {
-            if (isLabelProperty && info.modelProperty != null) {
-                internal_target().getLabelUtil().property(info.modelProperty).tryLabel()
-                        .ifPresent(label -> fMarkLabel(label));
-            }
-            if (info.accessesController) {
-                // bind to the controller
-                ValueHandleImpl<String> viewVal = new ValueHandleImpl<>();
-                Binding binding = info.createBinding(viewVal);
-                ApiJumpPad.registerBinding(internal_target().getController(), binding);
-                internal_target().getParentFragment().getBindings().add(binding);
-                binding.pullUp();
-                VALUE(viewVal);
-            } else {
-                addAttribute("value", value);
-            }
-        }).ifFailure(() -> addAttribute("value", value));
-        return self();
+        return VALUE(createValueHandle(value, isLabelProperty));
+    }
+
+    default <T> ValueHandle<T> createValueHandle(Supplier<T> value) {
+        return createValueHandle(value, true);
+    }
+
+    default <T> ValueHandle<T> createValueHandle(Supplier<T> value, boolean isLabelProperty) {
+        return internal_target().createValueHandle(value, isLabelProperty);
     }
 
     default TSelf VALUE(ValueHandle<String> value) {
         ComponentUtil util = internal_target().util();
-        HtmlFragment fragment = new HtmlFragment(internal_target().getParentFragment()) {
+        HtmlFragment fragment = new HtmlFragment(getParentFragment()) {
             @Override
             public void applyValues() {
                 util.getParameterValue(this, "value").ifPresent(value::set);
@@ -271,8 +273,54 @@ public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Htm
      * Add a label to the current parent fragment Can be retrieved afterwards
      * using {@link HtmlFragment#getLabels()} on any of the parent labels.
      */
-    default TSelf fMarkLabel(LString label) {
-        internal_target().getParentFragment().addLabel(label);
+    default TSelf addLabel(LString label) {
+        getParentFragment().addLabel(label);
         return self();
     }
+
+    /**
+     * Write text after HTML escaping it and close the current tag
+     * 
+     * @param unescapedString
+     *            String , HTML or plain text or null
+     * @return HTMLCanvas , the receiver
+     */
+    default TSelf content(Supplier<String> unescapedString) {
+        return write(unescapedString).close();
+    }
+
+    /**
+     * Write text after HTML escaping it. No need to close().
+     * 
+     * @param unescapedString
+     *            String , HTML or plain text or null
+     * @return HTMLCanvas , the receiver
+     */
+    default TSelf write(Supplier<String> unescapedString) {
+        internal_target().write(unescapedString);
+        return self();
+    }
+
+    /**
+     * Write some text without escaping it
+     * 
+     * @param text
+     *            String , HTML or plain text
+     * @return HTMLCanvas , the receiver
+     */
+    default TSelf writeUnescaped(Supplier<String> text) {
+        internal_target().writeUnescaped(text);
+        return self();
+    }
+
+    default TSelf addAttribute(String key, Supplier<String> value) {
+        internal_target().addAttribute(key, value);
+        return self();
+    }
+
+    default TSelf addAttributeOpt(String key, Supplier<Optional<String>> value) {
+        internal_target().addAttributeOpt(key, value);
+        return self();
+    }
+
 }

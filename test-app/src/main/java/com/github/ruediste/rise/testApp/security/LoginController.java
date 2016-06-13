@@ -12,7 +12,7 @@ public class LoginController extends LoginControllerBase {
 
         @Override
         protected void renderImpl(TestCanvas html) {
-            html.add(new CPage(() -> html.add(new CController(controller.getLoginSubController()))));
+            html.render(new CPage(() -> html.render(new CController(controller.getLoginSubController()))));
 
         }
 

@@ -8,6 +8,9 @@ public abstract class GroupHtmlFragment extends HtmlFragment {
 
     LinkedHashSet<HtmlFragment> children = new LinkedHashSet<>();
 
+    public GroupHtmlFragment() {
+    }
+
     public GroupHtmlFragment(HtmlFragment parent) {
         super(parent);
     }

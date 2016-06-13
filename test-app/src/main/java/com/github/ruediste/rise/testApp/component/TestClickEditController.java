@@ -33,11 +33,11 @@ public class TestClickEditController extends ControllerComponent {
         @Override
         protected Component createComponents() {
             return new CPage(label(this))
-                    .add(new CClickEdit<String>(v -> new CText(v).TEST_NAME("viewText"), (v, c) -> {
+                    .render(new CClickEdit<String>(v -> new CText(v).TEST_NAME("viewText"), (v, c) -> {
                         CTextField tf = new CTextField().setText(v);
                         c.setEditComponent(tf, () -> tf.getText(), tf);
                     }).bindValue(() -> controller.data().getTestLine()))
-                    .add(new CClickEdit<AutoCompleteValue<TestClickEditController.Entry>>(
+                    .render(new CClickEdit<AutoCompleteValue<TestClickEditController.Entry>>(
                             v -> new CText(v.isItemChosen() ? v.getItem().name : v.getText()).TEST_NAME("viewText"),
                             (v, c) -> {
                                 CAutoComplete<Entry, Integer> auto = new CAutoComplete<>(
@@ -77,11 +77,11 @@ public class TestClickEditController extends ControllerComponent {
                                         }).setValue(v).setAutoSearchMode(AutoSearchMode.SINGLE);
                                 c.setEditComponent(auto, () -> auto.getValue(), auto);
                             }).bindValue(() -> controller.data().getAutoComplete()))
-                    .add(new CText("clickTarget").TEST_NAME("clickTarget")).add(
+                    .render(new CText("clickTarget").TEST_NAME("clickTarget")).render(
                             new CButton(controller,
                                     x -> x.push()))
-                    .add(new CButton(controller, x -> x.pull()))
-                    .add(toComponentDirect(html -> html.addFragmentAndRender("Line: ").span().TEST_NAME("testLine")
+                    .render(new CButton(controller, x -> x.pull()))
+                    .render(toComponentDirect(html -> html.addFragmentAndRender("Line: ").span().TEST_NAME("testLine")
                             .content(String.valueOf(controller.data().getTestLine())).addFragmentAndRender("AutoCompleteValue: ")
                             .span().TEST_NAME("autoCompleteValue")
                             .content(String.valueOf(controller.data().getAutoComplete()))));

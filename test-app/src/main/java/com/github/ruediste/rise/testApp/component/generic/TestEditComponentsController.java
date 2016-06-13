@@ -32,17 +32,17 @@ public class TestEditComponentsController extends ControllerComponent {
 
         @Override
         protected Component createComponents() {
-            return new CPage().add(new CComponentStack(toComponent(html -> {
+            return new CPage().render(new CComponentStack(toComponent(html -> {
                 html.div().TEST_NAME("components")
-                        .add(editComponents.instance(controller, x -> x.data().getString()).get().getComponent())
-                        .add(editComponents.instance(controller, x -> x.data().getEnitities()).get().getComponent())
+                        .render(editComponents.instance(controller, x -> x.data().getString()).get().getComponent())
+                        .render(editComponents.instance(controller, x -> x.data().getEnitities()).get().getComponent())
                         ._div()
 
-                        .div().TEST_NAME("buttons").add(new CButton(controller, x -> x.pushDown()))
-                        .add(new CButton(controller, x -> x.pullUp()))._div()
+                        .div().TEST_NAME("buttons").render(new CButton(controller, x -> x.pushDown()))
+                        .render(new CButton(controller, x -> x.pullUp()))._div()
 
                         .div().TEST_NAME("values")
-                        .add(toComponentDirect(x -> x.div().TEST_NAME("string")
+                        .render(toComponentDirect(x -> x.div().TEST_NAME("string")
                                 .content(controller.data.get().getString()).div()
                                 .TEST_NAME("enitities").content(controller.data.get().getEnitities().stream()
                                         .map(TestAppEntity::getValue).sorted().collect(Collectors.joining(", ")))))

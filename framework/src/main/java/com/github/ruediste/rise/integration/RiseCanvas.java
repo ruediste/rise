@@ -8,6 +8,7 @@ import com.github.ruediste.rendersnakeXT.canvas.Html5Canvas;
 import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.IViewQualifier;
 import com.github.ruediste.rise.component.fragment.FragmentCanvas;
+import com.github.ruediste.rise.component.fragment.HtmlFragment;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ComponentBase;
 import com.github.ruediste.rise.core.ActionResult;
@@ -21,7 +22,7 @@ import com.github.ruediste.rise.util.MethodInvocation;
 import com.github.ruediste1.i18n.lString.LString;
 
 public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
-        extends Html5Canvas<TSelf>, FuncCanvas<TSelf>, FragmentCanvas<TSelf> {
+        extends Html5Canvas<TSelf>, FragmentCanvas<TSelf>, FuncCanvas<TSelf> {
 
     RiseCanvasHelper internal_riseHelper();
 
@@ -75,16 +76,6 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
         return write(value.resolve(internal_riseHelper().getCurrentLocale()));
     }
 
-    @Deprecated
-    default TSelf render(Component c) {
-        return self();
-    }
-
-    @Deprecated
-    default TSelf renderChildren(Component parent) {
-        return self();
-    }
-
     /**
      * Add a "data-test-name" attribute to the current element. The name can be
      * used to locate elements in selenium tests. It is only written if
@@ -101,7 +92,8 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
     }
 
     default TSelf TEST_NAME(Optional<String> name) {
-        return fIfPresent(name, s -> self().TEST_NAME(s));
+        name.ifPresent(s -> TEST_NAME(s));
+        return self();
     }
 
     default TSelf TEST_NAME(ActionResult name) {
@@ -135,23 +127,27 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
                 () -> DISABLED());
     }
 
-    default TSelf addView(ViewComponentBase<?> view) {
-        internal_target().addFragmentAndRender(view.getRootFragment());
+    default TSelf renderView(ViewComponentBase<?> view) {
+        return addFragmentAndRender(view.getRootFragment());
+    }
+
+    default TSelf renderController(Object controller) {
+        internal_riseHelper().renderController(this, controller);
         return self();
     }
 
-    default TSelf addController(Object controller) {
-        internal_riseHelper().addController(this, controller);
+    default TSelf renderController(Object controller, Class<? extends IViewQualifier> viewQualifier) {
+        internal_riseHelper().renderController(this, controller, viewQualifier);
         return self();
     }
 
-    default TSelf addController(Object controller, Class<? extends IViewQualifier> viewQualifier) {
-        internal_riseHelper().addController(this, controller, viewQualifier);
-        return self();
-    }
-
-    default TSelf add(Component c) {
+    default TSelf render(Component c) {
         internal_riseHelper().add(this, c);
         return self();
+    }
+
+    default HtmlFragment marker() {
+        return toFragmentAndAdd(() -> {
+        });
     }
 }

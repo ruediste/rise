@@ -9,12 +9,13 @@ import com.github.ruediste1.i18n.label.Labeled;
 public class TestComponentView extends ViewComponent<TestComponentController> {
 
     @Override
-    protected void render(TestCanvas html) {
-        html.add(new CPage(() -> {
-            html.div().ID("a").addController(controller.subControllerA)._div();
-            html.div().ID("b").addController(controller.subControllerB)._div();
+    protected void renderImpl(TestCanvas html) {
+        html.render(new CPage(() -> {
+            html.div().ID("a").renderController(controller.subControllerA)._div();
+            html.div().ID("b").renderController(controller.subControllerB)._div();
             html.div().ID("main").span().ID("mainValue").write(() -> controller.entity.getValue())._span()
-                    .add(new CButton("refresh").CLASS("refresh").setHandler(controller::refresh))._div();
+                    .render(new CButton("refresh").CLASS("refresh").setHandler(controller::refresh))._div();
         }));
     }
+
 }

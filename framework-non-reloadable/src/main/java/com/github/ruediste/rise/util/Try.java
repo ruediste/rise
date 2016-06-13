@@ -41,6 +41,18 @@ public class Try<T> {
         return Try.of(func.apply(value));
     }
 
+    public Try<T> mapFailure(Function<RuntimeException, RuntimeException> func) {
+        if (exception != null)
+            return Try.failure(() -> func.apply(exception.get()));
+        return this;
+    }
+
+    public T orElse(T fallback) {
+        if (exception != null)
+            return fallback;
+        return value;
+    }
+
     @SuppressWarnings("unchecked")
     public <P> Try<P> flatMap(Function<T, Try<P>> func) {
         if (exception != null)
@@ -62,6 +74,12 @@ public class Try<T> {
         if (exception != null)
             action.run();
         return this;
+    }
+
+    public RuntimeException getFailure() {
+        if (exception != null)
+            return exception.get();
+        return new RuntimeException("Try was successful");
     }
 
     public Try<T> ifFailure(Consumer<RuntimeException> consumer) {

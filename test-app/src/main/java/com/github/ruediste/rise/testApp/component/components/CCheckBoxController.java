@@ -18,8 +18,8 @@ public class CCheckBoxController extends ControllerComponent {
         @Override
         protected Component createComponents() {
             CText text = new CText().TEST_NAME("text");
-            return new CPage().add(new CCheckBox().TEST_NAME("checkBox")
-                    .setToggledHandler(x -> text.setTextString(Objects.toString(x)))).add(text);
+            return new CPage().render(new CCheckBox().TEST_NAME("checkBox")
+                    .setToggledHandler(x -> text.setTextString(Objects.toString(x)))).render(text);
         }
     }
 

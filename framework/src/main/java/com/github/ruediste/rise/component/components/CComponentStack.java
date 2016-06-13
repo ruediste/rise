@@ -1,9 +1,11 @@
 package com.github.ruediste.rise.component.components;
 
 import java.awt.event.ComponentEvent;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 
+import com.github.ruediste.rendersnakeXT.canvas.HtmlConsumer;
 import com.github.ruediste.rise.component.fragment.HtmlFragment;
 import com.github.ruediste.rise.component.fragment.HtmlFragment.EventHandlingOutcome;
 import com.github.ruediste.rise.component.tree.Component;
@@ -51,7 +53,21 @@ public class CComponentStack extends ComponentBase<CComponentStack> {
     HtmlFragment containerFragment;
 
     public CComponentStack() {
-        containerFragment = new HtmlFragment();
+        containerFragment = new HtmlFragment() {
+            @Override
+            protected void produceHtml(HtmlConsumer consumer) {
+                HtmlFragment peek = stack.peek();
+                if (peek != null)
+                    peek.getHtmlProducer().produce(consumer);
+            }
+
+            @Override
+            public Iterable<HtmlFragment> getChildren() {
+                if (stack.isEmpty())
+                    return Collections.emptyList();
+                return Collections.singleton(stack.peek());
+            }
+        };
         containerFragment.register(PopComponentEvent.class, e -> {
             pop();
             return EventHandlingOutcome.HANDLED;

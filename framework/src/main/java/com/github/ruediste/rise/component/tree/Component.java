@@ -2,6 +2,7 @@ package com.github.ruediste.rise.component.tree;
 
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
 import com.github.ruediste.rise.component.ComponentPage;
+import com.github.ruediste.rise.integration.RiseCanvas;
 
 /**
  * Interface of all components.
@@ -28,5 +29,8 @@ import com.github.ruediste.rise.component.ComponentPage;
  * 
  */
 public interface Component extends AttachedPropertyBearer {
+    default void render(RiseCanvas<?> html) {
+        throw new UnsupportedOperationException("No template found and doRender() was not implemented");
+    }
 
 }

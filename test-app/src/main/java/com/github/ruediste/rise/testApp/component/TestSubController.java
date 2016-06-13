@@ -26,9 +26,9 @@ public class TestSubController extends SubViewController {
                     // CTextField().bindText(()->controller.entity().getValue()));
                     .input().TYPE("text").VALUE(() -> controller.entity.getValue())
 
-            .add(new CButton("refresh").CLASS("refresh").setHandler(controller::refresh))
+            .render(new CButton("refresh").CLASS("refresh").setHandler(controller::refresh))
 
-            .add(new CButton("save").CLASS("save").setHandler(controller::save));
+            .render(new CButton("save").CLASS("save").setHandler(controller::save));
 
             // html.add(new CFormGroup(new CTextField().bind(g ->
             // g.setText(controller.entity().getValue()))));

@@ -12,7 +12,7 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 import com.github.ruediste1.i18n.lString.TranslatedString;
 
 public interface BootstrapRiseCanvas<TSelf extends BootstrapRiseCanvas<TSelf>>
-        extends BootstrapCanvas<TSelf>, RiseCanvas<TSelf>, FuncCanvas<TSelf>, FragmentCanvas<TSelf> {
+        extends BootstrapCanvas<TSelf>, RiseCanvas<TSelf>, FragmentCanvas<TSelf>, FuncCanvas<TSelf> {
 
     public default TSelf rButtonA(ActionResult target) {
         return rButtonA(target, a -> {

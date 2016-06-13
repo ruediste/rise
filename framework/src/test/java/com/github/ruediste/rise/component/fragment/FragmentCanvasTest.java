@@ -24,6 +24,7 @@ import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.integration.RiseCanvasBase;
 import com.github.ruediste.rise.nonReloadable.lambda.LambdaRunner;
 import com.github.ruediste.rise.util.Var;
+import com.github.ruediste1.i18n.label.LabelUtil;
 
 @RunWith(LambdaRunner.class)
 public class FragmentCanvasTest {
@@ -42,6 +43,7 @@ public class FragmentCanvasTest {
     public void setUp() throws Exception {
         html = new TestCanvas();
         html.target = new FragmentCanvasTarget();
+        html.target.labelUtil = new LabelUtil((str, locale) -> str.getFallback());
     }
 
     @Test
@@ -65,7 +67,7 @@ public class FragmentCanvasTest {
         items.add("foo");
         items.add("bar");
 
-        html.html().ul().fForEach(items, item -> html.li().content(item))._ul()._html();
+        html.html().ul().fForEach(() -> items, item -> html.li().content(item))._ul()._html();
         HtmlFragmentUtil.updateStructure(html.getTarget().getParentFragment());
         assertEquals("<html><ul><li>foo</li> <li>bar</li> </ul> </html> ", getContents());
 
@@ -121,10 +123,6 @@ public class FragmentCanvasTest {
     private static class TestController extends SubControllerComponent {
         String data;
 
-        @Override
-        protected void pullUp() {
-            super.pullUp();
-        }
     }
 
     private static class ViewComponent extends FrameworkViewComponent<TestController> {
@@ -149,11 +147,10 @@ public class FragmentCanvasTest {
         when(html.internal_target().util.getParameterKey(Matchers.any(), Matchers.eq("value"))).thenReturn("c_0_value");
 
         view.initialize(ctrl);
-        assertEquals("<input value=\"foo\" data-rise-send-value=\"c_0_value\"> ", getContents(view.getRootFragment()));
+        assertEquals("<input value=\"foo\" name=\"c_0_value\"> ", getContents(view.getRootFragment()));
 
         ctrl.data = "bar";
-        ctrl.pullUp();
-        assertEquals("<input value=\"bar\" data-rise-send-value=\"c_0_value\"> ", getContents(view.getRootFragment()));
+        assertEquals("<input value=\"bar\" name=\"c_0_value\"> ", getContents(view.getRootFragment()));
     }
 
     private String getContents() {

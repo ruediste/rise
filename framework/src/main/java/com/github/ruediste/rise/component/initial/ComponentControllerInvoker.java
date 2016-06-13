@@ -16,4 +16,8 @@ public class ComponentControllerInvoker extends ControllerInvokerBase {
         return pageInfo.getController();
     }
 
+    @Override
+    protected void applyObjectActionInvocation(ActionInvocation<Object> objectInvocation) {
+        pageInfo.setObjectActionInvocation(objectInvocation);
+    }
 }

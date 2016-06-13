@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.core.i18n;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,12 @@ import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Payload;
 
+import com.github.ruediste.rise.component.fragment.HtmlFragment;
+import com.github.ruediste.rise.component.fragment.ValidationStateBearer;
+import com.github.ruediste.rise.component.validation.ValidationPathUtil;
+import com.github.ruediste.rise.component.validation.ValidationState;
+import com.github.ruediste.rise.component.validation.ValidationStatus;
+import com.github.ruediste.rise.util.Var;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.lString.PatternString;
 import com.github.ruediste1.i18n.lString.PatternStringResolver;
@@ -28,6 +35,9 @@ public class ValidationUtil {
 
     @Inject
     LabelUtil labelUtil;
+
+    @Inject
+    ValidationPathUtil validationPathUtil;
 
     /**
      * Calculate a localized string message for a constraint violation.
@@ -85,25 +95,61 @@ public class ValidationUtil {
             ValidationFailureSeverity severity) {
         if (violations == null)
             return Collections.emptyList();
-        return StreamSupport.stream(violations.spliterator(), false).<ValidationFailure> map(v -> {
-            LString message = getMessage(v);
-            return new ValidationFailure() {
+        return StreamSupport.stream(violations.spliterator(), false)
+                .<ValidationFailure> map(v -> toFailure(v, severity)).collect(Collectors.toList());
+    }
 
-                @Override
-                public ValidationFailureSeverity getSeverity() {
-                    return severity;
-                }
+    public ValidationFailure toFailure(ConstraintViolation<?> violation) {
+        return toFailure(violation, ValidationFailureSeverity.ERROR);
+    }
 
-                @Override
-                public LString getMessage() {
-                    return message;
-                }
+    public ValidationFailure toFailure(ConstraintViolation<?> violation, ValidationFailureSeverity severity) {
+        LString message = getMessage(violation);
+        return new ValidationFailure() {
 
-                @Override
-                public String toString() {
-                    return "ValidationFailure(" + severity + ";" + message + ")";
-                }
-            };
-        }).collect(Collectors.toList());
+            @Override
+            public ValidationFailureSeverity getSeverity() {
+                return severity;
+            }
+
+            @Override
+            public LString getMessage() {
+                return message;
+            }
+
+            @Override
+            public String toString() {
+                return "ValidationFailure(" + severity + ";" + message + ")";
+            }
+        };
+    }
+
+    public ValidationStatus getValidationState(HtmlFragment fragment) {
+        ArrayList<ValidationFailure> failures = new ArrayList<>();
+        Var<Boolean> validated = new Var<>(false);
+        fragment.forEachNonValidationPresenterInSubTree(f -> {
+            ValidationStateBearer bearer = f.getValidationStateBearer();
+            if (bearer.isDirectlyValidated())
+                validated.setValue(true);
+
+            // add failures from fragment
+            failures.addAll(bearer.getDirectValidationFailures());
+
+            // add failures registered with the controller
+            f.getBindingInfos().forEach(pair -> {
+                pair.getB().modelPropertyPath
+                        .flatMap(path -> Optional.ofNullable(pair.getA().getValidationFailureMap().get(path)))
+                        .ifPresent(failures::addAll);
+            });
+        });
+
+        if (!validated.getValue())
+            return new ValidationStatus(ValidationState.NOT_VALIDATED, Collections.emptyList());
+        else {
+            if (failures.isEmpty())
+                return new ValidationStatus(ValidationState.SUCCESS, failures);
+            else
+                return new ValidationStatus(ValidationState.FAILED, failures);
+        }
     }
 }

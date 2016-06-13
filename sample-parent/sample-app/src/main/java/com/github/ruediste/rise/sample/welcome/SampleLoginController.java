@@ -14,7 +14,7 @@ public class SampleLoginController extends LoginControllerBase {
 
         @Override
         protected void doRender(SampleCanvas html) {
-            html.add(new CPage(() -> html.add(new CController(controller.getLoginSubController()))));
+            html.render(new CPage(() -> html.render(new CController(controller.getLoginSubController()))));
         }
 
     }

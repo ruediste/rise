@@ -44,8 +44,8 @@ public class TestPageDestructionController extends ControllerComponent {
 
         @Override
         protected Component createComponents() {
-            return new CPage().add(new CText(String.valueOf(controller.id)))
-                    .add(new CButton(controller, x -> x.navigateAway()));
+            return new CPage().render(new CText(String.valueOf(controller.id)))
+                    .render(new CButton(controller, x -> x.navigateAway()));
         }
 
     }

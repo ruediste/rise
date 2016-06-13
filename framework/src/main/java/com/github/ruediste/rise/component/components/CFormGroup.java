@@ -2,6 +2,7 @@ package com.github.ruediste.rise.component.components;
 
 import java.util.Optional;
 
+import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ComponentBase;
 import com.github.ruediste1.i18n.lString.LString;
 
@@ -9,9 +10,13 @@ import com.github.ruediste1.i18n.lString.LString;
 public class CFormGroup extends ComponentBase<CFormGroup> {
 
     private Optional<? extends LString> label = Optional.empty();
-    private Runnable content;
+    private Component content;
 
     public CFormGroup(Runnable content) {
+        this.content = new CRunnable(content);
+    }
+
+    public CFormGroup(Component content) {
         this.content = content;
     }
 
@@ -24,7 +29,7 @@ public class CFormGroup extends ComponentBase<CFormGroup> {
         return this;
     }
 
-    public Runnable getContent() {
+    public Component getContent() {
         return content;
     }
 }

@@ -35,7 +35,7 @@ public class CPageHtmlTemplate extends ComponentTemplate<CPage> {
 
             @Override
             public void renderContent(SampleCanvas html) {
-                html.add(new CReload(() -> html.render(component.body())));
+                html.render(new CReload(() -> html.render(component.body())));
             }
 
             @Override

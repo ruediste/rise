@@ -73,14 +73,14 @@ public class LoginSubController extends SubControllerComponent {
                     }
                 }
             });
-            html.add(new CFormGroup(() -> html.input_text().VALUE(() -> controller.data.userName)));
-            html.add(new CFormGroup(() -> html.input_text().VALUE(() -> controller.data.password)));
+            html.render(new CFormGroup(() -> html.input_text().VALUE(() -> controller.data.userName)));
+            html.render(new CFormGroup(() -> html.input_text().VALUE(() -> controller.data.password)));
 
             // html.span().write("userName")._span().input_text().VALUE(() ->
             // controller.data.userName);
             // html.span().write("password")._span().input_text().VALUE(() ->
             // controller.data.password);
-            html.add(new CButton(controller, c -> c.login()));
+            html.render(new CButton(controller, c -> c.login()));
 
         }
     }
@@ -129,7 +129,6 @@ public class LoginSubController extends SubControllerComponent {
      */
     @Labeled
     public void login() {
-        pushDown();
         data.tokenTheftDetected = false;
         UsernamePasswordAuthenticationRequest request = new UsernamePasswordAuthenticationRequest(data.userName,
                 data.password);
@@ -153,7 +152,6 @@ public class LoginSubController extends SubControllerComponent {
                     msgs.add(labelUtil.enumMember(Messages.AUTHENTICATION_FAILED).label());
             }
             data.password = "";
-            pullUp();
         }
     }
 }

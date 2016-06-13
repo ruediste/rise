@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.component.fragment;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import javax.inject.Inject;
 
@@ -11,6 +12,10 @@ import com.github.ruediste.rendersnakeXT.canvas.HtmlProducer;
 import com.github.ruediste.rendersnakeXT.canvas.HtmlProducerHtmlCanvasTarget;
 import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.component.ComponentUtil;
+import com.github.ruediste.rise.component.binding.BindingInfo;
+import com.github.ruediste.rise.component.binding.BindingUtil;
+import com.github.ruediste.rise.util.Pair;
+import com.github.ruediste.rise.util.Try;
 import com.github.ruediste1.i18n.label.LabelUtil;
 
 public class FragmentCanvasTarget extends DelegatingHtmlCanvasTarget {
@@ -19,7 +24,7 @@ public class FragmentCanvasTarget extends DelegatingHtmlCanvasTarget {
     public ComponentUtil util;
 
     @Inject
-    private LabelUtil labelUtil;
+    public LabelUtil labelUtil;
 
     private HtmlProducerHtmlCanvasTarget delegate = new HtmlProducerHtmlCanvasTarget();
     private GroupHtmlFragment parentFragment;
@@ -27,11 +32,11 @@ public class FragmentCanvasTarget extends DelegatingHtmlCanvasTarget {
     private SubControllerComponent controller;
 
     {
-        initializeParentFragment(null);
+        initializeParentFragment();
     }
 
-    private void initializeParentFragment(HtmlFragment parent) {
-        parentFragment = new GroupHtmlFragment(parent) {
+    private void initializeParentFragment() {
+        parentFragment = new GroupHtmlFragment() {
             HtmlProducerHtmlCanvasTarget delegateCopy = delegate;
 
             @Override
@@ -47,10 +52,6 @@ public class FragmentCanvasTarget extends DelegatingHtmlCanvasTarget {
     }
 
     public HtmlFragment toFragment(Runnable renderer) {
-        return toFragment(renderer, parentFragment);
-    }
-
-    public HtmlFragment toFragment(Runnable renderer, HtmlFragment parent) {
         // prepare current delegate
         delegate.commitAttributes();
         delegate.flush();
@@ -60,7 +61,7 @@ public class FragmentCanvasTarget extends DelegatingHtmlCanvasTarget {
         try {
             // set context
             delegate = new HtmlProducerHtmlCanvasTarget();
-            initializeParentFragment(parent);
+            initializeParentFragment();
 
             // run renderer
             renderer.run();
@@ -90,26 +91,9 @@ public class FragmentCanvasTarget extends DelegatingHtmlCanvasTarget {
     }
 
     /**
-     * Add the fragment to the current parent fragment of the canvas. This does
-     * not cause the {@link HtmlFragment#getHtmlProducer()} to be added to to
-     * the producer list
-     */
-    public void addFragment(HtmlFragment fragment) {
-        fragment.setParent(parentFragment);
-        parentFragment.childAdded(fragment);
-    }
-
-    public void addFragmentAndRender(HtmlFragment fragment) {
-        addFragment(fragment);
-        render(fragment);
-    }
-
-    /**
      * Render the given fragment.
      */
     public void render(HtmlFragment fragment) {
-        if (fragment.getParent() != parentFragment)
-            throw new RuntimeException("parent fragment does not match");
         delegate.addProducer(fragment.getHtmlProducer(), true);
     }
 
@@ -119,7 +103,7 @@ public class FragmentCanvasTarget extends DelegatingHtmlCanvasTarget {
 
     public void direct(Runnable runnable) {
         addProducer(cosumer -> {
-            HtmlFragment fragment = toFragment(runnable, null);
+            HtmlFragment fragment = toFragment(runnable);
             HtmlFragmentUtil.updateStructure(fragment);
             fragment.getHtmlProducer().produce(cosumer);
         } , true);
@@ -136,4 +120,44 @@ public class FragmentCanvasTarget extends DelegatingHtmlCanvasTarget {
     public LabelUtil getLabelUtil() {
         return labelUtil;
     }
+
+    public <T> ValueHandle<T> createValueHandle(Supplier<T> accessor, boolean isLabelProperty) {
+        Try<BindingInfo<T>> infoTry = BindingUtil.tryExtractBindingInfo(accessor);
+        if (infoTry.isPresent()) {
+            BindingInfo<T> info = infoTry.get();
+            if (isLabelProperty && info.modelProperty != null) {
+                getLabelUtil().property(info.modelProperty).tryLabel()
+                        .ifPresent(label -> getParentFragment().addLabel(label));
+            }
+            getParentFragment().getBindingInfos().add(Pair.of(controller, info));
+            return new ValueHandle<T>() {
+
+                @Override
+                public T get() {
+                    return accessor.get();
+                }
+
+                @Override
+                public void set(T value) {
+                    info.setModelProperty(value);
+                }
+            };
+
+        } else {
+            return new ValueHandle<T>() {
+
+                @Override
+                public T get() {
+                    return accessor.get();
+                }
+
+                @Override
+                public void set(T value) {
+                    throw new UnsupportedOperationException("unable to set value, could not parse accessor",
+                            infoTry.getFailure());
+                }
+            };
+        }
+    }
+
 }

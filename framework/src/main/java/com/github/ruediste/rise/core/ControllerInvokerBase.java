@@ -31,6 +31,7 @@ public abstract class ControllerInvokerBase implements Runnable {
         // convert String parameters to objects
         ActionInvocation<Object> objectInvocation = coreUtil.toObjectInvocation(stringActionInvocation);
         coreInfo.setObjectActionInvocation(objectInvocation);
+        applyObjectActionInvocation(objectInvocation);
 
         // invoke controller
         try {
@@ -46,6 +47,9 @@ public abstract class ControllerInvokerBase implements Runnable {
                     e.getCause());
         }
 
+    }
+
+    protected void applyObjectActionInvocation(ActionInvocation<Object> objectInvocation) {
     }
 
 }

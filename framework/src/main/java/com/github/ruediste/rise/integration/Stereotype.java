@@ -1,15 +1,13 @@
 package com.github.ruediste.rise.integration;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.github.ruediste.rendersnakeXT.canvas.Glyphicon;
-
-@IconAnnotation
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.ANNOTATION_TYPE })
-public @interface GlyphiconIcon {
-    Glyphicon value();
+@Target(ElementType.ANNOTATION_TYPE)
+@Documented
+public @interface Stereotype {
 }

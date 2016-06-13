@@ -82,7 +82,7 @@ public class CPageTemplate extends ComponentTemplateBase<CPage> {
                 if (body == null)
                     throw new RuntimeException("Body of page is null");
 
-                html.add(new CReload(body));
+                html.render(new CReload(body));
             }
         });
     }

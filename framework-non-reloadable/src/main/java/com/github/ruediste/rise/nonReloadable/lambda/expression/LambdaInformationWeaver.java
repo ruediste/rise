@@ -7,6 +7,7 @@ import java.lang.invoke.LambdaMetafactory;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.lang.reflect.Executable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
@@ -83,13 +84,17 @@ public class LambdaInformationWeaver extends ClassVisitor {
                     case Opcodes.INVOKEVIRTUAL:
                         tag = Opcodes.H_INVOKEVIRTUAL;
                         break;
-                    // case Opcodes.INVOKESPECIAL:
-                    // tag = Opcodes.H_INVOKESPECIAL;
-                    // break;
+                    case Opcodes.INVOKESPECIAL:
+                        tag = Opcodes.H_INVOKESPECIAL;
+                        break;
                     }
 
                     if (tag != -1) {
                         MethodInsnNode methodInsn = (MethodInsnNode) instruction;
+                        if (methodInsn.getOpcode() == Opcodes.INVOKESPECIAL) {
+                            if ("<init>".equals(methodInsn.name))
+                                tag = Opcodes.H_NEWINVOKESPECIAL;
+                        }
                         Type[] argumentTypes = Type.getArgumentTypes(methodInsn.desc);
                         for (int i = 0; i < argumentTypes.length; i++) {
                             for (AbstractInsnNode sourceInstruction : frame
@@ -179,7 +184,7 @@ public class LambdaInformationWeaver extends ClassVisitor {
         boolean doWrap = CapturingLambda.class.isAssignableFrom(lambdaInterface);
 
         if (!doWrap) {
-            Method usingMethod = MethodHandles.reflectAs(Method.class, usingMethodHandle);
+            Executable usingMethod = MethodHandles.reflectAs(Executable.class, usingMethodHandle);
             doWrap = usingMethod.getParameters()[usingParameterIndex].isAnnotationPresent(Capture.class);
         }
         if (doWrap) {

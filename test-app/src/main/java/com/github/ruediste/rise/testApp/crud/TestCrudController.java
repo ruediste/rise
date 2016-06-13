@@ -19,8 +19,8 @@ public class TestCrudController extends CrudControllerBase {
 
         @Override
         protected Component createComponents() {
-            return new CPage(label(this)).add(new CValidationStatusPresenter()
-                    .add(new CComponentStack(toSubView(() -> controller.data(), x -> x.getSubController()))));
+            return new CPage(label(this)).render(new CValidationStatusPresenter()
+                    .render(new CComponentStack(toSubView(() -> controller.data(), x -> x.getSubController()))));
         }
     }
 

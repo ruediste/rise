@@ -1,8 +1,6 @@
 package com.github.ruediste.rise.api;
 
 import java.util.Set;
-import java.util.WeakHashMap;
-import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
@@ -10,18 +8,15 @@ import javax.validation.Validator;
 
 import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.component.ComponentUtil;
-import com.github.ruediste.rise.component.binding.Binding;
-import com.github.ruediste.rise.component.fragment.ValidationStateBearer;
-import com.github.ruediste.rise.component.validation.ValidationException;
 import com.github.ruediste.rise.component.validation.ValidationPathUtil;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
+import com.github.ruediste.rise.core.i18n.ValidationFailure;
 import com.github.ruediste.rise.core.i18n.ValidationUtil;
 import com.github.ruediste.rise.core.web.HttpRenderResult;
 import com.github.ruediste.rise.core.web.RedirectRenderResult;
-import com.github.ruediste.rise.util.Var;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 
@@ -41,6 +36,11 @@ public class SubControllerComponent {
 
     @Inject
     ValidationUtil validationUtil;
+
+    private boolean validated;
+
+    private final Multimap<String, ValidationFailure> validationFailureMap = MultimapBuilder.hashKeys()
+            .arrayListValues().build();
 
     public SubControllerComponent() {
         super();
@@ -92,12 +92,6 @@ public class SubControllerComponent {
         closePage(new RedirectRenderResult(util.toUrlSpec(destination)));
     }
 
-    private WeakHashMap<Binding, Object> bindings = new WeakHashMap<>();
-
-    void registerBinding(Binding binding) {
-        bindings.put(binding, null);
-    }
-
     protected interface SuccessActions<T> {
         /**
          * Return true if the action was successful
@@ -119,21 +113,6 @@ public class SubControllerComponent {
          */
         T onFailure(Runnable r);
 
-    }
-
-    /**
-     * Pull the data of all bindings up from the model to the view
-     */
-    protected void pullUp() {
-        getValidationStateBearers().forEach(b -> {
-            b.clearDirectValidationFailures();
-            b.setValidated(false);
-        });
-        getBindings().forEach(b -> b.pullUp());
-    }
-
-    private Stream<ValidationStateBearer> getValidationStateBearers() {
-        return getBindings().map(b -> b.getValidationStateBearer()).filter(x -> x != null);
     }
 
     protected interface ValidateActions extends SuccessActions<ValidateActions> {
@@ -203,11 +182,10 @@ public class SubControllerComponent {
      * components have been constructed during initial page requests.
      */
     protected void addConstraintViolations(Set<? extends ConstraintViolation<?>> violations) {
-
-        if (componentRequestInfo.isInitialRequest())
-            componentRequestInfo.addInitialContraintViolations(this, violations);
-        else
-            applyConstraintViolations(violations);
+        for (ConstraintViolation<?> v : violations) {
+            String path = ValidationPathUtil.toPathString(v.getPropertyPath());
+            getValidationFailureMap().put(path, validationUtil.toFailure(v));
+        }
 
     }
 
@@ -217,7 +195,7 @@ public class SubControllerComponent {
      */
     protected ValidateActions validate() {
         Set<? extends ConstraintViolation<?>> violations = validator.validate(this);
-        clearValidationFailures();
+        this.validated = true;
         addConstraintViolations(violations);
         return new ValidateActionsImpl(true, violations);
 
@@ -229,125 +207,22 @@ public class SubControllerComponent {
      */
     protected ValidateActions validate(Class<?>... groups) {
         Set<? extends ConstraintViolation<?>> violations = validator.validate(this, groups);
-        clearValidationFailures();
+        this.validated = true;
         addConstraintViolations(violations);
         return new ValidateActionsImpl(true, violations);
     }
 
-    protected interface PushDownActions extends SuccessActions<PushDownActions> {
-
-        /**
-         * Validate the value of this group, both if the push down was
-         * successful or failed. The success state value represents both the
-         * push down and the validation.
-         */
-        ValidateActions validate();
-
-        /**
-         * Validate the value of this group, both if the push down was
-         * successful or failed. The success state value represents both the
-         * push down and the validation.
-         */
-        ValidateActions validate(Class<?>... groups);
+    public void clearValidations() {
+        validated = false;
+        validationFailureMap.clear();
     }
 
-    private class PushDownActionsImpl extends SuccessActionsImpl<PushDownActions>implements PushDownActions {
-
-        public PushDownActionsImpl(boolean success) {
-            super(success);
-        }
-
-        @Override
-        public ValidateActions validate() {
-            Set<? extends ConstraintViolation<?>> violations = validator.validate(this);
-            addConstraintViolations(violations);
-            return new ValidateActionsImpl(success(), violations);
-        }
-
-        @Override
-        public ValidateActions validate(Class<?>... groups) {
-            Set<? extends ConstraintViolation<?>> violations = validator.validate(this, groups);
-            addConstraintViolations(violations);
-            return new ValidateActionsImpl(success(), violations);
-        }
-
-        @Override
-        protected PushDownActions t() {
-            return this;
-        }
-
+    public boolean isValidated() {
+        return validated;
     }
 
-    /**
-     * Push down but do not show errors in the components
-     * 
-     * @return true if the push down was successful, false otherwise
-     */
-    protected boolean silentPushDown() {
-        Var<Boolean> success = new Var<Boolean>(true);
-        getBindings().forEach(b -> {
-            try {
-                b.pushDown();
-            } catch (ValidationException e) {
-                success.setValue(false);
-            }
-        });
-        return success.getValue();
+    public Multimap<String, ValidationFailure> getValidationFailureMap() {
+        return validationFailureMap;
     }
 
-    /**
-     * Push down and show validation errors during push down in the components.
-     * The returned value can be used to determine if the attempt was successful
-     * or if there were errors.
-     */
-    protected PushDownActions tryPushDown() {
-        clearValidationFailures();
-
-        Var<Boolean> success = new Var<Boolean>(true);
-        getBindings().forEach(b -> {
-            try {
-                b.pushDown();
-            } catch (ValidationException e) {
-                success.setValue(false);
-                b.getValidationStateBearer().addFailures(e.getFailures());
-            }
-            b.getValidationStateBearer().setValidated(true);
-        });
-        return new PushDownActionsImpl(success.getValue());
-    }
-
-    private void clearValidationFailures() {
-        getValidationStateBearers().forEach(b -> b.clearDirectValidationFailures());
-    }
-
-    /**
-     * Push the data of all bindings down from the view to the model
-     */
-    protected void pushDown() {
-        getBindings().forEach(Binding::pushDown);
-    }
-
-    private Stream<Binding> getBindings() {
-        return bindings.keySet().stream();
-    }
-
-    /**
-     * Directly apply violations to a binding group. Do not use this method
-     * during an initial page request. Usually, it is better to use
-     * {@link #addConstraintViolations(Set)}.
-     */
-    public void applyConstraintViolations(Set<? extends ConstraintViolation<?>> violations) {
-
-        Multimap<String, ConstraintViolation<?>> violationMap = MultimapBuilder.hashKeys().arrayListValues().build();
-
-        for (ConstraintViolation<?> v : violations) {
-            violationMap.put(ValidationPathUtil.toPathString(v.getPropertyPath()), v);
-        }
-
-        getBindings().filter(x -> x.getValidationStateBearer() != null).forEach(b -> {
-            ValidationStateBearer bearer = b.getValidationStateBearer();
-            bearer.addFailures(validationUtil.toFailures(violationMap.get(b.getModelPath())));
-            bearer.setValidated(true);
-        });
-    }
 }

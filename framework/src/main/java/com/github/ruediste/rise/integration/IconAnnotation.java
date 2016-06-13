@@ -10,10 +10,11 @@ import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 /**
  * Meta annotation for annotations declaring Icons for methods. Each annotation
  * member needs to be an enum extending {@link Renderable}. Using
- * {@link IconUtil}, the single non-null value can be retrieved. Sample
+ * {@link IconUtil}, the single (first) non-null value can be retrieved. Sample
  * Annotation:
  * 
  * <pre>
+ * &#64;IconAnnotation
  * &#064;Retention(RetentionPolicy.RUNTIME)
  * &#064;Target(ElementType.METHOD)
  * public @interface Icon {

@@ -2,22 +2,18 @@ package com.github.ruediste.rise.component.fragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.github.ruediste.rendersnakeXT.canvas.HtmlConsumer;
 import com.github.ruediste.rendersnakeXT.canvas.HtmlProducer;
-import com.github.ruediste.rise.component.binding.Binding;
+import com.github.ruediste.rise.api.SubControllerComponent;
+import com.github.ruediste.rise.component.binding.BindingInfo;
 import com.github.ruediste.rise.component.tree.Component;
-import com.github.ruediste.rise.component.validation.ValidationState;
-import com.github.ruediste.rise.component.validation.ValidationStatus;
 import com.github.ruediste.rise.core.CoreRequestInfo;
-import com.github.ruediste.rise.core.i18n.ValidationFailure;
 import com.github.ruediste.rise.core.web.HttpRenderResult;
-import com.github.ruediste.rise.util.Var;
+import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste1.i18n.lString.LString;
 
 /**
@@ -32,9 +28,19 @@ public class HtmlFragment {
         produceHtml(c);
     };
     private long fragmentNr = -1;
-    private final Set<Binding> bindings = new HashSet<>();
     private boolean isValidationPresenter;
     private List<LString> labels = new ArrayList<>();
+
+    private List<Pair<SubControllerComponent, BindingInfo<?>>> bindinginfos = new ArrayList<>();
+    private final ValidationStateBearer validationStateBearer = new ValidationStateBearer();
+
+    /**
+     * List of bindings associated with this fragment. Required since the
+     * controllers reference the bindings only weakly.
+     */
+    public List<Pair<SubControllerComponent, BindingInfo<?>>> getBindingInfos() {
+        return bindinginfos;
+    }
 
     public void addLabel(LString label) {
         labels.add(label);
@@ -308,46 +314,13 @@ public class HtmlFragment {
         this.fragmentNr = fragmentNr;
     }
 
-    public Set<Binding> getBindings() {
-        return bindings;
-    }
-
-    private void forEachNonValidationPresenterInSubTree(Consumer<HtmlFragment> consumer) {
+    public void forEachNonValidationPresenterInSubTree(Consumer<HtmlFragment> consumer) {
         consumer.accept(this);
         for (HtmlFragment child : getChildren()) {
             if (!child.isValidationPresenter())
                 child.forEachNonValidationPresenterInSubTree(consumer);
         }
     }
-
-    public List<ValidationFailure> getValidationFailures() {
-        ArrayList<ValidationFailure> result = new ArrayList<>();
-        forEachNonValidationPresenterInSubTree(f -> result.addAll(f.getValidationFailures()));
-        return result;
-    }
-
-    public boolean isValidated() {
-        Var<Boolean> result = new Var<Boolean>(false);
-        forEachNonValidationPresenterInSubTree(c -> {
-            if (c.getValidationStateBearer().isDirectlyValidated())
-                result.setValue(true);
-        });
-        return result.getValue();
-    }
-
-    public ValidationStatus getValidationState() {
-        if (!isValidated())
-            return new ValidationStatus(ValidationState.NOT_VALIDATED, Collections.emptyList());
-        else {
-            List<ValidationFailure> failures = getValidationFailures();
-            if (failures.isEmpty())
-                return new ValidationStatus(ValidationState.SUCCESS, failures);
-            else
-                return new ValidationStatus(ValidationState.FAILED, failures);
-        }
-    }
-
-    private final ValidationStateBearer validationStateBearer = new ValidationStateBearer();
 
     public boolean isValidationPresenter() {
         return isValidationPresenter;
@@ -360,4 +333,5 @@ public class HtmlFragment {
     public ValidationStateBearer getValidationStateBearer() {
         return validationStateBearer;
     }
+
 }

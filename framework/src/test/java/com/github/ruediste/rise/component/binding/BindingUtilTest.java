@@ -5,17 +5,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Objects;
-import java.util.function.Supplier;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.github.ruediste.rise.api.ControllerComponent;
-import com.github.ruediste.rise.api.ViewComponentBase;
-import com.github.ruediste.rise.component.fragment.FragmentCanvas;
-import com.github.ruediste.rise.component.fragment.ValueHandle;
-import com.github.ruediste.rise.component.fragment.ValueHandleImpl;
 import com.github.ruediste.rise.nonReloadable.lambda.Capture;
 import com.github.ruediste.rise.nonReloadable.lambda.LambdaRunner;
 
@@ -25,13 +20,14 @@ public class BindingUtilTest {
     private static class TestModel extends ControllerComponent {
         public String str;
 
+        public TestModel model;
+
         public String getStrReadonly() {
             return "foo";
         }
     }
 
     private TestModel model;
-    private TestView view;
 
     <T> T capture(@Capture T value) {
         return value;
@@ -40,36 +36,28 @@ public class BindingUtilTest {
     @Before
     public void before() {
         model = new TestModel();
-        view = new TestView();
-        view.setController(model);
     }
 
     @Test
     public void simple() {
-        BindingInfo<String> info = BindingUtil.extractBindingInfo(capture(() -> model.str), null);
+        BindingInfo<String> info = BindingUtil.extractBindingInfo(capture(() -> model.str));
         assertEquals("str", info.modelProperty.getName());
         assertTrue(info.isTwoWay);
     }
 
     @Test
     public void oneWay() {
-        BindingInfo<String> info = BindingUtil.extractBindingInfo(capture(() -> model.getStrReadonly()), null);
+        BindingInfo<String> info = BindingUtil.extractBindingInfo(capture(() -> model.getStrReadonly()));
         assertFalse(info.isTwoWay);
     }
 
     @Test
     public void simpleBinding() {
-        ValueHandle<String> value = new ValueHandleImpl<>();
-
-        BindingInfo<String> info = BindingUtil.extractBindingInfo(capture(() -> model.str), value);
+        BindingInfo<String> info = BindingUtil.extractBindingInfo(capture(() -> model.str));
 
         model.str = "bar";
-        Binding binding = info.createBinding(value);
-        binding.pullUp();
-        assertEquals("bar", value.get());
 
-        value.set("Hello");
-        binding.pushDown();
+        info.setModelProperty("Hello");
         assertEquals("Hello", model.str);
     }
 
@@ -96,9 +84,8 @@ public class BindingUtilTest {
 
     @Test
     public void withTransformer() {
-        TestModel model = new TestModel();
         BindingInfo<Integer> info = BindingUtil
-                .extractBindingInfo(capture(() -> stringToIntTransformer.transform(model.str)), null);
+                .extractBindingInfo(capture(() -> stringToIntTransformer.transform(model.str)));
         assertEquals("str", info.modelProperty.getName());
         assertEquals(stringToIntTransformer, info.transformer);
         assertTrue(info.isTwoWay);
@@ -106,48 +93,25 @@ public class BindingUtilTest {
 
     @Test
     public void withTransformerBinding() {
-        TestModel model = new TestModel();
-        ValueHandleImpl<Integer> value = new ValueHandleImpl<>();
         BindingInfo<Integer> info = BindingUtil
-                .extractBindingInfo(capture(() -> stringToIntTransformer.transform(model.str)), value);
+                .extractBindingInfo(capture(() -> stringToIntTransformer.transform(model.str)));
 
-        model.str = "1";
-        Binding binding = info.createBinding(value);
-        binding.pullUp();
-        assertEquals(1, (int) value.get());
-
-        value.set(5);
-        binding.pushDown();
+        info.setModelProperty(5);
         assertEquals("5", model.str);
     }
 
     @Test
     public void withTransformerOneWay() {
-        TestModel model = new TestModel();
         BindingInfo<Integer> info = BindingUtil
-                .extractBindingInfo(capture(() -> stringToIntTransformerOneWay.transform(model.str)), null);
+                .extractBindingInfo(capture(() -> stringToIntTransformerOneWay.transform(model.str)));
         assertFalse(info.isTwoWay);
     }
 
-    private class TestView extends ViewComponentBase<TestModel> {
-
-        void setController(TestModel ctrl) {
-            this.controller = ctrl;
-        }
-
-        Supplier<String> str() {
-            return capture(() -> controller.str);
-        }
-
-        @Override
-        protected void render(FragmentCanvas<?> html) {
-
-        }
-    }
-
     @Test
-    public void testAccessController() {
-        BindingInfo<String> info = BindingUtil.extractBindingInfo(view.str(), null);
-        assertTrue(info.accessesController);
+    public void modelPropertyPath() {
+        BindingInfo<?> info = BindingUtil.extractBindingInfo(capture(() -> model.model.str));
+        assertEquals("model.model.str", info.modelPropertyPath.get());
+        info = BindingUtil.extractBindingInfo(capture(() -> model.getStrReadonly()));
+        assertEquals("model.strReadonly", info.modelPropertyPath.get());
     }
 }

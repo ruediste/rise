@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.integration;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Optional;
@@ -21,14 +22,7 @@ public class IconUtil {
                 Renderable<Html5Canvas<?>> value);
     }
 
-    private final IconResolver iconResolver;
-
     public IconUtil() {
-        this((initiatingMethod, annotatedMethod, annotation, value) -> value);
-    }
-
-    public IconUtil(IconResolver iconResolver) {
-        this.iconResolver = iconResolver;
     }
 
     public <T> Renderable<Html5Canvas<?>> getIcon(Class<T> cls, Consumer<T> accessor) {
@@ -44,24 +38,41 @@ public class IconUtil {
         return tryGetIcon(MethodInvocationRecorder.getLastInvocation(cls, accessor).getMethod());
     }
 
-    @SuppressWarnings({ "unchecked" })
     public Optional<Renderable<Html5Canvas<?>>> tryGetIcon(Method method) {
         for (Method m : MethodUtil.getDeclarations(method)) {
-            for (Annotation a : m.getDeclaredAnnotations()) {
-                if (!a.annotationType().isAnnotationPresent(IconAnnotation.class))
+            Optional<Renderable<Html5Canvas<?>>> value = tryGetIcon((AnnotatedElement) m);
+            if (value.isPresent())
+                return value;
+        }
+        return Optional.empty();
+    }
+
+    @SuppressWarnings("unchecked")
+    public Optional<Renderable<Html5Canvas<?>>> tryGetIcon(AnnotatedElement element) {
+
+        for (Annotation a : element.getDeclaredAnnotations()) {
+            if (!a.annotationType().isAnnotationPresent(IconAnnotation.class))
+                continue;
+            for (Method attribute : a.annotationType().getDeclaredMethods()) {
+                if (!Renderable.class.isAssignableFrom(attribute.getReturnType()))
                     continue;
-                for (Method attribute : a.annotationType().getDeclaredMethods()) {
-                    Renderable<Html5Canvas<?>> value;
-                    try {
-                        value = (Renderable<Html5Canvas<?>>) attribute.invoke(a);
-                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                        throw new RuntimeException("Error while reading icon annotation value", e);
-                    }
-                    if (value != null) {
-                        return Optional.of(iconResolver.resolve(method, m, a, value));
-                    }
+                Renderable<Html5Canvas<?>> value;
+                try {
+                    value = (Renderable<Html5Canvas<?>>) attribute.invoke(a);
+                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                    throw new RuntimeException("Error while reading icon annotation value", e);
                 }
+                if (value != null)
+                    return Optional.of(value);
             }
+        }
+        for (Annotation a : element.getDeclaredAnnotations()) {
+            if (!a.annotationType().isAnnotationPresent(Stereotype.class))
+                continue;
+            Optional<Renderable<Html5Canvas<?>>> value = tryGetIcon(a.annotationType());
+            if (value.isPresent())
+                return value;
+
         }
         return Optional.empty();
     }

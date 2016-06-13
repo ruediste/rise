@@ -31,7 +31,7 @@ public class TestAutoCompleteController extends ControllerComponent {
         protected Component createComponents() {
             return new CPage(label(this))
 
-                    .add(new CAutoComplete<>(new CAutoCompleteParameters<Entry, Integer>() {
+                    .render(new CAutoComplete<>(new CAutoCompleteParameters<Entry, Integer>() {
 
                         @Override
                         public List<Entry> search(String term) {
@@ -63,9 +63,9 @@ public class TestAutoCompleteController extends ControllerComponent {
                             return String.valueOf(item.getId());
                         }
                     }).setAutoSearchMode(controller.autoSearchMode).bindItem(() -> controller.data().getEntry()))
-                    .add(new CButton(controller, x -> x.pushPull())).add(new CButton(controller, x -> x.push()))
-                    .add(new CButton(controller, x -> x.pull()))
-                    .add(toComponentDirect(html -> html.addFragmentAndRender("Chosen Entry: ").span().TEST_NAME("chosenEntry")
+                    .render(new CButton(controller, x -> x.pushPull())).render(new CButton(controller, x -> x.push()))
+                    .render(new CButton(controller, x -> x.pull()))
+                    .render(toComponentDirect(html -> html.addFragmentAndRender("Chosen Entry: ").span().TEST_NAME("chosenEntry")
                             .content(String.valueOf(controller.data().getEntry()))));
 
         }

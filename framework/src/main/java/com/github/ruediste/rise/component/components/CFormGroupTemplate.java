@@ -10,6 +10,7 @@ import com.github.ruediste.rise.component.fragment.HtmlFragment;
 import com.github.ruediste.rise.component.validation.ValidationState;
 import com.github.ruediste.rise.component.validation.ValidationStatus;
 import com.github.ruediste.rise.core.i18n.ValidationFailure;
+import com.github.ruediste.rise.core.i18n.ValidationUtil;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.LabelUtil;
@@ -20,9 +21,12 @@ public class CFormGroupTemplate extends BootstrapComponentTemplateBase<CFormGrou
     @Inject
     LabelUtil labelUtil;
 
+    @Inject
+    ValidationUtil validationUtil;
+
     @Override
     public void doRender(CFormGroup component, BootstrapRiseCanvas<?> html) {
-        HtmlFragment contentFragment = html.toFragment(component.getContent());
+        HtmlFragment contentFragment = html.toFragmentAndAdd(() -> html.render(component.getContent()));
 
         html.direct(() -> {
             Optional<? extends LString> label = component.getLabel();
@@ -32,7 +36,7 @@ public class CFormGroupTemplate extends BootstrapComponentTemplateBase<CFormGrou
                     label = Optional.of(labels.get(0));
             }
 
-            ValidationStatus violationStatus = contentFragment.getValidationState();
+            ValidationStatus violationStatus = validationUtil.getValidationState(contentFragment);
             html.bFormGroup().CLASS(component.CLASS());
 
             // render violation status

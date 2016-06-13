@@ -1,6 +1,5 @@
 package com.github.ruediste.rise.component.binding.transformers;
 
-import java.util.Date;
 import java.util.function.Function;
 
 import javax.inject.Inject;
@@ -17,15 +16,7 @@ import com.github.ruediste1.i18n.message.TMessages;
 public class Transformers {
 
     @Inject
-    public DateToStringTransformer dateToStringTransformer;
-
-    public String dateToString(Date date) {
-        return dateToStringTransformer.transform(date);
-    }
-
-    public Date stringToDate(String string) {
-        return dateToStringTransformer.transformInv(string);
-    }
+    public DateToStringTransformer dateToString;
 
     @Inject
     Messages messages;
@@ -61,25 +52,31 @@ public class Transformers {
         }
     }
 
-    public final TwoWayBindingTransformer<Integer, String> intToStringTransformer = new NumberTransformer<>(
-            Integer::parseInt);
+    public final TwoWayBindingTransformer<Integer, String> intToString = new NumberTransformer<>(Integer::parseInt);
 
-    public final TwoWayBindingTransformer<Long, String> longToStringTransformer = new NumberTransformer<>(
-            Long::parseLong);
+    public final TwoWayBindingTransformer<Long, String> longToString = new NumberTransformer<>(Long::parseLong);
 
-    public final TwoWayBindingTransformer<Short, String> shortToStringTransformer = new NumberTransformer<>(
-            Short::parseShort);
+    public final TwoWayBindingTransformer<Short, String> shortToString = new NumberTransformer<>(Short::parseShort);
 
     @Inject
-    public ByteArrayToHexStringTransformer byteArrayToHexStringTransformer;
+    public ByteArrayToHexStringTransformer byteArrayToHexString;
 
-    public String intToString(Integer value) {
-        return intToStringTransformer.transform(value);
-    }
+    public TwoWayBindingTransformer<Boolean, String> boolToString = new TwoWayBindingTransformer<Boolean, String>() {
 
-    public Integer stringToInt(String value) {
-        return intToStringTransformer.transformInv(value);
-    }
+        @Override
+        protected String transformImpl(Boolean source) {
+            if (source == null)
+                return null;
+            return source.toString();
+        }
+
+        @Override
+        protected Boolean transformInvImpl(String target) {
+            if (target == null)
+                return null;
+            return "true".equalsIgnoreCase(target.toLowerCase());
+        }
+    };
 
     public <T> TwoWayBindingTransformer<T, T> identityTransformer() {
         return new TwoWayBindingTransformer<T, T>() {

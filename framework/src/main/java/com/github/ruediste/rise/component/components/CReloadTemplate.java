@@ -19,7 +19,7 @@ public class CReloadTemplate extends Html5ComponentTemplateBase<CReload> {
         if (info.isReloadRequest())
             html.render(component.getBody());
         else {
-            HtmlFragment fragment = html.toFragment(component.getBody());
+            HtmlFragment fragment = html.toFragmentAndAdd(component.getBody());
             html.form().CLASS("rise_reload").DATA("rise-fragmentnr", Long.toString(util.getFragmentNr(fragment)))
                     .rCOMPONENT_ATTRIBUTES(component).render(fragment)._form();
         }

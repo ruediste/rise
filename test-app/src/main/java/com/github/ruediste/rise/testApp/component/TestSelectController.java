@@ -27,18 +27,18 @@ public class TestSelectController extends ControllerComponent {
         protected Component createComponents() {
             CText selectedItemText = new CText(String.valueOf(controller.data().getSelectedItem()))
                     .TEST_NAME("viewStatus");
-            return new CPage().add(new CSelect<String>().CLASS("list-group")
+            return new CPage().render(new CSelect<String>().CLASS("list-group")
                     .bindItems(() -> controller.data().getItems()).setAllowEmpty(controller.allowEmpty)
                     .bindSelectedItem(() -> controller.data().getSelectedItem())
                     .setChildComponentFactory(x -> new CText(x)).setTestNameExtractor(x -> x).apply(x -> {
                         if (controller.addSelectionHandler) {
                             x.setSelectionHandler(i -> selectedItemText.setTextString(String.valueOf(i)));
                         }
-                    })).add(new CButton(controller, x -> x.pullUp())).add(new CButton(controller, x -> x.pushDown()))
-                    .add(new CButton(controller, x -> x.reload()))
-                    .add(toComponentDirect(html -> html.span().TEST_NAME("controllerStatus")
+                    })).render(new CButton(controller, x -> x.pullUp())).render(new CButton(controller, x -> x.pushDown()))
+                    .render(new CButton(controller, x -> x.reload()))
+                    .render(toComponentDirect(html -> html.span().TEST_NAME("controllerStatus")
                             .addFragmentAndRender(String.valueOf(controller.data.get().getSelectedItem()))._span()))
-                    .add(selectedItemText);
+                    .render(selectedItemText);
         }
     }
 

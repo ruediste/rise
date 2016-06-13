@@ -16,9 +16,9 @@ public class TestEventController extends ControllerComponent {
         @Override
         protected Component createComponents() {
             return new CPage()
-                    .add(toComponent(html -> html.span().TEST_NAME("eventSpan").rON(JavaScriptEvent.click, () -> {
+                    .render(toComponent(html -> html.span().TEST_NAME("eventSpan").rON(JavaScriptEvent.click, () -> {
                         controller.eventCount++;
-                    }).content("fooBar"))).add(toComponentDirect(html -> html.addFragmentAndRender("eventCount: ").span()
+                    }).content("fooBar"))).render(toComponentDirect(html -> html.addFragmentAndRender("eventCount: ").span()
                             .TEST_NAME("eventCount").content(String.valueOf(controller.eventCount))));
 
         }

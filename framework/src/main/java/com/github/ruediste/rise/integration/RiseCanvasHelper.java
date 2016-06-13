@@ -121,15 +121,15 @@ public class RiseCanvasHelper {
     }
 
     public void add(RiseCanvas<?> html, Component c) {
-        componentTemplateIndex.getTemplate(c).get().doRender(c, html);
+        componentTemplateIndex.getTemplate(c).ifPresent(x -> x.doRender(c, html)).ifFailure(() -> c.render(html));
     }
 
-    public void addController(RiseCanvas<?> html, Object controller, Class<? extends IViewQualifier> viewQualifier) {
-        html.addView(componentViewRepository.createView((SubControllerComponent) controller, viewQualifier));
+    public void renderController(RiseCanvas<?> html, Object controller, Class<? extends IViewQualifier> viewQualifier) {
+        html.renderView(componentViewRepository.createView((SubControllerComponent) controller, false, viewQualifier));
     }
 
-    public void addController(RiseCanvas<?> html, Object controller) {
-        html.addView(componentViewRepository.createView((SubControllerComponent) controller));
+    public void renderController(RiseCanvas<?> html, Object controller) {
+        html.renderView(componentViewRepository.createView((SubControllerComponent) controller, false, null));
     }
 
 }

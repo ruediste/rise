@@ -30,9 +30,9 @@ public class NonRenderedComponentsController extends ControllerComponent {
             checkBox.setChecked(true);
             AtomicInteger count = new AtomicInteger(0);
             return new CPage()
-                    .add(new CSwitch<Choice>().put(Choice.A, new CText("a")).put(Choice.B, checkBox)
+                    .render(new CSwitch<Choice>().put(Choice.A, new CText("a")).put(Choice.B, checkBox)
                             .setOption(Choice.A))
-                    .add(new CButton(controller, x -> x.reload())).add(toComponentDirect(html -> html.span()
+                    .render(new CButton(controller, x -> x.reload())).render(toComponentDirect(html -> html.span()
                             .TEST_NAME("checked").content(count.incrementAndGet() + "" + checkBox.isChecked())));
         }
 

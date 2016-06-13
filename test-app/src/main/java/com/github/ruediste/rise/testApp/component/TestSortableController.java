@@ -25,10 +25,10 @@ public class TestSortableController extends ControllerComponent {
         @Override
         protected Component createComponents() {
             return new CPage()
-                    .add(new CSortable<String>().CLASS("list-group").bindItems(() -> controller.data().getItems())
+                    .render(new CSortable<String>().CLASS("list-group").bindItems(() -> controller.data().getItems())
                             .setChildComponentFactory(CText::new).setTestNameExtractor(x -> x))
-                    .add(new CButton(controller, x -> x.pullUp())).add(new CButton(controller, x -> x.pushDown()))
-                    .add(toComponentDirect(html -> html.span().TEST_NAME("controllerStatus")
+                    .render(new CButton(controller, x -> x.pullUp())).render(new CButton(controller, x -> x.pushDown()))
+                    .render(toComponentDirect(html -> html.span().TEST_NAME("controllerStatus")
                             .addFragmentAndRender(String.valueOf(controller.data.get().items))._span()));
         }
     }
