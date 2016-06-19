@@ -63,11 +63,11 @@ public class NavigationBuilder {
     }
 
     public NavigationBuilder add(ActionResult target, String text) {
-        return add(target, locale -> text);
+        return add(target, LString.of(text));
     }
 
     public NavigationBuilder add(ActionResult target, String text, Renderable<Html5Canvas<?>> icon) {
-        return add(target, locale -> text, icon);
+        return add(target, LString.of(text), icon);
     }
 
     public NavigationBuilder add(ActionResult target, LString text) {
@@ -86,7 +86,7 @@ public class NavigationBuilder {
     }
 
     public NavigationBuilder group(String text) {
-        return group(locale -> text);
+        return group(LString.of(text));
     }
 
     public NavigationBuilder group(Enum<?> labelEnum) {

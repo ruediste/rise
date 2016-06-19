@@ -84,7 +84,7 @@ public class ValidationUtil {
         }
 
         // fallback: just use the string as is as pattern
-        return new PatternString(patternStringResolver, l -> messageTemplate, args);
+        return new PatternString(patternStringResolver, LString.of(messageTemplate), args);
     }
 
     public List<ValidationFailure> toFailures(Iterable<? extends ConstraintViolation<?>> violations) {

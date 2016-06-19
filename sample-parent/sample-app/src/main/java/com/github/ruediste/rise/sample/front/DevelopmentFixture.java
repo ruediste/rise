@@ -39,6 +39,7 @@ public class DevelopmentFixture implements Runnable {
         user.setHash(hashingService.createHash("user"));
         user.getGrantedRights().addAll(Arrays.asList(SampleRight.VIEW_USER_PAGE));
         em.persist(user);
+
     }
 
 }

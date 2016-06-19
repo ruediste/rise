@@ -109,7 +109,7 @@ public class Strategies {
                         .flatMap(x -> x.isPresent() ? Stream.of(x.get()) : Stream.of()));
     }
 
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public <T extends Strategy> Stream<T> getStrategies(Class<T> strategyClass, AnnotatedElement element) {
         if (element == null)
             return getStrategies(strategyClass);
@@ -121,7 +121,7 @@ public class Strategies {
                 .map(UseStrategy::value).filter(strategyClass::isAssignableFrom).map(injector::getInstance);
 
         // use default strategies
-        return (Stream<T>) Stream.concat(Stream.concat(perElementStrategyStream, annotationStream),
+        return Stream.<T> concat((Stream) Stream.concat(perElementStrategyStream, annotationStream),
                 getStrategies(strategyClass));
     }
 

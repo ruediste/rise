@@ -15,7 +15,7 @@
 	<url>http://maven.apache.org</url>
 	<modules>
 		<module>framework</module>
-		<module>test-app</module>
+<!--		<module>test-app</module> -->
 		<module>sample-parent</module>
 		<module>framework-non-reloadable</module>
 		<module>framework-test</module>
@@ -67,7 +67,6 @@
 							<groupId>org.hibernate</groupId>
 							<artifactId>hibernate-jpamodelgen</artifactId>
 							<version>4.3.5.Final</version>
-							<optional>true</optional>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>

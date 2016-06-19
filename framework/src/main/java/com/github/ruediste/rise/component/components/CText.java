@@ -17,7 +17,7 @@ public class CText extends ComponentBase<CText> {
     }
 
     public CText(String text) {
-        this.text = locale -> text;
+        this.text = LString.of(text);
 
     }
 
@@ -26,7 +26,7 @@ public class CText extends ComponentBase<CText> {
     }
 
     public CText setTextString(String text) {
-        this.text = locale -> text;
+        this.text = LString.of(text);
         return this;
     }
 

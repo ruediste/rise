@@ -51,7 +51,7 @@ public abstract class StageRibbonControllerBase<TSelf extends StageRibbonControl
         }
 
         public LString getTitle() {
-            return r -> getTitleString();
+            return LString.of(() -> getTitleString());
         }
 
         public String getTitleString() {

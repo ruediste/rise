@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -86,6 +87,44 @@ public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Htm
         });
     }
 
+    default <T> TSelf fIfPresent(Supplier<Optional<T>> optional, Consumer<T> ifPresent) {
+        return fIfPresent(optional, ifPresent, () -> {
+        });
+    }
+
+    default <T> TSelf fIfPresent(Supplier<Optional<T>> optional, Consumer<T> ifPresent, Runnable ifAbsent) {
+        return addFragmentAndRender(new HtmlFragment() {
+            HtmlFragment currentFragment;
+            Optional<T> currentState;
+
+            @Override
+            public Iterable<HtmlFragment> getChildren() {
+                if (currentFragment == null)
+                    return Collections.emptyList();
+                return Arrays.asList(currentFragment);
+            }
+
+            @Override
+            protected void produceHtml(HtmlConsumer consumer) {
+                if (currentFragment != null)
+                    currentFragment.render(consumer);
+            }
+
+            @Override
+            public void updateStructure(UpdateStructureArg arg) {
+                Optional<T> newState = optional.get();
+                if (currentState == null || !Objects.equals(newState, currentState)) {
+                    currentState = newState;
+                    currentFragment = currentState.isPresent()
+                            ? toFragment(() -> ifPresent.accept(optional.get().get()), this)
+                            : toFragment(ifAbsent, this);
+                    arg.structureUpdated();
+                }
+            }
+
+        });
+    }
+
     /**
      * Render ifTrue of ifFalse, depending on the condition.
      * 
@@ -128,7 +167,7 @@ public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Htm
     default TSelf fIfT(Supplier<Boolean> condition, Runnable ifTrue, Runnable ifFalse) {
         return addFragmentAndRender(new HtmlFragment() {
             HtmlFragment currentFragment;
-            boolean currentState;
+            Boolean currentState;
 
             @Override
             public Iterable<HtmlFragment> getChildren() {
@@ -145,8 +184,8 @@ public interface FragmentCanvas<TSelf extends FragmentCanvas<TSelf>> extends Htm
 
             @Override
             public void updateStructure(UpdateStructureArg arg) {
-                Boolean newState = condition.get();
-                if (newState != currentState) {
+                boolean newState = condition.get();
+                if (currentState == null || newState != currentState) {
                     currentState = newState;
                     currentFragment = currentState ? toFragment(ifTrue, this) : toFragment(ifFalse, this);
                     arg.structureUpdated();

@@ -137,16 +137,6 @@ public class HtmlFragment {
          */
         void structureUpdated();
 
-        /**
-         * When called from
-         * {@link HtmlFragment#updateStructure(UpdateStructureArg)}, declares
-         * that this fragment needs to be notified of structural changes of
-         * other fragment, thus updateStructure() will be called again if any
-         * other fragment called {@link #structureUpdated()}.
-         * 
-         * Repeated calls have no effect
-         */
-        void callOnFurtherStructureUpdates();
     }
 
     /**
