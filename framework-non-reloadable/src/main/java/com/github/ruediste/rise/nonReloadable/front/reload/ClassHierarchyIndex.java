@@ -3,6 +3,7 @@ package com.github.ruediste.rise.nonReloadable.front.reload;
 import static java.util.stream.Collectors.toSet;
 import static org.objectweb.asm.Opcodes.ASM5;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -85,6 +86,16 @@ public class ClassHierarchyIndex {
 
     private Map<String, ClassNode> classMap = new HashMap<>();
     private HashMultimap<String, ClassNode> childMap = HashMultimap.create();
+    /**
+     * Map from annotation name to internal class names
+     */
+    private HashMultimap<String, String> annotationMap = HashMultimap.create();
+
+    private Stream<String> getAnnotationNames(ClassNode cls) {
+        if (cls.visibleAnnotations == null)
+            return Collections.<String> emptyList().stream();
+        return cls.visibleAnnotations.stream().map(x -> Type.getType(x.desc).getInternalName());
+    }
 
     void onChange(ClassChangeTransaction trx) {
         log.info("change occurred. added:" + trx.addedClasses.size() + " removed:" + trx.removedClasses.size()
@@ -100,6 +111,7 @@ public class ClassHierarchyIndex {
                         childMap.remove(iface, cls);
                     }
                 }
+                getAnnotationNames(cls).forEach(x -> annotationMap.remove(x, name));
             }
         });
 
@@ -114,7 +126,20 @@ public class ClassHierarchyIndex {
                     childMap.put(iface, cls);
                 }
             }
+            getAnnotationNames(cls).forEachOrdered(x -> annotationMap.put(x, cls.name));
         }
+    }
+
+    public Stream<Class<?>> getClassesByAnnotation(Class<? extends Annotation> annotation, ClassLoader cl) {
+        return getNodesByAnnotation(annotation).map(x -> loadClass(x, cl));
+    }
+
+    public Stream<ClassNode> getNodesByAnnotation(Class<? extends Annotation> annotation) {
+        return getNodesByAnnotation(Type.getType(annotation).getInternalName());
+    }
+
+    public Stream<ClassNode> getNodesByAnnotation(String internalName) {
+        return annotationMap.get(internalName).stream().map(x -> classMap.get(x)).filter(x -> x != null);
     }
 
     /**
@@ -145,15 +170,17 @@ public class ClassHierarchyIndex {
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     public <T> Set<Class<? extends T>> getAllChildClasses(Class<T> cls, ClassLoader cl) {
-        return getAllChildren(cls).stream().map(n -> {
-            try {
-                return (Class<? extends T>) cl.loadClass(Type.getObjectType(n.name).getClassName());
-            } catch (Exception e) {
-                throw new RuntimeException("Error while loading class " + n.name);
-            }
-        }).collect(toSet());
+        return getAllChildren(cls).stream().map(n -> this.<T> loadClass(n, cl)).collect(toSet());
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private <T> Class<T> loadClass(ClassNode node, ClassLoader cl) {
+        try {
+            return (Class<T>) cl.loadClass(Type.getObjectType(node.name).getClassName());
+        } catch (Exception e) {
+            throw new RuntimeException("Error while loading class " + node.name);
+        }
     }
 
     public Set<ClassNode> getAllChildren(Class<?> cls) {

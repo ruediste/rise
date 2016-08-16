@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassChangeNotifier.ClassChangeTransaction;
@@ -50,6 +52,7 @@ public class ClassHierarchyIndexTest {
     private class A implements IA {
     }
 
+    @NonReloadable
     private class B extends A implements IB {
     }
 
@@ -108,5 +111,12 @@ public class ClassHierarchyIndexTest {
                 cache.resolve(Type.getInternalName(Derived2.class), Type.getInternalName(Base.class), "T"));
         assertNull(cache.resolve(Type.getInternalName(Derived1.class), Type.getInternalName(Base.class), "T"));
     }
+
+    @Test
+        public void testGetNodesByAnnotation() throws Exception {
+            List<ClassNode> list = cache.getNodesByAnnotation(NonReloadable.class);
+            assertEquals(1, list.size());
+            assertEquals(Type.getType(B.class).getInternalName(), list.get(0).name);
+        }
 
 }
