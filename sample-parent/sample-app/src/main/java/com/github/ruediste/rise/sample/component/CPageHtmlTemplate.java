@@ -45,7 +45,7 @@ public class CPageHtmlTemplate extends ComponentTemplate<CPage> {
                     title = labelUtil.type(page.getView().getClass()).tryLabel().map(x -> (LString) x);
                 }
 
-                return title.orElseGet(() -> (locale -> ""));
+                return title.orElse(LString.empty());
             }
         });
     }
