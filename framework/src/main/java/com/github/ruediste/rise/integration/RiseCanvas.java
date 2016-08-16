@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.integration;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -20,6 +21,8 @@ import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.util.MethodInvocation;
 import com.github.ruediste1.i18n.lString.LString;
+import com.google.common.base.Charsets;
+import com.google.common.io.ByteStreams;
 
 public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
         extends Html5Canvas<TSelf>, FragmentCanvas<TSelf>, FuncCanvas<TSelf> {
@@ -149,5 +152,13 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
     default HtmlFragment marker() {
         return toFragmentAndAdd(() -> {
         });
+    }
+
+    default TSelf writeFromClasspath(Class<?> cls, String name) {
+        try {
+            return writeUnescaped(new String(ByteStreams.toByteArray(cls.getResourceAsStream(name)), Charsets.UTF_8));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
