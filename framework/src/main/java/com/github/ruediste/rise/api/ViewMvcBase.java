@@ -7,7 +7,7 @@ import javax.inject.Provider;
 
 import com.github.ruediste.rendersnakeXT.canvas.ByteArrayHtmlConsumer;
 import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvas;
-import com.github.ruediste.rise.component.fragment.HtmlFragmentUtil;
+import com.github.ruediste.rise.component.tree.HtmlFragmentUtil;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CurrentLocale;
 import com.github.ruediste.rise.core.IController;

@@ -4,7 +4,7 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 
-import com.github.ruediste.rise.component.fragment.HtmlFragment;
+import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.RequestParseResult;
 import com.github.ruediste.rise.core.RequestParser;
@@ -86,7 +86,7 @@ public class AjaxRequestParser implements RequestParser {
                 // get the component
                 PageHandle page = sessionInfo.getPageHandle(pageNr);
                 componentRequestInfo.setPageHandle(page);
-                HtmlFragment fragment;
+                Component fragment;
                 synchronized (page.lock) {
                     ScopeState old = pageScopeHandler.setState(page.pageScopeState);
                     try {

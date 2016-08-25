@@ -4,14 +4,15 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import com.github.ruediste.rendersnakeXT.canvas.FuncCanvas;
 import com.github.ruediste.rendersnakeXT.canvas.Html5Canvas;
 import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.IViewQualifier;
-import com.github.ruediste.rise.component.fragment.FragmentCanvas;
-import com.github.ruediste.rise.component.fragment.HtmlFragment;
+import com.github.ruediste.rise.component.render.ComponentCanvas;
+import com.github.ruediste.rise.component.render.RiseCanvasTarget;
 import com.github.ruediste.rise.component.tree.Component;
-import com.github.ruediste.rise.component.tree.ComponentBase;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
@@ -25,7 +26,7 @@ import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
 
 public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
-        extends Html5Canvas<TSelf>, FragmentCanvas<TSelf>, FuncCanvas<TSelf> {
+        extends Html5Canvas<TSelf>, ComponentCanvas<TSelf>, FuncCanvas<TSelf> {
 
     RiseCanvasHelper internal_riseHelper();
 
@@ -125,13 +126,13 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
         focusin, focusout, click
     }
 
-    default TSelf rCOMPONENT_ATTRIBUTES(ComponentBase<?> component) {
+    default TSelf rCOMPONENT_ATTRIBUTES(Component<?> component) {
         return self().CLASS(component.CLASS()).TEST_NAME(component.TEST_NAME()).fIf(component.isDisabled(),
                 () -> DISABLED());
     }
 
     default TSelf renderView(ViewComponentBase<?> view) {
-        return addFragmentAndRender(view.getRootFragment());
+        throw new NotImplementedException();
     }
 
     default TSelf renderController(Object controller) {
@@ -144,21 +145,26 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
         return self();
     }
 
-    default TSelf render(Component c) {
-        internal_riseHelper().add(this, c);
-        return self();
-    }
-
-    default HtmlFragment marker() {
-        return toFragmentAndAdd(() -> {
-        });
-    }
-
     default TSelf writeFromClasspath(Class<?> cls, String name) {
         try {
             return writeUnescaped(new String(ByteStreams.toByteArray(cls.getResourceAsStream(name)), Charsets.UTF_8));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    RiseCanvasTarget internal_target();
+
+    void setTarget(RiseCanvasTarget target);
+
+    default TSelf addPlaceholder(Runnable placeholder) {
+        internal_target().addPlaceholder(this, placeholder);
+        return self();
+    }
+
+    default TSelf addAttributePlaceholder(Runnable placeholder) {
+        internal_target().addAttributePlaceholder(this, placeholder);
+        return self();
     }
 }

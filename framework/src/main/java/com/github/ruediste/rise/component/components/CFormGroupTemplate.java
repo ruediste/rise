@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import com.github.ruediste.rise.component.fragment.HtmlFragment;
+import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.validation.ValidationState;
 import com.github.ruediste.rise.component.validation.ValidationStatus;
 import com.github.ruediste.rise.core.i18n.ValidationFailure;
@@ -26,7 +26,7 @@ public class CFormGroupTemplate extends BootstrapComponentTemplateBase<CFormGrou
 
     @Override
     public void doRender(CFormGroup component, BootstrapRiseCanvas<?> html) {
-        HtmlFragment contentFragment = html.toFragmentAndAdd(() -> html.render(component.getContent()));
+        Component contentFragment = html.toFragmentAndAdd(() -> html.render(component.getContent()));
 
         html.direct(() -> {
             Optional<? extends LString> label = component.getLabel();

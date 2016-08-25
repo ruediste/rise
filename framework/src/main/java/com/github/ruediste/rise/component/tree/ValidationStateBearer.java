@@ -1,4 +1,4 @@
-package com.github.ruediste.rise.component.fragment;
+package com.github.ruediste.rise.component.tree;
 
 import java.util.ArrayList;
 import java.util.Collections;

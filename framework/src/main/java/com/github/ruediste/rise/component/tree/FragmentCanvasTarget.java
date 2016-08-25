@@ -1,4 +1,4 @@
-package com.github.ruediste.rise.component.fragment;
+package com.github.ruediste.rise.component.tree;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -51,7 +51,7 @@ public class FragmentCanvasTarget extends DelegatingHtmlCanvasTarget {
         return delegate;
     }
 
-    public HtmlFragment toFragment(Runnable renderer) {
+    public Component toFragment(Runnable renderer) {
         // prepare current delegate
         delegate.commitAttributes();
         delegate.flush();
@@ -93,7 +93,7 @@ public class FragmentCanvasTarget extends DelegatingHtmlCanvasTarget {
     /**
      * Render the given fragment.
      */
-    public void render(HtmlFragment fragment) {
+    public void render(Component fragment) {
         delegate.addProducer(fragment.getHtmlProducer(), true);
     }
 
@@ -103,7 +103,7 @@ public class FragmentCanvasTarget extends DelegatingHtmlCanvasTarget {
 
     public void direct(Runnable runnable) {
         addProducer(cosumer -> {
-            HtmlFragment fragment = toFragment(runnable);
+            Component fragment = toFragment(runnable);
             HtmlFragmentUtil.updateStructure(fragment);
             fragment.getHtmlProducer().produce(cosumer);
         } , true);

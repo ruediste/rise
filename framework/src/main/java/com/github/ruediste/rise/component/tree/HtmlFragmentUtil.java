@@ -1,8 +1,8 @@
-package com.github.ruediste.rise.component.fragment;
+package com.github.ruediste.rise.component.tree;
 
 import java.util.List;
 
-import com.github.ruediste.rise.component.fragment.HtmlFragment.UpdateStructureArg;
+import com.github.ruediste.rise.component.tree.Component.UpdateStructureArg;
 
 public class HtmlFragmentUtil {
 
@@ -24,13 +24,13 @@ public class HtmlFragmentUtil {
 
     }
 
-    public static void updateStructure(HtmlFragment root) {
+    public static void updateStructure(Component root) {
         UpdateStructureArgImpl arg = new UpdateStructureArgImpl();
 
         while (true) {
-            List<HtmlFragment> fragments = root.subTree();
+            List<Component> fragments = root.subTree();
             boolean updated = false;
-            for (HtmlFragment fragment : fragments) {
+            for (Component fragment : fragments) {
                 arg.reset();
                 fragment.updateStructure(arg);
                 updated |= arg.structureUpdated;

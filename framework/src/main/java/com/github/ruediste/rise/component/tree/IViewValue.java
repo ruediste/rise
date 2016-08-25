@@ -1,4 +1,4 @@
-package com.github.ruediste.rise.component.fragment;
+package com.github.ruediste.rise.component.tree;
 
 import java.util.function.Supplier;
 
@@ -8,7 +8,7 @@ import java.util.function.Supplier;
  * <p>
  * In Rise, there is a controller and a view state. Whenever the view is
  * reloaded, the view state is updated based on the values of the
- * {@link HtmlFragment}s, the request is processed and finally the view is
+ * {@link Component}s, the request is processed and finally the view is
  * updated again from the view state.
  * 
  * <p>

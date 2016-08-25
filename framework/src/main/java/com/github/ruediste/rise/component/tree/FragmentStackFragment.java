@@ -1,19 +1,19 @@
-package com.github.ruediste.rise.component.fragment;
+package com.github.ruediste.rise.component.tree;
 
 import java.util.ArrayDeque;
 import java.util.Collections;
 
 import com.github.ruediste.rendersnakeXT.canvas.HtmlConsumer;
 
-public class FragmentStackFragment extends HtmlFragment {
+public class FragmentStackFragment extends Component {
 
-    ArrayDeque<HtmlFragment> currentStack = new ArrayDeque<>();
-    ArrayDeque<HtmlFragment> newStack;
+    ArrayDeque<Component> currentStack = new ArrayDeque<>();
+    ArrayDeque<Component> newStack;
 
     boolean isTransient;
 
     @Override
-    public Iterable<HtmlFragment> getChildren() {
+    public Iterable<Component> getChildren() {
         if (isTransient) {
             if (currentStack.isEmpty())
                 return Collections.emptyList();
@@ -39,7 +39,7 @@ public class FragmentStackFragment extends HtmlFragment {
         }
     }
 
-    private ArrayDeque<HtmlFragment> getNewStack() {
+    private ArrayDeque<Component> getNewStack() {
         if (newStack == null)
             newStack = new ArrayDeque<>(currentStack);
         return newStack;
@@ -54,7 +54,7 @@ public class FragmentStackFragment extends HtmlFragment {
         return this;
     }
 
-    void push(HtmlFragment fragment) {
+    void push(Component fragment) {
         getNewStack().push(fragment);
     }
 

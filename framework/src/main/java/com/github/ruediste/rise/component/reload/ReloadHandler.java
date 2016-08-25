@@ -17,8 +17,8 @@ import com.github.ruediste.rise.component.ComponentPageHandleRepository;
 import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.component.ComponentTemplateIndex;
 import com.github.ruediste.rise.component.ComponentUtil;
-import com.github.ruediste.rise.component.fragment.HtmlFragment;
-import com.github.ruediste.rise.component.fragment.HtmlFragmentUtil;
+import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.component.tree.HtmlFragmentUtil;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.web.ContentRenderResult;
@@ -68,7 +68,7 @@ public class ReloadHandler implements Runnable {
 
         ViewComponentBase<?> view = page.getView();
 
-        HtmlFragment reloadFragment = util.getFragment(request.getFragmentNr());
+        Component reloadFragment = util.getFragment(request.getFragmentNr());
 
         // parse the data
         List<Map<String, Object>> rawData;
@@ -86,21 +86,21 @@ public class ReloadHandler implements Runnable {
         request.setParameterData(data);
 
         // apply request values
-        List<HtmlFragment> reloadedFragments = reloadFragment.subTree();
+        List<Component> reloadedFragments = reloadFragment.subTree();
 
-        for (HtmlFragment fragment : reloadedFragments) {
+        for (Component fragment : reloadedFragments) {
             if (fragment.isRendered())
                 fragment.applyValues();
         }
 
         // process actions
-        for (HtmlFragment fragment : reloadedFragments) {
+        for (Component fragment : reloadedFragments) {
             if (fragment.isRendered())
                 fragment.processActions();
         }
 
         // clear rendered flags
-        for (HtmlFragment fragment : reloadedFragments) {
+        for (Component fragment : reloadedFragments) {
             fragment.setRendered(false);
         }
 

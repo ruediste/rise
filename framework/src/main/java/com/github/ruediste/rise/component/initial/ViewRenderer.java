@@ -9,7 +9,7 @@ import com.github.ruediste.rise.component.ComponentConfiguration;
 import com.github.ruediste.rise.component.ComponentPage;
 import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.component.ComponentUtil;
-import com.github.ruediste.rise.component.fragment.HtmlFragmentUtil;
+import com.github.ruediste.rise.component.tree.HtmlFragmentUtil;
 import com.github.ruediste.rise.core.ChainedRequestHandler;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;

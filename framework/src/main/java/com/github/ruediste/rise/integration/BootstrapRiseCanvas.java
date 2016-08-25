@@ -6,13 +6,12 @@ import java.util.function.Consumer;
 import com.github.ruediste.rendersnakeXT.canvas.BootstrapCanvas;
 import com.github.ruediste.rendersnakeXT.canvas.BootstrapCanvasCss;
 import com.github.ruediste.rendersnakeXT.canvas.FuncCanvas;
-import com.github.ruediste.rise.component.fragment.FragmentCanvas;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 import com.github.ruediste1.i18n.lString.TranslatedString;
 
 public interface BootstrapRiseCanvas<TSelf extends BootstrapRiseCanvas<TSelf>>
-        extends BootstrapCanvas<TSelf>, RiseCanvas<TSelf>, FragmentCanvas<TSelf>, FuncCanvas<TSelf> {
+        extends BootstrapCanvas<TSelf>, RiseCanvas<TSelf>, FuncCanvas<TSelf> {
 
     public default TSelf rButtonA(ActionResult target) {
         return rButtonA(target, a -> {

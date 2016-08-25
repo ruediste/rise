@@ -4,7 +4,7 @@ import javax.inject.Inject;
 
 import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.component.ComponentUtil;
-import com.github.ruediste.rise.component.fragment.HtmlFragment;
+import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.integration.RiseCanvas;
 
 public class CReloadTemplate extends Html5ComponentTemplateBase<CReload> {
@@ -19,7 +19,7 @@ public class CReloadTemplate extends Html5ComponentTemplateBase<CReload> {
         if (info.isReloadRequest())
             html.render(component.getBody());
         else {
-            HtmlFragment fragment = html.toFragmentAndAdd(component.getBody());
+            Component fragment = html.toFragmentAndAdd(component.getBody());
             html.form().CLASS("rise_reload").DATA("rise-fragmentnr", Long.toString(util.getFragmentNr(fragment)))
                     .rCOMPONENT_ATTRIBUTES(component).render(fragment)._form();
         }

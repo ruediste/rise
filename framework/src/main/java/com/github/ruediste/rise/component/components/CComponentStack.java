@@ -6,10 +6,9 @@ import java.util.Deque;
 import java.util.LinkedList;
 
 import com.github.ruediste.rendersnakeXT.canvas.HtmlConsumer;
-import com.github.ruediste.rise.component.fragment.HtmlFragment;
-import com.github.ruediste.rise.component.fragment.HtmlFragment.EventHandlingOutcome;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ComponentBase;
+import com.github.ruediste.rise.component.tree.Component.EventHandlingOutcome;
 
 /**
  * Contains a stack of {@link Component}s. The components can be pushed and
@@ -25,7 +24,7 @@ import com.github.ruediste.rise.component.tree.ComponentBase;
 @DefaultTemplate(CComponentStackTemplate.class)
 public class CComponentStack extends ComponentBase<CComponentStack> {
 
-    Deque<HtmlFragment> stack = new LinkedList<>();
+    Deque<Component> stack = new LinkedList<>();
 
     /**
      * Pop the top component from the next containing {@link CComponentStack}
@@ -39,30 +38,30 @@ public class CComponentStack extends ComponentBase<CComponentStack> {
      */
     public static class PushComponentEvent {
 
-        final private HtmlFragment fragment;
+        final private Component fragment;
 
-        public PushComponentEvent(HtmlFragment fragment) {
+        public PushComponentEvent(Component fragment) {
             this.fragment = fragment;
         }
 
-        public HtmlFragment getFragment() {
+        public Component getFragment() {
             return fragment;
         }
     }
 
-    HtmlFragment containerFragment;
+    Component containerFragment;
 
     public CComponentStack() {
-        containerFragment = new HtmlFragment() {
+        containerFragment = new Component() {
             @Override
             protected void produceHtml(HtmlConsumer consumer) {
-                HtmlFragment peek = stack.peek();
+                Component peek = stack.peek();
                 if (peek != null)
                     peek.getHtmlProducer().produce(consumer);
             }
 
             @Override
-            public Iterable<HtmlFragment> getChildren() {
+            public Iterable<Component> getChildren() {
                 if (stack.isEmpty())
                     return Collections.emptyList();
                 return Collections.singleton(stack.peek());
@@ -78,39 +77,39 @@ public class CComponentStack extends ComponentBase<CComponentStack> {
         });
     }
 
-    public CComponentStack(HtmlFragment fragment) {
+    public CComponentStack(Component fragment) {
         this();
         push(fragment);
     }
 
-    public HtmlFragment peek() {
+    public Component peek() {
         return stack.peek();
     }
 
     /**
      * @return the component stack (this)
      */
-    public CComponentStack push(HtmlFragment e) {
+    public CComponentStack push(Component e) {
         stack.push(e);
         e.setParent(containerFragment);
         return this;
     }
 
-    public HtmlFragment pop() {
-        HtmlFragment tos = stack.pop();
+    public Component pop() {
+        Component tos = stack.pop();
         tos.setParent(null);
         return tos;
     }
 
-    public HtmlFragment getContainerFragment() {
+    public Component getContainerFragment() {
         return containerFragment;
     }
 
-    public static void raisePop(HtmlFragment start) {
+    public static void raisePop(Component start) {
         start.raiseEventBubbling(new CComponentStack.PopComponentEvent());
     }
 
-    public static void raisePush(HtmlFragment start, HtmlFragment fragmentToPush) {
+    public static void raisePush(Component start, Component fragmentToPush) {
         start.raiseEventBubbling(new CComponentStack.PushComponentEvent(fragmentToPush));
     }
 }

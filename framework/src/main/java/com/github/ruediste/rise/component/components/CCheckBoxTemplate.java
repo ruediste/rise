@@ -2,8 +2,8 @@ package com.github.ruediste.rise.component.components;
 
 import java.util.Optional;
 
-import com.github.ruediste.rise.component.fragment.HtmlFragment;
-import com.github.ruediste.rise.component.fragment.ValueHandle;
+import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.component.tree.ValueHandle;
 import com.github.ruediste.rise.integration.RiseCanvas;
 
 public class CCheckBoxTemplate extends ComponentTemplateBase<CCheckBox> {
@@ -11,7 +11,7 @@ public class CCheckBoxTemplate extends ComponentTemplateBase<CCheckBox> {
     @Override
     public void doRender(CCheckBox component, RiseCanvas<?> html) {
         ValueHandle<Boolean> handle = html.createValueHandle(component.getValue());
-        HtmlFragment fragment = new HtmlFragment() {
+        Component fragment = new Component() {
             @Override
             public void applyValues() {
                 handle.set(util.getParameterValue(this, "value").isPresent());

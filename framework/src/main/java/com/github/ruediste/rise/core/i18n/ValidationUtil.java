@@ -13,8 +13,8 @@ import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Payload;
 
-import com.github.ruediste.rise.component.fragment.HtmlFragment;
-import com.github.ruediste.rise.component.fragment.ValidationStateBearer;
+import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.component.tree.ValidationStateBearer;
 import com.github.ruediste.rise.component.validation.ValidationPathUtil;
 import com.github.ruediste.rise.component.validation.ValidationState;
 import com.github.ruediste.rise.component.validation.ValidationStatus;
@@ -124,7 +124,7 @@ public class ValidationUtil {
         };
     }
 
-    public ValidationStatus getValidationState(HtmlFragment fragment) {
+    public ValidationStatus getValidationState(Component fragment) {
         ArrayList<ValidationFailure> failures = new ArrayList<>();
         Var<Boolean> validated = new Var<>(false);
         fragment.forEachNonValidationPresenterInSubTree(f -> {

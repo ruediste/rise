@@ -20,6 +20,9 @@ import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.front.RestartCountHolder;
 import com.github.ruediste.rise.util.MethodInvocation;
 
+/**
+ * Template for a web page, including some meta data attributes on the body tag
+ */
 public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>> extends PageTemplateBase {
 
     @Inject

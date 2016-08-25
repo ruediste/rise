@@ -4,7 +4,7 @@ import java.util.Map;
 
 import com.github.ruediste.rise.api.ControllerComponent;
 import com.github.ruediste.rise.api.ViewComponentBase;
-import com.github.ruediste.rise.component.fragment.HtmlFragment;
+import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerSet;
 import com.github.ruediste.rise.util.GenericEvent;
@@ -35,7 +35,7 @@ public class ComponentPage {
 
     private final GenericEventManager<Object> destroyEvent = new GenericEventManager<>();
 
-    private final Map<Long, HtmlFragment> fragmentNrMap = new MapMaker().weakValues().makeMap();
+    private final Map<Long, Component> fragmentNrMap = new MapMaker().weakValues().makeMap();
     private long maxFragmentNr = 0;
 
     private ActionInvocation<Object> objectActionInvocation;
@@ -93,7 +93,7 @@ public class ComponentPage {
         destroyEvent.fire(null);
     }
 
-    public Map<Long, HtmlFragment> getFragmentNrMap() {
+    public Map<Long, Component> getFragmentNrMap() {
         return fragmentNrMap;
     }
 

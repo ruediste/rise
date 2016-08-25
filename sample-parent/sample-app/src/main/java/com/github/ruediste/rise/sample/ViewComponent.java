@@ -2,7 +2,7 @@ package com.github.ruediste.rise.sample;
 
 import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.api.ViewComponentBase;
-import com.github.ruediste.rise.component.fragment.FragmentCanvas;
+import com.github.ruediste.rise.component.tree.FragmentCanvas;
 
 /**
  * Base class for views for the component framework.

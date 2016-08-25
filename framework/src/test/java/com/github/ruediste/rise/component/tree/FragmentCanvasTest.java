@@ -1,4 +1,4 @@
-package com.github.ruediste.rise.component.fragment;
+package com.github.ruediste.rise.component.tree;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -115,7 +115,7 @@ public class FragmentCanvasTest {
 
     @Test
     public void testToComponentAndRender() {
-        HtmlFragment fragment = html.toFragment(() -> html.div().ID("foo").CLASS("bar").content("div"));
+        Component fragment = html.toFragment(() -> html.div().ID("foo").CLASS("bar").content("div"));
         html.div().ID("id2").render(fragment)._div();
         assertEquals("<div id=\"id2\"><div id=\"foo\" class=\"bar\">div</div> </div> ", getContents());
     }
@@ -159,7 +159,7 @@ public class FragmentCanvasTest {
         return getContents(target.getProducers());
     }
 
-    private String getContents(HtmlFragment fragment) {
+    private String getContents(Component fragment) {
         return getContents(Collections.singletonList(fragment.getHtmlProducer()));
     }
 

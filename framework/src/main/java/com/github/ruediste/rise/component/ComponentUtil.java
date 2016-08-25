@@ -7,9 +7,9 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.github.ruediste.rise.component.fragment.FragmentJumpPad;
-import com.github.ruediste.rise.component.fragment.HtmlFragment;
 import com.github.ruediste.rise.component.reload.PageReloadRequest;
+import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.component.tree.FragmentJumpPad;
 import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.ICoreUtil;
 import com.github.ruediste.rise.core.persistence.TransactionCallbackNoResult;
@@ -48,7 +48,7 @@ public class ComponentUtil implements ICoreUtil {
         return pageInfo.getPageId();
     }
 
-    public long getFragmentNr(HtmlFragment fragment) {
+    public long getFragmentNr(Component fragment) {
 
         long result = FragmentJumpPad.getFragmentNr(fragment);
         if (result == -1) {
@@ -62,14 +62,14 @@ public class ComponentUtil implements ICoreUtil {
         return result;
     }
 
-    public HtmlFragment getFragment(long fragmentId) {
+    public Component getFragment(long fragmentId) {
         return pageInfo.getFragmentNrMap().get(fragmentId);
     }
 
     /**
      * Return the appropriate value for the html element id attribute.
      */
-    public String getFragmentId(HtmlFragment fragment) {
+    public String getFragmentId(Component fragment) {
         return "c_" + getFragmentNr(fragment);
     }
 
@@ -77,7 +77,7 @@ public class ComponentUtil implements ICoreUtil {
         return coreUtil.url(componentConfiguration.getReloadPath() + "/" + pageId());
     }
 
-    public String getAjaxUrl(HtmlFragment component) {
+    public String getAjaxUrl(Component component) {
         return coreUtil.url(componentConfiguration.getAjaxPath() + "/" + pageId() + "/" + getFragmentNr(component));
     }
 
@@ -89,11 +89,11 @@ public class ComponentUtil implements ICoreUtil {
     /**
      * Return a key for identifying a request parameter for the given fragment
      */
-    public String getParameterKey(HtmlFragment fragment, String keySuffix) {
+    public String getParameterKey(Component fragment, String keySuffix) {
         return "c_" + getFragmentNr(fragment) + "_" + keySuffix;
     }
 
-    public Optional<Object> getParameterObject(HtmlFragment component, String keySuffix) {
+    public Optional<Object> getParameterObject(Component component, String keySuffix) {
         return reloadRequest.getParameterObject(getParameterKey(component, keySuffix));
     }
 
@@ -102,18 +102,18 @@ public class ComponentUtil implements ICoreUtil {
      * page reload request.
      * 
      * @param keySuffix
-     *            value passed to {@link #getParameterKey(HtmlFragment, String)}
+     *            value passed to {@link #getParameterKey(Component, String)}
      *            as suffix
      */
-    public Optional<String> getParameterValue(HtmlFragment fragment, String keySuffix) {
+    public Optional<String> getParameterValue(Component fragment, String keySuffix) {
         return reloadRequest.getParameterValue(getParameterKey(fragment, keySuffix));
     }
 
-    public Collection<Object> getParameterObjects(HtmlFragment fragment, String keySuffix) {
+    public Collection<Object> getParameterObjects(Component fragment, String keySuffix) {
         return reloadRequest.getParameterObjects(getParameterKey(fragment, keySuffix));
     }
 
-    public List<String> getParameterValues(HtmlFragment fragment, String keySuffix) {
+    public List<String> getParameterValues(Component fragment, String keySuffix) {
         return reloadRequest.getParameterValues(getParameterKey(fragment, keySuffix));
     }
 
@@ -121,7 +121,7 @@ public class ComponentUtil implements ICoreUtil {
      * Test if a parameter is defined for a certain component during a page
      * reload request.
      */
-    public boolean isParameterDefined(HtmlFragment fragment, String key) {
+    public boolean isParameterDefined(Component fragment, String key) {
         return reloadRequest.isParameterDefined(getParameterKey(fragment, key));
     }
 

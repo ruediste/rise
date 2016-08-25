@@ -4,9 +4,8 @@ import javax.inject.Inject;
 
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
 import com.github.ruediste.rise.component.ComponentUtil;
-import com.github.ruediste.rise.component.fragment.FragmentCanvas;
-import com.github.ruediste.rise.component.fragment.HtmlFragment;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.component.tree.FragmentCanvas;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
@@ -24,7 +23,7 @@ public abstract class ViewComponentBase<TController extends SubControllerCompone
     public CoreConfiguration config;
 
     protected TController controller;
-    private HtmlFragment rootFragment;
+    private Component rootFragment;
 
     public TController getController() {
         return controller;
@@ -74,7 +73,7 @@ public abstract class ViewComponentBase<TController extends SubControllerCompone
         return componentUtil.path();
     }
 
-    public HtmlFragment getRootFragment() {
+    public Component getRootFragment() {
         return rootFragment;
     }
 
