@@ -1,5 +1,7 @@
 package com.github.ruediste.rise.component;
 
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,25 +33,52 @@ public class ComponentTemplateIndex {
     private ConcurrentHashMap<Class<?>, Optional<IComponentTemplate<?>>> templates = new ConcurrentHashMap<>();
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <T extends Component> Try<IComponentTemplate<T>> getTemplate(T component) {
-        return getTemplate((Class) component.getClass());
+    public Try<IComponentTemplate> getTemplateRaw(Component<?> component) {
+        return (Try) getTemplate(component);
+    }
+
+    public Try<IComponentTemplate<?>> getTemplate(Component<?> component) {
+        return getTemplate(component.getClass());
+    }
+
+    public Try<IComponentTemplate<?>> getTemplate(Class<?> component) {
+        return Try.of(
+                templates.computeIfAbsent(component,
+                        cls -> extractTemplate(component).map(c -> injector.getInstance(c))),
+                () -> new RuntimeException("No template has been registered explicitely for " + component.getName()
+                        + ", no @DefaultTemplate annotation is present and no single matching inner template class has been found"));
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <T extends Component> Try<IComponentTemplate<T>> getTemplate(Class<T> component) {
-        return (Try) Try.of(
-                templates.computeIfAbsent(component,
-                        cls -> Optional.ofNullable(component.getAnnotation(DefaultTemplate.class))
-                                .map(x -> injector.getInstance(x.value()))),
-                () -> new RuntimeException("No template has been registered explicitely for " + component.getName()
-                        + " and no @DefaultTemplate annotation is present"));
+    Optional<Class<? extends IComponentTemplate>> extractTemplate(Class<?> component) {
+        DefaultTemplate annotation = component.getAnnotation(DefaultTemplate.class);
+        if (annotation != null)
+            return Optional.of(annotation.value());
+
+        Class<?> cls = component;
+        do {
+            ArrayList<Class<?>> candidates = new ArrayList<>();
+            for (Class<?> template : cls.getDeclaredClasses()) {
+                if (template.isSynthetic())
+                    continue;
+                if (!Modifier.isStatic(template.getModifiers()))
+                    continue;
+                if (!(IComponentTemplate.class.isAssignableFrom(template)))
+                    continue;
+                candidates.add(template);
+            }
+            if (candidates.size() == 1)
+                return (Optional) Optional.of(candidates.get(0));
+            cls = cls.getSuperclass();
+        } while (cls != null);
+        return Optional.empty();
     }
 
-    public <T extends Component> void registerTemplate(Class<T> component, IComponentTemplate<T> template) {
+    public <T extends Component<T>> void registerTemplate(Class<T> component, IComponentTemplate<T> template) {
         templates.put(component, Optional.of(template));
     }
 
-    public <T extends Component> void registerTemplate(Class<T> component,
+    public <T extends Component<T>> void registerTemplate(Class<T> component,
             Class<? extends IComponentTemplate<T>> template) {
         templates.put(component, Optional.of(injector.getInstance(template)));
     }

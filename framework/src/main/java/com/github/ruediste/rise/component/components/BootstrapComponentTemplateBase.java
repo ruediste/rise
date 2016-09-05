@@ -7,7 +7,7 @@ import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.integration.RiseCanvas;
 
-public abstract class BootstrapComponentTemplateBase<T extends Component> extends ComponentTemplateBase<T> {
+public abstract class BootstrapComponentTemplateBase<T extends Component<T>> extends ComponentTemplateBase<T> {
     @Inject
     CoreConfiguration config;
 

@@ -7,8 +7,9 @@ import javax.inject.Provider;
 
 import com.github.ruediste.rendersnakeXT.canvas.ByteArrayHtmlConsumer;
 import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvas;
-import com.github.ruediste.rise.component.tree.HtmlFragmentUtil;
+import com.github.ruediste.rise.component.render.CanvasTargetMvc;
 import com.github.ruediste.rise.core.ActionResult;
+import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CurrentLocale;
 import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
@@ -41,6 +42,9 @@ public abstract class ViewMvcBase<TController extends IControllerMvc, TData, TCa
     @Inject
     CurrentLocale currentLocale;
 
+    @Inject
+    CoreConfiguration coreConfiguration;
+
     private TData data;
 
     private Class<? extends TController> controllerClass;
@@ -64,12 +68,16 @@ public abstract class ViewMvcBase<TController extends IControllerMvc, TData, TCa
     }
 
     public void render(ByteArrayOutputStream out) {
+        CanvasTargetMvc target = new CanvasTargetMvc();
+        target.captureStartStackTraces = coreConfiguration.doCaptureHtmlTagStartTraces();
         TCanvas canvas = canvasProvider.get();
+        canvas.setTarget(target);
         render(canvas);
+        canvas.commitAttributes();
+        target.checkAllTagsClosed();
         canvas.flush();
-        HtmlFragmentUtil.updateStructure(canvas.internal_target().getParentFragment());
         ByteArrayHtmlConsumer consumer = new ByteArrayHtmlConsumer(out);
-        canvas.internal_target().getProducers().forEach(p -> p.produce(consumer));
+        target.getProducers().forEach(p -> p.produce(consumer));
     }
 
     protected abstract void render(TCanvas html);

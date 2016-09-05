@@ -8,40 +8,117 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import com.github.ruediste.rendersnakeXT.canvas.HtmlConsumer;
-import com.github.ruediste.rendersnakeXT.canvas.HtmlProducer;
-import com.github.ruediste.rise.api.SubControllerComponent;
+import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.binding.BindingInfo;
 import com.github.ruediste.rise.component.binding.BindingUtil;
-import com.github.ruediste.rise.component.tree.Component;
-import com.github.ruediste.rise.core.CoreRequestInfo;
-import com.github.ruediste.rise.core.web.HttpRenderResult;
+import com.github.ruediste.rise.component.render.ComponentState;
+import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
 import com.github.ruediste.rise.nonReloadable.lambda.Capture;
-import com.github.ruediste.rise.util.Pair;
+import com.github.ruediste.rise.util.NOptional;
+import com.github.ruediste.rise.util.Try;
 import com.github.ruediste1.i18n.lString.LString;
+import com.github.ruediste1.i18n.label.LabelUtil;
+import com.google.common.base.Predicate;
 
 /**
- * A HTML fragment. Examples: ifFragment, forEachFragment, mixedFragment
+ * A component rendering some HTML
+ * 
+ * <p>
+ * <b>Rendering Overview</b><br>
+ * The basic idea is to freshly render the whole view upon each page reload,
+ * based on the view state. Together with the HTML a component tree is
+ * constructed. This tree is used during the reload to handle value updates and
+ * events and to keep component state over reloads.
+ * </p>
+ * 
+ * <p>
+ * The following features are supported:
+ * <ul>
+ * <li><b>Component State:</b> Each component can have state which is kept over
+ * page reloads. When a component is added to the tree during a page reload, all
+ * fields marked with {@link ComponentState} are copied over from the
+ * corresponding component of the previous render process. For details of the
+ * matching process see below. If a field contains an {@link Optional}, it is
+ * only copied if the target optional is {@link Optional#empty()}. The matching
+ * happens immediatley after adding the component, before rendering. Otherwise
+ * the state would not be available for rendering. *
+ * <p>
+ * Matching always happens among the children of the current parent component.
+ * If a key is specified for a component, the old component with the same key is
+ * used for matching. Otherwise the key is formed from the class of the
+ * component and it's index. There is a separate index sequence for each
+ * component class. Thus if the component sequence is A A B A C, the keys are
+ * (A:1) (A:2) (B:1) (A:3) (C:1)
+ * </p>
+ * </li>
+ * 
+ * <li><b>Inspection of the Component Tree:</b> In many cases it is helpful to
+ * be able to inspect the component tree to gain additional information or to
+ * pass events. However, this is of little value if the rendering already
+ * happened when such inspection becomes possible. Therefore a component can add
+ * a placeholder during rendering which is evaluated during a second render
+ * phase. There are two types of placeholders: attribute placeholders can only
+ * add attributes to a single html tag. Tag placeholders can generate a whole
+ * html tree, but have to start and end with a tag. All started tags have to be
+ * closed. This property allows to check for well-fromedness of the generated
+ * html during the initial rendering, as well as during the rendering of each
+ * tag placeholder.</li>
+ * 
+ * <li><b>Validation:</b> Validation is always triggered by the controller. Both
+ * the model and the components can be validated. The model will check domain
+ * properties, the components the user input.
+ * <p>
+ * When a controller performs model validation, the validation failures are
+ * stored in a field of the controller. The components inspect their bindings
+ * and extract the applicable validation failures. The validation presenters
+ * inspect a part of the component trees and display any validation failures
+ * found. A validation presenter can also inspect the failures present on a
+ * controller and display those not othewise displayed.
+ * </p>
+ * <p>
+ * In addition, the controller can set a flag which causes the components to
+ * perform their own validations which are displayed by the validation
+ * presenters, too.
+ * </p>
+ * <li><b>Partial page reloads:</b></li> For fast page changes, pages can be
+ * reloaded partially. This is achieved by implementing a part of the page
+ * rendering as lambda function, which will be re-evaluated for the partial
+ * rendering. All handlers (event, value, ajax) are associated with the
+ * compoents, thus throwing away and recreating part of the page is sufficient.
+ * <li><b>Ajax:</b> The client can send ajax requests, which can be handled by
+ * individual components</li>
+ * </ul>
+ * </p>
  */
 public class Component<TSelf> {
 
+    private ViewComponentBase<?> view;
     private Component<?> parent;
     private List<Component<?>> children = new ArrayList<>();
-    private boolean rendered;
-    private HtmlProducer producer = (c) -> {
-        rendered = true;
-        produceHtml(c);
-    };
     private long fragmentNr = -1;
     private boolean isValidationPresenter;
     private List<LString> labels = new ArrayList<>();
 
-    private List<Pair<SubControllerComponent, BindingInfo<?>>> bindinginfos = new ArrayList<>();
+    private List<BindingInfo<?>> bindinginfos = new ArrayList<>();
     private final ValidationStateBearer validationStateBearer = new ValidationStateBearer();
 
     private String class_;
     private String testName;
     private Optional<Boolean> disabled = Optional.empty();
+    private NOptional<Object> key = NOptional.empty();
+
+    public void setKey(NOptional<Object> key) {
+        this.key = key;
+    }
+
+    public TSelf key(Object key) {
+        this.key = NOptional.of(key);
+        return self();
+    }
+
+    public NOptional<Object> key() {
+        return key;
+    }
 
     @SuppressWarnings("unchecked")
     public TSelf self() {
@@ -97,7 +174,7 @@ public class Component<TSelf> {
      * inheritance
      */
     public boolean isDisabled() {
-        for (Component<?> f : parents())
+        for (Component<?> f : parents(true))
             if (f.disabled.isPresent())
                 return f.disabled.get();
 
@@ -135,7 +212,7 @@ public class Component<TSelf> {
      * List of bindings associated with this fragment. Required since the
      * controllers reference the bindings only weakly.
      */
-    public List<Pair<SubControllerComponent, BindingInfo<?>>> getBindingInfos() {
+    public List<BindingInfo<?>> getBindingInfos() {
         return bindinginfos;
     }
 
@@ -149,96 +226,22 @@ public class Component<TSelf> {
     public List<LString> getLabels() {
         ArrayList<LString> result = new ArrayList<>();
         forSubTree(f -> result.addAll(f.labels));
-        return labels;
+        return result;
     }
 
     public Component() {
     }
 
-    public List<Component<?>> getChildren() {
+    final public List<Component<?>> getChildren() {
         return children;
     }
 
-    protected void produceHtml(HtmlConsumer consumer) {
-        // NOP
-    }
-
-    public final HtmlProducer getHtmlProducer() {
-        return producer;
-    }
-
-    public Component<?> getParent() {
+    final public Component<?> getParent() {
         return parent;
     }
 
-    /**
-     * Raise the events of this fragment only
-     */
-    public void applyValues() {
-        // NOP
-    }
-
-    /**
-     * Process actions for this fragment
-     */
-    public void processActions() {
-        // NOP
-    }
-
-    /**
-     * Handle an ajax request targeted at the given component.
-     * 
-     * <p>
-     * To create the corresponding URL use
-     * {@link HtmlFragmentBase#getAjaxUrl(Component)} . Anything you append to
-     * the url (prefixed with a "/") will be available as suffix.
-     * 
-     * <p>
-     * To handle the request you can either return a {@link HttpRenderResult} or
-     * handle the request in the method by using
-     * {@link CoreRequestInfo#getServletResponse()} and returning null
-     * 
-     * @return a {@link HttpRenderResult} which will be used to send the
-     *         response, or null if the response has already be sent.
-     * 
-     */
-
-    public HttpRenderResult handleAjaxRequest(String suffix) throws Throwable {
-        throw new UnsupportedOperationException();
-    }
-
-    public interface UpdateStructureArg {
-        /**
-         * When called from
-         * {@link Component#updateStructure(UpdateStructureArg)}, declares
-         * that the structure has been updated and that interested fragments
-         * need to be updated again. Repeated calls have no effect
-         */
-        void structureUpdated();
-
-    }
-
-    /**
-     * Update this component to match the current view state. T
-     */
-    public void updateStructure(UpdateStructureArg arg) {
-    }
-
-    /**
-     * true if the fragment is currently rendered on screen. Set to true while
-     * rendering and cleared again after {@link #raiseEvents()}.
-     */
-    public boolean isRendered() {
-        return rendered;
-    }
-
-    public void setRendered(boolean rendered) {
-        this.rendered = rendered;
-
-    }
-
-    public final void render(HtmlConsumer consumer) {
-        getHtmlProducer().produce(consumer);
+    public void setParent(Component<?> parent) {
+        this.parent = parent;
     }
 
     private static class EventRegistration<T> {
@@ -294,7 +297,7 @@ public class Component<TSelf> {
      * Raise an event starting with this fragment, continuing towards the root
      */
     public void raiseEventBubbling(Object event) {
-        raiseEvents(parents(), event);
+        raiseEvents(parents(true), event);
     }
 
     /**
@@ -336,7 +339,7 @@ public class Component<TSelf> {
      * target fragment
      */
     public List<Component<?>> pathFromRoot() {
-        List<Component<?>> result = parents();
+        List<Component<?>> result = parents(true);
         Collections.reverse(result);
         return result;
     }
@@ -346,8 +349,20 @@ public class Component<TSelf> {
      * root fragment
      */
     public List<Component<?>> parents() {
+        return parents(false);
+    }
+
+    /**
+     * Return the start fragments followed by all ancestors, ending with the
+     * root fragment
+     */
+    public List<Component<?>> parents(boolean includeThis) {
         ArrayList<Component<?>> result = new ArrayList<>();
-        Component<?> f = this;
+        Component<?> f;
+        if (includeThis)
+            f = this;
+        else
+            f = getParent();
         while (f != null) {
             result.add(f);
             f = f.getParent();
@@ -355,15 +370,27 @@ public class Component<TSelf> {
         return result;
     }
 
+    /**
+     * Return all children, including this component
+     */
     public List<Component<?>> subTree() {
+        return subTree(x -> true);
+    }
+
+    /**
+     * Return all children, including this component
+     */
+    public List<Component<?>> subTree(Predicate<Component<?>> includeChildrenOf) {
         ArrayList<Component<?>> result = new ArrayList<>();
-        subTree(result, this);
+        subTree(result, this, includeChildrenOf);
         return result;
     }
 
-    private static void subTree(ArrayList<Component<?>> result, Component<?> fragment) {
+    private static void subTree(ArrayList<Component<?>> result, Component<?> fragment,
+            Predicate<Component<?>> includeChildrenOf) {
         result.add(fragment);
-        fragment.getChildren().forEach(child -> subTree(result, child));
+        if (includeChildrenOf.apply(fragment))
+            fragment.getChildren().forEach(child -> subTree(result, child, includeChildrenOf));
     }
 
     public void forSubTree(Consumer<Component<?>> consumer) {
@@ -403,4 +430,50 @@ public class Component<TSelf> {
         return validationStateBearer;
     }
 
+    public <T> ValueHandle<T> createValueHandle(Supplier<T> accessor, boolean isLabelProperty) {
+        Try<BindingInfo<T>> infoTry = BindingUtil.tryExtractBindingInfo(accessor);
+        if (infoTry.isPresent()) {
+            BindingInfo<T> info = infoTry.get();
+            if (isLabelProperty && info.modelProperty != null) {
+                InjectorsHolder.getInstance(LabelUtil.class).property(info.modelProperty).tryLabel()
+                        .ifPresent(label -> addLabel(label));
+            }
+            getBindingInfos().add(info);
+            return new ValueHandle<T>() {
+
+                @Override
+                public T get() {
+                    return accessor.get();
+                }
+
+                @Override
+                public void set(T value) {
+                    info.setModelProperty(value);
+                }
+            };
+
+        } else {
+            return new ValueHandle<T>() {
+
+                @Override
+                public T get() {
+                    return accessor.get();
+                }
+
+                @Override
+                public void set(T value) {
+                    throw new UnsupportedOperationException("unable to set value, could not parse accessor",
+                            infoTry.getFailure());
+                }
+            };
+        }
+    }
+
+    public ViewComponentBase<?> getView() {
+        return view;
+    }
+
+    public void setView(ViewComponentBase<?> view) {
+        this.view = view;
+    }
 }

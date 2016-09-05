@@ -1,15 +1,24 @@
 package com.github.ruediste.rise.component.render;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 import java.util.function.Consumer;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
 
 import com.github.ruediste.rendersnakeXT.canvas.StringHtmlConsumer;
+import com.github.ruediste.rise.component.ComponentUtil;
+import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.integration.RiseCanvas;
 import com.github.ruediste.rise.integration.RiseCanvasBase;
+import com.github.ruediste.rise.integration.RiseCanvasHelper;
+import com.github.ruediste.salta.jsr330.AbstractModule;
+import com.github.ruediste.salta.jsr330.Injector;
+import com.github.ruediste.salta.jsr330.Salta;
 
 public class RiseCanvasTargetTest {
 
@@ -21,7 +30,7 @@ public class RiseCanvasTargetTest {
     public void tearDown() throws Exception {
     }
 
-    private class Canvas extends RiseCanvasBase<Canvas> {
+    private static class Canvas extends RiseCanvasBase<Canvas> {
 
         @Override
         public Canvas self() {
@@ -67,17 +76,41 @@ public class RiseCanvasTargetTest {
         render(html -> html.div().addAttributePlaceholder(() -> html.div()._div())._div());
     }
 
-    private String render(Consumer<Canvas> renderer) {
-        Canvas html = new Canvas();
-        CanvasTargetFirstPass target = new CanvasTargetFirstPass();
+    public static String render(Consumer<RiseCanvas<?>> renderer) {
+        CanvasTargetFirstPass target = renderFirstPass(renderer);
+
+        StringHtmlConsumer consumer = new StringHtmlConsumer();
+        target.getProducers().forEach(p -> p.produce(consumer));
+        String actual = consumer.getString();
+        return actual;
+    }
+
+    public static CanvasTargetFirstPass renderFirstPass(Consumer<RiseCanvas<?>> renderer) {
+        return renderFirstPass(renderer, null);
+    }
+
+    public static CanvasTargetFirstPass renderFirstPass(Consumer<RiseCanvas<?>> renderer, Component<?> previousRoot) {
+        Injector injector = Salta.createInjector(new AbstractModule() {
+
+            @Override
+            protected void configure() throws Exception {
+                bindMock(RiseCanvasHelper.class);
+                bindMock(Logger.class);
+                bindMock(ComponentUtil.class);
+            }
+
+            private <T> void bindMock(Class<T> cls) {
+                bind(cls).toProvider(() -> mock(cls));
+            }
+        });
+        Canvas html = injector.getInstance(Canvas.class);
+        CanvasTargetFirstPass target = injector.getInstance(CanvasTargetFirstPass.class);
+        target.setPreviousRoot(previousRoot);
         html.setTarget(target);
         renderer.accept(html);
         target.commitAttributes();
         target.flush();
         target.checkAllTagsClosed();
-        StringHtmlConsumer consumer = new StringHtmlConsumer();
-        target.getProducers().forEach(p -> p.produce(consumer));
-        String actual = consumer.getString();
-        return actual;
+        return target;
     }
 }

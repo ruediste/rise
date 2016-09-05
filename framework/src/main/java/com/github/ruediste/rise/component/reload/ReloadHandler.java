@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
@@ -17,12 +18,16 @@ import com.github.ruediste.rise.component.ComponentPageHandleRepository;
 import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.component.ComponentTemplateIndex;
 import com.github.ruediste.rise.component.ComponentUtil;
+import com.github.ruediste.rise.component.components.IComponentTemplate;
+import com.github.ruediste.rise.component.render.CanvasTargetFirstPass;
 import com.github.ruediste.rise.component.tree.Component;
-import com.github.ruediste.rise.component.tree.HtmlFragmentUtil;
+import com.github.ruediste.rise.component.tree.HidingComponent;
+import com.github.ruediste.rise.component.tree.RootComponent;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.web.ContentRenderResult;
 import com.github.ruediste.rise.core.web.HttpServletResponseCustomizer;
+import com.github.ruediste.rise.integration.RiseCanvas;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
@@ -58,7 +63,10 @@ public class ReloadHandler implements Runnable {
     @Inject
     CoreConfiguration coreConfiguration;
 
-    @SuppressWarnings("unchecked")
+    @Inject
+    Provider<CanvasTargetFirstPass> fistPassTargetProvider;
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public void run() {
 
@@ -68,7 +76,7 @@ public class ReloadHandler implements Runnable {
 
         ViewComponentBase<?> view = page.getView();
 
-        Component reloadFragment = util.getFragment(request.getFragmentNr());
+        Component<?> reloadedComponent = util.getFragment(request.getFragmentNr());
 
         // parse the data
         List<Map<String, Object>> rawData;
@@ -85,23 +93,22 @@ public class ReloadHandler implements Runnable {
 
         request.setParameterData(data);
 
-        // apply request values
-        List<Component> reloadedFragments = reloadFragment.subTree();
+        // extract visible components
+        List<Component<?>> reloadedVisibleComponents = reloadedComponent.subTree(x -> {
+            if (x instanceof HidingComponent) {
+                return !((HidingComponent) x).isHidden();
+            }
+            return true;
+        });
 
-        for (Component fragment : reloadedFragments) {
-            if (fragment.isRendered())
-                fragment.applyValues();
+        // apply request values
+        for (Component<?> fragment : reloadedVisibleComponents) {
+            ((IComponentTemplate) componentTemplateIndex.getTemplate(fragment).get()).applyValues(fragment);
         }
 
         // process actions
-        for (Component fragment : reloadedFragments) {
-            if (fragment.isRendered())
-                fragment.processActions();
-        }
-
-        // clear rendered flags
-        for (Component fragment : reloadedFragments) {
-            fragment.setRendered(false);
+        for (Component<?> fragment : reloadedVisibleComponents) {
+            ((IComponentTemplate) componentTemplateIndex.getTemplate(fragment).get()).processActions(fragment);
         }
 
         // check if a destination has been defined
@@ -110,12 +117,28 @@ public class ReloadHandler implements Runnable {
             coreRequestInfo.setActionResult(componentRequestInfo.getClosePageResult());
         } else if (coreRequestInfo.getActionResult() == null) {
 
-            // update structure
-            HtmlFragmentUtil.updateStructure(view.getRootFragment());
+            // create root with previous children of the reloaded component
+            RootComponent previousRoot = new RootComponent();
+            previousRoot.getChildren().addAll(reloadedComponent.getChildren());
+            previousRoot.getChildren().forEach(x -> x.setParent(previousRoot));
 
             // render result
+            RiseCanvas<?> html = page.getCanvas();
+            CanvasTargetFirstPass target = fistPassTargetProvider.get();
+            target.captureStartStackTraces = coreConfiguration.doCaptureHtmlTagStartTraces();
+            target.setPreviousRoot(previousRoot);
+            html.setTarget(target);
+            componentTemplateIndex.getTemplateRaw(reloadedComponent).get().doRender(reloadedComponent, html);
+            target.commitAttributes();
+            target.flush();
+            target.checkAllTagsClosed();
+
+            reloadedComponent.getChildren().clear();
+            reloadedComponent.getChildren().addAll(target.getRoot().getChildren());
+
             ByteArrayHtmlConsumer out = new ByteArrayHtmlConsumer();
-            reloadFragment.getHtmlProducer().produce(out);
+            target.getProducers().forEach(p -> p.produce(out));
+
             coreRequestInfo.setActionResult(new ContentRenderResult(out.getByteArray(), r -> {
                 r.setContentType(coreConfiguration.htmlContentType);
                 if (view instanceof HttpServletResponseCustomizer) {

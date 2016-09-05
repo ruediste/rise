@@ -5,10 +5,10 @@ import javax.inject.Inject;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.tree.Component;
-import com.github.ruediste.rise.component.tree.FragmentCanvas;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
+import com.github.ruediste.rise.integration.RiseCanvas;
 import com.github.ruediste1.i18n.lString.LString;
 
 /**
@@ -23,7 +23,6 @@ public abstract class ViewComponentBase<TController extends SubControllerCompone
     public CoreConfiguration config;
 
     protected TController controller;
-    private Component rootFragment;
 
     public TController getController() {
         return controller;
@@ -34,19 +33,13 @@ public abstract class ViewComponentBase<TController extends SubControllerCompone
      */
     public final void initialize(TController controller) {
         this.controller = controller;
-        FragmentCanvas<?> html = (FragmentCanvas<?>) config.createApplicationCanvas();
-        html.internal_target().setController(controller);
-        render(html);
-        html.internal_target().commitAttributes();
-        html.internal_target().flush();
-        rootFragment = html.internal_target().getParentFragment();
     }
 
     /**
-     * Render this view to the provided canvas. This method is called after the
-     * instantiation of the view. The result is used to initialize
+     * Render this view to the provided canvas. This method is called for each
+     * page (re-)load.
      */
-    abstract protected void render(FragmentCanvas<?> html);
+    public abstract void render(RiseCanvas<?> html);
 
     protected LString label(Class<?> clazz) {
         return componentUtil.labelUtil().type(clazz).label();
@@ -72,9 +65,4 @@ public abstract class ViewComponentBase<TController extends SubControllerCompone
     protected ActionInvocationBuilder path() {
         return componentUtil.path();
     }
-
-    public Component getRootFragment() {
-        return rootFragment;
-    }
-
 }

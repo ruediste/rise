@@ -7,10 +7,11 @@ import java.util.function.Consumer;
 
 import com.github.ruediste.c3java.invocationRecording.MethodInvocationRecorder;
 import com.github.ruediste.rendersnakeXT.canvas.BootstrapCanvasCss.B_ButtonArgs;
+import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.component.tree.Component;
-import com.github.ruediste.rise.component.tree.ComponentBase;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
+import com.github.ruediste.rise.integration.RiseCanvas;
 
 /**
  * A button triggering a handler on the server. If a handler is specified, it
@@ -23,23 +24,23 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
  * present on that method are shown.
  */
 @DefaultTemplate(CButtonTemplate.class)
-public class CButton extends ComponentBase<CButton> {
+public class CButton extends Component<CButton> {
     private Runnable handler;
     private ActionResult target;
     private Method invokedMethod;
     private boolean isDisabled;
-    private Component body;
+    private Renderable<RiseCanvas<?>> body;
     private Consumer<B_ButtonArgs<?>> args = null;
 
     public CButton() {
     }
 
     public CButton(String text) {
-        this.body = new CText(text);
+        this.body = html -> html.write(text);
     }
 
     public CButton(Runnable body) {
-        this.body = new CRunnable(body);
+        this.body = html -> body.run();
     }
 
     /**
@@ -79,7 +80,7 @@ public class CButton extends ComponentBase<CButton> {
     public <T> CButton(Class<? extends Annotation> actionAnnotation, Runnable handler, boolean showIconOnly) {
         this.handler = handler;
         TEST_NAME(actionAnnotation.getSimpleName());
-        body = new CIconLabel().setActionAnnotation(actionAnnotation).setShowIconOnly(showIconOnly);
+        body = html -> html.add(new CIconLabel().setActionAnnotation(actionAnnotation).setShowIconOnly(showIconOnly));
     }
 
     /**
@@ -105,7 +106,7 @@ public class CButton extends ComponentBase<CButton> {
         setTarget(target);
         if (invokedMethod != null)
             TEST_NAME(invokedMethod.getName());
-        body = new CIconLabel().setMethod(invokedMethod).setShowIconOnly(showIconOnly);
+        body = html -> html.add(new CIconLabel().setMethod(invokedMethod).setShowIconOnly(showIconOnly));
     }
 
     /**
@@ -120,7 +121,7 @@ public class CButton extends ComponentBase<CButton> {
         invokedMethod = MethodInvocationRecorder
                 .getLastInvocation((Class<T>) target.getClass(), t -> handler.accept(this, t)).getMethod();
         TEST_NAME(invokedMethod.getName());
-        body = new CIconLabel().setMethod(invokedMethod).setShowIconOnly(showIconOnly);
+        body = html -> html.add(new CIconLabel().setMethod(invokedMethod).setShowIconOnly(showIconOnly));
     }
 
     public CButton setHandler(Runnable handler) {
@@ -177,7 +178,7 @@ public class CButton extends ComponentBase<CButton> {
         this.invokedMethod = invokedMethod;
     }
 
-    public Component getBody() {
+    public Renderable<RiseCanvas<?>> getBody() {
         return body;
     }
 

@@ -10,7 +10,6 @@ import com.github.ruediste.rise.component.ComponentTemplateIndex;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.ComponentViewRepository;
 import com.github.ruediste.rise.component.IViewQualifier;
-import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.CurrentLocale;
@@ -118,10 +117,6 @@ public class RiseCanvasHelper {
 
     public Authz getAuthz() {
         return authz;
-    }
-
-    public void add(RiseCanvas<?> html, Component c) {
-        componentTemplateIndex.getTemplate(c).ifPresent(x -> x.doRender(c, html)).ifFailure(() -> c.render(html));
     }
 
     public void renderController(RiseCanvas<?> html, Object controller, Class<? extends IViewQualifier> viewQualifier) {

@@ -2,7 +2,7 @@ package com.github.ruediste.rise.sample;
 
 import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.api.ViewComponentBase;
-import com.github.ruediste.rise.component.tree.FragmentCanvas;
+import com.github.ruediste.rise.integration.RiseCanvas;
 
 /**
  * Base class for views for the component framework.
@@ -10,8 +10,9 @@ import com.github.ruediste.rise.component.tree.FragmentCanvas;
 public abstract class ViewComponent<TController extends SubControllerComponent> extends ViewComponentBase<TController> {
 
     @Override
-    protected final void render(FragmentCanvas<?> html) {
+    public void render(RiseCanvas<?> html) {
         doRender((SampleCanvas) html);
+
     }
 
     protected abstract void doRender(SampleCanvas html);

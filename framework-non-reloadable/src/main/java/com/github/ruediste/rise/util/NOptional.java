@@ -80,4 +80,8 @@ public class NOptional<T> {
         return Objects.equals(value, other.value);
     }
 
+    @Override
+    public String toString() {
+        return isPresent() ? String.format("NOptional[%s]", value) : "NOptional.empty";
+    }
 }

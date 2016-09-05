@@ -1,6 +1,6 @@
 package com.github.ruediste.rise.sample.welcome;
 
-import com.github.ruediste.rise.component.components.CController;
+import com.github.ruediste.rise.component.components.CView;
 import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.core.security.login.LoginControllerBase;
 import com.github.ruediste.rise.sample.SampleCanvas;
@@ -14,7 +14,7 @@ public class SampleLoginController extends LoginControllerBase {
 
         @Override
         protected void doRender(SampleCanvas html) {
-            html.render(new CPage(() -> html.render(new CController(controller.getLoginSubController()))));
+            html.render(new CPage(() -> html.render(new CView(controller.getLoginSubController()))));
         }
 
     }

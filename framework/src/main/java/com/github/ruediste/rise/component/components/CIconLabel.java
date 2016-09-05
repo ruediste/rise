@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 import com.github.ruediste.c3java.invocationRecording.MethodInvocationRecorder;
 import com.github.ruediste.rendersnakeXT.canvas.Html5Canvas;
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
-import com.github.ruediste.rise.component.tree.ComponentBase;
+import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste1.i18n.lString.LString;
 
 /**
@@ -18,7 +18,7 @@ import com.github.ruediste1.i18n.lString.LString;
  * The icon and label can also be represented by a method.
  */
 @DefaultTemplate(CIconLabelTemplate.class)
-public class CIconLabel extends ComponentBase<CIconLabel> {
+public class CIconLabel extends Component<CIconLabel> {
 
     private Renderable<Html5Canvas<?>> icon;
     private LString label;

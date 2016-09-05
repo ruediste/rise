@@ -75,7 +75,6 @@ public abstract class CanvasTargetForAttributePlaceholder implements HtmlCanvasT
     @Override
     public void flush() {
         fail();
-
     }
 
 }

@@ -20,7 +20,6 @@ import javax.inject.Singleton;
 import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 
-import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvas;
 import com.github.ruediste.rise.core.argumentSerializer.ArgumentSerializer;
 import com.github.ruediste.rise.core.argumentSerializer.ClassArgumentSerializer;
 import com.github.ruediste.rise.core.argumentSerializer.EntityArgumentSerializer;
@@ -258,9 +257,9 @@ public class CoreConfiguration {
     /**
      * Factory for the {@link RiseCanvas} subtype used by the application
      */
-    public Optional<Supplier<HtmlCanvas<?>>> applicationCanvasFactory = Optional.empty();
+    public Optional<Supplier<RiseCanvas<?>>> applicationCanvasFactory = Optional.empty();
 
-    public HtmlCanvas<?> createApplicationCanvas() {
+    public RiseCanvas<?> createApplicationCanvas() {
         return applicationCanvasFactory.map(f -> f.get()).orElseThrow(
                 () -> new RuntimeException("Initialize applicationCanvasFactory from your restartable application"));
     }
@@ -323,4 +322,9 @@ public class CoreConfiguration {
         return translationsResourceBundleName;
     }
 
+    public Optional<Boolean> captureHtmlTagStartStackTraces = Optional.empty();
+
+    public boolean doCaptureHtmlTagStartTraces() {
+        return captureHtmlTagStartStackTraces.orElseGet(() -> stage != ApplicationStage.PRODUCTION);
+    }
 }

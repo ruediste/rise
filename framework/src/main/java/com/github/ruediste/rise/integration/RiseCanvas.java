@@ -3,13 +3,16 @@ package com.github.ruediste.rise.integration;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.function.Consumer;
-
-import org.apache.commons.lang.NotImplementedException;
+import java.util.function.Supplier;
 
 import com.github.ruediste.rendersnakeXT.canvas.FuncCanvas;
 import com.github.ruediste.rendersnakeXT.canvas.Html5Canvas;
+import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.IViewQualifier;
+import com.github.ruediste.rise.component.components.CValue;
+import com.github.ruediste.rise.component.components.CView;
+import com.github.ruediste.rise.component.components.ConClick;
 import com.github.ruediste.rise.component.render.ComponentCanvas;
 import com.github.ruediste.rise.component.render.RiseCanvasTarget;
 import com.github.ruediste.rise.component.tree.Component;
@@ -20,6 +23,7 @@ import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
 import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
+import com.github.ruediste.rise.nonReloadable.lambda.Capture;
 import com.github.ruediste.rise.util.MethodInvocation;
 import com.github.ruediste1.i18n.lString.LString;
 import com.google.common.base.Charsets;
@@ -132,12 +136,11 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
     }
 
     default TSelf renderView(ViewComponentBase<?> view) {
-        throw new NotImplementedException();
+        return add(new CView(view));
     }
 
-    default TSelf renderController(Object controller) {
-        internal_riseHelper().renderController(this, controller);
-        return self();
+    default TSelf renderController(SubControllerComponent controller) {
+        return add(new CView(controller));
     }
 
     default TSelf renderController(Object controller, Class<? extends IViewQualifier> viewQualifier) {
@@ -166,5 +169,35 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
     default TSelf addAttributePlaceholder(Runnable placeholder) {
         internal_target().addAttributePlaceholder(this, placeholder);
         return self();
+    }
+
+    default TSelf render(Component<?> component) {
+        return add(component);
+    }
+
+    default TSelf add(Component<?> component) {
+        internal_target().add(this, component);
+        return self();
+    }
+
+    default TSelf RonClick(Runnable handler) {
+        return add(new ConClick(handler));
+    }
+
+    default TSelf Rvalue(@Capture Supplier<String> value) {
+        return add(new CValue(value));
+    }
+
+    default TSelf Rvalue(@Capture Supplier<String> value, boolean isLabelProperty) {
+        return add(new CValue(value, isLabelProperty));
+    }
+
+    /**
+     * Return the current parent fragment
+     * 
+     * @return
+     */
+    default Component<?> getParent() {
+        return internal_target().getParent();
     }
 }

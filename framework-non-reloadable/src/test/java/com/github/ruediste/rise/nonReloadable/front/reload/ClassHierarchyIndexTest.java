@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.nonReloadable.front.reload;
 
+import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -113,10 +114,10 @@ public class ClassHierarchyIndexTest {
     }
 
     @Test
-        public void testGetNodesByAnnotation() throws Exception {
-            List<ClassNode> list = cache.getNodesByAnnotation(NonReloadable.class);
-            assertEquals(1, list.size());
-            assertEquals(Type.getType(B.class).getInternalName(), list.get(0).name);
-        }
+    public void testGetNodesByAnnotation() throws Exception {
+        List<ClassNode> list = cache.getNodesByAnnotation(NonReloadable.class).collect(toList());
+        assertEquals(1, list.size());
+        assertEquals(Type.getType(B.class).getInternalName(), list.get(0).name);
+    }
 
 }

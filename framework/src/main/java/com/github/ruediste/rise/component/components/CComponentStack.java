@@ -1,14 +1,13 @@
 package com.github.ruediste.rise.component.components;
 
 import java.awt.event.ComponentEvent;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedList;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 
-import com.github.ruediste.rendersnakeXT.canvas.HtmlConsumer;
+import com.github.ruediste.rise.component.render.ComponentState;
 import com.github.ruediste.rise.component.tree.Component;
-import com.github.ruediste.rise.component.tree.ComponentBase;
-import com.github.ruediste.rise.component.tree.Component.EventHandlingOutcome;
+import com.github.ruediste.rise.component.tree.HidingComponent;
+import com.github.ruediste.rise.integration.RiseCanvas;
 
 /**
  * Contains a stack of {@link Component}s. The components can be pushed and
@@ -21,10 +20,57 @@ import com.github.ruediste.rise.component.tree.Component.EventHandlingOutcome;
  * In addition, a {@link ComponentStackHandle} can be created from any
  * component, encapsulating the event raising.
  */
-@DefaultTemplate(CComponentStackTemplate.class)
-public class CComponentStack extends ComponentBase<CComponentStack> {
+public class CComponentStack extends Component<CComponentStack> {
 
-    Deque<Component> stack = new LinkedList<>();
+    @ComponentState
+    ArrayDeque<Runnable> stack = new ArrayDeque<>();
+
+    boolean isTransient;
+    private boolean showHiddenValidation;
+
+    static class Template extends ComponentTemplateBase<CComponentStack> {
+
+        @Override
+        public void doRender(CComponentStack component, RiseCanvas<?> html) {
+            if (!component.isTransient) {
+                ArrayList<Runnable> stack = new ArrayList<>(component.stack);
+                for (int i = 0; i < stack.size(); i++) {
+                    Runnable item = stack.get(i);
+                    html.add(new HidingComponent().key(item).hidden(i != 0)
+                            .showHiddenValidation(component.isShowHiddenValidation()).content(item));
+                }
+            } else if (!component.stack.isEmpty())
+                html.render(component.stack.peek());
+        }
+
+    }
+
+    /**
+     * Make the stack transient, such that only the state of the top of the
+     * stack survives a page reload.
+     */
+    public CComponentStack setTransient() {
+        isTransient = true;
+        return this;
+    }
+
+    public CComponentStack push(Runnable fragment) {
+        stack.push(fragment);
+        return this;
+    }
+
+    public void pop() {
+        stack.pop();
+    }
+
+    public boolean isShowHiddenValidation() {
+        return showHiddenValidation;
+    }
+
+    public CComponentStack setShowHiddenValidation(boolean showHiddenValidation) {
+        this.showHiddenValidation = showHiddenValidation;
+        return this;
+    }
 
     /**
      * Pop the top component from the next containing {@link CComponentStack}
@@ -38,78 +84,42 @@ public class CComponentStack extends ComponentBase<CComponentStack> {
      */
     public static class PushComponentEvent {
 
-        final private Component fragment;
+        final private Runnable fragment;
 
-        public PushComponentEvent(Component fragment) {
+        public PushComponentEvent(Runnable fragment) {
             this.fragment = fragment;
         }
 
-        public Component getFragment() {
+        public Runnable getFragment() {
             return fragment;
         }
     }
 
-    Component containerFragment;
-
     public CComponentStack() {
-        containerFragment = new Component() {
-            @Override
-            protected void produceHtml(HtmlConsumer consumer) {
-                Component peek = stack.peek();
-                if (peek != null)
-                    peek.getHtmlProducer().produce(consumer);
-            }
-
-            @Override
-            public Iterable<Component> getChildren() {
-                if (stack.isEmpty())
-                    return Collections.emptyList();
-                return Collections.singleton(stack.peek());
-            }
-        };
-        containerFragment.register(PopComponentEvent.class, e -> {
+        register(PopComponentEvent.class, e -> {
             pop();
             return EventHandlingOutcome.HANDLED;
         });
-        containerFragment.register(PushComponentEvent.class, e -> {
+        register(PushComponentEvent.class, e -> {
             push(e.getFragment());
             return EventHandlingOutcome.HANDLED;
         });
     }
 
-    public CComponentStack(Component fragment) {
+    public CComponentStack(Runnable fragment) {
         this();
         push(fragment);
     }
 
-    public Component peek() {
+    public Runnable peek() {
         return stack.peek();
     }
 
-    /**
-     * @return the component stack (this)
-     */
-    public CComponentStack push(Component e) {
-        stack.push(e);
-        e.setParent(containerFragment);
-        return this;
-    }
-
-    public Component pop() {
-        Component tos = stack.pop();
-        tos.setParent(null);
-        return tos;
-    }
-
-    public Component getContainerFragment() {
-        return containerFragment;
-    }
-
-    public static void raisePop(Component start) {
+    public static void raisePop(Component<?> start) {
         start.raiseEventBubbling(new CComponentStack.PopComponentEvent());
     }
 
-    public static void raisePush(Component start, Component fragmentToPush) {
+    public static void raisePush(Component<?> start, Runnable fragmentToPush) {
         start.raiseEventBubbling(new CComponentStack.PushComponentEvent(fragmentToPush));
     }
 }

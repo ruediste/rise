@@ -9,7 +9,7 @@ import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
 
-public abstract class ComponentTemplateBase<T extends Component> implements IComponentTemplate<T> {
+public abstract class ComponentTemplateBase<T extends Component<T>> implements IComponentTemplate<T> {
 
     @Inject
     protected ComponentUtil util;

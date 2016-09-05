@@ -124,11 +124,11 @@ public class ValidationUtil {
         };
     }
 
-    public ValidationStatus getValidationState(Component fragment) {
+    public ValidationStatus getValidationState(Component<?> component) {
         ArrayList<ValidationFailure> failures = new ArrayList<>();
         Var<Boolean> validated = new Var<>(false);
-        fragment.forEachNonValidationPresenterInSubTree(f -> {
-            ValidationStateBearer bearer = f.getValidationStateBearer();
+        component.forEachNonValidationPresenterInSubTree(child -> {
+            ValidationStateBearer bearer = child.getValidationStateBearer();
             if (bearer.isDirectlyValidated())
                 validated.setValue(true);
 
@@ -136,9 +136,10 @@ public class ValidationUtil {
             failures.addAll(bearer.getDirectValidationFailures());
 
             // add failures registered with the controller
-            f.getBindingInfos().forEach(pair -> {
-                pair.getB().modelPropertyPath
-                        .flatMap(path -> Optional.ofNullable(pair.getA().getValidationFailureMap().get(path)))
+            child.getBindingInfos().forEach(info -> {
+                info.modelPropertyPath
+                        .flatMap(path -> Optional
+                                .ofNullable(child.getView().getController().getValidationFailureMap().get(path)))
                         .ifPresent(failures::addAll);
             });
         });

@@ -7,6 +7,7 @@ import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerSet;
+import com.github.ruediste.rise.integration.RiseCanvas;
 import com.github.ruediste.rise.util.GenericEvent;
 import com.github.ruediste.rise.util.GenericEventManager;
 import com.google.common.collect.MapMaker;
@@ -35,10 +36,14 @@ public class ComponentPage {
 
     private final GenericEventManager<Object> destroyEvent = new GenericEventManager<>();
 
-    private final Map<Long, Component> fragmentNrMap = new MapMaker().weakValues().makeMap();
+    private final Map<Long, Component<?>> fragmentNrMap = new MapMaker().weakValues().makeMap();
     private long maxFragmentNr = 0;
 
     private ActionInvocation<Object> objectActionInvocation;
+
+    private Component<?> root;
+
+    private RiseCanvas<?> canvas;
 
     public IControllerComponent getController() {
         return controller;
@@ -93,7 +98,7 @@ public class ComponentPage {
         destroyEvent.fire(null);
     }
 
-    public Map<Long, Component> getFragmentNrMap() {
+    public Map<Long, Component<?>> getFragmentNrMap() {
         return fragmentNrMap;
     }
 
@@ -107,6 +112,23 @@ public class ComponentPage {
 
     public void setObjectActionInvocation(ActionInvocation<Object> objectActionInvocation) {
         this.objectActionInvocation = objectActionInvocation;
+    }
+
+    public Component<?> getRoot() {
+        return root;
+    }
+
+    public void setRoot(Component<?> root) {
+        this.root = root;
+
+    }
+
+    public RiseCanvas<?> getCanvas() {
+        return canvas;
+    }
+
+    public void setCanvas(RiseCanvas<?> canvas) {
+        this.canvas = canvas;
     }
 
 }

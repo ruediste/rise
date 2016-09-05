@@ -3,7 +3,6 @@ package com.github.ruediste.rise.component.components;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearer;
 import com.github.ruediste.c3java.properties.NoPropertyAccessor;
 import com.github.ruediste.c3java.properties.PropertyInfo;
-import com.github.ruediste.rise.component.tree.TestNamedComponent;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.LabelUtil;
 

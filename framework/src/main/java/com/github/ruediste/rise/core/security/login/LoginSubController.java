@@ -58,30 +58,26 @@ public class LoginSubController extends SubControllerComponent {
 
         @Override
         protected void renderImpl(BootstrapRiseCanvas<?> html) {
-            html.bFormGroup();
-            html.direct(() -> {
-                if (controller.data.tokenTheftDetected) {
-                    html.div().CLASS("panel panel-danger").div().CLASS("panel-heading")
-                            .content(Messages.TOKEN_TEFT_DETECTED_HEADING).div().CLASS("panel-body")
-                            .content(Messages.TOKEN_TEFT_DETECTED_BODY)._div();
-                } else {
-                    List<LString> msgs = controller.data.messages;
-                    if (!msgs.isEmpty()) {
-                        html.div().CLASS("panel panel-warning").div().CLASS("panel-heading")
-                                .content(Messages.LOGIN_FAILED).div().CLASS("panel-body").ul()
-                                .fForEach(msgs, msg -> html.li().content(msg))._ul()._div()._div();
-                    }
+            if (controller.data.tokenTheftDetected) {
+                html.div().CLASS("panel panel-danger").div().CLASS("panel-heading")
+                        .content(Messages.TOKEN_TEFT_DETECTED_HEADING).div().CLASS("panel-body")
+                        .content(Messages.TOKEN_TEFT_DETECTED_BODY)._div();
+            } else {
+                List<LString> msgs = controller.data.messages;
+                if (!msgs.isEmpty()) {
+                    html.div().CLASS("panel panel-warning").div().CLASS("panel-heading").content(Messages.LOGIN_FAILED)
+                            .div().CLASS("panel-body").ul().fForEach(msgs, msg -> html.li().content(msg))._ul()._div()
+                            ._div();
                 }
-            });
-            html.render(new CFormGroup(() -> html.input_text().VALUE(() -> controller.data.userName)));
-            html.render(new CFormGroup(() -> html.input_text().VALUE(() -> controller.data.password)));
+            }
+            html.add(new CFormGroup(() -> html.input_text().Rvalue(() -> controller.data.userName)));
+            html.add(new CFormGroup(() -> html.input_text().Rvalue(() -> controller.data.password)));
 
             // html.span().write("userName")._span().input_text().VALUE(() ->
             // controller.data.userName);
             // html.span().write("password")._span().input_text().VALUE(() ->
             // controller.data.password);
-            html.render(new CButton(controller, c -> c.login()));
-
+            html.add(new CButton(controller, c -> c.login()));
         }
     }
 

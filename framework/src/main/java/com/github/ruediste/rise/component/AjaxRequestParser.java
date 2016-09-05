@@ -86,7 +86,7 @@ public class AjaxRequestParser implements RequestParser {
                 // get the component
                 PageHandle page = sessionInfo.getPageHandle(pageNr);
                 componentRequestInfo.setPageHandle(page);
-                Component fragment;
+                Component<?> fragment;
                 synchronized (page.lock) {
                     ScopeState old = pageScopeHandler.setState(page.pageScopeState);
                     try {
@@ -96,7 +96,9 @@ public class AjaxRequestParser implements RequestParser {
                     }
                 }
                 try {
-                    HttpRenderResult renderResult = fragment.handleAjaxRequest(suffix);
+                    @SuppressWarnings("unchecked")
+                    HttpRenderResult renderResult = componentTemplateIndex.getTemplateRaw(fragment).get()
+                            .handleAjaxRequest(fragment, suffix);
                     if (renderResult != null)
                         renderResult.sendTo(coreRequestInfo.getServletResponse(), httpRenderResultUtil);
                 } catch (Throwable e) {
