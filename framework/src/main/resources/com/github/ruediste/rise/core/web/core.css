@@ -51,3 +51,7 @@
 .nav.nav-stacked .nav-stacked {
 	margin-left: 20px;
 }
+
+.rise-cdisplay-none {
+  display: none;
+}

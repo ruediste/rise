@@ -48,7 +48,7 @@ public class ComponentUtil implements ICoreUtil {
         return pageInfo.getPageId();
     }
 
-    public long getFragmentNr(Component fragment) {
+    public long getComponentNr(Component fragment) {
 
         long result = FragmentJumpPad.getFragmentNr(fragment);
         if (result == -1) {
@@ -70,7 +70,7 @@ public class ComponentUtil implements ICoreUtil {
      * Return the appropriate value for the html element id attribute.
      */
     public String getFragmentId(Component fragment) {
-        return "c_" + getFragmentNr(fragment);
+        return "c_" + getComponentNr(fragment);
     }
 
     public String getReloadUrl() {
@@ -78,7 +78,7 @@ public class ComponentUtil implements ICoreUtil {
     }
 
     public String getAjaxUrl(Component component) {
-        return coreUtil.url(componentConfiguration.getAjaxPath() + "/" + pageId() + "/" + getFragmentNr(component));
+        return coreUtil.url(componentConfiguration.getAjaxPath() + "/" + pageId() + "/" + getComponentNr(component));
     }
 
     @Override
@@ -90,7 +90,7 @@ public class ComponentUtil implements ICoreUtil {
      * Return a key for identifying a request parameter for the given fragment
      */
     public String getParameterKey(Component fragment, String keySuffix) {
-        return "c_" + getFragmentNr(fragment) + "_" + keySuffix;
+        return "c_" + getComponentNr(fragment) + "_" + keySuffix;
     }
 
     public Optional<Object> getParameterObject(Component component, String keySuffix) {

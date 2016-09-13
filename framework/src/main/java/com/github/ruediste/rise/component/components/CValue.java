@@ -29,6 +29,10 @@ public class CValue extends Component<CValue> {
 
     }
 
+    public CValue(String value) {
+        value(value);
+    }
+
     public CValue(@Capture Supplier<String> value) {
         value(value);
     }
@@ -39,6 +43,11 @@ public class CValue extends Component<CValue> {
 
     public ValueHandle<String> getValue() {
         return value;
+    }
+
+    public CValue value(String value) {
+        this.value = createValueHandle(value, true);
+        return this;
     }
 
     public CValue value(@Capture Supplier<String> value) {

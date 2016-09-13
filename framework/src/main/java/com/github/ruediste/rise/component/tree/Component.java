@@ -430,6 +430,10 @@ public class Component<TSelf> {
         return validationStateBearer;
     }
 
+    public <T> ValueHandle<T> createValueHandle(T value, boolean isLabelProperty) {
+        return new ValueHandleImpl<>(value);
+    }
+
     public <T> ValueHandle<T> createValueHandle(Supplier<T> accessor, boolean isLabelProperty) {
         Try<BindingInfo<T>> infoTry = BindingUtil.tryExtractBindingInfo(accessor);
         if (infoTry.isPresent()) {

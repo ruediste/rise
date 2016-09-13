@@ -27,7 +27,7 @@ public class CReload extends Component<CReload> {
             if (info.isReloadRequest())
                 component.getBody().run();
             else {
-                html.form().CLASS("rise_reload").DATA("rise-fragmentnr", Long.toString(util.getFragmentNr(component)))
+                html.form().CLASS("rise_reload").DATA("rise-fragmentnr", Long.toString(util.getComponentNr(component)))
                         .rCOMPONENT_ATTRIBUTES(component).render(component.getBody())._form();
             }
         }

@@ -62,6 +62,7 @@ var rise = (function() {
 	};
 
 	var onReload = $.Callbacks();
+	var toggled = $.Callbacks();
 
 	var extractData = function(data, $element) {
 
@@ -124,8 +125,8 @@ var rise = (function() {
 			reload(this);
 		});
 		
+		// swallow submit events
 		$(document).on("submit", ".rise_reload", function(event) {
-			// cancel submit events
 			event.preventDefault();
 			event.stopPropagation();
 		});
@@ -168,8 +169,40 @@ var rise = (function() {
 
 	return {
 		onReload : onReload,
+		
+		// setExtractData(element, function($element, data))
+		// data: [{name:"...", value:"..."},...]
 		setExtractData : setExtractData,
-		triggerViewReload : triggerViewReload
+		triggerViewReload : triggerViewReload,
+		// fired to indicate that an element has been toggled. The argument is the component id of the toggled component
+		toggled : toggled
 	};
 
 })();
+
+// cdisplay
+rise.toggled.add(function(nr){
+  $("*[data-rise-cdisplay-nr=\""+nr+"\"]").toggleClass("rise-cdisplay-none");
+});
+rise.onReload.add(function($receiver){
+  $receiver.find("*[data-rise-cdisplay-displayed]").each(function(idx,element){
+    var $element=$(element);
+    if (!$element.data("riseCdisplayDisplayed"))
+      $element.addClass("rise-cdisplay-none");
+    rise.setExtractData(element, function(data){
+      data.push({
+        name:$element.data("riseCdisplayKey"),
+        value:!$element.hasClass("rise-cdisplay-none")
+      });
+    });
+  });
+});
+
+// ConClickToggle
+$(function(){
+  $(document).on("click", "*[data-rise-conclicktoggle-target]", 
+			function(evt) {
+			    rise.toggled.fire($(this).data("rise-conclicktoggle-target"));
+				return false;
+			});
+});
