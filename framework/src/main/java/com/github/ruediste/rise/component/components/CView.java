@@ -2,7 +2,7 @@ package com.github.ruediste.rise.component.components;
 
 import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.api.ViewComponentBase;
-import com.github.ruediste.rise.component.ComponentConfiguration;
+import com.github.ruediste.rise.component.ViewFactory;
 import com.github.ruediste.rise.component.render.RiseCanvasTarget;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
@@ -46,8 +46,8 @@ public class CView extends Component<CView> {
         if (controller == null)
             setDisplayedView(null);
         else {
-            setDisplayedView(InjectorsHolder.getRestartableInjector().getInstance(ComponentConfiguration.class)
-                    .createView(controller, false));
+            setDisplayedView(InjectorsHolder.getRestartableInjector().getInstance(ViewFactory.class)
+                    .createView(controller, false, null));
         }
         return this;
     }

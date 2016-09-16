@@ -13,7 +13,7 @@ public class TestComponentView extends ViewComponent<TestComponentController> {
         html.render(new CPage(() -> {
             html.div().ID("a").renderController(controller.subControllerA)._div();
             html.div().ID("b").renderController(controller.subControllerB)._div();
-            html.div().ID("main").span().ID("mainValue").write(() -> controller.entity.getValue())._span()
+            html.div().ID("main").span().ID("mainValue").write(controller.entity.getValue())._span()
                     .render(new CButton("refresh").CLASS("refresh").setHandler(controller::refresh))._div();
         }));
     }

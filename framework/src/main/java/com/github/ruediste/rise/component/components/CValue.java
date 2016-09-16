@@ -18,7 +18,7 @@ public class CValue extends Component<CValue> {
             if (component.getValue() == null)
                 throw new RuntimeException("value not set");
 
-            html.addAttribute("value", component.getValue().get()).NAME(util.getParameterKey(component, "value"));
+            html.VALUE(component.getValue().get()).NAME(util.getParameterKey(component, "value"));
 
         }
 
@@ -27,6 +27,10 @@ public class CValue extends Component<CValue> {
             util.getParameterValue(component, "value").ifPresent(component.getValue()::set);
         }
 
+    }
+
+    public CValue(ValueHandle<String> value) {
+        value(value);
     }
 
     public CValue(String value) {
@@ -45,9 +49,13 @@ public class CValue extends Component<CValue> {
         return value;
     }
 
-    public CValue value(String value) {
-        this.value = createValueHandle(value, true);
+    public CValue value(ValueHandle<String> value) {
+        this.value = value;
         return this;
+    }
+
+    public CValue value(String value) {
+        return value(createValueHandle(value, true));
     }
 
     public CValue value(@Capture Supplier<String> value) {
@@ -55,7 +63,6 @@ public class CValue extends Component<CValue> {
     }
 
     public CValue value(@Capture Supplier<String> value, boolean isLabelProperty) {
-        this.value = createValueHandle(value, isLabelProperty);
-        return this;
+        return value(createValueHandle(value, isLabelProperty));
     }
 }

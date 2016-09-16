@@ -6,10 +6,10 @@ import javax.inject.Provider;
 import com.github.ruediste.rendersnakeXT.canvas.ByteArrayHtmlConsumer;
 import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.api.ViewComponentBase;
-import com.github.ruediste.rise.component.ComponentConfiguration;
 import com.github.ruediste.rise.component.ComponentPage;
 import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.component.ComponentUtil;
+import com.github.ruediste.rise.component.ViewFactory;
 import com.github.ruediste.rise.component.render.CanvasTargetFirstPass;
 import com.github.ruediste.rise.core.ChainedRequestHandler;
 import com.github.ruediste.rise.core.CoreConfiguration;
@@ -33,7 +33,7 @@ public class ViewRenderer extends ChainedRequestHandler {
     CoreConfiguration coreConfiguration;
 
     @Inject
-    ComponentConfiguration config;
+    ViewFactory viewFactory;
 
     @Inject
     ComponentRequestInfo componentRequestInfo;
@@ -55,7 +55,7 @@ public class ViewRenderer extends ChainedRequestHandler {
         }
 
         // create view
-        ViewComponentBase<?> view = config.createView((SubControllerComponent) page.getController(), true);
+        ViewComponentBase<?> view = viewFactory.createView((SubControllerComponent) page.getController(), true, null);
         page.setView(view);
 
         // render result

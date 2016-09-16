@@ -11,7 +11,7 @@ import javax.persistence.EntityManager;
 import com.github.ruediste.rise.api.ControllerComponent;
 import com.github.ruediste.rise.component.binding.BindingGroup;
 import com.github.ruediste.rise.component.components.CButton;
-import com.github.ruediste.rise.component.components.CComponentStack;
+import com.github.ruediste.rise.component.components.CDisplayStack;
 import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.component.generic.EditComponents;
 import com.github.ruediste.rise.component.tree.Component;
@@ -32,7 +32,7 @@ public class TestEditComponentsController extends ControllerComponent {
 
         @Override
         protected Component createComponents() {
-            return new CPage().render(new CComponentStack(toComponent(html -> {
+            return new CPage().render(new CDisplayStack(toComponent(html -> {
                 html.div().TEST_NAME("components")
                         .render(editComponents.instance(controller, x -> x.data().getString()).get().getComponent())
                         .render(editComponents.instance(controller, x -> x.data().getEnitities()).get().getComponent())

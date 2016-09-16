@@ -11,8 +11,6 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletResponse;
 
-import com.github.ruediste.rise.api.SubControllerComponent;
-import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.initial.ComponentControllerInvoker;
 import com.github.ruediste.rise.component.initial.ComponentRequestMapperImpl;
 import com.github.ruediste.rise.component.initial.InitialPagePersistenceHandler;
@@ -47,7 +45,6 @@ public class ComponentConfiguration {
     public void initialize() {
         mapper = mapperSupplier.get();
         mapper.initialize();
-        viewFactory = viewFactorySupplier.get();
 
         this.initialHandler = chainHandlers(initialHandlerSuppliers, finalInitialHandlerSupplier);
         this.reloadHandler = chainHandlers(reloadHandlerSuppliers, finalReloadHandlerSupplier);
@@ -156,7 +153,6 @@ public class ComponentConfiguration {
     @PostConstruct
     public void postConstruct(Provider<ComponentViewRepository> componentViewRepository,
             Provider<HearbeatRequestParser> heartbeatRequestParser) {
-        viewFactorySupplier = () -> componentViewRepository.get()::createView;
         heartbeatRequestParserSupplier = heartbeatRequestParser::get;
     }
 
@@ -194,18 +190,6 @@ public class ComponentConfiguration {
 
         reloadParserSupplier = reloadParser::get;
         ajaxParserSupplier = ajaxParser::get;
-    }
-
-    public Supplier<ViewFactory> viewFactorySupplier;
-    public ViewFactory viewFactory;
-
-    public ViewComponentBase<?> createView(SubControllerComponent controller, boolean setAsRootView) {
-        return createView(controller, setAsRootView, null);
-    }
-
-    public ViewComponentBase<?> createView(SubControllerComponent controller, boolean setAsRootView,
-            Class<? extends IViewQualifier> qualifier) {
-        return viewFactory.createView(controller, setAsRootView, qualifier);
     }
 
     public String reloadPath = "/~component/reload";

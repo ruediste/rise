@@ -25,7 +25,7 @@ import com.github.ruediste.salta.jsr330.Injector;
  * Repository keeping track of all {@link ViewComponentBase}s
  */
 @Singleton
-public class ComponentViewRepository {
+public class ComponentViewRepository implements ViewFactory {
 
     @Inject
     Logger log;
@@ -44,6 +44,18 @@ public class ComponentViewRepository {
 
     @Inject
     ComponentPage componentPage;
+
+    @PageScoped
+    static class ViewInstances {
+        private final Map<Pair<SubControllerComponent, Class<? extends IViewQualifier>>, ViewComponentBase<?>> instances = new HashMap<>();
+
+        public Map<Pair<SubControllerComponent, Class<? extends IViewQualifier>>, ViewComponentBase<?>> getInstances() {
+            return instances;
+        }
+    }
+
+    @Inject
+    ViewInstances viewInstances;
 
     Map<Pair<String, String>, ViewEntry> viewMap = new HashMap<>();
 
@@ -95,33 +107,39 @@ public class ComponentViewRepository {
      * @param qualifier
      *            qualifier class, or null if no qualifier is set
      */
+    @Override
     @SuppressWarnings("unchecked")
     public <T extends SubControllerComponent> ViewComponentBase<T> createView(T controller, boolean setAsRootView,
             Class<? extends IViewQualifier> qualifier) {
-        // get view, trying super classes
-        ViewEntry entry = null;
-        {
-            Class<? extends Object> controllerClass = controller.getClass();
-            String qualifierName = qualifier == null ? null : Type.getInternalName(qualifier);
-            while (controllerClass != null && entry == null) {
-                entry = viewMap.get(Pair.create(Type.getInternalName(controllerClass), qualifierName));
-                if (entry == null)
-                    controllerClass = controllerClass.getSuperclass();
-            }
-        }
+        return (ViewComponentBase<T>) viewInstances.getInstances().computeIfAbsent(Pair.of(controller, qualifier),
+                key -> {
+                    // get view, trying super classes
+                    ViewEntry entry = null;
+                    {
+                        Class<? extends Object> controllerClass = controller.getClass();
+                        String qualifierName = qualifier == null ? null : Type.getInternalName(qualifier);
+                        while (controllerClass != null && entry == null) {
+                            entry = viewMap.get(Pair.create(Type.getInternalName(controllerClass), qualifierName));
+                            if (entry == null)
+                                controllerClass = controllerClass.getSuperclass();
+                        }
+                    }
 
-        if (entry == null) {
-            throw new RuntimeException("There is no view for controller class " + controller.getClass().getName()
-                    + " and qualifier " + (qualifier == null ? "null" : qualifier.getName()));
+                    if (entry == null) {
+                        throw new RuntimeException(
+                                "There is no view for controller class " + controller.getClass().getName()
+                                        + " and qualifier " + (qualifier == null ? "null" : qualifier.getName()));
 
-        }
+                    }
 
-        // create view instance
-        Class<?> viewClass = AsmUtil.loadClass(Type.getObjectType(entry.viewClassInternalName), classLoader);
-        ViewComponentBase<T> result = (ViewComponentBase<T>) injector.getInstance(viewClass);
-        if (setAsRootView)
-            componentPage.setView(result);
-        result.initialize(controller);
-        return result;
+                    // create view instance
+                    Class<?> viewClass = AsmUtil.loadClass(Type.getObjectType(entry.viewClassInternalName),
+                            classLoader);
+                    ViewComponentBase<T> result = (ViewComponentBase<T>) injector.getInstance(viewClass);
+                    if (setAsRootView)
+                        componentPage.setView(result);
+                    result.initialize(controller);
+                    return result;
+                });
     }
 }

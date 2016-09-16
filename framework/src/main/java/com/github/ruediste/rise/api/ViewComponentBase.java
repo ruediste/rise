@@ -65,4 +65,13 @@ public abstract class ViewComponentBase<TController extends SubControllerCompone
     protected ActionInvocationBuilder path() {
         return componentUtil.path();
     }
+
+    public Runnable push(Runnable run) {
+        return componentUtil.push(run);
+    }
+
+    public void pop() {
+        componentUtil.pop();
+    }
+
 }

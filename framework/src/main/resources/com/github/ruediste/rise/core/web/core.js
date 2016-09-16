@@ -206,3 +206,12 @@ $(function(){
 				return false;
 			});
 });
+
+// COptionalInputBase
+$(function(){
+  $(document).on("click", ".rise-cOptionalInputBase > ._check > input", function(evt) {
+			    $(this).parent().parent().find("._value").toggle();
+			    $(this).parent().parent().find("._placeholder").toggle();
+				return true;
+			});
+});

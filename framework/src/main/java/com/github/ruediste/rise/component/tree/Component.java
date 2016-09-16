@@ -216,8 +216,9 @@ public class Component<TSelf> {
         return bindinginfos;
     }
 
-    public void addLabel(LString label) {
+    public TSelf addLabel(LString label) {
         labels.add(label);
+        return self();
     }
 
     /**

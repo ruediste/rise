@@ -3,18 +3,18 @@ package com.github.ruediste.rise.component.components;
 import java.util.function.Supplier;
 
 import com.github.ruediste.rise.component.tree.Component;
-import com.github.ruediste.rise.integration.RiseCanvas;
+import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.nonReloadable.lambda.Capture;
 
 public class CTextField extends Component<CTextField> {
 
     private Supplier<String> value;
 
-    static class Template extends ComponentTemplateBase<CTextField> {
+    static class Template extends BootstrapComponentTemplateBase<CTextField> {
 
         @Override
-        public void doRender(CTextField component, RiseCanvas<?> html) {
-            html.input_text().Rvalue(component.getValue());
+        public void doRender(CTextField component, BootstrapRiseCanvas<?> html) {
+            html.input_text().BformControl().Rvalue(component.getValue());
         }
     }
 

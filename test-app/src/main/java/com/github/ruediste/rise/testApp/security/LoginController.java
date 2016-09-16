@@ -1,6 +1,5 @@
 package com.github.ruediste.rise.testApp.security;
 
-import com.github.ruediste.rise.component.components.CController;
 import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.core.security.login.LoginControllerBase;
 import com.github.ruediste.rise.testApp.TestCanvas;
@@ -12,7 +11,7 @@ public class LoginController extends LoginControllerBase {
 
         @Override
         protected void renderImpl(TestCanvas html) {
-            html.render(new CPage(() -> html.render(new CController(controller.getLoginSubController()))));
+            html.render(new CPage(() -> html.renderController(controller.getLoginSubController())));
 
         }
 

@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.github.ruediste.rise.component.components.DisplayStack;
 import com.github.ruediste.rise.component.reload.PageReloadRequest;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.FragmentJumpPad;
@@ -44,15 +45,18 @@ public class ComponentUtil implements ICoreUtil {
     @Inject
     private TransactionControl template;
 
+    @Inject
+    DisplayStack stack;
+
     public long pageId() {
         return pageInfo.getPageId();
     }
 
-    public long getComponentNr(Component fragment) {
+    public long getComponentNr(Component<?> fragment) {
 
         long result = FragmentJumpPad.getFragmentNr(fragment);
         if (result == -1) {
-            // lazily set the component numbers. This allows components to
+            // lazily set the Component numbers. This allows components to
             // reference each other without caring about
             // the rendering order.
             result = pageInfo.getNextFragmentNr();
@@ -62,14 +66,14 @@ public class ComponentUtil implements ICoreUtil {
         return result;
     }
 
-    public Component getFragment(long fragmentId) {
+    public Component<?> getFragment(long fragmentId) {
         return pageInfo.getFragmentNrMap().get(fragmentId);
     }
 
     /**
      * Return the appropriate value for the html element id attribute.
      */
-    public String getFragmentId(Component fragment) {
+    public String getFragmentId(Component<?> fragment) {
         return "c_" + getComponentNr(fragment);
     }
 
@@ -77,7 +81,7 @@ public class ComponentUtil implements ICoreUtil {
         return coreUtil.url(componentConfiguration.getReloadPath() + "/" + pageId());
     }
 
-    public String getAjaxUrl(Component component) {
+    public String getAjaxUrl(Component<?> component) {
         return coreUtil.url(componentConfiguration.getAjaxPath() + "/" + pageId() + "/" + getComponentNr(component));
     }
 
@@ -89,39 +93,39 @@ public class ComponentUtil implements ICoreUtil {
     /**
      * Return a key for identifying a request parameter for the given fragment
      */
-    public String getParameterKey(Component fragment, String keySuffix) {
+    public String getParameterKey(Component<?> fragment, String keySuffix) {
         return "c_" + getComponentNr(fragment) + "_" + keySuffix;
     }
 
-    public Optional<Object> getParameterObject(Component component, String keySuffix) {
+    public Optional<Object> getParameterObject(Component<?> component, String keySuffix) {
         return reloadRequest.getParameterObject(getParameterKey(component, keySuffix));
     }
 
     /**
-     * Return the value of a parameter belonging to a certain component during a
-     * page reload request.
+     * Return the value of a parameter belonging to a certain Component
+     * <?> during a page reload request.
      * 
      * @param keySuffix
-     *            value passed to {@link #getParameterKey(Component, String)}
-     *            as suffix
+     *            value passed to {@link #getParameterKey(Component, String)} as
+     *            suffix
      */
-    public Optional<String> getParameterValue(Component fragment, String keySuffix) {
+    public Optional<String> getParameterValue(Component<?> fragment, String keySuffix) {
         return reloadRequest.getParameterValue(getParameterKey(fragment, keySuffix));
     }
 
-    public Collection<Object> getParameterObjects(Component fragment, String keySuffix) {
+    public Collection<Object> getParameterObjects(Component<?> fragment, String keySuffix) {
         return reloadRequest.getParameterObjects(getParameterKey(fragment, keySuffix));
     }
 
-    public List<String> getParameterValues(Component fragment, String keySuffix) {
+    public List<String> getParameterValues(Component<?> fragment, String keySuffix) {
         return reloadRequest.getParameterValues(getParameterKey(fragment, keySuffix));
     }
 
     /**
-     * Test if a parameter is defined for a certain component during a page
+     * Test if a parameter is defined for a certain Component<?> during a page
      * reload request.
      */
-    public boolean isParameterDefined(Component fragment, String key) {
+    public boolean isParameterDefined(Component<?> fragment, String key) {
         return reloadRequest.isParameterDefined(getParameterKey(fragment, key));
     }
 
@@ -178,4 +182,18 @@ public class ComponentUtil implements ICoreUtil {
         }
     }
 
+    /**
+     * push a runnable to the display stack
+     */
+    public Runnable push(Runnable run) {
+        stack.getStack().push(run);
+        return run;
+    }
+
+    /**
+     * pop the top runnable from the display stack
+     */
+    public void pop() {
+        stack.getStack().pop();
+    }
 }
