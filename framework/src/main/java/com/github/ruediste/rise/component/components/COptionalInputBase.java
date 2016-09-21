@@ -19,17 +19,27 @@ public class COptionalInputBase<T> extends Component<COptionalInputBase<T>> {
         public void doRender(COptionalInputBase<T> component, BootstrapRiseCanvas<?> html) {
             boolean checked = component.getValue().get().isPresent();
 
-            html.bInputGroup().CLASS("rise-cOptionalInputBase");
+            // hidden input to transport checked value
+            html.input_checkbox().NAME(util.getParameterKey(component, "checked")).STYLE("display: none").fIf(checked,
+                    () -> html.CHECKED());
 
-            html.bInputGroupAddon().CLASS("_check").input_checkbox().NAME(util.getParameterKey(component, "checked"))
-                    .VALUE("true").fIf(checked, () -> html.CHECKED())._bInputGroupAddon();
+            // checked version
+            html.bInputGroup().CLASS("rise-cOptionalInputBase _checked").fIf(!checked,
+                    () -> html.STYLE("display: none"));
 
-            html.span().CLASS("_value").fIf(!checked, () -> html.STYLE("display: none"));
+            html.bInputGroupAddon().CLASS("_check").input_checkbox().VALUE("true").CHECKED()._bInputGroupAddon();
+
             renderValueInput(component, html, component.getValue().get().orElse(component.getDefaultValue()));
-            html._span();
 
-            html.span().CLASS("_placeholder").fIf(checked, () -> html.STYLE("display: none")).input_text().DISABLED()
-                    .BformControl()._span();
+            html._bInputGroup();
+
+            // unchecked version
+            html.bInputGroup().CLASS("rise-cOptionalInputBase _unchecked").fIf(checked,
+                    () -> html.STYLE("display: none"));
+
+            html.bInputGroupAddon().CLASS("_check").input_checkbox().VALUE("true")._bInputGroupAddon();
+
+            html.span().CLASS("_placeholder").input_text().DISABLED().BformControl()._span();
 
             html._bInputGroup();
 

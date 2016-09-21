@@ -6,6 +6,10 @@ import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 
 public class COptionalDouble extends COptionalInputBase<Double> {
 
+    {
+        defaultValue = 0.0;
+    }
+
     static class Template extends COptionalInputBase.Template<Double> {
 
         @Override

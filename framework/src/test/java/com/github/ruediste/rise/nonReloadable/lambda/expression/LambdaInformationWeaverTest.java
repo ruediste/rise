@@ -2,6 +2,8 @@ package com.github.ruediste.rise.nonReloadable.lambda.expression;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -125,4 +127,21 @@ public class LambdaInformationWeaverTest {
         assertEquals("()->{java.lang.StringBuilder.<new>(Hello World ).append(A0).toString()}", lamda.toString());
     }
 
+    private static class A {
+        private <T> void add(List<Supplier<T>> result, Class<T> cls, @Capture Supplier<T> str) {
+            result.add(str);
+        }
+
+        public Supplier<String> get() {
+            List<Supplier<String>> list = new ArrayList<>();
+            add(list, String.class, () -> "foo");
+            return list.get(0);
+        }
+    }
+
+    @Test
+    public void testCaptureWithPrivateMethod() {
+        LambdaExpression<?> lambda = LambdaInformationWeaver.getLambdaExpression(new A().get());
+        assertEquals("()->{foo}", lambda.toString());
+    }
 }

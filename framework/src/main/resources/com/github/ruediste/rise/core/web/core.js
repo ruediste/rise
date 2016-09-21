@@ -11,6 +11,18 @@ var rise = (function() {
 	var triggerViewReload = function(element) {
 		$(element).trigger("rise_viewReload");
 	}
+	
+	var pushUrls = function (jsonString){
+	  if (!jsonString)
+	    return;
+	  JSON.parse(jsonString).forEach(function(url){
+	    if (url==null)
+	      history.back();
+	    else
+	  	  history.pushState({},"",url);
+	  });
+	};
+	
 	/**
 	 * Enters an endless loop polling for an application restart
 	 */
@@ -97,6 +109,7 @@ var rise = (function() {
 			contentType : "text/json; charset=UTF-8",
 			processData : false,
 			success : function(data, status, jqXHR) {
+			    pushUrls(jqXHR.getResponseHeader("rise-pushed-urls"));
 				var redirectTarget = jqXHR
 						.getResponseHeader("rise-redirect-target");
 				if (redirectTarget) {
@@ -158,7 +171,8 @@ var rise = (function() {
 			});
 		});
 		
-		
+		// push initially pushed URLs
+		pushUrls($("body").data("rise-pushed-urls"));
 
 		// start polling for application restart
 		pollForApplicationRestart();
@@ -209,9 +223,16 @@ $(function(){
 
 // COptionalInputBase
 $(function(){
-  $(document).on("click", ".rise-cOptionalInputBase > ._check > input", function(evt) {
-			    $(this).parent().parent().find("._value").toggle();
-			    $(this).parent().parent().find("._placeholder").toggle();
+  $(document).on("click", ".rise-cOptionalInputBase._checked > ._check > input", function(evt) {
+  				$(this).parent().parent().toggle();
+			    $(this).parent().parent().next().toggle();
+			    $(this).parent().parent().prev().click();
+				return false;
+			});
+  $(document).on("click", ".rise-cOptionalInputBase._unchecked > ._check > input", function(evt) {
+                $(this).parent().parent().toggle();	
+			    $(this).parent().parent().prev().toggle();
+			    $(this).parent().parent().prev().prev().click();
 				return true;
 			});
 });

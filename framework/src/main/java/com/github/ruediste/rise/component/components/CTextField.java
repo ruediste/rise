@@ -3,12 +3,13 @@ package com.github.ruediste.rise.component.components;
 import java.util.function.Supplier;
 
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.component.tree.ValueHandle;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.nonReloadable.lambda.Capture;
 
 public class CTextField extends Component<CTextField> {
 
-    private Supplier<String> value;
+    private ValueHandle<String> value;
 
     static class Template extends BootstrapComponentTemplateBase<CTextField> {
 
@@ -18,12 +19,12 @@ public class CTextField extends Component<CTextField> {
         }
     }
 
-    public Supplier<String> getValue() {
+    public ValueHandle<String> getValue() {
         return value;
     }
 
     public CTextField(@Capture Supplier<String> value) {
-        this.value = value;
+        this.value = createValueHandle(value, true);
     }
 
 }

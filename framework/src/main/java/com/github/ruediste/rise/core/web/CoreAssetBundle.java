@@ -14,6 +14,7 @@ public class CoreAssetBundle extends AssetBundle {
     public static final String bodyAttributeHeartbeatInterval = "rise-heartbeat-interval";
     public static final String bodyAttributeAjaxUrl = "rise-ajax-url";
     public static final String bodyAttributePageNr = "rise-page-nr";
+    public static final String bodyAttributePushedUrls = "rise-page-nr";
 
     public static final String componentAttributeNr = "rise-component-nr";
 

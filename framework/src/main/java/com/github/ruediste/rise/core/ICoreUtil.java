@@ -4,12 +4,18 @@ import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.github.ruediste.c3java.properties.PropertyInfo;
+import com.github.ruediste.c3java.properties.PropertyUtil;
+import com.github.ruediste.rise.component.binding.BindingUtil;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.core.web.UrlSpec;
+import com.github.ruediste.rise.nonReloadable.lambda.Capture;
+import com.github.ruediste.rise.nonReloadable.lambda.LambdaExpression;
+import com.github.ruediste.rise.nonReloadable.lambda.expression.MemberExpression;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.LabelUtil;
 
@@ -75,6 +81,20 @@ public interface ICoreUtil {
 
     default LabelUtil labelUtil() {
         return getCoreUtil().labelUtil();
+    }
+
+    /**
+     * Return the label of the last method accessed by the given supplier
+     */
+    default LString label(@Capture Supplier<?> supplier) {
+        LambdaExpression<Object> exp = LambdaExpression.parse(supplier);
+        MemberExpression memberExp = exp.getBody().accept(BindingUtil.MEMBER_EXPRESSION_EXTRACTOR);
+
+        if (memberExp == null)
+            throw new RuntimeException("Unable to extract accessed member");
+        PropertyInfo property = PropertyUtil.getProperty(memberExp.getMember());
+
+        return getCoreUtil().labelUtil.property(property).label();
     }
 
     default String toString(LString string) {

@@ -1,9 +1,14 @@
 package com.github.ruediste.rise.integration;
 
+import static java.util.stream.Collectors.toList;
+
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
 import javax.inject.Inject;
+
+import org.json.simple.JSONArray;
 
 import com.github.ruediste.rendersnakeXT.canvas.Html5Canvas;
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
@@ -69,11 +74,15 @@ public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>> extends PageT
 		       .DATA(CoreAssetBundle.bodyAttributeRestartNr,Long.toString(holder.get()))
 		       .TEST_NAME(testName);
 	        if (componentRequestInfo.isComponentRequest()) {
+	            List<String> pushedUrls = componentRequestInfo.getPushedUrls().stream()
+	                    .map(x -> x == null ? null : url(x)).collect(toList());
+	            
 	            html.DATA(CoreAssetBundle.bodyAttributePageNr,Long.toString(pageInfo.getPageId()))
                     .DATA(CoreAssetBundle.bodyAttributeReloadUrl,url(componentConfig.getReloadPath()))
                     .DATA(CoreAssetBundle.bodyAttributeHeartbeatUrl,url(componentConfig.getHeartbeatPath()))
                     .DATA(CoreAssetBundle.bodyAttributeHeartbeatInterval, Objects.toString(componentConfig.getHeartbeatInterval()))
-                    .DATA(CoreAssetBundle.bodyAttributeAjaxUrl,url(componentConfig.getAjaxPath()));
+                    .DATA(CoreAssetBundle.bodyAttributeAjaxUrl,url(componentConfig.getAjaxPath()))
+                    .DATA(CoreAssetBundle.bodyAttributePushedUrls,JSONArray.toJSONString(pushedUrls));
 	        }
 		    parameters.addBodyAttributes(html);
 			parameters.renderBody(html);

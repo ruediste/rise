@@ -25,7 +25,7 @@ public class BindingUtil {
     @Inject
     PropertyUtil propertyUtil;
 
-    private static final MemberExpressionExtractor MEMBER_EXPRESSION_EXTRACTOR = new MemberExpressionExtractor();
+    public static final MemberExpressionExtractor MEMBER_EXPRESSION_EXTRACTOR = new MemberExpressionExtractor();
     private static final Method transformMethod;
 
     static {

@@ -1,5 +1,7 @@
 package com.github.ruediste.rise.component.reload;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
@@ -8,6 +10,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 
@@ -141,6 +144,10 @@ public class ReloadHandler implements Runnable {
 
             coreRequestInfo.setActionResult(new ContentRenderResult(out.getByteArray(), r -> {
                 r.setContentType(coreConfiguration.htmlContentType);
+
+                List<String> pushedUrls = componentRequestInfo.getPushedUrls().stream()
+                        .map(x -> x == null ? null : util.url(x)).collect(toList());
+                r.addHeader("rise-pushed-urls", JSONArray.toJSONString(pushedUrls));
                 if (view instanceof HttpServletResponseCustomizer) {
                     ((HttpServletResponseCustomizer) view).customizeServletResponse(r);
                 }

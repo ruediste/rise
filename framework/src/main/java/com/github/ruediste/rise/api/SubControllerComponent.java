@@ -225,4 +225,11 @@ public class SubControllerComponent {
         return validationFailureMap;
     }
 
+    public void pushUrl(ActionResult actionResult) {
+        componentRequestInfo.pushUrl(util.toUrlSpec(actionResult));
+    }
+
+    public void popUrl() {
+        componentRequestInfo.popUrl();
+    }
 }

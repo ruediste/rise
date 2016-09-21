@@ -11,6 +11,7 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -59,6 +60,10 @@ public class LambdaInformationWeaver extends ClassVisitor {
 
             @Override
             public void visitEnd() {
+                // Two Step Algorithm: First we determine how the result of each
+                // invokedynamic instruciton is used (in what parameters).
+                // Then we modify the invokedynamic instructions, taking the
+                // information of how the result is used into account.
                 Frame<SourceValue>[] frames;
                 try {
                     frames = new Analyzer<>(new SourceInterpreter()).analyze(className, mn);
@@ -67,12 +72,21 @@ public class LambdaInformationWeaver extends ClassVisitor {
                 }
 
                 AbstractInsnNode[] instructions = mn.instructions.toArray();
-                Map<InvokeDynamicInsnNode, Set<UsingParameter>> map = new HashMap<>();
+
+                // a map containing all invokedynamic instructions of the
+                // current method, along with information about the parameter of
+                // the instruction
+                // using the result of the invokedynamic
+                Map<InvokeDynamicInsnNode, Set<UsingParameter>> invokeDynamicInstructions = new HashMap<>();
+
+                // iterate all instructions, process method invocations
                 for (int idx = 0; idx < frames.length; idx++) {
                     Frame<SourceValue> frame = frames[idx];
                     if (frame == null)
                         continue;
                     AbstractInsnNode instruction = instructions[idx];
+
+                    // filter method invocations
                     int tag = -1;
                     switch (instruction.getOpcode()) {
                     case Opcodes.INVOKEINTERFACE:
@@ -89,29 +103,38 @@ public class LambdaInformationWeaver extends ClassVisitor {
                         break;
                     }
 
-                    if (tag != -1) {
-                        MethodInsnNode methodInsn = (MethodInsnNode) instruction;
-                        if (methodInsn.getOpcode() == Opcodes.INVOKESPECIAL) {
-                            if ("<init>".equals(methodInsn.name))
-                                tag = Opcodes.H_NEWINVOKESPECIAL;
-                        }
-                        Type[] argumentTypes = Type.getArgumentTypes(methodInsn.desc);
-                        for (int i = 0; i < argumentTypes.length; i++) {
-                            for (AbstractInsnNode sourceInstruction : frame
-                                    .getStack(frame.getStackSize() - i - 1).insns) {
-                                if (sourceInstruction.getOpcode() == Opcodes.INVOKEDYNAMIC) {
-                                    InvokeDynamicInsnNode invokeDynamic = (InvokeDynamicInsnNode) sourceInstruction;
-                                    map.computeIfAbsent(invokeDynamic, x -> new HashSet<>()).add(new UsingParameter(
-                                            new Handle(tag, methodInsn.owner, methodInsn.name, methodInsn.desc), i));
-                                }
+                    // no method invocation, continue
+                    if (tag == -1) {
+                        continue;
+                    }
+
+                    MethodInsnNode methodInsn = (MethodInsnNode) instruction;
+
+                    // adjust tag for constructor invocations
+                    if (methodInsn.getOpcode() == Opcodes.INVOKESPECIAL) {
+                        if ("<init>".equals(methodInsn.name))
+                            tag = Opcodes.H_NEWINVOKESPECIAL;
+                    }
+
+                    // iterate method parameters
+                    Type[] argumentTypes = Type.getArgumentTypes(methodInsn.desc);
+                    for (int i = 0; i < argumentTypes.length; i++) {
+                        // iterate source instructions of the parameter
+                        for (AbstractInsnNode sourceInstruction : frame
+                                .getStack((frame.getStackSize() - argumentTypes.length) + i).insns) {
+                            if (sourceInstruction.getOpcode() == Opcodes.INVOKEDYNAMIC) {
+                                InvokeDynamicInsnNode invokeDynamic = (InvokeDynamicInsnNode) sourceInstruction;
+                                invokeDynamicInstructions.computeIfAbsent(invokeDynamic, x -> new HashSet<>())
+                                        .add(new UsingParameter(
+                                                new Handle(tag, methodInsn.owner, methodInsn.name, methodInsn.desc),
+                                                i));
                             }
                         }
                     }
                 }
 
-                // iterate all instructions
+                // iterate invoke dynamic instructions
                 for (AbstractInsnNode instruction : instructions) {
-                    // only process invoke dynamic instructions
                     if (instruction.getOpcode() != Opcodes.INVOKEDYNAMIC)
                         continue;
                     InvokeDynamicInsnNode insn = (InvokeDynamicInsnNode) instruction;
@@ -124,7 +147,7 @@ public class LambdaInformationWeaver extends ClassVisitor {
                         continue;
                     }
 
-                    Set<UsingParameter> usingParameters = map.get(insn);
+                    Set<UsingParameter> usingParameters = invokeDynamicInstructions.get(insn);
                     if (usingParameters != null && usingParameters.size() == 1) {
                         UsingParameter usingParameter = usingParameters.iterator().next();
                         // switch to custom meta factory with using parameter
@@ -180,10 +203,14 @@ public class LambdaInformationWeaver extends ClassVisitor {
 
         CallSite result = LambdaMetafactory.metafactory(caller, invokedName, invokedType, samMethodType, implMethod,
                 instantiatedMethodType);
+
+        // check capturing lambda interface
         Class<?> lambdaInterface = invokedType.returnType();
         boolean doWrap = CapturingLambda.class.isAssignableFrom(lambdaInterface);
 
         if (!doWrap) {
+            // check Capture annotation on parameters of the method using the
+            // lambda object
             Executable usingMethod = MethodHandles.reflectAs(Executable.class, usingMethodHandle);
             doWrap = usingMethod.getParameters()[usingParameterIndex].isAnnotationPresent(Capture.class);
         }

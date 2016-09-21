@@ -16,6 +16,7 @@ import com.github.ruediste.rise.component.components.ConClick;
 import com.github.ruediste.rise.component.render.ComponentCanvas;
 import com.github.ruediste.rise.component.render.RiseCanvasTarget;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.component.tree.ValueHandle;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
@@ -182,6 +183,10 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
 
     default TSelf RonClick(Runnable handler) {
         return add(new ConClick(handler));
+    }
+
+    default TSelf Rvalue(ValueHandle<String> value) {
+        return add(new CValue(value));
     }
 
     default TSelf Rvalue(@Capture Supplier<String> value) {

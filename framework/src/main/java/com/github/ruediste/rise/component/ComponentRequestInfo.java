@@ -1,11 +1,14 @@
 package com.github.ruediste.rise.component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 
 import com.github.ruediste.rise.core.scopes.RequestScoped;
 import com.github.ruediste.rise.core.web.HttpRenderResult;
+import com.github.ruediste.rise.core.web.UrlSpec;
 
 @RequestScoped
 public class ComponentRequestInfo {
@@ -21,6 +24,8 @@ public class ComponentRequestInfo {
     private boolean isAjaxRequest;
 
     private boolean isInitialRequest;
+
+    final private List<UrlSpec> pushedUrls = new ArrayList<>();
 
     public HttpRenderResult getClosePageResult() {
         return closePageResult;
@@ -70,9 +75,21 @@ public class ComponentRequestInfo {
         this.isInitialRequest = isInitialRequest;
     }
 
+    public void pushUrl(UrlSpec url) {
+        pushedUrls.add(url);
+    }
+
+    public void popUrl() {
+        pushedUrls.add(null);
+    }
+
     @FunctionalInterface
     public interface InitialConstraintViolationConsumer {
         void accept(Object controller, Set<ConstraintViolation<?>> violations);
+    }
+
+    public List<UrlSpec> getPushedUrls() {
+        return pushedUrls;
     }
 
 }
