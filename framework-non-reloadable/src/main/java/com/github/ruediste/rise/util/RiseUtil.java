@@ -12,9 +12,9 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 
 import com.github.ruediste.c3java.properties.PropertyInfo;
-import com.github.ruediste1.lambdaPegParser.DefaultParser;
-import com.github.ruediste1.lambdaPegParser.DefaultParsingContext;
-import com.github.ruediste1.lambdaPegParser.ParserFactory;
+import com.github.ruediste.lambdaPegParser.DefaultParser;
+import com.github.ruediste.lambdaPegParser.DefaultParsingContext;
+import com.github.ruediste.lambdaPegParser.ParserFactory;
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
 import com.google.common.reflect.TypeParameter;
@@ -160,13 +160,13 @@ public class RiseUtil {
         public Pair<String, String> glob() {
             String prefix = ZeroOrMoreChars(x -> x != '*', "non *");
             String pattern = ZeroOrMore(() -> FirstOf(() -> {
-                String("**/");
+                Str("**/");
                 return ".*";
             } , () -> {
-                String("**");
+                Str("**");
                 return ".*";
             } , () -> {
-                String("*");
+                Str("*");
                 return "[^/]*";
             } , () -> {
                 return Pattern.quote(OneOrMoreChars(x -> x != '*', "non *"));

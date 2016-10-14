@@ -24,7 +24,8 @@ public class COptionalDuration extends COptionalInputBase<Duration> {
 
         @Override
         Optional<Duration> extractValue(COptionalInputBase<Duration> component) {
-            return util.getParameterValue(component, "value").map(x -> Duration.ofSeconds(Integer.parseInt(x)));
+            return util.getParameterValue(component, "value")
+                    .map(x -> Duration.ofMillis((long) (Double.parseDouble(x) * 1000)));
         }
 
     }

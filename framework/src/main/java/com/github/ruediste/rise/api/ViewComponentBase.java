@@ -52,7 +52,7 @@ public abstract class ViewComponentBase<TController extends SubControllerCompone
         return componentUtil.labelUtil().enumMember(e).label();
     }
 
-    public LString label(@Capture Supplier<?> supplier) {
+    protected LString label(@Capture Supplier<?> supplier) {
         return componentUtil.label(supplier);
     }
 

@@ -4,6 +4,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Optional which can contain null values
@@ -42,6 +43,18 @@ public class NOptional<T> {
     public T get() {
         if (this == empty)
             throw new NoSuchElementException("No value present");
+        return value;
+    }
+
+    public T orElse(T fallback) {
+        if (this == empty)
+            return fallback;
+        return value;
+    }
+
+    public T orElseGet(Supplier<T> fallback) {
+        if (this == empty)
+            return fallback.get();
         return value;
     }
 
