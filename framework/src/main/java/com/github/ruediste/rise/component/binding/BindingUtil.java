@@ -92,9 +92,15 @@ public class BindingUtil {
             switch (e.getExpressionType()) {
             case FieldAccess:
                 return e.getInstance().accept(this).map(x -> (x.isEmpty() ? "" : x + ".") + e.getMember().getName());
-            case MethodAccess:
-                return e.getInstance().accept(this).flatMap(x -> PropertyUtil.tryGetProperty(e.getMember())
+            case MethodAccess: {
+                Optional<String> base;
+                if (e.getInstance() != null)
+                    base = e.getInstance().accept(this);
+                else
+                    base = Optional.of("this.");
+                return base.flatMap(x -> PropertyUtil.tryGetProperty(e.getMember())
                         .map(i -> (x.isEmpty() ? "" : x + ".") + i.getName()));
+            }
             default:
                 return Optional.empty();
             }

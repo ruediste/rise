@@ -233,6 +233,6 @@ $(function(){
                 $(this).parent().parent().toggle();	
 			    $(this).parent().parent().prev().toggle();
 			    $(this).parent().parent().prev().prev().click();
-				return true;
+				return false;
 			});
 });

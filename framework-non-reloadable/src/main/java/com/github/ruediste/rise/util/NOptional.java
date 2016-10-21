@@ -58,6 +58,13 @@ public class NOptional<T> {
         return value;
     }
 
+    public <E extends Throwable> T orElseThrow(Supplier<E> throwableSupplier) throws E {
+        if (this == empty)
+            throw throwableSupplier.get();
+        return value;
+
+    }
+
     public boolean isPresent() {
         return this != empty;
     }
@@ -97,4 +104,5 @@ public class NOptional<T> {
     public String toString() {
         return isPresent() ? String.format("NOptional[%s]", value) : "NOptional.empty";
     }
+
 }
