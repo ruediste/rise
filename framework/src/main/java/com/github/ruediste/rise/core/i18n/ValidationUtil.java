@@ -14,10 +14,10 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Payload;
 
 import com.github.ruediste.rise.component.tree.Component;
-import com.github.ruediste.rise.component.tree.ValidationStateBearer;
+import com.github.ruediste.rise.component.tree.ValidationStatus;
+import com.github.ruediste.rise.component.validation.ValidationClassification;
 import com.github.ruediste.rise.component.validation.ValidationPathUtil;
 import com.github.ruediste.rise.component.validation.ValidationState;
-import com.github.ruediste.rise.component.validation.ValidationStatus;
 import com.github.ruediste.rise.util.Var;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.lString.PatternString;
@@ -26,6 +26,30 @@ import com.github.ruediste1.i18n.lString.TranslatedString;
 import com.github.ruediste1.i18n.lString.TranslatedStringResolver;
 import com.github.ruediste1.i18n.label.LabelUtil;
 
+/**
+ * Utility for {@link Component} validation.
+ * 
+ * <p>
+ * Validation always happens on the model and is pulled up by the components to
+ * the view. This allows easy acesss to the validation result by the controller,
+ * which is required to enforce validation for example prior to saving changes.
+ * 
+ * <p>
+ * After rendering the validation failures are pulled up from the controllers to
+ * the components. This is accomplished by examining the bindings of each
+ * component and locating matching {@link ValidationFailure}s. The failures are
+ * added to the closest ancestor implementing {@link ValidationPresenter}. If no
+ * presenter can be found, the failure is added to the view. All failures
+ * present on a rendered controller which are not correlated to a component are
+ * also added to the view.
+ * 
+ * <p>
+ * The validation failures are then added to the server response while replacing
+ * placeholders that were added while rendering.
+ * 
+ * <p>
+ * <img src="doc-files/ValidationOverview.png" >
+ */
 public class ValidationUtil {
     @Inject
     PatternStringResolver patternStringResolver;
@@ -124,15 +148,15 @@ public class ValidationUtil {
         };
     }
 
-    public ValidationStatus getValidationState(Component<?> component) {
+    public ValidationClassification getValidationState(Component<?> component) {
         ArrayList<ValidationFailure> failures = new ArrayList<>();
         Var<Boolean> validated = new Var<>(false);
         component.forEachNonValidationPresenterInSubTree(child -> {
-            ValidationStateBearer bearer = child.getValidationStateBearer();
+            ValidationStatus bearer = child.getValidationStateBearer();
             if (bearer.isDirectlyValidated())
                 validated.setValue(true);
 
-            // add failures from fragment
+            // add failures from component
             failures.addAll(bearer.getDirectValidationFailures());
 
             // add failures registered with the controller
@@ -145,12 +169,12 @@ public class ValidationUtil {
         });
 
         if (!validated.getValue())
-            return new ValidationStatus(ValidationState.NOT_VALIDATED, Collections.emptyList());
+            return new ValidationClassification(ValidationState.NOT_VALIDATED, Collections.emptyList());
         else {
             if (failures.isEmpty())
-                return new ValidationStatus(ValidationState.SUCCESS, failures);
+                return new ValidationClassification(ValidationState.SUCCESS, failures);
             else
-                return new ValidationStatus(ValidationState.FAILED, failures);
+                return new ValidationClassification(ValidationState.FAILED, failures);
         }
     }
 }

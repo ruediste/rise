@@ -4,12 +4,12 @@ import java.util.List;
 
 import com.github.ruediste.rise.core.i18n.ValidationFailure;
 
-public class ValidationStatus {
+public class ValidationClassification {
 
     private final ValidationState state;
     private final List<ValidationFailure> failures;
 
-    public ValidationStatus(ValidationState state, List<ValidationFailure> failures) {
+    public ValidationClassification(ValidationState state, List<ValidationFailure> failures) {
         super();
         this.state = state;
         this.failures = failures;

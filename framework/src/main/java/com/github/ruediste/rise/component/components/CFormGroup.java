@@ -10,7 +10,7 @@ import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.validation.ValidationState;
-import com.github.ruediste.rise.component.validation.ValidationStatus;
+import com.github.ruediste.rise.component.validation.ValidationClassification;
 import com.github.ruediste.rise.core.i18n.ValidationFailure;
 import com.github.ruediste.rise.core.i18n.ValidationUtil;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
@@ -39,7 +39,7 @@ public class CFormGroup extends Component<CFormGroup> {
             html.bFormGroup().CLASS(component.CLASS());
 
             html.addAttributePlaceholder(() -> {
-                ValidationStatus violationStatus = validationUtil.getValidationState(component);
+                ValidationClassification violationStatus = validationUtil.getValidationState(component);
                 // render violation status
                 if (violationStatus != null) {
                     if (violationStatus.getState() == ValidationState.SUCCESS) {
@@ -67,7 +67,7 @@ public class CFormGroup extends Component<CFormGroup> {
 
             // render constraint violation
             html.addPlaceholder(() -> {
-                ValidationStatus violationStatus = validationUtil.getValidationState(component);
+                ValidationClassification violationStatus = validationUtil.getValidationState(component);
                 if (violationStatus != null) {
                     Collection<ValidationFailure> constraintViolations = violationStatus.getFailures();
                     if (constraintViolations != null && !constraintViolations.isEmpty()) {

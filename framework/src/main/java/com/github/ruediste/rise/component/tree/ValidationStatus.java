@@ -5,21 +5,21 @@ import java.util.Collections;
 import java.util.List;
 
 import com.github.ruediste.rise.component.validation.ValidationState;
-import com.github.ruediste.rise.component.validation.ValidationStatus;
+import com.github.ruediste.rise.component.validation.ValidationClassification;
 import com.github.ruediste.rise.core.i18n.ValidationFailure;
 
-public class ValidationStateBearer {
+public class ValidationStatus {
 
     private boolean isDirectlyValidated;
     private final List<ValidationFailure> directValidationFailures = new ArrayList<>();
 
-    public ValidationStatus getDirectValidationState() {
+    public ValidationClassification getDirectValidationState() {
         if (!isDirectlyValidated)
-            return new ValidationStatus(ValidationState.NOT_VALIDATED, Collections.emptyList());
+            return new ValidationClassification(ValidationState.NOT_VALIDATED, Collections.emptyList());
         else if (directValidationFailures.isEmpty())
-            return new ValidationStatus(ValidationState.SUCCESS, directValidationFailures);
+            return new ValidationClassification(ValidationState.SUCCESS, directValidationFailures);
         else
-            return new ValidationStatus(ValidationState.FAILED, directValidationFailures);
+            return new ValidationClassification(ValidationState.FAILED, directValidationFailures);
     }
 
     public void clearDirectValidationFailures() {
@@ -36,6 +36,10 @@ public class ValidationStateBearer {
 
     public void setValidated(boolean isValidated) {
         this.isDirectlyValidated = isValidated;
+    }
+
+    public void addFailure(ValidationFailure failure) {
+        directValidationFailures.add(failure);
     }
 
     public void addFailures(List<ValidationFailure> failures) {

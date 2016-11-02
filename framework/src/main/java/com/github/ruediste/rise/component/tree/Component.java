@@ -100,7 +100,7 @@ public class Component<TSelf> {
     private List<LString> labels = new ArrayList<>();
 
     private List<BindingInfo<?>> bindinginfos = new ArrayList<>();
-    private final ValidationStateBearer validationStateBearer = new ValidationStateBearer();
+    private final ValidationStatus validationStateBearer = new ValidationStatus();
 
     private String class_;
     private String testName;
@@ -317,10 +317,10 @@ public class Component<TSelf> {
     }
 
     @SuppressWarnings("unchecked")
-    private void raiseEvents(List<Component<?>> htmlFragments, Object event) {
+    private void raiseEvents(List<Component<?>> components, Object event) {
         boolean handled = false;
-        for (Component<?> fragment : htmlFragments) {
-            for (EventRegistration<?> registration : fragment.eventRegistrations) {
+        for (Component<?> component : components) {
+            for (EventRegistration<?> registration : component.eventRegistrations) {
                 if (!registration.eventType.isAssignableFrom(event.getClass()))
                     continue;
                 if (handled && !registration.handlesToo)
@@ -427,7 +427,7 @@ public class Component<TSelf> {
         this.isValidationPresenter = isValidationPresenter;
     }
 
-    public ValidationStateBearer getValidationStateBearer() {
+    public ValidationStatus getValidationStateBearer() {
         return validationStateBearer;
     }
 
