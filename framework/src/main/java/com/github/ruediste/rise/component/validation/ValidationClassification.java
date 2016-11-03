@@ -1,26 +1,6 @@
 package com.github.ruediste.rise.component.validation;
 
-import java.util.List;
+public enum ValidationClassification {
 
-import com.github.ruediste.rise.core.i18n.ValidationFailure;
-
-public class ValidationClassification {
-
-    private final ValidationState state;
-    private final List<ValidationFailure> failures;
-
-    public ValidationClassification(ValidationState state, List<ValidationFailure> failures) {
-        super();
-        this.state = state;
-        this.failures = failures;
-    }
-
-    public ValidationState getState() {
-        return state;
-    }
-
-    public List<ValidationFailure> getFailures() {
-        return failures;
-    }
-
+    NOT_VALIDATED, SUCCESS, FAILED
 }

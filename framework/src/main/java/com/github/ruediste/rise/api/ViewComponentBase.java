@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.component.tree.ValidationStatus;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
@@ -26,6 +27,8 @@ public abstract class ViewComponentBase<TController extends SubControllerCompone
     public CoreConfiguration config;
 
     protected TController controller;
+
+    public final ValidationStatus validationStatus = new ValidationStatus();
 
     public TController getController() {
         return controller;

@@ -12,6 +12,8 @@ import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.binding.BindingInfo;
 import com.github.ruediste.rise.component.binding.BindingUtil;
 import com.github.ruediste.rise.component.render.ComponentState;
+import com.github.ruediste.rise.core.i18n.ValidationFailure;
+import com.github.ruediste.rise.core.i18n.ValidationPresenter;
 import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
 import com.github.ruediste.rise.nonReloadable.lambda.Capture;
 import com.github.ruediste.rise.util.NOptional;
@@ -96,11 +98,9 @@ public class Component<TSelf> {
     private Component<?> parent;
     private List<Component<?>> children = new ArrayList<>();
     private long fragmentNr = -1;
-    private boolean isValidationPresenter;
     private List<LString> labels = new ArrayList<>();
 
     private List<BindingInfo<?>> bindinginfos = new ArrayList<>();
-    private final ValidationStatus validationStateBearer = new ValidationStatus();
 
     private String class_;
     private String testName;
@@ -226,7 +226,7 @@ public class Component<TSelf> {
      */
     public List<LString> getLabels() {
         ArrayList<LString> result = new ArrayList<>();
-        forSubTree(f -> result.addAll(f.labels));
+        forSubTreePartial(f -> result.addAll(f.labels));
         return result;
     }
 
@@ -350,12 +350,16 @@ public class Component<TSelf> {
      * root fragment
      */
     public List<Component<?>> parents() {
-        return parents(false);
+        return parents(true);
     }
 
     /**
      * Return the start fragments followed by all ancestors, ending with the
-     * root fragment
+     * root fragment.
+     * 
+     * @param includeThis
+     *            if set to false, the returned list will start with the parent
+     *            of this
      */
     public List<Component<?>> parents(boolean includeThis) {
         ArrayList<Component<?>> result = new ArrayList<>();
@@ -379,7 +383,13 @@ public class Component<TSelf> {
     }
 
     /**
-     * Return all children, including this component
+     * Return all children, including this component.
+     * 
+     * @param includeChildrenOf
+     *            predicate evaluated on each component. The component the
+     *            predicate is evaluated on is included in the result regardless
+     *            of the outcome of the predicate. But if false is returned, the
+     *            children of the component are skipped
      */
     public List<Component<?>> subTree(Predicate<Component<?>> includeChildrenOf) {
         ArrayList<Component<?>> result = new ArrayList<>();
@@ -394,13 +404,33 @@ public class Component<TSelf> {
             fragment.getChildren().forEach(child -> subTree(result, child, includeChildrenOf));
     }
 
+    /**
+     * Perform an operation on each component in the sub tree of this (including
+     * this)
+     */
     public void forSubTree(Consumer<Component<?>> consumer) {
-        forSubTree(this, consumer);
+        forSubTreePartial(x -> {
+            consumer.accept(x);
+            return true;
+        });
     }
 
-    private static void forSubTree(Component<?> fragment, Consumer<Component<?>> consumer) {
-        consumer.accept(fragment);
-        fragment.getChildren().forEach(x -> forSubTree(x, consumer));
+    /**
+     * Perform an operation on each component in the sub tree of this (including
+     * this)
+     * 
+     * @param operation
+     *            predicate evaluated on each component. If false is returned,
+     *            the children of the component are skipped
+     * 
+     */
+    public void forSubTreePartial(Predicate<Component<?>> operation) {
+        forSubTreePartial(this, operation);
+    }
+
+    private static void forSubTreePartial(Component<?> component, Predicate<Component<?>> operation) {
+        if (operation.apply(component))
+            component.getChildren().forEach(x -> forSubTreePartial(x, operation));
     }
 
     long getFragmentNr() {
@@ -409,26 +439,6 @@ public class Component<TSelf> {
 
     void setFragmentNr(long fragmentNr) {
         this.fragmentNr = fragmentNr;
-    }
-
-    public void forEachNonValidationPresenterInSubTree(Consumer<Component<?>> consumer) {
-        consumer.accept(this);
-        for (Component<?> child : getChildren()) {
-            if (!child.isValidationPresenter())
-                child.forEachNonValidationPresenterInSubTree(consumer);
-        }
-    }
-
-    public boolean isValidationPresenter() {
-        return isValidationPresenter;
-    }
-
-    public void setValidationPresenter(boolean isValidationPresenter) {
-        this.isValidationPresenter = isValidationPresenter;
-    }
-
-    public ValidationStatus getValidationStateBearer() {
-        return validationStateBearer;
     }
 
     public <T> ValueHandle<T> createValueHandle(T value, boolean isLabelProperty) {
@@ -480,5 +490,13 @@ public class Component<TSelf> {
 
     public void setView(ViewComponentBase<?> view) {
         this.view = view;
+    }
+
+    /**
+     * Validate this component. Failures are bubbled up to the closest
+     * {@link ValidationPresenter}
+     */
+    public List<ValidationFailure> validate() {
+        return Collections.emptyList();
     }
 }

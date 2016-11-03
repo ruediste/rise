@@ -8,6 +8,7 @@ import javax.validation.Validator;
 
 import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.component.ComponentUtil;
+import com.github.ruediste.rise.component.validation.ValidationClassification;
 import com.github.ruediste.rise.component.validation.ValidationPathUtil;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.IController;
@@ -17,6 +18,7 @@ import com.github.ruediste.rise.core.i18n.ValidationFailure;
 import com.github.ruediste.rise.core.i18n.ValidationUtil;
 import com.github.ruediste.rise.core.web.HttpRenderResult;
 import com.github.ruediste.rise.core.web.RedirectRenderResult;
+import com.github.ruediste.rise.util.Pair;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 
@@ -37,10 +39,12 @@ public class SubControllerComponent {
     @Inject
     ValidationUtil validationUtil;
 
-    private boolean validated;
+    public boolean validateView;
 
-    private final Multimap<String, ValidationFailure> validationFailureMap = MultimapBuilder.hashKeys()
+    public final Multimap<Pair<Object, String>, ValidationFailure> validationFailureMap = MultimapBuilder.hashKeys()
             .arrayListValues().build();
+
+    public ValidationClassification validationClassification;
 
     public SubControllerComponent() {
         super();
@@ -161,8 +165,8 @@ public class SubControllerComponent {
 
         private Set<? extends ConstraintViolation<?>> violations;
 
-        public ValidateActionsImpl(boolean success, Set<? extends ConstraintViolation<?>> violations) {
-            super(success && violations.isEmpty());
+        public ValidateActionsImpl(Set<? extends ConstraintViolation<?>> violations) {
+            super(violations.isEmpty());
             this.violations = violations;
         }
 
@@ -184,45 +188,33 @@ public class SubControllerComponent {
     protected void addConstraintViolations(Set<? extends ConstraintViolation<?>> violations) {
         for (ConstraintViolation<?> v : violations) {
             String path = ValidationPathUtil.toPathString(v.getPropertyPath());
-            getValidationFailureMap().put(path, validationUtil.toFailure(v));
+            validationFailureMap.put(Pair.of(v.getLeafBean(), path), validationUtil.toFailure(v));
         }
 
     }
 
     /**
-     * Validate the value of this group and update the validation state of the
-     * components
+     * Validate this and enable view validation
      */
     protected ValidateActions validate() {
         Set<? extends ConstraintViolation<?>> violations = validator.validate(this);
-        this.validated = true;
+        this.validateView = true;
         addConstraintViolations(violations);
-        return new ValidateActionsImpl(true, violations);
+        validationUtil.performValidation();
+        return new ValidateActionsImpl(violations);
 
     }
 
     /**
-     * Validate the value of this group and update the validation state of the
-     * components
+     * Validate this, using the provided validation group and enable view
+     * validation
      */
     protected ValidateActions validate(Class<?>... groups) {
         Set<? extends ConstraintViolation<?>> violations = validator.validate(this, groups);
-        this.validated = true;
+        this.validateView = true;
         addConstraintViolations(violations);
-        return new ValidateActionsImpl(true, violations);
-    }
-
-    public void clearValidations() {
-        validated = false;
-        validationFailureMap.clear();
-    }
-
-    public boolean isValidated() {
-        return validated;
-    }
-
-    public Multimap<String, ValidationFailure> getValidationFailureMap() {
-        return validationFailureMap;
+        validationUtil.performValidation();
+        return new ValidateActionsImpl(violations);
     }
 
     public void pushUrl(ActionResult actionResult) {

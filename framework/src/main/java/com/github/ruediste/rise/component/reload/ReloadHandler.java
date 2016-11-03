@@ -28,6 +28,7 @@ import com.github.ruediste.rise.component.tree.HidingComponent;
 import com.github.ruediste.rise.component.tree.RootComponent;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
+import com.github.ruediste.rise.core.i18n.ValidationUtil;
 import com.github.ruediste.rise.core.web.ContentRenderResult;
 import com.github.ruediste.rise.core.web.HttpServletResponseCustomizer;
 import com.github.ruediste.rise.integration.RiseCanvas;
@@ -68,6 +69,9 @@ public class ReloadHandler implements Runnable {
 
     @Inject
     Provider<CanvasTargetFirstPass> fistPassTargetProvider;
+
+    @Inject
+    ValidationUtil validationUtil;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
@@ -139,6 +143,10 @@ public class ReloadHandler implements Runnable {
             reloadedComponent.getChildren().clear();
             reloadedComponent.getChildren().addAll(target.getRoot().getChildren());
 
+            // validate
+            validationUtil.performValidation(page.getRoot());
+
+            // produce output
             ByteArrayHtmlConsumer out = new ByteArrayHtmlConsumer();
             target.getProducers().forEach(p -> p.produce(out));
 

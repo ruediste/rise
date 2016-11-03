@@ -9,9 +9,10 @@ import javax.inject.Inject;
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.Component;
-import com.github.ruediste.rise.component.validation.ValidationState;
+import com.github.ruediste.rise.component.tree.ValidationStatus;
 import com.github.ruediste.rise.component.validation.ValidationClassification;
 import com.github.ruediste.rise.core.i18n.ValidationFailure;
+import com.github.ruediste.rise.core.i18n.ValidationPresenter;
 import com.github.ruediste.rise.core.i18n.ValidationUtil;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.integration.RiseCanvas;
@@ -19,10 +20,11 @@ import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.google.common.collect.Iterables;
 
-public class CFormGroup extends Component<CFormGroup> {
+public class CFormGroup extends Component<CFormGroup>implements ValidationPresenter {
 
     private Optional<? extends LString> label = Optional.empty();
     private Renderable<? extends RiseCanvas<?>> content;
+    private ValidationStatus validationStatus = new ValidationStatus();
 
     static class Template extends BootstrapComponentTemplateBase<CFormGroup> {
 
@@ -39,16 +41,15 @@ public class CFormGroup extends Component<CFormGroup> {
             html.bFormGroup().CLASS(component.CLASS());
 
             html.addAttributePlaceholder(() -> {
-                ValidationClassification violationStatus = validationUtil.getValidationState(component);
                 // render violation status
-                if (violationStatus != null) {
-                    if (violationStatus.getState() == ValidationState.SUCCESS) {
-                        html.BhasSuccess();
-                    }
+                ValidationStatus status = component.getValidationStatus();
+                ValidationClassification classification = status.getClassification();
+                if (classification == ValidationClassification.SUCCESS) {
+                    html.BhasSuccess();
+                }
 
-                    if (violationStatus.getState() == ValidationState.FAILED) {
-                        html.BhasError();
-                    }
+                if (classification == ValidationClassification.FAILED) {
+                    html.BhasError();
                 }
             });
 
@@ -67,18 +68,14 @@ public class CFormGroup extends Component<CFormGroup> {
 
             // render constraint violation
             html.addPlaceholder(() -> {
-                ValidationClassification violationStatus = validationUtil.getValidationState(component);
-                if (violationStatus != null) {
-                    Collection<ValidationFailure> constraintViolations = violationStatus.getFailures();
-                    if (constraintViolations != null && !constraintViolations.isEmpty()) {
-                        if (constraintViolations.size() == 1) {
-                            html.span().BhelpBlock()
-                                    .content(Iterables.getOnlyElement(constraintViolations).getMessage());
-                        }
-                        if (constraintViolations.size() > 1) {
-                            html.ul().BhelpBlock()
-                                    .fForEach(constraintViolations, v -> html.li().content(v.getMessage()))._ul();
-                        }
+                Collection<ValidationFailure> constraintViolations = component.getValidationStatus().failures;
+                if (constraintViolations != null && !constraintViolations.isEmpty()) {
+                    if (constraintViolations.size() == 1) {
+                        html.span().BhelpBlock().content(Iterables.getOnlyElement(constraintViolations).getMessage());
+                    }
+                    if (constraintViolations.size() > 1) {
+                        html.ul().BhelpBlock().fForEach(constraintViolations, v -> html.li().content(v.getMessage()))
+                                ._ul();
                     }
                 }
             });
@@ -106,5 +103,10 @@ public class CFormGroup extends Component<CFormGroup> {
 
     public Renderable<? extends RiseCanvas<?>> getContent() {
         return content;
+    }
+
+    @Override
+    public ValidationStatus getValidationStatus() {
+        return validationStatus;
     }
 }

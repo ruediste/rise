@@ -1,49 +1,36 @@
 package com.github.ruediste.rise.component.tree;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import com.github.ruediste.rise.component.validation.ValidationState;
 import com.github.ruediste.rise.component.validation.ValidationClassification;
 import com.github.ruediste.rise.core.i18n.ValidationFailure;
 
 public class ValidationStatus {
 
-    private boolean isDirectlyValidated;
-    private final List<ValidationFailure> directValidationFailures = new ArrayList<>();
+    public boolean isValidated;
+    public final List<ValidationFailure> failures = new ArrayList<>();
 
-    public ValidationClassification getDirectValidationState() {
-        if (!isDirectlyValidated)
-            return new ValidationClassification(ValidationState.NOT_VALIDATED, Collections.emptyList());
-        else if (directValidationFailures.isEmpty())
-            return new ValidationClassification(ValidationState.SUCCESS, directValidationFailures);
+    public ValidationClassification getClassification() {
+        if (!isValidated)
+            return ValidationClassification.NOT_VALIDATED;
+        else if (failures.isEmpty())
+            return ValidationClassification.SUCCESS;
         else
-            return new ValidationClassification(ValidationState.FAILED, directValidationFailures);
+            return ValidationClassification.FAILED;
     }
 
-    public void clearDirectValidationFailures() {
-        directValidationFailures.clear();
-    }
-
-    public List<ValidationFailure> getDirectValidationFailures() {
-        return directValidationFailures;
-    }
-
-    public boolean isDirectlyValidated() {
-        return isDirectlyValidated;
-    }
-
-    public void setValidated(boolean isValidated) {
-        this.isDirectlyValidated = isValidated;
+    public void clear() {
+        isValidated = false;
+        failures.clear();
     }
 
     public void addFailure(ValidationFailure failure) {
-        directValidationFailures.add(failure);
+        failures.add(failure);
     }
 
     public void addFailures(List<ValidationFailure> failures) {
-        directValidationFailures.addAll(failures);
+        failures.addAll(failures);
     }
 
 }
