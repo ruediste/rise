@@ -31,4 +31,9 @@ public interface RiseCanvasTarget extends HtmlCanvasTarget {
     default Component<?> getParent() {
         throw new UnsupportedOperationException();
     }
+
+    default void suspendOutput(boolean suspend) {
+        throw new UnsupportedOperationException();
+    }
+
 }

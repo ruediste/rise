@@ -23,7 +23,9 @@ public class CView extends Component<CView> {
             ViewComponentBase<?> oldView = target.getView();
             try {
                 target.setView(component.getDisplayedView());
-                component.getDisplayedView().render(html);
+                ViewComponentBase<?> view = component.getDisplayedView();
+                view.parentComponent = component;
+                view.render(html);
             } finally {
                 target.setView(oldView);
             }

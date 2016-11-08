@@ -64,6 +64,8 @@ public class ViewRenderer extends ChainedRequestHandler {
         CanvasTargetFirstPass target = fistPassTargetProvider.get();
         target.captureStartStackTraces = coreConfiguration.doCaptureHtmlTagStartTraces();
         html.setTarget(target);
+        target.setView(view);
+        target.getRoot().setView(view);
         view.render(html);
         target.commitAttributes();
         target.flush();

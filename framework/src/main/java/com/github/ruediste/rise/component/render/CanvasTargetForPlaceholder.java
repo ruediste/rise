@@ -6,6 +6,10 @@ import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasTarget;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.integration.RiseCanvas;
 
+/**
+ * Canvas target for normal placehoders. Can add attributes, but no other
+ * placehoders or components
+ */
 public class CanvasTargetForPlaceholder extends DelegatingHtmlCanvasTarget implements RiseCanvasTarget {
     private HtmlCanvasTarget delegate;
     private Component<?> parent;

@@ -23,8 +23,8 @@ import com.github.ruediste.rise.component.ComponentTemplateIndex;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.components.IComponentTemplate;
 import com.github.ruediste.rise.component.render.CanvasTargetFirstPass;
+import com.github.ruediste.rise.component.tree.CHide;
 import com.github.ruediste.rise.component.tree.Component;
-import com.github.ruediste.rise.component.tree.HidingComponent;
 import com.github.ruediste.rise.component.tree.RootComponent;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
@@ -102,8 +102,8 @@ public class ReloadHandler implements Runnable {
 
         // extract visible components
         List<Component<?>> reloadedVisibleComponents = reloadedComponent.subTree(x -> {
-            if (x instanceof HidingComponent) {
-                return !((HidingComponent) x).isHidden();
+            if (x instanceof CHide) {
+                return !((CHide) x).isHidden();
             }
             return true;
         });
@@ -128,12 +128,14 @@ public class ReloadHandler implements Runnable {
             RootComponent previousRoot = new RootComponent();
             previousRoot.getChildren().addAll(reloadedComponent.getChildren());
             previousRoot.getChildren().forEach(x -> x.setParent(previousRoot));
+            previousRoot.setView(reloadedComponent.getView());
 
             // render result
             RiseCanvas<?> html = page.getCanvas();
             CanvasTargetFirstPass target = fistPassTargetProvider.get();
             target.captureStartStackTraces = coreConfiguration.doCaptureHtmlTagStartTraces();
             target.setPreviousRoot(previousRoot);
+            target.setView(reloadedComponent.getView());
             html.setTarget(target);
             componentTemplateIndex.getTemplateRaw(reloadedComponent).get().doRender(reloadedComponent, html);
             target.commitAttributes();
@@ -142,9 +144,6 @@ public class ReloadHandler implements Runnable {
 
             reloadedComponent.getChildren().clear();
             reloadedComponent.getChildren().addAll(target.getRoot().getChildren());
-
-            // validate
-            validationUtil.performValidation(page.getRoot());
 
             // produce output
             ByteArrayHtmlConsumer out = new ByteArrayHtmlConsumer();

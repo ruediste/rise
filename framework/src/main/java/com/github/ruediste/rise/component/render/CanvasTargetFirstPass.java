@@ -2,6 +2,7 @@ package com.github.ruediste.rise.component.render;
 
 import static java.util.stream.Collectors.toMap;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
@@ -17,10 +18,11 @@ import com.github.ruediste.rendersnakeXT.canvas.HtmlProducer;
 import com.github.ruediste.rendersnakeXT.canvas.HtmlProducerHtmlCanvasTarget;
 import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.ComponentTemplateIndex;
+import com.github.ruediste.rise.component.components.CState;
 import com.github.ruediste.rise.component.components.IComponentTemplate;
 import com.github.ruediste.rise.component.tree.Component;
-import com.github.ruediste.rise.component.tree.HidingComponent;
 import com.github.ruediste.rise.component.tree.RootComponent;
+import com.github.ruediste.rise.core.i18n.ValidationPresenter;
 import com.github.ruediste.rise.integration.RiseCanvas;
 import com.github.ruediste.rise.util.NOptional;
 import com.github.ruediste.rise.util.Pair;
@@ -38,6 +40,31 @@ public class CanvasTargetFirstPass extends HtmlProducerHtmlCanvasTarget implemen
     private Map<Object, Component<?>> previousChildren = new HashMap<>();
 
     private ViewComponentBase<?> view;
+    private int suspendOutputCounter;
+
+    @Override
+    public void suspendOutput(boolean suspend) {
+        if (suspend) {
+            if (suspendOutputCounter == 0) {
+                commitAttributes();
+                flush();
+            }
+            suspendOutputCounter++;
+        } else
+            suspendOutputCounter--;
+    }
+
+    @Override
+    public void addProducer(HtmlProducer producer, boolean commitAttributes) {
+        if (suspendOutputCounter == 0)
+            super.addProducer(producer, commitAttributes);
+    }
+
+    @Override
+    public void writeUnescapedWithoutAttributeCommitting(String str) {
+        if (suspendOutputCounter == 0)
+            super.writeUnescapedWithoutAttributeCommitting(str);
+    }
 
     @Override
     public void addAttributePlaceholder(RiseCanvas<?> html, Runnable placeholder) {
@@ -61,6 +88,7 @@ public class CanvasTargetFirstPass extends HtmlProducerHtmlCanvasTarget implemen
                 };
                 html.setTarget(target);
                 placeholder.run();
+                target.flush();
             }
         }, false);
     }
@@ -99,15 +127,6 @@ public class CanvasTargetFirstPass extends HtmlProducerHtmlCanvasTarget implemen
             if (previousParent != null) {
                 previous = previousChildren.get(key);
                 if (previous != null && previous.getClass().equals(component.getClass())) {
-                    // keep children of hidden hiding components, such that
-                    // their state is not lost
-                    if (component instanceof HidingComponent) {
-                        HidingComponent hidingComponent = (HidingComponent) component;
-                        if (hidingComponent.isHidden()) {
-                            component.getChildren().addAll(previous.getChildren());
-                        }
-                    }
-
                     Class<?> cls = previous.getClass();
                     while (cls != null) {
                         try {
@@ -115,6 +134,23 @@ public class CanvasTargetFirstPass extends HtmlProducerHtmlCanvasTarget implemen
                                 if (Modifier.isStatic(field.getModifiers()))
                                     continue;
                                 ComponentState componentState = field.getAnnotation(ComponentState.class);
+
+                                // add synthetic component state annotation to
+                                // subclasses of CState
+                                if (componentState == null && CState.class.isAssignableFrom(cls))
+                                    componentState = new ComponentState() {
+
+                                        @Override
+                                        public Class<? extends Annotation> annotationType() {
+                                            return ComponentState.class;
+                                        }
+
+                                        @Override
+                                        public boolean alwaysOverwrite() {
+                                            return false;
+                                        }
+                                    };
+
                                 if (componentState == null)
                                     continue;
                                 field.setAccessible(true);
@@ -146,6 +182,10 @@ public class CanvasTargetFirstPass extends HtmlProducerHtmlCanvasTarget implemen
         component.setView(getView());
         component.setParent(parent);
         parent.getChildren().add(component);
+
+        if (component instanceof ValidationPresenter) {
+            ((ValidationPresenter) component).getValidationStatus().isOutputSuspended = suspendOutputCounter != 0;
+        }
 
         // render component
         Component<?> oldParent = parent;

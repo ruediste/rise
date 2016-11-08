@@ -226,7 +226,7 @@ public class Component<TSelf> {
      */
     public List<LString> getLabels() {
         ArrayList<LString> result = new ArrayList<>();
-        forSubTreePartial(f -> result.addAll(f.labels));
+        forSubTree(f -> result.addAll(f.labels));
         return result;
     }
 

@@ -2,8 +2,11 @@ package com.github.ruediste.rise.component.render;
 
 import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasTarget;
 import com.github.ruediste.rise.integration.RiseCanvas;
+import com.google.common.base.Strings;
 
 public abstract class CanvasTargetForAttributePlaceholder implements HtmlCanvasTarget, RiseCanvasTarget {
+
+    private StringBuilder classBuilder = new StringBuilder();
 
     private void fail() {
         throw new RuntimeException("Cannot write tags from attribute placeholders");
@@ -52,7 +55,12 @@ public abstract class CanvasTargetForAttributePlaceholder implements HtmlCanvasT
 
     @Override
     public void CLASS(String class_) {
-        fail();
+        checkAttributesUncommited();
+        if (Strings.isNullOrEmpty(class_))
+            return;
+        if (classBuilder.length() > 0)
+            classBuilder.append(" ");
+        classBuilder.append(class_);
 
     }
 
@@ -74,7 +82,8 @@ public abstract class CanvasTargetForAttributePlaceholder implements HtmlCanvasT
 
     @Override
     public void flush() {
-        fail();
+        if (classBuilder.length() > 0)
+            addAttribute("class", classBuilder.toString());
     }
 
 }

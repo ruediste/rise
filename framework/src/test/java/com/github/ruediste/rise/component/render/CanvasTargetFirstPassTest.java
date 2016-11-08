@@ -9,8 +9,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.github.ruediste.rise.component.tree.CHide;
 import com.github.ruediste.rise.component.tree.Component;
-import com.github.ruediste.rise.component.tree.HidingComponent;
 import com.github.ruediste.rise.integration.RiseCanvas;
 
 public class CanvasTargetFirstPassTest {
@@ -35,6 +35,18 @@ public class CanvasTargetFirstPassTest {
     }
 
     @Test
+    public void testSuspendOutput() {
+
+        assertEquals("<div></div> ", RiseCanvasTargetTest.render(html -> {
+            html.div();
+            html.internal_target().suspendOutput(true);
+            html.div()._div();
+            html.internal_target().suspendOutput(false);
+            html._div();
+        }));
+    }
+
+    @Test
     public void testComponentRenderingHidden() {
         assertEquals("<div><div class=\"parent\"><div class=\"child\">foo</div> </div> </div> ",
                 RiseCanvasTargetTest.render(renderHidden(false, "")));
@@ -48,9 +60,11 @@ public class CanvasTargetFirstPassTest {
     }
 
     private Consumer<RiseCanvas<?>> renderHidden(boolean hide, String value) {
-        return html -> html.div().add(new TestComponent().CLASS("parent")
-                .body(() -> html.add(new HidingComponent().hidden(hide).content(() -> html.add(
-                        new TestComponent().setStateValueString(value).CLASS("child").body(() -> html.write("foo")))))))
+        return html -> html
+                .div().add(
+                        new TestComponent().CLASS("parent")
+                                .body(() -> html.add(new CHide().hidden(hide).content(() -> html.add(new TestComponent()
+                                        .setStateValueString(value).CLASS("child").body(() -> html.write("foo")))))))
                 ._div();
     }
 

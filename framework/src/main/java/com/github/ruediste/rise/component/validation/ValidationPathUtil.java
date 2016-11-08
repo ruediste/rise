@@ -5,6 +5,8 @@ import java.util.stream.StreamSupport;
 
 import javax.validation.Path;
 
+import com.google.common.collect.Iterables;
+
 public class ValidationPathUtil {
 
     /**
@@ -13,6 +15,10 @@ public class ValidationPathUtil {
     public static String toPathString(Path path) {
         return StreamSupport.stream(path.spliterator(), false).map(ValidationPathUtil::toPathString)
                 .collect(Collectors.joining("."));
+    }
+
+    public static String getProperty(Path path) {
+        return toPathString(Iterables.getLast(path));
     }
 
     /**

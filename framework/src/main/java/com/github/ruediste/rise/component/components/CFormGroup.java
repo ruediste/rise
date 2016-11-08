@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.inject.Inject;
 
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
+import com.github.ruediste.rise.component.render.ComponentState;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ValidationStatus;
@@ -24,6 +25,8 @@ public class CFormGroup extends Component<CFormGroup>implements ValidationPresen
 
     private Optional<? extends LString> label = Optional.empty();
     private Renderable<? extends RiseCanvas<?>> content;
+
+    @ComponentState
     private ValidationStatus validationStatus = new ValidationStatus();
 
     static class Template extends BootstrapComponentTemplateBase<CFormGroup> {

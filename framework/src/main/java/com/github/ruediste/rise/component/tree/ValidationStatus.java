@@ -11,6 +11,8 @@ public class ValidationStatus {
     public boolean isValidated;
     public final List<ValidationFailure> failures = new ArrayList<>();
 
+    public boolean isOutputSuspended;
+
     public ValidationClassification getClassification() {
         if (!isValidated)
             return ValidationClassification.NOT_VALIDATED;
