@@ -1,11 +1,14 @@
 package com.github.ruediste.rise.component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import com.github.ruediste.rise.api.ControllerComponent;
 import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
+import com.github.ruediste.rise.core.i18n.ValidationFailure;
 import com.github.ruediste.rise.core.persistence.em.EntityManagerSet;
 import com.github.ruediste.rise.integration.RiseCanvas;
 import com.github.ruediste.rise.util.GenericEvent;
@@ -44,6 +47,8 @@ public class ComponentPage {
     private Component<?> root;
 
     private RiseCanvas<?> canvas;
+
+    private final List<ValidationFailure> unhandledValidationFailures = new ArrayList<>();
 
     public IControllerComponent getController() {
         return controller;
@@ -129,6 +134,10 @@ public class ComponentPage {
 
     public void setCanvas(RiseCanvas<?> canvas) {
         this.canvas = canvas;
+    }
+
+    public List<ValidationFailure> getUnhandledValidationFailures() {
+        return unhandledValidationFailures;
     }
 
 }

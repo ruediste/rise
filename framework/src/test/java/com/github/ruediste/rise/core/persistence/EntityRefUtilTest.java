@@ -32,17 +32,17 @@ public class EntityRefUtilTest extends DbTestBase {
             TestEntity e = new TestEntity();
             e.setValue("foo");
             em.persist(e);
-            ref.setValue(util.toEntityRef(e));
+            ref.set(util.toEntityRef(e));
 
             e = new TestEntity();
             e.setValue("bar");
             em1.persist(e);
-            ref1.setValue(util.toEntityRef(e));
+            ref1.set(util.toEntityRef(e));
         });
 
         template.execute(() -> {
-            assertEquals("foo", util.load(ref.getValue()).getValue());
-            assertEquals("bar", util.load(ref1.getValue()).getValue());
+            assertEquals("foo", util.load(ref.get()).getValue());
+            assertEquals("bar", util.load(ref1.get()).getValue());
         });
     }
 }

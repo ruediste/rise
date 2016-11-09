@@ -492,6 +492,9 @@ public class Component<TSelf> {
         this.view = view;
     }
 
+    public boolean isValidated;
+    public List<ValidationFailure> validationFailures = Collections.emptyList();
+
     /**
      * Validate this component. Failures are bubbled up to the closest
      * {@link ValidationPresenter}

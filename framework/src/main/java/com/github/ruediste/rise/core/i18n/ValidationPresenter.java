@@ -5,4 +5,5 @@ import com.github.ruediste.rise.component.tree.ValidationStatus;
 public interface ValidationPresenter {
 
     ValidationStatus getValidationStatus();
+
 }

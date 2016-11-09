@@ -7,7 +7,6 @@ import javax.validation.ConstraintViolation;
 
 import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.component.ComponentUtil;
-import com.github.ruediste.rise.component.validation.ValidationClassification;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
@@ -18,7 +17,10 @@ import com.github.ruediste.rise.core.i18n.ValidationFailureSeverity;
 import com.github.ruediste.rise.core.i18n.ValidationUtil;
 import com.github.ruediste.rise.core.web.HttpRenderResult;
 import com.github.ruediste.rise.core.web.RedirectRenderResult;
+import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste1.i18n.lString.LString;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 
 /**
  * Base class for normal controllers and sub controllers
@@ -34,9 +36,8 @@ public class SubControllerComponent {
     @Inject
     ValidationUtil validationUtil;
 
-    public boolean validateView;
-
-    public ValidationClassification validationClassification;
+    public Multimap<Pair<Object, String>, ValidationFailure> validationFailureMap = MultimapBuilder.hashKeys()
+            .arrayListValues().build();
 
     public SubControllerComponent() {
         super();
@@ -166,23 +167,12 @@ public class SubControllerComponent {
 
     }
 
-    protected void removeValidation() {
-        this.validateView = false;
-        validationUtil.clearValidation();
-    }
-
     /**
      * Validate this and enable view validation
      */
     protected SuccessActions validate() {
-        this.validateView = true;
-        validationUtil.performValidation();
-        return new SuccessActions(isValidationSuccess());
+        return new SuccessActions(validationUtil.validate(this));
 
-    }
-
-    protected boolean isValidationSuccess() {
-        return validationClassification == ValidationClassification.SUCCESS;
     }
 
     public void pushUrl(ActionResult actionResult) {

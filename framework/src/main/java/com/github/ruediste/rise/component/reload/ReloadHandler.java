@@ -145,6 +145,9 @@ public class ReloadHandler implements Runnable {
             reloadedComponent.getChildren().clear();
             reloadedComponent.getChildren().addAll(target.getRoot().getChildren());
 
+            // validation
+            validationUtil.updateValidationPresenters();
+
             // produce output
             ByteArrayHtmlConsumer out = new ByteArrayHtmlConsumer();
             target.getProducers().forEach(p -> p.produce(out));

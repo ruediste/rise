@@ -25,9 +25,9 @@ import com.github.ruediste.rise.component.ComponentPage;
 import com.github.ruediste.rise.component.binding.BindingInfo;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ValidationStatus;
-import com.github.ruediste.rise.component.validation.ValidationClassification;
 import com.github.ruediste.rise.component.validation.ValidationPathUtil;
 import com.github.ruediste.rise.util.Pair;
+import com.github.ruediste.rise.util.Var;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.lString.PatternString;
 import com.github.ruediste1.i18n.lString.PatternStringResolver;
@@ -39,6 +39,24 @@ import com.google.common.collect.MultimapBuilder;
 
 /**
  * Utility for {@link Component} validation.
+ * 
+ * <p>
+ * Requirements:
+ * <ul>
+ * <li>Validation is triggered explicitly by the controller. This keeps page
+ * reloads transparent.</li>
+ * <li>During a reload request, a controller has to be able to request
+ * validation and immediately (without a further page reload) react to it. It is
+ * sufficient if the last version of the view rendered is validated.</li>
+ * <li>The {@link ValidationPresenter} for each {@link ValidationFailure} needs
+ * to be redetermined during each render process since the structure of the page
+ * might have been changed</li>
+ * <li>Hidden validation presenters cannot present failures</li>
+ * <li>A subcontroller is always validated if it's parent controller is
+ * validated.</li>
+ * <li>The controller-subcontroller relationship is determined by the view</li>
+ * <li>Both controllers and components can contribute validation failures</li>
+ * </ul>
  * 
  * <p>
  * Validation happens both on the model and in the components.
@@ -196,57 +214,105 @@ public class ValidationUtil {
     }
 
     /**
-     * Perform the validation on a whole page
+     * Validate the components of the view of the given controller, including
+     * subviews/subcontrollers and return true if no failures have been found.
+     * The validation failures of the components and controllers are updated.
      */
-    public void performValidation() {
-        Component<?> pageRoot = page.getRoot();
-        // clear all validation state
-        clearValidation();
+    public boolean validate(SubControllerComponent rootCtrl) {
+        Component<?> rootComponent = findRootComponent(rootCtrl);
+        Var<Boolean> success = Var.of(true);
 
-        // build helper data structures for easy access to required objects
-        List<Component<?>> rootComponents = new ArrayList<>();
-        List<Component<?>> components = new ArrayList<>();
-        List<ValidationPresenter> validationPresenters = new ArrayList<>();
-        Set<ViewComponentBase<?>> views = new HashSet<>();
-        Set<SubControllerComponent> controllers = new HashSet<>();
-        pageRoot.forSubTreePartial(rootComponent -> {
-            if (rootComponent.getView().getController().validateView) {
-                // handle the root components which have a controller requesting
-                // validation
-                rootComponents.add(rootComponent);
-                rootComponent.forSubTreePartial(component -> {
-                    components.add(component);
-                    if (component instanceof ValidationPresenter) {
-                        if (!((ValidationPresenter) component).getValidationStatus().isOutputSuspended)
-                            validationPresenters.add((ValidationPresenter) component);
-                    }
-                    views.add(component.getView());
-                    controllers.add(component.getView().getController());
-                    return true;
-                });
+        // validate components in subtree and collect controllers
+        HashSet<SubControllerComponent> controllers = new HashSet<>();
+        rootComponent.forSubTree(c -> {
+            c.isValidated = true;
+            c.validationFailures = c.validate();
+            if (!c.validationFailures.isEmpty())
+                success.set(false);
+            controllers.add(c.getView().getController());
+            if (c instanceof ValidationPresenter)
+                ((ValidationPresenter) c).getValidationStatus().isValidated = true;
+        });
 
-                // don't dive into subtree
+        // validate controllers
+        controllers.forEach(ctrl -> {
+            Collector collector = new Collector();
+            ctrl.performValidation(collector);
+            ctrl.validationFailureMap = collector.validationFailureMap;
+            if (!ctrl.validationFailureMap.isEmpty())
+                success.set(false);
+        });
+        return success.get();
+    }
+
+    public void clearValidation(SubControllerComponent rootCtrl) {
+        Component<?> rootComponent = findRootComponent(rootCtrl);
+        HashSet<SubControllerComponent> controllers = new HashSet<>();
+        rootComponent.forSubTree(c -> {
+            c.isValidated = false;
+            c.validationFailures = Collections.emptyList();
+            controllers.add(c.getView().getController());
+            if (c instanceof ValidationPresenter)
+                ((ValidationPresenter) c).getValidationStatus().isValidated = false;
+        });
+
+        controllers.forEach(ctrl -> {
+            ctrl.validationFailureMap.clear();
+        });
+    }
+
+    private Component<?> findRootComponent(SubControllerComponent rootCtrl) {
+        // find view of the controller
+        Var<ViewComponentBase<?>> rootView = Var.of(null);
+        page.getRoot().forSubTreePartial(c -> {
+            if (c.getView().getController() == rootCtrl) {
+                rootView.set(c.getView());
                 return false;
             }
             return true;
         });
 
-        Map<SubControllerComponent, List<SubControllerComponent>> controllerAncestors = new HashMap<>();
-        rootComponents.forEach(x -> fillControllerAncestors(controllerAncestors, x, Collections.emptyList()));
+        if (rootView.get() == null)
+            throw new RuntimeException("View for " + rootCtrl + " not found");
 
-        // initialize validation of controllers
-        controllers.forEach(ctrl -> ctrl.validationClassification = ValidationClassification.SUCCESS);
+        // get root component
+        Component<?> rootComponent = rootView.get().parentComponent;
+        if (rootComponent == null)
+            rootComponent = page.getRoot();
+        return rootComponent;
+    }
 
-        // mark validationPresenters as validated
-        validationPresenters.forEach(x -> x.getValidationStatus().isValidated = true);
+    /**
+     * Update the status of all validation presenters
+     */
+    public void updateValidationPresenters() {
+        Component<?> pageRoot = page.getRoot();
 
-        // calculate controller failures
-        Map<SubControllerComponent, Collector> collectors = new HashMap<>();
-        controllers.forEach(ctrl -> {
-            Collector collector = new Collector();
-            ctrl.performValidation(collector);
-            collectors.put(ctrl, collector);
+        // build helper data structures for easy access to required objects
+        List<Component<?>> components = new ArrayList<>();
+        List<ValidationPresenter> validationPresenters = new ArrayList<>();
+        Set<ViewComponentBase<?>> views = new HashSet<>();
+        Set<SubControllerComponent> controllers = new HashSet<>();
+        pageRoot.forSubTreePartial(component -> {
+            components.add(component);
+            if (component instanceof ValidationPresenter) {
+                if (!((ValidationPresenter) component).getValidationStatus().isOutputSuspended)
+                    validationPresenters.add((ValidationPresenter) component);
+            }
+            views.add(component.getView());
+            controllers.add(component.getView().getController());
+            return true;
         });
+
+        Map<SubControllerComponent, List<SubControllerComponent>> controllerAncestors = new HashMap<>();
+        fillControllerAncestors(controllerAncestors, page.getRoot(), Collections.emptyList());
+
+        // clear validationPresenters
+        validationPresenters.forEach(x -> {
+            ValidationStatus status = x.getValidationStatus();
+            status.failures.clear();
+        });
+        page.getUnhandledValidationFailures().clear();
 
         Set<ValidationFailure> handledControllerFailures = new HashSet<>();
 
@@ -259,36 +325,28 @@ public class ValidationUtil {
             SubControllerComponent ctrl = component.getView().getController();
             for (BindingInfo<?> bindingInfo : component.getBindingInfos()) {
                 Object owner = bindingInfo.propertyOwnerSupplier.get();
-                failures.addAll(collectors.get(ctrl).validationFailureMap
-                        .get(Pair.of(owner, bindingInfo.modelProperty.getName())));
+                failures.addAll(ctrl.validationFailureMap.get(Pair.of(owner, bindingInfo.modelProperty.getName())));
             }
             handledControllerFailures.addAll(failures);
 
-            // validate component
-            {
-                List<ValidationFailure> componentFailures = component.validate();
-                if (!componentFailures.isEmpty())
-                    // failures originating from the controller itself are
-                    // handled below
-                    markControllerValidationAsFailed(ctrl, controllerAncestors);
-                failures.addAll(componentFailures);
-            }
+            // add component failures
+            failures.addAll(component.validationFailures);
 
             addFailuresToNearestPresenter(component, failures);
         }
 
         // pull remaining failures from controllers into view
         for (ViewComponentBase<?> view : views) {
-            if (view.parentComponent == null)
-                continue;
             SubControllerComponent controller = view.getController();
-            Collector collector = collectors.get(controller);
-            if (!collector.validationFailureMap.isEmpty()) {
-                markControllerValidationAsFailed(controller, controllerAncestors);
-                List<ValidationFailure> unhandledFailures = collector.validationFailureMap.values().stream()
+            if (!controller.validationFailureMap.isEmpty()) {
+                List<ValidationFailure> unhandledFailures = controller.validationFailureMap.values().stream()
                         .filter(x -> !handledControllerFailures.contains(x)).collect(toList());
-                if (!unhandledFailures.isEmpty())
-                    addFailuresToNearestPresenter(view.parentComponent, unhandledFailures);
+                if (!unhandledFailures.isEmpty()) {
+                    if (view.parentComponent != null)
+                        addFailuresToNearestPresenter(view.parentComponent, unhandledFailures);
+                    else
+                        page.getUnhandledValidationFailures().addAll(unhandledFailures);
+                }
             }
         }
 
@@ -300,12 +358,14 @@ public class ValidationUtil {
             for (Component<?> ancestor : component.parents()) {
                 if (ancestor instanceof ValidationPresenter) {
                     ValidationStatus status = ((ValidationPresenter) ancestor).getValidationStatus();
-                    if (!status.isOutputSuspended)
+                    if (!status.isOutputSuspended) {
                         status.failures.addAll(failures);
-                    break;
+                        return;
+                    }
                 }
             }
 
+            page.getUnhandledValidationFailures().addAll(failures);
         }
     }
 
@@ -318,18 +378,8 @@ public class ValidationUtil {
             }
             ViewComponentBase<?> view = x.getView();
             SubControllerComponent ctrl = view.getController();
-            ctrl.validationClassification = ValidationClassification.NOT_VALIDATED;
+            ctrl.validationFailureMap.clear();
         });
-    }
-
-    private void markControllerValidationAsFailed(SubControllerComponent ctrl,
-            Map<SubControllerComponent, List<SubControllerComponent>> controllerAncestors) {
-        ctrl.validationClassification = ValidationClassification.FAILED;
-        for (SubControllerComponent ancestor : controllerAncestors.get(ctrl)) {
-            if (ancestor.validationClassification == ValidationClassification.FAILED)
-                break;
-            ancestor.validationClassification = ValidationClassification.FAILED;
-        }
     }
 
     private void fillControllerAncestors(Map<SubControllerComponent, List<SubControllerComponent>> map,
