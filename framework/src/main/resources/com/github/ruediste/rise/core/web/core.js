@@ -189,7 +189,17 @@ var rise = (function() {
 		setExtractData : setExtractData,
 		triggerViewReload : triggerViewReload,
 		// fired to indicate that an element has been toggled. The argument is the component id of the toggled component
-		toggled : toggled
+		toggled : toggled,
+		
+	    debounce: function(fn, timeout){
+		  var timeoutId = -1;
+		  return function(){
+			if (timeoutId>-1){
+				window.clearTimeout(timeoutId);
+			}
+			timeoutId = window.setTimeout(fn, timeout);
+		  };
+	    }
 	};
 
 })();

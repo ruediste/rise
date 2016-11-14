@@ -12,6 +12,7 @@ public class ControllerMvc<TSelf extends ControllerMvc<TSelf>> implements IContr
 
     @Inject
     MvcUtil util;
+
     private Class<TSelf> controllerClass;
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -39,4 +40,5 @@ public class ControllerMvc<TSelf extends ControllerMvc<TSelf>> implements IContr
     public ActionInvocationBuilderKnownController<TSelf> path() {
         return util.path(controllerClass);
     }
+
 }
