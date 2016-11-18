@@ -2,7 +2,7 @@ package com.github.ruediste.rise.sample;
 
 import javax.inject.Inject;
 
-import com.github.ruediste.rise.core.web.CoreAssetBundle;
+import com.github.ruediste.rise.core.web.CoreAssetConstants;
 import com.github.ruediste.rise.core.web.assetBundles.BootstrapBundle;
 import com.github.ruediste.rise.core.web.assetBundles.ChosenBundle;
 import com.github.ruediste.rise.core.web.assetBundles.FileinputAssetBundle;
@@ -28,7 +28,7 @@ public class SampleBundle extends AssetBundle {
     BootstrapBundle bootstrap;
 
     @Inject
-    CoreAssetBundle core;
+    CoreAssetConstants core;
 
     @Inject
     FileinputAssetBundle fileinputAssetBundle;

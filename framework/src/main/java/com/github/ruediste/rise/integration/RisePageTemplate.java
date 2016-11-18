@@ -19,7 +19,7 @@ import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
-import com.github.ruediste.rise.core.web.CoreAssetBundle;
+import com.github.ruediste.rise.core.web.CoreAssetConstants;
 import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.front.RestartCountHolder;
@@ -70,19 +70,19 @@ public class RisePageTemplate<TCanvas extends RiseCanvas<TCanvas>> extends PageT
 				parameters.renderHead(html);
 				parameters.renderCssLinks(html);
 		html._head()
-		.body().DATA(CoreAssetBundle.bodyAttributeRestartQueryUrl,url(coreConfig.restartQueryPathInfo))
-		       .DATA(CoreAssetBundle.bodyAttributeRestartNr,Long.toString(holder.get()))
+		.body().DATA(CoreAssetConstants.bodyAttributeRestartQueryUrl,url(coreConfig.restartQueryPathInfo))
+		       .DATA(CoreAssetConstants.bodyAttributeRestartNr,Long.toString(holder.get()))
 		       .TEST_NAME(testName);
 	        if (componentRequestInfo.isComponentRequest()) {
 	            List<String> pushedUrls = componentRequestInfo.getPushedUrls().stream()
 	                    .map(x -> x == null ? null : url(x)).collect(toList());
 	            
-	            html.DATA(CoreAssetBundle.bodyAttributePageNr,Long.toString(pageInfo.getPageId()))
-                    .DATA(CoreAssetBundle.bodyAttributeReloadUrl,url(componentConfig.getReloadPath()))
-                    .DATA(CoreAssetBundle.bodyAttributeHeartbeatUrl,url(componentConfig.getHeartbeatPath()))
-                    .DATA(CoreAssetBundle.bodyAttributeHeartbeatInterval, Objects.toString(componentConfig.getHeartbeatInterval()))
-                    .DATA(CoreAssetBundle.bodyAttributeAjaxUrl,url(componentConfig.getAjaxPath()))
-                    .DATA(CoreAssetBundle.bodyAttributePushedUrls,JSONArray.toJSONString(pushedUrls));
+	            html.DATA(CoreAssetConstants.bodyAttributePageNr,Long.toString(pageInfo.getPageId()))
+                    .DATA(CoreAssetConstants.bodyAttributeReloadUrl,url(componentConfig.getReloadPath()))
+                    .DATA(CoreAssetConstants.bodyAttributeHeartbeatUrl,url(componentConfig.getHeartbeatPath()))
+                    .DATA(CoreAssetConstants.bodyAttributeHeartbeatInterval, Objects.toString(componentConfig.getHeartbeatInterval()))
+                    .DATA(CoreAssetConstants.bodyAttributeAjaxUrl,url(componentConfig.getAjaxPath()))
+                    .DATA(CoreAssetConstants.bodyAttributePushedUrls,JSONArray.toJSONString(pushedUrls));
 	        }
 		    parameters.addBodyAttributes(html);
 			parameters.renderBody(html);

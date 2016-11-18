@@ -14,10 +14,7 @@ import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.CurrentLocale;
 import com.github.ruediste.rise.core.security.authorization.Authz;
-import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
-import com.github.ruediste.rise.core.web.assetPipeline.AssetHelper;
-import com.github.ruediste.rise.core.web.assetPipeline.AssetRequestMapper;
-import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
+import com.github.ruediste.rise.core.web.assetDir.AssetDirRequestMapper;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.google.common.base.Strings;
@@ -32,9 +29,6 @@ public class RiseCanvasHelper {
 
     @Inject
     IconUtil iconUtil;
-
-    @Inject
-    AssetRequestMapper mapper;
 
     @Inject
     CurrentLocale currentLocale;
@@ -52,9 +46,6 @@ public class RiseCanvasHelper {
     Injector injector;
 
     @Inject
-    AssetHelper assetPipelineHelper;
-
-    @Inject
     Authz authz;
 
     @Inject
@@ -63,19 +54,18 @@ public class RiseCanvasHelper {
     @Inject
     ComponentViewRepository componentViewRepository;
 
-    public void rCssLinks(RiseCanvas<?> html, AssetBundleOutput output) {
-        output.forEach(asset -> {
-            if (asset.getAssetType() != DefaultAssetTypes.CSS)
-                return;
-            html.link().REL("stylesheet").TYPE("text/css").HREF(assetPipelineHelper.url(asset));
+    @Inject
+    AssetDirRequestMapper assetDirRequestMapper;
+
+    public void rCssLinks(RiseCanvas<?> html, AssetBundle bundle) {
+        assetDirRequestMapper.getCssUrls(bundle).forEach(url -> {
+            html.link().REL("stylesheet").TYPE("text/css").HREF(url);
         });
     }
 
-    public void rJsLinks(RiseCanvas<?> html, AssetBundleOutput output) {
-        output.forEach(asset -> {
-            if (asset.getAssetType() != DefaultAssetTypes.JS)
-                return;
-            html.script().SRC(assetPipelineHelper.url(asset))._script();
+    public void rJsLinks(RiseCanvas<?> html, AssetBundle bundle) {
+        assetDirRequestMapper.getJsUrls(bundle).forEach(url -> {
+            html.script().SRC(url)._script();
         });
     }
 

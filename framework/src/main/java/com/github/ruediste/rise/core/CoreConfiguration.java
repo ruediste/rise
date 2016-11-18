@@ -5,9 +5,11 @@ import static java.util.stream.Collectors.toList;
 import java.lang.reflect.AnnotatedType;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -273,6 +275,17 @@ public class CoreConfiguration {
         return defaultLocale;
     }
 
+    public String assetsPrefix = "/assets/";
+
+    public final Map<String, String> contentTypeMap = new HashMap<>();
+
+    {
+        contentTypeMap.put("png", "image/png");
+        contentTypeMap.put("html", "text/html");
+        contentTypeMap.put("css", "text/css");
+        contentTypeMap.put("js", "application/javascript");
+    }
+
     /**
      * If true, the 'data-test-name' attributes are written to the responses
      */
@@ -326,5 +339,11 @@ public class CoreConfiguration {
 
     public boolean doCaptureHtmlTagStartTraces() {
         return captureHtmlTagStartStackTraces.orElseGet(() -> stage != ApplicationStage.PRODUCTION);
+    }
+
+    public Optional<Boolean> isAssetsProdMode = Optional.empty();
+
+    public boolean isAssetsProdMode() {
+        return isAssetsProdMode.orElseGet(() -> stage != ApplicationStage.DEVELOPMENT);
     }
 }

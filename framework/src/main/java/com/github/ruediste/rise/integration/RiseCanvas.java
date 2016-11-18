@@ -21,8 +21,6 @@ import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
 import com.github.ruediste.rise.core.web.UrlSpec;
-import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
-import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.lambda.Capture;
 import com.github.ruediste.rise.util.MethodInvocation;
@@ -39,7 +37,7 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
      * Render a css link for all {@link DefaultAssetTypes#CSS} assets in the
      * given output
      */
-    default TSelf rCssLinks(AssetBundleOutput output) {
+    default TSelf rCssLinks(AssetBundle output) {
         internal_riseHelper().rCssLinks(this, output);
         return self();
     }
@@ -48,7 +46,7 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
      * Render a js link for all {@link DefaultAssetTypes#JS} assets in the given
      * output
      */
-    default TSelf rJsLinks(AssetBundleOutput output) {
+    default TSelf rJsLinks(AssetBundle output) {
         internal_riseHelper().rJsLinks(this, output);
         return self();
     }

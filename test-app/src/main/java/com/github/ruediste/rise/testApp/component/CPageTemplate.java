@@ -5,7 +5,7 @@ import javax.inject.Inject;
 import com.github.ruediste.rise.component.components.CPage;
 import com.github.ruediste.rise.component.components.CReload;
 import com.github.ruediste.rise.component.components.ComponentTemplateBase;
-import com.github.ruediste.rise.core.web.CoreAssetBundle;
+import com.github.ruediste.rise.core.web.CoreAssetConstants;
 import com.github.ruediste.rise.core.web.assetBundles.BootstrapBundle;
 import com.github.ruediste.rise.core.web.assetBundles.JQueryAssetBundle;
 import com.github.ruediste.rise.core.web.assetBundles.JQueryUiAssetBundle;
@@ -22,7 +22,7 @@ public class CPageTemplate extends ComponentTemplateBase<CPage> {
 
     private static class Bundle extends AssetBundle {
         @Inject
-        CoreAssetBundle coreBundle;
+        CoreAssetConstants coreBundle;
 
         @Inject
         BootstrapBundle bootstrapBundle;

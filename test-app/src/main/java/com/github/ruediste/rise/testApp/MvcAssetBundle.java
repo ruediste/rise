@@ -2,7 +2,7 @@ package com.github.ruediste.rise.testApp;
 
 import javax.inject.Inject;
 
-import com.github.ruediste.rise.core.web.CoreAssetBundle;
+import com.github.ruediste.rise.core.web.CoreAssetConstants;
 import com.github.ruediste.rise.core.web.assetBundles.BootstrapBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.core.web.assetPipeline.AssetBundleOutput;
@@ -12,7 +12,7 @@ import com.github.ruediste.rise.core.web.assetPipeline.DefaultAssetTypes;
 public class MvcAssetBundle extends AssetBundle {
 
     @Inject
-    CoreAssetBundle coreBundle;
+    CoreAssetConstants coreBundle;
 
     @Inject
     BootstrapBundle bootstrap;

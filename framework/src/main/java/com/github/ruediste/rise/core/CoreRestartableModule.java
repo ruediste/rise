@@ -20,8 +20,6 @@ import com.github.ruediste.rise.core.i18n.RiseValidationMessageInterpolator;
 import com.github.ruediste.rise.core.persistence.PersistenceRestartableModule;
 import com.github.ruediste.rise.core.scopes.HttpScopeModule;
 import com.github.ruediste.rise.core.security.authorization.MethodAuthorizationManager;
-import com.github.ruediste.rise.core.web.assetDir.AssetDir;
-import com.github.ruediste.rise.core.web.assetPipeline.AssetBundle;
 import com.github.ruediste.rise.nonReloadable.NonRestartable;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndex;
 import com.github.ruediste.rise.util.InitializerUtil;
@@ -29,7 +27,6 @@ import com.github.ruediste.salta.core.CoreDependencyKey;
 import com.github.ruediste.salta.core.CoreInjector;
 import com.github.ruediste.salta.core.CreationRule;
 import com.github.ruediste.salta.core.RecipeCreationContext;
-import com.github.ruediste.salta.core.Scope;
 import com.github.ruediste.salta.core.compile.MethodCompilationContext;
 import com.github.ruediste.salta.core.compile.SupplierRecipe;
 import com.github.ruediste.salta.core.compile.SupplierRecipeImpl;
@@ -38,7 +35,6 @@ import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste.salta.jsr330.Provides;
 import com.github.ruediste.salta.standard.DependencyKey;
 import com.github.ruediste.salta.standard.InjectionPoint;
-import com.github.ruediste.salta.standard.ScopeRule;
 import com.github.ruediste.salta.standard.config.StandardInjectorConfiguration;
 import com.github.ruediste1.i18n.lString.AdditionalResourceKeyProvider;
 import com.github.ruediste1.i18n.lString.DefaultPatternStringResolver;
@@ -48,7 +44,6 @@ import com.github.ruediste1.i18n.lString.ResourceBundleResolver;
 import com.github.ruediste1.i18n.lString.TranslatedStringResolver;
 import com.github.ruediste1.i18n.message.TMessageUtil;
 import com.github.ruediste1.i18n.message.TMessages;
-import com.google.common.reflect.TypeToken;
 
 public class CoreRestartableModule extends AbstractModule {
 
@@ -162,17 +157,6 @@ public class CoreRestartableModule extends AbstractModule {
 
     protected void registerAssetBundleScopeRule() {
         StandardInjectorConfiguration standardConfig = config().standardConfig;
-        config().standardConfig.scope.scopeRules.add(new ScopeRule() {
-
-            @Override
-            public Scope getScope(TypeToken<?> type) {
-                if (TypeToken.of(AssetBundle.class).isAssignableFrom(type)
-                        || TypeToken.of(AssetDir.class).isAssignableFrom(type)) {
-                    return standardConfig.singletonScope;
-                }
-                return null;
-            }
-        });
     }
 
     protected void registerPermanentRule() {

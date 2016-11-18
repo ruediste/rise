@@ -9,15 +9,11 @@ import org.slf4j.Logger;
 
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
-import com.github.ruediste.rise.core.web.assetPipeline.AssetPipelineConfiguration;
 import com.google.common.io.ByteStreams;
 
 public class ClasspathResourceRenderResultFactory {
     @Inject
     CoreConfiguration coreConfiguration;
-
-    @Inject
-    AssetPipelineConfiguration pipelineConfig;
 
     @Inject
     CoreRequestInfo info;
@@ -33,7 +29,7 @@ public class ClasspathResourceRenderResultFactory {
         InputStream in = classLoader.getResourceAsStream(classpath);
 
         if (in == null) {
-            throw new RuntimeException("Asset " + classpath + " not found");
+            throw new RuntimeException("Classpath resource " + classpath + " not found");
         }
 
         // set content type
@@ -41,7 +37,7 @@ public class ClasspathResourceRenderResultFactory {
         {
             int idx = classpath.lastIndexOf('.');
             if (idx >= 0) {
-                String tmp = pipelineConfig.getContentType(classpath.substring(idx + 1));
+                String tmp = coreConfiguration.contentTypeMap.get(classpath.substring(idx + 1));
                 if (tmp != null)
                     contentType = tmp;
             }

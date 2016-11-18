@@ -1,69 +1,225 @@
 package com.github.ruediste.rise.core.web.assetDir;
 
+import static java.util.stream.Collectors.groupingBy;
+
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.BiConsumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
-import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.ClassNode;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.slf4j.Logger;
 
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
+import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.PathInfoIndex;
 import com.github.ruediste.rise.core.RequestParseResult;
-import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.web.ClasspathResourceRenderResultFactory;
+import com.github.ruediste.rise.core.web.HttpRenderResult;
 import com.github.ruediste.rise.core.web.HttpRenderResultUtil;
 import com.github.ruediste.rise.core.web.PathInfo;
-import com.github.ruediste.rise.core.web.assetPipeline.AssetHelper;
-import com.github.ruediste.rise.core.web.assetPipeline.AssetPipelineConfiguration;
-import com.github.ruediste.rise.nonReloadable.front.CurrentRestartableApplicationHolder;
-import com.github.ruediste.rise.nonReloadable.front.StartupTimeLogger;
-import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndex;
-import com.github.ruediste.rise.util.AsmUtil;
-import com.github.ruediste.salta.jsr330.Injector;
-import com.google.common.base.Stopwatch;
+import com.github.ruediste.rise.integration.AssetBundle;
+import com.github.ruediste.rise.nonReloadable.front.reload.ClasspathResourceIndex;
+import com.google.common.base.CaseFormat;
+import com.google.common.base.Charsets;
+import com.google.common.io.ByteStreams;
 
+@Singleton
 public class AssetDirRequestMapper {
     @Inject
     Logger log;
 
-    private final static class AssetDirRequestParseResult implements RequestParseResult {
+    @Inject
+    CoreConfiguration coreConfiguration;
 
-        @Inject
-        CoreRequestInfo info;
+    @Inject
+    PathInfoIndex index;
 
-        @Inject
-        ClasspathResourceRenderResultFactory factory;
+    @Inject
+    CoreRequestInfo info;
 
-        @Inject
-        HttpRenderResultUtil httpRenderResultUtil;
+    @Inject
+    ClasspathResourceRenderResultFactory factory;
 
-        private String absoluteLocation;
+    @Inject
+    HttpRenderResultUtil httpRenderResultUtil;
 
-        private String pathInfoPrefix;
+    @Inject
+    ClasspathResourceIndex resourceIndex;
 
-        public AssetDirRequestParseResult initialize(String absoluteLocation, String pathInfoPrefix) {
-            this.absoluteLocation = absoluteLocation;
-            this.pathInfoPrefix = pathInfoPrefix;
-            return this;
+    @Inject
+    CoreUtil util;
+
+    @Inject
+    ClassLoader classLoader;
+
+    private class Bundle {
+        public Deque<String> cssUrls = new ArrayDeque<>();
+        public Deque<String> jsUrls = new ArrayDeque<>();
+    }
+
+    private Map<String, Bundle> bundles = new HashMap<>();
+
+    public Iterable<String> getJsUrls(AssetBundle bundle) {
+        Bundle b = bundles.get(bundle.toString());
+        if (b == null) {
+            return Collections.emptyList();
+        }
+        return b.jsUrls;
+    }
+
+    public Iterable<String> getCssUrls(AssetBundle bundle) {
+        Bundle b = bundles.get(bundle.toString());
+        if (b == null) {
+            return Collections.emptyList();
+        }
+        return b.cssUrls;
+    }
+
+    private Bundle getBundle(String lowerCamelName) {
+        String name = CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, lowerCamelName);
+        Bundle result = bundles.get(name);
+        if (result == null) {
+            result = new Bundle();
+            bundles.put(name, result);
+        }
+        return result;
+    }
+
+    private class AssetEntry {
+        String name;
+        String bundle;
+        int nr;
+        String extension;
+
+        public AssetEntry(String name, String bundle, int nr, String extension) {
+            super();
+            this.name = name;
+            this.bundle = bundle;
+            this.nr = nr;
+            this.extension = extension;
+        }
+
+    }
+
+    private static Pattern devPattern = Pattern.compile("(?<bundle>.*)-segment-(?<nr>\\d+)\\.(?<ext>[a-z]*)");
+
+    public void initialize() {
+        ArrayList<AssetEntry> assetEntries = new ArrayList<>();
+        for (String resource : resourceIndex.getResourcesByGlob("assets/**/*")) {
+            if (!resource.startsWith("assets/"))
+                continue;
+            String name = resource.substring("assets/".length());
+
+            // register resource
+            AssetRequestParseResult result = new AssetRequestParseResult("assets/" + name);
+            {
+                String pathInfo;
+                if (name.startsWith("root/"))
+                    pathInfo = name.substring("root".length());
+                else
+                    pathInfo = coreConfiguration.assetsPrefix + name;
+                index.registerPathInfo(pathInfo, request -> result);
+            }
+
+            if (name.contains("/"))
+                continue;
+            if (coreConfiguration.isAssetsProdMode()) {
+                if (handleProdResource(name, ".css.list", (bundle, url) -> bundle.cssUrls.add(url)))
+                    continue;
+                if (handleProdResource(name, ".js.list", (bundle, url) -> bundle.jsUrls.add(url)))
+                    continue;
+            } else {
+                Matcher matcher = devPattern.matcher(name);
+                if (matcher.matches()) {
+                    assetEntries.add(new AssetEntry(name, matcher.group("bundle"),
+                            Integer.parseInt(matcher.group("nr")), matcher.group("ext")));
+                    continue;
+                }
+            }
+
+        }
+        if (!coreConfiguration.isAssetsProdMode()) {
+            for (Entry<String, List<AssetEntry>> entry : assetEntries.stream().collect(groupingBy(x -> x.bundle))
+                    .entrySet()) {
+                Bundle bundle = getBundle(entry.getKey());
+
+                entry.getValue().stream().sorted(Comparator.comparing(x -> x.nr)).forEach(e -> {
+                    String pathInfo = coreConfiguration.assetsPrefix + e.name;
+                    String url = util.urlStatic(new PathInfo(pathInfo));
+                    if ("css".equals(e.extension))
+                        bundle.cssUrls.add(url);
+                    else if ("js".equals(e.extension))
+                        bundle.jsUrls.add(url);
+                });
+                ;
+            }
+        }
+    }
+
+    private boolean handleProdResource(String name, String suffix, BiConsumer<Bundle, String> urlHandler) {
+        if (name.endsWith(suffix)) {
+            Bundle bundle = getBundle(name.substring(0, name.length() - suffix.length()));
+            try {
+                JSONArray array = new JSONArray(readFromClasspath(name));
+                for (int i = 0; i < array.length(); i++) {
+                    String fileName = array.getString(i);
+                    String pathInfo = "/assets/" + fileName;
+                    urlHandler.accept(bundle, util.urlStatic(new PathInfo(pathInfo)));
+                }
+                return true;
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return false;
+    }
+
+    private String readFromClasspath(String name) {
+        try (InputStream in = classLoader.getResourceAsStream(name)) {
+            return new String(ByteStreams.toByteArray(in), Charsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean handleDevResource(String name, String suffix, BiConsumer<Bundle, String> urlHandler) {
+        if (name.endsWith(suffix)) {
+            Bundle bundle = getBundle(name.substring(0, name.length() - suffix.length()));
+            String pathInfo = coreConfiguration.assetsPrefix + name;
+            urlHandler.accept(bundle, util.urlStatic(new PathInfo(pathInfo)));
+            return true;
+        }
+        return false;
+    }
+
+    private final class AssetRequestParseResult implements RequestParseResult {
+
+        private HttpRenderResult result;
+
+        public AssetRequestParseResult(String classpath) {
+            result = factory.create(classpath);
         }
 
         @Override
         public void handle() {
-            // determine location
-            HttpRequest request = info.getRequest();
-            String classpath = absoluteLocation + request.getPathInfo().substring(pathInfoPrefix.length());
-
-            if (classpath.endsWith("/")) {
-                throw new RuntimeException("Not serving directory listings");
-            }
-
             try {
-                factory.create(classpath).sendTo(info.getServletResponse(), httpRenderResultUtil);
+                result.sendTo(info.getServletResponse(), httpRenderResultUtil);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -72,87 +228,4 @@ public class AssetDirRequestMapper {
 
     }
 
-    @Inject
-    ClassHierarchyIndex cache;
-
-    @Inject
-    CoreConfiguration coreConfiguration;
-
-    @Inject
-    AssetPipelineConfiguration pipelineConfiguration;
-
-    @Inject
-    Injector injector;
-
-    @Inject
-    PathInfoIndex index;
-
-    @Inject
-    javax.inject.Provider<AssetDirRequestParseResult> resultProvider;
-
-    @Inject
-    CurrentRestartableApplicationHolder appHolder;
-
-    @Inject
-    ClassLoader classLoader;
-
-    private List<AssetDir> dirs = new ArrayList<>();
-
-    public void initialize() {
-        Stopwatch watch = Stopwatch.createStarted();
-        String internalName = Type.getInternalName(AssetDir.class);
-        registerChilDirs(internalName);
-        registerDirs(dirs);
-        StartupTimeLogger.stopAndLog("Asset Directory Registration", watch);
-    }
-
-    void registerDirs(List<AssetDir> dirs) {
-
-        for (AssetDir dir : dirs) {
-            String location = dir.getLocation();
-            String absoluteLocation = AssetHelper.calculateAbsoluteLocation(location,
-                    pipelineConfiguration.getAssetBasePath(), dir.getClass());
-
-            String pathInfoPrefix = dir.getName();
-            if (pathInfoPrefix == null)
-                pathInfoPrefix = absoluteLocation;
-            else {
-                if (!pathInfoPrefix.startsWith("/"))
-                    pathInfoPrefix = pipelineConfiguration.assetPathInfoPrefix + pathInfoPrefix;
-
-            }
-
-            String pathInfoPrefixFinal = pathInfoPrefix;
-
-            dir.pathInfoPrefix = pathInfoPrefix;
-
-            index.registerPrefix(pathInfoPrefix,
-                    request -> resultProvider.get().initialize(absoluteLocation, pathInfoPrefixFinal));
-            log.debug("Registered asset directory {} ({} -> {})", dir.getClass().getSimpleName(), absoluteLocation,
-                    pathInfoPrefix);
-        }
-    }
-
-    public String getPathInfoString(AssetDir dir, String subPath) {
-        return dir.pathInfoPrefix + subPath;
-    }
-
-    public PathInfo getPathInfo(AssetDir dir, String subPath) {
-        return new PathInfo(getPathInfoString(dir, subPath));
-    }
-
-    void registerChilDirs(String internalName) {
-        for (ClassNode child : cache.getChildren(internalName)) {
-            registerBundle(child);
-            registerChilDirs(child.name);
-        }
-    }
-
-    void registerBundle(ClassNode cls) {
-        Class<?> dirClass;
-        dirClass = AsmUtil.loadClass(Type.getObjectType(cls.name), classLoader);
-
-        AssetDir dir = (AssetDir) injector.getInstance(dirClass);
-        dirs.add(dir);
-    }
 }
