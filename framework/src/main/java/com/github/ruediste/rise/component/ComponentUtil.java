@@ -10,7 +10,7 @@ import javax.inject.Singleton;
 import com.github.ruediste.rise.component.components.DisplayStack;
 import com.github.ruediste.rise.component.reload.PageReloadRequest;
 import com.github.ruediste.rise.component.tree.Component;
-import com.github.ruediste.rise.component.tree.FragmentJumpPad;
+import com.github.ruediste.rise.component.tree.ComponentJumpPad;
 import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.ICoreUtil;
 import com.github.ruediste.rise.core.persistence.TransactionCallbackNoResult;
@@ -52,29 +52,29 @@ public class ComponentUtil implements ICoreUtil {
         return pageInfo.getPageId();
     }
 
-    public long getComponentNr(Component<?> fragment) {
+    public long getComponentNr(Component<?> component) {
 
-        long result = FragmentJumpPad.getFragmentNr(fragment);
+        long result = ComponentJumpPad.getComponentNr(component);
         if (result == -1) {
             // lazily set the Component numbers. This allows components to
             // reference each other without caring about
             // the rendering order.
             result = pageInfo.getNextFragmentNr();
-            FragmentJumpPad.setFragmentNr(fragment, result);
-            pageInfo.getFragmentNrMap().put(result, fragment);
+            ComponentJumpPad.setFragmentNr(component, result);
+            pageInfo.getComponentNrMap().put(result, component);
         }
         return result;
     }
 
-    public Component<?> getFragment(long fragmentId) {
-        return pageInfo.getFragmentNrMap().get(fragmentId);
+    public Component<?> getComponent(long componentId) {
+        return pageInfo.getComponentNrMap().get(componentId);
     }
 
     /**
      * Return the appropriate value for the html element id attribute.
      */
-    public String getFragmentId(Component<?> fragment) {
-        return "c_" + getComponentNr(fragment);
+    public String getComponentId(Component<?> component) {
+        return "c_" + getComponentNr(component);
     }
 
     public String getReloadUrl() {

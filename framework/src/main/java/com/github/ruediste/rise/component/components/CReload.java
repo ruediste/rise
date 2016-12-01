@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import com.github.ruediste.rise.component.ComponentRequestInfo;
 import com.github.ruediste.rise.component.ComponentUtil;
+import com.github.ruediste.rise.component.reload.PageReloadRequest;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.integration.RiseCanvas;
 
@@ -22,13 +23,16 @@ public class CReload extends Component<CReload> {
         @Inject
         ComponentRequestInfo info;
 
+        @Inject
+        PageReloadRequest reloadRequest;
+
         @Override
         public void doRender(CReload component, RiseCanvas<?> html) {
-            if (info.isReloadRequest())
+            if (info.isReloadRequest() && reloadRequest.getFragmentNr() == util.getComponentNr(component))
                 component.getBody().run();
             else {
-                html.form().CLASS("rise_reload").DATA("rise-fragmentnr", Long.toString(util.getComponentNr(component)))
-                        .rCOMPONENT_ATTRIBUTES(component).render(component.getBody())._form();
+                html.div().CLASS("rise_reload").DATA("rise-fragmentnr", Long.toString(util.getComponentNr(component)))
+                        .rCOMPONENT_ATTRIBUTES(component).render(component.getBody())._div();
             }
         }
 

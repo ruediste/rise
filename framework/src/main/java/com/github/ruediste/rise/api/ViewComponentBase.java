@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import com.github.ruediste.attachedProperties4J.AttachedPropertyBearerBase;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.tree.Component;
+import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.integration.RiseCanvas;
@@ -63,6 +64,10 @@ public abstract class ViewComponentBase<TController extends SubControllerCompone
      */
     protected LString label(Object obj) {
         return label(obj.getClass());
+    }
+
+    protected String url(ActionResult actionResult) {
+        return componentUtil.url(actionResult);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

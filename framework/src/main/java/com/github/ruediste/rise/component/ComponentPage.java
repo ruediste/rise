@@ -103,7 +103,7 @@ public class ComponentPage {
         destroyEvent.fire(null);
     }
 
-    public Map<Long, Component<?>> getFragmentNrMap() {
+    public Map<Long, Component<?>> getComponentNrMap() {
         return fragmentNrMap;
     }
 

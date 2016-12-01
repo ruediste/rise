@@ -18,7 +18,7 @@ public class COptionalDuration extends COptionalInputBase<Duration> {
         protected void renderValueInput(COptionalInputBase<Duration> component, BootstrapRiseCanvas<?> html,
                 Duration value) {
             html.input_number().NAME(util.getParameterKey(component, "value")).BformControl()
-                    .VALUE(Objects.toString(value.getSeconds()));
+                    .VALUE(Objects.toString(value.toMillis() / 1000.0));
             html.bInputGroupAddon().content("s");
         }
 

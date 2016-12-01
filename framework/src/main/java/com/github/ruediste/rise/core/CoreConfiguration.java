@@ -346,4 +346,5 @@ public class CoreConfiguration {
     public boolean isAssetsProdMode() {
         return isAssetsProdMode.orElseGet(() -> stage != ApplicationStage.DEVELOPMENT);
     }
+
 }

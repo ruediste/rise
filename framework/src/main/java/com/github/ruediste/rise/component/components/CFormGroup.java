@@ -74,11 +74,16 @@ public class CFormGroup extends Component<CFormGroup>implements ValidationPresen
                 Collection<ValidationFailure> constraintViolations = component.getValidationStatus().failures;
                 if (constraintViolations != null && !constraintViolations.isEmpty()) {
                     if (constraintViolations.size() == 1) {
-                        html.span().BhelpBlock().content(Iterables.getOnlyElement(constraintViolations).getMessage());
+                        html.span().BhelpBlock();
+                        Iterables.getOnlyElement(constraintViolations).render(html);
+                        html._span();
                     }
                     if (constraintViolations.size() > 1) {
-                        html.ul().BhelpBlock().fForEach(constraintViolations, v -> html.li().content(v.getMessage()))
-                                ._ul();
+                        html.ul().BhelpBlock().fForEach(constraintViolations, v -> {
+                            html.li();
+                            v.render(html);
+                            html._li();
+                        })._ul();
                     }
                 }
             });

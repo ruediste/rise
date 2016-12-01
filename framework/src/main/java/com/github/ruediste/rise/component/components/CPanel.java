@@ -56,6 +56,15 @@ public class CPanel extends Component<CPanel> {
         return isTransient;
     }
 
+    public CPanel expanded() {
+        return expanded(true);
+    }
+
+    public CPanel expanded(boolean expanded) {
+        this.expanded = expanded;
+        return this;
+    }
+
     public CPanel transient_(boolean isTransient) {
         this.isTransient = isTransient;
         return this;

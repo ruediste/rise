@@ -83,7 +83,7 @@ public class ReloadHandler implements Runnable {
 
         ViewComponentBase<?> view = page.getView();
 
-        Component<?> reloadedComponent = util.getFragment(request.getFragmentNr());
+        Component<?> reloadedComponent = util.getComponent(request.getFragmentNr());
 
         // parse the data
         List<Map<String, Object>> rawData;

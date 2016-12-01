@@ -26,6 +26,7 @@ import com.github.ruediste.rise.component.binding.BindingInfo;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ValidationStatus;
 import com.github.ruediste.rise.component.validation.ValidationPathUtil;
+import com.github.ruediste.rise.integration.RiseCanvas;
 import com.github.ruediste.rise.util.Pair;
 import com.github.ruediste.rise.util.Var;
 import com.github.ruediste1.i18n.lString.LString;
@@ -173,8 +174,8 @@ public class ValidationUtil {
             }
 
             @Override
-            public LString getMessage() {
-                return message;
+            public void render(RiseCanvas<?> html) {
+                html.write(message);
             }
 
             @Override

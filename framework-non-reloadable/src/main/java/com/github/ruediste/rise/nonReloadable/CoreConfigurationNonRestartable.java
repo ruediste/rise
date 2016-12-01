@@ -3,6 +3,7 @@ package com.github.ruediste.rise.nonReloadable;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
@@ -25,7 +26,9 @@ import com.github.ruediste.rise.nonReloadable.front.DefaultStartupErrorHandler;
 import com.github.ruediste.rise.nonReloadable.front.StartupErrorHandler;
 import com.github.ruediste.rise.nonReloadable.front.reload.FileChangeNotifier.FileChangeTransaction;
 import com.github.ruediste.rise.nonReloadable.persistence.CompositeSessionCustomizer;
+import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
 import com.github.ruediste.rise.nonReloadable.persistence.EmbeddedFieldNamesSessionCustomizer;
+import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste.salta.standard.Stage;
 import com.google.common.base.Strings;
 import com.google.common.reflect.Reflection;
@@ -35,6 +38,9 @@ import com.google.common.reflect.Reflection;
 public class CoreConfigurationNonRestartable {
     @Inject
     Stage stage;
+
+    @Inject
+    Injector injector;
 
     /**
      * Flags to be used when calling
@@ -161,6 +167,7 @@ public class CoreConfigurationNonRestartable {
     }
 
     public final Set<Class<?>> additionalScannedClasses = new HashSet<>();
+
     {
         additionalScannedClasses.add(Object.class);
     }
@@ -185,5 +192,12 @@ public class CoreConfigurationNonRestartable {
     }
 
     public List<SessionCustomizer> sessionCustomizers;
+
+    public final List<Runnable> dbDropAndCreateTasks = new ArrayList<>();
+
+    @PostConstruct
+    private void initDbDropAndCreateTasks() {
+        dbDropAndCreateTasks.add(() -> injector.getInstance(DataBaseLinkRegistry.class).dropAndCreateSchemas());
+    }
 
 }

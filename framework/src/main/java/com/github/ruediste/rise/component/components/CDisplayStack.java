@@ -30,15 +30,13 @@ public class CDisplayStack extends Component<CDisplayStack> {
         public void doRender(CDisplayStack component, RiseCanvas<?> html) {
             ArrayDeque<Runnable> stack = this.stack.getStack();
             ArrayList<Runnable> stackList = new ArrayList<>(stack);
-            if (stackList.isEmpty()) {
-                if (component.fallback != null)
-                    html.add(new CHide().key(component.fallback).transient_(component.isTransient)
-                            .content(component.fallback));
-            } else {
-                for (int i = 0; i < stackList.size(); i++) {
-                    Runnable item = stackList.get(i);
-                    html.add(new CHide().key(item).hidden(i != 0).transient_(component.isTransient).content(item));
-                }
+            if (component.fallback != null) {
+                html.add(new CHide().key(component.fallback).transient_(component.isTransient)
+                        .content(component.fallback).hidden(!stackList.isEmpty()));
+            }
+            for (int i = 0; i < stackList.size(); i++) {
+                Runnable item = stackList.get(i);
+                html.add(new CHide().key(item).hidden(i != 0).transient_(component.isTransient).content(item));
             }
         }
 

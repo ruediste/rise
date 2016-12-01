@@ -1,8 +1,8 @@
 package com.github.ruediste.rise.component.tree;
 
-public class FragmentJumpPad {
+public class ComponentJumpPad {
 
-    public static long getFragmentNr(Component fragment) {
+    public static long getComponentNr(Component fragment) {
         return fragment.getFragmentNr();
     }
 

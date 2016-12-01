@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.github.ruediste.rendersnakeXT.canvas.Html5Canvas;
 import com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasBase;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
-import com.github.ruediste.rise.nonReloadable.persistence.DataBaseLinkRegistry;
+import com.github.ruediste.rise.nonReloadable.CoreConfigurationNonRestartable;
 import com.google.common.base.Throwables;
 
 public class DefaultStartupErrorHandler implements StartupErrorHandler {
@@ -21,7 +21,7 @@ public class DefaultStartupErrorHandler implements StartupErrorHandler {
     private static final Logger log = LoggerFactory.getLogger(DefaultStartupErrorHandler.class);
 
     @Inject
-    private DataBaseLinkRegistry registry;
+    private CoreConfigurationNonRestartable config;
 
     protected ApplicationStage stage;
 
@@ -35,7 +35,7 @@ public class DefaultStartupErrorHandler implements StartupErrorHandler {
         this.dropAndCreatePathInfo = dropAndCreatePathInfo;
     }
 
-    private static class SimpleCanvas extends HtmlCanvasBase<SimpleCanvas> implements Html5Canvas<SimpleCanvas> {
+    private static class SimpleCanvas extends HtmlCanvasBase<SimpleCanvas>implements Html5Canvas<SimpleCanvas> {
 
         public SimpleCanvas(PrintWriter writer) {
             initialize(writer);
@@ -75,7 +75,7 @@ public class DefaultStartupErrorHandler implements StartupErrorHandler {
 							.write(Throwables.getStackTraceAsString(t))
 						._pre();
 					}
-					if (stage==ApplicationStage.DEVELOPMENT){
+					if (config.isDbDropAndCreateEnabled()){
 						html.form().METHOD("POST").ACTION(dropAndCreatePathInfo)
 							.input().TYPE("submit").VALUE("Drop-and-Create Database")
 						._form();
@@ -92,12 +92,15 @@ public class DefaultStartupErrorHandler implements StartupErrorHandler {
     }
 
     protected void dropAndCreateDb(HttpServletRequest request, HttpServletResponse response) {
-        if (registry == null) {
+        if (config == null) {
             log.error("Cannot drop-and-create the database since the NonRestartable Application could not be started");
         }
-        log.info("Dropping and Creating DB schemas ...");
-        registry.dropAndCreateSchemas();
-        redirectToReferer(request, response);
+        if (config.isDbDropAndCreateEnabled()) {
+            log.info("Dropping and Creating DB schemas ...");
+            config.dbDropAndCreateTasks.forEach(Runnable::run);
+            redirectToReferer(request, response);
+        } else
+            log.error("DbDropping not enabled");
     }
 
     protected void redirectToReferer(HttpServletRequest request, HttpServletResponse response) {
