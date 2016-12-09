@@ -30,7 +30,7 @@ module.exports= [
 */
 
 var path= require('path');
-var gulp = require('gulp');
+var gulp;
 var dir = require('node-dir');
 var fs = require('fs');
 var merge2 = require('merge2');
@@ -63,7 +63,7 @@ function readBundle(root){
 
 	var bundle;
 	if (fs.existsSync(bundleJsPath)){
-		bundle=require('./'+bundleJsPath);
+		bundle=require(bundleJsPath);
 	}
 	else bundle=[['*']];
   if (Array.isArray(bundle)) bundle={segments: bundle};
@@ -132,7 +132,7 @@ var debug=function(opts){
 
 var dest = 'target/classes/assets/';
 var bundleDest = 'src/main/resources/assets/';
-var assetsBase='src/main/assets/';
+var assetsBase;
 
 function splitBy(input, separator){
 	var value=[];
@@ -210,6 +210,7 @@ function defineBundle(root) {
 					only: [
 						'src/**',
 					],
+					presets: [require('babel-preset-react')],
 					compact: false
 				})))
 		  .pipe(plugins.concat(bundle.bundleName+'-segment-'+segmentNr+'.js'))
@@ -270,7 +271,9 @@ function defineBundle(root) {
 	});
 }
 
-function defineTasks(){
+function defineTasks(_gulp, base){
+	assetsBase=base+"/src/main/assets/";
+	gulp=_gulp;
 	fs.readdirSync(assetsBase).forEach(function(path){
 	  defineBundle(assetsBase+path);
 	});

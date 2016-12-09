@@ -1,18 +1,18 @@
 {
   "name": "rise-gulp",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
+  "main": "gulpfile-utils",
   "dependencies": {
     "babel-preset-react": "^6.16.0",
     "del": "^2.2.2",
     "event-stream": "^3.3.4",
     "fs": "0.0.1-security",
-    "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-clean-css": "^2.0.12",
     "gulp-concat": "^2.6.0",
@@ -39,7 +39,7 @@
     "streamqueue": "^1.1.1"
   },
   "devDependencies": {
-		"chai": "^3.5.0",
-		"gulp-mocha": "^3.0.1"
+    "chai": "^3.5.0",
+    "gulp-mocha": "^3.0.1"
   }
 }
