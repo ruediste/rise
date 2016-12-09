@@ -2,6 +2,7 @@ package com.github.ruediste.rise.component.components;
 
 import static java.util.stream.Collectors.toList;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -25,7 +26,10 @@ public class CSelect<T> extends Component<CSelect<T>> {
                 html.option().VALUE("-1").render(component.getEmptyOptionRenderer())._option();
             for (int i = 0; i < component.getOptions().size(); i++) {
                 CSelectOption<?> option = component.getOptions().get(i);
-                html.option().VALUE(Objects.toString(i)).render(option.body)._option();
+                html.option().VALUE(Objects.toString(i))
+                        .fIf(Objects.equals(component.getSelected().get(), NOptional.of(option.key)),
+                                () -> html.SELECTED())
+                        .render(option.body)._option();
             }
             html._select();
         }
@@ -123,6 +127,10 @@ public class CSelect<T> extends Component<CSelect<T>> {
 
     public CSelect<T> options(Stream<CSelectOption<T>> options) {
         return options(options.collect(toList()));
+    }
+
+    public CSelect<T> options(@SuppressWarnings("unchecked") CSelectOption<T>... options) {
+        return options(Arrays.asList(options));
     }
 
     public CSelect<T> options(List<CSelectOption<T>> options) {

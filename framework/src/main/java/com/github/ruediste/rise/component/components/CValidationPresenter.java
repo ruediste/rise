@@ -48,7 +48,9 @@ public class CValidationPresenter extends Component<CValidationPresenter>impleme
         }
 
         private void renderFailure(BootstrapRiseCanvas<?> html, ValidationFailure failure) {
-            html.p().BbgDanger().content(failure.getMessage());
+            html.p().BbgDanger();
+            failure.render(html);
+            html._p();
         }
 
     }
