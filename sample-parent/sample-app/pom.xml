@@ -8,24 +8,17 @@
 	</parent>
 	<artifactId>sample-app</artifactId>
 	<description>sample application</description>
-
-	<pluginRepositories>
-		<pluginRepository>
-			<id>ossrhsnapshots-plugins</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</pluginRepository>
-	</pluginRepositories>
-
+	
 	<dependencies>
 		<dependency>
 			<groupId>com.github.ruediste.rise</groupId>
 			<artifactId>sample-app-deps</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.ruediste.rise</groupId>
 			<artifactId>framework-test</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>${rise.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
