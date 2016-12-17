@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.github.ruediste.rendersnakeXT.canvas.FuncCanvas;
-import com.github.ruediste.rendersnakeXT.canvas.Html5Canvas;
 import com.github.ruediste.rise.api.SubControllerComponent;
 import com.github.ruediste.rise.api.ViewComponentBase;
 import com.github.ruediste.rise.component.IViewQualifier;
@@ -28,8 +27,7 @@ import com.github.ruediste1.i18n.lString.LString;
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
 
-public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>>
-        extends Html5Canvas<TSelf>, ComponentCanvas<TSelf>, FuncCanvas<TSelf> {
+public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends ComponentCanvas<TSelf>, FuncCanvas<TSelf> {
 
     RiseCanvasHelper internal_riseHelper();
 
