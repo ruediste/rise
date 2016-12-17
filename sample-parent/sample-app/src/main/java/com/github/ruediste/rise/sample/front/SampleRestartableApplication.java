@@ -30,7 +30,6 @@ import com.github.ruediste.rise.core.security.authorization.Right;
 import com.github.ruediste.rise.core.security.login.PasswordHashingService;
 import com.github.ruediste.rise.core.security.web.rememberMe.InMemoryRememberMeTokenDao;
 import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeAuthenticationProvider;
-import com.github.ruediste.rise.core.web.assetPipeline.AssetPipelineConfiguration;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.sample.SampleCanvas;
 import com.github.ruediste.rise.sample.User;
@@ -56,9 +55,6 @@ public class SampleRestartableApplication extends RestartableApplicationBase {
 
     @Inject
     Provider<SampleCanvas> canvasProvider;
-
-    @Inject
-    AssetPipelineConfiguration assetPipelineConfiguration;
 
     @Inject
     DefaultAuthenticationManager defaultAuthenticationManager;

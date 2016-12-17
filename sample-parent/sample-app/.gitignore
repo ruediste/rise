@@ -2,3 +2,5 @@
 /.apt_generated/
 /btm?.tlog
 /elastic/
+/bower_components/
+/node_modules/

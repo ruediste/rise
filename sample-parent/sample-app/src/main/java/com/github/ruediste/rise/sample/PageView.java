@@ -10,9 +10,6 @@ public abstract class PageView<TController extends IControllerMvc, TData> extend
         implements SamplePageTemplateParameters {
 
     @Inject
-    SampleBundle bundle;
-
-    @Inject
     SamplePageTemplate template;
 
     @Override

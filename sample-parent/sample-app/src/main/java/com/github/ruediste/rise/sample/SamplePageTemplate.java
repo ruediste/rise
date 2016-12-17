@@ -22,9 +22,6 @@ import com.github.ruediste1.i18n.lString.LString;
 public class SamplePageTemplate extends PageTemplateBase {
 
     @Inject
-    SampleBundle bundle;
-
-    @Inject
     RisePageTemplate<SampleCanvas> risePageTemplate;
 
     @Inject
@@ -44,12 +41,12 @@ public class SamplePageTemplate extends PageTemplateBase {
 
                     @Override
                     protected void renderJsLinks(SampleCanvas html) {
-                        html.rJsLinks(bundle.out);
+                        html.rJsLinks(SampleBundles.COMMON);
                     }
 
                     @Override
                     protected void renderCssLinks(SampleCanvas html) {
-                        html.rCssLinks(bundle.out);
+                        html.rCssLinks(SampleBundles.COMMON);
                     }
 
                     @Override

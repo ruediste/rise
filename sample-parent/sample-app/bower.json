@@ -1,0 +1,23 @@
+{
+  "name": "gulp-test",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "Ruedi Steinmann <ruediste@gmail.com>"
+  ],
+  "license": "Apache 2.0",
+  "homepage": "https://github.com/ruediste/rise",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "rise-bower": "^0.0.1",
+    "d3": "^4.3.0",
+    "d3-time-format": "^2.0.2"
+  }
+}
