@@ -19,6 +19,8 @@
 		<module>sample-parent</module>
 		<module>framework-non-reloadable</module>
 		<module>framework-test</module>
+		<module>rise-es-api</module>
+		<module>rise-es</module>
 	</modules>
 
 	<properties>

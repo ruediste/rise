@@ -113,6 +113,7 @@ public class CoreConfigurationNonRestartable {
     {
         scannedPrefixes.add("com/github/ruediste/rise/");
         scannedPrefixes.add("assets/");
+        scannedPrefixes.add("indexTemplates/");
         scannedPrefixes.add("java/lang/Object.class");
     }
 

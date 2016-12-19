@@ -34,17 +34,17 @@ public class ClasspathResourceIndex {
     }
 
     public Set<String> getResourcesByGlob(String glob) {
-        return getResourcesByGlob(RiseUtil.toPrefixAndRegex(glob));
+        Pair<String, String> prefixAndRegex = RiseUtil.toPrefixAndRegex(glob);
+        return getResources(prefixAndRegex.getA(), prefixAndRegex.getB());
     }
 
-    public Set<String> getResourcesByGlob(Pair<String, String> prefixAndRegex) {
+    public Set<String> getResources(String prefix, String regex) {
         HashSet<String> result = new HashSet<>();
-        Pattern regex = Pattern.compile(prefixAndRegex.getB() + "$");
-        String prefix = prefixAndRegex.getA();
+        Pattern regexPattern = Pattern.compile(regex + "$");
         for (String resource : resources.tailSet(prefix)) {
             if (!resource.startsWith(prefix))
                 break;
-            if (regex.matcher(resource.substring(prefix.length())).matches())
+            if (regexPattern.matcher(resource.substring(prefix.length())).matches())
                 result.add(resource);
         }
         return result;
