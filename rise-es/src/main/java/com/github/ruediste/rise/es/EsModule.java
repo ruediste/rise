@@ -20,8 +20,11 @@ public class EsModule extends AbstractModule {
     protected void configure() throws Exception {
         gson = GsonFactory.createGson();
         JestClientFactory factory = new JestClientFactory();
-        factory.setHttpClientConfig(
-                new HttpClientConfig.Builder("http://localhost:9200").multiThreaded(true).gson(gson).build());
+        String esUrl = System.getenv("RISE-ES-URL");
+        if (esUrl == null)
+            esUrl = "http://localhost:9200";
+
+        factory.setHttpClientConfig(new HttpClientConfig.Builder(esUrl).multiThreaded(true).gson(gson).build());
 
         client = factory.getObject();
 

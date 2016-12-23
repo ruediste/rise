@@ -60,9 +60,11 @@ public class EclipseLinkPersistenceUnitManager
     synchronized public void dropAndCreateSchema() {
         Stopwatch watch = Stopwatch.createStarted();
         log.info("Dropping and creating schema of " + qualifierName());
+
         // we got to close the link and reopen it again with schema generation
         // enabled
         close();
+
         checkOpen(props -> {
             props.put(PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION,
                     PersistenceUnitProperties.SCHEMA_GENERATION_DROP_AND_CREATE_ACTION);
