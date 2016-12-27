@@ -65,12 +65,24 @@ public class EclipseLinkPersistenceUnitManager
         // enabled
         close();
 
-        checkOpen(props -> {
-            props.put(PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION,
-                    PersistenceUnitProperties.SCHEMA_GENERATION_DROP_AND_CREATE_ACTION);
-            customizeSchemaGenerationProperties(props);
-        });
-        close();
+        try {
+            // no transaction
+            boolean txOpen = txm.getTransaction() != null;
+            if (txOpen)
+                txm.commit();
+
+            checkOpen(props -> {
+                props.put(PersistenceUnitProperties.SCHEMA_GENERATION_DATABASE_ACTION,
+                        PersistenceUnitProperties.SCHEMA_GENERATION_DROP_AND_CREATE_ACTION);
+                customizeSchemaGenerationProperties(props);
+            });
+            close();
+
+            if (txOpen)
+                txm.begin();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         StartupTimeLogger.stopAndLog("Dropping and creatin schema of " + qualifierName(), watch);
         log.info("Dropping and creating schema of " + qualifierName() + " completed. Time: " + watch);
     }
@@ -133,13 +145,16 @@ public class EclipseLinkPersistenceUnitManager
 
         boolean manageTx = false;
         try {
+            // always initialize DB in a transaction. Necessary?
             manageTx = txm.getTransaction() == null;
             if (manageTx)
-                txm.begin();
+                // txm.begin();
+                ;
             bean.afterPropertiesSet();
 
             if (manageTx)
-                txm.commit();
+                // txm.commit();
+                ;
         } catch (Exception e) {
             throw new RuntimeException("Error while creating EntityManagerFactory for " + qualifierName(), e);
         } finally {

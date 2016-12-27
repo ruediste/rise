@@ -15,7 +15,8 @@ import com.google.common.collect.HashBiMap;
 
 /**
  * Registry holding the available {@link DataBaseLink}s. Used to register the
- * links in the dynamic injector
+ * links in the dynamic injector.
+ * 
  */
 @Singleton
 @NonRestartable
