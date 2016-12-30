@@ -60,7 +60,7 @@ public class RememberMeAuthenticationProvider implements AuthenticationProvider<
                 // set the remember me token with a new series
                 log.debug("Successful login with remember me set to true, adding cookie to the response");
                 RememberMeToken token = createToken();
-                dao.newToken(token, res.getSuccess().getPrincipal());
+                token = dao.newToken(token, res.getSuccess().getPrincipal());
                 info.getServletResponse().addCookie(createRememberMeCookie(token));
                 tokenIdProperty.set(res.getSuccess(), token.getId());
             }

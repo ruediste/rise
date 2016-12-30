@@ -60,22 +60,26 @@ public class WebRequestAuthenticator extends ChainedRequestHandler {
         AuthenticationSuccess success = loginHolder.getSuccess();
 
         if (success == null) {
-            AuthenticationResult result = authenticationManager
-                    .authenticate(new RememberMeCookieAuthenticationRequest());
-            if (result.isSuccess()) {
-                success = result.getSuccess();
-                log.debug("remember me login successful: {}", success);
-                loginManager.login(success);
-            } else {
-                for (AuthenticationFailure failure : result.getFailures()) {
-                    if (failure instanceof RememberMeTokenTheftFailure) {
-                        coreRequestInfo
-                                .setActionResult(new RedirectRenderResult(util.toUrlSpec(util.go(LoginController.class)
-                                        .tokenTheftDetected(coreRequestInfo.getRequest().createUrlSpec()))));
-                        if (coreRequestInfo.getActionResult() != null)
-                            return;
+            try {
+                AuthenticationResult result = authenticationManager
+                        .authenticate(new RememberMeCookieAuthenticationRequest());
+                if (result.isSuccess()) {
+                    success = result.getSuccess();
+                    log.debug("remember me login successful: {}", success);
+                    loginManager.login(success);
+                } else {
+                    for (AuthenticationFailure failure : result.getFailures()) {
+                        if (failure instanceof RememberMeTokenTheftFailure) {
+                            coreRequestInfo.setActionResult(
+                                    new RedirectRenderResult(util.toUrlSpec(util.go(LoginController.class)
+                                            .tokenTheftDetected(coreRequestInfo.getRequest().createUrlSpec()))));
+                            if (coreRequestInfo.getActionResult() != null)
+                                return;
+                        }
                     }
                 }
+            } catch (Throwable t) {
+                log.error("Error while checking remember me", t);
             }
         } else {
             log.debug("found success in login holder: {}", success);

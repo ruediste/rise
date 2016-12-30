@@ -120,6 +120,16 @@ public abstract class FrontServletBase extends HttpServlet {
         handle(req, resp, HttpMethod.POST);
     }
 
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        handle(req, resp, HttpMethod.PUT);
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        handle(req, resp, HttpMethod.DELETE);
+    }
+
     /**
      * Hook to change the {@link StartupErrorHandler}
      */

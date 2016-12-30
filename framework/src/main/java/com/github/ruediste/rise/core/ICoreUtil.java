@@ -83,6 +83,11 @@ public interface ICoreUtil {
         return getCoreUtil().labelUtil();
     }
 
+    default LString label(ActionResult action) {
+        ActionInvocation<Object> invocation = toActionInvocation(action);
+        return labelUtil().method(invocation.methodInvocation.getMethod()).label();
+    }
+
     /**
      * Return the label of the last method accessed by the given supplier
      */

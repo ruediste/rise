@@ -28,16 +28,15 @@ public class EMUtil {
         }).getResultList();
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> TypedQuery<T> queryWithFilter(EntityManager em, Class<T> entityClass,
-            Consumer<PersistenceFilterContext> action) {
+            Consumer<PersistenceFilterContext<T>> action) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery q = cb.createQuery(entityClass);
-        Root root = q.from(entityClass);
+        CriteriaQuery<T> q = cb.createQuery(entityClass);
+        Root<T> root = q.from(entityClass);
         q.select(root);
 
         ArrayList<Predicate> whereClauses = new ArrayList<>();
-        PersistenceFilterContext filterContext = new PersistenceFilterContext<T>() {
+        PersistenceFilterContext<T> filterContext = new PersistenceFilterContext<T>() {
 
             @Override
             public CriteriaQuery<T> query() {

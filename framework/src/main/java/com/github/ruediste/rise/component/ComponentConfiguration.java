@@ -162,6 +162,7 @@ public class ComponentConfiguration {
          * {@link HttpServletResponse}
          */
         public Supplier<ChainedRequestHandler> actionResultRendererSupplier;
+        public Supplier<ChainedRequestHandler> authenticator;
 
         public Supplier<ChainedRequestHandler> pageScopeHandler;
         public Supplier<ChainedRequestHandler> persistenceHandler;
@@ -173,11 +174,14 @@ public class ComponentConfiguration {
 
     @PostConstruct
     public void constructReloadChain(Provider<ActionResultRenderer> actionResultRenderer,
-            Provider<ReloadPageScopeHandler> scopeHandler, Provider<ReloadPagePersistenceHandler> persistenceHandler,
-            Provider<ReloadHandler> reloadHandler, Provider<ReloadRequestParser> reloadParser,
-            Provider<AjaxRequestParser> ajaxParser) {
+            Provider<WebRequestAuthenticator> authenticator, Provider<ReloadPageScopeHandler> scopeHandler,
+            Provider<ReloadPagePersistenceHandler> persistenceHandler, Provider<ReloadHandler> reloadHandler,
+            Provider<ReloadRequestParser> reloadParser, Provider<AjaxRequestParser> ajaxParser) {
         reloadChain.actionResultRendererSupplier = actionResultRenderer::get;
         reloadHandlerSuppliers.add(reloadChain.actionResultRendererSupplier);
+
+        reloadChain.authenticator = authenticator::get;
+        reloadHandlerSuppliers.add(initialChain.authenticator);
 
         reloadChain.pageScopeHandler = scopeHandler::get;
         reloadHandlerSuppliers.add(reloadChain.pageScopeHandler);
