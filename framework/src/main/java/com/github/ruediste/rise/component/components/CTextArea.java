@@ -18,9 +18,10 @@ public class CTextArea extends Component<CTextArea> {
 
         @Override
         public void doRender(CTextArea component, BootstrapRiseCanvas<?> html) {
+            String value = component.value.get();
             html.textarea().BformControl().NAME(util.getParameterKey(component, "value"))
                     .fIf(component.customizer != null, () -> component.customizer.accept(html))
-                    .content(component.value.get());
+                    .content(value == null ? "" : value);
         }
 
         @Override

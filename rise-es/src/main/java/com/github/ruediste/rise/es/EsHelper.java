@@ -60,7 +60,7 @@ public class EsHelper {
             throw new RuntimeException("ElasticSearch request not sucessful: " + result.getErrorMessage());
     }
 
-    public void store(EsEntity entity) {
+    public void store(EsEntity<?> entity) {
         store(entity, false);
     }
 
@@ -74,8 +74,10 @@ public class EsHelper {
      *            updated
      * @return true if the operation was successful. Only false if create is
      *         true and the document already exists
+     * @throws RuntimeException
+     *             if the store operation fails
      */
-    public boolean store(EsEntity entity, boolean create) {
+    public boolean store(EsEntity<?> entity, boolean create) {
         Builder builder;
         {
             builder = new Index.Builder(entity).index(EsNameHelper.index(entity.getClass()))
@@ -99,8 +101,9 @@ public class EsHelper {
         return true;
     }
 
-    public <T extends EsEntity> Optional<T> get(Class<T> cls, String id) {
-        DocumentResult result = execute(new Get.Builder(EsNameHelper.index(cls), id).type(EsNameHelper.type(cls)).build());
+    public <T extends EsEntity<?>> Optional<T> get(Class<T> cls, String id) {
+        DocumentResult result = execute(
+                new Get.Builder(EsNameHelper.index(cls), id).type(EsNameHelper.type(cls)).build());
         if (result.isSucceeded()) {
             T entity = result.getSourceAsObject(cls);
             entity.setId(id);
@@ -110,11 +113,11 @@ public class EsHelper {
         return Optional.empty();
     }
 
-    public <T extends EsEntity> List<T> loadAll(Class<T> entityClass) {
+    public <T extends EsEntity<?>> List<T> loadAll(Class<T> entityClass) {
         return search("{\"version\":true, \"query\":{\"match_all\": {} }}", entityClass);
     }
 
-    public <T extends EsEntity> List<T> search(String query, Class<T> entityClass) {
+    public <T extends EsEntity<?>> List<T> search(String query, Class<T> entityClass) {
         SearchResult result = executeSucessfully(new Search.Builder(query).addIndex(EsNameHelper.index(entityClass))
                 .addType(EsNameHelper.type(entityClass)).build());
 
@@ -143,9 +146,9 @@ public class EsHelper {
                     }
 
                 }
-                ((EsEntity) result).setId(getId());
+                ((EsEntity<?>) result).setId(getId());
                 T resultFinal = result;
-                tryGetVersion().ifPresent(x -> ((EsEntity) resultFinal).setVersion(x));
+                tryGetVersion().ifPresent(x -> ((EsEntity<?>) resultFinal).setVersion(x));
 
             }
             return result;
@@ -184,10 +187,14 @@ public class EsHelper {
         executeSucessfully(new Refresh.Builder().addIndex(EsNameHelper.indexPattern(entityClass)).build());
     }
 
-    public void delete(EsEntity entity) {
-        String id = entity.getId();
-        String index = EsNameHelper.index(entity.getClass());
-        String type = EsNameHelper.type(entity.getClass());
+    public void delete(EsEntity<?> entity) {
+        delete(entity.getClass(), entity.getId());
+    }
+
+    @SuppressWarnings("rawtypes")
+    public void delete(Class<? extends EsEntity> entityClass, String id) {
+        String index = EsNameHelper.index(entityClass);
+        String type = EsNameHelper.type(entityClass);
         try {
             executeSucessfully(new Delete.Builder(id).index(index).type(type).build());
         } catch (Throwable t) {

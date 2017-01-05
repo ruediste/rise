@@ -10,7 +10,7 @@ import javax.inject.Inject;
 import com.github.ruediste.rise.es.api.EsEntity;
 import com.google.common.reflect.TypeToken;
 
-public class EsRepository<T extends EsEntity> {
+public class EsRepository<T extends EsEntity<?>> {
 
     @Inject
     protected EsHelper es;

@@ -7,6 +7,7 @@ import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
@@ -150,7 +151,8 @@ public class GsonFactory {
         public String translateName(Field f) {
             EsRoot esRoot = f.getDeclaringClass().getAnnotation(EsRoot.class);
             if (esRoot != null && esRoot.typedFieldNames()) {
-                if (String.class.equals(f.getType())) {
+                if (String.class.equals(f.getType()) || new TypeToken<List<String>>() {
+                }.getType().equals(f.getGenericType())) {
                     if (f.isAnnotationPresent(NotIndexed.class))
                         return "sni_" + f.getName();
                     else if (f.isAnnotationPresent(NotAnalyzed.class))

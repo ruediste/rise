@@ -4,11 +4,11 @@ import java.io.Serializable;
 
 public class RememberMeToken implements Serializable {
     private static final long serialVersionUID = 1L;
-    private final long id;
+    private final String id;
     private final byte[] series;
     private final byte[] token;
 
-    public RememberMeToken(long id, byte[] series, byte[] token) {
+    public RememberMeToken(String id, byte[] series, byte[] token) {
         super();
         this.id = id;
         this.series = series;
@@ -19,11 +19,11 @@ public class RememberMeToken implements Serializable {
         return new RememberMeToken(id, series, token);
     }
 
-    public RememberMeToken withId(long id) {
+    public RememberMeToken withId(String id) {
         return new RememberMeToken(id, series, token);
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 

@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.core;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletResponse;
@@ -88,11 +89,19 @@ public interface ICoreUtil {
         return labelUtil().method(invocation.methodInvocation.getMethod()).label();
     }
 
-    /**
-     * Return the label of the last method accessed by the given supplier
-     */
+    default LString label(@Capture Function<?, ?> function) {
+        return labelOfLambda(function);
+    }
+
     default LString label(@Capture Supplier<?> supplier) {
-        LambdaExpression<Object> exp = LambdaExpression.parse(supplier);
+        return labelOfLambda(supplier);
+    }
+
+    /**
+     * Return the label of the last method accessed by the given lambda method
+     */
+    default LString labelOfLambda(Object lambda) {
+        LambdaExpression<Object> exp = LambdaExpression.parse(lambda);
         MemberExpression memberExp = exp.getBody().accept(BindingUtil.MEMBER_EXPRESSION_EXTRACTOR);
 
         if (memberExp == null)

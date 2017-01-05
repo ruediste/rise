@@ -1,7 +1,10 @@
 package com.github.ruediste.rise.es;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.es.api.GsonFactory;
 import com.github.ruediste.salta.jsr330.AbstractModule;
 import com.github.ruediste.salta.jsr330.Provides;
@@ -28,6 +31,20 @@ public class EsModule extends AbstractModule {
 
         client = factory.getObject();
 
+        binder().requestInjection(new Object() {
+
+            @Inject
+            EsEntityArgumentSerializer serializer;
+
+            @Inject
+            CoreConfiguration config;
+
+            @PostConstruct
+            public void setup() {
+                config.argumentSerializerSuppliers.add(() -> serializer);
+
+            }
+        });
     }
 
     @Provides

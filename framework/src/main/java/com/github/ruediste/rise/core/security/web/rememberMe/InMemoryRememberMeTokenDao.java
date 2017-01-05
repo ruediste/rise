@@ -17,7 +17,7 @@ public class InMemoryRememberMeTokenDao implements RememberMeTokenDao {
     InMemoryRememberMeTokenStore store;
 
     @Override
-    public RememberMeToken loadToken(long id) {
+    public RememberMeToken loadToken(String id) {
         Pair<RememberMeToken, Principal> pair = deSerialize(store.get(id));
         if (pair == null)
             return null;
@@ -38,7 +38,7 @@ public class InMemoryRememberMeTokenDao implements RememberMeTokenDao {
     }
 
     @Override
-    public Principal loadPrincipal(long id) {
+    public Principal loadPrincipal(String id) {
         return deSerialize(store.get(id)).getB();
     }
 
@@ -66,7 +66,7 @@ public class InMemoryRememberMeTokenDao implements RememberMeTokenDao {
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(String id) {
         store.remove(id);
     }
 }

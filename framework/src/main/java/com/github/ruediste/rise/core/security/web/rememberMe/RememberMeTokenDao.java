@@ -6,7 +6,7 @@ public interface RememberMeTokenDao {
     /**
      * Load the token with the given Id
      */
-    RememberMeToken loadToken(long id);
+    RememberMeToken loadToken(String id);
 
     /**
      * Store the given subject and token. The id of the provided token is not
@@ -24,11 +24,11 @@ public interface RememberMeTokenDao {
     /**
      * Load the principal for the given token id
      */
-    Principal loadPrincipal(long id);
+    Principal loadPrincipal(String id);
 
     /**
      * Delete the token with the given id
      */
-    void delete(long id);
+    void delete(String id);
 
 }

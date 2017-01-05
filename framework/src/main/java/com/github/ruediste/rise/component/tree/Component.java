@@ -445,7 +445,7 @@ public class Component<TSelf> {
         return new ValueHandleImpl<>(value);
     }
 
-    public <T> ValueHandle<T> createValueHandle(Supplier<T> accessor, boolean isLabelProperty) {
+    protected <T> ValueHandle<T> createValueHandle(Supplier<T> accessor, boolean isLabelProperty) {
         Try<BindingInfo<T>> infoTry = BindingUtil.tryExtractBindingInfo(accessor);
         if (infoTry.isPresent()) {
             BindingInfo<T> info = infoTry.get();

@@ -181,7 +181,7 @@ public class ComponentConfiguration {
         reloadHandlerSuppliers.add(reloadChain.actionResultRendererSupplier);
 
         reloadChain.authenticator = authenticator::get;
-        reloadHandlerSuppliers.add(initialChain.authenticator);
+        reloadHandlerSuppliers.add(reloadChain.authenticator);
 
         reloadChain.pageScopeHandler = scopeHandler::get;
         reloadHandlerSuppliers.add(reloadChain.pageScopeHandler);

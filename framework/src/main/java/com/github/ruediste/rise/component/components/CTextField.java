@@ -23,8 +23,16 @@ public class CTextField extends Component<CTextField> {
         return value;
     }
 
+    public CTextField() {
+
+    }
+
     public CTextField(@Capture Supplier<String> value) {
         this.value = createValueHandle(value, true);
     }
 
+    public CTextField value(ValueHandle<String> value) {
+        this.value = value;
+        return this;
+    }
 }

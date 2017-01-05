@@ -23,6 +23,7 @@ import com.github.ruediste.rise.core.security.authentication.core.Authentication
 import com.github.ruediste.rise.core.security.authentication.core.AuthenticationSuccess;
 import com.github.ruediste.rise.core.security.web.LoginManager;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 
 /**
@@ -31,7 +32,7 @@ import com.google.common.base.Strings;
  */
 public class RememberMeAuthenticationProvider implements AuthenticationProvider<RememberMeCookieAuthenticationRequest> {
 
-    private static final AttachedProperty<AuthenticationSuccess, Long> tokenIdProperty = new AttachedProperty<>(
+    private static final AttachedProperty<AuthenticationSuccess, String> tokenIdProperty = new AttachedProperty<>(
             "tokenId");
     @Inject
     Logger log;
@@ -67,7 +68,7 @@ public class RememberMeAuthenticationProvider implements AuthenticationProvider<
         });
 
         loginManager.logoutEvent().addListener(success -> {
-            Long tokenId = tokenIdProperty.get(success);
+            String tokenId = tokenIdProperty.get(success);
             if (tokenId != null) {
                 dao.delete(tokenId);
                 log.debug("removed token tokenId");
@@ -137,12 +138,13 @@ public class RememberMeAuthenticationProvider implements AuthenticationProvider<
         byte[] token = new byte[20];
         random.nextBytes(series);
         random.nextBytes(token);
-        return new RememberMeToken(0, series, token);
+        return new RememberMeToken(null, series, token);
     }
 
     private Cookie createRememberMeCookie(RememberMeToken token) {
 
-        String value = token.getId() + "~" + Base64.getEncoder().encodeToString(token.getSeries()) + "~"
+        String value = Base64.getEncoder().encodeToString(token.getId().getBytes(Charsets.UTF_8)) + "~"
+                + Base64.getEncoder().encodeToString(token.getSeries()) + "~"
                 + Base64.getEncoder().encodeToString(token.getToken());
         Cookie result = new Cookie(config.rememberMeCookieName, value);
         String path = info.getServletContext().getContextPath();
@@ -167,7 +169,7 @@ public class RememberMeAuthenticationProvider implements AuthenticationProvider<
     public static RememberMeToken parseToken(String str) {
         String[] parts = str.split("~");
         try {
-            long id = Long.parseLong(parts[0]);
+            String id = new String(Base64.getDecoder().decode(parts[0]), Charsets.UTF_8);
             byte[] series = Base64.getDecoder().decode(parts[1]);
             byte[] token = Base64.getDecoder().decode(parts[2]);
             return new RememberMeToken(id, series, token);

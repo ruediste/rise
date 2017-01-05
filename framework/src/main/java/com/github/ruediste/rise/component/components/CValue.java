@@ -18,7 +18,8 @@ public class CValue extends Component<CValue> {
             if (component.getValue() == null)
                 throw new RuntimeException("value not set");
 
-            html.VALUE(component.getValue().get()).NAME(util.getParameterKey(component, "value"));
+            String value = component.getValue().get();
+            html.VALUE(value == null ? "" : value).NAME(util.getParameterKey(component, "value"));
 
         }
 

@@ -13,23 +13,23 @@ import com.github.ruediste.rise.nonReloadable.front.reload.NonReloadable;
 @NonRestartable
 @Singleton
 public class InMemoryRememberMeTokenStore {
-    private Map<Long, byte[]> tokens = new ConcurrentHashMap<>();
+    private Map<String, byte[]> tokens = new ConcurrentHashMap<>();
     private AtomicLong nextId = new AtomicLong();
 
-    public void put(long id, byte[] bytes) {
+    public void put(String id, byte[] bytes) {
         tokens.put(id, bytes);
     }
 
     @SuppressWarnings("unchecked")
-    public byte[] get(long id) {
+    public byte[] get(String id) {
         return tokens.get(id);
     }
 
-    public long getNextId() {
-        return nextId.incrementAndGet();
+    public String getNextId() {
+        return String.valueOf(nextId.incrementAndGet());
     }
 
-    public void remove(long id) {
+    public void remove(String id) {
         tokens.remove(id);
     }
 }

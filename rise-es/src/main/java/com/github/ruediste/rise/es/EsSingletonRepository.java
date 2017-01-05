@@ -7,7 +7,7 @@ import javax.inject.Inject;
 import com.github.ruediste.rise.es.api.EsEntity;
 import com.google.common.reflect.TypeToken;
 
-public abstract class EsSingletonRepository<T extends EsEntity> {
+public abstract class EsSingletonRepository<T extends EsEntity<T>> {
 
     @Inject
     EsHelper es;

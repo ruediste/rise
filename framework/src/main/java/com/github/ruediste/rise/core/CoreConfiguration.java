@@ -86,7 +86,6 @@ public class CoreConfiguration {
     public void initialize() {
         controllerNameMapper = controllerNameMapperSupplier.get();
         argumentSerializers = argumentSerializerSuppliers.stream().map(Supplier::get).collect(toList());
-
     }
 
     /**
