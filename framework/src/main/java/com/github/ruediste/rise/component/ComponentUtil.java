@@ -102,8 +102,8 @@ public class ComponentUtil implements ICoreUtil {
     }
 
     /**
-     * Return the value of a parameter belonging to a certain Component
-     * <?> during a page reload request.
+     * Return the value of a parameter belonging to a certain {@link Component}
+     * during a page reload request.
      * 
      * @param keySuffix
      *            value passed to {@link #getParameterKey(Component, String)} as
@@ -122,8 +122,8 @@ public class ComponentUtil implements ICoreUtil {
     }
 
     /**
-     * Test if a parameter is defined for a certain Component<?> during a page
-     * reload request.
+     * Test if a parameter is defined for a certain {@link Component} during a
+     * page reload request.
      */
     public boolean isParameterDefined(Component<?> fragment, String key) {
         return reloadRequest.isParameterDefined(getParameterKey(fragment, key));

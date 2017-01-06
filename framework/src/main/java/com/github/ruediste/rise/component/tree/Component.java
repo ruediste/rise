@@ -82,15 +82,17 @@ import com.google.common.base.Predicate;
  * perform their own validations which are displayed by the validation
  * presenters, too.
  * </p>
- * <li><b>Partial page reloads:</b></li> For fast page changes, pages can be
- * reloaded partially. This is achieved by implementing a part of the page
- * rendering as lambda function, which will be re-evaluated for the partial
- * rendering. All handlers (event, value, ajax) are associated with the
- * compoents, thus throwing away and recreating part of the page is sufficient.
+ * </li>
+ * 
+ * <li><b>Partial page reloads:</b> For fast page changes, pages can be reloaded
+ * partially. This is achieved by implementing a part of the page rendering as
+ * lambda function, which will be re-evaluated for the partial rendering. All
+ * handlers (event, value, ajax) are associated with the compoents, thus
+ * throwing away and recreating part of the page is sufficient.</li>
+ * 
  * <li><b>Ajax:</b> The client can send ajax requests, which can be handled by
  * individual components</li>
  * </ul>
- * </p>
  */
 public class Component<TSelf> {
 
@@ -139,10 +141,8 @@ public class Component<TSelf> {
     }
 
     /**
-     * Bind a property of this component. In addition, the {@link #TEST_NAME()}
-     * is set to the name of the model property.
+     * Set the {@link Component#TEST_NAME()} to the name of the model property.
      * 
-     * @see #bind(Consumer)
      */
     public TSelf TEST_NAME(@Capture Supplier<?> supplier) {
         BindingUtil.tryExtractBindingInfo(supplier).ifPresent(info -> TEST_NAME(info.modelProperty.getName()));

@@ -1,6 +1,7 @@
 package com.github.ruediste.rise.component.components;
 
 import com.github.ruediste.rise.component.ComponentTemplateIndex;
+import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.web.HttpRenderResult;
@@ -44,8 +45,8 @@ public interface IComponentTemplate<T extends Component<T>> {
      * 
      * <p>
      * To create the corresponding URL use
-     * {@link HtmlFragmentBase#getAjaxUrl(Component)} . Anything you append to
-     * the url (prefixed with a "/") will be available as suffix.
+     * {@link ComponentUtil#getAjaxUrl(Component)} . Anything you append to the
+     * url (prefixed with a "/") will be available as suffix.
      * 
      * <p>
      * To handle the request you can either return a {@link HttpRenderResult} or

@@ -8,10 +8,6 @@ import com.github.ruediste.rise.component.render.RiseCanvasTarget;
 /**
  * Base class for {@link HtmlCanvas}es.
  * 
- * <p>
- * {@link #initialize(com.github.ruediste.rendersnakeXT.canvas.HtmlCanvasTarget)}
- * is called from post construct method, so no need to call it yourself. Data is
- * always written to a
  */
 public abstract class RiseCanvasBase<TSelf extends RiseCanvasBase<TSelf>> implements RiseCanvas<TSelf> {
 
@@ -39,6 +35,7 @@ public abstract class RiseCanvasBase<TSelf extends RiseCanvasBase<TSelf>> implem
         return target;
     }
 
+    @Override
     public void setTarget(RiseCanvasTarget target) {
         this.target = target;
     }

@@ -32,8 +32,7 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends ComponentCa
     RiseCanvasHelper internal_riseHelper();
 
     /**
-     * Render a css link for all {@link DefaultAssetTypes#CSS} assets in the
-     * given output
+     * Render a css link for all css assets in the given output
      */
     default TSelf rCssLinks(AssetBundle output) {
         internal_riseHelper().rCssLinks(this, output);
@@ -41,8 +40,7 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends ComponentCa
     }
 
     /**
-     * Render a js link for all {@link DefaultAssetTypes#JS} assets in the given
-     * output
+     * Render a js link for all js assets in the given output
      */
     default TSelf rJsLinks(AssetBundle output) {
         internal_riseHelper().rJsLinks(this, output);

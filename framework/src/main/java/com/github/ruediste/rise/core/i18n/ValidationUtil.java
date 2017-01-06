@@ -79,7 +79,7 @@ import com.google.common.collect.MultimapBuilder;
  * placeholders that were added while rendering.
  * 
  * <p>
- * <img src="doc-files/ValidationOverview.png" >
+ * <img src="doc-files/ValidationOverview.png" alt="">
  */
 public class ValidationUtil {
     @Inject
