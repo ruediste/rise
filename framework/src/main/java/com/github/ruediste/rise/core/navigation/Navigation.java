@@ -26,17 +26,24 @@ public class Navigation {
          * Target of the navigation. For inner nodes (sub menus), this is
          * typically empty.
          */
-        public final Optional<ActionResult> target;
+        public Optional<ActionResult> target;
 
         /**
          * Text to display
          */
-        public final LString text;
+        public LString text;
 
         /**
          * Icon
          */
         public Optional<Renderable<Html5Canvas<?>>> icon;
+
+        /**
+         * By default unauthorized entries are available and the login page is
+         * displayed when the user clicks them. When this flag is true, such
+         * entries are not shown.
+         */
+        public boolean hideWhenUnauthorized;
 
         /**
          * Predicate to test if this navigation is selected when the given

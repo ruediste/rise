@@ -3,6 +3,7 @@ package com.github.ruediste.rise.core.navigation;
 import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -57,32 +58,48 @@ public class NavigationBuilder {
         return this;
     }
 
+    protected NavigationItem lastItem() {
+        List<NavigationItem> list;
+        if (currentGroup.isEmpty())
+            list = result.getRootItems();
+        else
+            list = currentGroup.peek().children;
+        return list.get(list.size() - 1);
+    }
+
     public NavigationBuilder add(ActionResult target) {
         Method method = util.toActionInvocation(target).methodInvocation.getMethod();
-        return add(target, labelUtil.method(method).label(), iconUtil.tryGetIcon(method));
+        add(new NavigationItem(labelUtil.method(method).label(), iconUtil.tryGetIcon(method), Optional.of(target),
+                new SameActionInvocationPredicate(util.toActionInvocation(target))));
+
+        return this;
     }
 
-    public NavigationBuilder add(ActionResult target, String text) {
-        return add(target, LString.of(text));
+    public NavigationBuilder text(String text) {
+        return text(LString.of(text));
     }
 
-    public NavigationBuilder add(ActionResult target, String text, Renderable<Html5Canvas<?>> icon) {
-        return add(target, LString.of(text), icon);
+    public NavigationBuilder hideWhenUnauthorized() {
+        lastItem().hideWhenUnauthorized = true;
+        return this;
+    }
+
+    public NavigationBuilder text(LString text) {
+        lastItem().text = text;
+        return this;
+    }
+
+    public NavigationBuilder icon(Renderable<Html5Canvas<?>> icon) {
+        return icon(Optional.of(icon));
+    }
+
+    public NavigationBuilder icon(Optional<Renderable<Html5Canvas<?>>> icon) {
+        lastItem().icon = icon;
+        return this;
     }
 
     public NavigationBuilder add(ActionResult target, LString text) {
-        return add(new NavigationItem(text, Optional.empty(), Optional.of(target),
-                new SameActionInvocationPredicate(util.toActionInvocation(target))));
-    }
-
-    public NavigationBuilder add(ActionResult target, LString text, Renderable<Html5Canvas<?>> icon) {
-        return add(target, text, Optional.of(icon));
-
-    }
-
-    public NavigationBuilder add(ActionResult target, LString text, Optional<Renderable<Html5Canvas<?>>> icon) {
-        return add(new NavigationItem(text, icon, Optional.of(target),
-                new SameActionInvocationPredicate(util.toActionInvocation(target))));
+        return add(target).text(text);
     }
 
     public NavigationBuilder group(String text) {

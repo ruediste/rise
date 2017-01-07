@@ -8,12 +8,16 @@ import javax.inject.Provider;
 
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.core.navigation.Navigation.NavigationItem;
+import com.github.ruediste.rise.core.security.authorization.Authz;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 
 public class NavigationRenderer {
 
     @Inject
     Provider<NavigationItemSelectionCache> cache;
+
+    @Inject
+    Authz authz;
 
     public static class NavigationRendererOptions {
         public boolean isInverted;
@@ -91,24 +95,30 @@ public class NavigationRenderer {
     private void renderNavItems(BootstrapRiseCanvas<?> html, Ctx ctx, Iterable<NavigationItem> items, int level) {
 
         for (NavigationItem item : items) {
-            html.li();
-            if (level == 1 && ctx.cache.isSelected(item))
-                html.CLASS("active");
+            Runnable itemRenderer = () -> {
+                html.li();
+                if (level == 1 && ctx.cache.isSelected(item))
+                    html.CLASS("active");
 
-            if (item.getChildren().isEmpty()) {
-                if (item.target.isPresent())
-                    html.a().HREF(item.target.get()).fIfPresent(item.icon, html::render).content(item.text);
-                else
-                    html.a().HREF("#").content(item.text);
-                html._li();
-            } else {
-                html.CLASS("dropdown").a().HREF("#").CLASS("dropdown-toggle").DATA("toggle", "dropdown").ROLE("button")
-                        .ARIA_EXPANDED("false").fIfPresent(item.icon, html::render).write(item.text).bCaret()._a();
-                html.ul().CLASS("dropdown-menu").ROLE("menu");
-                renderNavItems(html, ctx, item.getChildren(), level + 1);
-                html._ul()._li();
-            }
-
+                if (item.getChildren().isEmpty()) {
+                    if (item.target.isPresent())
+                        html.a().HREF(item.target.get()).fIfPresent(item.icon, html::render).content(item.text);
+                    else
+                        html.a().HREF("#").content(item.text);
+                    html._li();
+                } else {
+                    html.CLASS("dropdown").a().HREF("#").CLASS("dropdown-toggle").DATA("toggle", "dropdown")
+                            .ROLE("button").ARIA_EXPANDED("false").fIfPresent(item.icon, html::render).write(item.text)
+                            .bCaret()._a();
+                    html.ul().CLASS("dropdown-menu").ROLE("menu");
+                    renderNavItems(html, ctx, item.getChildren(), level + 1);
+                    html._ul()._li();
+                }
+            };
+            if (item.target.isPresent()) {
+                html.rIfAuthorized(item.target.get(), target -> itemRenderer.run());
+            } else
+                itemRenderer.run();
         }
 
     }
