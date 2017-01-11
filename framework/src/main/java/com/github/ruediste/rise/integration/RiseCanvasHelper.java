@@ -98,13 +98,6 @@ public class RiseCanvasHelper {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> T getControllerAuthzInstance(Class<T> instanceClass) {
-        Class<?> implClass = coreConfiguration.getRequestMapper(instanceClass)
-                .getControllerImplementationClass(instanceClass);
-        return (T) injector.getInstance(implClass);
-    }
-
     public Authz getAuthz() {
         return authz;
     }

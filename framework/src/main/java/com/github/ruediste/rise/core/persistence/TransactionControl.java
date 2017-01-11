@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.InvalidTransactionException;
 import javax.transaction.Status;
+import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
@@ -324,4 +325,62 @@ public class TransactionControl implements ITransactionControl {
         return executor().noAutoJoin();
     }
 
+    public static abstract class TransactionListener {
+        /**
+         * invoked before starting the commit
+         */
+        public void beforeCompletion() {
+        }
+
+        /**
+         * invoked after a successful commit, before {@link #after()}
+         */
+        public void afterSuccess(int status) {
+        }
+
+        /**
+         * invoked after a failed commit, before {@link #after()}
+         */
+        public void afterFailure(int status) {
+        }
+
+        /**
+         * invoked after a commit, after {@link #afterSuccess()} or
+         * {@link #afterFailure()}
+         */
+        public void after(int status) {
+        }
+    }
+
+    public void registerSynchronization(TransactionListener listener) {
+
+        try {
+            txm.getTransaction().registerSynchronization(new Synchronization() {
+
+                @Override
+                public void beforeCompletion() {
+                    listener.beforeCompletion();
+                }
+
+                @Override
+                public void afterCompletion(int status) {
+                    try {
+                        if (status == Status.STATUS_COMMITTED) {
+                            listener.afterSuccess(status);
+                        } else
+                            listener.afterFailure(status);
+                    } catch (Throwable t) {
+                        log.error("Error occurred in after method", t);
+                    }
+                    try {
+                        listener.after(status);
+                    } catch (Throwable t) {
+                        log.error("Error occurred in after method", t);
+                    }
+                }
+            });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -121,7 +121,7 @@ public class EsHelper {
         SearchResult result = executeSucessfully(new Search.Builder(query).addIndex(EsNameHelper.index(entityClass))
                 .addType(EsNameHelper.type(entityClass)).build());
 
-        return hitStream(result, entityClass).map(h -> h.getObject()).collect(toList());
+        return hitList(result, entityClass).entities();
     }
 
     public static class Hit<T> {
@@ -172,15 +172,51 @@ public class EsHelper {
         }
     }
 
-    public <T> List<T> hitList(SearchResult result, Class<T> objClass) {
-        return hitStream(result, objClass).map(x -> x.getObject()).collect(toList());
+    public static class HitList<T> {
+        Gson gson;
+        Class<T> entityClass;
+        SearchResult searchResult;
+
+        public HitList(Gson gson, Class<T> entityClass, SearchResult searchResult) {
+            super();
+            this.gson = gson;
+            this.entityClass = entityClass;
+            this.searchResult = searchResult;
+        }
+
+        public Stream<Hit<T>> hitStream() {
+            return StreamSupport.stream(hitArray().spliterator(), false)
+                    .map(hit -> new Hit<>(hit.getAsJsonObject(), gson, entityClass));
+        }
+
+        private JsonArray hitArray() {
+            JsonObject jsonObject = searchResult.getJsonObject();
+            JsonArray hitList = jsonObject.getAsJsonObject("hits").get("hits").getAsJsonArray();
+            return hitList;
+        }
+
+        public List<T> entities() {
+            return hitStream().map(h -> h.getObject()).collect(toList());
+        }
+
+        public int total() {
+            return searchResult.getTotal();
+        }
+
+        public int retrieved() {
+            return hitArray().size();
+        }
     }
 
-    public <T> Stream<Hit<T>> hitStream(SearchResult result, Class<T> objClass) {
-        JsonObject jsonObject = result.getJsonObject();
-        JsonArray hitList = jsonObject.getAsJsonObject("hits").get("hits").getAsJsonArray();
-        return StreamSupport.stream(hitList.spliterator(), false)
-                .map(hit -> new Hit<>(hit.getAsJsonObject(), gson, objClass));
+    public <T> HitList<T> hitList(String query, Class<T> entityClass) {
+        SearchResult result = executeSucessfully(new Search.Builder(query).addIndex(EsNameHelper.index(entityClass))
+                .addType(EsNameHelper.type(entityClass)).build());
+
+        return hitList(result, entityClass);
+    }
+
+    private <T> HitList<T> hitList(SearchResult result, Class<T> entityClass) {
+        return new HitList<>(gson, entityClass, result);
     }
 
     public void refresh(Class<?> entityClass) {

@@ -22,7 +22,6 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
 import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.lambda.Capture;
-import com.github.ruediste.rise.util.MethodInvocation;
 import com.github.ruediste1.i18n.lString.LString;
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
@@ -109,11 +108,7 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends ComponentCa
     }
 
     default TSelf rIfAuthorized(ActionResult target, Consumer<ActionResult> ifTrue, Consumer<ActionResult> ifFalse) {
-        MethodInvocation<Object> invocation = internal_riseHelper().getUtil()
-                .toActionInvocation(target).methodInvocation;
-        Object targetObj = internal_riseHelper().getControllerAuthzInstance(invocation.getInstanceClass());
-        if (internal_riseHelper().getAuthz().isAuthorized(targetObj, invocation.getMethod(),
-                invocation.getArguments().toArray()))
+        if (internal_riseHelper().util.isAutorized(target))
             ifTrue.accept(target);
         else
             ifFalse.accept(target);

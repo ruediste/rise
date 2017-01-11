@@ -153,4 +153,15 @@ public interface ICoreUtil {
     default PathInfo toPathInfo(ActionInvocation<String> invocation) {
         return getCoreUtil().toPathInfo(invocation);
     }
+
+    /**
+     * Return the controller instance to perform authorization checks with
+     */
+    default <T> T getControllerAuthzInstance(Class<T> controllerClass) {
+        return getCoreUtil().getControllerAuthzInstance(controllerClass);
+    }
+
+    default boolean isAutorized(ActionResult target) {
+        return getCoreUtil().isAutorized(target);
+    }
 }

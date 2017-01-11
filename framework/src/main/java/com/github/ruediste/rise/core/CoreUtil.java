@@ -16,9 +16,12 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKno
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.httpRequest.HttpRequestImpl;
+import com.github.ruediste.rise.core.security.authorization.Authz;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste.rise.nonReloadable.NonRestartable;
+import com.github.ruediste.rise.util.MethodInvocation;
+import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.LabelUtil;
 import com.google.common.base.CharMatcher;
@@ -44,6 +47,12 @@ public class CoreUtil implements ICoreUtil {
 
     @Inject
     Provider<ActionInvocationBuilderKnownController<?>> actionPathBuilderKnownController;
+
+    @Inject
+    Injector injector;
+
+    @Inject
+    Authz authz;
 
     String contextPath;
 
@@ -183,5 +192,19 @@ public class CoreUtil implements ICoreUtil {
     public String urlStatic(PathInfo path) {
         String prefix = contextPath;
         return prefix + path.getValue();
+    }
+
+    @Override
+    public <T> T getControllerAuthzInstance(Class<T> controllerClass) {
+        Class<?> implClass = coreConfiguration.getRequestMapper(controllerClass)
+                .getControllerImplementationClass(controllerClass);
+        return controllerClass.cast(injector.getInstance(implClass));
+    }
+
+    @Override
+    public boolean isAutorized(ActionResult target) {
+        MethodInvocation<Object> invocation = toActionInvocation(target).methodInvocation;
+        Object targetObj = getControllerAuthzInstance(invocation.getInstanceClass());
+        return authz.isAuthorized(targetObj, invocation.getMethod(), invocation.getArguments().toArray());
     }
 }

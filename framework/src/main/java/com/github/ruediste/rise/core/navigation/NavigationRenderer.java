@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.core.navigation;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -7,6 +8,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
+import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.core.navigation.Navigation.NavigationItem;
 import com.github.ruediste.rise.core.security.authorization.Authz;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
@@ -16,6 +18,8 @@ public class NavigationRenderer {
     @Inject
     Provider<NavigationItemSelectionCache> cache;
 
+    @Inject
+    CoreUtil coreUtil;
     @Inject
     Authz authz;
 
@@ -95,7 +99,7 @@ public class NavigationRenderer {
     private void renderNavItems(BootstrapRiseCanvas<?> html, Ctx ctx, Iterable<NavigationItem> items, int level) {
 
         for (NavigationItem item : items) {
-            Runnable itemRenderer = () -> {
+            if (isVisible(item)) {
                 html.li();
                 if (level == 1 && ctx.cache.isSelected(item))
                     html.CLASS("active");
@@ -105,21 +109,32 @@ public class NavigationRenderer {
                         html.a().HREF(item.target.get()).fIfPresent(item.icon, html::render).content(item.text);
                     else
                         html.a().HREF("#").content(item.text);
-                    html._li();
                 } else {
                     html.CLASS("dropdown").a().HREF("#").CLASS("dropdown-toggle").DATA("toggle", "dropdown")
                             .ROLE("button").ARIA_EXPANDED("false").fIfPresent(item.icon, html::render).write(item.text)
                             .bCaret()._a();
                     html.ul().CLASS("dropdown-menu").ROLE("menu");
                     renderNavItems(html, ctx, item.getChildren(), level + 1);
-                    html._ul()._li();
+                    html._ul();
                 }
-            };
-            if (item.target.isPresent()) {
-                html.rIfAuthorized(item.target.get(), target -> itemRenderer.run());
-            } else
-                itemRenderer.run();
+                html._li();
+            }
+
         }
 
+    }
+
+    private boolean isVisible(NavigationItem item) {
+        List<NavigationItem> children = item.getChildren();
+        if (children.isEmpty()) {
+            // check the target
+            if (item.hideWhenUnauthorized && item.target.isPresent()) {
+                return coreUtil.isAutorized(item.target.get());
+            }
+            return item.target.isPresent();
+        } else {
+            // check if any child is visible
+            return children.stream().anyMatch(x -> isVisible(x));
+        }
     }
 }

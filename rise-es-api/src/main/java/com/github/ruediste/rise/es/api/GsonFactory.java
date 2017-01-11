@@ -3,6 +3,7 @@ package com.github.ruediste.rise.es.api;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.time.Duration;
@@ -151,14 +152,30 @@ public class GsonFactory {
         public String translateName(Field f) {
             EsRoot esRoot = f.getDeclaringClass().getAnnotation(EsRoot.class);
             if (esRoot != null && esRoot.typedFieldNames()) {
+                // direct EsFieldPrefix annotation
+                {
+                    EsFieldPrefix prefix = f.getAnnotation(EsFieldPrefix.class);
+                    if (prefix != null) {
+                        return prefix.value() + "_" + f.getName();
+                    }
+                }
+
+                // Meta EsFieldPrefixAnnotation
+                for (Annotation annotation : f.getAnnotations()) {
+                    EsFieldPrefix prefix = annotation.annotationType().getAnnotation(EsFieldPrefix.class);
+                    if (prefix != null) {
+                        return prefix.value() + "_" + f.getName();
+                    }
+                }
+
                 if (String.class.equals(f.getType()) || new TypeToken<List<String>>() {
                 }.getType().equals(f.getGenericType())) {
                     if (f.isAnnotationPresent(NotIndexed.class))
-                        return "sni_" + f.getName();
-                    else if (f.isAnnotationPresent(NotAnalyzed.class))
-                        return "sna_" + f.getName();
+                        return "tni_" + f.getName();
+                    else if (f.isAnnotationPresent(Keyword.class))
+                        return "k_" + f.getName();
                     else
-                        return "s_" + f.getName();
+                        return "t_" + f.getName();
                 }
 
                 if (Long.class.equals(f.getType()) || Long.TYPE.equals(f.getType()))
@@ -166,6 +183,9 @@ public class GsonFactory {
 
                 if (Integer.class.equals(f.getType()) || Integer.TYPE.equals(f.getType()))
                     return "i_" + f.getName();
+
+                if (Boolean.class.equals(f.getType()) || Boolean.TYPE.equals(f.getType()))
+                    return "b_" + f.getName();
 
                 if (Instant.class.equals(f.getType()))
                     return "d_" + f.getName();

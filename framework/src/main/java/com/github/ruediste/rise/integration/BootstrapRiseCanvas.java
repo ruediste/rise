@@ -26,10 +26,7 @@ public interface BootstrapRiseCanvas<TSelf extends BootstrapRiseCanvas<TSelf>>
         R_ButtonArgs buttonArgs = new R_ButtonArgs(this, true);
         args.accept(buttonArgs);
 
-        Object instance = internal_riseHelper()
-                .getControllerAuthzInstance(actionInvocation.methodInvocation.getInstanceClass());
-        boolean authorized = helper.getAuthz().isAuthorized(instance, actionInvocation.methodInvocation.getMethod(),
-                actionInvocation.methodInvocation.getArguments());
+        boolean authorized = internal_riseHelper().util.isAutorized(target);
 
         if (!authorized && buttonArgs.nonAuthorizedHidden) {
             return self();

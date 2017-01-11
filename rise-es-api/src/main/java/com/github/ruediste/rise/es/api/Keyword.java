@@ -7,12 +7,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a field in an {@link EsRoot} as not analyzed. Only meaningful for
- * strings
+ * Marks a field in an {@link EsRoot} as keyword (stored as keyword type). Only
+ * meaningful for strings
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 @Documented
-public @interface NotAnalyzed {
+public @interface Keyword {
 
 }
