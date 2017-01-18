@@ -40,7 +40,8 @@ public class PageScopeCleaner {
     private Timer timer;
 
     public void start() {
-        timer = new Timer("pageScopeCleanupThread");
+        timer = new Timer("pageScopeCleanupThread", true);
+
         timer.schedule(new TimerTask() {
 
             @Override

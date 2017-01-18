@@ -58,7 +58,9 @@ public class CoreUtil implements ICoreUtil {
 
     @PostConstruct
     public void postConstruct(@NonRestartable ServletConfig servletConfig) {
-        contextPath = servletConfig.getServletContext().getContextPath();
+        if (servletConfig != null) {
+            contextPath = servletConfig.getServletContext().getContextPath();
+        }
     }
 
     @Override
