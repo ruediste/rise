@@ -150,7 +150,8 @@ public final class LambdaExpressionCompiler implements ExpressionVisitor<Functio
 
         List<Function<Object[], ?>> argExps = e.getArguments().stream()
                 .map(exp -> ((Function<Object[], ?>) exp.accept(this))).collect(toList());
-        Function<Object[], Object[]> args = t -> argExps.stream().map(x -> x.apply(t)).collect(toList()).toArray();
+        Function<Object[], Object[]> args = t -> argExps.stream().<Object> map(x -> x.apply(t)).collect(toList())
+                .toArray();
 
         Function<Object[], Object> field = t -> {
             try {
