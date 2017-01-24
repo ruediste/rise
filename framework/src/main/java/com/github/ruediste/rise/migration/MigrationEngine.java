@@ -36,7 +36,11 @@ public class MigrationEngine {
 
     @Inject
     Injector injector;
-    List<MigrationTask> tasks = new ArrayList<>();
+
+    @Inject
+    Provider<MigrationTaskSQLFile> fileTaskProvider;
+
+    private List<MigrationTask> tasks = new ArrayList<>();
 
     @PostConstruct
     public void postConstruct() {
@@ -45,9 +49,6 @@ public class MigrationEngine {
                 .filter(t -> !t.isAnnotationPresent(MigrationTaskNoAutoDiscover.class))
                 .map(t -> injector.getInstance(t)).collect(toList()));
     }
-
-    @Inject
-    Provider<MigrationTaskSQLFile> fileTaskProvider;
 
     /**
      * 
@@ -60,6 +61,10 @@ public class MigrationEngine {
     public void addSQLTasks(Class<? extends MigrationTargetSQLFileBase> target, String scriptGlob) {
         tasks.addAll(resourceIndex.getResourcesByGlob(scriptGlob).stream()
                 .map(name -> fileTaskProvider.get().initialize(name, target)).collect(toList()));
+    }
+
+    public void addTask(MigrationTask task) {
+        tasks.add(task);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -86,7 +91,7 @@ public class MigrationEngine {
         }
 
         // execute tasks
-        log.info("The following tasks will be executed: {}",
+        log.info("The following tasks will be executed:\n{}",
                 tasks.stream().map(x -> x.toString()).collect(joining("\n")));
         tasks.forEach(t -> {
             log.info("Executing {} ...", t);

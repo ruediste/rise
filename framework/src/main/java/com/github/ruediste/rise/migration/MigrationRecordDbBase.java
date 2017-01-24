@@ -15,4 +15,6 @@ public class MigrationRecordDbBase {
     public Timestamp taskTimeStamp;
 
     public String taskAuthor;
+
+    public String description;
 }

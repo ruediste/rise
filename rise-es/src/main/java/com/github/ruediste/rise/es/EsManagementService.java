@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -14,6 +15,9 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import com.github.ruediste.rise.es.api.EsRoot;
+import com.github.ruediste.rise.es.migration.MigrationTargetESBase;
+import com.github.ruediste.rise.es.migration.MigrationTaskESIndexTemplate;
+import com.github.ruediste.rise.migration.MigrationEngine;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClassHierarchyIndex;
 import com.github.ruediste.rise.nonReloadable.front.reload.ClasspathResourceIndex;
 import com.google.common.base.Charsets;
@@ -38,6 +42,15 @@ public class EsManagementService {
 
     @Inject
     Logger log;
+
+    @Inject
+    Provider<MigrationTaskESIndexTemplate> taskProvider;
+
+    public void addEsIndexTasks(MigrationEngine engine, String resourceGlob,
+            Class<? extends MigrationTargetESBase> target) {
+        cri.getResourcesByGlob(resourceGlob).stream().map(name -> taskProvider.get().initialize(name, target))
+                .forEach(engine::addTask);
+    }
 
     public void dropIdexes() {
         Set<String> indices = new HashSet<>();
@@ -72,26 +85,30 @@ public class EsManagementService {
         String prefix = "indexTemplates/";
         String suffix = ".json";
         cri.getResourcesByGlob(prefix + "*" + suffix).stream()
-                .forEach(s -> initializeIndexTemplate(s, s.substring(prefix.length(), s.length() - suffix.length())));
+                .forEach(s -> initializeIndexTemplate(s.substring(prefix.length(), s.length() - suffix.length()), s));
     }
 
-    private void initializeIndexTemplate(String resource, String name) {
+    private void initializeIndexTemplate(String name, String resource) {
         String mapping = loadResouce(resource);
-        JSONArray template;
+        JSONObject parsed;
         try {
-            JSONObject parsed = new JSONObject(mapping);
-            template = parsed.optJSONArray("template");
-            if (template == null) {
-                template = new JSONArray().put(parsed.getString("template"));
-            }
-
-            for (int i = 0; i < template.length(); i++) {
-                String current = template.getString(i);
-                parsed.put("template", current);
-                es.executeSucessfully(new PutTemplate.Builder(name + i, parsed.toString()).build());
-            }
+            parsed = new JSONObject(mapping);
         } catch (JSONException e) {
             throw new RuntimeException("error while parsing template " + resource, e);
+        }
+        initializeIndexTemplate(name, parsed);
+    }
+
+    public void initializeIndexTemplate(String name, JSONObject parsed) {
+        JSONArray template = parsed.optJSONArray("template");
+        if (template == null) {
+            template = new JSONArray().put(parsed.getString("template"));
+        }
+
+        for (int i = 0; i < template.length(); i++) {
+            String current = template.getString(i);
+            parsed.put("template", current);
+            es.executeSucessfully(new PutTemplate.Builder(name + i, parsed.toString()).build());
         }
     }
 

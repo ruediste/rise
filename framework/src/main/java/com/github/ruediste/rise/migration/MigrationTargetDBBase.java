@@ -9,6 +9,8 @@ import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+
 import com.github.ruediste.rise.core.persistence.TransactionControl;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste.salta.standard.DependencyKey;
@@ -21,6 +23,9 @@ public abstract class MigrationTargetDBBase extends MigrationTarget<MigrationTas
 
     @Inject
     Injector injector;
+
+    @Inject
+    Logger log;
 
     private Class<? extends Annotation> annotatation;
 
@@ -48,7 +53,12 @@ public abstract class MigrationTargetDBBase extends MigrationTarget<MigrationTas
 
     @Override
     public boolean isAlreadyExecuted(MigrationTaskId id) {
-        return txc.execute(() -> getEm().find(recordClass, toIdString(id)) != null);
+        try {
+            return txc.execute(() -> getEm().find(recordClass, toIdString(id)) != null);
+        } catch (Throwable t) {
+            log.error("Error while reading Migration Record, Table not created yet? Continuing ...", t);
+            return true;
+        }
     }
 
     private String toIdString(MigrationTaskId id) {
@@ -74,6 +84,7 @@ public abstract class MigrationTargetDBBase extends MigrationTarget<MigrationTas
                 record.executionTime = Timestamp.from(Instant.now());
                 record.taskAuthor = task.id.author;
                 record.taskTimeStamp = Timestamp.from(task.id.timestamp);
+                record.description = task.description;
                 getEm().persist(record);
             } catch (Throwable t) {
                 throw new RuntimeException(t);
