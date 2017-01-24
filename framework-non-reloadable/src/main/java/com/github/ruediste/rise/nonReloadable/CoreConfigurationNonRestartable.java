@@ -102,7 +102,7 @@ public class CoreConfigurationNonRestartable {
                     stackTraceFilter = e -> {
                     };
         }
-        sessionCustomizers = sessionCustomizerProviders.stream().<SessionCustomizer> map(Provider::get)
+        sessionCustomizers = sessionCustomizerProviders.stream().map(p -> (SessionCustomizer) p.get())
                 .collect(toList());
         CompositeSessionCustomizer.customizers = sessionCustomizers;
     }
