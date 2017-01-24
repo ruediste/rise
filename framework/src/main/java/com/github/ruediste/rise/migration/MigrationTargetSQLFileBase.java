@@ -24,8 +24,12 @@ import com.google.common.base.Charsets;
 /**
  * Command to extract all table structures from a database:
  * 
+ * <p>
+ * 
  * <pre>
+ * {@code
  * mysqldump -d -h localhost -uuser -ppwd mvnzone --protocol=TCP > server/src/main/resources/migration/2017-01-16T18:07Z.ruediste.sql
+ * }
  * </pre>
  */
 @Singleton

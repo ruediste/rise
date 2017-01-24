@@ -13,8 +13,8 @@ public class MigrationTaskSQLFile extends MigrationTask {
      * Initialize this task
      * 
      * @param sqlResourceName
-     *            name in the format <path>/<timestamp>.<author>. <description>.
-     *            sql
+     *            name in the format
+     *            {@code <path>/<timestamp>.<author>.<description>.sql}
      */
     public MigrationTaskSQLFile initialize(String sqlResourceName, Class<? extends MigrationTarget<?>> target) {
         initializeFromResourceName(target, sqlResourceName);

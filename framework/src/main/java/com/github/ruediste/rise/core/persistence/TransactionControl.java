@@ -333,20 +333,23 @@ public class TransactionControl implements ITransactionControl {
         }
 
         /**
-         * invoked after a successful commit, before {@link #after()}
+         * invoked after a successful commit, before
+         * {@link TransactionListener#after()}
          */
         public void afterSuccess(int status) {
         }
 
         /**
-         * invoked after a failed commit, before {@link #after()}
+         * invoked after a failed commit, before
+         * {@link TransactionListener#after()}
          */
         public void afterFailure(int status) {
         }
 
         /**
-         * invoked after a commit, after {@link #afterSuccess()} or
-         * {@link #afterFailure()}
+         * invoked after a commit, after
+         * {@link TransactionListener#afterSuccess()} or
+         * {@link TransactionListener#afterFailure()}
          */
         public void after(int status) {
         }

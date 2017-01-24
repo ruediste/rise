@@ -51,10 +51,7 @@ public class MigrationEngine {
     }
 
     /**
-     * 
      * @param target
-     * @param sourceAnnotation
-     *            may be null
      * @param scriptGlob
      *            location of the SQL scripts, for example "migrations/*.sql"
      */
