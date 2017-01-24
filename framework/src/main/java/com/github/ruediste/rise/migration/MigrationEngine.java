@@ -47,7 +47,7 @@ public class MigrationEngine {
         tasks.addAll(idx.getAllChildClasses(MigrationTask.class, cl).stream()
                 .filter(t -> !Modifier.isAbstract(t.getModifiers()))
                 .filter(t -> !t.isAnnotationPresent(MigrationTaskNoAutoDiscover.class))
-                .map(t -> injector.getInstance(t)).collect(toList()));
+                .map(t -> (MigrationTask) injector.getInstance(t)).collect(toList()));
     }
 
     /**
