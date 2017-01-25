@@ -25,7 +25,7 @@ public class ConEnter extends Component<ConEnter> {
 
         @Override
         public void doRender(ConEnter component, RiseCanvas<?> html) {
-            html.DATA("rise-on-enter", util.getParameterKey(component, "pressed"));
+            html.DATA("rise-on-enter-key", util.getParameterKey(component, "pressed"));
         }
 
     }

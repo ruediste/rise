@@ -31,7 +31,11 @@ public interface EsListPostProcessor<T extends EsEntity<T>> extends Function<Lis
     }
 
     static <T extends EsEntity<T>> EsListPostProcessor<T> removing(T entity) {
-        return list -> list.stream().filter(x -> !Objects.equal(x.getId(), entity.getId())).collect(toList());
+        return removingId(entity.getId());
+    }
+
+    static <T extends EsEntity<T>> EsListPostProcessor<T> removingId(String id) {
+        return list -> list.stream().filter(x -> !Objects.equal(x.getId(), id)).collect(toList());
     }
 
     static <T extends EsEntity<T>> EsListPostProcessor<T> addingOrReplacing(T entity) {
