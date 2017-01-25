@@ -11,18 +11,18 @@ public enum ApplicationStage {
     /**
      * Show full errors
      */
-    DEVELOPMENT(Stage.DEVELOPMENT, "white", "blue"),
+    DEVELOPMENT("dev", Stage.DEVELOPMENT, "white", "blue"),
 
     /**
      * As production like as possible, but don't do any dangerous interactions
      * with the environment (No mass mailing!)
      */
-    TESTING(Stage.PRODUCTION, "white", "green"),
+    TESTING("test", Stage.PRODUCTION, "white", "green"),
 
     /**
      * Production mode
      */
-    PRODUCTION(Stage.PRODUCTION, "white", "red");
+    PRODUCTION("prod", Stage.PRODUCTION, "white", "red");
 
     final private Stage saltaStage;
 
@@ -36,7 +36,10 @@ public enum ApplicationStage {
      */
     public String backgroundColor;
 
-    private ApplicationStage(Stage saltaStage, String color, String backgroundColor) {
+    public String shortName;
+
+    private ApplicationStage(String shortName, Stage saltaStage, String color, String backgroundColor) {
+        this.shortName = shortName;
         this.saltaStage = saltaStage;
         this.color = color;
         this.backgroundColor = backgroundColor;

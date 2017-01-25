@@ -53,7 +53,7 @@ public class MigrationTargetSQLFileBase extends MigrationTarget<MigrationTaskSQL
 
     private DbConnectionInfo info;
 
-    public MigrationTargetSQLFileBase(Class<? extends Annotation> dbAnnotation,
+    protected void initialize(Class<? extends Annotation> dbAnnotation,
             Class<? extends MigrationRecordDbBase> recordClass, DbConnectionInfo info) {
         this.annotatation = dbAnnotation;
         this.recordClass = recordClass;
