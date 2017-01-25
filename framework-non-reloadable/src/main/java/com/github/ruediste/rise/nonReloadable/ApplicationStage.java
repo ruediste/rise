@@ -1,5 +1,8 @@
 package com.github.ruediste.rise.nonReloadable;
 
+import java.util.Objects;
+import java.util.Optional;
+
 import com.github.ruediste.salta.standard.Stage;
 
 /**
@@ -47,5 +50,13 @@ public enum ApplicationStage {
 
     public Stage getSaltaStage() {
         return saltaStage;
+    }
+
+    public static Optional<ApplicationStage> valueOfShort(String shortName) {
+        for (ApplicationStage stage : values()) {
+            if (Objects.equals(shortName, stage.shortName))
+                return Optional.of(stage);
+        }
+        return Optional.empty();
     }
 }

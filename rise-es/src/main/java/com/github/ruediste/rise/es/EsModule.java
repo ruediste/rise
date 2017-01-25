@@ -23,7 +23,7 @@ public class EsModule extends AbstractModule {
     protected void configure() throws Exception {
         gson = GsonFactory.createGson();
         JestClientFactory factory = new JestClientFactory();
-        String esUrl = System.getenv("RISE-ES-URL");
+        String esUrl = System.getenv("RISE_ES_URL");
         if (esUrl == null)
             esUrl = "http://localhost:9200";
 
