@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import com.github.ruediste.rise.core.security.Principal;
 import com.github.ruediste.rise.core.security.authentication.InMemoryAuthenticationProvider;
-import com.github.ruediste.rise.core.security.authentication.UsernamePasswordAuthenticationRequest;
+import com.github.ruediste.rise.core.security.authentication.AuthenticationRequestUsernamePassword;
 
 public class DefaultAuthenticationManagerTest {
 
@@ -22,17 +22,17 @@ public class DefaultAuthenticationManagerTest {
 
     @Test
     public void testAuthenticate() throws Exception {
-        mgr.authenticate(new UsernamePasswordAuthenticationRequest("foo", "bar"));
+        mgr.authenticate(new AuthenticationRequestUsernamePassword("foo", "bar"));
     }
 
     @Test
     public void testAuthenticateUserNotFound() throws Exception {
-        AuthenticationResult result = mgr.authenticate(new UsernamePasswordAuthenticationRequest("Hello", "bar"));
+        AuthenticationResult result = mgr.authenticate(new AuthenticationRequestUsernamePassword("Hello", "bar"));
         assertEquals(1, result.getFailures().size());
     }
 
     @Test
     public void testAuthenticate2nd() throws Exception {
-        mgr.authenticate(new UsernamePasswordAuthenticationRequest("foo2", "bar2"));
+        mgr.authenticate(new AuthenticationRequestUsernamePassword("foo2", "bar2"));
     }
 }

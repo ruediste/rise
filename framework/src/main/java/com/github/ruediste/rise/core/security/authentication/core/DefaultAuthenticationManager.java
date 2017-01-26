@@ -4,8 +4,10 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 
+import com.github.ruediste.rise.core.security.authentication.AuthenticationProviderKnownPrincipal;
 import com.github.ruediste.rise.util.GenericEvent;
 import com.github.ruediste.rise.util.GenericEventManager;
 import com.github.ruediste.rise.util.Pair;
@@ -24,6 +26,11 @@ public class DefaultAuthenticationManager implements AuthenticationManager {
     private final Deque<Pair<Class<?>, AuthenticationProvider<?>>> providers = new ArrayDeque<>();
     private GenericEventManager<AuthenticationRequest> preAuthenticationEvent = new GenericEventManager<>();
     private GenericEventManager<Pair<AuthenticationRequest, AuthenticationResult>> postAuthenticationEvent = new GenericEventManager<>();
+
+    @PostConstruct
+    public void postConstruct(AuthenticationProviderKnownPrincipal provider) {
+        addProvider(provider);
+    }
 
     /**
      * Authenticate an authentication request. Throws an exception if the

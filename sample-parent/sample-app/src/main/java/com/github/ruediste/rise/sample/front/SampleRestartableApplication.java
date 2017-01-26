@@ -17,7 +17,7 @@ import com.github.ruediste.rise.core.front.RestartableApplicationBase;
 import com.github.ruediste.rise.core.security.Principal;
 import com.github.ruediste.rise.core.security.authentication.PasswordMismatchAuthenticationFailure;
 import com.github.ruediste.rise.core.security.authentication.UserNameNotFoundAuthenticationFailure;
-import com.github.ruediste.rise.core.security.authentication.UsernamePasswordAuthenticationRequest;
+import com.github.ruediste.rise.core.security.authentication.AuthenticationRequestUsernamePassword;
 import com.github.ruediste.rise.core.security.authentication.core.AuthenticationProvider;
 import com.github.ruediste.rise.core.security.authentication.core.AuthenticationResult;
 import com.github.ruediste.rise.core.security.authentication.core.AuthenticationSuccess;
@@ -127,10 +127,10 @@ public class SampleRestartableApplication extends RestartableApplicationBase {
         // .with("user", "user", new ExplicitRightsPrincipal(
         // SampleRight.VIEW_USER_PAGE)));
 
-        defaultAuthenticationManager.addProvider(new AuthenticationProvider<UsernamePasswordAuthenticationRequest>() {
+        defaultAuthenticationManager.addProvider(new AuthenticationProvider<AuthenticationRequestUsernamePassword>() {
 
             @Override
-            public AuthenticationResult authenticate(UsernamePasswordAuthenticationRequest request) {
+            public AuthenticationResult authenticate(AuthenticationRequestUsernamePassword request) {
                 return userRepository.getUser(request.getUserName()).map(user -> {
                     if (passwordHashingService.validatePassword(request.getPassword(), user.getHash()))
                         return AuthenticationResult.success(new UserPrincipal(user.getId()));

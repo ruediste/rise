@@ -6,7 +6,7 @@ import com.github.ruediste.rise.core.security.authentication.core.Authentication
  * Interface for {@link AuthenticationRequest}s which are aware of the existence
  * of a "Remember-Me" feature.
  */
-public interface RememberMeAwareAuthenticationRequest extends AuthenticationRequest {
+public interface AuthenticationRequestRememberMeAware extends AuthenticationRequest {
 
     /**
      * Used by the framework to determine if the user wishes to be remembered

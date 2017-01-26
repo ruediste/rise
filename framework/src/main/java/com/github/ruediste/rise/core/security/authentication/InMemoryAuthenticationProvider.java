@@ -13,12 +13,12 @@ import com.github.ruediste.rise.util.Pair;
  * memory
  */
 public class InMemoryAuthenticationProvider<T extends Principal>
-        implements AuthenticationProvider<UsernamePasswordAuthenticationRequest> {
+        implements AuthenticationProvider<AuthenticationRequestUsernamePassword> {
 
     public HashMap<String, Pair<String, T>> users = new HashMap<>();
 
     @Override
-    public AuthenticationResult authenticate(UsernamePasswordAuthenticationRequest request) {
+    public AuthenticationResult authenticate(AuthenticationRequestUsernamePassword request) {
         Pair<String, T> pair = users.get(request.getUserName());
         if (pair == null)
             return AuthenticationResult.failure(new UserNameNotFoundAuthenticationFailure(request.getUserName()));

@@ -15,7 +15,7 @@ import com.github.ruediste.attachedProperties4J.AttachedProperty;
 import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.security.Principal;
-import com.github.ruediste.rise.core.security.authentication.RememberMeAwareAuthenticationRequest;
+import com.github.ruediste.rise.core.security.authentication.AuthenticationRequestRememberMeAware;
 import com.github.ruediste.rise.core.security.authentication.core.AuthenticationManager;
 import com.github.ruediste.rise.core.security.authentication.core.AuthenticationProvider;
 import com.github.ruediste.rise.core.security.authentication.core.AuthenticationRequest;
@@ -30,7 +30,7 @@ import com.google.common.base.Strings;
  * Perform authentication based on a remember me cookie contained in the web
  * request.
  */
-public class RememberMeAuthenticationProvider implements AuthenticationProvider<RememberMeCookieAuthenticationRequest> {
+public class RememberMeAuthenticationProvider implements AuthenticationProvider<AuthenticationRequestRememberMeCookie> {
 
     private static final AttachedProperty<AuthenticationSuccess, String> tokenIdProperty = new AttachedProperty<>(
             "tokenId");
@@ -56,8 +56,8 @@ public class RememberMeAuthenticationProvider implements AuthenticationProvider<
         mgr.postAuthenticationEvent().addListener(pair -> {
             AuthenticationRequest req = pair.getA();
             AuthenticationResult res = pair.getB();
-            if (req instanceof RememberMeAwareAuthenticationRequest
-                    && ((RememberMeAwareAuthenticationRequest) req).isRememberMe() && res.isSuccess()) {
+            if (req instanceof AuthenticationRequestRememberMeAware
+                    && ((AuthenticationRequestRememberMeAware) req).isRememberMe() && res.isSuccess()) {
                 // set the remember me token with a new series
                 log.debug("Successful login with remember me set to true, adding cookie to the response");
                 RememberMeToken token = createToken();
@@ -78,7 +78,7 @@ public class RememberMeAuthenticationProvider implements AuthenticationProvider<
     }
 
     @Override
-    public AuthenticationResult authenticate(RememberMeCookieAuthenticationRequest request) {
+    public AuthenticationResult authenticate(AuthenticationRequestRememberMeCookie request) {
         AuthenticationResult failure = AuthenticationResult.failure(new NoRememberMeTokenFoundAuthenticationFailure());
 
         // extract the token from the request

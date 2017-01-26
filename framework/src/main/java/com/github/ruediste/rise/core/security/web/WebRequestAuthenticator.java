@@ -17,7 +17,7 @@ import com.github.ruediste.rise.core.security.authentication.core.Authentication
 import com.github.ruediste.rise.core.security.authorization.AuthorizationException;
 import com.github.ruediste.rise.core.security.authorization.RememberMeNotSufficientException;
 import com.github.ruediste.rise.core.security.login.LoginController;
-import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeCookieAuthenticationRequest;
+import com.github.ruediste.rise.core.security.web.rememberMe.AuthenticationRequestRememberMeCookie;
 import com.github.ruediste.rise.core.security.web.rememberMe.RememberMeTokenTheftFailure;
 import com.github.ruediste.rise.core.web.RedirectRenderResult;
 
@@ -62,7 +62,7 @@ public class WebRequestAuthenticator extends ChainedRequestHandler {
         if (success == null) {
             try {
                 AuthenticationResult result = authenticationManager
-                        .authenticate(new RememberMeCookieAuthenticationRequest());
+                        .authenticate(new AuthenticationRequestRememberMeCookie());
                 if (result.isSuccess()) {
                     success = result.getSuccess();
                     log.debug("remember me login successful: {}", success);
@@ -95,8 +95,7 @@ public class WebRequestAuthenticator extends ChainedRequestHandler {
             }
         } catch (Exception e) {
             // determine if the exception occurred due to insufficient rights.
-            // If so,
-            // redirecto to the LoginController
+            // If so, redirec to to the LoginController
             Throwable t = e;
             while (t != null) {
                 if (t instanceof NoAuthenticationException || t instanceof RememberMeNotSufficientException

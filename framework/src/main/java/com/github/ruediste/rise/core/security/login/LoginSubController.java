@@ -13,7 +13,7 @@ import com.github.ruediste.rise.component.components.CButton;
 import com.github.ruediste.rise.component.components.CFormGroup;
 import com.github.ruediste.rise.core.CoreRequestInfo;
 import com.github.ruediste.rise.core.security.authentication.UserNameNotFoundAuthenticationFailure;
-import com.github.ruediste.rise.core.security.authentication.UsernamePasswordAuthenticationRequest;
+import com.github.ruediste.rise.core.security.authentication.AuthenticationRequestUsernamePassword;
 import com.github.ruediste.rise.core.security.authentication.core.AuthenticationFailure;
 import com.github.ruediste.rise.core.security.authentication.core.AuthenticationManager;
 import com.github.ruediste.rise.core.security.authentication.core.AuthenticationResult;
@@ -126,7 +126,7 @@ public class LoginSubController extends SubControllerComponent {
     @Labeled
     public void login() {
         data.tokenTheftDetected = false;
-        UsernamePasswordAuthenticationRequest request = new UsernamePasswordAuthenticationRequest(data.userName,
+        AuthenticationRequestUsernamePassword request = new AuthenticationRequestUsernamePassword(data.userName,
                 data.password);
         request.setRememberMe(true);
 
