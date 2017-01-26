@@ -1,7 +1,8 @@
 package com.github.ruediste.rise.nonReloadable.persistence;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,7 +15,6 @@ import javax.persistence.Converter;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.PersistenceException;
 import javax.persistence.SharedCacheMode;
 import javax.persistence.ValidationMode;
 
@@ -22,9 +22,6 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager;
 import org.springframework.orm.jpa.persistenceunit.MutablePersistenceUnitInfo;
 
 import com.github.ruediste.rise.nonReloadable.CoreConfigurationNonRestartable;
@@ -53,11 +50,9 @@ public class PersistenceUnitManagerHelper {
         result.setSharedCacheMode(SharedCacheMode.ENABLE_SELECTIVE);
 
         try {
-            Resource res = new PathMatchingResourcePatternResolver()
-                    .getResource(DefaultPersistenceUnitManager.ORIGINAL_DEFAULT_PERSISTENCE_UNIT_ROOT_LOCATION);
-            result.setPersistenceUnitRootUrl(res.getURL());
-        } catch (IOException ex) {
-            throw new PersistenceException("Unable to resolve persistence unit root URL", ex);
+            result.setPersistenceUnitRootUrl(new URL("http://foo.foo"));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
         }
 
         result.addProperty(PersistenceUnitProperties.SESSION_CUSTOMIZER, CompositeSessionCustomizer.class.getName());
