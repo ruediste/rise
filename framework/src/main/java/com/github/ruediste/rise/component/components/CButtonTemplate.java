@@ -1,5 +1,6 @@
 package com.github.ruediste.rise.component.components;
 
+import java.lang.annotation.Annotation;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -12,6 +13,7 @@ import com.github.ruediste.rise.component.ComponentPage;
 import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.integration.IconUtil;
+import com.github.ruediste.rise.integration.StereotypeHelper;
 import com.github.ruediste1.i18n.label.LabelUtil;
 
 public class CButtonTemplate extends BootstrapComponentTemplateBase<CButton> {
@@ -53,15 +55,18 @@ public class CButtonTemplate extends BootstrapComponentTemplateBase<CButton> {
         Supplier<B_ButtonArgs<?>> argSupplier = () -> {
             ButtonArgs argsInst = new ButtonArgs(html, isLink);
             Consumer<B_ButtonArgs<?>> args = button.getArgs();
-            if (args != null)
-                args.accept(argsInst);
             if (button.isDisabled())
                 argsInst.disabled_internal();
             if (button.getInvokedMethod() != null) {
-                ButtonStyle buttonStyle = button.getInvokedMethod().getAnnotation(ButtonStyle.class);
-                if (buttonStyle != null)
-                    argsInst.style(buttonStyle.value());
+                for (Annotation annotation : StereotypeHelper.getAllAnnotations(button.getInvokedMethod())) {
+                    if (annotation instanceof ButtonStyle) {
+                        argsInst.style(((ButtonStyle) annotation).value());
+                    }
+                }
             }
+            if (args != null)
+                args.accept(argsInst);
+
             return argsInst;
         };
 

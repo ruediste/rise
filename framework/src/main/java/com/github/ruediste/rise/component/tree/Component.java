@@ -203,7 +203,7 @@ public class Component<TSelf> {
         return self();
     }
 
-    public TSelf disable() {
+    public TSelf disabled() {
         this.disabled = Optional.of(true);
         return self();
     }

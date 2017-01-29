@@ -12,7 +12,7 @@ import com.github.ruediste.rendersnakeXT.canvas.BootstrapCanvasCss.B_ButtonStyle
  * Set the button style to use when rendering a action method or action
  * invocation as button.
  */
-@Target(ElementType.METHOD)
+@Target({ ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface ButtonStyle {

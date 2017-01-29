@@ -50,7 +50,7 @@ public class IconUtil {
     @SuppressWarnings("unchecked")
     public Optional<Renderable<Html5Canvas<?>>> tryGetIcon(AnnotatedElement element) {
 
-        for (Annotation a : element.getDeclaredAnnotations()) {
+        for (Annotation a : StereotypeHelper.getAllAnnotations(element)) {
             if (!a.annotationType().isAnnotationPresent(IconAnnotation.class))
                 continue;
             for (Method attribute : a.annotationType().getDeclaredMethods()) {
@@ -66,14 +66,7 @@ public class IconUtil {
                     return Optional.of(value);
             }
         }
-        for (Annotation a : element.getDeclaredAnnotations()) {
-            if (!a.annotationType().isAnnotationPresent(Stereotype.class))
-                continue;
-            Optional<Renderable<Html5Canvas<?>>> value = tryGetIcon(a.annotationType());
-            if (value.isPresent())
-                return value;
 
-        }
         return Optional.empty();
     }
 }

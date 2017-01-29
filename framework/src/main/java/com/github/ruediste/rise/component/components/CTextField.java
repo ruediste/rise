@@ -15,7 +15,10 @@ public class CTextField extends Component<CTextField> {
 
         @Override
         public void doRender(CTextField component, BootstrapRiseCanvas<?> html) {
-            html.input_text().BformControl().Rvalue(component.getValue());
+            if (component.isDisabled())
+                html.input_text().BformControl().DISABLED().VALUE(component.getValue().get());
+            else
+                html.input_text().BformControl().Rvalue(component.getValue());
         }
     }
 
@@ -35,4 +38,5 @@ public class CTextField extends Component<CTextField> {
         this.value = value;
         return this;
     }
+
 }
