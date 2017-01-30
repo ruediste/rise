@@ -176,7 +176,7 @@ public class AssetDirRequestMapper {
         if (name.endsWith(suffix)) {
             Bundle bundle = getBundle(name.substring(0, name.length() - suffix.length()));
             try {
-                JSONArray array = new JSONArray(readFromClasspath(name));
+                JSONArray array = new JSONArray(readFromClasspath("assets/" + name));
                 for (int i = 0; i < array.length(); i++) {
                     String fileName = array.getString(i);
                     String pathInfo = "/assets/" + fileName;
