@@ -34,6 +34,7 @@ public class PersistenceModuleUtil {
             PersistenceUnitManager persistenceUnitManager, DataSourceFactory dataSourceFactory) {
         DataBaseLink link = new DataBaseLink(qualifier, dataSourceFactory, persistenceUnitManager);
 
+        binder.requestInjection(dataSourceFactory);
         binder.requestInjection(link);
 
         binder.bind(DataSource.class).annotatedWith(qualifier)
