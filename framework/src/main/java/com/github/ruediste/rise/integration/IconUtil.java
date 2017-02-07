@@ -53,18 +53,25 @@ public class IconUtil {
         for (Annotation a : StereotypeHelper.getAllAnnotations(element)) {
             if (!a.annotationType().isAnnotationPresent(IconAnnotation.class))
                 continue;
-            for (Method attribute : a.annotationType().getDeclaredMethods()) {
-                if (!Renderable.class.isAssignableFrom(attribute.getReturnType()))
-                    continue;
-                Renderable<Html5Canvas<?>> value;
-                try {
-                    value = (Renderable<Html5Canvas<?>>) attribute.invoke(a);
-                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                    throw new RuntimeException("Error while reading icon annotation value", e);
-                }
-                if (value != null)
-                    return Optional.of(value);
+            Method attribute;
+            try {
+                attribute = a.annotationType().getDeclaredMethod("value");
+            } catch (NoSuchMethodException e1) {
+                throw new RuntimeException(
+                        "Icon annotation " + a.annotationType() + " needs to declare the attribute value()");
+            } catch (SecurityException e) {
+                throw new RuntimeException(e);
             }
+            if (!Renderable.class.isAssignableFrom(attribute.getReturnType()))
+                throw new RuntimeException("Value attribute of annotation " + a.annotationType()
+                        + " needs to be assignable to Renderable");
+            Renderable<Html5Canvas<?>> value;
+            try {
+                value = (Renderable<Html5Canvas<?>>) attribute.invoke(a);
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                throw new RuntimeException("Error while reading icon annotation value", e);
+            }
+            return Optional.of(value);
         }
 
         return Optional.empty();

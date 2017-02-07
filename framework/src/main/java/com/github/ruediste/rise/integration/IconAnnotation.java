@@ -8,10 +8,10 @@ import java.lang.annotation.Target;
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 
 /**
- * Meta annotation for annotations declaring Icons for methods. Each annotation
- * member needs to be an enum extending {@link Renderable}. Using
- * {@link IconUtil}, the single (first) non-null value can be retrieved. Sample
- * Annotation:
+ * Meta annotation for annotations declaring Icons for methods. The annotation
+ * needs to declare a single attribute {@code value()} of an enum extending
+ * {@link Renderable}. Using {@link IconUtil}, the single value can be
+ * retrieved. Sample Annotation:
  * 
  * <pre>
  * &#64;IconAnnotation
@@ -22,6 +22,7 @@ import com.github.ruediste.rendersnakeXT.canvas.Renderable;
  * }
  * </pre>
  * 
+ * {@link Stereotype}s are supported.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)

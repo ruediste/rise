@@ -28,7 +28,7 @@ import com.google.common.base.Charsets;
  * 
  * <pre>
  * {@code
- * mysqldump -d -h localhost -uuser -ppwd mvnzone --protocol=TCP > server/src/main/resources/migration/2017-01-16T18:07Z.ruediste.sql
+ * mysqldump -d -h localhost -uuser -ppwd mvnzone --protocol=TCP > server/src/main/resources/migration/2017-01-16T18:07Z.ruediste.initial db schema.sql
  * }
  * </pre>
  */

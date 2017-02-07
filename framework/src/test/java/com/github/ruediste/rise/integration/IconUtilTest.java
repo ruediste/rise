@@ -11,6 +11,10 @@ import com.github.ruediste.rendersnakeXT.canvas.Glyphicon;
 
 public class IconUtilTest {
 
+    private enum TestIcons {
+
+    }
+
     @IconAnnotation
     @Retention(RetentionPolicy.RUNTIME)
     private @interface TestIcon {

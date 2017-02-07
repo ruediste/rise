@@ -179,7 +179,7 @@ public class AssetDirRequestMapper {
                 JSONArray array = new JSONArray(readFromClasspath("assets/" + name));
                 for (int i = 0; i < array.length(); i++) {
                     String fileName = array.getString(i);
-                    String pathInfo = "/assets/" + fileName;
+                    String pathInfo = coreConfiguration.assetsPrefix + fileName;
                     urlHandler.accept(bundle, util.urlStatic(new PathInfo(pathInfo)));
                 }
                 return true;
@@ -198,15 +198,6 @@ public class AssetDirRequestMapper {
         }
     }
 
-    private boolean handleDevResource(String name, String suffix, BiConsumer<Bundle, String> urlHandler) {
-        if (name.endsWith(suffix)) {
-            Bundle bundle = getBundle(name.substring(0, name.length() - suffix.length()));
-            String pathInfo = coreConfiguration.assetsPrefix + name;
-            urlHandler.accept(bundle, util.urlStatic(new PathInfo(pathInfo)));
-            return true;
-        }
-        return false;
-    }
 
     private final class AssetRequestParseResult implements RequestParseResult {
 

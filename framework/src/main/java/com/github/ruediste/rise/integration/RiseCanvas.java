@@ -194,4 +194,8 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends ComponentCa
     default Component<?> getParent() {
         return internal_target().getParent();
     }
+
+    default TSelf SRC(AssetBundle bundle, String path) {
+        return SRC(internal_riseHelper().getUtil().assetUrl(bundle, path));
+    }
 }

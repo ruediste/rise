@@ -14,7 +14,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import com.github.ruediste.rise.es.api.EsNameHelper;
 import com.github.ruediste.rise.es.api.EsRoot;
+import com.github.ruediste.rise.es.api.IndexSuffixExtractor;
 import com.github.ruediste.rise.es.migration.MigrationTargetESBase;
 import com.github.ruediste.rise.es.migration.MigrationTaskESIndexTemplate;
 import com.github.ruediste.rise.migration.MigrationEngine;
@@ -23,6 +25,7 @@ import com.github.ruediste.rise.nonReloadable.front.reload.ClasspathResourceInde
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
 
+import io.searchbox.indices.CreateIndex;
 import io.searchbox.indices.DeleteIndex;
 import io.searchbox.indices.template.PutTemplate;
 
@@ -52,14 +55,40 @@ public class EsManagementService {
                 .forEach(engine::addTask);
     }
 
-    public void dropIdexes() {
-        Set<String> indices = new HashSet<>();
-        forEachEsRoot((cls, root) -> indices.add(root.index()));
-
-        for (String index : indices) {
-            log.info("dropping {}", index);
-            es.execute(new DeleteIndex.Builder(index + "*").build());
+    public void createIndices() {
+        for (String index : getEsIndices(false)) {
+            log.info("creating {}", index);
+            es.execute(new CreateIndex.Builder(index).build());
         }
+    }
+
+    public void dropIdexes() {
+        for (String index : getEsIndices(true)) {
+            log.info("dropping {}", index);
+            es.execute(new DeleteIndex.Builder(index).build());
+        }
+    }
+
+    /**
+     * Get all indices.
+     */
+    private Set<String> getEsIndices(boolean includeIndicesWithSuffix) {
+        Set<String> indices = new HashSet<>();
+
+        forEachEsRoot((cls, root) -> {
+            String index = root.index();
+            if ("".equals(index)) {
+                index = EsNameHelper.DEFAULT_INDEX;
+            }
+            if (IndexSuffixExtractor.class.equals(root.suffixExtractor()))
+                indices.add(index);
+            else {
+                if (includeIndicesWithSuffix) {
+                    indices.add(index + "-*");
+                }
+            }
+        });
+        return indices;
     }
 
     private void forEachEsRoot(BiConsumer<Class<?>, EsRoot> consumer) {

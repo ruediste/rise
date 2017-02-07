@@ -14,6 +14,7 @@ import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKno
 import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.core.web.UrlSpec;
+import com.github.ruediste.rise.integration.AssetBundle;
 import com.github.ruediste.rise.nonReloadable.lambda.Capture;
 import com.github.ruediste.rise.nonReloadable.lambda.LambdaExpression;
 import com.github.ruediste.rise.nonReloadable.lambda.expression.MemberExpression;
@@ -136,6 +137,10 @@ public interface ICoreUtil {
      */
     default String urlStatic(PathInfo path) {
         return getCoreUtil().urlStatic(path);
+    }
+
+    default String assetUrl(AssetBundle bundle, String path) {
+        return getCoreUtil().assetUrl(bundle, path);
     }
 
     default UrlSpec toUrlSpec(ActionInvocation<String> invocation) {

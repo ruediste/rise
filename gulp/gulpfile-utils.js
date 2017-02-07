@@ -282,7 +282,7 @@ function defineTasks(_gulp, base){
 		return gulp.src([ 'bower_components/**/*.*' ,assetsBase+"/**/*.*"])
 		// .pipe(debug({title:'others in'}))
 		.pipe(
-			plugins.filter([ '**', '!**/*.js', '!**/*.less', '!**/*.css','!**/*.txt','!**/*.map','!**/*.json','!**/*.yml',
+			plugins.filter([ '**', '!**/*.js', '!**/*.less', '!**/*.css', '!**/*.scss','!**/*.txt','!**/*.map','!**/*.json','!**/*.yml',
 				'!**/*.ps1','!bower_components/bootstrap/fonts/**',
 						'!**/*.md', '!**/*.nuspec', '!**/*.jsx', '!**/*.sublime-project' ]))
 		.pipe(debug({	title : 'others out'	}))

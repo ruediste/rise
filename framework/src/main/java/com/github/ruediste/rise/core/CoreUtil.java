@@ -19,11 +19,13 @@ import com.github.ruediste.rise.core.httpRequest.HttpRequestImpl;
 import com.github.ruediste.rise.core.security.authorization.Authz;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.core.web.UrlSpec;
+import com.github.ruediste.rise.integration.AssetBundle;
 import com.github.ruediste.rise.nonReloadable.NonRestartable;
 import com.github.ruediste.rise.util.MethodInvocation;
 import com.github.ruediste.salta.jsr330.Injector;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.LabelUtil;
+import com.google.common.base.CaseFormat;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
 
@@ -194,6 +196,12 @@ public class CoreUtil implements ICoreUtil {
     public String urlStatic(PathInfo path) {
         String prefix = contextPath;
         return prefix + path.getValue();
+    }
+
+    @Override
+    public String assetUrl(AssetBundle bundle, String path) {
+        String bundlePart = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, bundle.toString());
+        return urlStatic(new PathInfo(coreConfiguration.assetsPrefix + bundlePart + "/" + path));
     }
 
     @Override
