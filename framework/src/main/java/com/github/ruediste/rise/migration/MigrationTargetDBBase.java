@@ -57,7 +57,7 @@ public abstract class MigrationTargetDBBase extends MigrationTarget<MigrationTas
             return txc.execute(() -> getEm().find(recordClass, toIdString(id)) != null);
         } catch (Throwable t) {
             log.error("Error while reading Migration Record, Table not created yet? Continuing ...", t);
-            return true;
+            return false;
         }
     }
 
