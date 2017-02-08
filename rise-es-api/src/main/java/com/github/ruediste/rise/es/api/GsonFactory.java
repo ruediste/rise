@@ -151,7 +151,8 @@ public class GsonFactory {
         @Override
         public String translateName(Field f) {
             EsRoot esRoot = f.getDeclaringClass().getAnnotation(EsRoot.class);
-            if (esRoot != null && esRoot.typedFieldNames()) {
+            if ((esRoot != null && esRoot.typedFieldNames()) || f.isAnnotationPresent(EsTypedFieldNames.class)
+                    || f.getDeclaringClass().isAnnotationPresent(EsTypedFieldNames.class)) {
                 // direct EsFieldPrefix annotation
                 {
                     EsFieldPrefix prefix = f.getAnnotation(EsFieldPrefix.class);
@@ -168,6 +169,9 @@ public class GsonFactory {
                     }
                 }
 
+                if (f.getType().isEnum()) {
+                    return "k_" + f.getName();
+                }
                 if (String.class.equals(f.getType()) || new TypeToken<List<String>>() {
                 }.getType().equals(f.getGenericType())) {
                     if (f.isAnnotationPresent(NotIndexed.class))
