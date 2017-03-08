@@ -135,9 +135,11 @@ public class EsManagementService {
         }
 
         for (int i = 0; i < template.length(); i++) {
+            String templateName = name + i;
+            log.info("putting index template {}", templateName);
             String current = template.getString(i);
             parsed.put("template", current);
-            es.executeSucessfully(new PutTemplate.Builder(name + i, parsed.toString()).build());
+            es.executeSucessfully(new PutTemplate.Builder(templateName, parsed.toString()).build());
         }
     }
 

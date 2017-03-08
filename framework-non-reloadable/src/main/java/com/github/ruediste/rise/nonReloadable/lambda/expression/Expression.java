@@ -1208,4 +1208,25 @@ public abstract class Expression {
             Object this_, Object[] capturedArgumentValues) {
         return new LambdaExpression<>(resultType, parameterTypes, _body, this_, capturedArgumentValues);
     }
+
+    public MemberExpression getMemberExpression() {
+        return this.accept(MEMBER_EXPRESSION_EXTRACTOR);
+    }
+
+    private static final MemberExpressionExtractor MEMBER_EXPRESSION_EXTRACTOR = new MemberExpressionExtractor();
+
+    private static class MemberExpressionExtractor extends ExpressionVisitorAdapter<MemberExpression> {
+        @Override
+        public MemberExpression visit(MemberExpression e) {
+            return e;
+        }
+
+        @Override
+        public MemberExpression visit(UnaryExpression e) {
+            if (e.getExpressionType() == UnaryExpressionType.Convert)
+                return e.getFirst().accept(this);
+            return null;
+        }
+
+    }
 }

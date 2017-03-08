@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.github.ruediste.c3java.properties.PropertyUtil;
-import com.github.ruediste.rise.component.binding.BindingUtil;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
@@ -103,7 +102,7 @@ public interface ICoreUtil {
      */
     default LString labelOfLambda(Object lambda) {
         LambdaExpression<Object> exp = LambdaExpression.parse(lambda);
-        MemberExpression memberExp = exp.getBody().accept(BindingUtil.MEMBER_EXPRESSION_EXTRACTOR);
+        MemberExpression memberExp = exp.getMemberExpression();
 
         if (memberExp == null)
             throw new RuntimeException("Unable to extract accessed member");

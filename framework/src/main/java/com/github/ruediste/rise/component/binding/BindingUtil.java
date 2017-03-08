@@ -15,8 +15,6 @@ import com.github.ruediste.rise.nonReloadable.lambda.expression.Expression;
 import com.github.ruediste.rise.nonReloadable.lambda.expression.ExpressionVisitorAdapter;
 import com.github.ruediste.rise.nonReloadable.lambda.expression.MemberExpression;
 import com.github.ruediste.rise.nonReloadable.lambda.expression.ThisExpression;
-import com.github.ruediste.rise.nonReloadable.lambda.expression.UnaryExpression;
-import com.github.ruediste.rise.nonReloadable.lambda.expression.UnaryExpressionType;
 import com.github.ruediste.rise.util.Try;
 
 @Singleton
@@ -25,7 +23,6 @@ public class BindingUtil {
     @Inject
     PropertyUtil propertyUtil;
 
-    public static final MemberExpressionExtractor MEMBER_EXPRESSION_EXTRACTOR = new MemberExpressionExtractor();
     private static final Method transformMethod;
 
     static {
@@ -44,12 +41,12 @@ public class BindingUtil {
         BindingInfo<T> info = new BindingInfo<T>();
         info.lambda = lambda;
         LambdaExpression<Object> exp = LambdaExpression.parse(lambda);
-        MemberExpression memberExp = exp.getBody().accept(MEMBER_EXPRESSION_EXTRACTOR);
+        MemberExpression memberExp = exp.getMemberExpression();
         // check for a transformer
         if (transformMethod.equals(memberExp.getMember())) {
             info.transformer = (BindingTransformer<?, ?>) exp.withBody(memberExp.getInstance()).compile()
                     .apply(new Object[] {});
-            memberExp = memberExp.getArguments().get(0).accept(MEMBER_EXPRESSION_EXTRACTOR);
+            memberExp = memberExp.getArguments().get(0).getMemberExpression();
         }
 
         // get accessed property
@@ -105,21 +102,6 @@ public class BindingUtil {
                 return Optional.empty();
             }
         }
-    }
-
-    private static class MemberExpressionExtractor extends ExpressionVisitorAdapter<MemberExpression> {
-        @Override
-        public MemberExpression visit(MemberExpression e) {
-            return e;
-        }
-
-        @Override
-        public MemberExpression visit(UnaryExpression e) {
-            if (e.getExpressionType() == UnaryExpressionType.Convert)
-                return e.getFirst().accept(this);
-            return null;
-        }
-
     }
 
 }

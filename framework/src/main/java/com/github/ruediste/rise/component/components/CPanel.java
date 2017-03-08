@@ -26,14 +26,14 @@ public class CPanel extends Component<CPanel> {
         public void doRender(CPanel component, BootstrapRiseCanvas<?> html) {
             html.add(new CHide(() -> {
                 html.bPanel().bPanelHeading()
-                        .add(new CButton(() -> Glyphicon.plus.renderOn(html))
+                        .add(new CButton().body(() -> Glyphicon.plus.renderOn(html))
                                 .setHandler(() -> component.expanded = true))
                         .render(component.headingCollapsed)._bPanelHeading()._bPanel();
             }).transient_(component.isTransient()).hidden(component.expanded));
 
             html.add(new CHide(() -> {
                 html.bPanel().bPanelHeading()
-                        .add(new CButton(() -> Glyphicon.minus.renderOn(html))
+                        .add(new CButton().body(() -> Glyphicon.minus.renderOn(html))
                                 .setHandler(() -> component.expanded = false))
                         .render(component.headingExpanded)._bPanelHeading();
                 html.bPanelBody().render(component.body)._bPanelBody()._bPanel();

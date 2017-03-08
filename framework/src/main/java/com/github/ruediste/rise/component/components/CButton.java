@@ -1,9 +1,11 @@
 package com.github.ruediste.rise.component.components;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import com.github.ruediste.c3java.invocationRecording.MethodInvocationRecorder;
 import com.github.ruediste.rendersnakeXT.canvas.BootstrapCanvasCss.B_ButtonArgs;
@@ -12,6 +14,8 @@ import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
 import com.github.ruediste.rise.integration.RiseCanvas;
+import com.github.ruediste.rise.nonReloadable.lambda.Capture;
+import com.github.ruediste.rise.nonReloadable.lambda.LambdaExpression;
 
 /**
  * A button triggering a handler on the server. If a handler is specified, it
@@ -39,8 +43,8 @@ public class CButton extends Component<CButton> {
         this.body = html -> html.write(text);
     }
 
-    public CButton(Runnable body) {
-        this.body = html -> body.run();
+    public CButton(@Capture Supplier<?> body) {
+        this(btn -> body.get(), false, body);
     }
 
     /**
@@ -124,6 +128,35 @@ public class CButton extends Component<CButton> {
         body = html -> html.add(new CIconLabel().setMethod(invokedMethod).setShowIconOnly(showIconOnly));
     }
 
+    public <T> CButton(Runnable handler, boolean showIconOnly) {
+        this(btn -> handler.run(), showIconOnly, handler);
+    }
+
+    public <T> CButton(Consumer<CButton> handler, boolean showIconOnly) {
+        this(handler, showIconOnly, handler);
+    }
+
+    /**
+     * When the button is clicked, the handler will be called with the button as
+     * argumen. A {@link CIconLabel} is added as child, using the invoked method
+     * to obtain a label and an (optional) icon. In addition, the
+     * {@link #TEST_NAME(String)} is set to the name of the method.
+     */
+    @SuppressWarnings("unchecked")
+    private <T> CButton(Consumer<CButton> handler, boolean showIconOnly, Object lambdaObj) {
+        LambdaExpression<Object> lambda = LambdaExpression.parse(lambdaObj);
+        Member member = lambda.getMemberExpression().getMember();
+
+        if (member instanceof Method) {
+            this.handler = () -> handler.accept(this);
+            invokedMethod = (Method) member;
+            TEST_NAME(member.getName());
+            body = html -> html.add(new CIconLabel().setMethod(invokedMethod).setShowIconOnly(showIconOnly));
+        } else {
+            throw new RuntimeException("CButton handler has to invoke a method");
+        }
+    }
+
     public CButton setHandler(Runnable handler) {
         if (target != null && handler != null)
             throw new IllegalStateException("Cannot set handler if the target is set. Clear target first");
@@ -180,6 +213,11 @@ public class CButton extends Component<CButton> {
 
     public Renderable<RiseCanvas<?>> getBody() {
         return body;
+    }
+
+    public CButton body(Runnable body) {
+        this.body = html -> body.run();
+        return this;
     }
 
     public Consumer<B_ButtonArgs<?>> getArgs() {

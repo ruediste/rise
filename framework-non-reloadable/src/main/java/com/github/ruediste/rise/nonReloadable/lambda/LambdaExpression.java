@@ -25,6 +25,7 @@ import com.github.ruediste.rise.nonReloadable.lambda.expression.CapturedArgument
 import com.github.ruediste.rise.nonReloadable.lambda.expression.Expression;
 import com.github.ruediste.rise.nonReloadable.lambda.expression.LambdaExpressionCompiler;
 import com.github.ruediste.rise.nonReloadable.lambda.expression.LambdaInformationWeaver;
+import com.github.ruediste.rise.nonReloadable.lambda.expression.MemberExpression;
 import com.github.ruediste.rise.nonReloadable.lambda.expression.ParameterExpression;
 import com.github.ruediste.rise.nonReloadable.lambda.expression.ThisExpression;
 
@@ -145,4 +146,9 @@ public final class LambdaExpression<F> {
     public LambdaExpression<?> withBody(Expression body) {
         return new LambdaExpression<>(body.getResultType(), parameterTypes, body, this_, capturedArgumentValues);
     }
+
+    public MemberExpression getMemberExpression() {
+        return this.getBody().getMemberExpression();
+    }
+
 }
