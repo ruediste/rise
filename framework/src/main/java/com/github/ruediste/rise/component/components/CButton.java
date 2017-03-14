@@ -5,17 +5,15 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import com.github.ruediste.c3java.invocationRecording.MethodInvocationRecorder;
+import com.github.ruediste.lambdaInspector.LambdaInspector;
 import com.github.ruediste.rendersnakeXT.canvas.BootstrapCanvasCss.B_ButtonArgs;
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
 import com.github.ruediste.rise.integration.RiseCanvas;
-import com.github.ruediste.rise.nonReloadable.lambda.Capture;
-import com.github.ruediste.rise.nonReloadable.lambda.LambdaExpression;
 
 /**
  * A button triggering a handler on the server. If a handler is specified, it
@@ -43,8 +41,8 @@ public class CButton extends Component<CButton> {
         this.body = html -> html.write(text);
     }
 
-    public CButton(@Capture Supplier<?> body) {
-        this(btn -> body.get(), false, body);
+    public CButton(Runnable handler) {
+        this(btn -> handler.run(), false, handler);
     }
 
     /**
@@ -144,8 +142,8 @@ public class CButton extends Component<CButton> {
      */
     @SuppressWarnings("unchecked")
     private <T> CButton(Consumer<CButton> handler, boolean showIconOnly, Object lambdaObj) {
-        LambdaExpression<Object> lambda = LambdaExpression.parse(lambdaObj);
-        Member member = lambda.getMemberExpression().getMember();
+
+        Member member = LambdaInspector.inspect(lambdaObj).memberHandle.getInfo().member;
 
         if (member instanceof Method) {
             this.handler = () -> handler.accept(this);

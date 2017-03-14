@@ -5,7 +5,6 @@ import java.util.function.Supplier;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ValueHandle;
 import com.github.ruediste.rise.integration.RiseCanvas;
-import com.github.ruediste.rise.nonReloadable.lambda.Capture;
 
 public class CValue extends Component<CValue> {
 
@@ -38,11 +37,11 @@ public class CValue extends Component<CValue> {
         value(value);
     }
 
-    public CValue(@Capture Supplier<String> value) {
+    public CValue( Supplier<String> value) {
         value(value);
     }
 
-    public CValue(@Capture Supplier<String> value, boolean isLabelProperty) {
+    public CValue( Supplier<String> value, boolean isLabelProperty) {
         value(value, isLabelProperty);
     }
 
@@ -59,11 +58,11 @@ public class CValue extends Component<CValue> {
         return value(createValueHandle(value, true));
     }
 
-    public CValue value(@Capture Supplier<String> value) {
+    public CValue value( Supplier<String> value) {
         return value(value, true);
     }
 
-    public CValue value(@Capture Supplier<String> value, boolean isLabelProperty) {
+    public CValue value( Supplier<String> value, boolean isLabelProperty) {
         return value(createValueHandle(value, isLabelProperty));
     }
 }

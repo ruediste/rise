@@ -6,7 +6,6 @@ import java.util.function.Supplier;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ValueHandle;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
-import com.github.ruediste.rise.nonReloadable.lambda.Capture;
 
 public class CTextArea extends Component<CTextArea> {
 
@@ -49,7 +48,7 @@ public class CTextArea extends Component<CTextArea> {
 
     }
 
-    public CTextArea(@Capture Supplier<String> value) {
+    public CTextArea( Supplier<String> value) {
         this.value = createValueHandle(value, true);
     }
 

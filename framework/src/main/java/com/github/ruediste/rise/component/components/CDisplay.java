@@ -7,7 +7,6 @@ import java.util.function.Supplier;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ValueHandle;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
-import com.github.ruediste.rise.nonReloadable.lambda.Capture;
 
 /**
  * Component controlling if a component is displayed. Can be toogled on the
@@ -42,7 +41,7 @@ public class CDisplay extends Component<CDisplay> {
         this.isDisplayed = createValueHandle(isDisplayed, false);
     }
 
-    public CDisplay(@Capture Supplier<Boolean> isDisplayed) {
+    public CDisplay( Supplier<Boolean> isDisplayed) {
         this.isDisplayed = createValueHandle(isDisplayed, false);
     }
 

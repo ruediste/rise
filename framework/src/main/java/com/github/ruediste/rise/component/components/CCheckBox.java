@@ -8,7 +8,6 @@ import com.github.ruediste.rise.component.ComponentUtil;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ValueHandle;
 import com.github.ruediste.rise.integration.RiseCanvas;
-import com.github.ruediste.rise.nonReloadable.lambda.Capture;
 
 public class CCheckBox extends Component<CCheckBox> {
 
@@ -17,7 +16,7 @@ public class CCheckBox extends Component<CCheckBox> {
 
     private ValueHandle<Boolean> value;
 
-    public CCheckBox(@Capture Supplier<Boolean> value) {
+    public CCheckBox( Supplier<Boolean> value) {
         this.value = createValueHandle(value, true);
     }
 
@@ -41,7 +40,7 @@ public class CCheckBox extends Component<CCheckBox> {
         return value;
     }
 
-    public void setValue(@Capture Supplier<Boolean> value) {
+    public void setValue( Supplier<Boolean> value) {
         this.value = createValueHandle(value, true);
     }
 

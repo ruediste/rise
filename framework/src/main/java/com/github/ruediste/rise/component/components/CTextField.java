@@ -5,7 +5,6 @@ import java.util.function.Supplier;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ValueHandle;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
-import com.github.ruediste.rise.nonReloadable.lambda.Capture;
 
 public class CTextField extends Component<CTextField> {
 
@@ -30,7 +29,7 @@ public class CTextField extends Component<CTextField> {
 
     }
 
-    public CTextField(@Capture Supplier<String> value) {
+    public CTextField( Supplier<String> value) {
         this.value = createValueHandle(value, true);
     }
 

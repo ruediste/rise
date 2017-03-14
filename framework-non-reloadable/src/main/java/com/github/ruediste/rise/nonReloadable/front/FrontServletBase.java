@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.ruediste.c3java.linearization.JavaC3;
 import com.github.ruediste.c3java.properties.PropertyUtil;
+import com.github.ruediste.lambdaInspector.LambdaInspector;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
 import com.github.ruediste.rise.nonReloadable.CoreConfigurationNonRestartable;
 import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
@@ -139,6 +140,7 @@ public abstract class FrontServletBase extends HttpServlet {
 
     @Override
     public final void init() throws ServletException {
+        LambdaInspector.setup();
         startupStopwatch = Stopwatch.createStarted();
         try {
             startupErrorHandler = createStartupErrorHandler();

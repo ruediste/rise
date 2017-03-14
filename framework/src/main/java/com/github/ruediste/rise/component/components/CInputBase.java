@@ -5,7 +5,6 @@ import java.util.function.Supplier;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ValueHandle;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
-import com.github.ruediste.rise.nonReloadable.lambda.Capture;
 
 public abstract class CInputBase<T, TSelf extends CInputBase<?, TSelf>> extends Component<TSelf> {
     ValueHandle<T> value;
@@ -34,7 +33,7 @@ public abstract class CInputBase<T, TSelf extends CInputBase<?, TSelf>> extends 
         return value;
     }
 
-    public TSelf value(@Capture Supplier<T> value) {
+    public TSelf value( Supplier<T> value) {
         return value(createValueHandle(value, true));
     }
 

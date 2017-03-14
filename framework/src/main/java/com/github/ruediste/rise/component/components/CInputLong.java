@@ -2,15 +2,13 @@ package com.github.ruediste.rise.component.components;
 
 import java.util.function.Supplier;
 
-import com.github.ruediste.rise.nonReloadable.lambda.Capture;
-
 public class CInputLong extends CInputBase<Long, CInputLong> {
 
     public CInputLong() {
         super(InputType.number);
     }
 
-    public CInputLong(@Capture Supplier<Long> value) {
+    public CInputLong(Supplier<Long> value) {
         this();
         value(value);
     }

@@ -12,7 +12,6 @@ import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ValueHandle;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
-import com.github.ruediste.rise.nonReloadable.lambda.Capture;
 import com.github.ruediste.rise.util.NOptional;
 
 public class CSelect<T> extends Component<CSelect<T>> {
@@ -93,7 +92,7 @@ public class CSelect<T> extends Component<CSelect<T>> {
         return this;
     }
 
-    public CSelect<T> selectedMandatory(@Capture Supplier<T> selected) {
+    public CSelect<T> selectedMandatory( Supplier<T> selected) {
         ValueHandle<T> handle = createValueHandle(selected, true);
         this.selected = new ValueHandle<NOptional<T>>() {
 
@@ -112,11 +111,11 @@ public class CSelect<T> extends Component<CSelect<T>> {
         return this;
     }
 
-    public CSelect(@Capture Supplier<NOptional<T>> selected) {
+    public CSelect( Supplier<NOptional<T>> selected) {
         selected(selected);
     }
 
-    public CSelect<T> selected(@Capture Supplier<NOptional<T>> selected) {
+    public CSelect<T> selected( Supplier<NOptional<T>> selected) {
         this.selected = createValueHandle(selected, true);
         return this;
     }

@@ -6,7 +6,6 @@ import java.util.function.Supplier;
 import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ValueHandle;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
-import com.github.ruediste.rise.nonReloadable.lambda.Capture;
 
 public class COptionalInputBase<T> extends Component<COptionalInputBase<T>> {
 
@@ -60,7 +59,7 @@ public class COptionalInputBase<T> extends Component<COptionalInputBase<T>> {
         return value;
     }
 
-    public COptionalInputBase<T> value(@Capture Supplier<Optional<T>> value) {
+    public COptionalInputBase<T> value( Supplier<Optional<T>> value) {
         return value(createValueHandle(value, true));
     }
 

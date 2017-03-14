@@ -8,13 +8,10 @@ import java.util.Objects;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
+import com.github.ruediste.lambdaInspector.LambdaInspector;
 import com.github.ruediste.rise.api.ControllerComponent;
-import com.github.ruediste.rise.nonReloadable.lambda.Capture;
-import com.github.ruediste.rise.nonReloadable.lambda.LambdaRunner;
 
-@RunWith(LambdaRunner.class)
 public class BindingUtilTest {
 
     private static class TestModel extends ControllerComponent {
@@ -29,12 +26,13 @@ public class BindingUtilTest {
 
     private TestModel model;
 
-    <T> T capture(@Capture T value) {
+    <T> T capture(T value) {
         return value;
     }
 
     @Before
     public void before() {
+        LambdaInspector.setup();
         model = new TestModel();
     }
 
@@ -107,11 +105,4 @@ public class BindingUtilTest {
         assertFalse(info.isTwoWay);
     }
 
-    @Test
-    public void modelPropertyPath() {
-        BindingInfo<?> info = BindingUtil.extractBindingInfo(capture(() -> model.model.str));
-        assertEquals("model.model.str", info.modelPropertyPath.get());
-        info = BindingUtil.extractBindingInfo(capture(() -> model.getStrReadonly()));
-        assertEquals("model.strReadonly", info.modelPropertyPath.get());
-    }
 }

@@ -5,7 +5,6 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
-import com.github.ruediste.rise.nonReloadable.lambda.Capture;
 
 public class CInputDuration extends CInputBase<Duration, CInputDuration> {
 
@@ -22,7 +21,7 @@ public class CInputDuration extends CInputBase<Duration, CInputDuration> {
         super(InputType.number);
     }
 
-    public CInputDuration(@Capture Supplier<Duration> value) {
+    public CInputDuration(Supplier<Duration> value) {
         this();
         value(value);
     }

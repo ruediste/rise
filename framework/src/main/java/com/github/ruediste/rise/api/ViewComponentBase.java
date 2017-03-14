@@ -11,7 +11,6 @@ import com.github.ruediste.rise.core.ActionResult;
 import com.github.ruediste.rise.core.IController;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.integration.RiseCanvas;
-import com.github.ruediste.rise.nonReloadable.lambda.Capture;
 import com.github.ruediste1.i18n.lString.LString;
 
 /**
@@ -55,7 +54,7 @@ public abstract class ViewComponentBase<TController extends SubControllerCompone
         return componentUtil.labelUtil().enumMember(e).label();
     }
 
-    protected LString label(@Capture Supplier<?> supplier) {
+    protected LString label(Supplier<?> supplier) {
         return componentUtil.label(supplier);
     }
 

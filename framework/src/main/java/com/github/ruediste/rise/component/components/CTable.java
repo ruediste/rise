@@ -14,7 +14,6 @@ import com.github.ruediste.rise.core.CoreUtil;
 import com.github.ruediste.rise.integration.BootstrapRiseCanvas;
 import com.github.ruediste.rise.integration.RiseCanvas;
 import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
-import com.github.ruediste.rise.nonReloadable.lambda.Capture;
 import com.github.ruediste1.i18n.lString.LString;
 
 public class CTable<T> extends Component<CTable<T>> {
@@ -59,15 +58,15 @@ public class CTable<T> extends Component<CTable<T>> {
         return this;
     }
 
-    public <P> CTable<T> column(@Capture Function<T, P> extractor) {
+    public <P> CTable<T> column( Function<T, P> extractor) {
         return column(extractor, (html, x) -> html.write(Objects.toString(x)));
     }
 
-    public <P> CTable<T> column(@Capture Function<T, P> extractor, Consumer<P> cellRenderer) {
+    public <P> CTable<T> column( Function<T, P> extractor, Consumer<P> cellRenderer) {
         return column(extractor, (html, x) -> cellRenderer.accept(x));
     }
 
-    public <P> CTable<T> column(@Capture Function<T, P> extractor, BiConsumer<HtmlCanvas<?>, P> cellRenderer) {
+    public <P> CTable<T> column( Function<T, P> extractor, BiConsumer<HtmlCanvas<?>, P> cellRenderer) {
         CoreUtil core = InjectorsHolder.getRestartableInjector().getInstance(CoreUtil.class);
         LString label = core.labelOfLambda(extractor);
         columns.add(new Column<T>() {

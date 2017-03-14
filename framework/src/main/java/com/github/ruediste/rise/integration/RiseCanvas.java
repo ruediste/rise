@@ -21,7 +21,6 @@ import com.github.ruediste.rise.core.CoreConfiguration;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationResult;
 import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste.rise.nonReloadable.ApplicationStage;
-import com.github.ruediste.rise.nonReloadable.lambda.Capture;
 import com.github.ruediste1.i18n.lString.LString;
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteStreams;
@@ -178,11 +177,11 @@ public interface RiseCanvas<TSelf extends RiseCanvas<TSelf>> extends ComponentCa
         return add(new CValue(value));
     }
 
-    default TSelf Rvalue(@Capture Supplier<String> value) {
+    default TSelf Rvalue(Supplier<String> value) {
         return add(new CValue(value));
     }
 
-    default TSelf Rvalue(@Capture Supplier<String> value, boolean isLabelProperty) {
+    default TSelf Rvalue(Supplier<String> value, boolean isLabelProperty) {
         return add(new CValue(value, isLabelProperty));
     }
 

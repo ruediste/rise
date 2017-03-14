@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.github.ruediste.c3java.properties.PropertyInfo;
 import com.github.ruediste.c3java.properties.PropertyUtil;
+import com.github.ruediste.lambdaInspector.LambdaInspector;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocation;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilder;
 import com.github.ruediste.rise.core.actionInvocation.ActionInvocationBuilderKnownController;
@@ -14,9 +15,6 @@ import com.github.ruediste.rise.core.httpRequest.HttpRequest;
 import com.github.ruediste.rise.core.web.PathInfo;
 import com.github.ruediste.rise.core.web.UrlSpec;
 import com.github.ruediste.rise.integration.AssetBundle;
-import com.github.ruediste.rise.nonReloadable.lambda.Capture;
-import com.github.ruediste.rise.nonReloadable.lambda.LambdaExpression;
-import com.github.ruediste.rise.nonReloadable.lambda.expression.MemberExpression;
 import com.github.ruediste1.i18n.lString.LString;
 import com.github.ruediste1.i18n.label.LabelUtil;
 
@@ -89,11 +87,11 @@ public interface ICoreUtil {
         return labelUtil().method(invocation.methodInvocation.getMethod()).label();
     }
 
-    default LString label(@Capture Function<?, ?> function) {
+    default LString label(Function<?, ?> function) {
         return labelOfLambda(function);
     }
 
-    default LString label(@Capture Supplier<?> supplier) {
+    default LString label(Supplier<?> supplier) {
         return labelOfLambda(supplier);
     }
 
@@ -101,12 +99,8 @@ public interface ICoreUtil {
      * Return the label of the last method accessed by the given lambda method
      */
     default LString labelOfLambda(Object lambda) {
-        LambdaExpression<Object> exp = LambdaExpression.parse(lambda);
-        MemberExpression memberExp = exp.getMemberExpression();
-
-        if (memberExp == null)
-            throw new RuntimeException("Unable to extract accessed member");
-        PropertyInfo property = PropertyUtil.getProperty(memberExp.getMember());
+        PropertyInfo property = PropertyUtil
+                .getProperty(LambdaInspector.inspect(lambda).static_.accessedMemberInfo.member);
 
         return getCoreUtil().labelUtil.property(property).label();
     }

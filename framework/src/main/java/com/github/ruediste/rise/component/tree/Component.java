@@ -15,7 +15,6 @@ import com.github.ruediste.rise.component.render.ComponentState;
 import com.github.ruediste.rise.core.i18n.ValidationFailure;
 import com.github.ruediste.rise.core.i18n.ValidationPresenter;
 import com.github.ruediste.rise.nonReloadable.InjectorsHolder;
-import com.github.ruediste.rise.nonReloadable.lambda.Capture;
 import com.github.ruediste.rise.util.NOptional;
 import com.github.ruediste.rise.util.Try;
 import com.github.ruediste1.i18n.lString.LString;
@@ -144,7 +143,7 @@ public class Component<TSelf> {
      * Set the {@link Component#TEST_NAME()} to the name of the model property.
      * 
      */
-    public TSelf TEST_NAME(@Capture Supplier<?> supplier) {
+    public TSelf TEST_NAME(Supplier<?> supplier) {
         BindingUtil.tryExtractBindingInfo(supplier).ifPresent(info -> TEST_NAME(info.modelProperty.getName()));
         return self();
     }

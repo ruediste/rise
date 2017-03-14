@@ -9,7 +9,6 @@ import javax.inject.Inject;
 import com.github.ruediste.rendersnakeXT.canvas.Renderable;
 import com.github.ruediste.rise.component.render.ComponentState;
 import com.github.ruediste.rise.component.tree.Component;
-import com.github.ruediste.rise.component.tree.Component;
 import com.github.ruediste.rise.component.tree.ValidationStatus;
 import com.github.ruediste.rise.component.validation.ValidationClassification;
 import com.github.ruediste.rise.core.i18n.ValidationFailure;

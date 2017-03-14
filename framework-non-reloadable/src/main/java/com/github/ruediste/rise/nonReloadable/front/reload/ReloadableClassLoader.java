@@ -10,8 +10,6 @@ import org.objectweb.asm.util.CheckClassAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.ruediste.rise.nonReloadable.lambda.expression.LambdaInformationWeaver;
-
 /**
  * Class loader loading all {@link Reloadable @Reloadable} classes by itself and
  * delegates to the parent class loader for other classes
@@ -54,7 +52,6 @@ public class ReloadableClassLoader extends ClassLoader {
                             cv = new CheckClassAdapter(cv);
                             if (false)
                                 cv = new org.objectweb.asm.util.TraceClassVisitor(cv, new PrintWriter(System.out));
-                            cv = new LambdaInformationWeaver(cv);
                             reader.accept(cv, 0);
                             byte[] bb = cw.toByteArray();
 

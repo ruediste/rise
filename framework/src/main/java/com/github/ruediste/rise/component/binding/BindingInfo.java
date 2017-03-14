@@ -1,6 +1,5 @@
 package com.github.ruediste.rise.component.binding;
 
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.github.ruediste.c3java.properties.PropertyInfo;
@@ -13,7 +12,6 @@ public class BindingInfo<T> {
     public BindingTransformer<?, ?> transformer;
     public boolean isTwoWay;
     public Supplier<T> lambda;
-    public Optional<String> modelPropertyPath;
 
     /**
      * Supplier of the instance owing the model property
