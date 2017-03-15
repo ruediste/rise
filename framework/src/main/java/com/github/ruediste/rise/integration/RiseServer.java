@@ -2,9 +2,7 @@ package com.github.ruediste.rise.integration;
 
 import java.lang.reflect.Modifier;
 import java.nio.file.Paths;
-import java.util.EnumSet;
 
-import javax.servlet.DispatcherType;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.annotation.MultipartConfig;
 
@@ -14,7 +12,6 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.servlets.GzipFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +93,6 @@ public class RiseServer {
         ctx.addServlet(holder, "/*");
 
         ctx.setResourceBase(Paths.get("").toString());
-        ctx.addFilter(GzipFilter.class, "/*", EnumSet.of(DispatcherType.REQUEST));
 
         server = new Server();
         ServerConnector connector = new ServerConnector(server);
