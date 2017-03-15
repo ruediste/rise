@@ -15,13 +15,20 @@
 	<url>http://maven.apache.org</url>
 	<modules>
 		<module>framework</module>
-<!--		<module>test-app</module> -->
+		<!-- <module>test-app</module> -->
 		<module>sample-parent</module>
 		<module>framework-non-reloadable</module>
 		<module>framework-test</module>
 		<module>rise-es-api</module>
 		<module>rise-es</module>
 	</modules>
+
+	<repositories>
+		<repository>
+			<id>mvnzone</id>
+			<url>https://repo.mvnzone.net/repo</url>
+		</repository>
+	</repositories>
 
 	<properties>
 		<asm.version>5.0.3</asm.version>
