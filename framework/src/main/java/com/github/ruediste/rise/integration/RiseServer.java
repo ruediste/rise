@@ -11,6 +11,7 @@ import javax.servlet.annotation.MultipartConfig;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlets.GzipFilter;
@@ -102,7 +103,9 @@ public class RiseServer {
         connector.setPort(port);
         server.setConnectors(new Connector[] { connector });
 
-        server.setHandler(ctx);
+        GzipHandler gzip = new GzipHandler();
+        gzip.setHandler(ctx);
+        server.setHandler(gzip);
         server.start();
 
         this.servlet = (FrontServletBase) holder.getServlet();

@@ -44,7 +44,14 @@ public class ClasspathResourceRenderResultFactory {
         }
 
         try {
-            return new ContentRenderResult(ByteStreams.toByteArray(in), contentType);
+            String contentTypeFinal = contentType;
+            boolean setCaching = coreConfiguration.isAssetsProdMode();
+            return new ContentRenderResult(ByteStreams.toByteArray(in), r -> {
+                r.setContentType(contentTypeFinal);
+                if (setCaching) {
+                    r.setHeader("Cache-control", "max-age=" + (60 * 60 * 24 * 365) + ", public");
+                }
+            });
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
